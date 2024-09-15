@@ -1,4 +1,6 @@
-﻿namespace PLATEAU.RoadNetwork.Structure
+﻿using System.Collections.Generic;
+
+namespace PLATEAU.RoadNetwork.Structure
 {
     public class RnSideWalk : ARnParts<RnSideWalk>
     {
@@ -30,7 +32,6 @@
 
         public RnRoadBase ParentRoad => parentRoad;
 
-
         public RnWay OutsideWay => outsideWay;
 
         public RnWay InsideWay => insideWay;
@@ -38,6 +39,22 @@
         public RnWay StartEdgeWay => startEdgeWay;
 
         public RnWay EndEdgeWay => endEdgeWay;
+
+        /// <summary>
+        /// 左右のWay(OutsideWay, InsideWay)を列挙
+        /// </summary>
+        public IEnumerable<RnWay> SideWays
+        {
+            get { yield return outsideWay; yield return insideWay; }
+        }
+
+        /// <summary>
+        /// 開始/終了の境界線のWay(StartEdgeWay, EndEdgeWay)を列挙
+        /// </summary>
+        public IEnumerable<RnWay> EdgeWays
+        {
+            get { yield return startEdgeWay; yield return endEdgeWay; }
+        }
 
         public RnSideWalk() { }
 
@@ -50,6 +67,10 @@
             this.endEdgeWay = endEdgeWay;
         }
 
+        /// <summary>
+        /// 親情報の再設定
+        /// </summary>
+        /// <param name="parent"></param>
         public void SetParent(RnRoadBase parent)
         {
             if (parent != null)
@@ -58,10 +79,33 @@
         }
 
         /// <summary>
+        /// 左右のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="outsideWay"></param>
+        /// <param name="insideWay"></param>
+        public void SetSideWays(RnWay outsideWay, RnWay insideWay)
+        {
+            this.outsideWay = outsideWay;
+            this.insideWay = insideWay;
+        }
+
+        /// <summary>
+        /// 境界のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="startEdgeWay"></param>
+        /// <param name="endEdgeWay"></param>
+        public void SetEdgeWays(RnWay startEdgeWay, RnWay endEdgeWay)
+        {
+            this.startEdgeWay = startEdgeWay;
+            this.endEdgeWay = endEdgeWay;
+        }
+
+
+
+        /// <summary>
         /// 歩道作成
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="way"></param>
         /// <param name="outsideWay"></param>
         /// <param name="insideWay"></param>
         /// <param name="startEdgeWay"></param>

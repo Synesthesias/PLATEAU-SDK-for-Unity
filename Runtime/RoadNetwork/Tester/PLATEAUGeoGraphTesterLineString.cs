@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
@@ -31,6 +33,15 @@ namespace PLATEAU.RoadNetwork.Tester
         }
         public TunTypeTestParam turnTypeTest = new TunTypeTestParam();
 
+        [Serializable]
+        public class RoadIntersectionTestParam
+        {
+            public bool enable = false;
+            public long rnRoadId = -1;
+            public AxisPlane plane = AxisPlane.Xz;
+            public bool exec = false;
+        }
+        [FormerlySerializedAs("lineStringIntersectionTest")] public RoadIntersectionTestParam roadIntersectionTest = new RoadIntersectionTestParam();
 
         private IEnumerable<Transform> GetChildren(Transform self)
         {
@@ -41,6 +52,11 @@ namespace PLATEAU.RoadNetwork.Tester
         public List<Vector2> GetVertices()
         {
             return GetChildren(transform).Select(v => v.position.ToVector2(axis)).ToList();
+        }
+
+        public List<Vector3> GetVertices3D()
+        {
+            return GetChildren(transform).Select(v => v.position).ToList();
         }
 
         /// <summary>
@@ -85,6 +101,39 @@ namespace PLATEAU.RoadNetwork.Tester
             DebugEx.DrawString($"{type}", vertices[0].ToVector3(axis));
         }
 
+        private void RoadIntersectionTest(RoadIntersectionTestParam p)
+        {
+            var exec = p.exec;
+            p.exec = false;
+            if (p.enable == false)
+                return;
+            var target = GameObject.FindAnyObjectByType<PLATEAURnStructureModel>();
+            if (!target || target.RoadNetwork == null)
+                return;
+
+            foreach (var road in target.RoadNetwork.Roads.Where(r =>
+                         p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList())
+            {
+                foreach (var e in GeoGraphEx.GetEdges(GetVertices3D(), false))
+                {
+                    var segment = new LineSegment3D(e.Item1, e.Item2);
+                    var res = road.GetLaneIntersections(segment);
+                    if (res == null)
+                        continue;
+                    foreach (var v in res.Intersections)
+                    {
+                        DebugEx.DrawSphere(v.Position, 0.3f, Color.red);
+                        DebugEx.DrawString($"{v.PosIndex}", v.Position);
+                    }
+
+                    if (exec)
+                    {
+                        road.CutHorizontal(segment);
+                    }
+                }
+            }
+        }
+
         public void OnDrawGizmos()
         {
             if (!gameObject.activeInHierarchy)
@@ -97,6 +146,7 @@ namespace PLATEAU.RoadNetwork.Tester
 
             EdgeBorderTest(edgeBorderTest);
             TurnTypeTest(turnTypeTest);
+            RoadIntersectionTest(roadIntersectionTest);
         }
 
     }
