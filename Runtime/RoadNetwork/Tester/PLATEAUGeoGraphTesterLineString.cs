@@ -40,6 +40,7 @@ namespace PLATEAU.RoadNetwork.Tester
             public long rnRoadId = -1;
             public AxisPlane plane = AxisPlane.Xz;
             public bool exec = false;
+            public bool exec2 = false;
         }
         [FormerlySerializedAs("lineStringIntersectionTest")] public RoadIntersectionTestParam roadIntersectionTest = new RoadIntersectionTestParam();
 
@@ -105,32 +106,42 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             var exec = p.exec;
             p.exec = false;
+            var exec2 = p.exec2;
+            p.exec2 = false;
             if (p.enable == false)
                 return;
             var target = GameObject.FindAnyObjectByType<PLATEAURnStructureModel>();
             if (!target || target.RoadNetwork == null)
                 return;
 
-            foreach (var road in target.RoadNetwork.Roads.Where(r =>
-                         p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList())
+            var edges = GeoGraphEx.GetEdges(GetVertices3D(), false).Select(s => new LineSegment3D(s.Item1, s.Item2)).ToList();
+
+            var roads = target.RoadNetwork.Roads.Where(r =>
+                p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList();
+            foreach (var road in roads)
             {
-                foreach (var e in GeoGraphEx.GetEdges(GetVertices3D(), false))
+                foreach (var segment in edges)
                 {
-                    var segment = new LineSegment3D(e.Item1, e.Item2);
                     var res = road.GetLaneIntersections(segment);
                     if (res == null)
                         continue;
-                    foreach (var v in res.Intersections)
+                    foreach (var v in res.TargetLines.SelectMany(w => w.Intersections))
                     {
-                        DebugEx.DrawSphere(v.Position, 0.3f, Color.red);
-                        DebugEx.DrawString($"{v.PosIndex}", v.Position);
+                        DebugEx.DrawSphere(v.v, 0.3f, Color.red);
+                        DebugEx.DrawString($"{v.index}", v.v);
                     }
 
                     if (exec)
                     {
-                        road.CutHorizontal(segment);
+                        target.RoadNetwork.SliceRoadHorizontal(road, segment);
                     }
                 }
+
+                if (exec2 && edges.Count >= 3)
+                {
+                    target.RoadNetwork.SliceRoadHorizontalAndConvert2Intersection(road, edges[0], edges[2]);
+                }
+
             }
         }
 

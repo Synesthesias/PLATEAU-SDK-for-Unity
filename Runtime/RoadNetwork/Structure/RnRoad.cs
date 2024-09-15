@@ -712,140 +712,6 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        public enum RoadCutResult
-        {
-            Success,
-            InvalidRoad,
-            IndexOutOfRange,
-            // 分断しする線分が交差する
-            CrossCut,
-        }
-
-        /// <summary>
-        /// 自身をlineSegmentで水平分割し、２つのRoadに分割する
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="lineSegment"></param>
-        public static void CutHorizontal(this RnRoad self, LineSegment3D lineSegment)
-        {
-            var inters = self.GetLaneIntersections(lineSegment);
-            if (inters == null)
-                return;
-
-            if (inters.Intersections.Count == 0)
-                return;
-
-            var lineSegment2D = lineSegment.To2D(AxisPlane.Xz);
-
-            // key   : 元のLineString
-            // value : 分割後のselfのprev/next側のLineString
-            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable = new();
-
-            var prevBorder = self.GetBorderWays(RnLaneBorderType.Prev).First();
-            foreach (var inter in inters.Intersections)
-            {
-                inter.LineString.SplitByIndex(inter.PosIndex, out var front, out var back);
-                // LineStringのfront側がlineSegmentのどっち側にあるか
-                var frontSign = lineSegment2D.Sign(front[0].Xz());
-                // selfのprev側がlineSegmentのどっち側にあるか
-                var borderSign = lineSegment2D.Sign(prevBorder[0].Xz());
-
-                var (prev, next) = (front, back);
-                var isReversed = frontSign != borderSign;
-                if (isReversed)
-                    (next, prev) = (prev, next);
-
-                lineTable[inter.LineString] = (prev, next, back.Points[0], isReversed);
-            }
-
-            var ret = new RnRoad(self.TargetTran);
-
-            // wayのlineStringだけ差し替えて他同じ物を返す
-            RnWay CopyWay(RnLineString lineString, RnWay way)
-            {
-                return new RnWay(lineString, way.IsReversed, way.IsReverseNormal);
-            }
-
-            foreach (var lane in self.AllLanesWithMedian)
-            {
-                var left = lineTable[lane.LeftWay.LineString];
-                var right = lineTable[lane.RightWay.LineString];
-
-                var nextLeftWay = CopyWay(left.next, lane.LeftWay);
-                var nextRightWay = CopyWay(right.next, lane.RightWay);
-
-                var prevLeftWay = CopyWay(left.prev, lane.LeftWay);
-                var prevRightWay = CopyWay(right.prev, lane.RightWay);
-
-                var isReverseLane = lane.IsReverse;
-
-                // 分割個所の境界線
-                var midBorderWay = new RnWay(RnLineString.Create(new[] { left.midPoint, right.midPoint }));
-
-                // 順方向ならNext/逆方向ならPrevが中間地点になる
-                var laneMidBorderType = isReverseLane ? RnLaneBorderType.Prev : RnLaneBorderType.Next;
-
-                // 以前のボーダーは新しいボーダーに設定する
-                var nextBorder = lane.GetBorder(laneMidBorderType);
-                lane.SetBorder(laneMidBorderType, midBorderWay);
-
-                var newLane = new RnLane(nextLeftWay, nextRightWay, null, null) { IsReverse = isReverseLane };
-                newLane.SetBorder(laneMidBorderType, nextBorder);
-                newLane.SetBorder(laneMidBorderType.GetOpposite(), midBorderWay);
-
-                if (lane.IsMedianLane)
-                {
-                    ret.SetMedianLane(newLane);
-                }
-                else
-                {
-                    ret.AddMainLane(newLane);
-                }
-
-                lane.SetSideWay(RnDir.Left, prevLeftWay);
-                lane.SetSideWay(RnDir.Right, prevRightWay);
-            }
-            ret.SetPrevNext(self, self.Next);
-            self.SetPrevNext(self.Prev, ret);
-
-            ret.Prev?.ReplaceNeighbor(self, ret);
-            ret.Next?.ReplaceNeighbor(self, ret);
-            self.ParentModel?.AddRoad(ret);
-
-
-            foreach (var sideWalk in self.SideWalks)
-            {
-                var inside = lineTable[sideWalk.InsideWay.LineString];
-                var outside = lineTable[sideWalk.OutsideWay.LineString];
-
-                var nextInsideWay = CopyWay(inside.next, sideWalk.InsideWay);
-                var nextOutsideWay = CopyWay(outside.next, sideWalk.OutsideWay);
-
-                var prevInsideWay = CopyWay(inside.prev, sideWalk.InsideWay);
-                var prevOutsideWay = CopyWay(outside.prev, sideWalk.OutsideWay);
-
-                var (startEdgeWay, endEdgeWay) = (sideWalk.StartEdgeWay, sideWalk.EndEdgeWay);
-
-                // LineStringのfront側がlineSegmentのどっち側にあるか
-                var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.prev[0], inside.prev[1], 0.5f).Xz());
-                // selfのprev側がlineSegmentのどっち側にあるか
-                var startSign = lineSegment2D.Sign(startEdgeWay[0].Xz());
-                // startがprevと逆なら入れ替える
-                if (prevSign != startSign)
-                {
-                    (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
-                }
-
-                // 切断線の境界
-                var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
-
-                var newSideWalk = RnSideWalk.Create(ret, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay);
-                sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
-                sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
-                self.ParentModel?.AddSideWalk(newSideWalk);
-            }
-
-        }
 
         /// <summary>
         /// レーンのLineStringと
@@ -860,20 +726,21 @@ namespace PLATEAU.RoadNetwork.Structure
                 public RnLineString LineString { get; set; }
 
                 /// <summary>
-                /// LineString上の配列インデックス位置. 線分の途中の点の場合は小数になる
+                /// 交点情報.
+                /// index : LineString上の配列インデックス位置. 線分の途中の点の場合は小数になる
+                ///     v : 交点座標
                 /// </summary>
-                public float PosIndex { get; set; }
-
-                /// <summary>
-                /// 交点
-                /// </summary>
-                public Vector3 Position { get; set; }
+                public List<(float index, Vector3 v)> Intersections { get; set; } = new();
             }
 
-            public List<Intersection> Intersections { get; set; } = new();
+            /// <summary>
+            /// 交点チェック対象のLineString情報
+            /// </summary>
+            public List<Intersection> TargetLines { get; set; } = new();
 
             public LineSegment3D LineSegment { get; set; }
 
+            // 対応するRoad
             public RnRoad Road { get; set; }
         }
 
@@ -888,23 +755,21 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var ret = new LaneIntersectionResult { LineSegment = lineSegment, Road = self };
 
-            var allLineStrings = self.AllLanesWithMedian
+            var targetLines = self.AllLanesWithMedian
                 .SelectMany(l => l.BothWays)
                 .Concat(self.SideWalks.SelectMany(s => s.SideWays))
                 .Select(w => w.LineString)
                 .ToHashSet();
 
-            foreach (var way in allLineStrings)
+            foreach (var way in targetLines)
             {
+                var elem = new LaneIntersectionResult.Intersection { LineString = way };
+
                 foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
                 {
-                    ret.Intersections.Add(new LaneIntersectionResult.Intersection
-                    {
-                        LineString = way,
-                        PosIndex = r.index,
-                        Position = r.v,
-                    });
+                    elem.Intersections.Add((r.index, r.v));
                 }
+                ret.TargetLines.Add(elem);
             }
 
             return ret;
