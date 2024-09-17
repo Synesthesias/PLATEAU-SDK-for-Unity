@@ -387,6 +387,10 @@ namespace PLATEAU.RoadNetwork.Structure
                     if (other.IsBorder == false || eg == other)
                         continue;
 
+                    // Uターンを許可しない場合
+                    if (eg.Key == other.Key && allowUTurn == false)
+                        continue;
+
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
 
                     void AddTrack(RnNeighbor from, RnNeighbor to)

@@ -126,7 +126,7 @@ namespace PLATEAU.RoadNetwork.Structure
             road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
             if (leftWay != null)
                 intersection.AddEdge(null, leftWay);
-            foreach (var lane in road.MainLanes)
+            foreach (var lane in road.AllLanesWithMedian)
             {
                 lane.AlignBorder();
                 intersection.AddEdge(lane.GetNextRoad(), lane.NextBorder);
@@ -134,7 +134,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (rightWay != null)
                 intersection.AddEdge(null, rightWay.ReversedWay());
-            foreach (var lane in road.MainLanes)
+            foreach (var lane in road.AllLanesWithMedian)
             {
                 intersection.AddEdge(lane.GetPrevRoad(), lane.PrevBorder.ReversedWay());
             }
