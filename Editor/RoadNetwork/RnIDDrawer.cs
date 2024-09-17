@@ -25,35 +25,28 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataTrack>))]
-    public class RnTrackIDDrawer : RnIDDrawer<RoadNetworkDataTrack> { }
+    [CustomPropertyDrawer(typeof(RnID<RnDataRoadBase>))]
+    public class RnRoadBaseIDDrawer : RnIDDrawer<RnDataRoadBase> { }
+
+    [CustomPropertyDrawer(typeof(RnID<RnDataLineString>))]
+    public class RnLineStringIDDrawer : RnIDDrawer<RnDataLineString> { }
+
+    [CustomPropertyDrawer(typeof(RnID<RnDataPoint>))]
+    public class RnPointIDDrawer : RnIDDrawer<RnDataPoint> { }
 
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataNode>))]
-    public class RnNodeIDDrawer : RnIDDrawer<RoadNetworkDataNode> { }
+    [CustomPropertyDrawer(typeof(RnID<RnDataBlock>))]
+    public class RnBlockIDDrawer : RnIDDrawer<RnDataBlock> { }
 
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLink>))]
-    public class RnLinkIDDrawer : RnIDDrawer<RoadNetworkDataLink> { }
+    [CustomPropertyDrawer(typeof(RnID<RnDataWay>))]
+    public class RnWayIDDrawer : RnIDDrawer<RnDataWay> { }
 
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLineString>))]
-    public class RnLineStringIDDrawer : RnIDDrawer<RoadNetworkDataLineString> { }
+    [CustomPropertyDrawer(typeof(RnID<RnDataLane>))]
+    public class RnLaneIDDrawer : RnIDDrawer<RnDataLane> { }
 
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataPoint>))]
-    public class RnPointIDDrawer : RnIDDrawer<RoadNetworkDataPoint> { }
-
-
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataBlock>))]
-    public class RnBlockIDDrawer : RnIDDrawer<RoadNetworkDataBlock> { }
-
-
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataWay>))]
-    public class RnWayIDDrawer : RnIDDrawer<RoadNetworkDataWay> { }
-
-
-    [CustomPropertyDrawer(typeof(RnID<RoadNetworkDataLane>))]
-    public class RnLaneIDDrawer : RnIDDrawer<RoadNetworkDataLane> { }
-
+    [CustomPropertyDrawer(typeof(RnID<RnDataSideWalk>))]
+    public class RnSideWalkIDDrawer : RnIDDrawer<RnDataSideWalk> { }
 #endif
 }

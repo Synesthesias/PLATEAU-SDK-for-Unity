@@ -3,11 +3,12 @@ using UnityEngine;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 using UnityEngine.UIElements;
 using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
 using System;
 using UnityEditor.UIElements;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
     /// <summary>
     /// 信号制御器のパターンを編集するUIDocumentのバインドや挙動の定義を行うクラス
@@ -102,7 +103,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             var cotrollerInfo = patternEditPanelInst.Q<VisualElement>("CotrollerInfo");
             var cycleTimeTextField = cotrollerInfo.Q<FloatField>("CycleTime");
-            UIDocBind.Helper.Bind(cycleTimeTextField, nameof(trafficSignalLightPatternUIEx.CycleTime), trafficSignalLightPatternUIEx);
+            UIDocBindHelper.Helper.Bind(cycleTimeTextField, nameof(trafficSignalLightPatternUIEx.CycleTime), trafficSignalLightPatternUIEx);
             cycleTimeTextField.SetValueWithoutNotify(trafficSignalLightPatternUIEx.CycleTime);
         }
 
@@ -178,7 +179,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         if (e.newValue == false)
                             return;
 
-                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControllerPhase;
+                        var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPhase;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
                         system.SelectedSignalPhase = userData;
@@ -197,7 +198,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             var phase = system.SelectedSignalPhase;
  
                             var spllitField = phasePanelRoot.Q<FloatField>("Split");
-                            UIDocBind.Helper.Bind(spllitField, nameof(phase.SplitSeconds), phase);
+                            UIDocBindHelper.Helper.Bind(spllitField, nameof(phase.SplitSeconds), phase);
                             spllitField.SetValueWithoutNotify(phase.SplitSeconds);
                             spllitField.RegisterValueChangedCallback((e) =>
                             {
@@ -208,7 +209,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             });
 
                             var maskField = phasePanelRoot.Q<MaskField>("EnterableCarTypeMask");
-                            UIDocBind.Helper.Bind(maskField, nameof(phase.EnterableVehicleType), phase);
+                            UIDocBindHelper.Helper.Bind(maskField, nameof(phase.EnterableVehicleType), phase);
                             maskField.SetValueWithoutNotify(phase.EnterableVehicleType);
 
                         }

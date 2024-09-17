@@ -1,12 +1,15 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
     /// <summary>
     /// 交通信号灯制御器関連のUIDocumentのバインドや挙動の定義を行うクラス
@@ -193,7 +196,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     radioBtn.RegisterValueChangedCallback((e) =>
                     {
-                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControllerPattern;
+                        var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPattern;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
                         system.SelectedSignalControllerPattern = userData;

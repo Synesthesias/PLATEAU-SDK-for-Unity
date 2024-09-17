@@ -1,16 +1,51 @@
-﻿using PLATEAU.CityInfo;
+﻿using PLATEAU.CityImport.Import.Convert;
+using PLATEAU.CityInfo;
+using PLATEAU.GranularityConvert;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Splines;
+using Debug = UnityEngine.Debug;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Tester
 {
     public class PLATEAUGeoGraphTester : MonoBehaviour
     {
 
+        [Serializable]
+        public class SerializableRay2D
+        {
+            [SerializeField] public Vector2 origin;
+            [SerializeField] public Vector2 direction;
+            public Ray2D Ray => new Ray2D(origin, direction);
+
+            public SerializableRay2D(Ray2D ray)
+            {
+                origin = ray.origin;
+                direction = ray.direction;
+            }
+
+            public SerializableRay2D(Vector2 origin, Vector2 direction)
+            {
+                this.origin = origin;
+                this.direction = direction;
+            }
+
+            public SerializableRay2D()
+            {
+                origin = Vector2.zero;
+                direction = Vector2.zero;
+            }
+
+            public static implicit operator Ray2D(SerializableRay2D serializableRay2D) => serializableRay2D.Ray;
+        }
         [Serializable]
         public class LerpLineTestParam
         {
@@ -73,7 +108,120 @@ namespace PLATEAU.RoadNetwork
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
         public bool convertWithConvexHull = false;
 
+        [Serializable]
+        public class SplineTestParam
+        {
+            [Serializable]
+            public class SplinePoint
+            {
+                public Vector2 point;
+                public Vector2 dir;
+                public Color color = Color.white;
+            }
 
+            public bool enable = false;
+            public float drawPointRadius = 0.1f;
+            public List<SplinePoint> points = new List<SplinePoint>();
+        }
+        public SplineTestParam splineTest = new SplineTestParam();
+
+        static float3 ToFloat3(Vector3 v) => new float3(v.x, v.y, v.z);
+        public void SplineTest(SplineTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            if (p.points.Count < 2)
+                return;
+
+            void DrawPoint(SplineTestParam.SplinePoint pos)
+            {
+                DebugEx.DrawSphere(pos.point, p.drawPointRadius, pos.color);
+                DebugEx.DrawArrow(pos.point, pos.point + pos.dir, bodyColor: pos.color);
+            }
+            var p1 = p.points[0];
+            var p2 = p.points[1];
+            DrawPoint(p1);
+            DrawPoint(p2);
+            var sp = new Spline(2);
+            sp.Add(new BezierKnot(ToFloat3(p1.point.Xya()), -ToFloat3(p1.dir.Xya()), ToFloat3(p1.dir.Xya())));
+            sp.Add(new BezierKnot(ToFloat3(p2.point.Xya()), -ToFloat3(p2.dir.Xya()), ToFloat3(p2.dir.Xya())));
+
+            var positions = new List<Vector3>();
+            foreach (var i in Enumerable.Range(0, 10))
+            {
+                var t = i / 9f;
+
+                sp.Evaluate(t, out var pos, out var tangent, out var up);
+                positions.Add(pos);
+            }
+            DebugEx.DrawLines(positions);
+        }
+
+        [Serializable]
+        public class LerpPointInLineTestParam
+        {
+            public bool enable = false;
+            public SerializableRay2D ray1 = new SerializableRay2D(Vector2.zero, Vector2.right);
+            public SerializableRay2D ray2 = new SerializableRay2D(Vector2.zero, Vector2.right);
+            public float p = 0.5f;
+            public float drawRayLength = 10;
+            public Vector2 drawTextScreenOffset = Vector2.zero;
+        }
+
+        [SerializeField] private LerpPointInLineTestParam lerpPointInLineTestParam;
+        private void LerpPointInLineTest(LerpPointInLineTestParam p)
+        {
+            if (p.enable == false)
+                return;
+
+            var ray1 = p.ray1.Ray;
+            var ray2 = p.ray2.Ray;
+            DebugEx.DrawArrow(ray1.origin, ray1.origin + ray1.direction * p.drawRayLength, bodyColor: Color.red);
+            DebugEx.DrawArrow(ray2.origin, ray2.origin + ray2.direction * p.drawRayLength, bodyColor: Color.blue);
+
+            if (GeoGraph2D.CalcLerpPointInLine(ray1, ray2, p.p, out var pos))
+            {
+                DebugEx.DrawArrow(ray1.origin, pos, bodyColor: Color.yellow);
+                var nearest = ray2.GetNearestPoint(pos);
+                DebugEx.DrawArrow(nearest, pos, bodyColor: Color.white);
+
+                DebugEx.DrawString($"ray1[{(pos - ray1.origin).magnitude}] :  ray2[{(nearest - pos).magnitude}] = {p.p} : {1 - p.p}", pos, p.drawTextScreenOffset);
+
+                DebugEx.DrawSphere(pos, 0.1f, Color.green);
+            }
+        }
+
+        [Serializable]
+        public class Segment3DIntersectionTest
+        {
+            public bool enable = false;
+            public GameObject v0;
+            public GameObject v1;
+            public GameObject v2;
+            public GameObject v3;
+            public AxisPlane plane = AxisPlane.Xz;
+            public float normalEpsilon = 0.1f;
+            public float sphereRadius = 0.1f;
+            public void Update()
+            {
+                if (!enable)
+                    return;
+                if (!v0 || !v1 || !v2 || !v3)
+                    return;
+                var s1 = new LineSegment3D(v0.transform.position, v1.transform.position);
+                var s2 = new LineSegment3D(v2.transform.position, v3.transform.position);
+
+                DebugEx.DrawLine(s1.Start, s1.End, color: Color.red);
+                DebugEx.DrawLine(s2.End, s2.Start, color: Color.blue);
+                if (s1.TrySegmentIntersectionBy2D(s2, plane, normalEpsilon, out var intersection, out var t1,
+                        out var t2))
+                {
+                    DebugEx.DrawSphere(intersection, sphereRadius, Color.green);
+                }
+            }
+        }
+        [SerializeField]
+        private Segment3DIntersectionTest segment3DIntersectionTest = new Segment3DIntersectionTest();
 
         public void ConvertTrans()
         {
@@ -120,22 +268,19 @@ namespace PLATEAU.RoadNetwork
                 var right = child.GetChild(1).GetComponent<PLATEAUGeoGraphTesterLineString>();
                 if (!left || !right)
                     continue;
-                var leftVertices = left.GetVertices();
-                var rightVertices = right.GetVertices();
+                var leftVertices = left.GetVertices().Select(v => v.Xya()).ToList();
+                var rightVertices = right.GetVertices().Select(v => v.Xya()).ToList();
 
                 if (param.showWay)
                 {
                     foreach (var v in new[] { leftVertices, rightVertices })
                     {
                         var color = DebugEx.GetDebugColor(childIndex++, 8);
-                        DebugEx.DrawArrows(v.Select(a => a.Xya()), false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
+                        DebugEx.DrawArrows(v, false, arrowSize: 0.1f, color: color, arrowUp: Vector3.forward);
                     }
                 }
-                var segments = GeoGraph2D.GetInnerLerpSegments(leftVertices, rightVertices, param.p, param.op);
-                foreach (var seg in segments.Select((v, i) => new { v, i }))
-                {
-                    DebugEx.DrawLineSegment2D(seg.v.Segment, color: DebugEx.GetDebugColor(seg.i, 16));
-                }
+                var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xy, param.p);
+                DebugEx.DrawArrows(segments);
             }
         }
 
@@ -246,15 +391,17 @@ namespace PLATEAU.RoadNetwork
         }
 
         [Serializable]
-        public class MeshPolygonTestParam
+        public class MeshOutlineTestParam
         {
             public bool enable = false;
             public bool showIndex = false;
             public Color color = Color.white;
+            public float epsilon = 0.1f;
+            public bool showLoop = true;
             public List<PLATEAUCityObjectGroup> targets;
         }
-        public MeshPolygonTestParam meshPolygonTest = new MeshPolygonTestParam();
-        private void MeshPolygonTest(MeshPolygonTestParam p)
+        public MeshOutlineTestParam meshOutlineTest = new MeshOutlineTestParam();
+        private void MeshOutlineTest(MeshOutlineTestParam p)
         {
             if (p.enable == false)
                 return;
@@ -263,8 +410,12 @@ namespace PLATEAU.RoadNetwork
                 if (!target)
                     continue;
                 var mesh = target.GetComponent<MeshCollider>();
-                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz());
-                DebugEx.DrawLines(vertices, false, p.color);
+                var sw = new Stopwatch();
+                sw.Start();
+                var vertices = GeoGraph2D.ComputeMeshOutlineVertices(mesh.sharedMesh, v => v.Xz(), p.epsilon);
+                sw.Stop();
+                DebugEx.DrawString($"sec={sw.ElapsedMilliseconds}[ms]", vertices.FirstOrDefault());
+                DebugEx.DrawLines(vertices, p.showLoop, p.color);
                 if (p.showIndex)
                 {
                     for (var i = 0; i < vertices.Count; i++)
@@ -275,6 +426,24 @@ namespace PLATEAU.RoadNetwork
             }
         }
 
+        [Serializable]
+        public class SplitCityObjectTestParam
+        {
+            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
+            public bool doDestroySrcObject = false;
+        }
+        public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
+
+        public async Task<GranularityConvertResult> SplitCityObjectTest(SplitCityObjectTestParam p)
+        {
+            // 分割結合の設定です。
+            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
+            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
+                p.targets.Select(t => t.gameObject).ToArray(), false);
+            // 分割結合します。
+            return await new CityGranularityConverter().ConvertAsync(conf);
+        }
+
         public void OnDrawGizmos()
         {
             LerpSegmentsTest(lerpSegmentsTest);
@@ -282,7 +451,10 @@ namespace PLATEAU.RoadNetwork
             ConvexTest(convexTest);
             LerpLineTest(lerpLineTest);
             UnionPolygonTest(unionPolygonTest);
-            MeshPolygonTest(meshPolygonTest);
+            MeshOutlineTest(meshOutlineTest);
+            SplineTest(splineTest);
+            LerpPointInLineTest(lerpPointInLineTestParam);
+            segment3DIntersectionTest.Update();
         }
 
     }

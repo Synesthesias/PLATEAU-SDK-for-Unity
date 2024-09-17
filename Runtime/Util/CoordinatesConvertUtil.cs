@@ -27,6 +27,16 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// UnityEngine.Quaternionに変換.(double->floatへの誤差あり)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Quaternion ToUnityQuaternion(this PlateauQuaternion self)
+        {
+            return new Quaternion((float)self.X, (float)self.Y, (float)self.Z, (float)self.W);
+        }
+
+        /// <summary>
         /// Unity向けの座標変換インスタンスを new して返します。
         /// </summary>
         public static GeoReference UnityStandardGeoReference(int coordinateZoneID)

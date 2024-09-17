@@ -1,4 +1,8 @@
+﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Data;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
@@ -20,7 +24,49 @@ namespace PLATEAU.RoadNetwork.Data
         /// <summary>
         /// 優先道路
         /// </summary>
-        public RnID<RoadNetworkDataLineString> yields;
+        public RnID<RnDataLineString> yields;
+    }
+
+    [System.Serializable]
+    public class RnDataTrafficLightController : IPrimitiveData
+    {
+        ////// #TODO : 消える予定
+        ////// 自分自身を表すId
+        ////[field: SerializeField]
+        ////public RnID<TrafficLightController> MyId { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember]
+        //public RnID<RnDataNode> Parent { get; set; }
+
+        //// 連結しているレーン(上流)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.NextLanes))]
+        //public List<RnID<RnDataLane>> NextLanes { get; set; } = new List<RnID<RnDataLane>>();
+
+        //// 連結しているレーン(下流)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.PrevLanes))]
+        //public List<RnID<RnDataLane>> PrevLanes { get; set; } = new List<RnID<RnDataLane>>();
+
+        //// 境界線(下流)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.PrevBorder))]
+        //public RnID<RnDataWay> PrevBorder { get; set; }
+
+        //// 境界線(上流)
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.NextBorder))]
+        //public RnID<RnDataWay> NextBorder { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.LeftWay))]
+        //public RnID<RnDataWay> LeftWay { get; set; }
+
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember(nameof(RnLane.RightWay))]
+        //public RnID<RnDataWay> RightWay { get; set; }
+
     }
 
     /// <summary>
@@ -29,7 +75,7 @@ namespace PLATEAU.RoadNetwork.Data
     [System.Serializable]
     public class StopLine
     {
-        public RnID<RoadNetworkDataLineString> line;
+        public RnID<RnDataLineString> line;
         public TrafficLight trafficLight;
         public bool bHasStopSign;
     }
@@ -44,6 +90,19 @@ namespace PLATEAU.RoadNetwork.Data
         public LightBulb[] LightBulbs => lightBulbs;
         [SerializeField] private LightBulb[] lightBulbs;
     }
+
+    [System.Serializable]
+    public class RnDataTrafficSignalStep
+    {
+        public RnID<RnDataTrafficLightController> parent;
+        public int paternID;
+        public int phaseID;
+        public int allowVehicleTypeMask;
+        public List<RnID<RnDataRoad>> linkAtBlue;
+        public List<RnID<RnDataRoad>> linkAtYellow;
+        public List<RnID<RnDataRoad>> linkAtRed;
+    }
+
 
     /// <summary>
     /// 信号機の電球

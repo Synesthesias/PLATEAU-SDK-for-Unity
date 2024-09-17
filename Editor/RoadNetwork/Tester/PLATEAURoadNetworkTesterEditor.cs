@@ -1,56 +1,54 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.Editor.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.CityObject.Drawer;
+using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Tester;
+using PLATEAU.RoadNetwork.Util;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.Tester
 {
     [CustomEditor(typeof(PLATEAURoadNetworkTester))]
     public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
     {
-        public void OnSceneGUI()
-        {
-            // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            UpdateRoadNetworkGUISystem();
-
-            void UpdateRoadNetworkGUISystem()
-            {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
-                    return;
-
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.OnSceneGUI(target as PLATEAURoadNetworkTester);
-            }
-
-        }
 
         public override void OnInspectorGUI()
         {
-            var cog = target as PLATEAURoadNetworkTester;
-            if (!cog)
+            var obj = target as PLATEAURoadNetworkTester;
+            if (!obj)
                 return;
+
 
             base.OnInspectorGUI();
             if (GUILayout.Button("Create"))
-                cog.CreateNetwork();
+                obj.CreateNetwork();
 
-            if (GUILayout.Button("Serialize"))
-                cog.RoadNetwork.Serialize();
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                var model = obj.GetComponent<PLATEAURnStructureModel>();
+                if (model && model.RoadNetwork != null)
+                {
+                    if (GUILayout.Button("Create Empty Road"))
+                        model.RoadNetwork.CreateEmptyRoadBetweenInteraction();
 
-            if (GUILayout.Button("Deserialize"))
-                cog.RoadNetwork.Deserialize();
+                    if (GUILayout.Button("Remove Empty Road"))
+                        model.RoadNetwork.RemoveEmptyRoadBetweenIntersection();
+                }
+                if (model && model.RoadNetwork != null)
+                {
+                    if (GUILayout.Button("Create Empty Intersection"))
+                        model.RoadNetwork.CreateEmptyIntersectionBetweenRoad();
 
-            if (GUILayout.Button("SplitCityObject"))
-                cog.SplitCityObjectAsync();
+                    if (GUILayout.Button("Remove Empty Intersection"))
+                        model.RoadNetwork.RemoveEmptyIntersectionBetweenRoad();
+                }
+            }
+            if (GUILayout.Button("Check Lod"))
+                obj.RemoveSameNameCityObjectGroup();
         }
     }
 }
