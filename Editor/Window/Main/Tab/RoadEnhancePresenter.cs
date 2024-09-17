@@ -10,15 +10,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
     /// <summary>
     /// 路面標示機能のPresenterクラスです。
     /// </summary>
-    public class RoadMarkingGeneratorPresenter : ITabContent
+    public class RoadEnhancePresenter : ITabContent
     {
         private ElementGroup guis;
         private TargetT target;
 
-        public RoadMarkingGeneratorPresenter()
+        public RoadEnhancePresenter()
         {
             guis = new ElementGroup("", 0,
-                new HeaderElementGroup("", "路面に描かれた車線と横断歩道を生成します。", HeaderType.Subtitle),
+                new HeaderElementGroup("", "車道や歩道に白線等を追加し、道路モデルを変更して見た目をよくします。", HeaderType.Subtitle),
                 new ObjectFieldElement<TargetT>("", "対象", OnTargetChanged),
                 new ButtonElement("", "実行", OnExecButtonPushed)
             );

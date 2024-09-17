@@ -38,8 +38,7 @@ namespace PLATEAU.Editor.Window.Main
                         new TabElement("道路調整",
                             // 道路調整内の入れ子タブ
                             new TabWithFrame(
-                                new TabElement("路面標示生成", new RoadMarkingGeneratorPresenter()),
-                                new TabElement("レーン見た目補正", new RoadLaneEnhancePresenter()),
+                                new TabElement("道路見た目補正", new RoadEnhancePresenter()),
                                 new TabElement("道路変更", new RoadChangePresenter()))
                         )
                     )

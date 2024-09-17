@@ -13,7 +13,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     internal class MCCenterLine : IMarkedWayListComposer
     {
         private const float WidthThreshold = 6f; // センターラインのタイプが変わるしきい値、道路の片側の幅
-        private const float IntersectionThreshold = 30f; // 交差点との距離が近いかどうかのしきい値
+        private const float YellowIntersectionThreshold = 30f; // 交差点との距離が近いかどうかのしきい値
+        private const float YellowRoadLengthThreshold = 100f; // この長さ以下の道路(交差点に挟まれた範囲)は、センターラインは白色
 
         public MarkedWayList ComposeFrom(RnModel model)
         {
@@ -27,12 +28,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 for (int i = 0; i < carLanes.Count; i++)
                 {
                     var lane = carLanes[i];
-                    // 次のレーンと進行方向が異なる場合、RightLaneはセンターラインです。
+                    // 次のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
                     bool isCenterLane = i < carLanes.Count - 1 && lane.IsReverse != carLanes[i + 1].IsReverse;
                     if (!isCenterLane)
                     {
                         continue;
                     }
+                    
+                    // センターラインの場合
 
                     var srcWay = WayWithMiddlePoint(lane.RightWay);
 
@@ -41,7 +44,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     for (int j = 0; j < srcWay.Count; j++)
                     {
                         float currentDist = interDistCalc.NearestDistFromIntersection(srcWay, j);
-                        var interType = currentDist < IntersectionThreshold
+                        var interType = IsCenterLineYellow(currentDist, interDistCalc.LengthBetweenCenterLine)
                             ? MarkedWayType.CenterLineNearIntersection
                             : widthType;
                         if (prevInterType != interType && prevInterType != MarkedWayType.None)
@@ -55,7 +58,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                             }
                             else
                             {
-                                t = (IntersectionThreshold - prevDist) / (currentDist - prevDist);
+                                t = (YellowIntersectionThreshold - prevDist) / (currentDist - prevDist);
                             }
 
 
@@ -83,6 +86,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             }
 
             return ret;
+        }
+
+        /// <summary> センターラインが黄色となる条件に合致するかどうかを返します。 </summary>
+        private bool IsCenterLineYellow(float distFromIntersection, float lengthBetweenIntersections)
+        {
+            bool isNearIntersection = distFromIntersection < YellowIntersectionThreshold;
+
+            bool isLong = lengthBetweenIntersections > YellowRoadLengthThreshold;
+            return isNearIntersection && isLong;
         }
 
         /// <summary> 片側の道路幅からセンターラインのタイプを判定します。 </summary>
@@ -138,6 +150,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         private float PrevLength { get; }
         /// <summary> 道路のNext方向の交差点までの距離（対象道路を含まない距離） </summary>
         private float NextLength { get; }
+        public float LengthBetweenCenterLine { get; }
 
         private const float Inf = 999999;
 
@@ -164,6 +177,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
             PrevLength = prev is RnIntersection ? prevLength : Inf;
             NextLength = next is RnIntersection ? nextLength : Inf;
+            LengthBetweenCenterLine = Math.Min(prevLength + nextLength + RoadLength(road), Inf);
         }
 
         /// <summary>
