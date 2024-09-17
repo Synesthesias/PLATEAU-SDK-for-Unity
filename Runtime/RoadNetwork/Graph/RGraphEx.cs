@@ -60,12 +60,15 @@ namespace PLATEAU.RoadNetwork.Graph
 
                 var lodLevel = cityObject.CityObjectGroup.GetLodLevel();
                 var roadType = cityObject.GetRoadType(true);
+                // transformを適用する
+                var mat = cityObject.CityObjectGroup.transform.localToWorldMatrix;
                 foreach (var mesh in cityObject.Meshes)
                 {
                     var face = new RFace(graph, cityObject.CityObjectGroup, roadType, lodLevel);
                     var vertices = mesh.Vertices.Select(v =>
                     {
-                        return vertexMap.GetValueOrCreate(v, k => new RVertex(k));
+                        var v4 = mat * v.Xyza(1f);
+                        return vertexMap.GetValueOrCreate(v4.Xyz(), k => new RVertex(k));
                     }).ToList();
                     foreach (var s in mesh.SubMeshes)
                     {

@@ -43,23 +43,22 @@ namespace PLATEAU.RoadNetwork.CityObject
                     }
                 }
 
-                var tris = Enumerable.Range(0, Triangles.Count / 3).ToList();
-
+                var triNum = Enumerable.Range(0, Triangles.Count / 3).ToList();
                 List<SubMesh> subMeshes = new List<SubMesh>();
-                while (tris.Any())
+                while (triNum.Any())
                 {
-                    var t = tris[0];
+                    var t = triNum[0];
                     var triIndices = new List<int> { t };
                     for (var a = 0; a < triIndices.Count; ++a)
                     {
                         var tt = triIndices[a];
-                        tris.Remove(tt);
+                        triNum.Remove(tt);
                         for (var i = 0; i < 3; i++)
                         {
                             var v = Triangles[tt * 3 + i];
                             foreach (var ttt in vertexToTriangle[v])
                             {
-                                if (tris.Contains(ttt) && triIndices.Contains(ttt) == false)
+                                if (triNum.Contains(ttt) && triIndices.Contains(ttt) == false)
                                     triIndices.Add(ttt);
                             }
                         }
