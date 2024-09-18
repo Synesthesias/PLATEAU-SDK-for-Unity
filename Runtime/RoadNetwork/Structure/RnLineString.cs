@@ -28,6 +28,16 @@ namespace PLATEAU.RoadNetwork.Structure
         // 頂点が2つ以上ある有効な線分かどうか
         public bool IsValid => Count >= 2;
 
+        public RnLineString()
+        {
+            
+        }
+        
+        public RnLineString(IEnumerable<RnPoint> points)
+        {
+            Points = points.ToList();
+        }
+
         /// <summary>
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
         /// rateSelector : 分割線分の長さを取得する関数.numでちょうど1になるようにする必要がある.  nullの場合は等分割. rateSel
