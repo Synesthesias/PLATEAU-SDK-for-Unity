@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
@@ -175,11 +176,11 @@ namespace PLATEAU.RoadNetwork.CityObject
 
         // 自分の道路タイプ
         [field: SerializeField]
-        public RRoadTypeMask SelfRoadType { get; set; } = RRoadTypeMask.Empty;
+        public RRoadTypeMask SelfRoadType { get; private set; } = RRoadTypeMask.Empty;
 
         // 親の道路タイプ
         [field: SerializeField]
-        public RRoadTypeMask ParentRoadType { get; set; } = RRoadTypeMask.Empty;
+        public RRoadTypeMask ParentRoadType { get; private set; } = RRoadTypeMask.Empty;
 
         public CityInfo.CityObjectList CityObjects
         {
@@ -222,6 +223,23 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
         }
 
+        public SubDividedCityObject(PLATEAUContourMesh contourMesh)
+        {
+            Name = contourMesh.name;
+            CityObjectGroup = contourMesh.GetComponent<PLATEAUCityObjectGroup>();
+            Meshes.Add(new Mesh
+            {
+                Vertices = contourMesh.contourMesh.vertices.ToList(),
+                SubMeshes = new List<SubMesh>
+                {
+                    new SubMesh
+                    {
+                        Triangles = contourMesh.contourMesh.triangles.ToList()
+                    }
+                }
+            });
+        }
+
         /// <summary>
         /// C++側の <see cref="PolygonMesh.Node"/> から変換して
         /// <see cref="SubDividedCityObject"/> を作ります。
@@ -243,15 +261,6 @@ namespace PLATEAU.RoadNetwork.CityObject
                     {
                         var v = m.GetVertexAt(i).ToUnityVector();
                         vertices.Add(v);
-                    }
-
-                    var totalIndexNum = 0;
-                    for (var i = 0; i < m.SubMeshCount; ++i)
-                    {
-                        var subMesh = m.GetSubMeshAt(i);
-                        var num = subMesh.EndIndex - subMesh.StartIndex + 1;
-                        Assert.IsTrue(num % 3 == 0, "invalid triangles");
-                        totalIndexNum += num;
                     }
 
                     var subMeshes = new List<SubMesh>(m.SubMeshCount);
