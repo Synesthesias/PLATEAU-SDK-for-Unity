@@ -47,7 +47,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public IEnumerable<RnWay> SideWays
         {
-            get { yield return outsideWay; yield return insideWay; }
+            get
+            {
+                if (OutsideWay != null)
+                    yield return OutsideWay;
+                if (InsideWay != null)
+                    yield return insideWay;
+            }
         }
 
         /// <summary>
@@ -55,7 +61,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public IEnumerable<RnWay> EdgeWays
         {
-            get { yield return startEdgeWay; yield return endEdgeWay; }
+            get
+            {
+                if (StartEdgeWay != null)
+                    yield return startEdgeWay;
+                if (EndEdgeWay != null)
+                    yield return endEdgeWay;
+            }
         }
 
         public RnSideWalk() { }
