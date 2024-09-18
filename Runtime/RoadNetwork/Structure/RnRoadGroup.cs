@@ -483,6 +483,15 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 中央を通るスプラインとその幅を取得する
+        /// 幅は中間点から取得するので完璧な値ではない
+        /// </summary>
+        /// <param name="spline"></param>
+        /// <param name="width"></param>
+        /// <param name="tangentLength"></param>
+        /// <param name="pointSkipDistance"></param>
+        /// <returns></returns>
         public bool TryCreateSpline(out Spline spline, out float width, float tangentLength = 1f, float pointSkipDistance = 1e-3f)
         {
             Align();
@@ -501,7 +510,36 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 points.AddRange(line.Points.Select(p => p.Vertex));
                 width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
-                // #TODO : 途中のポイントごとに幅を計算する必要がある
+
+                HashSet<float> indices = new();
+                foreach (var p in leftWay.Points)
+                {
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    indices.Add(index);
+                }
+
+                foreach (var p in rightWay.Points)
+                {
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    indices.Add(index);
+                }
+
+                foreach (var i in Enumerable.Range(0, line.Count))
+                    indices.Add(i);
+
+                // 左右それぞれで最も小さい幅の２倍にする
+                // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
+                var leftWidth = float.MaxValue;
+                var rightWidth = float.MaxValue;
+                foreach (var i in indices)
+                {
+                    var v = line.GetLerpPoint(i);
+                    leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
+                    leftWidth = Mathf.Min(leftWidth, wl);
+                    rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
+                    rightWidth = Mathf.Min(rightWidth, wr);
+                }
+                width = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 0.5f, width);
             }
 
             for (var i = 0; i < points.Count; i++)
