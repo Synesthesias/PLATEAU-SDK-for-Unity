@@ -1,23 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.RoadNetwork
 {
+    /// <summary>
+    /// 道路ネットワークの編集機能のギズモを描画する
+    /// </summary>
     public class RoadNetworkEditorGizmos : MonoBehaviour
     {
         private List<System.Action> drawFuncs = new List<System.Action>();
         public List<System.Action> DrawFuncs { get { return drawFuncs; } }
-
-        //public List<Vector3> intersectionConnectionLinePairs = new List<Vector3>();
-        //public List<List<Vector3>> intersectionConnectionLinePairs2 = new List<List<Vector3>>();
-        //public Color connectionColor = Color.blue;
-
-        //public List<Vector3> intersections = new List<Vector3>();
-        //public Color intersectionColor = Color.green;
-        //public float intersectionRadius = 4.0f;
-
-        //public float btnSize = 2.0f;
 
         public void OnDrawGizmos()
         {

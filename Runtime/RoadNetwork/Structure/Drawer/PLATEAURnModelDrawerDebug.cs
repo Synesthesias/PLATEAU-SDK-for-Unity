@@ -4,6 +4,7 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -19,7 +20,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         Road = 1 << 4,
         Intersection = 1 << 5,
         Neighbor = 1 << 6,
-        SideWalk = 1 << 7,
     }
 
     [Serializable]
@@ -329,8 +329,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (sideWalk == null)
                 return;
 
-            if (showPartsType.HasFlag(RnPartsTypeMask.SideWalk))
-                DebugEx.DrawString($"S[{sideWalk.DebugMyId}]", sideWalk.GetCenter());
             void DrawSideWalkWay(RnWay way, DrawOption op)
             {
                 if (op.visible == false)

@@ -347,21 +347,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        /// <summary>
-        ///  隣接情報を差し替える(呼び出し注意)
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        public override void ReplaceNeighbor(RnRoadBase from, RnRoadBase to)
-        {
-            if (from == null)
-                return;
-            foreach (var e in Edges)
-            {
-                if (e.Road == from)
-                    e.Road = to;
-            }
-        }
 
 
         /// <summary>

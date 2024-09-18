@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Native;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

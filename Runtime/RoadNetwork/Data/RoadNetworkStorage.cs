@@ -91,12 +91,6 @@ namespace PLATEAU.RoadNetwork.Data
         }
     }
 
-    //[System.Serializable]
-    //public struct TrafficRegulationStorage
-    //{
-    //    public TrafficRegulationInfo[] regulationCollection;
-    //}
-
     /// <summary>
     /// 
     /// </summary>

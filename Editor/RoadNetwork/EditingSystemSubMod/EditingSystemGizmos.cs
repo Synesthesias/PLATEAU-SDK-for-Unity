@@ -9,6 +9,11 @@ using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
+    /// <summary>
+    /// ギズモの描画システム
+    /// ギズモ描画を行う処理を生成する。
+    /// 実際の描画はMonoBehaviourを継承したギズモ描画クラスを用意したのでそこで行う。
+    /// </summary>
     public class EditingSystemGizmos
     {
         private List<System.Action> drawFuncs = new List<Action>();
@@ -21,11 +26,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
 
         private List<List<Vector3>> guideWayList = new List<List<Vector3>>();
-        //public List<Vector3> intersections = new List<Vector3>();
-        //public Color intersectionColor = Color.green;
-        //public float intersectionRadius = 4.0f;
-
-        //public float btnSize = 2.0f;
 
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
 
@@ -53,6 +53,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
 
+        /// <summary>
+        /// 描画コマンド生成に必要なデータを更新する
+        /// </summary>
+        /// <param name="selectingElement"></param>
+        /// <param name="highLightWay"></param>
+        /// <param name="linkGroupEditorData"></param>
+        /// <param name="slideDummyWay"></param>
         public void Update(
             object selectingElement,
             WayEditorData highLightWay,
@@ -130,58 +137,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
                 var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
-                //// way用の編集データがない場合は作成
-                //if (wayEditorDataList == null || true)
-                //{
-                //    // wayを重複無しでコレクションする
-                //    HashSet<RnWay> ways = new HashSet<RnWay>();
-                //    foreach (var road in roadGroupEditorData.Ref.Roads)
-                //    {
-                //        foreach (var lane in road.AllLanes)
-                //        {
-                //            ways.Add(lane.LeftWay);
-                //            ways.Add(lane.RightWay);
-                //        }
-                //    }
-
-                //    // way用の編集データの作成
-                //    wayEditorDataList = new List<WayEditorData>(ways.Count);
-                //    foreach (var editingTarget in ways)
-                //    {
-                //        if (editingTarget == null)
-                //        {
-                //            continue;
-                //        }
-                //        wayEditorDataList.Add(new WayEditorData(editingTarget));
-                //    }
-                //    roadGroupEditorData.TryAdd(wayEditorDataList);
-
-                //    //// 道路端のwayを編集不可能にする
-                //    //wayEditorDataList.First().IsSelectable = false;
-                //    //wayEditorDataList.Last().IsSelectable = false;
-
-                //    // 下　もしかしたらwayを結合して扱う必要があるかも
-                //    // 道路端のwayを編集不可能にする
-                //    //var firstRoad = roadGroupEditorData.Ref.Roads.First();
-                //    //var leftEdgeLane = firstRoad.MainLanes.First();
-                //    //wayEditorDataList.Find(x => x.Ref == leftEdgeLane.LeftWay).IsSelectable = false;
-                //    //var rightEdgeLane = firstRoad.MainLanes.Last();
-                //    //if (leftEdgeLane == rightEdgeLane)  // レーンが一つしかない時は反対側のレーンを参照する
-                //    //{
-                //    //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.RightWay).IsSelectable = false;
-                //    //}
-                //    //else
-                //    //{
-                //    //    if (rightEdgeLane.LeftWay != null)
-                //    //    {
-                //    //        rightEdgeLane.GetBorderDir(RnLaneBorderType.)
-                //    //        wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
-
-                //    //    }
-                //    //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
-                //    //}
-                //}
-
                 // 選択可能なwayを描画
                 foreach (var wayEditorData in wayEditorDataList)
                 {
@@ -221,30 +176,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             }
 
-
-            //gizmos.intersectionConnectionLinePairs2.Clear();
-            //var pts = gizmos.intersectionConnectionLinePairs2;
-            //pts.Capacity = (connections.Count + 3) * 2;
-            //foreach (var item in connections)
-            //{
-            //    foreach (var link in item.ConnectionLinks)
-            //    {
-            //        foreach (var lane in link.AllLanes)
-            //        {
-            //            lane.NextBorder.LineString.Points
-            //        }
-            //        pts.Add();
-
-            //    }
-            //    //Debug.Log(item.A.RefGameObject.name + "." + item.B.RefGameObject.name);
-            //}
-
             intersectionConnectionLinePairs = pts;
 
             selectingWay.Clear();
             if (highLightWay != null)
             {
-                //if (selectingElement is WayEditorData selectingWayData)
                 if (highLightWay is WayEditorData selectingWayData)
                 {
                     selectingWay.AddRange(selectingWayData.Ref.ToList());
@@ -271,6 +207,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
 
+        /// <summary>
+        /// 描画コマンドの生成
+        /// </summary>
+        /// <returns></returns>
         public List<Action> BuildDrawCommands()
         {
             drawFuncs.Clear();
@@ -295,7 +235,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 drawFuncs.Add(() =>
                 {
                     Gizmos.color = connectionColor;
-                    //Handles.DrawLines(linePairs);
                     Gizmos.DrawLineList(intersectionConnectionLinePairs.ToArray());
                 });
             }
@@ -310,32 +249,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     {
                         Gizmos.DrawLineList(item.ToArray());
                     }
-                    //Handles.DrawLines(linePairs);
                 });
             }
-
-            //    var ee = intersectionConnectionLinePairs.GetEnumerator();
-            //    while (ee.MoveNext())
-            //    {
-            //        var p1 = ee.Current;
-            //        if (ee.MoveNext())
-            //        {
-            //            var p2 = ee.Current;
-            //            var btnP = (p1 + p2) / 2.0f;
-            //            if (Handles.Button(btnP, Quaternion.identity, btnSize, btnSize, Handles.SphereHandleCap)){
-            //                Debug.Log("Button Clicked");
-            //            }
-            //        }
-            //    }
-
-            //    if (intersections.Count > 0)
-            //    {
-            //        Gizmos.color = intersectionColor;
-            //        foreach (var i in intersections)
-            //        {
-            //            Gizmos.DrawSphere(i, intersectionRadius);
-            //        }
-            //    }
 
             AddDrawFunc(ref drawFuncs, selectableWayList, selectableWayColor);
 

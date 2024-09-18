@@ -107,6 +107,89 @@ namespace PLATEAU.Editor.RoadNetwork
     }
 
     /// <summary>
+    /// 道路ネットーワークの編集機能を提供するインターフェイス
+    /// 整備予定　このクラスを使ったり使わなかったりする。
+    /// 実装コストからそのまま実装を直書きしている箇所がある、データが更新された際の処理を統一したいので（通知を飛ばす対象など
+    /// </summary>
+    public interface IRoadNetworkEditOperation
+    {
+        /// <summary>
+        /// ポイントの追加、削除、移動
+        /// </summary>
+        /// <param name="way"></param>
+        /// <param name="idx"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult AddPoint(RnWay parent, int idx, RnPoint point);
+        RoadNetworkEditingResult RemovePoint(RnWay parent, RnPoint point);
+        RoadNetworkEditingResult MovePoint(RnPoint point, in Vector3 newPos);
+
+        /// <summary>
+        /// 幅員のスケーリング
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="factor"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult ScaleRoadWidth(RnLane lane, float factor);
+        RoadNetworkEditingResult ScaleRoadWidth(RnRoad link, float factor);
+
+        /// <summary>
+        /// 車線を増やす、減らす
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="idx"></param>
+        /// <param name="newLane"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult AddMainLane(RnRoad parent, RnLane newLane);
+        RoadNetworkEditingResult RemoveMainLane(RnRoad parent, RnLane lane);
+
+        /// <summary>
+        /// リンクを追加する削除する
+        /// </summary>
+        /// <param name="parentNode"></param>
+        /// <param name="idx"></param>
+        /// <param name="newLink"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult AddLink(RnModel parent, RnRoad newLink);
+        RoadNetworkEditingResult RemoveLink(RnModel parent, RnRoad link);
+
+        // ノードを追加する削除する
+        RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnIntersection newNode);
+        RoadNetworkEditingResult RemoveNode(RnModel parent, RnIntersection node);
+
+        //RoadNetworkEditingResult AddBlock(RoadNetworkLane parentLane, int idx, RoadNetworkBlock newBlock);
+        //RoadNetworkEditingResult RemoveBlock(RoadNetworkLane parentLane, RoadNetworkBlock block);
+
+        //RoadNetworkEditingResult AddTrack(RoadNetworkNode parentNode, int idx, RoadNetworkTrack newTrack);
+        //RoadNetworkEditingResult RemoveTrack(RoadNetworkNode parentNode, RoadNetworkTrack track);
+
+        /// <summary>
+        /// 交通規制情報の登録
+        /// </summary>
+        /// <param name="link"></param>
+        /// <param name="newRegulation"></param>
+        /// <returns></returns>
+        RoadNetworkEditingResult RegisterRegulation(RnRoad link, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RnLane lane, RoadNetworkRegulationElemet newRegulation);
+        RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation);
+    }
+
+    /// <summary>
+    /// 道路ネットワークの編集モード
+    /// </summary>
+    public enum RoadNetworkEditMode
+    {
+        _EditLaneShape,
+        _EditLaneStructure,
+        EditTrafficRegulation,// 交通規制編集
+        _AddLane,    // debugOperationの機能を個々に移してもいいかも
+        _AddLink,    // debugOperationの機能を個々に移してもいいかも
+        _AddNode,    // debugOperationの機能を個々に移してもいいかも
+        _EditLaneWidth,    // debugOperationの機能を個々に移してもいいかも
+        EditRoadStructure,    // 道路構造編集
+    }
+
+    /// <summary>
     /// 道路ネットワーク編集システムのインスタンス
     /// 管理元
     /// 出来るだけサブシステム同士で連携を取らないようにする
