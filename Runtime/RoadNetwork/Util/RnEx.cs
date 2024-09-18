@@ -5,7 +5,7 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.CityInfo;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
@@ -185,7 +185,7 @@ namespace PLATEAU.RoadNetwork.Util
 #endif
         }
 
-        public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, float t, float pointSkipDistance = 1e-3f)
+        public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, RnWay startBorder, RnWay endBorder, float t, float pointSkipDistance = 1e-3f)
         {
             var line = new RnLineString();
             void AddPoint(RnPoint p)

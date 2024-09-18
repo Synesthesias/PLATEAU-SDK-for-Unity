@@ -1,5 +1,4 @@
-﻿
-using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections;
@@ -147,6 +146,8 @@ namespace PLATEAU.RoadNetwork.Data
                     return RnID<TData>.Undefind;
                 }
 
+                if (Table.ContainsKey(val) == false)
+                    throw new InvalidDataException($"Object {val.GetType().Name} is not found in table");
                 return Table[val];
             }
         }
@@ -398,6 +399,7 @@ namespace PLATEAU.RoadNetwork.Data
         private static ReferenceTable CreateReferenceTable()
         {
             var refTable = new ReferenceTable();
+            // CollectForDeserializeで自動的に集められないクラスを登録しておく
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataNeighbor));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataIntersection));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataRoad));

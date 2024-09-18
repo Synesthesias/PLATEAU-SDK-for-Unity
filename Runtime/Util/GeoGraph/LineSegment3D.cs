@@ -113,7 +113,10 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// self, otherが交差するかチェック. ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalEpsilon以下の場合のみ交差と判定
+        /// self, otherが交差するかチェック.
+        /// ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalTolerance以下の場合のみ交差と判定.
+        /// normalToleranceが負数の時は無限大扱い
+        /// normal
         /// </summary>
         /// <param name="self"></param>
         /// <param name="other"></param>
@@ -136,7 +139,7 @@ namespace PLATEAU.Util.GeoGraph
             // 法線方向の差分が指定値より大きい時はねじれの位置で交点無し
             var v1 = self.Lerp(t1);
             var v2 = other.Lerp(t2);
-            if (Mathf.Abs((v2 - v1).GetNormal(plane)) > normalTolerance)
+            if (Mathf.Abs((v2 - v1).GetNormal(plane)) > normalTolerance && normalTolerance >= 0f)
                 return false;
 
             intersection = (v1 + v2) * 0.5f;

@@ -4,7 +4,7 @@ using PLATEAU.Util;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Util
 {
     public static class CityObjectEx
     {

@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;

@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
@@ -18,32 +19,41 @@ namespace PLATEAU.RoadNetwork.Factory
         // --------------------
         // start:フィールド
         // --------------------
-
-        // 同一頂点扱いにするセルサイズ
-        [SerializeField] public float cellSize = 0.01f;
-
         // 道路サイズ
-        [SerializeField] public float roadSize = 3f;
+        [field: SerializeField]
+        public float RoadSize { get; set; } = 3f;
 
         // 行き止まり検出判定時に同一直線と判断する角度の総和
-        [SerializeField] public float terminateAllowEdgeAngle = 20f;
-        // 行き止まり検出判定時に開始線分と同一と判定する角度の許容量
-        [SerializeField] public float terminateSkipEdgeAngle = 20f;
+        [field: SerializeField]
+        public float TerminateAllowEdgeAngle { get; set; } = 20f;
+
+        // 行き止まり検出用. 開始線分との角度がこれ以下の間は絶対に中心線にならない
+        [field: SerializeField]
+        public float TerminateSkipAngle { get; set; } = 5f;
+
         // Lod1の道の歩道サイズ
-        [SerializeField] public float lod1SideWalkSize = 3f;
+        [field: SerializeField]
+        public float Lod1SideWalkSize { get; set; } = 3f;
+
         // Lod3の歩道を追加するかどうか
-        [SerializeField] public bool addLod3SideWalk = true;
+        [field: SerializeField]
+        public bool AddLod3SideWalk { get; set; } = true;
 
         // 中央分離帯をチェックする
-        [SerializeField] public bool checkMedian = true;
-        [SerializeField] public bool zeroWidthMedian = false;
-        // 高速道路を無視するかのフラグ
-        [SerializeField] public bool ignoreHighway = false;
-        // RGraph作るときのファクトリパラメータ
-        [SerializeField] public RGraphFactory graphFactory;
-        // 中間データ
-        [SerializeField] public RsFactoryMidStageData midStageData;
+        [field: SerializeField]
+        public bool CheckMedian { get; set; } = true;
 
+        // 高速道路を無視するかのフラグ
+        [field: SerializeField]
+        public bool IgnoreHighway { get; set; } = true;
+
+        // RGraph作るときのファクトリパラメータ
+        [field: SerializeField]
+        public RGraphFactory GraphFactory { get; set; }
+
+        // 中間データを保存する
+        [field: SerializeField]
+        public bool SaveTmpData { get; set; } = false;
 
         // --------------------
         // end:フィールド
@@ -74,7 +84,11 @@ namespace PLATEAU.RoadNetwork.Factory
             // value : RnLineString
             public Dictionary<ulong, List<RnLineString>> RnPointList2LineStringMap { get; } = new();
 
+            // 行き止まり検出用. 角度がこの値以下の場合は同一直線と判断
             public float terminateAllowEdgeAngle = 20f;
+
+            // 行き止まり検出用.開始線分との角度がこれ以下の間は絶対に中心線にならない
+            public float terminateSkipAngleDeg = 30f;
 
             public Tran FindTranOrDefault(RFace face)
             {
@@ -372,7 +386,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
 
                     var vertices = line.Vertices.Select(v => v.Position.Xz()).ToList();
-                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle);
+                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
 
                     RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
@@ -570,7 +584,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }).ToList();
 
                 var ret = new RnModel();
-                var work = new Work { terminateAllowEdgeAngle = terminateAllowEdgeAngle };
+                var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle, terminateSkipAngleDeg = TerminateSkipAngle };
                 foreach (var faceGroup in faceGroups)
                 {
                     var roadType = faceGroup.RoadTypes;
@@ -581,7 +595,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (roadType.IsSideWalk())
                         continue;
                     // ignoreHighway=trueの時は高速道路も無視
-                    if (roadType.IsHighWay() && ignoreHighway)
+                    if (roadType.IsHighWay() && IgnoreHighway)
                         continue;
                     work.TranMap[faceGroup] = new Tran(work, graph, faceGroup);
                 }
@@ -602,10 +616,10 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 歩道を作成する
-                var sideWalks = work.CreateSideWalk(lod1SideWalkSize);
+                var sideWalks = work.CreateSideWalk(Lod1SideWalkSize);
                 foreach (var sideWalk in sideWalks)
                     ret.AddSideWalk(sideWalk);
-                if (addLod3SideWalk)
+                if (AddLod3SideWalk)
                 {
                     foreach (var fg in faceGroups)
                     {
@@ -644,17 +658,18 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (visited.Contains(road))
                                 continue;
-                            var width = n.GetMedianWidth();
-                            if (width <= 0f)
+                            var medianWidth = n.GetMedianWidth();
+                            if (medianWidth <= 0f)
                                 continue;
                             var linkGroup = road.CreateRoadGroupOrDefault();
                             if (linkGroup == null)
                                 continue;
-                            if (checkMedian)
+
+                            // 中央分離帯の幅が道路の幅を超えている場合は分割
+                            var borderWidth = road.MainLanes[0].CalcWidth();
+                            if (CheckMedian && borderWidth > medianWidth)
                             {
-                                linkGroup.SetLaneCount(1, 1);
-                                if (zeroWidthMedian == false)
-                                    linkGroup.SetMedianWidth(width, LaneWayMoveOption.MoveBothWay);
+                                linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
                             }
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);
@@ -663,7 +678,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
 
-                ret.SplitLaneByWidth(roadSize, out var failedLinks);
+                ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);
             }
@@ -676,9 +691,32 @@ namespace PLATEAU.RoadNetwork.Factory
 
         public async Task<RnModel> CreateRnModelImplAsync(List<PLATEAUCityObjectGroup> cityObjectGroups, GameObject target)
         {
-            await midStageData.ConvertCityObjectAsync(cityObjectGroups);
-            var graph = midStageData.CreateGraph(graphFactory, target);
+            var subDividedCityObjects = (await RnEx.ConvertCityObjectsAsync(cityObjectGroups)).ConvertedCityObjects;
+            var graph = GraphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);
+
+            if (target)
+            {
+                if (SaveTmpData)
+                {
+                    target.GetOrAddComponent<PLATEAURGraph>().Graph = graph;
+                    target.GetOrAddComponent<PLATEAUSubDividedCityObjectGroup>().CityObjects = subDividedCityObjects;
+                }
+                else
+                {
+                    // 中間データは削除する
+                    foreach (var comp in target.GetComponents<PLATEAURGraph>().ToList())
+                    {
+                        UnityEngine.Object.DestroyImmediate(comp);
+                    }
+
+                    foreach (var comp in target.GetComponents<PLATEAUSubDividedCityObjectGroup>().ToList())
+                    {
+                        UnityEngine.Object.DestroyImmediate(comp);
+                    }
+                }
+            }
+
             return model;
         }
 
@@ -700,11 +738,6 @@ namespace PLATEAU.RoadNetwork.Factory
             var model = await CreateRnModelAsync(graph);
             ret.RoadNetwork = model;
             return ret;
-        }
-
-        public void DebugDraw()
-        {
-            midStageData?.DebugDraw();
         }
     }
 }

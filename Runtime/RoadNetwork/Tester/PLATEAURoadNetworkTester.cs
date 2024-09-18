@@ -1,7 +1,9 @@
 ﻿using PLATEAU.CityGML;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure.Drawer;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,24 @@ namespace PLATEAU.RoadNetwork.Tester
         // --------------------
         // start:フィールド
         // --------------------
-        [field: SerializeField] public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+        [field: SerializeField]
+        public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+
+        // シーンに配置している全てのPLATEAUCityObjectGroupを対象にするか
+        [field: SerializeField]
+        private bool TargetAll { get; set; } = true;
+
+        // 道路ネットワーク作成用のPLATEAUCityObjectGroupのプリセットテーブル
+        [field: SerializeField]
+        public List<TestTargetPresets> TargetPresets { get; set; } = new();
+
+        // 今回作成するPLATEAUCityObjectGroupのプリセットテーブル
+        [field: SerializeField]
+        public string TargetPresetName { get; set; } = "";
+
+        // --------------------
+        // end:フィールド
+        // --------------------
 
         [Serializable]
         public class TestTargetPresets
@@ -28,40 +47,12 @@ namespace PLATEAU.RoadNetwork.Tester
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
-        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
-        [SerializeField] private bool targetAll = false;
-        public string targetPresetName = "";
-
-        [Serializable]
-        public enum CreateMode
-        {
-            ConvertCityObject,
-            MergeConvertCityObject,
-            SeparateConvertCityObject,
-            TranMesh,
-            RoadNetwork,
-            All
-        }
-        [SerializeField]
-        private CreateMode createMode = CreateMode.ConvertCityObject;
-
-        // --------------------
-        // end:フィールド
-        // --------------------
-
-        public List<SubDividedCityObject> SubDividedCityObjects => Factory.midStageData.convertedCityObjects.cityObjects;
-
-        public void OnDrawGizmos()
-        {
-            Factory?.DebugDraw();
-        }
-
         public List<PLATEAUCityObjectGroup> GetTargetCityObjects()
         {
-            var ret = targetAll
+            var ret = TargetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
-                : savedTargets
-                    .FirstOrDefault(s => s.name == targetPresetName)
+                : TargetPresets
+                    .FirstOrDefault(s => s.name == TargetPresetName)
                     ?.targets;
             if (ret == null)
                 return new List<PLATEAUCityObjectGroup>();
@@ -73,7 +64,10 @@ namespace PLATEAU.RoadNetwork.Tester
                 .ToList();
         }
 
-
+        /// <summary>
+        /// 道路ネットワークを作成する
+        /// </summary>
+        /// <returns></returns>
         public async Task CreateNetwork()
         {
             try
@@ -85,16 +79,6 @@ namespace PLATEAU.RoadNetwork.Tester
                 Debug.LogException(e);
             }
         }
-
-        public void CreateRGraph()
-        {
-            Factory.midStageData.CreateGraph(Factory.graphFactory);
-        }
-
-        //public async Task CreateRoadNetworkByGraphAsync()
-        //{
-        //    await Factory.CreateRnModelAsync(Factory.midStageData.Graph, gameObject);
-        //}
 
         /// <summary>
         /// 同名のCityObjectGroupがあった場合に最大のLODのもの以外を非表示にする

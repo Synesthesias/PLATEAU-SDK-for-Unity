@@ -42,6 +42,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         // FoldOutの状態を保持する
         private HashSet<object> FoldOuts { get; } = new();
 
+        public class Work
+        {
+            // foreach文で回している最中に実行するとまずいもの(リストの変換等)の遅延実行用
+            public List<Action> DelayExec { get; } = new();
+        }
 
         private class LaneEdit
         {
@@ -71,7 +76,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         /// レーンの編集
         /// </summary>
         /// <param name="lane"></param>
-        public void EditLane(RnLane lane)
+        /// <param name="work"></param>
+        public void EditLane(RnLane lane, Work work)
         {
             if (lane == null)
                 return;
@@ -178,20 +184,20 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public float medianWidth = 0;
             public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
 
-            public HashSet<RnLane> FoldoutLanes { get; } = new HashSet<RnLane>();
+            public HashSet<object> Foldouts { get; } = new HashSet<object>();
+
+
         }
 
         /// <summary>
         /// 道路の編集
         /// </summary>
         /// <param name="road"></param>
-        private void EditRoad(RnRoad road)
+        /// <param name="work"></param>
+        private void EditRoad(RnRoad road, Work work)
         {
             var p = roadEdit;
             if (road == null)
-                return;
-            var roadGroup = road.CreateRoadGroupOrDefault();
-            if (roadGroup == null)
                 return;
 
             RnEditorUtil.TargetToggle($"Id '{road.DebugMyId.ToString()}'", InstanceHelper.TargetRoads, road);
@@ -201,54 +207,59 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 EditorGUILayout.LongField("Next", (long)(road.Next?.DebugMyId ?? ulong.MaxValue));
             }
 
-            using (new EditorGUILayout.VerticalScope())
+            var roadGroup = road.CreateRoadGroupOrDefault();
+            if (roadGroup != null)
             {
-                EditorGUILayout.LabelField("LaneCount");
-                using (new EditorGUI.IndentLevelScope())
+                using (new EditorGUILayout.VerticalScope())
                 {
-                    using (new EditorGUILayout.HorizontalScope())
+                    EditorGUILayout.LabelField("LaneCount");
+                    using (new EditorGUI.IndentLevelScope())
                     {
-                        EditorGUILayout.LabelField($"L ({roadGroup.GetLeftLaneCount()}) ->", GUILayout.Width(45));
-                        p.leftLaneCount = EditorGUILayout.IntField(p.leftLaneCount, GUILayout.Width(45));
-                        if (GUILayout.Button("Change"))
+                        using (new EditorGUILayout.HorizontalScope())
                         {
-                            roadGroup.SetLeftLaneCount(p.leftLaneCount);
+                            EditorGUILayout.LabelField($"L({roadGroup.GetLeftLaneCount()})->", GUILayout.Width(80));
+                            p.leftLaneCount = EditorGUILayout.IntField("", p.leftLaneCount, GUILayout.Width(80));
+                            if (GUILayout.Button("Change"))
+                            {
+                                roadGroup.SetLeftLaneCount(p.leftLaneCount);
+                            }
+                            EditorGUILayout.LabelField($"R({roadGroup.GetRightLaneCount()})->", GUILayout.Width(80));
+                            p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(80));
+                            if (GUILayout.Button("Change"))
+                            {
+                                roadGroup.SetRightLaneCount(p.rightLaneCount);
+                            }
                         }
-                        EditorGUILayout.LabelField($"R ({roadGroup.GetRightLaneCount()}) ->", GUILayout.Width(45));
-                        p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(45));
-                        if (GUILayout.Button("Change"))
+                        using (new EditorGUILayout.HorizontalScope())
                         {
-                            roadGroup.SetRightLaneCount(p.rightLaneCount);
+                        }
+                        if (GUILayout.Button("Change Both"))
+                        {
+                            roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
                         }
                     }
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                    }
-                    if (GUILayout.Button("Change Both"))
-                    {
-                        roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
-                    }
                 }
-            }
 
-            if (GUILayout.Button("Align"))
-            {
-                roadGroup.Align();
-            }
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
-                p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
-                if (GUILayout.Button("SetMedianWidth"))
+                if (GUILayout.Button("Align"))
                 {
-                    roadGroup.SetMedianWidth(p.medianWidth, p.medianWidthOption);
+                    roadGroup.Align();
                 }
 
-                if (GUILayout.Button("RemoveMedian"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    roadGroup.RemoveMedian(p.medianWidthOption);
+                    p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
+                    p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
+                    if (GUILayout.Button("SetMedianWidth"))
+                    {
+                        roadGroup.SetMedianWidth(p.medianWidth, p.medianWidthOption);
+                    }
+
+                    if (GUILayout.Button("RemoveMedian"))
+                    {
+                        roadGroup.RemoveMedian(p.medianWidthOption);
+                    }
                 }
+
             }
 
             if (GUILayout.Button("DisConnect"))
@@ -258,24 +269,42 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             if (GUILayout.Button("Convert2Intersection"))
             {
-                road.ParentModel.Convert2Intersection(road);
+                work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
             }
 
             foreach (var lane in road.MainLanes)
             {
-                var foldout = EditorGUILayout.Foldout(p.FoldoutLanes.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
                 if (foldout)
                 {
                     RnEditorUtil.Separator();
                     using (new EditorGUI.IndentLevelScope())
                     {
-                        p.FoldoutLanes.Add(lane);
-                        EditLane(lane);
+                        p.Foldouts.Add(lane);
+                        EditLane(lane, work);
                     }
                 }
                 else
                 {
-                    p.FoldoutLanes.Remove(lane);
+                    p.Foldouts.Remove(lane);
+                }
+            }
+
+            foreach (var sideWalk in road.SideWalks)
+            {
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
+                if (foldout)
+                {
+                    RnEditorUtil.Separator();
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        p.Foldouts.Add(sideWalk);
+                        EditSideWalk(sideWalk, work);
+                    }
+                }
+                else
+                {
+                    p.Foldouts.Remove(sideWalk);
                 }
             }
         }
@@ -285,7 +314,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public long convertNextRoadId = -1;
         }
 
-        public void EditIntersection(RnIntersection intersection)
+
+        public void EditIntersection(RnIntersection intersection, Work work)
         {
             if (intersection == null)
                 return;
@@ -317,7 +347,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                 if (GUILayout.Button("Convert2Road"))
                 {
-                    intersection.ParentModel.Convert2Road(intersection, prev, next);
+                    work.DelayExec.Add(() => intersection.ParentModel.Convert2Road(intersection, prev, next));
                 }
             }
 
@@ -341,10 +371,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
         }
 
-        public void EditSideWalk(RnSideWalk sideWalk)
+        public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
             var p = sideWalkEdit;
-
             RnEditorUtil.TargetToggle($"Id '{sideWalk.DebugMyId.ToString()}'", InstanceHelper.TargetSideWalks,
                 sideWalk);
             using (new EditorGUI.DisabledScope(false))
@@ -374,6 +403,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             var model = InstanceHelper?.GetModel();
             if (model == null)
                 return;
+            var work = new Work();
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Lane Edit", GUILayout.Height(20));
 
@@ -382,7 +412,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             foreach (var l in InstanceHelper.TargetLanes.ToList())
             {
                 RnEditorUtil.Separator();
-                EditLane(l);
+                EditLane(l, work);
             }
 
             RnEditorUtil.Separator();
@@ -402,7 +432,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     using (new EditorGUI.IndentLevelScope())
                     {
                         FoldOuts.Add(r);
-                        EditRoad(r);
+                        EditRoad(r, work);
                     }
                 }
                 else
@@ -429,7 +459,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     using (new EditorGUI.IndentLevelScope())
                     {
                         FoldOuts.Add(i);
-                        EditIntersection(i);
+                        EditIntersection(i, work);
                     }
                 }
                 else
@@ -454,7 +484,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     using (new EditorGUI.IndentLevelScope())
                     {
                         FoldOuts.Add(sw);
-                        EditSideWalk(sw);
+                        EditSideWalk(sw, work);
                     }
                 }
                 else
@@ -462,6 +492,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     FoldOuts.Remove(sw);
                 }
             }
+
+            foreach (var e in work.DelayExec)
+                e.Invoke();
         }
 
         /// <summary>

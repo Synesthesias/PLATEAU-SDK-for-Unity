@@ -1,4 +1,4 @@
-﻿using PLATEAU.RoadNetwork.Mesh;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.CityObject.Drawer
 {
     [Serializable]
-    public class SubDividedCityObjectDrawerDebug
+    public class PLATEAUSubDividedCityObjectDrawerDebug : MonoBehaviour
     {
         // --------------------
         // start:フィールド
@@ -43,7 +43,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             }
         }
 
-        public void DrawConvertedCityObject(List<SubDividedCityObject> cityObjects)
+        public void DrawCityObjects(List<SubDividedCityObject> cityObjects)
         {
             if (!visible)
                 return;
@@ -76,6 +76,17 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
                     }
                 }
             }
+        }
+
+        public void OnDrawGizmos()
+        {
+            if (visible == false)
+                return;
+
+            var target = GetComponent<PLATEAUSubDividedCityObjectGroup>();
+            if (!target)
+                return;
+            DrawCityObjects(target.CityObjects ?? new List<SubDividedCityObject>());
         }
     }
 }

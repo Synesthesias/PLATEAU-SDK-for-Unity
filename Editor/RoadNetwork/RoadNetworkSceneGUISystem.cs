@@ -766,9 +766,12 @@ namespace PLATEAU.Editor.RoadNetwork
             var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
             if (EditorGUI.EndChangeCheck())
             {
-                var res = networkOperator.MovePoint(point, vertPos);
+                var mousePos = Event.current.mousePosition;
+                var ray = HandleUtility.GUIPointToWorldRay(mousePos);
+                RoadNetworkEditingSystem.SnapPointToDem(point, ray);
+                //var res = networkOperator.MovePoint(point, vertPos);
                 state.isDirtyTarget = true;
-                Debug.Assert(res.IsSuccess);
+                //Debug.Assert(res.IsSuccess);
             }
         }
 

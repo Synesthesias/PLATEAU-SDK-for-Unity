@@ -1,4 +1,8 @@
-﻿namespace PLATEAU.RoadNetwork.Structure
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace PLATEAU.RoadNetwork.Structure
 {
     public class RnSideWalk : ARnParts<RnSideWalk>
     {
@@ -9,23 +13,26 @@
         private RnRoadBase parentRoad;
 
         // 道路と反対側のWay
-        private RnWay outsideWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay outsideWay;
 
         // 道路と同じ側のWay
-        private RnWay insideWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay insideWay;
 
         // outsideWayとinsideWayの始点を繋ぐWay
-        private RnWay startEdgeWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay startEdgeWay;
 
         // outsideWayとinsideWayの終点を繋ぐWay
-        private RnWay endEdgeWay { get; }
+        // シリアライズ化の為にフィールドに
+        private RnWay endEdgeWay;
 
         //----------------------------------
         // end: フィールド
         //----------------------------------
 
         public RnRoadBase ParentRoad => parentRoad;
-
 
         public RnWay OutsideWay => outsideWay;
 
@@ -34,6 +41,22 @@
         public RnWay StartEdgeWay => startEdgeWay;
 
         public RnWay EndEdgeWay => endEdgeWay;
+
+        /// <summary>
+        /// 左右のWay(OutsideWay, InsideWay)を列挙
+        /// </summary>
+        public IEnumerable<RnWay> SideWays
+        {
+            get { yield return outsideWay; yield return insideWay; }
+        }
+
+        /// <summary>
+        /// 開始/終了の境界線のWay(StartEdgeWay, EndEdgeWay)を列挙
+        /// </summary>
+        public IEnumerable<RnWay> EdgeWays
+        {
+            get { yield return startEdgeWay; yield return endEdgeWay; }
+        }
 
         public RnSideWalk() { }
 
@@ -46,6 +69,10 @@
             this.endEdgeWay = endEdgeWay;
         }
 
+        /// <summary>
+        /// 親情報の再設定
+        /// </summary>
+        /// <param name="parent"></param>
         public void SetParent(RnRoadBase parent)
         {
             if (parent != null)
@@ -54,10 +81,33 @@
         }
 
         /// <summary>
+        /// 左右のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="outsideWay"></param>
+        /// <param name="insideWay"></param>
+        public void SetSideWays(RnWay outsideWay, RnWay insideWay)
+        {
+            this.outsideWay = outsideWay;
+            this.insideWay = insideWay;
+        }
+
+        /// <summary>
+        /// 境界のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="startEdgeWay"></param>
+        /// <param name="endEdgeWay"></param>
+        public void SetEdgeWays(RnWay startEdgeWay, RnWay endEdgeWay)
+        {
+            this.startEdgeWay = startEdgeWay;
+            this.endEdgeWay = endEdgeWay;
+        }
+
+
+
+        /// <summary>
         /// 歩道作成
         /// </summary>
         /// <param name="parent"></param>
-        /// <param name="way"></param>
         /// <param name="outsideWay"></param>
         /// <param name="insideWay"></param>
         /// <param name="startEdgeWay"></param>
@@ -68,6 +118,24 @@
             var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay);
             parent.AddSideWalk(sideWalk);
             return sideWalk;
+        }
+    }
+
+    public static class RnSideWalkEx
+    {
+        public static Vector3 GetCenter(this RnSideWalk self)
+        {
+            if (self == null)
+                return Vector3.zero;
+            var num = (self.OutsideWay?.Count ?? 0) + (self.InsideWay?.Count ?? 0);
+            if (num == 0)
+                return Vector3.zero;
+            var sum = Enumerable.Repeat(self.OutsideWay, 1)
+                .Concat(Enumerable.Repeat(self.InsideWay, 1))
+                .Where(w => w != null)
+                .SelectMany(w => w)
+                .Aggregate(Vector3.zero, (sum, way) => sum + way);
+            return sum / num;
         }
     }
 }

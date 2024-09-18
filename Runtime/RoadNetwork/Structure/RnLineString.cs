@@ -40,7 +40,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
-        /// getSubLength : 分割線分の長さを取得する関数. nullの場合は等分割
+        /// rateSelector : 分割線分の長さを取得する関数.numでちょうど1になるようにする必要がある.  nullの場合は等分割. rateSel
         /// </summary>
         /// <param name="num"></param>
         /// <param name="insertNewPoint"></param>
@@ -62,7 +62,6 @@ namespace PLATEAU.RoadNetwork.Structure
             var subVertices = new List<RnPoint> { Points[0] };
 
             float GetLength(int i) => totalLength * rateSelector(i);
-
             for (var i = 1; i < Points.Count; ++i)
             {
                 var p0 = subVertices.Last();
@@ -70,9 +69,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 var l = (p1.Vertex - p0.Vertex).magnitude;
                 len += l;
 
+                var length = GetLength(ret.Count);
                 // lenがlengthを超えたら分割線分を追加
-                var length = GetLength(subVertices.Count);
-                while (len >= length && l >= GeoGraph2D.Epsilon)
+                // ただし、最後の線は全部追加する
+                while (len >= length && l >= GeoGraph2D.Epsilon && ret.Count < (num - 1))
                 {
                     // #TODO : マジックナンバー
                     //       : 分割点が隣り合う点とこれ以下の場合は新規で作らず使いまわす
@@ -128,6 +128,50 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 分割できない時は空を返す
             return ret.Select(a => Create(a)).ToList();
+        }
+
+        /// <summary>
+        /// index指定で前半/後半に分割する
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="front"></param>
+        /// <param name="back"></param>
+        /// <returns></returns>
+        public bool SplitByIndex(float index, out RnLineString front, out RnLineString back)
+        {
+            // indexが整数の時で処理を変える
+            var isInt = Mathf.Abs(index - Mathf.RoundToInt(index)) < 1e-5f;
+            // 桁落ちを考えて, isInt時にはRoundを取る
+            var i = isInt ? Mathf.RoundToInt(index) : (int)index;
+
+
+            // points = [v0, v1, v2, v3]の時
+            // index = 1で区切るときは, front = [v0, v1], back = [v1, v2, v3]
+            // -> i = 1, frontはTake(1), backはskip(2)にして、v1をお互いに追加
+            // index = 1.5で区切るときは,front = [v0, v1, v1.5], back = [v1.5, v2, v3]
+            // -> i = 1, frontはTake(2), backはskip(2)にして、v1.5を追加
+
+            // まずはiで前半と後半で分ける
+            var frontPoints = Points.Take(i + 1).ToList();
+            var backPoints = Points.Skip(i + 1).ToList();
+
+            if (isInt)
+            {
+                // 整数の時はfrontの最後をbackの最初に追加
+                backPoints.Insert(0, Points[i]);
+            }
+            else
+            {
+                // 少数の時は中間点をfontの最後とbackの最初に追加
+                var v = Vector3.Lerp(Points[i].Vertex, Points[i + 1].Vertex, index - i);
+                var mid = new RnPoint(v);
+                frontPoints.Add(mid);
+                backPoints.Insert(0, mid);
+            }
+
+            front = Create(frontPoints);
+            back = Create(backPoints);
+            return true;
         }
 
         /// <summary>
@@ -254,6 +298,37 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
+        public RnLineString Cut(float index, bool returnAfter)
+        {
+            // indexが整数の時で処理を変える
+            var isInt = Mathf.Abs(index - Mathf.RoundToInt(index)) < 1e-5f;
+            // 桁落ちを考えて, isInt時にはRoundを取る
+            var i = isInt ? Mathf.RoundToInt(index) : (int)index;
+            if (isInt == false)
+            {
+                if (i + 1 >= Points.Count)
+                {
+                    var x = 0;
+                }
+                var v = Vector3.Lerp(Points[i].Vertex, Points[i + 1].Vertex, index - i);
+                var p = new RnPoint(v);
+                Points.Insert(i + 1, p);
+                i = i + 1;
+            }
+
+            if (returnAfter)
+            {
+                var ret = Create(Points.Skip(i));
+                Points.RemoveRange(i + 1, Points.Count - (i + 1));
+                return ret;
+            }
+            else
+            {
+                var ret = Create(Points.Take(i + 1));
+                Points.RemoveRange(0, i);
+                return ret;
+            }
+        }
 
         // ---------------
         // Static Methods
@@ -318,10 +393,21 @@ namespace PLATEAU.RoadNetwork.Structure
 
     public static class RoadNetworkLineStringEx
     {
-        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self)
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = AxisPlane.Xz)
         {
-            foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex.Xz()), false))
+            foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex.ToVector2(axis)), false))
                 yield return new LineSegment2D(e.Item1, e.Item2);
+        }
+
+        /// <summary>
+        /// 線分をLineSegment3Dにして返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static IEnumerable<LineSegment3D> GetEdges(this RnLineString self)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex), false))
+                yield return new LineSegment3D(e.Item1, e.Item2);
         }
 
         /// <summary>
@@ -332,6 +418,26 @@ namespace PLATEAU.RoadNetwork.Structure
         public static float CalcLength(this RnLineString self)
         {
             return LineUtil.GetLineSegmentLength(self);
+        }
+
+        /// <summary>
+        /// selfをlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
+        /// 実際に変える好転はself上の点とその時のインデックス(float)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="line"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, LineSegment3D line, AxisPlane axis = AxisPlane.Xz)
+        {
+            foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
+            {
+                if (item.edge.TrySegmentIntersectionBy2D(line, axis, -1f, out var p, out var t1, out var t2))
+                {
+                    var v = item.edge.Lerp(t1);
+                    yield return (v, item.i + t1);
+                }
+            }
         }
     }
 }
