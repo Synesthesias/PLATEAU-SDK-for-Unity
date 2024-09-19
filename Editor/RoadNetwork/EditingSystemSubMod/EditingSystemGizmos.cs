@@ -21,9 +21,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private List<Vector3> selectingWay = new List<Vector3>();
 
-        private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
-
-        private List<List<Vector3>> guideWayList = new List<List<Vector3>>();
+        //private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
+        private List<List<Vector3>> leftLaneWayList = new List<List<Vector3>>();
+        private List<List<Vector3>> rightLaneWayList = new List<List<Vector3>>();
 
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
 
@@ -37,9 +37,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private Color connectionColor = Color.blue;
         private Color selectingWayColor = Color.red;
-        private Color selectableWayColor = Color.yellow;
+        //private Color selectableWayColor = Color.yellow;
+        private Color leftSideWayColor = Color.yellow;
+        private Color rightSideWayColor = Color.green;
+        private Color medianWayColor = Color.red;
+
         private Color guideWayColor = Color.black;
-        private Color sideWalkColor = Color.grey;
+        private Color sideWalkColor = Color.magenta;
         private Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
 
         private Color intersectionOutlineColor = Color.gray;
@@ -115,8 +119,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
 
             // RoadGroupが選択されている
-            selectableWayList.Clear();
-            guideWayList.Clear();
+            rightLaneWayList.Clear();
+            leftLaneWayList.Clear();
             sideWalks.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
@@ -135,7 +139,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
                 var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
-                // 選択可能なwayを描画
+                // 車線のwayを描画
                 foreach (var wayEditorData in wayEditorDataList)
                 {
                     // 選択中のwayは別の描画処理で対応するためスキップ
@@ -144,30 +148,57 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
-                    selectableWayList.Add(way);
+                    if (wayEditorData.IsSideWalk)
+                    {
+                        continue;
+                    }
+
                     if (wayEditorData.IsSelectable)
                     {
+                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
                         var points = wayEditorData.Ref.Points;
                         foreach (var p in points)
                         {
                             way.Add(p);
+                        }
+                        
+                        var parent = wayEditorData.Parent;
+                        Debug.Assert(parent != null);
+                        if (parent.IsReverse == false)
+                        {
+                            leftLaneWayList.Add(way);
+                        }
+                        else
+                        {
+                            rightLaneWayList.Add(way);
                         }
                     }
                 }
 
-                // ガイド用のwayを描画
+                // 歩道のwayを描画
                 foreach (var wayEditorData in wayEditorDataList)
                 {
-                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
-                    guideWayList.Add(way);
-                    if (wayEditorData.IsSelectable == false)
+                    // 選択中のwayは別の描画処理で対応するためスキップ
+                    if (selectingElement == wayEditorData)
                     {
+                        continue;
+                    }
+
+                    if (wayEditorData.IsSideWalk == false)
+                    {
+                        continue;
+                    }
+
+                    if (wayEditorData.IsSelectable)
+                    {
+                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
                         var points = wayEditorData.Ref.Points;
                         foreach (var p in points)
                         {
                             way.Add(p);
                         }
+
+                        sideWalks.Add(way);
                     }
                 }
 
@@ -250,9 +281,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 });
             }
 
-            AddDrawFunc(ref drawFuncs, selectableWayList, selectableWayColor);
-
-            AddDrawFunc(ref drawFuncs, guideWayList, guideWayColor);
+            AddDrawFunc(ref drawFuncs, leftLaneWayList, leftSideWayColor);
+            AddDrawFunc(ref drawFuncs, rightLaneWayList, rightSideWayColor);
 
             // 選択中のwayを描画
             if (selectingWay.Count >= 2)

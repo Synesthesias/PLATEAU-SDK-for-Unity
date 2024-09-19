@@ -440,11 +440,13 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public class WayEditorData
     {
-        public WayEditorData(RnWay target)
+        public WayEditorData(RnWay target, RnLane parent)
         {
             Assert.IsNotNull(target);
             BaseWay = target.Vertices.ToList();
             Ref = target;
+
+            Parent = parent;    // null許容
         }
 
         float sliderVarVals;
@@ -468,7 +470,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public List<Vector3> BaseWay { get; private set; } = new List<Vector3>();
         public RnWay Ref { get; private set; } = null;
-
+        public RnLane Parent { get; private set; } = null;
         /// <summary>
         /// 選択可能か？
         /// </summary>
