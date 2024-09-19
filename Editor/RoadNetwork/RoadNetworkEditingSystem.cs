@@ -1818,22 +1818,28 @@ namespace PLATEAU.Editor.RoadNetwork
                 IRoadNetworkEditingSystem system, EditorData<RnRoadGroup> roadGroupEditorData, List<WayEditorData> wayEditorDataList)
             {
                 // wayを重複無しでコレクションする
-                HashSet<RnWay> laneWays = new HashSet<RnWay>();
+                Dictionary<RnLane, HashSet<RnWay>> laneWays = new();
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var lane in road.AllLanes)
                     {
-                        laneWays.Add(lane.LeftWay);
-                        laneWays.Add(lane.RightWay);
+                        HashSet<RnWay> ways = new HashSet<RnWay>();
+                        laneWays.TryAdd(lane, ways);
+                        ways = laneWays[lane];
+                        ways.Add(lane.LeftWay);
+                        ways.Add(lane.RightWay);
                     }
                 }
 
-                HashSet<RnWay> sideWalkWays = new HashSet<RnWay>();
+                Dictionary<RnRoad, HashSet<RnWay>> sideWalkWays = new();    // wayはlaneに紐づいていたないためroadに紐づける
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalkWays.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
+                        HashSet<RnWay> ways = new HashSet<RnWay>();
+                        sideWalkWays.TryAdd(road, ways);
+                        ways = sideWalkWays[road];
+                        ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
                     }
                 }
 
@@ -1845,24 +1851,31 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 foreach (var editingTarget in laneWays)
                 {
-                    if (editingTarget == null)
+                    if (editingTarget.Value == null)
                     {
                         continue;
                     }
-                    var wayEditorData = new WayEditorData(editingTarget);
-                    wayEditorData.IsSideWalk = false;
-                    wayEditorDataList.Add(wayEditorData);
+                    foreach (var way in editingTarget.Value)
+                    {
+                        var wayEditorData = new WayEditorData(way, editingTarget.Key);
+                        wayEditorData.IsSideWalk = false;
+                        wayEditorDataList.Add(wayEditorData);
+                    }
                 }
 
                 foreach (var editingTarget in sideWalkWays)
                 {
-                    if (editingTarget == null)
+                    if (editingTarget.Value == null)
                     {
                         continue;
                     }
-                    var wayEditorData = new WayEditorData(editingTarget);
-                    wayEditorData.IsSideWalk = true;
-                    wayEditorDataList.Add(new WayEditorData(editingTarget));
+
+                    foreach (var way in editingTarget.Value)
+                    {
+                        var wayEditorData = new WayEditorData(way, null);
+                        wayEditorData.IsSideWalk = true;
+                        wayEditorDataList.Add(wayEditorData);
+                    }
                 }
 
                 if (system.RoadNetworkSimpleEditModule.isEditingDetailMode) // 詳細編集モードではwayの選択は行わない
