@@ -1831,6 +1831,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
+                // 歩道のwayを重複無しでコレクションする
                 Dictionary<RnRoad, HashSet<RnWay>> sideWalkWays = new();    // wayはlaneに紐づいていたないためroadに紐づける
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
@@ -1843,12 +1844,29 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
+                // 中央分離帯のwayを重複無しでコレクションする
+                IReadOnlyCollection<RnWay> medianWays = null;
+                foreach (var road in roadGroupEditorData.Ref.Roads)
+                {
+                    roadGroupEditorData.Ref.GetMedians(out var leftWays, out var rightWays);
+                    medianWays = leftWays.Concat(rightWays).ToArray();
+                }
 
-                // way用の編集データの作成
+                // way用の編集データの作成準備
                 if (wayEditorDataList == null)
                     wayEditorDataList = new List<WayEditorData>(laneWays.Count);
                 wayEditorDataList?.Clear();
 
+                // 車線のwayから中央分離帯のwayを除外
+                foreach (var ways in laneWays.Values)
+                {
+                    foreach (var medianWay in medianWays)
+                    {
+                        ways.Remove(medianWay);
+                    }
+                }
+
+                // 車線の編集用データを作成
                 foreach (var editingTarget in laneWays)
                 {
                     if (editingTarget.Value == null)
@@ -1858,11 +1876,12 @@ namespace PLATEAU.Editor.RoadNetwork
                     foreach (var way in editingTarget.Value)
                     {
                         var wayEditorData = new WayEditorData(way, editingTarget.Key);
-                        wayEditorData.IsSideWalk = false;
+                        wayEditorData.Type = WayEditorData.WayType.Main;
                         wayEditorDataList.Add(wayEditorData);
                     }
                 }
 
+                // 歩道の編集用データを作成
                 foreach (var editingTarget in sideWalkWays)
                 {
                     if (editingTarget.Value == null)
@@ -1873,12 +1892,22 @@ namespace PLATEAU.Editor.RoadNetwork
                     foreach (var way in editingTarget.Value)
                     {
                         var wayEditorData = new WayEditorData(way, null);
-                        wayEditorData.IsSideWalk = true;
+                        wayEditorData.Type = WayEditorData.WayType.SideWalk;
                         wayEditorDataList.Add(wayEditorData);
                     }
                 }
 
-                if (system.RoadNetworkSimpleEditModule.isEditingDetailMode) // 詳細編集モードではwayの選択は行わない
+                // 中央分離帯の編集用データを作成
+                foreach (var way in medianWays)
+                {
+                    var wayEditorData = new WayEditorData(way, null);
+                    wayEditorData.Type = WayEditorData.WayType.Median;
+                    wayEditorDataList.Add(wayEditorData);
+                }
+
+                // 詳細編集モードではwayの選択は行わない
+                var isWaySelectableMode = system.RoadNetworkSimpleEditModule.isEditingDetailMode;
+                if (isWaySelectableMode) 
                 {
                     foreach (var wayEditorData in wayEditorDataList)
                     {
