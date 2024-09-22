@@ -441,6 +441,14 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public class WayEditorData
     {
+        public enum WayType
+        {
+            _Undefind = 0,
+            Main,
+            SideWalk,
+            Median
+        }
+
         public WayEditorData(RnWay target, RnLane parent)
         {
             Assert.IsNotNull(target);
@@ -477,7 +485,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public bool IsSelectable { get; set; } = true;
 
-        public bool IsSideWalk { get; set; } = false;
+        public WayType Type { get; set; } = WayEditorData.WayType._Undefind;
     }
 
 }
