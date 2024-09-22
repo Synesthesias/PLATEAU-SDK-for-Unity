@@ -14,41 +14,53 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// </summary>
     public class EditingSystemGizmos
     {
+        /// <summary>
+        /// 描画コマンド群
+        /// </summary>
         private List<System.Action> drawFuncs = new List<Action>();
 
+        // 交差間の繋がり(RnRoadGroup)を表現する頂点リスト
         private List<Vector3> intersectionConnectionLinePairs = new List<Vector3>();
-        private List<List<Vector3>> intersectionConnectionLinePairs2 = new List<List<Vector3>>();
 
+        // 選択中のwayを表現する頂点リスト
         private List<Vector3> selectingWay = new List<Vector3>();
 
+        // 左側、右側車線のwayを表現する頂点リスト
         private List<List<Vector3>> leftLaneWayList = new List<List<Vector3>>();
         private List<List<Vector3>> rightLaneWayList = new List<List<Vector3>>();
 
+        // 中央分離帯
         private List<List<Vector3>> medianWayList = new List<List<Vector3>>();
 
+        // 歩道
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
 
+        // 選択中のwayをスライドした時の結果表示
         private List<List<Vector3>> slideDummyWayList = new List<List<Vector3>>();
 
+        // 交差点の外周
         private List<List<Vector3>> intersectionOutline = new List<List<Vector3>>();
+        // 交差点と道路の境界
         private List<List<Vector3>> intersectionBorder = new List<List<Vector3>>();
+
+        // それぞれのwayの色
 
         private readonly Color selectingColorOffset = new Color(0.2f, 0.2f, 0.2f, 0);
         private readonly Color dummyColorOffset = new Color(-0.2f, -0.2f, -0.2f, 0);
 
-        private Color connectionColor = Color.blue;
-        private Color selectingWayColor = Color.red;
-        //private Color selectableWayColor = Color.yellow;
-        private Color leftSideWayColor = Color.yellow;
-        private Color rightSideWayColor = Color.green;
-        private Color medianWayColor = Color.blue;
-
-        private Color guideWayColor = Color.black;
-        private Color sideWalkColor = Color.magenta;
-        private Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
-
-        private Color intersectionOutlineColor = Color.gray;
-        private Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
+        private readonly Color connectionColor = Color.blue;
+        private readonly Color selectingWayColor = Color.red;
+                
+        private readonly Color leftSideWayColor = Color.yellow;
+        private readonly Color rightSideWayColor = Color.green;
+        private readonly Color medianWayColor = Color.blue;
+                
+        private readonly Color guideWayColor = Color.black;
+        private readonly Color sideWalkColor = Color.magenta;
+        private readonly Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
+                
+        private readonly Color intersectionOutlineColor = Color.gray;
+        private readonly Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
 
         public EditingSystemGizmos()
         {
@@ -294,19 +306,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     Gizmos.color = connectionColor;
                     Gizmos.DrawLineList(intersectionConnectionLinePairs.ToArray());
-                });
-            }
-
-            var nParis2 = intersectionConnectionLinePairs2.Count;
-            if (nParis2 >= 2)
-            {
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = connectionColor;
-                    foreach (var item in intersectionConnectionLinePairs2)
-                    {
-                        Gizmos.DrawLineList(item.ToArray());
-                    }
                 });
             }
 
