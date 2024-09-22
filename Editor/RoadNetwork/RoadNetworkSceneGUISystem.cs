@@ -499,9 +499,9 @@ namespace PLATEAU.Editor.RoadNetwork
                     //    unionWay.Remove(otherLane.RightWay);
                     //}
 
-                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+                    //var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
                     //var nSlider = unionWay.Count; // 左右の
-                    if (wayEditorDataList == null)
+                    //if (wayEditorDataList == null)
                     {
                         //wayEditorDataList = new List<WayEditorData>(nSlider);
                         //foreach (var editingTarget in unionWay)
@@ -511,7 +511,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         //roadGroupEditorData.TryAdd(wayEditorDataList);
                     }
 
-                    Assert.IsNotNull(wayEditorDataList);
+                    //Assert.IsNotNull(wayEditorDataList);
                     //if (wayEditorDataList.Count != nSlider)
                     //{
                     //    wayEditorDataList.Clear();
@@ -547,28 +547,28 @@ namespace PLATEAU.Editor.RoadNetwork
                     GUILayout.EndArea();
                     Handles.EndGUI();
 
-                    // 変更あったものに対してのみ差分を適用する
-                    foreach (var wayEditorData in wayEditorDataList)
-                    {
-                        if (wayEditorData.IsChanged == false)
-                        {
-                            continue;
-                        }
+                    //// 変更あったものに対してのみ差分を適用する
+                    //foreach (var wayEditorData in wayEditorDataList)
+                    //{
+                    //    if (wayEditorData.IsChanged == false)
+                    //    {
+                    //        continue;
+                    //    }
 
-                        var target = wayEditorData.Ref;
+                    //    var target = wayEditorData.Ref;
 
-                        // デフォルトの状態に戻す
-                        var baseWay = wayEditorData.BaseWay;
-                        for (int i = 0; i < baseWay.Count; i++)
-                        {
-                            var p = baseWay[i];
-                            var p2 = target.GetPoint(i);
-                            p2.Vertex = p;
-                        }
-                        var offset = wayEditorData.SliderVarVals;
-                        target.MoveAlongNormal(offset);
-                        Debug.Log($"way.MoveAlongNormal({offset})");
-                    }
+                    //    // デフォルトの状態に戻す
+                    //    var baseWay = wayEditorData.BaseWay;
+                    //    for (int i = 0; i < baseWay.Count; i++)
+                    //    {
+                    //        var p = baseWay[i];
+                    //        var p2 = target.GetPoint(i);
+                    //        p2.Vertex = p;
+                    //    }
+                    //    var offset = wayEditorData.SliderVarVals;
+                    //    target.MoveAlongNormal(offset);
+                    //    Debug.Log($"way.MoveAlongNormal({offset})");
+                    //}
                 }
                 else // 詳細モードでのみ表示
                 {
