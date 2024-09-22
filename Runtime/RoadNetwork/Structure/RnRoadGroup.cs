@@ -429,6 +429,29 @@ namespace PLATEAU.RoadNetwork.Structure
         {
            return Roads.Any(l => l.MedianLane != null);
         }
+        /// <summary>
+        /// 中央分離帯を取得する
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        public void GetMedians(
+            out IReadOnlyCollection<RnWay> left,
+            out IReadOnlyCollection<RnWay> right)
+        {
+            var lWays = new List<RnWay>(Roads.Count);
+            var rWays = new List<RnWay>(Roads.Count);
+
+            foreach (var road in Roads)
+            {
+                var centerLeft = road.GetLeftLanes().Last();
+                var centerRight = road.GetRightLanes().First();
+                lWays.Add(centerLeft.RightWay);
+                rWays.Add(centerRight.RightWay);
+            }
+
+            left = lWays;
+            right = rWays;
+        }
 
         /// <summary>
         /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨
