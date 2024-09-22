@@ -21,9 +21,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private List<Vector3> selectingWay = new List<Vector3>();
 
-        //private List<List<Vector3>> selectableWayList = new List<List<Vector3>>();
         private List<List<Vector3>> leftLaneWayList = new List<List<Vector3>>();
         private List<List<Vector3>> rightLaneWayList = new List<List<Vector3>>();
+
+        private List<List<Vector3>> medianWayList = new List<List<Vector3>>();
 
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
 
@@ -40,7 +41,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         //private Color selectableWayColor = Color.yellow;
         private Color leftSideWayColor = Color.yellow;
         private Color rightSideWayColor = Color.green;
-        private Color medianWayColor = Color.red;
+        private Color medianWayColor = Color.blue;
 
         private Color guideWayColor = Color.black;
         private Color sideWalkColor = Color.magenta;
@@ -148,7 +149,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    if (wayEditorData.IsSideWalk)
+                    if (wayEditorData.Type != WayEditorData.WayType.Main)
                     {
                         continue;
                     }
@@ -184,7 +185,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    if (wayEditorData.IsSideWalk == false)
+                    if (wayEditorData.Type != WayEditorData.WayType.SideWalk)
                     {
                         continue;
                     }
@@ -201,6 +202,34 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         sideWalks.Add(way);
                     }
                 }
+
+                // 中央分離帯のwayを描画
+                foreach (var wayEditorData in wayEditorDataList)
+                {
+                    // 選択中のwayは別の描画処理で対応するためスキップ
+                    if (selectingElement == wayEditorData)
+                    {
+                        continue;
+                    }
+
+                    if (wayEditorData.Type != WayEditorData.WayType.Median)
+                    {
+                        continue;
+                    }
+
+                    if (wayEditorData.IsSelectable)
+                    {
+                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                        var points = wayEditorData.Ref.Points;
+                        foreach (var p in points)
+                        {
+                            way.Add(p);
+                        }
+
+                        medianWayList.Add(way);
+                    }
+                }
+
 
 
             }
@@ -301,6 +330,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             AddDrawFunc(ref drawFuncs, intersectionOutline, intersectionOutlineColor);
 
             AddDrawFunc(ref drawFuncs, intersectionBorder, intersectionBorderColor);
+
+            AddDrawFunc(ref drawFuncs, medianWayList, medianWayColor);
 
             return drawFuncs;
         }
