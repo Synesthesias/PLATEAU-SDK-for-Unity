@@ -412,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// selfをlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
-        /// 実際に変える好転はself上の点とその時のインデックス(float)
+        /// 実際に返る交点はself上の点とその時のインデックス(float)
         /// </summary>
         /// <param name="self"></param>
         /// <param name="line"></param>

@@ -556,7 +556,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        ///  隣接情報を差し替える(呼び出し注意)
+        /// 隣接情報を差し替える.
+        /// 隣り合うRoadBaseとの整合性を保つように変更する必要があるので注意
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -714,7 +715,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
         /// <summary>
-        /// レーンのLineStringと
+        /// Roadの全レーンの境界線との交点チェック結果
         /// </summary>
         public class LaneIntersectionResult
         {
