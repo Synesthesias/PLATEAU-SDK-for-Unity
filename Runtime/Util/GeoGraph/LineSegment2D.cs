@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PLATEAU.RoadNetwork.Util;
+using UnityEngine;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -146,6 +147,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="origin"></param>
         /// <param name="dir"></param>
         /// <param name="intersection"></param>
@@ -218,6 +220,20 @@ namespace PLATEAU.Util.GeoGraph
         public static LineSegment2D Reversed(this LineSegment2D self)
         {
             return new LineSegment2D(self.End, self.Start);
+        }
+
+
+        /// <summary>
+        /// selfに対して, vが右側にあるか左側にあるかを返す(z軸上から見たとき)
+        /// 右側 : 1, 左側 : -1, 線上 : 0
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static int Sign(this LineSegment2D self, RnExplicit<Vector2> v)
+        {
+            var ret = Vector2Ex.Cross(self.Direction, v.V - self.Start);
+            return ret.CompareTo(0f);
         }
     }
 }

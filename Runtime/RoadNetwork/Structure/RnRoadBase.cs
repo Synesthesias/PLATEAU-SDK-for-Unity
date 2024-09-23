@@ -14,7 +14,7 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        private List<RnSideWalk> sideWalks = new List<RnSideWalk>();
+        protected List<RnSideWalk> sideWalks = new List<RnSideWalk>();
 
 
         //----------------------------------
@@ -29,7 +29,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
             if (sideWalks.Contains(sideWalk))
                 return;
-            sideWalk.SetParent(this);
+            sideWalk.ChangeParent(this);
             sideWalks.Add(sideWalk);
         }
 
@@ -37,7 +37,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (sideWalk == null)
                 return;
-            sideWalk.SetParent(null);
+            sideWalk.ChangeParent(null);
             sideWalks.Remove(sideWalk);
         }
 
@@ -73,6 +73,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return Vector3.zero;
         }
 
+        public virtual void ReplaceNeighbor(RnRoadBase from, RnRoadBase to) { }
     }
 
     public static class RnRoadBaseEx

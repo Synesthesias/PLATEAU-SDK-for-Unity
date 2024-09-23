@@ -39,6 +39,19 @@ namespace PLATEAU.RoadNetwork
         /// <typeparam name="T"></typeparam>
         /// <param name="self"></param>
         /// <returns></returns>
+        public static long GetDebugMyIdOrDefault<T>(this ARnParts<T> self)
+        {
+            if (self == null)
+                return -1;
+            return (long)self.DebugMyId;
+        }
+
+        /// <summary>
+        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static long GetDebugMyIdOrDefault(this RnRoad self)
         {
             return self.GetDebugMyIdOrDefault<RnRoadBase>();

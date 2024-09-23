@@ -79,28 +79,45 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 親リンク
+
+        /// <summary>
+        /// 親リンク
+        /// </summary>
         public RnRoad Parent { get; set; }
 
-        // 境界線(下流)
-        public RnWay PrevBorder { get; set; }
+        /// <summary>
+        /// 境界線(下流)
+        /// </summary>
+        public RnWay PrevBorder { get; private set; }
 
-        // 境界線(上流)
-        public RnWay NextBorder { get; set; }
+        /// <summary>
+        /// 境界線(上流)
+        /// </summary>
+        public RnWay NextBorder { get; private set; }
 
-        // 車線(左)
+        /// <summary>
+        /// 車線(左)
+        /// </summary>
         public RnWay LeftWay { get; private set; }
 
-        // 車線(右)
+        /// <summary>
+        /// 車線(右)
+        /// </summary>
         public RnWay RightWay { get; private set; }
 
-        // 属性
+        /// <summary>
+        /// 属性
+        /// </summary>
         public RnLaneAttribute Attributes { get; set; }
 
-        // 親Roadと逆方向(右車線等)
+        /// <summary>
+        /// 親Roadと逆方向(右車線等)
+        /// </summary>
         public bool IsReverse { get; set; }
 
-        // 内部的に持つだけ. 中心線
+        /// <summary>
+        /// 内部的に持つだけ. 中心線
+        /// </summary>
         private RnWay centerWay { get; set; }
 
         //----------------------------------
@@ -144,6 +161,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 隣接した交差点に挿入された空レーンかどうか
         /// </summary>
         public bool IsEmptyLane => IsValidWay == false && NextBorder == PrevBorder && NextBorder != null;
+
+        /// <summary>
+        /// 自分が中央分離帯かどうか. 親がないときはfalseになる
+        /// </summary>
+        public bool IsMedianLane => Parent != null && Parent.MedianLane == this;
 
         //デシリアライズの為に必要
         public RnLane() { }
@@ -372,7 +394,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// dirのWayを置き換える
+        /// dirのWayを置き換える.
+        /// データを直接書き換えるので使い方注意.
+        /// 親Roadが持つ他のレーンや隣接するIntersectionとの整合性を保つようにする事
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="way"></param>
@@ -397,6 +421,21 @@ namespace PLATEAU.RoadNetwork.Structure
                 RnDir.Right => RightWay,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// 境界線の再設定. 
+        /// データを直接書き換えるので使い方注意.
+        /// 親Roadが持つ他のレーンや隣接するIntersectionとの整合性を保つようにする事
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="way"></param>
+        public void SetBorder(RnLaneBorderType type, RnWay way)
+        {
+            if (type == RnLaneBorderType.Prev)
+                PrevBorder = way;
+            else
+                NextBorder = way;
         }
 
         /// <summary>

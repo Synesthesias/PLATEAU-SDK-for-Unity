@@ -110,6 +110,14 @@ namespace PLATEAU.Util.GeoGraph
             };
         }
 
+        /// <summary>
+        /// selfのplane成分をaに変更したVector3を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="plane"></param>
+        /// <param name="a"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static Vector3 Put(this Vector3 self, AxisPlane plane, Vector2 a)
         {
             return plane switch
@@ -121,9 +129,26 @@ namespace PLATEAU.Util.GeoGraph
             };
         }
 
+        /// <summary>
+        /// planeの平行成分をv, 直交成分をnormalに変更したVector3を返す
+        /// </summary>
+        /// <param name="plane"></param>
+        /// <param name="v"></param>
+        /// <param name="normal"></param>
+        /// <returns></returns>
         public static Vector3 Make(this AxisPlane plane, Vector2 v, float normal)
         {
             return Vector3.zero.Put(plane, v).PutNormal(plane, normal);
+        }
+
+        /// <summary>
+        /// planeに直交する軸の単位ベクトルを返す
+        /// </summary>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static Vector3 NormalVector(this AxisPlane plane)
+        {
+            return plane.Make(Vector2.zero, 1f);
         }
     }
 

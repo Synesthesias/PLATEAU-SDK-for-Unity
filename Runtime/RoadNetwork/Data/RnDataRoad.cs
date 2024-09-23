@@ -27,6 +27,11 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember("mainLanes")]
         public List<RnID<RnDataLane>> MainLanes { get; set; } = new List<RnID<RnDataLane>>();
 
+        // 中央分離帯
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("medianLane")]
+        public RnID<RnDataLane> MedianLane { get; set; }
+
         // 即性情報
         [field: SerializeField]
         [RoadNetworkSerializeMember]
