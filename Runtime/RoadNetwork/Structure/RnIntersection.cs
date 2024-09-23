@@ -145,9 +145,9 @@ namespace PLATEAU.RoadNetwork.Structure
                     return RnFlowTypeMask.Both;
 
                 var ret = RnFlowTypeMask.Empty;
-                if (road.GetConnectedLanes(Border).Any(l => l.NextBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Inbound;
-                if (road.GetConnectedLanes(Border).Any(l => l.PrevBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.PrevBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Outbound;
                 return ret;
             }
