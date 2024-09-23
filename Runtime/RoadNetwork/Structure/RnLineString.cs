@@ -249,7 +249,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 道の外側を向いている. 正規化はされていない
+        /// 上(Vector3.up)から見て半時計回りを向いている. . 正規化はされていない
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>

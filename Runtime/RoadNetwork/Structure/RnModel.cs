@@ -90,13 +90,13 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// Intersection/Roadのレーンを全て取得
+        /// Roadのレーンを全て取得
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnLane> CollectAllLanes()
         {
             // Laneは重複しないはず
-            return Roads.SelectMany(l => l.AllLanes);
+            return Roads.SelectMany(l => l.AllLanesWithMedian);
         }
 
         /// <summary>
@@ -123,20 +123,23 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var intersection = new RnIntersection(road.TargetTran);
 
+            // 左右のWayとBorderを使って交差点とする
             road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
             if (leftWay != null)
                 intersection.AddEdge(null, leftWay);
             foreach (var lane in road.AllLanesWithMedian)
             {
                 lane.AlignBorder();
-                intersection.AddEdge(lane.GetNextRoad(), lane.NextBorder);
+                var border = lane.NextBorder.Clone();
+                intersection.AddEdge(lane.GetNextRoad(), border);
             }
 
             if (rightWay != null)
                 intersection.AddEdge(null, rightWay.ReversedWay());
             foreach (var lane in road.AllLanesWithMedian)
             {
-                intersection.AddEdge(lane.GetPrevRoad(), lane.PrevBorder.ReversedWay());
+                var border = lane.PrevBorder.ReversedWay();
+                intersection.AddEdge(lane.GetPrevRoad(), border);
             }
 
             // 歩道情報を移す
@@ -210,7 +213,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // シリアライズ前に一度全レーンに対して中央線を作成する
             foreach (var road in Roads)
             {
-                foreach (var l in road.AllLanes)
+                foreach (var l in road.MainLanes)
                     l.CreateCenterWay();
             }
 
@@ -704,7 +707,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 var newLane = new RnLane(nextLeftWay, nextRightWay, null, null) { IsReverse = isReverseLane };
                 newLane.SetBorder(laneMidBorderType, nextBorder);
                 newLane.SetBorder(laneMidBorderType.GetOpposite(), midBorderWay);
-
                 if (lane.IsMedianLane)
                 {
                     newNextRoad.SetMedianLane(newLane);

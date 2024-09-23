@@ -234,6 +234,12 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 中央分離帯を考慮したレーン分割
+        /// </summary>
+        /// <param name="leftCount"></param>
+        /// <param name="rightCount"></param>
+        /// <param name="medianWidthRate"></param>
         public void SetLaneCountWithMedian(int leftCount, int rightCount, float medianWidthRate)
         {
             if (IsValid == false)
@@ -271,8 +277,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 var median = lanes[leftCount];
                 lanes.RemoveAt(leftCount);
-                Roads[i].ReplaceLanes(lanes);
-                Roads[i].SetMedianLane(median);
+                road.ReplaceLanes(lanes);
+                road.SetMedianLane(median);
             }
         }
 
