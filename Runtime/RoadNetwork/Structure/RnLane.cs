@@ -394,7 +394,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// dirのWayを置き換える. 使い方注意
+        /// dirのWayを置き換える.
+        /// データを直接書き換えるので使い方注意.
+        /// 親Roadが持つ他のレーンや隣接するIntersectionとの整合性を保つようにする事
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="way"></param>
@@ -422,7 +424,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 境界線の再設定. 使い方注意
+        /// 境界線の再設定. 
+        /// データを直接書き換えるので使い方注意.
+        /// 親Roadが持つ他のレーンや隣接するIntersectionとの整合性を保つようにする事
         /// </summary>
         /// <param name="type"></param>
         /// <param name="way"></param>
