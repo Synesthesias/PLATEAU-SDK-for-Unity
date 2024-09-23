@@ -89,6 +89,12 @@ namespace PLATEAU.RoadNetwork.Structure
         public bool IsAllBothConnectedLane => MainLanes.Any() && MainLanes.All(l => l.IsBothConnectedLane);
 
         /// <summary>
+        /// 全レーンがIsValidかどうかチェックする
+        /// </summary>
+        public bool IsAllLaneValid => AllLanesWithMedian.All(l => l.IsValidWay);
+
+
+        /// <summary>
         /// 左車線/右車線両方あるかどうか
         /// </summary>
         public bool HasBothLane
