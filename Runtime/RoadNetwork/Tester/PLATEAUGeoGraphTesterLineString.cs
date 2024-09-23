@@ -120,6 +120,7 @@ namespace PLATEAU.RoadNetwork.Tester
                 p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList();
             foreach (var road in roads)
             {
+                var isCrossed = false;
                 foreach (var segment in edges)
                 {
                     var res = road.GetLaneIntersections(segment);
@@ -129,15 +130,16 @@ namespace PLATEAU.RoadNetwork.Tester
                     {
                         DebugEx.DrawSphere(v.v, 0.3f, Color.red);
                         DebugEx.DrawString($"{v.index}", v.v);
+                        isCrossed = true;
                     }
 
-                    if (exec)
+                    if (exec && isCrossed)
                     {
                         target.RoadNetwork.SliceRoadHorizontal(road, segment);
                     }
                 }
 
-                if (exec2 && edges.Count >= 3)
+                if (exec2 && edges.Count >= 3 && isCrossed)
                 {
                     target.RoadNetwork.SliceRoadHorizontalAndConvert2Intersection(road, edges[0], edges[2]);
                 }

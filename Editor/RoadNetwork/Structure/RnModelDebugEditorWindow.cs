@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -15,23 +16,18 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
             RnModel GetModel();
 
-            HashSet<RnRoad> TargetRoads { get; }
+            // 非表示対象オブジェクト
+            HashSet<object> InVisibleObjects { get; }
 
-            HashSet<RnIntersection> TargetIntersections { get; }
-
-            HashSet<RnLane> TargetLanes { get; }
-
-            HashSet<RnWay> TargetWays { get; }
-
-            HashSet<RnSideWalk> TargetSideWalks { get; }
-
-            public bool IsTarget(RnRoadBase roadBase);
+            // 選択済みオブジェクト
+            HashSet<object> SelectedObjects { get; }
         }
 
         private const string WindowName = "Debug RnModel Editor";
 
         private IInstanceHelper InstanceHelper { get; set; }
 
+        private AddTargetType addTargetType = AddTargetType.Road;
         private long addTargetId = -1;
 
         private LaneEdit laneEdit = new LaneEdit();
@@ -42,10 +38,26 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         // FoldOutの状態を保持する
         private HashSet<object> FoldOuts { get; } = new();
 
+        /// <summary>
+        /// Id指定での対象追加用タイプ
+        /// </summary>
+        private enum AddTargetType
+        {
+            Road,
+            Intersection,
+            SideWalk,
+        }
+
         public class Work
         {
             // foreach文で回している最中に実行するとまずいもの(リストの変換等)の遅延実行用
             public List<Action> DelayExec { get; } = new();
+        }
+
+        private void ShowBase<T>(ARnParts<T> parts)
+        {
+            RnEditorUtil.SelectToggle($"Id '{parts.GetDebugMyIdOrDefault()}'", InstanceHelper.SelectedObjects, parts);
+            RnEditorUtil.VisibleToggle(InstanceHelper.InVisibleObjects, parts);
         }
 
         private class LaneEdit
@@ -82,7 +94,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (lane == null)
                 return;
             var p = laneEdit;
-            RnEditorUtil.TargetToggle($"Id '{lane.DebugMyId.ToString()}'", InstanceHelper.TargetLanes, lane);
+            ShowBase(lane);
             using (new EditorGUI.DisabledScope(false))
             {
                 void Draw(RnLaneBorderType type)
@@ -185,8 +197,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
 
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
-
-
         }
 
         /// <summary>
@@ -200,7 +210,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (road == null)
                 return;
 
-            RnEditorUtil.TargetToggle($"Id '{road.DebugMyId.ToString()}'", InstanceHelper.TargetRoads, road);
+            ShowBase(road);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LongField("Prev", (long)(road.Prev?.DebugMyId ?? ulong.MaxValue));
@@ -321,7 +331,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 return;
             var p = intersectionEdit;
 
-            RnEditorUtil.TargetToggle($"Id '{intersection.DebugMyId.ToString()}'", InstanceHelper.TargetIntersections, intersection);
+            ShowBase(intersection);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField("Intersection ID", intersection.DebugMyId.ToString());
@@ -374,8 +384,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
             var p = sideWalkEdit;
-            RnEditorUtil.TargetToggle($"Id '{sideWalk.DebugMyId.ToString()}'", InstanceHelper.TargetSideWalks,
-                sideWalk);
+            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
@@ -409,20 +418,27 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             //addTargetId = RnEditorUtil.CheckAddTarget(InstanceHelper.TargetLanes, this.addTargetId, out var isAddLane);
             // 内部でTargetLanesを更新するため、ToListでコピーを取得
-            foreach (var l in InstanceHelper.TargetLanes.ToList())
+            foreach (var l in InstanceHelper.SelectedObjects.Select(x => x as RnLane).Where(x => x != null).ToList())
             {
                 RnEditorUtil.Separator();
                 EditLane(l, work);
             }
 
+            bool isAdded;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                addTargetId = EditorGUILayout.LongField("AddTarget", addTargetId);
+                isAdded = GUILayout.Button("+");
+            }
+
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Road Edit", GUILayout.Height(20));
-            addTargetId = RnEditorUtil.CheckAddTarget<RnRoad, RnRoadBase>(InstanceHelper.TargetRoads, this.addTargetId, out var isAddRoad);
+
             foreach (var r in model.Roads)
             {
-                if (isAddRoad && r.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.TargetRoads.Add(r);
-                if (InstanceHelper.IsTarget(r) == false && InstanceHelper.TargetRoads.Contains(r) == false)
+                if (addTargetType == AddTargetType.Road && isAdded && r.DebugMyId == (ulong)addTargetId)
+                    InstanceHelper.SelectedObjects.Add(r);
+                if (IsSceneSelected(r) == false && InstanceHelper.SelectedObjects.Contains(r) == false)
                     continue;
 
                 var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(r), $"Road {r.GetDebugMyIdOrDefault()}");
@@ -444,13 +460,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Intersection Edit", GUILayout.Height(20));
-
-            addTargetId = RnEditorUtil.CheckAddTarget<RnIntersection, RnRoadBase>(InstanceHelper.TargetIntersections, this.addTargetId, out var isAddInter);
             foreach (var i in model.Intersections)
             {
-                if (isAddInter && i.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.TargetIntersections.Add(i);
-                if (InstanceHelper.IsTarget(i) == false && InstanceHelper.TargetIntersections.Contains(i) == false)
+                if (addTargetType == AddTargetType.Intersection && isAdded && i.DebugMyId == (ulong)addTargetId)
+                    InstanceHelper.SelectedObjects.Add(i);
+                if (IsSceneSelected(i) == false && InstanceHelper.SelectedObjects.Contains(i) == false)
                     continue;
                 var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(i), $"InterSection {i.GetDebugMyIdOrDefault()}");
                 if (foldout)
@@ -470,12 +484,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Side Walk Edit", GUILayout.Height(20));
-            addTargetId = RnEditorUtil.CheckAddTarget<RnIntersection, RnRoadBase>(InstanceHelper.TargetIntersections, this.addTargetId, out var isAddSideWalk);
             foreach (var sw in model.SideWalks)
             {
-                if (isAddSideWalk && sw.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.TargetSideWalks.Add(sw);
-                if (InstanceHelper.TargetSideWalks.Contains(sw) == false)
+                if (addTargetType == AddTargetType.SideWalk && isAdded && sw.DebugMyId == (ulong)addTargetId)
+                    InstanceHelper.SelectedObjects.Add(sw);
+                if (IsSceneSelected(sw) == false && InstanceHelper.SelectedObjects.Contains(sw) == false)
                     continue;
                 var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(sw), $"SideWalk {sw.GetDebugMyIdOrDefault()}");
                 if (foldout)
@@ -520,5 +533,25 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             return HasOpenInstances<RnModelDebugEditorWindow>();
         }
 
+        /// <summary>
+        /// Scene上で選択されているかどうか
+        /// </summary>
+        /// <param name="roadBase"></param>
+        /// <returns></returns>
+        public static bool IsSceneSelected(RnRoadBase roadBase)
+        {
+            if (roadBase == null)
+                return false;
+            return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
+        }
+        /// <summary>
+        /// Scene上で選択されているかどうか
+        /// </summary>
+        /// <param name="sideWalk"></param>
+        /// <returns></returns>
+        public static bool IsSceneSelected(RnSideWalk sideWalk)
+        {
+            return IsSceneSelected(sideWalk.ParentRoad);
+        }
     }
 }
