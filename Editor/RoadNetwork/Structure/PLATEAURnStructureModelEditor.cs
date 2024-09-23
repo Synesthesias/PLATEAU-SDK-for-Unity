@@ -35,13 +35,10 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 return target.RoadNetwork;
             }
 
-            public HashSet<RnRoad> TargetRoads => Drawer.TargetRoads;
-            public HashSet<RnIntersection> TargetIntersections => Drawer.TargetIntersections;
-            public HashSet<RnLane> TargetLanes => Drawer.TargetLanes;
-            public HashSet<RnWay> TargetWays => Drawer.TargetWays;
-            public HashSet<RnSideWalk> TargetSideWalks => Drawer.TargetSideWalks;
+            public HashSet<object> InVisibleObjects => Drawer.InVisibleObjects;
+            public HashSet<object> SelectedObjects => Drawer.SelectedObjects;
 
-            public bool IsTarget(RnRoadBase roadBase)
+            public bool IsSceneSelected(RnRoadBase roadBase)
             {
                 return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
             }

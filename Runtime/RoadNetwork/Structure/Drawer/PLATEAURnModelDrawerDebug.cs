@@ -46,7 +46,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         [SerializeField] public bool visible = true;
 
-        [SerializeField] public bool showAll = true;
         // Laneの頂点の内側を向くベクトルの中央点を表示する
         [SerializeField] public bool showInsideNormalMidPoint = false;
         // 頂点インデックスを表示する
@@ -63,13 +62,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
+        // 非表示オブジェクト
+        public HashSet<object> InVisibleObjects { get; } = new();
 
-        public HashSet<RnRoad> TargetRoads { get; } = new();
-        public HashSet<RnIntersection> TargetIntersections { get; } = new();
-        public HashSet<RnLane> TargetLanes { get; } = new();
-        public HashSet<RnWay> TargetWays { get; } = new();
-
-        public HashSet<RnSideWalk> TargetSideWalks { get; } = new();
+        // エディタで選択されたオブジェクト
+        public HashSet<object> SelectedObjects { get; } = new();
 
         [Serializable]
         public class TrackOption : DrawOption
@@ -182,6 +179,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption showInsideWay = new DrawOption(true, Color.blue);
             public DrawOption showStartEdgeWay = new DrawOption(true, Color.green);
             public DrawOption showEndEdgeWay = new DrawOption(true, Color.yellow);
+            // Noneの時はすべて表示. それ以外はRnSideWalk.GetValidWayTypeMaskが一致したものだけ表示する(不正なSideWalk検出用)
+            public RnSideWalkWayTypeMask showWayFilter = RnSideWalkWayTypeMask.None;
         }
         [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
 
@@ -279,6 +278,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             if (way == null)
                 return;
+
+            // 非表示設定
+            if (InVisibleObjects.Contains(way))
+                return;
+
             if (way.Count <= 1)
                 return;
             // 矢印色は設定されていない場合は反転しているかどうかで返る
@@ -332,6 +336,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             if (showPartsType.HasFlag(RnPartsTypeMask.SideWalk))
                 DebugEx.DrawString($"S[{sideWalk.DebugMyId}]", sideWalk.GetCenter());
+
+            // 一致判定
+            if (p.showWayFilter != RnSideWalkWayTypeMask.None && sideWalk.GetValidWayTypeMask() != p.showWayFilter)
+                return;
+
+            // 非表示設定
+            if (InVisibleObjects.Contains(sideWalk))
+                return;
             void DrawSideWalkWay(RnWay way, DrawOption op)
             {
                 if (op.visible == false)
@@ -367,7 +379,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Lane))
                 DebugEx.DrawString($"L[{lane.DebugMyId}]", lane.GetCenter());
 
-            if (showAll == false && (TargetLanes?.Any() == true) && TargetLanes?.Contains(lane) == false)
+            // 非表示設定
+            if (InVisibleObjects.Contains(lane))
                 return;
 
             var offset = Vector3.up * (lane.DebugMyId % 10);
@@ -440,10 +453,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (work.IsVisited(road) == false)
                 return;
 
-            if (showAll == false && (TargetRoads?.Any() == true) && TargetRoads?.Contains(road) == false)
+            if (targetTran && targetTran != road.TargetTran)
                 return;
 
-            if (targetTran && targetTran != road.TargetTran)
+            // 非表示設定
+            if (InVisibleObjects.Contains(road))
                 return;
 
             // RoadGroupで描画する場合はGroup全部で同じ色にする
@@ -569,7 +583,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (targetTran && targetTran != intersection.TargetTran)
                 return;
 
-            if (showAll == false && TargetIntersections?.Any() == true && TargetIntersections?.Contains(intersection) == false)
+            // 非表示設定
+            if (InVisibleObjects.Contains(intersection))
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
@@ -666,14 +681,25 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             work = new DrawWork(roadNetwork);
 
-            foreach (var r in TargetRoads)
-                DrawRoad(r, VisibleType.GuiSelected);
-
-            foreach (var i in TargetIntersections)
-                DrawIntersection(i, VisibleType.GuiSelected);
-
-            foreach (var l in TargetLanes)
-                DrawLane(l, laneOp, VisibleType.GuiSelected);
+            foreach (var x in SelectedObjects)
+            {
+                if (x is RnRoad r)
+                {
+                    DrawRoad(r, VisibleType.GuiSelected);
+                }
+                else if (x is RnIntersection i)
+                {
+                    DrawIntersection(i, VisibleType.GuiSelected);
+                }
+                else if (x is RnLane l)
+                {
+                    DrawLane(l, laneOp, VisibleType.GuiSelected);
+                }
+                else if (x is RnSideWalk sw)
+                {
+                    DrawSideWalk(sw, sideWalkRoadOp);
+                }
+            }
 
             DrawRoads(roadNetwork);
             DrawIntersections(roadNetwork);
