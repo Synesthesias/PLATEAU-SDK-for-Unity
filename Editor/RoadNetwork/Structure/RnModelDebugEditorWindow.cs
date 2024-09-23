@@ -322,6 +322,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
             public long convertPrevRoadId = -1;
             public long convertNextRoadId = -1;
+            public HashSet<object> Foldouts { get; } = new HashSet<object>();
         }
 
 
@@ -369,6 +370,24 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (GUILayout.Button("Build Track"))
             {
                 intersection.BuildTracks();
+            }
+
+            foreach (var sideWalk in intersection.SideWalks)
+            {
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
+                if (foldout)
+                {
+                    RnEditorUtil.Separator();
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        p.Foldouts.Add(sideWalk);
+                        EditSideWalk(sideWalk, work);
+                    }
+                }
+                else
+                {
+                    p.Foldouts.Remove(sideWalk);
+                }
             }
         }
 
