@@ -246,7 +246,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lane"></param>
         public void SetMedianLane(RnLane lane)
         {
+            // 以前の中央分離帯から親情報を削除
+            OnRemoveLane(medianLane);
             medianLane = lane;
+            OnAddLane(medianLane);
         }
 
         /// <summary>
