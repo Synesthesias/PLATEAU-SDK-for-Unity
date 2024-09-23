@@ -300,6 +300,29 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
             }
 
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("MedianLane");
+            if (road.MedianLane != null)
+            {
+                var lane = road.MedianLane;
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
+                if (foldout)
+                {
+                    RnEditorUtil.Separator();
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        p.Foldouts.Add(lane);
+                        EditLane(lane, work);
+                    }
+                }
+                else
+                {
+                    p.Foldouts.Remove(lane);
+                }
+            }
+
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("SideWalk");
             foreach (var sideWalk in road.SideWalks)
             {
                 var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
@@ -446,6 +469,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             bool isAdded;
             using (new EditorGUILayout.HorizontalScope())
             {
+                addTargetType = (AddTargetType)EditorGUILayout.EnumPopup("AddTargetType", addTargetType);
                 addTargetId = EditorGUILayout.LongField("AddTarget", addTargetId);
                 isAdded = GUILayout.Button("+");
             }
