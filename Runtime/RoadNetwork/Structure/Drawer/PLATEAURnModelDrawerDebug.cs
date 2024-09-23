@@ -124,8 +124,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class WayOption
         {
-            // 法線を表示する
-            public bool showNormal = true;
+            // 頂点の法線を表示する
+            public bool showVertexNormal = true;
+
+            // 線の法線を表示する
+            public bool showEdgeNormal = false;
 
             // 反転したWayの矢印色
             public Color normalWayArrowColor = Color.yellow;
@@ -309,10 +312,18 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 var n = way.GetVertexNormal(i);
 
                 // 法線表示
-                if (wayOp.showNormal)
+                if (wayOp.showVertexNormal)
                 {
                     DrawLine(v, v + n * 0.3f, color: Color.yellow);
                 }
+
+                if (wayOp.showEdgeNormal && i < way.Count - 1)
+                {
+                    var p = (v + way[i + 1]) * 0.5f;
+                    var nn = way.GetEdgeNormal(i).normalized;
+                    DrawArrow(p, p + nn, bodyColor: Color.blue);
+                }
+
                 // 中央線
                 if (showInsideNormalMidPoint)
                 {
