@@ -68,6 +68,11 @@ namespace PLATEAU.RoadNetwork.Structure
             get { yield return startEdgeWay; yield return endEdgeWay; }
         }
 
+        /// <summary>
+        /// Inside/OutsideのWayが両方ともValidかどうか. (Edgeは角の道だとnullの場合もあり得るのでチェックしない)
+        /// </summary>
+        public bool IsValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault();
+
         public RnSideWalk() { }
 
         private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay)
@@ -97,10 +102,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 親情報の再設定
         /// </summary>
         /// <param name="parent"></param>
-        public void SetParent(RnRoadBase parent)
+        public void ChangeParent(RnRoadBase parent)
         {
-            if (parent != null)
-                parent.RemoveSideWalk(this);
+            // 以前の親からは削除する
+            parent?.RemoveSideWalk(this);
             this.parentRoad = parent;
         }
 

@@ -29,7 +29,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
             if (sideWalks.Contains(sideWalk))
                 return;
-            sideWalk.SetParent(this);
+            sideWalk.ChangeParent(this);
             sideWalks.Add(sideWalk);
         }
 
@@ -37,7 +37,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (sideWalk == null)
                 return;
-            sideWalk.SetParent(null);
+            sideWalk.ChangeParent(null);
             sideWalks.Remove(sideWalk);
         }
 
