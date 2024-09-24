@@ -491,13 +491,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     }
                     else
                     {
-                        DrawArrows(Enumerable.Range(0, n)
-                            .Select(i => 1f * i / (n - 1))
-                            .Select(t =>
-                            {
-                                spline.Evaluate(t, out var pos, out var tam, out var up);
-                                return (Vector3)pos;
-                            }), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                        var points = Enumerable.Range(0, n)
+                             .Select(i => 1f * i / (n - 1))
+                             .Select(t =>
+                             {
+                                 spline.Evaluate(t, out var pos, out var tam, out var up);
+                                 var n = new Vector3(tam.z, 0f, -tam.x).normalized;
+                                 if (n.x > 0)
+                                     n = -n;
+                                 return new { pos = (Vector3)pos, n };
+                             }).ToList();
+                        DrawArrows(points.Select(p => p.pos), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                        DrawArrows(points.Select(p => p.pos + 0.5f * p.n * width), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
+                        DrawArrows(points.Select(p => p.pos - 0.5f * p.n * width), false, color: roadOp.showRoadGroup.color, arrowSize: 1f);
                     }
                 }
                 else

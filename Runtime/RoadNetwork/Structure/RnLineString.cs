@@ -273,6 +273,12 @@ namespace PLATEAU.RoadNetwork.Structure
             return Create(Points, false);
         }
 
+        /// <summary>
+        /// ポイントの入れ替え
+        /// </summary>
+        /// <param name="oldPoint"></param>
+        /// <param name="newPoint"></param>
+        /// <returns></returns>
         public int ReplacePoint(RnPoint oldPoint, RnPoint newPoint)
         {
             var ret = 0;
@@ -428,6 +434,51 @@ namespace PLATEAU.RoadNetwork.Structure
                     yield return (v, item.i + t1);
                 }
             }
+        }
+
+        /// <summary>
+        /// 点vに最も近いself上の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <param name="nearest"></param>
+        /// <param name="pointIndex"></param>
+        /// <param name="distance"></param>
+        public static void GetNearestPoint(this RnLineString self, Vector3 v, out Vector3 nearest, out float pointIndex, out float distance)
+        {
+            nearest = Vector3.zero;
+            distance = float.MaxValue;
+            pointIndex = -1f;
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var segment = new LineSegment3D(self[i], self[i + 1]);
+                var p = segment.GetNearestPoint(v, out var distanceFromStart);
+                var d = (p - v).sqrMagnitude;
+                if (d < distance)
+                {
+                    nearest = p;
+                    distance = d;
+                    pointIndex = i + distanceFromStart / segment.Magnitude;
+                }
+            }
+        }
+
+        /// <summary>
+        /// floatのindexを指定して線分上の点を取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static Vector3 GetLerpPoint(this RnLineString self, float index)
+        {
+            var i1 = (int)index;
+            var i2 = i1 + 1;
+            if (i2 >= self.Count)
+            {
+                return self[^1];
+            }
+            var t = index - i1;
+            return Vector3.Lerp(self[i1], self[i2], t);
         }
     }
 }
