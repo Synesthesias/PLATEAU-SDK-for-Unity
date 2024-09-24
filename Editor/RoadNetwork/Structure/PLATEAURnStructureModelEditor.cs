@@ -4,7 +4,9 @@ using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Editor.RoadNetwork.Structure
 {
@@ -87,6 +89,21 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             if (GUILayout.Button("RnModel Debug Editor"))
                 RnModelDebugEditorWindow.OpenWindow(new RnModelInstanceHelper(obj), true);
+        }
+
+        // https://docs.unity3d.com/ja/2020.3/ScriptReference/InitializeOnLoadMethodAttribute.html
+        [InitializeOnLoadMethod]
+        public static void RegisterEditorCallbacks()
+        {
+            // Scene保存時にPLATEAURnStructureModelのシリアライズを行う
+            // https://docs.unity3d.com/ScriptReference/SceneManagement.EditorSceneManager-sceneSaving.html
+            EditorSceneManager.sceneSaving += OnSceneSaving;
+        }
+
+        private static void OnSceneSaving(Scene scene, string path)
+        {
+            // Scene保存時にPLATEAURnStructureModelのシリアライズを行う
+            PLATEAURnStructureModel.OnSceneSaving(scene, path);
         }
     }
 }
