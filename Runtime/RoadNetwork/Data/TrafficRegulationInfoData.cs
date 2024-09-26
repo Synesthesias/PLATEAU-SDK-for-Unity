@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,28 +96,13 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public List<List<int>> PhaseTimeSet { get; set; }
 
-        /// <summary>
-        /// オフセットタイプ
-        /// 0:相対　1:絶対
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public List<int> OffsetTypes { get; set; }
 
         /// <summary>
-        /// オフセット値
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public List<int> Offsets { get; set; }
-
-        /// <summary>
-        /// 制御パターン開始時刻
+        /// 整合性の確認
+        /// 未実装
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public List<DateTime> StartOffsets { get; set; }
-
         public static bool IsValid(RnDataTrafficLightController data)
         {
             //データ数が一致しているか
@@ -125,6 +111,9 @@ namespace PLATEAU.RoadNetwork.Data
         }
     }
 
+    /// <summary>
+    /// 信号灯器
+    /// </summary>
     [System.Serializable]
     public class RnDataTrafficLight : IPrimitiveData
     {
@@ -174,12 +163,40 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataTrafficLightController> Parent { get; set; }
+
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public List<RnID<RnDataTrafficSignalPhase>> Phases { get; set; }
 
+        /// <summary>
+        /// オフセット値
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public float OffsetSeconds { get; set; }
+
+        /// <summary>
+        /// オフセットタイプ
+        /// 0:相対　1:絶対
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public int OffsetType { get; set; }
+
+        /// <summary>
+        /// 制御パターン開始時刻
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public DateTime StartOffsets { get; set; }
+
     }
 
+    /// <summary>
+    /// フェーズ
+    /// </summary>
     [System.Serializable]
     public class RnDataTrafficSignalPhase : IPrimitiveData
     {
@@ -199,6 +216,9 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public int Order { get; set; }
 
+        /// <summary>
+        /// フェーズの時間
+        /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public float Split { get; set; }
