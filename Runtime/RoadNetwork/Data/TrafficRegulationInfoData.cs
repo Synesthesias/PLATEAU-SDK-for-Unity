@@ -48,6 +48,14 @@ namespace PLATEAU.RoadNetwork.Data
     //    public RnID<RnDataLineString> yields;
     //}
 
+    public class RnDataTrafficAccessHelper
+    {
+
+    }
+
+    /// <summary>
+    /// 信号制御器
+    /// </summary>
     [System.Serializable]
     public class RnDataTrafficLightController : IPrimitiveData
     {
@@ -87,15 +95,6 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public List<int> CycleTime { get; set; }
-
-        /// <summary>
-        /// フェーズ数（現示数）
-        /// 設定時のエラーチェック必須
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public List<List<int>> PhaseTimeSet { get; set; }
-
 
         /// <summary>
         /// 整合性の確認
