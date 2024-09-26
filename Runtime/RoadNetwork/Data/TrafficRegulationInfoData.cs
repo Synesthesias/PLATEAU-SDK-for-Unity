@@ -51,12 +51,6 @@ namespace PLATEAU.RoadNetwork.Data
     [System.Serializable]
     public class RnDataTrafficLightController : IPrimitiveData
     {
-        //// #TODO : 消える予定
-        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember]
-        //public string MyId { get; set; }
-
         /// <summary>
         /// 対応している交差点
         /// </summary>
@@ -123,12 +117,6 @@ namespace PLATEAU.RoadNetwork.Data
     [System.Serializable]
     public class RnDataTrafficLight : IPrimitiveData
     {
-        //// #TODO : 消える予定
-        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember]
-        //public string MyId { get; set; }
-
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataTrafficLightController> Parent { get; set; }
@@ -206,14 +194,6 @@ namespace PLATEAU.RoadNetwork.Data
     [System.Serializable]
     public class RnDataTrafficSignalPhase : IPrimitiveData
     {
-        //// #TODO : 消える予定
-        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember]
-        //public string MyId { get; set; }
-
-        //public RnID<RnDataTrafficLightController> ParentController { get; set; }
-
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataTrafficSignalPattern> Parent { get; set; }
