@@ -8,6 +8,12 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
+    public enum OffsetRelationType : int
+    {
+        Relative = 0,
+        Absolute = 1,
+    }
+
     /// <summary>
     /// 車両タイプ
     /// </summary>
@@ -125,7 +131,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnID< RnDataTrafficLightController> Parent { get; set; }
+        public RnID<RnDataTrafficLightController> Parent { get; set; }
 
         /// <summary>
         /// 設置されている道路のID
@@ -181,7 +187,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public int OffsetType { get; set; }
+        public OffsetRelationType OffsetType { get; set; }
 
         /// <summary>
         /// 制御パターン開始時刻
@@ -343,4 +349,4 @@ namespace PLATEAU.RoadNetwork.Data
     //        WHITE = 3,
     //    }
     //}
-}
+//}
