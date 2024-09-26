@@ -163,7 +163,7 @@ namespace PLATEAU.RoadNetwork.Data
         public List<RnID<RnDataTrafficSignalPhase>> Phases { get; set; }
 
         /// <summary>
-        /// オフセット値
+        /// オフセット値 秒数
         /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
@@ -203,7 +203,7 @@ namespace PLATEAU.RoadNetwork.Data
         public int Order { get; set; }
 
         /// <summary>
-        /// フェーズの時間
+        /// フェーズの時間 秒数
         /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
