@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PlasticPipe;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using System;
@@ -8,6 +9,10 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
+    /// <summary>
+    /// オフセット値の参照方法
+    /// 相対 or 絶対
+    /// </summary>
     public enum OffsetRelationType : int
     {
         Relative = 0,
@@ -27,10 +32,75 @@ namespace PLATEAU.RoadNetwork.Data
 
         Error = 0xfffffff
     }
+   
+    /// <summary>
+    /// 信号制御器に関わるデータをまとめた構造体
+    /// </summary>
+    public struct RnTraficLightDataSet
+    {
+        public RnTraficLightDataSet(
+            IReadOnlyCollection<RnDataTrafficLightController> traffics,
+            IReadOnlyCollection<RnDataTrafficLight> lights,
+            IReadOnlyCollection<RnDataTrafficSignalPattern> signalPatterns,
+            IReadOnlyCollection<RnDataTrafficSignalPhase> signalPhases)
+        {
+            Controllers = traffics;
+            Lights = lights;
+            SignalPatterns = signalPatterns;
+            SignalPhases = signalPhases;
+        }
 
+        public IReadOnlyCollection<RnDataTrafficLightController> Controllers { get; private set; }
+        public IReadOnlyCollection<RnDataTrafficLight> Lights { get; private set; }
+        public IReadOnlyCollection<RnDataTrafficSignalPattern> SignalPatterns { get; private set; }
+        public IReadOnlyCollection<RnDataTrafficSignalPhase> SignalPhases { get; private set; }
+
+        /// <summary>
+        /// 整合性のチェック
+        /// </summary>
+        /// <returns></returns>
+        public bool IsValid()
+        {
+            // 整合性のチェック
+            if (Controllers == null || Lights == null || SignalPatterns == null || SignalPhases == null)
+            {
+                Debug.LogError("traffics, signalPatterns, signalPhases is null");
+                return false;
+            }
+
+            //...
+            bool isSuccess = false;
+            foreach (var controller in Controllers)
+            {
+                isSuccess = RnDataTrafficLightController.IsValid(controller);
+                if (!isSuccess)
+                {
+                    Debug.LogError("TrafficSignalLightController is invalid");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// データ参照をしやすくするための 
+    /// </summary>
     public class RnDataTrafficAccessHelper
     {
-
+        /// <summary>
+        /// サイクル長を計算
+        /// 信号制御器が持つパターンをすべて実行した時の長さ
+        /// </summary>
+        /// <param name="dataSet"></param>
+        /// <param name="controller"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        float CalcCycleTime(in RnTraficLightDataSet dataSet, RnDataTrafficLightController controller)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

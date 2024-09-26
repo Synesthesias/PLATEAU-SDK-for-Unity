@@ -20,31 +20,15 @@ namespace PLATEAU.RoadNetwork.Data
         /// </summary>
         /// <param name="traffics"></param>
         /// <returns></returns>
-        public bool SetTrafficSignalLightController(
-            IReadOnlyCollection<RnDataTrafficLightController> traffics,
-            IReadOnlyCollection<RnDataTrafficLight> lights,
-            IReadOnlyCollection<RnDataTrafficSignalPattern> signalPatterns,
-            IReadOnlyCollection<RnDataTrafficSignalPhase> signalPhases)
+        public bool SetTrafficSignalLightController(in RnTraficLightDataSet dataSet)
         {
             Debug.Log("Called SetTrafficSignalLightController()");
 
-            // 整合性のチェック
-            if (traffics == null || lights == null || signalPatterns == null || signalPhases == null)
+            var isSuc = dataSet.IsValid();
+            if (!isSuc)
             {
-                Debug.LogError("traffics, signalPatterns, signalPhases is null");
+                Debug.LogError("Invalid data");
                 return false;
-            }
-
-            //...
-            bool isSuccess = false;
-            foreach (var traffic in traffics)
-            {
-                isSuccess = RnDataTrafficLightController.IsValid(traffic);
-                if (!isSuccess)
-                {
-                    Debug.LogError("TrafficSignalLightController is invalid");
-                    return false;
-                }
             }
             return true;
         }
