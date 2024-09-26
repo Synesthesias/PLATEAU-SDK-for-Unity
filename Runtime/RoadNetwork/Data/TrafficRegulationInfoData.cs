@@ -7,6 +7,20 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
+    /// <summary>
+    /// 車両タイプ
+    /// </summary>
+    public enum VehicleType : int
+    {
+        Undefind = 0,
+        // 小型車両
+        Smarll = 1 << 0,
+        // 大型車両
+        Large = 1 << 1,
+
+        Error = 0xfffffff
+    }
+
     ///// <summary>
     ///// 交通規制情報
     ///// </summary>
@@ -191,10 +205,11 @@ namespace PLATEAU.RoadNetwork.Data
 
         /// <summary>
         /// 進入可能車種規制マスク
+        /// VehicleTypeを参照
         /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public int VehicleTypeMask { get; set; }
+        public int EnterableVehicleTypeMask { get; set; }
 
         [field: SerializeField]
         [RoadNetworkSerializeMember]
