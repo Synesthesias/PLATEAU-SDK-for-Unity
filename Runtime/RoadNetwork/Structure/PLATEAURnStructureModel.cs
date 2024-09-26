@@ -25,6 +25,19 @@ namespace PLATEAU.RoadNetwork.Structure
             RoadNetwork.Deserialize(storage);
         }
 
+        /// <summary>
+        /// 道路ネットワークのデータを設定するためのクラスを取得する
+        /// </summary>
+        /// <returns></returns>
+        public RoadNetworkDataSetter GetRoadNetworkDataSetter()
+        {
+            return new RoadNetworkDataSetter(storage);
+        }
+
+        /// <summary>
+        /// 道路ネットワークのデータを取得するためのクラスを取得する
+        /// </summary>
+        /// <returns></returns>
         public RoadNetworkDataGetter GetRoadNetworkDataGetter()
         {
             return new RoadNetworkDataGetter(storage);

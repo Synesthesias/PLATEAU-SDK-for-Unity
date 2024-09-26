@@ -7,163 +7,305 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
-    /// <summary>
-    /// 交通規制情報
-    /// </summary>
-    [Serializable, RoadNetworkSerializeData(typeof(TrafficRegulationInfoData))]
-    public class TrafficRegulationInfoData : IPrimitiveData
-    {
-        /// <summary>
-        /// 停止線
-        /// </summary>
-        public StopLine stopLine;
-        /// <summary>
-        /// 速度制限
-        /// </summary>
-        public float speedLimit;
-        /// <summary>
-        /// 優先道路
-        /// </summary>
-        public RnID<RnDataLineString> yields;
-    }
+    ///// <summary>
+    ///// 交通規制情報
+    ///// </summary>
+    //[Serializable, RoadNetworkSerializeData(typeof(TrafficRegulationInfoData))]
+    //public class TrafficRegulationInfoData : IPrimitiveData
+    //{
+    //    /// <summary>
+    //    /// 停止線
+    //    /// </summary>
+    //    public StopLine stopLine;
+    //    /// <summary>
+    //    /// 速度制限
+    //    /// </summary>
+    //    public float speedLimit;
+    //    /// <summary>
+    //    /// 優先道路
+    //    /// </summary>
+    //    public RnID<RnDataLineString> yields;
+    //}
 
     [System.Serializable]
     public class RnDataTrafficLightController : IPrimitiveData
     {
-        ////// #TODO : 消える予定
-        ////// 自分自身を表すId
-        ////[field: SerializeField]
-        ////public RnID<TrafficLightController> MyId { get; set; }
-
+        //// #TODO : 消える予定
+        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
         //[field: SerializeField]
         //[RoadNetworkSerializeMember]
-        //public RnID<RnDataNode> Parent { get; set; }
+        //public string MyId { get; set; }
 
-        //// 連結しているレーン(上流)
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.NextLanes))]
-        //public List<RnID<RnDataLane>> NextLanes { get; set; } = new List<RnID<RnDataLane>>();
+        /// <summary>
+        /// 対応している交差点
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataRoadBase> Parent { get; set; }
 
-        //// 連結しているレーン(下流)
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.PrevLanes))]
-        //public List<RnID<RnDataLane>> PrevLanes { get; set; } = new List<RnID<RnDataLane>>();
+        /// <summary>
+        /// 対応する信号機
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataTrafficLight>> TrafficLights { get; set; }
 
-        //// 境界線(下流)
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.PrevBorder))]
-        //public RnID<RnDataWay> PrevBorder { get; set; }
+        /// <summary>
+        /// オフセットの基準となる信号機
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataTrafficLight> OffsetTrafficLight { get; set; }
 
-        //// 境界線(上流)
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.NextBorder))]
-        //public RnID<RnDataWay> NextBorder { get; set; }
+        /// <summary>
+        /// 制御バターン
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataTrafficSignalPattern>> SignalPatterns { get; set; }
 
-        //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.LeftWay))]
-        //public RnID<RnDataWay> LeftWay { get; set; }
+        /// <summary>
+        /// サイクル長(制御パターン)
+        /// RnDataTrafficSignalPhaseのSplitの合計値
+        /// 設定時のエラーチェック必須
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<int> CycleTime { get; set; }
 
+        /// <summary>
+        /// フェーズ数（現示数）
+        /// 設定時のエラーチェック必須
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<List<int>> PhaseTimeSet { get; set; }
+
+        /// <summary>
+        /// オフセットタイプ
+        /// 0:相対　1:絶対
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<int> OffsetTypes { get; set; }
+
+        /// <summary>
+        /// オフセット値
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<int> Offsets { get; set; }
+
+        /// <summary>
+        /// 制御パターン開始時刻
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public List<DateTime> StartOffsets { get; set; }
+
+        public static bool IsValid(RnDataTrafficLightController data)
+        {
+            //データ数が一致しているか
+            //データ数値が正常か
+            return true;
+        }
+    }
+
+    [System.Serializable]
+    public class RnDataTrafficLight : IPrimitiveData
+    {
+        //// #TODO : 消える予定
+        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
         //[field: SerializeField]
-        //[RoadNetworkSerializeMember(nameof(RnLane.RightWay))]
-        //public RnID<RnDataWay> RightWay { get; set; }
+        //[RoadNetworkSerializeMember]
+        //public string MyId { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID< RnDataTrafficLightController> Parent { get; set; }
+
+        /// <summary>
+        /// 設置されている道路のID
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataRoad> RoadId { get; set; }
+
+        /// <summary>
+        /// 規制対象レーン種別
+        /// 注意　SDKのデータのどれに当たるか調査中
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public string LaneType { get; set; }
+
+        /// <summary>
+        /// 設置位置
+        /// 停止からの距離 
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public float Distance { get; set; }
 
     }
 
     /// <summary>
-    /// 停止線
+    /// 信号制御器のパターン
+    /// フェーズを所持
+    /// 実装途中
     /// </summary>
     [System.Serializable]
-    public class StopLine
+    public class RnDataTrafficSignalPattern : IPrimitiveData
     {
-        public RnID<RnDataLineString> line;
-        public TrafficLight trafficLight;
-        public bool bHasStopSign;
-    }
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataTrafficLightController> Parent { get; set; }
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataTrafficSignalPhase>> Phases { get; set; }
 
-    /// <summary>
-    /// 信号機の電球（概念）
-    /// 今の信号機は何色ですかと聞かれたらこれを返す
-    /// </summary>
-    [System.Serializable]
-    public class TrafficLight
-    {
-        public LightBulb[] LightBulbs => lightBulbs;
-        [SerializeField] private LightBulb[] lightBulbs;
     }
 
     [System.Serializable]
-    public class RnDataTrafficSignalStep
+    public class RnDataTrafficSignalPhase : IPrimitiveData
     {
-        public RnID<RnDataTrafficLightController> parent;
-        public int paternID;
-        public int phaseID;
-        public int allowVehicleTypeMask;
-        public List<RnID<RnDataRoad>> linkAtBlue;
-        public List<RnID<RnDataRoad>> linkAtYellow;
-        public List<RnID<RnDataRoad>> linkAtRed;
+        //// #TODO : 消える予定
+        //// 自分自身を表すId　シミュレーターからのIDを一応受け取る
+        //[field: SerializeField]
+        //[RoadNetworkSerializeMember]
+        //public string MyId { get; set; }
+
+        //public RnID<RnDataTrafficLightController> ParentController { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataTrafficSignalPattern> Parent { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public int Order { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public float Split { get; set; }
+
+        /// <summary>
+        /// 進入可能車種規制マスク
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public int VehicleTypeMask { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataRoad>> BlueRoadPairs { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataRoad>> YellowRoadPairs { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataRoad>> RedRoadPairs { get; set; }
+
     }
+}
+
+    ///// <summary>
+    ///// 停止線
+    ///// </summary>
+    //[System.Serializable]
+    //public class StopLine
+    //{
+    //    public RnID<RnDataLineString> line;
+    //    public TrafficLight trafficLight;
+    //    public bool bHasStopSign;
+    //}
+
+    ///// <summary>
+    ///// 信号機の電球（概念）
+    ///// 今の信号機は何色ですかと聞かれたらこれを返す
+    ///// </summary>
+    //[System.Serializable]
+    //public class TrafficLight
+    //{
+    //    public LightBulb[] LightBulbs => lightBulbs;
+    //    [SerializeField] private LightBulb[] lightBulbs;
+    //}
+
+    //[System.Serializable]
+    //public class RnDataTrafficSignalStep
+    //{
+    //    public RnID<RnDataTrafficLightController> parent;
+    //    public int paternID;
+    //    public int phaseID;
+    //    public int allowVehicleTypeMask;
+    //    public List<RnID<RnDataRoad>> linkAtBlue;
+    //    public List<RnID<RnDataRoad>> linkAtYellow;
+    //    public List<RnID<RnDataRoad>> linkAtRed;
+    //}
 
 
-    /// <summary>
-    /// 信号機の電球
-    /// </summary>
-    [System.Serializable]
-    public class LightBulb
-    {
-        public BulbType Type => type;
+    ///// <summary>
+    ///// 信号機の電球
+    ///// </summary>
+    //[System.Serializable]
+    //public class LightBulb
+    //{
+    //    public BulbType Type => type;
 
-        public BulbColor Color => color;
+    //    public BulbColor Color => color;
 
-        public BulbStatus Status => status;
+    //    public BulbStatus Status => status;
 
-        [SerializeField] private BulbType type;
-        [SerializeField] private BulbColor color;
-        [SerializeField] private BulbStatus status;
+    //    [SerializeField] private BulbType type;
+    //    [SerializeField] private BulbColor color;
+    //    [SerializeField] private BulbStatus status;
 
-        public LightBulb(BulbType type, BulbColor color, BulbStatus status)
-        {
-            this.type = type;
-            this.color = color;
-            this.status = status;
-        }
+    //    public LightBulb(BulbType type, BulbColor color, BulbStatus status)
+    //    {
+    //        this.type = type;
+    //        this.color = color;
+    //        this.status = status;
+    //    }
 
-        /// <summary>
-        /// Type of each bulb.
-        /// </summary>
-        public enum BulbType
-        {
-            ANY_CIRCLE_BULB = 0,
-            RED_BULB = 1,
-            YELLOW_BULB = 2,
-            GREEN_BULB = 3,
-            LEFT_ARROW_BULB = 4,
-            RIGHT_ARROW_BULB = 5,
-            UP_ARROW_BULB = 6,
-            DOWN_ARROW_BULB = 7,
-            DOWN_LEFT_ARROW_BULB = 8,
-            DOWN_RIGHT_ARROW_BULB = 9,
-            CROSS_BULB = 10,
-        }
+    //    /// <summary>
+    //    /// Type of each bulb.
+    //    /// </summary>
+    //    public enum BulbType
+    //    {
+    //        ANY_CIRCLE_BULB = 0,
+    //        RED_BULB = 1,
+    //        YELLOW_BULB = 2,
+    //        GREEN_BULB = 3,
+    //        LEFT_ARROW_BULB = 4,
+    //        RIGHT_ARROW_BULB = 5,
+    //        UP_ARROW_BULB = 6,
+    //        DOWN_ARROW_BULB = 7,
+    //        DOWN_LEFT_ARROW_BULB = 8,
+    //        DOWN_RIGHT_ARROW_BULB = 9,
+    //        CROSS_BULB = 10,
+    //    }
 
-        /// <summary>
-        /// Bulb lighting status.
-        /// </summary>
-        public enum BulbStatus
-        {
-            SOLID_OFF = 0,        // Lights off.
-            SOLID_ON = 1,        // Lights on.
-            FLASHING = 2,        // Lights on every flashSec.
-        }
+    //    /// <summary>
+    //    /// Bulb lighting status.
+    //    /// </summary>
+    //    public enum BulbStatus
+    //    {
+    //        SOLID_OFF = 0,        // Lights off.
+    //        SOLID_ON = 1,        // Lights on.
+    //        FLASHING = 2,        // Lights on every flashSec.
+    //    }
 
-        /// <summary>
-        /// Bulb lighting color.
-        /// </summary>
-        public enum BulbColor
-        {
-            RED = 0,
-            YELLOW = 1,
-            GREEN = 2,
-            WHITE = 3,
-        }
-    }
+    //    /// <summary>
+    //    /// Bulb lighting color.
+    //    /// </summary>
+    //    public enum BulbColor
+    //    {
+    //        RED = 0,
+    //        YELLOW = 1,
+    //        GREEN = 2,
+    //        WHITE = 3,
+    //    }
+    //}
 }
