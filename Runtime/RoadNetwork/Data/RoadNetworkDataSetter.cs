@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
@@ -20,7 +21,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// </summary>
         /// <param name="traffics"></param>
         /// <returns></returns>
-        public bool SetTrafficSignalLightController(in RnTraficLightDataSet dataSet)
+        public bool SetTrafficSignalLightController(in RnTrafficLightDataSet dataSet)
         {
             Debug.Log("Called SetTrafficSignalLightController()");
 
@@ -30,6 +31,18 @@ namespace PLATEAU.RoadNetwork.Data
                 Debug.LogError("Invalid data");
                 return false;
             }
+
+            // 既存データをクリア
+            primStorage.TrafficLightControllers.ClearAll();
+            primStorage.TrafficLights.ClearAll();
+            primStorage.TrafficSignalPatterns.ClearAll();
+            primStorage.TrafficSignalPhases.ClearAll();
+
+            primStorage.TrafficLightControllers.WriteNew(dataSet.Controllers.ToArray());
+            primStorage.TrafficLights.WriteNew(dataSet.Lights.ToArray());
+            primStorage.TrafficSignalPatterns.WriteNew(dataSet.SignalPatterns.ToArray());
+            primStorage.TrafficSignalPhases.WriteNew(dataSet.SignalPhases.ToArray());
+
             return true;
         }
 
