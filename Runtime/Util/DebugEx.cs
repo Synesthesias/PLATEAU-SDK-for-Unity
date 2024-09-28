@@ -1,5 +1,4 @@
-﻿using PLATEAU.Native;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -499,6 +498,16 @@ namespace PLATEAU.Util
         {
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
                 DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
+
+        /// <summary>
+        /// Debug.Logのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void Log(object message)
+        {
+            Debug.Log(message);
         }
     }
 }

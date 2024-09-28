@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
     public class PLATEAUGeoGraphTesterLineString : MonoBehaviour
     {
         public bool visible = true;
+        public bool visibleNormal = false;
         public Color color = Color.white;
         public AxisPlane axis = AxisPlane.Xy;
         [Serializable]
@@ -120,6 +120,7 @@ namespace PLATEAU.RoadNetwork.Tester
                 p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList();
             foreach (var road in roads)
             {
+                var isCrossed = false;
                 foreach (var segment in edges)
                 {
                     var res = road.GetLaneIntersections(segment);
@@ -129,15 +130,16 @@ namespace PLATEAU.RoadNetwork.Tester
                     {
                         DebugEx.DrawSphere(v.v, 0.3f, Color.red);
                         DebugEx.DrawString($"{v.index}", v.v);
+                        isCrossed = true;
                     }
 
-                    if (exec)
+                    if (exec && isCrossed)
                     {
                         target.RoadNetwork.SliceRoadHorizontal(road, segment);
                     }
                 }
 
-                if (exec2 && edges.Count >= 3)
+                if (exec2 && edges.Count >= 3 && isCrossed)
                 {
                     target.RoadNetwork.SliceRoadHorizontalAndConvert2Intersection(road, edges[0], edges[2]);
                 }
@@ -153,6 +155,21 @@ namespace PLATEAU.RoadNetwork.Tester
             if (visible)
             {
                 DebugEx.DrawArrows(GetVertices().Select(v => v.ToVector3(axis)), color: color);
+
+                if (visibleNormal)
+                {
+                    var vertices = GetVertices3D();
+                    for (var i = 0; i < vertices.Count - 1; i++)
+                    {
+                        var v = vertices[i].PutNormal(axis, 0);
+                        var next = vertices[(i + 1) % vertices.Count].PutNormal(axis, 0);
+                        var p = Vector3.Lerp(v, next, 0.5f);
+
+                        var a = axis.NormalVector();
+                        var n = Vector3.Cross(a, next - v).normalized;
+                        DebugEx.DrawArrow(p, p + n, bodyColor: Color.blue);
+                    }
+                }
             }
 
             EdgeBorderTest(edgeBorderTest);

@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
+    [System.Flags]
+    public enum RnSideWalkWayTypeMask
+    {
+        None = 0,
+        Outside = 1 << 0,
+        Inside = 1 << 1,
+        StartEdge = 1 << 2,
+        EndEdge = 1 << 3,
+    }
+
     public class RnSideWalk : ARnParts<RnSideWalk>
     {
         //----------------------------------
@@ -70,6 +80,11 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// Inside/OutsideのWayが両方ともValidかどうか. (Edgeは角の道だとnullの場合もあり得るのでチェックしない)
+        /// </summary>
+        public bool IsValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault();
+
         public RnSideWalk() { }
 
         private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay)
@@ -81,14 +96,28 @@ namespace PLATEAU.RoadNetwork.Structure
             this.endEdgeWay = endEdgeWay;
         }
 
+        public RnSideWalkWayTypeMask GetValidWayTypeMask()
+        {
+            var mask = RnSideWalkWayTypeMask.None;
+            if (outsideWay != null)
+                mask |= RnSideWalkWayTypeMask.Outside;
+            if (insideWay != null)
+                mask |= RnSideWalkWayTypeMask.Inside;
+            if (startEdgeWay != null)
+                mask |= RnSideWalkWayTypeMask.StartEdge;
+            if (endEdgeWay != null)
+                mask |= RnSideWalkWayTypeMask.EndEdge;
+            return mask;
+        }
+
         /// <summary>
         /// 親情報の再設定
         /// </summary>
         /// <param name="parent"></param>
-        public void SetParent(RnRoadBase parent)
+        public void ChangeParent(RnRoadBase parent)
         {
-            if (parent != null)
-                parent.RemoveSideWalk(this);
+            // 以前の親からは削除する
+            parent?.RemoveSideWalk(this);
             this.parentRoad = parent;
         }
 
@@ -113,8 +142,6 @@ namespace PLATEAU.RoadNetwork.Structure
             this.startEdgeWay = startEdgeWay;
             this.endEdgeWay = endEdgeWay;
         }
-
-
 
         /// <summary>
         /// 歩道作成

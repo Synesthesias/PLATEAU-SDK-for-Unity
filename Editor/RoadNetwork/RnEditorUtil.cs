@@ -1,7 +1,4 @@
-﻿using CodiceApp.EventTracking.Plastic;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Structure;
-using System;
+﻿using PLATEAU.RoadNetwork;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -51,6 +48,47 @@ namespace PLATEAU.Editor.RoadNetwork
                 targets.Add(obj);
             else
                 targets.Remove(obj);
+        }
+
+        /// <summary>
+        /// 選択/非選択トグル
+        /// selectedObjectsに入っていると選択/そうじゃない場合は非選択
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="selectedObjects"></param>
+        /// <param name="obj"></param>
+        public static bool SelectToggle(string label, HashSet<object> selectedObjects, object obj)
+        {
+            var isNowAdd = selectedObjects.Contains(obj);
+            var isNextAdd = EditorGUILayout.Toggle(label, isNowAdd);
+            if (isNowAdd == isNextAdd)
+                return isNextAdd;
+
+            if (isNextAdd)
+                selectedObjects.Add(obj);
+            else
+                selectedObjects.Remove(obj);
+            return isNextAdd;
+        }
+
+        /// <summary>
+        /// 表示/非表示トグル
+        /// inVisibleObjectsに入っていると非表示/そうじゃない場合は表示
+        /// </summary>
+        /// <param name="inVisibleObjects"></param>
+        /// <param name="obj"></param>
+        /// <param name="label"></param>
+        public static bool VisibleToggle(HashSet<object> inVisibleObjects, object obj, string label = "visible")
+        {
+            var isNowVisible = inVisibleObjects.Contains(obj) == false;
+            var isNextVisible = EditorGUILayout.Toggle(label, isNowVisible);
+            if (isNowVisible == isNextVisible)
+                return isNextVisible;
+            if (isNextVisible)
+                inVisibleObjects.Remove(obj);
+            else
+                inVisibleObjects.Add(obj);
+            return isNextVisible;
         }
     }
 }

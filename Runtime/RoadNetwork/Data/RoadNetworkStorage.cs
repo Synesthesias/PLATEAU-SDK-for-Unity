@@ -101,15 +101,15 @@ namespace PLATEAU.RoadNetwork.Data
         // 大きくメモリを確保してそこから切り出す形に修正する
         // Listで確保しているストレージは配列にして初期化処理、解放処理の最適化
 
-        public PrimitiveStorage<TrafficRegulationInfoData> RegulationCollection { get => regulationCollection; }
+        //public PrimitiveStorage<TrafficRegulationInfoData> RegulationCollection { get => regulationCollection; }
 
         public PrimitiveStorage<RnDataPoint> Points { get => points; }
         public PrimitiveStorage<RnDataLineString> LineStrings { get => lineStrings; }
 
 
-        [field: SerializeField]
-        public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
-            new PrimitiveStorage<TrafficRegulationInfoData>();
+        //[field: SerializeField]
+        //public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
+        //    new PrimitiveStorage<TrafficRegulationInfoData>();
 
         [field: SerializeField] private PrimitiveStorage<RnDataPoint> points = new PrimitiveStorage<RnDataPoint>();
 
