@@ -36,9 +36,9 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// 信号制御器に関わるデータをまとめた構造体
     /// </summary>
-    public struct RnTraficLightDataSet
+    public struct RnTrafficLightDataSet
     {
-        public RnTraficLightDataSet(
+        public RnTrafficLightDataSet(
             IReadOnlyCollection<RnDataTrafficLightController> traffics,
             IReadOnlyCollection<RnDataTrafficLight> lights,
             IReadOnlyCollection<RnDataTrafficSignalPattern> signalPatterns,
@@ -97,7 +97,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// <param name="controller"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        float CalcCycleTime(in RnTraficLightDataSet dataSet, RnDataTrafficLightController controller)
+        float CalcCycleTime(in RnTrafficLightDataSet dataSet, RnDataTrafficLightController controller)
         {
             throw new NotImplementedException();
         }
