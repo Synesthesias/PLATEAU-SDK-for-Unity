@@ -33,9 +33,9 @@ namespace PLATEAU.CityAdjust.NonLibData
                 if (mf == null) return NextSearchFlow.Continue;
                 var mesh = mf.sharedMesh;
                 if (mesh == null) return NextSearchFlow.Continue;
-                data.Add(trans, src.Get.ToArray(), new ContourMesh(mesh.vertices, mesh.triangles));
+                data.Add(trans, src.Get.ToArray(), new ContourMesh(mesh.vertices, mesh.triangles, mesh.uv4));
                 
-                return NextSearchFlow.Continue;
+                return NextSearchFlow.Continue; 
             });
         }
 

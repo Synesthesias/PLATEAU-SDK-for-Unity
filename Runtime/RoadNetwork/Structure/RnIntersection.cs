@@ -145,9 +145,9 @@ namespace PLATEAU.RoadNetwork.Structure
                     return RnFlowTypeMask.Both;
 
                 var ret = RnFlowTypeMask.Empty;
-                if (road.GetConnectedLanes(Border).Any(l => l.NextBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Inbound;
-                if (road.GetConnectedLanes(Border).Any(l => l.PrevBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.PrevBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Outbound;
                 return ret;
             }
@@ -347,6 +347,21 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
+        /// <summary>
+        ///  隣接情報を差し替える(呼び出し注意)
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        public override void ReplaceNeighbor(RnRoadBase from, RnRoadBase to)
+        {
+            if (from == null)
+                return;
+            foreach (var e in Edges)
+            {
+                if (e.Road == from)
+                    e.Road = to;
+            }
+        }
 
 
         /// <summary>
@@ -370,6 +385,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 foreach (var other in edgeGroups)
                 {
                     if (other.IsBorder == false || eg == other)
+                        continue;
+
+                    // Uターンを許可しない場合
+                    if (eg.Key == other.Key && allowUTurn == false)
                         continue;
 
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);

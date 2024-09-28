@@ -22,11 +22,13 @@ namespace PLATEAU.CityAdjust.NonLibData
     {
         public Vector3[] vertices;
         public int[] triangles;
+        public Vector2[] uv4;
         
-        public ContourMesh(Vector3[] vertices, int[] triangles)
+        public ContourMesh(Vector3[] vertices, int[] triangles, Vector2[] uv4)
         {
             this.vertices = vertices;
             this.triangles = triangles;
+            this.uv4 = uv4;
         }
     }
 }

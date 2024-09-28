@@ -1422,7 +1422,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
                         // 同じものを格納済みかチェック
                         var isContain = false;
-                        foreach (var group in linkGroups) 
+                        foreach (var group in linkGroups)
                         {
                             var prev = group.LinkGroup.Ref.PrevIntersection;
                             var next = group.LinkGroup.Ref.NextIntersection;
@@ -1683,7 +1683,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // dummyのwayを表示する
                 RnWay dummyWay = null;
-                
+
                 var mouseDown = sceneViewEvBuf.MouseDown;
                 var mouseUp = sceneViewEvBuf.MouseUp;
                 if (mouseDown)
@@ -1710,12 +1710,12 @@ namespace PLATEAU.Editor.RoadNetwork
                                 // 内積を取ることでベクトルが同じ方向を向いているかを調べる
 
                                 var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
-                                var line = waySlideCalcCache.ClosestWay.Ref.IsReversed ? 
+                                var line = waySlideCalcCache.ClosestWay.Ref.IsReversed ?
                                     waySlideCalcCache.ClosestLine.VecB2A : waySlideCalcCache.ClosestLine.VecA2B;
                                 var wayRightVec = Vector3.Cross(vecCamera2Way, line);
                                 //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
 
-                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay; 
+                                var vecWay2Ray = waySlideCalcCache.ClosestPointOnRay - waySlideCalcCache.ClosestPointOnWay;
                                 var isRayOnRightSide = Vector3.Dot(wayRightVec, vecWay2Ray) > 0;
                                 //Debug.Log($"ray on right side : {isRayOnRightSide}");
 
@@ -1786,7 +1786,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     // gizmosの更新
                     gizmosSys.Update(
-                        system.SelectedRoadNetworkElement, 
+                        system.SelectedRoadNetworkElement,
                         waySlideCalcCache?.ClosestWay,
                         linkGroupEditorData,
                         dummyWay);
@@ -1912,7 +1912,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     return;
                 }
-                
+
                 const float radius = 2.0f;
                 foreach (var wayEditorData in wayEditorDataList)
                 {
