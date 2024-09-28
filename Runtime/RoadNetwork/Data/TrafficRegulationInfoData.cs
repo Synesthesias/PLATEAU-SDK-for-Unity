@@ -138,15 +138,6 @@ namespace PLATEAU.RoadNetwork.Data
         public List<RnID<RnDataTrafficSignalPattern>> SignalPatterns { get; set; }
 
         /// <summary>
-        /// サイクル長(制御パターン)
-        /// RnDataTrafficSignalPhaseのSplitの合計値
-        /// 設定時のエラーチェック必須
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public List<int> CycleTime { get; set; }
-
-        /// <summary>
         /// 整合性の確認
         /// 未実装
         /// </summary>
