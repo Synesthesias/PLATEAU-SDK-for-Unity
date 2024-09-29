@@ -25,10 +25,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public void Generate()
         {
-            var contours = new ContourGenerator().Generate(model);
-            var obj = new GameObject("RoadNetworkToMeshDebug");
-            var comp = obj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
-            comp.Init(contours);
+            var contours = new RnmContourGenerator().Generate(model);
+            foreach (var contour in contours)
+            {
+                var obj = new GameObject("RoadNetworkToMeshDebug");
+                var comp = obj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
+                comp.Init(contour);
+                var mesh = new ContourToMesh().Generate(contour);
+                var renderer = obj.AddComponent<MeshRenderer>();
+                var filter = obj.AddComponent<MeshFilter>();
+                filter.sharedMesh = mesh;
+            }
+            
         }
         
         

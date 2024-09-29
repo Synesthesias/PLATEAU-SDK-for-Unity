@@ -25,6 +25,23 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public int Count => vertices.Count;
         public Vector3 this[int index] => vertices[index];
         public void AddVertices(IEnumerable<Vector3> v) => vertices.AddRange(v);
+
+        /// <summary>時計回りならtrue、反時計回りならfalseを返します。 </summary>
+        public bool IsClockwise()
+        {
+            if (Count < 3) throw new ArgumentException("頂点数が足りません");
+            float sum = 0;
+            for (int i = 0; i < Count; i++)
+            {
+                var v1 = vertices[i];
+                var v2 = vertices[(i + 1) % Count];
+                sum += (v2.x - v1.x) * (v2.z + v1.z);
+            }
+
+            return sum > 0;
+        }
+
+        public void Reverse() => vertices.Reverse();
     }
 
     /// <summary> <see cref="RnmContour"/>を複数保持します。 </summary>
@@ -46,95 +63,37 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
 
 
-    /// <summary>
-    /// 複数の線を受け取り、それらの線をつないで多角形 <see cref="RnmContour"/> を形成します。
-    /// RnmはRoadNetworkToMeshの略です。
-    /// </summary>
-    public class RnmContourCalculator
+    /// <summary> 線1つに計算用のデータを付与したデータ構造です。 </summary>
+    public class RnmLine
     {
-        private List<RnmLine> lines = new ();
-
-        public void AddLine(IEnumerable<Vector3> line)
-        {
-            var lineArray = line.ToArray();
-            if (lineArray.Length < 2) return; // 計算の都合上、2点は必要
-            lines.Add(new RnmLine(lineArray));
-        }
-        
-        public void AddRangeLine(IEnumerable<IEnumerable<Vector3>> linesArg)
-        {
-            foreach (var line in linesArg)
-            {
-                AddLine(line);
-            }
-        }
-
-        public RnmContour Calculate()
-        {
-            var contour = new RnmContour();
-            // 最初の線を追加
-            var line = lines[0];
-            contour.AddVertices(line.Vertices);
-            line.IsProcessed = true;
-            bool lineDirectionLast = true; // 次に繋げるのが末尾方向ならtrue, 最初方向ならfalse
+        public Vector3[] Vertices { get; private set; }
+        public bool IsProcessed { get; set; } = false;
             
-            // 線の末尾について、もっとも近い点を探して繋いでいく
-            while (lines.Any(l => !l.IsProcessed))
-            {
-                var remaining = lines.Where(l => !l.IsProcessed).ToArray();
-                int minID = -1;
-                float minDist = float.MaxValue;
-                var v = lineDirectionLast ? line[^1] : line[0];
-                bool rConnectedDirectionLast = false;
-                for (int i = 0; i < remaining.Length; i++)
-                {
-                    var r = remaining[i];
-                    var distFirst = Vector3.Distance(v, r[0]);
-                    var distLast = Vector3.Distance(v, r[^1]);
-                    if (distFirst < minDist)
-                    {
-                        minDist = distFirst;
-                        minID = i;
-                        rConnectedDirectionLast = false;
-                    }
-                    if (distLast < minDist)
-                    {
-                        minDist = distLast;
-                        minID = i;
-                        rConnectedDirectionLast = true;
-                    }
-                }
-                var minLine = remaining[minID];
-                if (rConnectedDirectionLast)
-                {
-                    contour.AddVertices(minLine.Vertices.Reverse());
-                }
-                else
-                {
-                    contour.AddVertices(minLine.Vertices);
-                }
+        public RnmLine(IEnumerable<Vector3> vertices)
+        {
+            Vertices = vertices.ToArray();
+        }
+            
+        public Vector3 this[int index] => Vertices[index];
+        public int Count => Vertices.Length;
 
-                line = minLine;
-                minLine.IsProcessed = true;
-                lineDirectionLast = !rConnectedDirectionLast;
+        /// <summary> 線が一致するかどうかです。 </summary>
+        private bool IsSameWith(RnmLine other)
+        {
+            if (this.Count != other.Count) return false;
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (Vector3.Distance(this[i], other[i]) > 0.01f) return false;
             }
 
-            return contour;
+            return true;
         }
 
-        /// <summary> 線1つに計算用のデータを付与したデータ構造です。 </summary>
-        private class RnmLine
+        /// <summary> 線が一致する、または順番を逆転させたら一致する </summary>
+        public bool IsSameOrReverseWith(RnmLine other)
         {
-            public Vector3[] Vertices { get; }
-            public bool IsProcessed { get; set; } = false;
-            
-            public RnmLine(Vector3[] vertices)
-            {
-                Vertices = vertices;
-            }
-            
-            public Vector3 this[int index] => Vertices[index];
-            public int Count => Vertices.Length;
+            var reverse = new RnmLine(Vertices.Reverse());
+            return this.IsSameWith(other) || this.IsSameWith(reverse);
         }
     }
 }

@@ -19,12 +19,20 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             contours = contoursArg;
         }
 
+        public void Init(RnmContour contourArg)
+        {
+            var list = new RnmContourList();
+            list.Add(contourArg);
+            contours = list;
+        }
+
         private void OnDrawGizmos()
         {
             if (contours == null) return;
             
             foreach (var contour in contours)
             {
+                if (contour.Count == 0) continue;
                 for (int i = 0; i < contour.Count - 1; i++)
                 {
                     DrawArrow(contour[i], contour[i + 1]);
