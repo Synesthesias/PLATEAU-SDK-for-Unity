@@ -625,7 +625,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var edges = faces
                 .SelectMany(f => f.Edges)
                 .ToHashSet();
-            var res = GeoGraph2D.ComputeOutline2(
+            var res = GeoGraph2D.ComputeOutline(
                 vertices
                 , v => v.Position, AxisPlane.Xz
                 , v => v.Edges.Where(e => edges.Contains(e)).Select(e => e.GetOppositeVertex(v)).Where(n => n != null));
