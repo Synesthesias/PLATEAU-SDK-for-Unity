@@ -233,7 +233,7 @@ namespace PLATEAU.Util.GeoGraph
 
         /// <summary>
         /// 3次元のセル空間における, d近傍の距離を返す.
-        /// GetNeighborDistance3D(1)の場合は, 3*3*3の立方体の距離を返す( x,yzがそれぞれ -1~1の範囲)
+        /// GetNeighborDistance3D(1)の場合は, 3*3*3の立方体の距離を返す( x,y,zがそれぞれ -1~1の範囲)
         /// </summary>
         /// <param name="d"></param>
         /// <returns></returns>
@@ -258,7 +258,7 @@ namespace PLATEAU.Util.GeoGraph
 
         /// <summary>
         /// 2次元のセル空間における, d近傍の距離を返す.
-        /// GetNeighborDistance3D(1)の場合は, 3*3の正方形の距離を返す( x,yzがそれぞれ -1~1の範囲)
+        /// GetNeighborDistance2D(1)の場合は, 3*3の正方形の距離を返す( x,yがそれぞれ -1~1の範囲)
         /// </summary>
         /// <param name="d"></param>
         /// <returns></returns>

@@ -125,6 +125,86 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// Lod1の外形の頂点を隣接するLOD2以上のポリゴンの頂点に高さを考慮してマージする
+        /// 戻り値は削除された頂点
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="mergeCellSize"></param>
+        /// <param name="mergeCellLength"></param>
+        /// <param name="heightTolerance"></param>
+        public static HashSet<RVertex> AdjustLod1Height(this RGraph self, float mergeCellSize, int mergeCellLength,
+            float heightTolerance)
+        {
+            HashSet<RVertex> removed = new();
+            // 変換対象の頂点
+            HashSet<RVertex> targetVertices = new();
+            var table = new Dictionary<Vector2Int, HashSet<RVertex>>();
+            foreach (var f in self.Faces)
+            {
+                if (f.LodLevel == 1)
+                {
+                    // 2重実行対策. すでにLOD3の他の頂点にマージされている場合はスキップ
+                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() == 1));
+                }
+                else
+                {
+                    foreach (var v in f.CreateVertexSet())
+                    {
+                        var key = (v.Position / mergeCellSize).FloorToInt().Xz();
+                        table.GetValueOrCreate(key).Add(v);
+                    }
+                }
+            }
+
+            void Check()
+            {
+                var e = self.GetAllEdges().FirstOrDefault(e => e.Vertices.Any(v => v == null));
+                if (e != null)
+                {
+                    var hoge = 0;
+                }
+            }
+            Check();
+            var delta = GeoGraphEx.GetNeighborDistance2D(mergeCellLength);
+            var mergedCount = 0;
+            foreach (var p in targetVertices)
+            {
+                var key = (p.Position / mergeCellSize).FloorToInt().Xz();
+
+                RVertex nearest = null;
+                float minDistance = float.MaxValue;
+                foreach (var k in delta.Select(d => key + d))
+                {
+                    var t = table.GetValueOrDefault(k);
+                    if (t == null)
+                        continue;
+                    foreach (var v in t)
+                    {
+                        if (Mathf.Abs(v.Position.y - p.Position.y) > heightTolerance)
+                            continue;
+
+                        var d = (v.Position - p.Position).sqrMagnitude;
+                        if (d < minDistance)
+                        {
+                            minDistance = d;
+                            nearest = v;
+                        }
+                    }
+                }
+
+                if (nearest != null && nearest != p)
+                {
+                    p.MergeTo(nearest);
+                    Check();
+                    mergedCount++;
+                    removed.Add(p);
+                }
+            }
+            Debug.Log($"MergeLodPoint: {mergedCount}");
+            return removed;
+        }
+
+        /// <summary>
         /// 頂点をリダクション処理
         /// </summary>
         /// <param name="self"></param>
@@ -313,8 +393,9 @@ namespace PLATEAU.RoadNetwork.Graph
             return ret;
         }
 
-        public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
+        public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance, float lod1HeightTolerance)
         {
+            self.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1HeightTolerance);
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
             self.EdgeReduction();
             self.InsertVertexInNearEdge(midPointTolerance);
@@ -590,6 +671,11 @@ namespace PLATEAU.RoadNetwork.Graph
             return ComputeOutlineVertices(faces);
         }
 
+        /// <summary>
+        /// xz平明上での凸包頂点を計算する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static List<RVertex> ComputeConvexHullVertices(this RFace self)
         {
             var vertices = self.CreateVertexSet();

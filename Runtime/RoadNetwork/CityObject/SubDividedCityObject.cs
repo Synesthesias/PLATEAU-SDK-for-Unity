@@ -164,8 +164,11 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public bool Visible { get; set; } = true;
 
+        /// <summary>
+        /// サイズは0 or 1
+        /// </summary>
         [field: SerializeField]
-        public List<Mesh> Meshes { get; set; } = new List<Mesh>();
+        public List<Mesh> Meshes { get; private set; } = new List<Mesh>();
 
         [field: SerializeField]
         public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
@@ -220,23 +223,6 @@ namespace PLATEAU.RoadNetwork.CityObject
                 // 再帰的な子の生成です。
                 Children.Add(new SubDividedCityObject(rootNode, attributeDataHelper.Copy(), RRoadTypeMask.Empty));
             }
-        }
-
-        public SubDividedCityObject(PLATEAUContourMesh contourMesh)
-        {
-            Name = contourMesh.name;
-            CityObjectGroup = contourMesh.GetComponent<PLATEAUCityObjectGroup>();
-            Meshes.Add(new Mesh
-            {
-                Vertices = contourMesh.contourMesh.vertices.ToList(),
-                SubMeshes = new List<SubMesh>
-                {
-                    new SubMesh
-                    {
-                        Triangles = contourMesh.contourMesh.triangles.ToList()
-                    }
-                }
-            });
         }
 
         /// <summary>

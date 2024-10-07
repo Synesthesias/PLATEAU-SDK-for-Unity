@@ -15,6 +15,8 @@ namespace PLATEAU.RoadNetwork.Graph
         public float mergeCellSize = 0.5f;
         public int mergeCellLength = 4;
         public float removeMidPointTolerance = 0.3f;
+        // LOD1モデルは高さ情報がないため、高さの許容誤差を設定する
+        public float lod1HeightTolerance = 1.5f;
         public bool useOutlineOnly = false;
         // --------------------
         // end:フィールド
@@ -37,7 +39,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public void Reduction(RGraph graph)
         {
-            graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+            graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1HeightTolerance);
         }
     }
 }

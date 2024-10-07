@@ -745,7 +745,7 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RnModel> CreateRnModelAsync(CreateRnModelRequest req)
         {
             var subDividedRes =
-                await RnEx.ConvertCityObjectsAsync(req.CityObjectGroups, useContourMesh: UseContourMesh);
+                await SubDividedCityObjectFactory.ConvertCityObjectsAsync(req.CityObjectGroups, useContourMesh: UseContourMesh);
             var subDividedCityObjects = subDividedRes.ConvertedCityObjects;
             var graph = GraphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);

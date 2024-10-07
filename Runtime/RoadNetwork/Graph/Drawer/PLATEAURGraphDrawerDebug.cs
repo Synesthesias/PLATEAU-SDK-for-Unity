@@ -17,7 +17,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // --------------------
         public bool visible = false;
         public bool showAll = true;
-
+        // シーン上で選択中のCityObjectGroupのみ表示する
         public bool onlySelectedCityObjectGroupVisible = true;
 
         public RRoadTypeMask showFaceType = RRoadTypeMask.All;
@@ -69,7 +69,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             public bool showEdgeCount = false;
             public bool useAnyFaceVertexColor = false;
         }
-        public VertexOption vertexOption = new VertexOption();
+        public VertexOption vertexOption = new VertexOption { visible = false };
 
         [Serializable]
         public class RoadTypeMaskOption

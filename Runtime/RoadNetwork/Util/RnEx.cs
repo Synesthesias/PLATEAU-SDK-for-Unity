@@ -1,19 +1,11 @@
-﻿using PLATEAU.CityAdjust.NonLibData;
-using PLATEAU.CityAdjust.NonLibDataHolder;
-using PLATEAU.CityExport.ModelConvert;
-using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert;
-using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Util
@@ -119,87 +111,6 @@ namespace PLATEAU.RoadNetwork.Util
                 Debug.LogException(e);
                 return new List<SubDividedCityObject>();
             }
-        }
-
-        [Serializable]
-        internal class ConvertCityObjectResult
-        {
-            public List<SubDividedCityObject> ConvertedCityObjects { get; } = new List<SubDividedCityObject>();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cityObjectGroups"></param>
-        /// <param name="epsilon"></param>
-        /// <param name="useContourMesh"></param>
-        /// <returns></returns>
-        internal static async Task<ConvertCityObjectResult> ConvertCityObjectsAsync(IEnumerable<PLATEAUCityObjectGroup> cityObjectGroups, float epsilon = 0.1f, bool useContourMesh = true)
-        {
-            // NOTE : CityGranularityConverterを参考
-            var cityObjectGroupList = new List<PLATEAUCityObjectGroup>();
-            var contourMeshList = new List<PLATEAUContourMesh>();
-            foreach (var cityObjectGroup in cityObjectGroups)
-            {
-                if (useContourMesh)
-                {
-                    var contourMesh = cityObjectGroup.GetComponent<PLATEAUContourMesh>();
-                    if (contourMesh)
-                    {
-                        contourMeshList.Add(contourMesh);
-                    }
-                    else
-                    {
-                        cityObjectGroupList.Add(cityObjectGroup);
-                    }
-
-                }
-                else
-                {
-                    cityObjectGroupList.Add(cityObjectGroup);
-                }
-            }
-            var nativeOption = new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1);
-
-            var transformList = new UniqueParentTransformList(cityObjectGroupList.Select(c => c.transform).ToArray());
-
-            // 属性情報を記憶しておく
-            var attributes = new GmlIdToSerializedCityObj();
-            attributes.ComposeFrom(transformList);
-
-            var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithEmptyMaterial();
-
-            // ゲームオブジェクトを共通ライブラリのModelに変換します。
-            using var srcModel = UnityMeshToDllModelConverter.Convert(
-                transformList,
-                unityMeshToDllSubMeshConverter,
-                true, // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
-                VertexConverterFactory.NoopConverter());
-
-            // 共通ライブラリの機能でモデルを分割・結合します。
-            var converter = new GranularityConverter();
-            var dstModel = converter.Convert(srcModel, nativeOption);
-            var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
-            var attrHelper = new AttributeDataHelper(getter, true);
-            var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
-
-            var ret = new ConvertCityObjectResult();
-            foreach (var co in cityObjectGroupList)
-            {
-                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c.Name == co.name);
-                if (ccoChild != null)
-                {
-                    ccoChild.SetCityObjectGroup(co);
-                }
-            }
-            ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
-
-            foreach (var cm in contourMeshList)
-            {
-                var sco = new SubDividedCityObject(cm);
-                ret.ConvertedCityObjects.Add(sco);
-            }
-            return ret;
         }
 
         /// <summary>
