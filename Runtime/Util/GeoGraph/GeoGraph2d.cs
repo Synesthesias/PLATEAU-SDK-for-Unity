@@ -528,8 +528,6 @@ namespace PLATEAU.Util.GeoGraph
             }
 
             Vector2 ToVec2(T a) => toVec3(a).GetTangent(plane);
-
-
             keys.Sort((a, b) =>
             {
                 var a2 = ToVec2(a);

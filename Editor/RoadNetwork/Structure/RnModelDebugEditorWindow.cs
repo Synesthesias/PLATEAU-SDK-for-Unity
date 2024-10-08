@@ -35,6 +35,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         private IntersectionEdit intersectionEdit = new IntersectionEdit();
         private SideWalkEdit sideWalkEdit = new SideWalkEdit();
 
+        // FoldOutの状態を保持する
+        private HashSet<object> FoldOuts { get; } = new();
+
         /// <summary>
         /// Id指定での対象追加用タイプ
         /// </summary>
@@ -44,9 +47,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             Intersection,
             SideWalk,
         }
-
-        // FoldOutの状態を保持する
-        private HashSet<object> FoldOuts { get; } = new();
 
         public class Work
         {
@@ -197,8 +197,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public LaneWayMoveOption medianWidthOption = LaneWayMoveOption.MoveBothWay;
 
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
-
-
         }
 
         /// <summary>
@@ -302,6 +300,29 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
             }
 
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("MedianLane");
+            if (road.MedianLane != null)
+            {
+                var lane = road.MedianLane;
+                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
+                if (foldout)
+                {
+                    RnEditorUtil.Separator();
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        p.Foldouts.Add(lane);
+                        EditLane(lane, work);
+                    }
+                }
+                else
+                {
+                    p.Foldouts.Remove(lane);
+                }
+            }
+
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("SideWalk");
             foreach (var sideWalk in road.SideWalks)
             {
                 var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");

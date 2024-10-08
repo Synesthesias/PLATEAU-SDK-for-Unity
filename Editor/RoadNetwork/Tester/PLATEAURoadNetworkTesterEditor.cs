@@ -1,13 +1,5 @@
-﻿using PLATEAU.Editor.RoadNetwork.CityObject;
-using PLATEAU.RoadNetwork.CityObject;
-using PLATEAU.RoadNetwork.CityObject.Drawer;
-using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Tester;
-using PLATEAU.RoadNetwork.Util;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,9 +18,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             base.OnInspectorGUI();
             if (GUILayout.Button("Create"))
-            {
                 obj.CreateNetwork();
-            }
 
             using (new EditorGUILayout.HorizontalScope())
             {

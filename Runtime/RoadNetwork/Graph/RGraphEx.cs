@@ -156,15 +156,6 @@ namespace PLATEAU.RoadNetwork.Graph
                 }
             }
 
-            void Check()
-            {
-                var e = self.GetAllEdges().FirstOrDefault(e => e.Vertices.Any(v => v == null));
-                if (e != null)
-                {
-                    var hoge = 0;
-                }
-            }
-            Check();
             var delta = GeoGraphEx.GetNeighborDistance2D(mergeCellLength);
             var mergedCount = 0;
             foreach (var p in targetVertices)
@@ -195,7 +186,6 @@ namespace PLATEAU.RoadNetwork.Graph
                 if (nearest != null && nearest != p)
                 {
                     p.MergeTo(nearest);
-                    Check();
                     mergedCount++;
                     removed.Add(p);
                 }
@@ -627,7 +617,8 @@ namespace PLATEAU.RoadNetwork.Graph
                 .ToHashSet();
             var res = GeoGraph2D.ComputeOutline(
                 vertices
-                , v => v.Position, AxisPlane.Xz
+                , v => v.Position
+                , AxisPlane.Xz
                 , v => v.Edges.Where(e => edges.Contains(e)).Select(e => e.GetOppositeVertex(v)).Where(n => n != null));
             return res.Outline ?? new List<RVertex>();
         }

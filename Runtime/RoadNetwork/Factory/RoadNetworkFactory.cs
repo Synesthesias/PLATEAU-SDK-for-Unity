@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool SaveTmpData { get; set; } = false;
 
-
+        // 平滑化されたtranオブジェクトに対してContourMeshを使用するかどうか(基本true)
         [field: SerializeField]
         public bool UseContourMesh { get; set; } = true;
         // --------------------
