@@ -283,15 +283,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)
                 : face.ComputeOutlineVertices();
 
-            //bool isLoop = true;
-            //if (vertices.Count > 1)
-            //{
-            //    if ((vertices[0].Edges.Any(e => e.V0 == vertices[^1] || e.V1 == vertices[^1])) == false)
-            //    {
-            //        isLoop = false;
-            //    }
-
-            //}
             RGraphEx.OutlineVertex2Edge(vertices, out var edges);
             if (showId.HasFlag(RPartsFlag.Face))
             {
@@ -305,12 +296,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             }
             else if (op.showOutline)
             {
-
-                var ii = 0;
-                foreach (var v in vertices)
-                {
-                    //DebugEx.DrawString((ii++).ToString(), v.Position, color: Color.white);
-                }
                 foreach (var e in edges)
                 {
                     Draw(edgeOption, e, work);
