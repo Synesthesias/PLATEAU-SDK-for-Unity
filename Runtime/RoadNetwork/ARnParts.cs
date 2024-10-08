@@ -67,5 +67,15 @@ namespace PLATEAU.RoadNetwork
         {
             return self.GetDebugMyIdOrDefault<RnRoadBase>();
         }
+
+        /// <summary>
+        /// RnWayは内部のLineStringで比較する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static long GetDebugMyIdOrDefault(this RnWay self)
+        {
+            return self?.LineString?.GetDebugMyIdOrDefault() ?? -1;
+        }
     }
 }

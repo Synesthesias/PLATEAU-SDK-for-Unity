@@ -15,18 +15,61 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 自分が所属するRoadNetworkModel
+
+        /// <summary>
+        /// 流入元
+        /// </summary>
         public RnWay FromBorder { get; set; }
 
-        // 対象のtranオブジェクト
+        /// <summary>
+        /// 流出先
+        /// </summary>
         public RnWay ToBorder { get; set; }
 
-        // スプライン
+        /// <summary>
+        /// 経路
+        /// </summary>
         public Spline Spline { get; set; }
+
+        /// <summary>
+        /// 曲がり具合
+        /// </summary>
+        public RnTurnType TurnType { get; set; }
 
         //----------------------------------
         // end: フィールド
         //----------------------------------
+        // シリアライズ化の為にデフォルトコンストラクタは必要
+        public RnTrack() { }
+
+        public RnTrack(RnWay from, RnWay to, Spline spline, RnTurnType turnType = RnTurnType.Straight)
+        {
+            FromBorder = from;
+            ToBorder = to;
+            Spline = spline;
+            TurnType = turnType;
+        }
+
+        /// <summary>
+        /// 入口/出口が同じかどうか
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public bool IsSameInOut(RnWay from, RnWay to)
+        {
+            return FromBorder.IsSameLine(from) && ToBorder.IsSameLine(to);
+        }
+
+        /// <summary>
+        /// 入口/出口が同じかどうか
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsSameInOut(RnTrack other)
+        {
+            return IsSameInOut(other.FromBorder, other.ToBorder);
+        }
     }
 
     // 交差点における曲がり具合
@@ -52,6 +95,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
     public static class RnTurnTypeEx
     {
+        // enumの数(キャッシュ用)
+        public static readonly int Count = Enum.GetValues(typeof(RnTurnType)).Length;
+
         // 左折関係か
         public static bool IsLeft(this RnTurnType self)
         {
@@ -240,7 +286,6 @@ namespace PLATEAU.RoadNetwork.Structure
             TargetTran = targetTran;
         }
 
-
         public override IEnumerable<RnRoadBase> GetNeighborRoads()
         {
             foreach (var neighbor in Neighbors)
@@ -308,6 +353,37 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// トラック情報を追加/更新する.
+        /// 同じfrom/toのトラックがすでにある場合は上書きする. そうでない場合は追加する
+        /// </summary>
+        /// <param name="track"></param>
+        public bool TryAddOrUpdateTrack(RnTrack track)
+        {
+            // trackの入口/出口がこの交差点のものかチェックする
+            if (!edges.Any(e =>
+                    e.Border.IsSameLine(track.FromBorder) || !edges.Any(e => e.Border.IsSameLine(track.ToBorder))))
+            {
+                DebugEx.LogError("交差点に含まれないトラックが追加されようとしています");
+                return false;
+            }
+
+            // それに同じ物が入口/出口のものがあれば削除する
+            tracks.RemoveAll(t => t.IsSameInOut(track));
+
+            // track追加
+            tracks.Add(track);
+            return true;
+        }
+
+        /// <summary>
+        /// 指定した条件のトラックを削除する
+        /// </summary>
+        /// <param name="predicate"></param>
+        public void RemoveTracks(Predicate<RnTrack> predicate)
+        {
+            tracks.RemoveAll(predicate);
+        }
 
         /// <summary>
         /// road/laneに接続している隣接情報を削除する
@@ -393,7 +469,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
 
-                    void AddTrack(RnNeighbor from, RnNeighbor to)
+                    void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType turnType)
                     {
                         var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
                         var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
@@ -406,12 +482,7 @@ namespace PLATEAU.RoadNetwork.Structure
                             new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
                             new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
                         }; ;
-                        tracks.Add(new RnTrack
-                        {
-                            FromBorder = from.Border,
-                            ToBorder = to.Border,
-                            Spline = spline
-                        });
+                        tracks.Add(new RnTrack(from.Border, to.Border, spline, turnType));
                     }
 
                     var outBounds = other.OutBoundBorders.ToList();
@@ -422,7 +493,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         foreach (var from in Enumerable.Range(0, num).Select(i => inBounds[^(i + 1)]))
                         {
                             foreach (var to in outBounds)
-                                AddTrack(from, to);
+                                AddTrack(from, to, turnType);
                         }
                     }
                     else if (turnType.IsRight())
@@ -432,7 +503,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         foreach (var from in inBounds.Take(num))
                         {
                             foreach (var to in outBounds)
-                                AddTrack(from, to);
+                                AddTrack(from, to, turnType);
                         }
                     }
                     else
@@ -441,7 +512,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         {
                             foreach (var to in outBounds)
                             {
-                                AddTrack(from, to);
+                                AddTrack(from, to, turnType);
                             }
                         }
                     }
@@ -579,22 +650,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 var flow = neighbor.GetFlowType();
                 if ((flow & RnFlowTypeMask.Inbound) != 0)
                 {
-                    ret.tracks.Add(new RnTrack
-                    {
-                        FromBorder = border,
-                        ToBorder = border,
-                        Spline = new Spline { from, to }
-                    });
+                    ret.tracks.Add(new RnTrack(border, border, new Spline { from, to }));
                 }
                 else if ((flow & RnFlowTypeMask.Outbound) != 0)
                 {
                     (to, from) = (from, to);
-                    ret.tracks.Add(new RnTrack
-                    {
-                        FromBorder = border,
-                        ToBorder = border,
-                        Spline = new Spline { from, to }
-                    });
+                    ret.tracks.Add(new RnTrack(border, border, new Spline { from, to }));
                 }
             }
 

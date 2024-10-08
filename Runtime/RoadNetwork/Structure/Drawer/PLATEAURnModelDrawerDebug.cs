@@ -82,9 +82,21 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class IntersectionOption
         {
+            [Serializable]
+            public class DrawTrackOption : DrawOption
+            {
+                public bool useTurnTypeColor = false;
+
+                public DrawTrackOption()
+                {
+                    visible = true;
+                    color = Color.yellow * 0.7f;
+                }
+            }
+
             public bool visible = true;
             public VisibleType visibleType = VisibleType.All;
-            public DrawOption showTrack = new(true, Color.yellow * 0.7f);
+            public DrawTrackOption showTrack = new();
 
             public DrawOption showNonBorderEdge = new(true, Color.magenta * 0.7f);
 
@@ -654,13 +666,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 foreach (var track in intersection.Tracks)
                 {
                     var n = 5;
+
+                    var color = op.showTrack.color;
+                    if (op.showTrack.useTurnTypeColor)
+                    {
+                        color = DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
+                    }
                     DrawArrows(Enumerable.Range(0, n)
                         .Select(i => 1f * i / (n - 1))
                         .Select(t =>
                         {
                             track.Spline.Evaluate(t, out var pos, out var tam, out var up);
                             return (Vector3)pos;
-                        }), false, color: op.showTrack.color);
+                        }), false, color: color);
                 }
             }
         }

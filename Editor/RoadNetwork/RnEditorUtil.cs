@@ -90,5 +90,25 @@ namespace PLATEAU.Editor.RoadNetwork
                 inVisibleObjects.Add(obj);
             return isNextVisible;
         }
+
+        /// <summary>
+        /// foldoutObjectsに入っていると展開/そうじゃない場合は折りたたみ
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="foldoutObjects"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool Foldout(string label, HashSet<object> foldoutObjects, object obj)
+        {
+            var isNowVisible = foldoutObjects.Contains(obj);
+            var isNextVisible = EditorGUILayout.Foldout(isNowVisible, label);
+            if (isNowVisible == isNextVisible)
+                return isNextVisible;
+            if (isNextVisible)
+                foldoutObjects.Add(obj);
+            else
+                foldoutObjects.Remove(obj);
+            return isNextVisible;
+        }
     }
 }

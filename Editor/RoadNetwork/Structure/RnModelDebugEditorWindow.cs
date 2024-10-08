@@ -346,8 +346,13 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public long convertPrevRoadId = -1;
             public long convertNextRoadId = -1;
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
-        }
 
+            // TrackのFoldout状態
+            public HashSet<object> TrackFoldouts { get; } = new HashSet<object>();
+
+            // Trackのスクロール位置
+            public Vector2 trackScrollPosition;
+        }
 
         public void EditIntersection(RnIntersection intersection, Work work)
         {
@@ -395,6 +400,26 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 intersection.BuildTracks();
             }
 
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("Tracks");
+            if (RnEditorUtil.Foldout("Track", p.TrackFoldouts, this))
+            {
+                using (var scope = new EditorGUILayout.ScrollViewScope(p.trackScrollPosition))
+                {
+                    p.trackScrollPosition = scope.scrollPosition;
+                    foreach (var track in intersection.Tracks)
+                    {
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            EditorGUILayout.LabelField($"Track[{track.GetDebugMyIdOrDefault()}] : From:{track.FromBorder.GetDebugMyIdOrDefault()} -> To:{track.ToBorder.GetDebugMyIdOrDefault()}");
+                            track.TurnType = (RnTurnType)EditorGUILayout.EnumPopup("TurnType", track.TurnType);
+                        }
+                    }
+                }
+            }
+
+            RnEditorUtil.Separator();
+            EditorGUILayout.TextField("SideWalk");
             foreach (var sideWalk in intersection.SideWalks)
             {
                 var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
