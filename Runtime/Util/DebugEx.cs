@@ -509,5 +509,15 @@ namespace PLATEAU.Util
         {
             Debug.Log(message);
         }
+
+        /// <summary>
+        /// Debug.LogErrorのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object message)
+        {
+            Debug.LogError(message);
+        }
     }
 }
