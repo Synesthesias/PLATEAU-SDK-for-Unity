@@ -29,6 +29,13 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public Spline Spline { get; set; }
 
+        /// <summary>
+        /// 曲がり具合
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnTurnType TurnType { get; set; }
+
         //----------------------------------
         // end: フィールド
         //----------------------------------

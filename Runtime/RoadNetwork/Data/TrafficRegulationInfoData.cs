@@ -36,9 +36,9 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// 信号制御器に関わるデータをまとめた構造体
     /// </summary>
-    public struct RnTraficLightDataSet
+    public struct RnTrafficLightDataSet
     {
-        public RnTraficLightDataSet(
+        public RnTrafficLightDataSet(
             IReadOnlyCollection<RnDataTrafficLightController> traffics,
             IReadOnlyCollection<RnDataTrafficLight> lights,
             IReadOnlyCollection<RnDataTrafficSignalPattern> signalPatterns,
@@ -97,7 +97,7 @@ namespace PLATEAU.RoadNetwork.Data
         /// <param name="controller"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        float CalcCycleTime(in RnTraficLightDataSet dataSet, RnDataTrafficLightController controller)
+        float CalcCycleTime(in RnTrafficLightDataSet dataSet, RnDataTrafficLightController controller)
         {
             throw new NotImplementedException();
         }
@@ -138,15 +138,6 @@ namespace PLATEAU.RoadNetwork.Data
         public List<RnID<RnDataTrafficSignalPattern>> SignalPatterns { get; set; }
 
         /// <summary>
-        /// サイクル長(制御パターン)
-        /// RnDataTrafficSignalPhaseのSplitの合計値
-        /// 設定時のエラーチェック必須
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public List<int> CycleTime { get; set; }
-
-        /// <summary>
         /// 整合性の確認
         /// 未実装
         /// </summary>
@@ -172,10 +163,11 @@ namespace PLATEAU.RoadNetwork.Data
 
         /// <summary>
         /// 設置されている道路のID
+        /// 注意　交差点ではない
         /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public RnID<RnDataRoad> RoadId { get; set; }
+        public RnID<RnDataRoadBase> RoadId { get; set; }
 
         /// <summary>
         /// 規制対象レーン種別
@@ -266,17 +258,29 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public int EnterableVehicleTypeMask { get; set; }
 
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public List<RnID<RnDataRoad>> BlueRoadPairs { get; set; }
+        public List<RnID<RnDataRoadBase>> BlueRoadPairs { get; set; }
 
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public List<RnID<RnDataRoad>> YellowRoadPairs { get; set; }
+        public List<RnID<RnDataRoadBase>> YellowRoadPairs { get; set; }
 
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
         [field: SerializeField]
         [RoadNetworkSerializeMember]
-        public List<RnID<RnDataRoad>> RedRoadPairs { get; set; }
+        public List<RnID<RnDataRoadBase>> RedRoadPairs { get; set; }
 
     }
 }
