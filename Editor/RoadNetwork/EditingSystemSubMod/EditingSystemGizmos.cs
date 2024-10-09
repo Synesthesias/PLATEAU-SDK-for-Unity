@@ -48,12 +48,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private readonly Color selectingColorOffset = new Color(0.2f, 0.2f, 0.2f, 0);
         private readonly Color dummyColorOffset = new Color(-0.2f, -0.2f, -0.2f, 0);
 
-        private readonly Color connectionColor = Color.blue;
+        private readonly Color connectionColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
         private readonly Color selectingWayColor = Color.red;
                 
         private readonly Color leftSideWayColor = Color.yellow;
         private readonly Color rightSideWayColor = Color.green;
-        private readonly Color medianWayColor = Color.blue;
+        private readonly Color medianWayColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
                 
         private readonly Color guideWayColor = Color.black;
         private readonly Color sideWalkColor = Color.magenta;
@@ -135,6 +135,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             rightLaneWayList.Clear();
             leftLaneWayList.Clear();
             sideWalks.Clear();
+            medianWayList.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
 
