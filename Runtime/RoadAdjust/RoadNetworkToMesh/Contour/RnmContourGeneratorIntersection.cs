@@ -27,53 +27,70 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         .SelectMany(w => new[] { w.StartEdgeWay, w.EndEdgeWay })
                         .Where(w => w != null);
                 
-                // nonBorderEdgeのうち、insideWayと重ならないもの
-                var outsideNonBorders = new List<RnWay>();
-                foreach(var nonBorder in inter.Edges.Where(e => !e.IsBorder).Select(e => e.Border))
-                {
-                    bool isBorderOutside = true;
-                    foreach(var insideWay in inter.SideWalks.Select(sw => sw.InsideWay))
-                    {
-                        if (ContourGeneratorCommon.NearestDist(nonBorder.Vertices, insideWay.Vertices) < 1)
-                        {
-                            isBorderOutside = false;
-                            Debug.Log("border is not outside");
-                            break;
-                        }   
-                    }
-                    if(isBorderOutside) outsideNonBorders.Add(nonBorder);
-                }
                 
                 // 隣接する道路について
                 var neighborEdges = new List<RnWay>();
+                var nStartsAll = new List<RnWay>();
+                var nEndsAll = new List<RnWay>(); 
                 foreach (var neighbor in inter.Neighbors.Where(n => n.Road != null))
                 {
                     // 隣の道路のもっとも近い StartEdgeWay, EndEdgeWay を選択
-                    var nStarts = neighbor.Road.SideWalks.Select(sw => sw.StartEdgeWay).Where(w => w != null).ToArray();
-                    var nEnds = neighbor.Road.SideWalks.Select(sw => sw.EndEdgeWay).Where(w => w != null).ToArray();
+                    var nSidewalks = neighbor.Road.SideWalks;
+                    var nStarts = nSidewalks.Select(sw => sw.StartEdgeWay).Where(w => w != null).ToArray();
+                    var nEnds = nSidewalks.Select(sw => sw.EndEdgeWay).Where(w => w != null).ToArray();
+                    nStartsAll.AddRange(nStarts);
+                    nEndsAll.AddRange(nEnds);
                     if (nStarts.Length != 0)
                     {
                         int nearestID = ContourGeneratorCommon.FindCorrespondWayIDMinDist(nStarts, neighbor.Border);
                         var nearest = nStarts[nearestID];
-                        if (carBoarderEdges.Min(cb =>
-                                ContourGeneratorCommon.NearestDist(nearest.Vertices.ToArray(), cb.Vertices.ToArray()) <
-                                1f))
+                        float minDist = carBoarderEdges.Min(cb =>
+                            ContourGeneratorCommon.NearestDist(nearest, cb));
+                        if (minDist < 1f)
                         {
                             neighborEdges.Add(nearest);
                         }
-                        
                     }
 
                     if (nEnds.Length != 0)
                     {
                         int nearestID = ContourGeneratorCommon.FindCorrespondWayIDMinDist(nEnds, neighbor.Border);
                         var nearest = nEnds[nearestID];
-                        if (carBoarderEdges.Min(cb =>
-                                ContourGeneratorCommon.NearestDist(nearest.Vertices.ToArray(), cb.Vertices.ToArray()) <
-                                1f))
+                        float minDist = carBoarderEdges.Min(cb =>
+                            ContourGeneratorCommon.NearestDist(nearest, cb));
+                        if (minDist < 1f)
+                        {
                             neighborEdges.Add(nEnds[nearestID]);
+                        }
+                        
                     }
                     
+                }
+                
+                // nonBorderEdgeのうち外側のもの。すなわち、nonBorderEdgeのうち、歩道のinsideWayと重ならず、StartEdgeWayともEndEdgeWayとも重ならないもの
+                var outsideNonBorders = new List<RnWay>();
+                foreach(var nonBorder in inter.Edges.Where(e => !e.IsBorder).Select(e => e.Border))
+                {
+                    bool isBorderOutside = true;
+                    // 条件: 歩道のinsideWayと重ならない
+                    foreach(var insideWay in inter.SideWalks.Select(sw => sw.InsideWay))
+                    {
+                        if (ContourGeneratorCommon.NearestDist(nonBorder, insideWay) < 1)
+                        {
+                            isBorderOutside = false;
+                            break;
+                        }   
+                    }
+                    // 条件: StartEdgeWayともEndEdgeWayとも重ならない
+                    foreach (var edge in nStartsAll.Concat(nEndsAll))
+                    {
+                        if (ContourGeneratorCommon.NearestDist(nonBorder, edge.Vertices) < 1)
+                        {
+                            isBorderOutside = false;
+                            break;
+                        }
+                    }
+                    if(isBorderOutside) outsideNonBorders.Add(nonBorder);
                 }
                 
                 // 輪郭線を作ります。
