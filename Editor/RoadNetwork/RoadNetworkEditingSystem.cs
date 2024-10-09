@@ -1846,7 +1846,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // 中央分離帯のwayを重複無しでコレクションする
                 Dictionary<RnRoad, HashSet<RnWay>> medianWays = new();
-                //IReadOnlyCollection<RnWay> medianWays = null;
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     HashSet<RnWay> ways = new HashSet<RnWay>();
@@ -1860,7 +1859,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     {
                         ways.Add(way);
                     }
-                    //medianWays = leftWays.Concat(rightWays).ToArray();
                 }
 
                 // way用の編集データの作成準備
@@ -1869,12 +1867,18 @@ namespace PLATEAU.Editor.RoadNetwork
                 wayEditorDataList?.Clear();
 
                 // 車線のwayから中央分離帯のwayを除外
-                if (medianWays != null) {
-                    foreach (var ways in laneWays.Values)
+                foreach (var ways in laneWays.Values)
+                {
+                    foreach (var editingTarget in medianWays)
                     {
-                        foreach (var medianWay in medianWays)
+                        if (editingTarget.Value == null)
                         {
-                            //ways.Remove(medianWay);
+                            continue;
+                        }
+
+                        foreach (var medianWay in editingTarget.Value)
+                        { 
+                            ways.Remove(medianWay);
                         }
                     }
                 }
@@ -1911,22 +1915,18 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
 
                 // 中央分離帯の編集用データを作成
-                if (medianWays != null)
+                foreach (var editingTarget in medianWays)
                 {
-                    foreach (var editingTarget in medianWays)
+                    if (editingTarget.Value == null)
                     {
-                        if (editingTarget.Value == null)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        foreach (var way in editingTarget.Value)
-                        {
-                            var wayEditorData = new WayEditorData(way, null);
-                            wayEditorData.Type = WayEditorData.WayType.Median;
-                            wayEditorDataList.Add(wayEditorData);
-                        }
-
+                    foreach (var way in editingTarget.Value)
+                    {
+                        var wayEditorData = new WayEditorData(way, null);
+                        wayEditorData.Type = WayEditorData.WayType.Median;
+                        wayEditorDataList.Add(wayEditorData);
                     }
                 }
 
