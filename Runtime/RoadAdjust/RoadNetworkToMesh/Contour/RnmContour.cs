@@ -66,8 +66,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary> 線1つに計算用のデータを付与したデータ構造です。 </summary>
     public class RnmLine
     {
-        public Vector3[] Vertices { get; private set; }
-        public bool IsProcessed { get; set; } = false;
+        public Vector3[] Vertices { get; }
+        public bool IsProcessed { get; set; }
             
         public RnmLine(IEnumerable<Vector3> vertices)
         {

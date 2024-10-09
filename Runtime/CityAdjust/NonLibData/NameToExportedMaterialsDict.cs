@@ -49,7 +49,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         
 
         /// <summary>
-        /// <paramref name="dst"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
+        /// <paramref name="target"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
         /// ただし、FBXのマテリアルを使った方が良い状況ではそれを使います。
         /// </summary>
         public void RestoreTo(UniqueParentTransformList target)

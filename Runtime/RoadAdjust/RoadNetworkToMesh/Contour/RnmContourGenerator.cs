@@ -6,14 +6,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
-    /// <summary>
-    /// 道路ネットワークから輪郭線を生成するインターフェイスです。
-    /// RnmはRoad Network to Meshの略です。
-    /// </summary>
-    public interface IRnmContourGenerator
-    {
-        public RnmContourList Generate(RnModel model);
-    }
 
     /// <summary>
     /// 道路ネットワークから輪郭線を生成します。
@@ -38,6 +30,21 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
             return ret;
         }
+    }
+    
+    /// <summary>
+    /// 道路ネットワークから輪郭線を生成するインターフェイスです。
+    /// RnmはRoad Network to Meshの略です。
+    /// </summary>
+    internal interface IRnmContourGenerator
+    {
+        public RnmContourList Generate(RnModel model);
+    }
+
+    /// <summary> 道路ネットワークから望みの<see cref="RnWay"/>を収集するインターフェイスです。 </summary>
+    internal interface IRnmWayCollector
+    {
+        IEnumerable<RnWay> Collect();
     }
 
     /// <summary>
@@ -85,5 +92,46 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
             return minDist;
         }
+
+        /// <summary> 点群Aと点群Bを比べて、位置が同じ点の数を数えます。 ただし各点郡内の重複を排除したもので数えます。</summary>
+        public static int MatchCount(IEnumerable<Vector3> pointsAArg, IEnumerable<Vector3> pointsBArg, float threshold)
+        {
+            var pointsA = RemoveDuplicate(pointsAArg, threshold);
+            var pointsB = RemoveDuplicate(pointsBArg, threshold).ToArray();
+            // var pointsA = pointsAArg.ToArray();
+            // var pointsB = pointsBArg.ToArray();
+            
+            int count = 0;
+            foreach (var a in pointsA)
+            {
+                foreach (var b in pointsB)
+                {
+                    if (Vector3.Distance(a, b) < threshold) count++;
+                }
+            }
+            return count;
+        }
+        
+        private static IEnumerable<Vector3> RemoveDuplicate(IEnumerable<Vector3> lineArg, float threshold)
+        {
+            var line = lineArg.ToArray();
+            var duplicateIds = new List<int>();
+            for (int i = 0; i < line.Length; i++)
+            {
+                for (int j = i + 1; j < line.Length; j++)
+                {
+                    if(Vector3.Distance(line[i], line[j]) < threshold)
+                    {
+                        duplicateIds.Add(j);
+                    }
+                }
+            }
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                if (!duplicateIds.Contains(i)) yield return line[i];
+            }
+        }
+        
     }
 }

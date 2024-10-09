@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using UnityEditor;
 using Object = UnityEngine.Object;
-using TargetT = UnityEngine.GameObject;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -15,7 +14,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
     public class RoadNetworkToMeshPresenter : ITabContent
     {
         private ElementGroup guis;
-        private TargetT target;
         private LineSeparateType lineSeparateType;
         
 
@@ -24,7 +22,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
             guis = new ElementGroup("", 0,
                 new HeaderElementGroup("", "道路を変更します。", HeaderType.Subtitle),
                 new HeaderElementGroup("", "道路ネットワーク編集", HeaderType.HeaderNum1),
-                new ObjectFieldElement<TargetT>("", "対象", OnTargetChanged),
                 new GeneralElement("", () => EditorGUILayout.Space(150)),
                 new HeaderElementGroup("", "道路ネットワークをメッシュに反映", HeaderType.HeaderNum2),
                 new GeneralElement("", DrawLineSeparateTypeSelector),
@@ -44,7 +41,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
         }
         
 
-        private void OnTargetChanged(TargetT targetArg) => target = targetArg;
         
         
         private void DrawLineSeparateTypeSelector()

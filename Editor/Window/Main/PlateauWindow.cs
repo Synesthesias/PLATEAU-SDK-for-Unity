@@ -10,7 +10,6 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal class PlateauWindow : PlateauWindowBase
     {
-        private readonly ScrollView scrollView = new ();
         private PlateauWindowGui gui;
 
         [MenuItem("PLATEAU/PLATEAU SDK")]

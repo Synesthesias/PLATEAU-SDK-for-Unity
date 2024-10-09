@@ -88,7 +88,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 case RoadMarkingMaterial.Yellow:
                     return new Material(materialYellow);
                 default:
-                    throw new System.ArgumentOutOfRangeException(nameof(material), material, null);
+                    throw new ArgumentOutOfRangeException(nameof(material), material, null);
             }
         }
 

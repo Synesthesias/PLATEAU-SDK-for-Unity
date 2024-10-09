@@ -1,20 +1,11 @@
-﻿using Codice.CM.Common;
-using PLATEAU.CityGML;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Assertions.Must;
-using UnityEngine.UIElements;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork

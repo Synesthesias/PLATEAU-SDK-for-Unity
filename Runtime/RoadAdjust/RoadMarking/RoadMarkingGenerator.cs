@@ -10,7 +10,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     public class RoadMarkingGenerator
     {
-        private RnModel targetNetwork;
+        private readonly RnModel targetNetwork;
         
         
         public RoadMarkingGenerator(RnModel targetNetwork)

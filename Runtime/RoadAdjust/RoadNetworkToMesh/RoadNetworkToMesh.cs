@@ -1,8 +1,4 @@
 using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
@@ -12,7 +8,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RoadNetworkToMesh
     {
-        private RnModel model;
+        private readonly RnModel model;
         
         public RoadNetworkToMesh(RnModel model)
         {
@@ -32,7 +28,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var comp = obj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
                 comp.Init(contour);
                 var mesh = new ContourToMesh().Generate(contour);
-                var renderer = obj.AddComponent<MeshRenderer>();
+                obj.AddComponent<MeshRenderer>();
                 var filter = obj.AddComponent<MeshFilter>();
                 filter.sharedMesh = mesh;
             }
