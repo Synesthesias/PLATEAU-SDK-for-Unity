@@ -332,13 +332,13 @@ namespace PLATEAU.RoadNetwork.CityObject
             return (heightMap, min, max, cellSize);
         }
 
-        public static float ApplyHeight(Vector2 v, Mesh mesh)
+        public static bool TryGetHeight(Vector2 v, Mesh mesh, out float height)
         {
+            height = 0f;
             var v3 = new Vector3[3];
             var v2 = new Vector2[3];
             var d = new Vector2[3];
             var e = new Vector2[3];
-
             var cross = new float[3];
             for (var index = 0; index < mesh.triangles.Length; index += 3)
             {
@@ -355,7 +355,10 @@ namespace PLATEAU.RoadNetwork.CityObject
                     e[x] = v2[x] - v;
 
                     if (e[x].sqrMagnitude < 0.01f)
-                        return v3[x].y;
+                    {
+                        height = v3[x].y;
+                        return true;
+                    }
 
                     cross[x] = Vector2Ex.Cross(e[x], d[x]);
                 }
@@ -367,12 +370,14 @@ namespace PLATEAU.RoadNetwork.CityObject
                     var a = v.Xay() - v3[0];
                     var nd = Vector3.Dot(n, a);
                     var dd = a - nd * n;
-                    return (v3[0] + dd).y;
+                    height = (v3[0] + dd).y;
+                    return true;
                 }
             }
 
-            return 0f;
+            return false;
         }
+
         [Serializable]
         internal class ConvertCityObjectResult
         {
@@ -431,16 +436,32 @@ namespace PLATEAU.RoadNetwork.CityObject
                 {
                     try
                     {
-                        foreach (var m in ccoChild.Meshes)
+                        void Visit(SubDividedCityObject sdvco)
                         {
-                            for (var i = 0; i < m.Vertices.Count; i++)
+                            foreach (var m in sdvco.Meshes)
                             {
-                                var v = m.Vertices[i];
-                                v.y = ApplyHeight(v.Xz(), co.OriginalMesh);
-                                m.Vertices[i] = v;
+                                for (var i = 0; i < m.Vertices.Count; i++)
+                                {
+                                    var v = m.Vertices[i];
+                                    if (TryGetHeight(v.Xz(), co.OriginalMesh, out var height))
+                                    {
+                                        v.y = height;
+                                    }
+                                    else
+                                    {
+                                        DebugEx.LogError($"Failed to get height / {ccoChild.CityObjectGroup.name}");
+                                    }
+
+                                    m.Vertices[i] = v;
+                                }
+                            }
+
+                            foreach (var c in sdvco.Children)
+                            {
+                                Visit(c);
                             }
                         }
-
+                        Visit(ccoChild);
                     }
                     catch (Exception e)
                     {
@@ -449,6 +470,13 @@ namespace PLATEAU.RoadNetwork.CityObject
                 }
             }
             ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
+
+            foreach (var c in ret.ConvertedCityObjects)
+            {
+                // 全く同じ頂点を結合する
+                foreach (var m in c.Meshes)
+                    m.VertexReduction();
+            }
             return ret;
         }
 
