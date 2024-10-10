@@ -718,7 +718,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var mousePos = Event.current.mousePosition;
                 var ray = HandleUtility.GUIPointToWorldRay(mousePos);
-                RoadNetworkEditingSystem.SnapPointToDem(point, ray);
+                RoadNetworkEditingSystem.SnapPointToObj(point, ray, "dem_", "tran_");
                 //var res = networkOperator.MovePoint(point, vertPos);
                 state.isDirtyTarget = true;
                 //Debug.Assert(res.IsSuccess);
