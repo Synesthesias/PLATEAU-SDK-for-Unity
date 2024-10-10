@@ -290,7 +290,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 while (lineE.MoveNext())
                 {
                     var way = lineE.Current;
-                    SnapPointsToDem(way.Points);
+                    SnapPointsToDemAndTran(way.Points);
                 }
 
 
@@ -305,32 +305,41 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
 
-        public static void SnapPointsToDem(IEnumerable<RnPoint> items)
+        public static void SnapPointsToDemAndTran(IEnumerable<RnPoint> items)
         {
             Ray ray;
             const float rayDis = 1000.0f;
             foreach (var item in items)
             {
                 ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
-                SnapPointToDem(item, ray);
+                SnapPointToObj(item, ray, "dem_", "tran_");
             }
         }
 
-        public static void SnapPointToDem(RnPoint item)
+        public static void SnapPointToDemAndTran(RnPoint item)
         {
             Ray ray;
             const float rayDis = 1000.0f;
             ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
-            SnapPointToDem(item, ray);
+            SnapPointToObj(item, ray, "dem_", "tran_");
         }
 
-        public static void SnapPointToDem(RnPoint item, in Ray ray)
+        public static void SnapPointToObj(RnPoint item, in Ray ray, params string[] filter)
         {
             const float maxDistance = 1000.0f;
             var hits = Physics.RaycastAll(ray, maxDistance);    // 地形メッシュが埋まっていてもスナップ出来るように
             foreach (RaycastHit hit in hits)
             {
-                if (hit.collider.name.Contains("dem_"))
+                var isTarget = false;
+                foreach (var f in filter)
+                {
+                    if (hit.collider.name.Contains(f))
+                    {
+                        isTarget = true;
+                        break;
+                    }
+                }
+                if (isTarget)
                 {
                     item.Vertex = hit.point;
                     return;
