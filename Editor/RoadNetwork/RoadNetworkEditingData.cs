@@ -135,6 +135,26 @@ namespace PLATEAU.Editor.RoadNetwork
             return false;
         }
 
+        /// <summary>
+        /// 内部データのクリア
+        /// データの構成に変更が出て既存のデータが古くなった際に使ったりする
+        /// 例　EditorData<RnRoadGroup>　内部データでwayのリストを持っている。この時Laneが削除などされればこの関数を呼ぶ必要が出てくる
+        /// </summary>
+        public void ClearSubData()
+        {
+            userData.Clear();
+        }
+
+        public void ClearSubData<_Type>()
+            where _Type : class
+        {
+            var subData = GetSubData<_Type>();
+            if (subData != null)
+            {
+                userData.Remove(subData);
+            }
+        }
+
         public _BaseData Ref { get; private set; }
         private List<object> userData;
 
@@ -192,17 +212,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
     public class NodeEditorData
     {
-        public NodeEditorData(GameObject gameObject)
+        public NodeEditorData()
         {
-            Assert.IsNotNull(gameObject);
-            this.RefGameObject = gameObject;
-            UpdateBaseTransform();
             PointWithWeight.Clear();
-        }
-
-        public void UpdateBaseTransform()
-        {
-            baseTransform = new CacheTransform(RefGameObject.transform);
         }
 
         public bool AddPoint(EditorData<RnPoint> point, float weight)
@@ -228,16 +240,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        public void ApplyTranslate()
-        {
-            var translate = RefGameObject.transform.position - baseTransform.position;
-            foreach (var item in PointWithWeight)
-            {
-                var ptData = item.Value.data;
-                ptData.Translate(translate * item.Value.weight);
-            }
-        }
-
         private struct CacheTransform
         {
             public CacheTransform(Transform transform)
@@ -247,7 +249,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public Vector3 position;
         }
-        public GameObject RefGameObject;
         private CacheTransform baseTransform;
 
         private Dictionary<EditorData<RnPoint>, (PointEditorData data, float weight)> PointWithWeight { get; set; } =
@@ -260,11 +261,14 @@ namespace PLATEAU.Editor.RoadNetwork
     }
     public class LinkGroupEditorData
     {
-        public LinkGroupEditorData(EditorData<RnRoadGroup> parent, NodeEditorData a, NodeEditorData b, IReadOnlyCollection<RnRoad> links)
+        public LinkGroupEditorData(EditorData<RnRoadGroup> parent, IReadOnlyCollection<RnRoad> links)
         {
             Assert.IsNotNull(parent);
             Assert.IsNotNull(parent.Ref);
             LinkGroup = parent;
+
+            var a = parent.Ref.PrevIntersection;
+            var b = parent.Ref.NextIntersection;
 
             Assert.IsNotNull(a);
             Assert.IsNotNull(b);
@@ -301,8 +305,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
 
 
-        public NodeEditorData A { get; private set; }
-        public NodeEditorData B { get; private set; }
+        public RnIntersection A { get; private set; }
+        public RnIntersection B { get; private set; }
 
         public IReadOnlyCollection<RnRoad> ConnectionLinks { get; private set; }
 
