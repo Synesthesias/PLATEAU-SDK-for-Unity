@@ -291,7 +291,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // UIへバインドするモデルオブジェクトの生成
                 var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
                 testObj.Construct(linkGroupEditorData.Ref);
-                mdl = new SerializedScriptableRoadMdl(testObj, system.RoadNetworkSimpleEditModule);
+                mdl = new SerializedScriptableRoadMdl(testObj, linkGroupEditorData, system.RoadNetworkSimpleEditModule);
 
                 // 参照を持たせる
                 linkGroupEditorData.TryAdd(mdl);

@@ -332,7 +332,6 @@ namespace PLATEAU.Editor.RoadNetwork
         public Color connectionColor = Color.blue;
 
         public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
-        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -359,8 +358,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 var subData = item.GetSubData<LinkGroupEditorData>();
 
-                var p1 = subData.A.RefGameObject.transform.position;
-                var p2 = subData.B.RefGameObject.transform.position;
+                var p1 = subData.A.GetCenter();
+                var p2 = subData.B.GetCenter();
                 var btnP = (p1 + p2) / 2.0f;
 
 
@@ -374,7 +373,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
                     if (isClicked)
                     {
-                        Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
+                        Debug.Log(subData.A.ToString() + "-" + subData.B.ToString());
                         editorSystem.SelectedRoadNetworkElement = item;
                         return;
                     }
@@ -382,13 +381,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
 
-            // ノードが重複して描画されるので nodeEitorDataで走査
-            HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
-            foreach (var item in cns)
-            {
-                nodeEitorData.Add(item.A);
-                nodeEitorData.Add(item.B);
-            }
+            // ノード
+            var nodeEitorData = intersections;
 
             //foreach (var item in nodeEitorData)
             //{

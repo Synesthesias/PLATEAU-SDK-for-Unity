@@ -1334,17 +1334,17 @@ namespace PLATEAU.Editor.RoadNetwork
                 StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
                 foreach (var node in roadNetwork.Intersections)
                 {
-                    var name = sb.AppendFormat("Node{0}", id).ToString();
-                    var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    //var obj = new GameObject(name, typeof(MeshFilter));
-                    obj.transform.position = node.GetCenterPoint();
-                    obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
-                    //var obj = GameObject.InstantiateGameObjects(prefab,);
-                    //var obj = GameObject.Instantiate(
-                    //    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
-                    obj.name = name;
-                    obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
-                    var subData = new NodeEditorData(obj);
+                    //var name = sb.AppendFormat("Node{0}", id).ToString();
+                    //var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    ////var obj = new GameObject(name, typeof(MeshFilter));
+                    //obj.transform.position = node.GetCenterPoint();
+                    //obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
+                    ////var obj = GameObject.InstantiateGameObjects(prefab,);
+                    ////var obj = GameObject.Instantiate(
+                    ////    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
+                    //obj.name = name;
+                    //obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
+                    var subData = new NodeEditorData();
                     nodeEditorData.Add(node, subData);
 
                     id++;
@@ -1414,7 +1414,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         var node1 = linkGroup.NextIntersection;
                         var editorData = new EditorData<RnRoadGroup>(linkGroup);
 
-                        var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
+                        var cn = new LinkGroupEditorData(editorData, linkGroup.Roads);
                         // 同じものを格納済みかチェック
                         var isContain = false;
                         foreach (var group in linkGroups)
@@ -1619,8 +1619,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     var cameraPos = camera.transform.position;
                     var val = data.Value;
-                    var transform = val.RefGameObject.transform;
-                    transform.LookAt(cameraPos, Vector3.up);
                 }
                 if (camera)
                 {
@@ -1661,8 +1659,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
                     // way用の編集データがない場合は作成
-                    CreateWayEditorData(system, roadGroupEditorData, wayEditorDataList);
-
+                    if (wayEditorDataList == null)
+                    {
+                        CreateWayEditorData(system, roadGroupEditorData, wayEditorDataList);
+                    }
                     var isMouseOnViewport = true;
                     if (currentState == State.Default)
                     {
