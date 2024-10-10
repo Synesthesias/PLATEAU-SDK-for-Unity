@@ -1,6 +1,5 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PLATEAU.CityAdjust.NonLibData

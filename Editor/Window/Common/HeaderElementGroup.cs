@@ -71,6 +71,15 @@ namespace PLATEAU.Editor.Window.Common
                 case HeaderType.Header:
                     PlateauEditorStyle.Heading(headerText, null);
                     break;
+                case HeaderType.HeaderNum1:
+                    PlateauEditorStyle.Heading(headerText, "num1.png");
+                    break;
+                case HeaderType.HeaderNum2:
+                    PlateauEditorStyle.Heading(headerText, "num2.png");
+                    break;
+                case HeaderType.HeaderNum3:
+                    PlateauEditorStyle.Heading(headerText, "num3.png");
+                    break;
                 case HeaderType.Subtitle:
                     PlateauEditorStyle.SubTitle(headerText);
                     break;
@@ -89,7 +98,7 @@ namespace PLATEAU.Editor.Window.Common
 
     internal enum HeaderType
     {
-        Header, Subtitle, Separator
+        Header, Subtitle, Separator, HeaderNum1, HeaderNum2, HeaderNum3
     }
     
 }

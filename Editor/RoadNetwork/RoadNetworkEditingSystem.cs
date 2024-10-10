@@ -1,17 +1,12 @@
-﻿using Codice.Client.BaseCommands;
-using Codice.Client.Commands;
-using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using Unity.Plastic.Antlr3.Runtime;
 using UnityEditor;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
@@ -26,6 +21,22 @@ namespace PLATEAU.Editor.RoadNetwork
         //public RoadNetworkUIDoc UIDocEditor { get; }
         public IRoadNetworkEditOperation NetworkOperator { get; }
         public RoadNetworkSceneGUISystem SceneGUISystem { get; }
+    }
+    
+
+    /// <summary>
+    /// 道路ネットワークの編集モード
+    /// </summary>
+    public enum RoadNetworkEditMode
+    {
+        _EditLaneShape,
+        _EditLaneStructure,
+        EditTrafficRegulation,// 交通規制編集
+        _AddLane,    // debugOperationの機能を個々に移してもいいかも
+        _AddLink,    // debugOperationの機能を個々に移してもいいかも
+        _AddNode,    // debugOperationの機能を個々に移してもいいかも
+        _EditLaneWidth,    // debugOperationの機能を個々に移してもいいかも
+        EditRoadStructure,    // 道路構造編集
     }
 
     /// <summary>
@@ -96,20 +107,6 @@ namespace PLATEAU.Editor.RoadNetwork
         RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation);
     }
 
-    /// <summary>
-    /// 道路ネットワークの編集モード
-    /// </summary>
-    public enum RoadNetworkEditMode
-    {
-        _EditLaneShape,
-        _EditLaneStructure,
-        EditTrafficRegulation,// 交通規制編集
-        _AddLane,    // debugOperationの機能を個々に移してもいいかも
-        _AddLink,    // debugOperationの機能を個々に移してもいいかも
-        _AddNode,    // debugOperationの機能を個々に移してもいいかも
-        _EditLaneWidth,    // debugOperationの機能を個々に移してもいいかも
-        EditRoadStructure,    // 道路構造編集
-    }
 
     /// <summary>
     /// 道路ネットワーク編集システムのインスタンス

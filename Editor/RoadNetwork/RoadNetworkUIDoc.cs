@@ -1,14 +1,9 @@
-﻿using Codice.Client.Common;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
-using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
