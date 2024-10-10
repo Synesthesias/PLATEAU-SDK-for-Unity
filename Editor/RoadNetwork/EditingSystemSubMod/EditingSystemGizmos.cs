@@ -169,25 +169,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    if (wayEditorData.IsSelectable)
+                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                    var points = wayEditorData.Ref.Points;
+                    foreach (var p in points)
                     {
-                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
-                        var points = wayEditorData.Ref.Points;
-                        foreach (var p in points)
-                        {
-                            way.Add(p);
-                        }
+                        way.Add(p);
+                    }
                         
-                        var parent = wayEditorData.Parent;
-                        Debug.Assert(parent != null);
-                        if (parent.IsReverse == false)
-                        {
-                            leftLaneWayList.Add(way);
-                        }
-                        else
-                        {
-                            rightLaneWayList.Add(way);
-                        }
+                    var parent = wayEditorData.Parent;
+                    Debug.Assert(parent != null);
+                    if (parent.IsReverse == false)
+                    {
+                        leftLaneWayList.Add(way);
+                    }
+                    else
+                    {
+                        rightLaneWayList.Add(way);
                     }
                 }
 
@@ -205,17 +202,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    if (wayEditorData.IsSelectable)
+                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                    var points = wayEditorData.Ref.Points;
+                    foreach (var p in points)
                     {
-                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
-                        var points = wayEditorData.Ref.Points;
-                        foreach (var p in points)
-                        {
-                            way.Add(p);
-                        }
-
-                        sideWalks.Add(way);
+                        way.Add(p);
                     }
+
+                    sideWalks.Add(way);
                 }
 
                 // 中央分離帯のwayを描画
@@ -232,17 +226,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         continue;
                     }
 
-                    if (wayEditorData.IsSelectable)
+                    var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
+                    var points = wayEditorData.Ref.Points;
+                    foreach (var p in points)
                     {
-                        var way = new List<Vector3>(wayEditorData.Ref.Points.Count());
-                        var points = wayEditorData.Ref.Points;
-                        foreach (var p in points)
-                        {
-                            way.Add(p);
-                        }
-
-                        medianWayList.Add(way);
+                        way.Add(p);
                     }
+
+                    medianWayList.Add(way);
                 }
 
 
