@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -43,6 +44,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         private int mergeCellLength = 2;
         private float heightTolerance = 0.1f;
         private float removeMidPointTolerance = 0.3f;
+        private float lod1PointHeightTolerance = 1.5f;
 
         private int showVertexId = -1;
 
@@ -57,6 +59,10 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
                 RnEditorUtil.TargetToggle($"ID[{f.DebugMyId}]", work.InstanceHelper.TargetFaces, f);
                 EditorGUILayout.EnumFlagsField("RoadType", f.RoadTypes);
+                if (GUILayout.Button("Remove Inner Vertex"))
+                {
+                    f.RemoveInnerVertex();
+                }
             }
         }
         FaceEdit faceEdit = new FaceEdit();
@@ -142,7 +148,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                         target = InstanceHelper.CreateGraph();
                         if (mergeOnCreate)
                         {
-                            target.Graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                            target.Graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1PointHeightTolerance);
                         }
                     }
                     mergeOnCreate = EditorGUILayout.Toggle("MergeOnCreate", mergeOnCreate);
@@ -159,7 +165,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             {
                 if (GUILayout.Button("Optimize"))
                 {
-                    graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                    graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1PointHeightTolerance);
                 }
 
                 mergeCellSize = EditorGUILayout.FloatField("mergeCellSize", mergeCellSize);
@@ -172,6 +178,15 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 if (GUILayout.Button("InsertVertexInNearEdge"))
                 {
                     graph.InsertVertexInNearEdge(mergeCellSize);
+                }
+
+                if (GUILayout.Button("Lod1 Adjust Height"))
+                {
+                    var removed = graph.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1PointHeightTolerance);
+                    foreach (var r in removed)
+                    {
+                        DebugEx.DrawSphere(r.Position, 1f, Color.red, duration: 10);
+                    }
                 }
 
                 if (GUILayout.Button("Vertex Reduction"))

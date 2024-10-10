@@ -367,6 +367,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 非表示設定
             if (InVisibleObjects.Contains(sideWalk))
                 return;
+
             void DrawSideWalkWay(RnWay way, DrawOption op)
             {
                 if (op.visible == false)

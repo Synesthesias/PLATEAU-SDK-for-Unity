@@ -70,14 +70,10 @@ namespace PLATEAU.RoadNetwork.Tester
         /// <returns></returns>
         public async Task CreateNetwork()
         {
-            try
-            {
-                await Factory.CreateRnModelAsync(GetTargetCityObjects(), gameObject);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            var go = gameObject;
+            var targets = GetTargetCityObjects();
+            var req = Factory.CreateRequest(targets, go);
+            await Factory.CreateRnModelAsync(req);
         }
 
         /// <summary>

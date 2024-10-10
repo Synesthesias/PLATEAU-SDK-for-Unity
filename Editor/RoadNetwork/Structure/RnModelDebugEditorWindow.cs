@@ -451,7 +451,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
             var p = sideWalkEdit;
-            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");

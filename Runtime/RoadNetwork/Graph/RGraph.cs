@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -180,13 +181,23 @@ namespace PLATEAU.RoadNetwork.Graph
 
         /// <summary>
         /// 自分自身を外す.
-        /// keepLinkがtrueの時は自分がいなくなっても接続頂点同士のEdgeを貼って接続が消えないようにする
+        /// removeEdge = trueの時は自分を持っている辺も削除する
         /// </summary>
-        public void DisConnect()
+        public void DisConnect(bool removeEdge = false)
         {
-            // 自分を持っている辺を削除する
-            foreach (var e in Edges.ToList())
-                e.RemoveVertex(this);
+            if (removeEdge)
+            {
+                // 自分を持っている辺を削除する
+                foreach (var e in Edges.ToList())
+                    e.DisConnect();
+            }
+            else
+            {
+                // 自分を持っている辺から自分を削除する
+                foreach (var e in Edges.ToList())
+                    e.RemoveVertex(this);
+            }
+
         }
 
         /// <summary>
@@ -256,8 +267,14 @@ namespace PLATEAU.RoadNetwork.Graph
         /// </summary>
         public void MergeTo(RVertex dst, bool checkEdgeMerge = true)
         {
+            if (this == dst)
+            {
+                Debug.LogWarning("Merge self");
+                return;
+            }
             // srcに繋がっている辺に変更を通知する
-            foreach (var e in Edges.ToList())
+            var tmpEdges = Edges.ToList();
+            foreach (var e in tmpEdges)
             {
                 e.ChangeVertex(this, dst);
             }
@@ -442,7 +459,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 基本呼び出し禁止. 面のつながりを消す
+        /// 基本呼び出し禁止. 面のつながりを消す(親のFaceからのみ呼び出す)
         /// </summary>
         /// <param name="face"></param>
         public void RemoveFace(RFace face)
@@ -593,11 +610,10 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="checkFaceMerge"></param>
         public void MergeTo(REdge dst, bool checkFaceMerge = true)
         {
-            var addFaces =
-                Faces.Where(poly => dst.Faces.Contains(poly) == false).ToList();
-            foreach (var p in addFaces)
+            var tmpFaces = Faces.ToList();
+            foreach (var face in tmpFaces)
             {
-                p.ChangeEdge(this, dst);
+                face.ChangeEdge(this, dst);
             }
 
             // 最後に自分の接続は解除する
@@ -615,7 +631,7 @@ namespace PLATEAU.RoadNetwork.Graph
                     if (poly.IsSameEdges(queue[i]))
                     {
                         // 辺は全て同じなので高速化のため移動処理は行わない
-                        queue[i].TryMergeTo(poly, false);
+                        queue[i].TryMergeTo(poly);
                         queue.RemoveAt(i);
                     }
                     else
@@ -768,6 +784,9 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="to"></param>
         public void ChangeEdge(REdge from, REdge to)
         {
+            // fromを含んでいない場合は無視する
+            if (edges.Contains(from) == false)
+                return;
             RemoveEdge(from);
             AddEdge(to);
         }
@@ -791,7 +810,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// </summary>
         /// <param name="dst"></param>
         /// <param name="moveEdge"></param>
-        public bool TryMergeTo(RFace dst, bool moveEdge = true)
+        public bool TryMergeTo(RFace dst)
         {
             if (dst.CityObjectGroup && CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
             {
@@ -802,6 +821,7 @@ namespace PLATEAU.RoadNetwork.Graph
             dst.RoadTypes |= RoadTypes;
             dst.cityObjectGroup = CityObjectGroup;
             dst.LodLevel = Mathf.Max(dst.LodLevel, LodLevel);
+
             foreach (var e in Edges)
                 dst.AddEdge(e);
             DisConnect();
@@ -919,6 +939,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <returns></returns>
         public static RRoadTypeMask GetRoadType(this RVertex self, Func<RFace, bool> faceSelector)
         {
+            faceSelector ??= _ => true;
             RRoadTypeMask roadType = RRoadTypeMask.Empty;
             foreach (var face in self.GetFaces().Where(faceSelector))
             {
@@ -926,5 +947,25 @@ namespace PLATEAU.RoadNetwork.Graph
             }
             return roadType;
         }
+
+        /// <summary>
+        /// faceSelectorで指定したRFaceだけのLodLevelの最大値を取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="faceSelector"></param>
+        /// <returns></returns>
+        public static int GetMaxLodLevel(this RVertex self, Func<RFace, bool> faceSelector = null)
+        {
+            faceSelector ??= _ => true;
+            var lodLevel = 0;
+            foreach (var face in self.GetFaces().Where(faceSelector))
+            {
+                lodLevel = Mathf.Max(lodLevel, face.LodLevel);
+            }
+
+            return lodLevel;
+        }
+
+
     }
 }

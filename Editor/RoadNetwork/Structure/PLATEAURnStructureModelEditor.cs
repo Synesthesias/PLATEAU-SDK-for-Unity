@@ -37,8 +37,25 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 return target.RoadNetwork;
             }
 
-            public HashSet<object> InVisibleObjects => Drawer.InVisibleObjects;
-            public HashSet<object> SelectedObjects => Drawer.SelectedObjects;
+            public HashSet<object> InVisibleObjects
+            {
+                get
+                {
+                    if (!Drawer)
+                        return new HashSet<object>();
+                    return Drawer.InVisibleObjects;
+                }
+            }
+
+            public HashSet<object> SelectedObjects
+            {
+                get
+                {
+                    if (!Drawer)
+                        return new HashSet<object>();
+                    return Drawer.SelectedObjects;
+                }
+            }
 
             public bool IsSceneSelected(RnRoadBase roadBase)
             {
