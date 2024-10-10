@@ -4,7 +4,6 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph.Drawer
@@ -190,11 +189,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             return ret;
         }
 
-        private IEnumerable<PLATEAUCityObjectGroup> GetSelectedCityObjectGroups()
-        {
-            return Selection.gameObjects.Select(go => go.GetComponent<PLATEAUCityObjectGroup>()).Where(cog => cog != null);
-        }
-
         private void Draw(VertexOption op, RVertex vertex, DrawWork work)
         {
             if (op.visible == false)
@@ -273,11 +267,9 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             work.visitedFaces.Add(face);
             if (onlySelectedCityObjectGroupVisible)
             {
-#if UNITY_EDITOR
-                var show = GetSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
+                var show = RnEx.GetSceneSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
                 if (show == false)
                     return;
-#endif
             }
 
             var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)

@@ -340,6 +340,7 @@ namespace PLATEAU.RoadNetwork.CityObject
             var d = new Vector2[3];
             var e = new Vector2[3];
             var cross = new float[3];
+            // TODO : 全探索しているので効率悪い
             for (var index = 0; index < mesh.triangles.Length; index += 3)
             {
                 for (var x = 0; x < 3; x++)

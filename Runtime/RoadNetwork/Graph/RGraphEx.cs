@@ -45,7 +45,7 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        public static RGraph Create(List<SubDividedCityObject> cityObjects)
+        public static RGraph Create(List<SubDividedCityObject> cityObjects, bool useOutline)
         {
             var graph = new RGraph();
             Dictionary<Vector3, RVertex> vertexMap = new Dictionary<Vector3, RVertex>();
@@ -72,16 +72,27 @@ namespace PLATEAU.RoadNetwork.Graph
                     }).ToList();
                     foreach (var s in mesh.SubMeshes)
                     {
-                        var separated = s.Separate();
-                        foreach (var m in separated)
+                        if (useOutline)
                         {
-                            for (var i = 0; i < m.Triangles.Count; i += 3)
+                            var indexTable = s.CreateOutlineIndices();
+                            foreach (var indices in indexTable)
                             {
-                                var e0 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[m.Triangles[i]], vertices[m.Triangles[i + 1]])
+                                for (var i = 0; i < indices.Count; i++)
+                                {
+                                    var e0 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[indices[i]], vertices[indices[(i + 1) % indices.Count]]), e => new REdge(e.V0, e.V1));
+                                    face.AddEdge(e0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (var i = 0; i < s.Triangles.Count; i += 3)
+                            {
+                                var e0 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[s.Triangles[i]], vertices[s.Triangles[i + 1]])
                                     , e => new REdge(e.V0, e.V1));
-                                var e1 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[m.Triangles[i + 1]], vertices[m.Triangles[i + 2]])
+                                var e1 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[s.Triangles[i + 1]], vertices[s.Triangles[i + 2]])
                                     , e => new REdge(e.V0, e.V1));
-                                var e2 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[m.Triangles[i + 2]], vertices[m.Triangles[i]])
+                                var e2 = edgeMap.GetValueOrCreate(new EdgeKey(vertices[s.Triangles[i + 2]], vertices[s.Triangles[i]])
                                     , e => new REdge(e.V0, e.V1));
                                 var edges = new[] { e0, e1, e2 };
                                 foreach (var e in edges)
@@ -90,6 +101,7 @@ namespace PLATEAU.RoadNetwork.Graph
                                 }
                             }
                         }
+
                     }
                     graph.AddFace(face);
                 }
@@ -386,6 +398,7 @@ namespace PLATEAU.RoadNetwork.Graph
         public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance, float lod1HeightTolerance)
         {
             self.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1HeightTolerance);
+            self.EdgeReduction();
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
             self.EdgeReduction();
             self.InsertVertexInNearEdge(midPointTolerance);

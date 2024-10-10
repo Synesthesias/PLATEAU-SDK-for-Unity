@@ -17,20 +17,14 @@ namespace PLATEAU.RoadNetwork.Graph
         public float removeMidPointTolerance = 0.3f;
         // LOD1モデルは高さ情報がないため、高さの許容誤差を設定する
         public float lod1HeightTolerance = 1.5f;
-        public bool useOutlineOnly = false;
+        public bool useCityObjectOutline = true;
         // --------------------
         // end:フィールド
         // --------------------
 
         public RGraph CreateGraph(List<SubDividedCityObject> cityObjects)
         {
-            var graph = RGraphEx.Create(cityObjects);
-
-            if (useOutlineOnly)
-            {
-                graph.EdgeReduction();
-                graph.RemoveInnerVertex();
-            }
+            var graph = RGraphEx.Create(cityObjects, useCityObjectOutline);
 
             if (reductionOnCreate)
                 Reduction(graph);

@@ -6,6 +6,9 @@ using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Util
@@ -49,6 +52,18 @@ namespace PLATEAU.RoadNetwork.Util
 
     public static class RnEx
     {
+        /// <summary>
+        /// EditorのScene上で選択されているPLATEAUCityObjectGroupを取得する(Editorのみ)
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<PLATEAUCityObjectGroup> GetSceneSelectedCityObjectGroups()
+        {
+#if UNITY_EDITOR
+            return Selection.gameObjects.Select(go => go.GetComponent<PLATEAUCityObjectGroup>()).Where(cog => cog != null);
+#else
+            return Enumerable.Empty<PLATEAUCityObjectGroup>();
+#endif
+        }
         public static CombSet2<T> CombSet<T>(T a, T b)
         {
             return new CombSet2<T>(a, b);
@@ -82,35 +97,6 @@ namespace PLATEAU.RoadNetwork.Util
         {
             for (var i = 0; i < self.RootNodesCount; ++i)
                 yield return self.GetRootNodeAt(i);
-        }
-
-        /// <summary>
-        /// targetsの頂点をマージする
-        /// </summary>
-        /// <param name="targets"></param>
-        /// <param name="mergeEpsilon"></param>
-        /// <param name="mergeCellLength"></param>
-        /// <returns></returns>
-        public static List<SubDividedCityObject> MergeVertices(List<SubDividedCityObject> targets, float mergeEpsilon, int mergeCellLength)
-        {
-            try
-            {
-                var ret = targets.Select(c => c.DeepCopy()).ToList();
-                var vertexTable = GeoGraphEx.MergeVertices(
-                    ret.SelectMany(c => c.Meshes.SelectMany(m => m.Vertices)),
-                    mergeEpsilon, mergeCellLength);
-                foreach (var m in ret.SelectMany(c => c.Meshes))
-                {
-                    m.Merge(vertexTable);
-                }
-
-                return ret;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                return new List<SubDividedCityObject>();
-            }
         }
 
         /// <summary>
