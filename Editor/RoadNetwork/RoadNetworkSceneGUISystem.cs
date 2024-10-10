@@ -341,7 +341,6 @@ namespace PLATEAU.Editor.RoadNetwork
         public Color connectionColor = Color.blue;
 
         public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
-        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -368,8 +367,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 var subData = item.GetSubData<LinkGroupEditorData>();
 
-                var p1 = subData.A.RefGameObject.transform.position;
-                var p2 = subData.B.RefGameObject.transform.position;
+                var p1 = subData.A.GetCenter();
+                var p2 = subData.B.GetCenter();
                 var btnP = (p1 + p2) / 2.0f;
 
 
@@ -383,7 +382,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
                     if (isClicked)
                     {
-                        Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
+                        Debug.Log(subData.A.ToString() + "-" + subData.B.ToString());
                         editorSystem.SelectedRoadNetworkElement = item;
                         return;
                     }
@@ -391,13 +390,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
 
-            // ノードが重複して描画されるので nodeEitorDataで走査
-            HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
-            foreach (var item in cns)
-            {
-                nodeEitorData.Add(item.A);
-                nodeEitorData.Add(item.B);
-            }
+            // ノード
+            var nodeEitorData = intersections;
 
             //foreach (var item in nodeEitorData)
             //{
@@ -495,41 +489,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     unionWay = ways.ToList();
 
-                    // 仕様上動かしてはいけないwayを除外する
-                    //// レーンが一つの場合は必ず歩道に接するので
-                    //if (lanes.Count == 1)
-                    //{
-                    //    unionWay.Clear();
-                    //}
-                    //else if (lanes.Count > 0)
-                    //{
-                    //    unionWay.Remove(lanes[0].LeftWay);
-                    //    var otherLane = lanes[lanes.Count - 1];
-                    //    unionWay.Remove(otherLane.RightWay);
-                    //}
-
-                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    //var nSlider = unionWay.Count; // 左右の
-                    if (wayEditorDataList == null)
-                    {
-                        //wayEditorDataList = new List<WayEditorData>(nSlider);
-                        //foreach (var editingTarget in unionWay)
-                        //{
-                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        //}
-                        //roadGroupEditorData.TryAdd(wayEditorDataList);
-                    }
-
-                    Assert.IsNotNull(wayEditorDataList);
-                    //if (wayEditorDataList.Count != nSlider)
-                    //{
-                    //    wayEditorDataList.Clear();
-                    //    wayEditorDataList.Capacity = nSlider;
-                    //    foreach (var editingTarget in unionWay)
-                    //    {
-                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
-                    //    }
-                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
                     //GUILayout.BeginVertical();
@@ -556,28 +515,28 @@ namespace PLATEAU.Editor.RoadNetwork
                     GUILayout.EndArea();
                     Handles.EndGUI();
 
-                    // 変更あったものに対してのみ差分を適用する
-                    foreach (var wayEditorData in wayEditorDataList)
-                    {
-                        if (wayEditorData.IsChanged == false)
-                        {
-                            continue;
-                        }
+                    //// 変更あったものに対してのみ差分を適用する
+                    //foreach (var wayEditorData in wayEditorDataList)
+                    //{
+                    //    if (wayEditorData.IsChanged == false)
+                    //    {
+                    //        continue;
+                    //    }
 
-                        var target = wayEditorData.Ref;
+                    //    var target = wayEditorData.Ref;
 
-                        // デフォルトの状態に戻す
-                        var baseWay = wayEditorData.BaseWay;
-                        for (int i = 0; i < baseWay.Count; i++)
-                        {
-                            var p = baseWay[i];
-                            var p2 = target.GetPoint(i);
-                            p2.Vertex = p;
-                        }
-                        var offset = wayEditorData.SliderVarVals;
-                        target.MoveAlongNormal(offset);
-                        Debug.Log($"way.MoveAlongNormal({offset})");
-                    }
+                    //    // デフォルトの状態に戻す
+                    //    var baseWay = wayEditorData.BaseWay;
+                    //    for (int i = 0; i < baseWay.Count; i++)
+                    //    {
+                    //        var p = baseWay[i];
+                    //        var p2 = target.GetPoint(i);
+                    //        p2.Vertex = p;
+                    //    }
+                    //    var offset = wayEditorData.SliderVarVals;
+                    //    target.MoveAlongNormal(offset);
+                    //    Debug.Log($"way.MoveAlongNormal({offset})");
+                    //}
                 }
                 else // 詳細モードでのみ表示
                 {
