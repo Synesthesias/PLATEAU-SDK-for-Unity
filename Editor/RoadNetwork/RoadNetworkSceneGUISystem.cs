@@ -486,41 +486,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     unionWay = ways.ToList();
 
-                    // 仕様上動かしてはいけないwayを除外する
-                    //// レーンが一つの場合は必ず歩道に接するので
-                    //if (lanes.Count == 1)
-                    //{
-                    //    unionWay.Clear();
-                    //}
-                    //else if (lanes.Count > 0)
-                    //{
-                    //    unionWay.Remove(lanes[0].LeftWay);
-                    //    var otherLane = lanes[lanes.Count - 1];
-                    //    unionWay.Remove(otherLane.RightWay);
-                    //}
-
-                    //var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    //var nSlider = unionWay.Count; // 左右の
-                    //if (wayEditorDataList == null)
-                    {
-                        //wayEditorDataList = new List<WayEditorData>(nSlider);
-                        //foreach (var editingTarget in unionWay)
-                        //{
-                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        //}
-                        //roadGroupEditorData.TryAdd(wayEditorDataList);
-                    }
-
-                    //Assert.IsNotNull(wayEditorDataList);
-                    //if (wayEditorDataList.Count != nSlider)
-                    //{
-                    //    wayEditorDataList.Clear();
-                    //    wayEditorDataList.Capacity = nSlider;
-                    //    foreach (var editingTarget in unionWay)
-                    //    {
-                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
-                    //    }
-                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
                     //GUILayout.BeginVertical();
