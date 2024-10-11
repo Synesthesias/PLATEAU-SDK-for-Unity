@@ -535,7 +535,6 @@ namespace PLATEAU.RoadNetwork.Graph
                         return false;
                     return removeEdges.Contains(e) == false;
                 }).ToList();
-                var shareMid = 0.3f * 0.3f;
                 foreach (var e0 in removeEdges)
                 {
                     var s0 = new LineSegment3D(e0.V0.Position, e0.V1.Position);
