@@ -721,10 +721,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 if (x is RnRoad r)
                 {
+                    if (r.ParentModel != roadNetwork)
+                        continue;
                     DrawRoad(r, VisibleType.GuiSelected);
                 }
                 else if (x is RnIntersection i)
                 {
+                    if (i.ParentModel != roadNetwork)
+                        continue;
                     DrawIntersection(i, VisibleType.GuiSelected);
                 }
                 else if (x is RnLane l)
