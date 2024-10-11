@@ -20,6 +20,9 @@ namespace PLATEAU.RoadNetwork.CityObject
 {
     public class SubDividedCityObjectFactory
     {
+        /*
+         * UnityMeshToDllModelConverterからコピペして作成している
+         */
         public class CityObjectInfo
         {
             public Transform Transform { get; set; }
@@ -256,11 +259,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                 }
             }
 
-            Material[] materials = null;
-
             var dllSubMeshes = unityMeshToDllSubMeshConverter.Convert(unityMesh, null);
-
-
             Assert.AreEqual(plateauUv1.Length, plateauVertices.Length);
 
             var dllMesh = PolygonMesh.Mesh.Create(
@@ -288,46 +287,6 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
 
             return dllMesh;
-        }
-
-        public static float ApplyHeight(Vector2 v, float[,] heightMap, Vector2 min, Vector2 max, float cellSize)
-        {
-            var c = (Vector2.Min(max, v) - min) / cellSize;
-            var lt = Vector2IntEx.Clamp(c.FloorToInt(), Vector2Int.zero, new Vector2Int(heightMap.GetLength(0) - 1, heightMap.GetLength(1) - 1));
-            var rb = Vector2IntEx.Clamp(c.CeilToInt(), Vector2Int.zero, new Vector2Int(heightMap.GetLength(0) - 1, heightMap.GetLength(1) - 1));
-
-            var h0 = heightMap[lt.x, lt.y];
-            var h1 = heightMap[rb.x, lt.y];
-            var h2 = heightMap[lt.x, rb.y];
-            var h3 = heightMap[rb.x, rb.y];
-
-            var dx = c.x - lt.x;
-            var dy = c.y - lt.y;
-            return (1f - dx) * (1f - dy) * h0
-                   + dx * (1f - dy) * h1
-                   + (1f - dx) * dy * h2
-                   + dx * dy * h3;
-        }
-
-        public static (float[,] heightMap, Vector2 min, Vector3 max, float cellSize) CreateHeightMap(Vector3[] vertices, float cellSize)
-        {
-            var min = vertices.Aggregate(vertices[0], (a, b) => Vector3.Min(a, b)).Xz();
-            var max = vertices.Aggregate(vertices[0], (a, b) => Vector3.Max(a, b)).Xz();
-            var c = ((max - min) / cellSize).CeilToInt();
-            var heightMap = new float[c.x + 1, c.y + 1];
-
-            for (var i = 0; i < c.x; ++i)
-                for (var j = 0; j < c.y; j++)
-                    heightMap[i, j] = float.MinValue;
-            // #TODO : 間に入っていないもの
-            foreach (var v in vertices)
-            {
-                var x = ((v.Xz() - min) / cellSize).FloorToInt();
-                if (x.x < 0 || x.x > c.x || x.y < 0 || x.y > c.y)
-                    continue;
-                heightMap[x.x, x.y] = v.y;
-            }
-            return (heightMap, min, max, cellSize);
         }
 
         public static bool TryGetHeight(Vector2 v, Mesh mesh, out float height)
@@ -400,7 +359,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                 var info = CityObjectInfo.Create(cityObjectGroup, useContourMesh);
                 cityInfos.Add(info);
             }
-            var nativeOption = new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1);
+            var nativeOption = new GranularityConvertOption(ConvertGranularity.PerAtomicFeatureObject, 1);
 
             var transformList = new UniqueParentTransformList(cityInfos.Select(c => c.Transform).ToArray());
 
