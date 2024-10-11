@@ -1,8 +1,9 @@
-﻿using PLATEAU.RoadNetwork.Graph;
+﻿using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.CityObject.Drawer
@@ -14,8 +15,11 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
         // start:フィールド
         // --------------------
         public bool visible = false;
+        // シーン上で選択中のCityObjectGroupのみ表示する
+        public bool onlySelectedCityObjectGroupVisible = true;
         public int meshColorNum = 16;
         public bool showVertexIndex = false;
+        public bool showOutline = false;
         public int showVertexIndexFontSize = 8;
 
         public HashSet<SubDividedCityObject> TargetCityObjects { get; } = new();
@@ -35,9 +39,9 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
 
                 var v = new[]
                 {
-                    mat * v0,
-                    mat * v1,
-                    mat * v2
+                    mat * v0.Xyza(1f),
+                    mat * v1.Xyza(1f),
+                    mat * v2.Xyza(1f)
                 }.Select(x => new Vector3(x.x, x.y, x.z));
                 DebugEx.DrawLines(v, true, color, duration, depthTest);
             }
@@ -50,7 +54,13 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             var index = 0;
             foreach (var item in cityObjects)
             {
-                if (item.Visible == false || (TargetCityObjects.Any() && TargetCityObjects.Contains(item) == false))
+
+                var coVisible =
+                    item.Visible &&
+                    (!TargetCityObjects.Any() || TargetCityObjects.Contains(item)) &&
+                    (onlySelectedCityObjectGroupVisible == false || RnEx.GetSceneSelectedCityObjectGroups().Any(cog => item.CityObjectGroup == cog));
+
+                if (coVisible == false)
                 {
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);
@@ -59,6 +69,29 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
 
                 foreach (var mesh in item.Meshes)
                 {
+
+                    if (showOutline)
+                    {
+                        foreach (var subMesh in mesh.SubMeshes)
+                        {
+                            var polyIndices = subMesh.CreateOutlineIndices();
+                            foreach (var indices in polyIndices)
+                            {
+                                for (var i = 0; i < indices.Count; i++)
+                                {
+                                    var v0 = mesh.Vertices[indices[i]];
+                                    var v1 = mesh.Vertices[indices[(i + 1) % indices.Count]];
+
+                                    DebugEx.DrawLine(v0, v1, color: DebugEx.GetDebugColor(index, meshColorNum),
+                                        duration: 0f, depthTest: true);
+                                }
+                                index++;
+                            }
+                        }
+
+                        continue;
+                    }
+
                     if (showVertexIndex)
                     {
                         //foreach (var v in mesh.Vertices)
@@ -71,7 +104,9 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
 
                     foreach (var subMesh in mesh.SubMeshes)
                     {
-                        DrawMesh(mesh, subMesh, Matrix4x4.identity, color: DebugEx.GetDebugColor(index, meshColorNum));
+
+                        var mat = item.CityObjectGroup.transform.localToWorldMatrix;
+                        DrawMesh(mesh, subMesh, mat, color: DebugEx.GetDebugColor(index, meshColorNum));
                         index++;
                     }
                 }

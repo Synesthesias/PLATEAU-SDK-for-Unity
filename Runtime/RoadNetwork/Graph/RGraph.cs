@@ -1,4 +1,5 @@
-using PLATEAU.CityInfo;
+ï»¿using PLATEAU.CityInfo;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,37 +9,37 @@ using UnityEngine.Assertions;
 namespace PLATEAU.RoadNetwork.Graph
 {
     /// <summary>
-    /// “¹˜Hƒ^ƒCƒv
+    /// é“è·¯ã‚¿ã‚¤ãƒ—
     /// </summary>
     [Flags]
     public enum RRoadTypeMask
     {
         /// <summary>
-        /// ‰½‚à‚È‚µ
+        /// ä½•ã‚‚ãªã—
         /// </summary>
         Empty = 0,
         /// <summary>
-        /// Ô“¹
+        /// è»Šé“
         /// </summary>
         Road = 1 << 0,
         /// <summary>
-        /// •à“¹
+        /// æ­©é“
         /// </summary>
         SideWalk = 1 << 1,
         /// <summary>
-        /// ’†‰›•ª—£‘Ñ
+        /// ä¸­å¤®åˆ†é›¢å¸¯
         /// </summary>
         Median = 1 << 2,
         /// <summary>
-        /// ‚‘¬“¹˜H
+        /// é«˜é€Ÿé“è·¯
         /// </summary>
         HighWay = 1 << 3,
         /// <summary>
-        /// •s³‚È’l
+        /// ä¸æ­£ãªå€¤
         /// </summary>
         Undefined = 1 << 4,
         /// <summary>
-        /// ‘S‚Ä‚Ì’l
+        /// å…¨ã¦ã®å€¤
         /// </summary>
         All = ~0
     }
@@ -46,7 +47,7 @@ namespace PLATEAU.RoadNetwork.Graph
     public static class RRoadTypeEx
     {
         /// <summary>
-        /// Ô“¹•”•ª
+        /// è»Šé“éƒ¨åˆ†
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -56,7 +57,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Œğ’Ê“¹˜H
+        /// äº¤é€šé“è·¯
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -66,7 +67,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// •à“¹
+        /// æ­©é“
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -76,7 +77,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// •à“¹
+        /// æ­©é“
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -86,7 +87,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// self‚ªflag‚Ì‚Ç‚ê‚©‚ğ‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
+        /// selfãŒflagã®ã©ã‚Œã‹ã‚’æŒã£ã¦ã„ã‚‹ã‹ã©ã†ã‹
         /// </summary>
         /// <param name="self"></param>
         /// <param name="flag"></param>
@@ -98,32 +99,32 @@ namespace PLATEAU.RoadNetwork.Graph
     }
 
     /// <summary>
-    /// Ú“_
+    /// æ¥ç‚¹
     /// </summary>
     [Serializable]
     public class RVertex : ARnParts<RVertex>
     {
         //----------------------------------
-        // start: ƒtƒB[ƒ‹ƒh
+        // start: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
 
         /// <summary>
-        /// Ú‘±•Ó
+        /// æ¥ç¶šè¾º
         /// </summary>
         private HashSet<REdge> edges = new HashSet<REdge>();
 
         /// <summary>
-        /// ˆÊ’u
+        /// ä½ç½®
         /// </summary>
         [field: SerializeField]
         public Vector3 Position { get; set; }
 
         //----------------------------------
-        // start: ƒtƒB[ƒ‹ƒh
+        // start: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
 
         /// <summary>
-        /// Ú‘±•Ó
+        /// æ¥ç¶šè¾º
         /// </summary>
         public IReadOnlyCollection<REdge> Edges => edges;
 
@@ -158,7 +159,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Šî–{ŒÄ‚Ño‚µ‹Ö~. Ú‘±•Ó’Ç‰Á
+        /// åŸºæœ¬å‘¼ã³å‡ºã—ç¦æ­¢. æ¥ç¶šè¾ºè¿½åŠ 
         /// </summary>
         /// <param name="edge"></param>
         public void AddEdge(REdge edge)
@@ -170,7 +171,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Šî–{ŒÄ‚Ño‚µ‹Ö~. Ú‘±•Óíœ
+        /// åŸºæœ¬å‘¼ã³å‡ºã—ç¦æ­¢. æ¥ç¶šè¾ºå‰Šé™¤
         /// </summary>
         /// <param name="edge"></param>
         public void RemoveEdge(REdge edge)
@@ -179,28 +180,38 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ©•ª©g‚ğŠO‚·.
-        /// keepLink‚ªtrue‚Ì‚Í©•ª‚ª‚¢‚È‚­‚È‚Á‚Ä‚àÚ‘±’¸“_“¯m‚ÌEdge‚ğ“\‚Á‚ÄÚ‘±‚ªÁ‚¦‚È‚¢‚æ‚¤‚É‚·‚é
+        /// è‡ªåˆ†è‡ªèº«ã‚’å¤–ã™.
+        /// removeEdge = trueã®æ™‚ã¯è‡ªåˆ†ã‚’æŒã£ã¦ã„ã‚‹è¾ºã‚‚å‰Šé™¤ã™ã‚‹
         /// </summary>
-        public void DisConnect()
+        public void DisConnect(bool removeEdge = false)
         {
-            // ©•ª‚ğ‚Á‚Ä‚¢‚é•Ó‚ğíœ‚·‚é
-            foreach (var e in Edges.ToList())
-                e.RemoveVertex(this);
+            if (removeEdge)
+            {
+                // è‡ªåˆ†ã‚’æŒã£ã¦ã„ã‚‹è¾ºã‚’å‰Šé™¤ã™ã‚‹
+                foreach (var e in Edges.ToList())
+                    e.DisConnect();
+            }
+            else
+            {
+                // è‡ªåˆ†ã‚’æŒã£ã¦ã„ã‚‹è¾ºã‹ã‚‰è‡ªåˆ†ã‚’å‰Šé™¤ã™ã‚‹
+                foreach (var e in Edges.ToList())
+                    e.RemoveVertex(this);
+            }
+
         }
 
         /// <summary>
-        /// ©•ª©g‚ğ‰ğœ‚·‚é‚¤‚¦‚Å, ¡‚Ü‚Å‚ ‚Á‚½‚Â‚È‚ª‚è‚Íc‚·‚æ‚¤‚É‚·‚é
+        /// è‡ªåˆ†è‡ªèº«ã‚’è§£é™¤ã™ã‚‹ã†ãˆã§, ä»Šã¾ã§ã‚ã£ãŸã¤ãªãŒã‚Šã¯æ®‹ã™ã‚ˆã†ã«ã™ã‚‹
         /// </summary>
         public void DisConnectWithKeepLink()
         {
             var neighbors = GetNeighborVertices().ToList();
 
-            // ©•ª‚ÆŒq‚ª‚Á‚Ä‚¢‚é•Ó‚Íˆê’Uíœ
+            // è‡ªåˆ†ã¨ç¹‹ãŒã£ã¦ã„ã‚‹è¾ºã¯ä¸€æ—¦å‰Šé™¤
             foreach (var e in Edges.ToList())
                 e.DisConnect();
 
-            // “\‚è‚È‚¨‚·
+            // è²¼ã‚ŠãªãŠã™
             for (var i = 0; i < neighbors.Count; i++)
             {
                 var v0 = neighbors[i];
@@ -213,14 +224,14 @@ namespace PLATEAU.RoadNetwork.Graph
                         continue;
                     if (v0.IsNeighbor(v1))
                         continue;
-                    // V‚µ‚¢•Ó‚ğì¬‚·‚é
+                    // æ–°ã—ã„è¾ºã‚’ä½œæˆã™ã‚‹
                     var _ = new REdge(v0, v1);
                 }
             }
         }
 
         /// <summary>
-        /// —×Ú’¸“_‚ğæ“¾
+        /// éš£æ¥é ‚ç‚¹ã‚’å–å¾—
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RVertex> GetNeighborVertices()
@@ -241,7 +252,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// other‚Æ‚Ì’¼Ú‚Ì•Ó‚ğ‚Á‚Ä‚¢‚é‚©
+        /// otherã¨ã®ç›´æ¥ã®è¾ºã‚’æŒã£ã¦ã„ã‚‹ã‹
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
@@ -252,20 +263,26 @@ namespace PLATEAU.RoadNetwork.Graph
 
 
         /// <summary>
-        /// ©g‚ğdst‚Éƒ}[ƒW‚·‚é
+        /// è‡ªèº«ã‚’dstã«ãƒãƒ¼ã‚¸ã™ã‚‹
         /// </summary>
         public void MergeTo(RVertex dst, bool checkEdgeMerge = true)
         {
-            // src‚ÉŒq‚ª‚Á‚Ä‚¢‚é•Ó‚É•ÏX‚ğ’Ê’m‚·‚é
-            foreach (var e in Edges.ToList())
+            if (this == dst)
+            {
+                Debug.LogWarning("Merge self");
+                return;
+            }
+            // srcã«ç¹‹ãŒã£ã¦ã„ã‚‹è¾ºã«å¤‰æ›´ã‚’é€šçŸ¥ã™ã‚‹
+            var tmpEdges = Edges.ToList();
+            foreach (var e in tmpEdges)
             {
                 e.ChangeVertex(this, dst);
             }
-            // ©•ª‚ÌÚ‘±‚Í‰ğœ‚·‚é
+            // è‡ªåˆ†ã®æ¥ç¶šã¯è§£é™¤ã™ã‚‹
             DisConnect();
             if (checkEdgeMerge == false)
                 return;
-            // “¯‚¶’¸“_‚ğ‚Á‚Ä‚¢‚é•Ó‚àƒ}[ƒW‚·‚é
+            // åŒã˜é ‚ç‚¹ã‚’æŒã£ã¦ã„ã‚‹è¾ºã‚‚ãƒãƒ¼ã‚¸ã™ã‚‹
             var queue = dst.Edges.ToList();
             while (queue.Any())
             {
@@ -289,7 +306,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
 
     /// <summary>
-    /// •Ó
+    /// è¾º
     /// </summary>
     [Serializable]
     public class REdge
@@ -302,46 +319,46 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         //----------------------------------
-        // start: ƒtƒB[ƒ‹ƒh
+        // start: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
 
         /// <summary>
-        /// Ú‘±–Ê
+        /// æ¥ç¶šé¢
         /// </summary>
         private HashSet<RFace> faces = new HashSet<RFace>();
 
         /// <summary>
-        /// \¬’¸“_(2ŒÂ)
+        /// æ§‹æˆé ‚ç‚¹(2å€‹)
         /// </summary>
         [SerializeField]
         private RVertex[] vertices = new RVertex[2];
 
         //----------------------------------
-        // end: ƒtƒB[ƒ‹ƒh
+        // end: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
 
         /// <summary>
-        /// ŠJn“_
+        /// é–‹å§‹ç‚¹
         /// </summary>
         public RVertex V0 => GetVertex(VertexType.V0);
 
         /// <summary>
-        /// I—¹“_
+        /// çµ‚äº†ç‚¹
         /// </summary>
         public RVertex V1 => GetVertex(VertexType.V1);
 
         /// <summary>
-        /// Ú‘±–Ê
+        /// æ¥ç¶šé¢
         /// </summary>
         public IReadOnlyCollection<RFace> Faces => faces;
 
         /// <summary>
-        /// \¬’¸“_(2ŒÂ)
+        /// æ§‹æˆé ‚ç‚¹(2å€‹)
         /// </summary>
         public IReadOnlyList<RVertex> Vertices => vertices;
 
         /// <summary>
-        /// —LŒø‚È•Ó‚©‚Ç‚¤‚©. 2‚Â‚Ì’¸“_‚ª‘¶İ‚µ‚ÄA‚©‚ÂˆÙ‚È‚é‚©‚Ç‚¤‚©
+        /// æœ‰åŠ¹ãªè¾ºã‹ã©ã†ã‹. 2ã¤ã®é ‚ç‚¹ãŒå­˜åœ¨ã—ã¦ã€ã‹ã¤ç•°ãªã‚‹ã‹ã©ã†ã‹
         /// </summary>
         public bool IsValid => V0 != null && V1 != null && V0 != V1;
 
@@ -352,7 +369,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// —×Ú‚µ‚Ä‚¢‚éEdge‚ğæ“¾
+        /// éš£æ¥ã—ã¦ã„ã‚‹Edgeã‚’å–å¾—
         /// </summary>
         /// <returns></returns>
         public IEnumerable<REdge> GetNeighborEdges()
@@ -377,7 +394,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ’¸“_ƒm[ƒhæ“¾
+        /// é ‚ç‚¹ãƒãƒ¼ãƒ‰å–å¾—
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -387,7 +404,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ’¸“_ƒm[ƒh‚ğ·‚µ‘Ö‚¦
+        /// é ‚ç‚¹ãƒãƒ¼ãƒ‰ã‚’å·®ã—æ›¿ãˆ
         /// </summary>
         /// <param name="type"></param>
         /// <param name="vertex"></param>
@@ -403,9 +420,9 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ’¸“_from -> to‚É•ÏX‚·‚é
-        /// from‚ğ‚Á‚Ä‚¢‚È‚¢ê‡‚Í–³‹
-        /// •ÏX‚µ‚½Œ‹‰Ê—¼•û‚Æ‚àto‚É‚È‚éê‡‚ÍÚ‘±‚ª‰ğœ‚³‚ê‚é
+        /// é ‚ç‚¹from -> toã«å¤‰æ›´ã™ã‚‹
+        /// fromã‚’æŒã£ã¦ã„ãªã„å ´åˆã¯ç„¡è¦–
+        /// å¤‰æ›´ã—ãŸçµæœä¸¡æ–¹ã¨ã‚‚toã«ãªã‚‹å ´åˆã¯æ¥ç¶šãŒè§£é™¤ã•ã‚Œã‚‹
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -413,7 +430,7 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             if (V0 == from)
             {
-                // —¼•û‚Æ‚àto‚É‚È‚éê‡‚ÍÚ‘±‚ª‰ğœ‚³‚ê‚é
+                // ä¸¡æ–¹ã¨ã‚‚toã«ãªã‚‹å ´åˆã¯æ¥ç¶šãŒè§£é™¤ã•ã‚Œã‚‹
                 if (V1 == to)
                     DisConnect();
                 else
@@ -422,7 +439,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
             if (V1 == from)
             {
-                // —¼•û‚Æ‚àto‚É‚È‚éê‡‚ÍÚ‘±‚ª‰ğœ‚³‚ê‚é
+                // ä¸¡æ–¹ã¨ã‚‚toã«ãªã‚‹å ´åˆã¯æ¥ç¶šãŒè§£é™¤ã•ã‚Œã‚‹
                 if (V0 == to)
                     DisConnect();
                 else
@@ -431,7 +448,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Šî–{ŒÄ‚Ño‚µ‹Ö~. —×Ú–Ê’Ç‰Á
+        /// åŸºæœ¬å‘¼ã³å‡ºã—ç¦æ­¢. éš£æ¥é¢è¿½åŠ 
         /// </summary>
         /// <param name="face"></param>
         public void AddFace(RFace face)
@@ -442,7 +459,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Šî–{ŒÄ‚Ño‚µ‹Ö~. –Ê‚Ì‚Â‚È‚ª‚è‚ğÁ‚·
+        /// åŸºæœ¬å‘¼ã³å‡ºã—ç¦æ­¢. é¢ã®ã¤ãªãŒã‚Šã‚’æ¶ˆã™(è¦ªã®Faceã‹ã‚‰ã®ã¿å‘¼ã³å‡ºã™)
         /// </summary>
         /// <param name="face"></param>
         public void RemoveFace(RFace face)
@@ -451,7 +468,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ’¸“_‚ğíœ‚·‚é
+        /// é ‚ç‚¹ã‚’å‰Šé™¤ã™ã‚‹
         /// </summary>
         /// <param name="vertex"></param>
         public void RemoveVertex(RVertex vertex)
@@ -463,17 +480,17 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é
+        /// è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹
         /// </summary>
         public void DisConnect()
         {
-            // q‚É©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é‚æ‚¤‚É“`‚¦‚é
+            // å­ã«è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹ã‚ˆã†ã«ä¼ãˆã‚‹
             foreach (var v in vertices.ToList())
             {
                 v?.RemoveEdge(this);
             }
 
-            // e‚É©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é‚æ‚¤‚É“`‚¦‚é
+            // è¦ªã«è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹ã‚ˆã†ã«ä¼ãˆã‚‹
             foreach (var p in faces.ToList())
             {
                 p?.RemoveEdge(this);
@@ -484,7 +501,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// v‚Å2‚Â‚É•ªŠ„‚·‚é, Œ³‚Ìedge‚ÍV0->v, V‚µ‚¢Edge‚Ív->V1‚É‚È‚é. V‚µ‚¢Edge‚ğ•Ô‚·
+        /// vã§2ã¤ã«åˆ†å‰²ã™ã‚‹, å…ƒã®edgeã¯V0->v, æ–°ã—ã„Edgeã¯v->V1ã«ãªã‚‹. æ–°ã—ã„Edgeã‚’è¿”ã™
         /// </summary>
         /// <param name="v"></param>
         public REdge SplitEdge(RVertex v)
@@ -501,7 +518,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// “¯‚¶’¸“_‚ğQÆ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©. (‡˜‚Í–â‚í‚È‚¢)
+        /// åŒã˜é ‚ç‚¹ã‚’å‚ç…§ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹. (é †åºã¯å•ã‚ãªã„)
         /// </summary>
         /// <param name="v0"></param>
         /// <param name="v1"></param>
@@ -517,7 +534,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// other‚Æ‹¤—L‚µ‚Ä‚¢‚é’¸“_‚ª‚ ‚é‚©‚Ç‚¤‚©
+        /// otherã¨å…±æœ‰ã—ã¦ã„ã‚‹é ‚ç‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
@@ -527,7 +544,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// other‚Æ‹¤—L‚µ‚Ä‚¢‚é’¸“_‚ª‚ ‚é‚©‚Ç‚¤‚©
+        /// otherã¨å…±æœ‰ã—ã¦ã„ã‚‹é ‚ç‚¹ãŒã‚ã‚‹ã‹ã©ã†ã‹
         /// </summary>
         /// <param name="other"></param>
         /// <param name="sharedVertex"></param>
@@ -551,7 +568,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// vertex‚Æ”½‘Î‘¤‚Ì’¸“_‚ğæ“¾‚·‚é. vertex‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢ê‡‚Ínull‚ğ•Ô‚·
+        /// vertexã¨åå¯¾å´ã®é ‚ç‚¹ã‚’å–å¾—ã™ã‚‹. vertexãŒå«ã¾ã‚Œã¦ã„ãªã„å ´åˆã¯nullã‚’è¿”ã™
         /// </summary>
         /// <param name="vertex"></param>
         /// <param name="opposite"></param>
@@ -575,7 +592,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// vertex‚Æ”½‘Î‘¤‚Ì’¸“_‚ğæ“¾‚·‚é. vertex‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚¢ê‡‚Ínull‚ğ•Ô‚·
+        /// vertexã¨åå¯¾å´ã®é ‚ç‚¹ã‚’å–å¾—ã™ã‚‹. vertexãŒå«ã¾ã‚Œã¦ã„ãªã„å ´åˆã¯nullã‚’è¿”ã™
         /// </summary>
         /// <param name="vertex"></param>
         /// <returns></returns>
@@ -587,20 +604,19 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ©g‚ğdst‚Éƒ}[ƒW‚·‚é
+        /// è‡ªèº«ã‚’dstã«ãƒãƒ¼ã‚¸ã™ã‚‹
         /// </summary>
         /// <param name="dst"></param>
         /// <param name="checkFaceMerge"></param>
         public void MergeTo(REdge dst, bool checkFaceMerge = true)
         {
-            var addFaces =
-                Faces.Where(poly => dst.Faces.Contains(poly) == false).ToList();
-            foreach (var p in addFaces)
+            var tmpFaces = Faces.ToList();
+            foreach (var face in tmpFaces)
             {
-                p.ChangeEdge(this, dst);
+                face.ChangeEdge(this, dst);
             }
 
-            // ÅŒã‚É©•ª‚ÌÚ‘±‚Í‰ğœ‚·‚é
+            // æœ€å¾Œã«è‡ªåˆ†ã®æ¥ç¶šã¯è§£é™¤ã™ã‚‹
             DisConnect();
 
             if (checkFaceMerge == false)
@@ -614,8 +630,8 @@ namespace PLATEAU.RoadNetwork.Graph
                 {
                     if (poly.IsSameEdges(queue[i]))
                     {
-                        // •Ó‚Í‘S‚Ä“¯‚¶‚È‚Ì‚Å‚‘¬‰»‚Ì‚½‚ßˆÚ“®ˆ—‚Ís‚í‚È‚¢
-                        queue[i].TryMergeTo(poly, false);
+                        // è¾ºã¯å…¨ã¦åŒã˜ãªã®ã§é«˜é€ŸåŒ–ã®ãŸã‚ç§»å‹•å‡¦ç†ã¯è¡Œã‚ãªã„
+                        queue[i].TryMergeTo(poly);
                         queue.RemoveAt(i);
                     }
                     else
@@ -628,28 +644,28 @@ namespace PLATEAU.RoadNetwork.Graph
     }
 
     /// <summary>
-    /// •Ó‚ÌW‡
+    /// è¾ºã®é›†åˆ
     /// </summary>
     [Serializable]
     public class RFace : ARnParts<RFace>
     {
         //----------------------------------
-        // start: ƒtƒB[ƒ‹ƒh
+        // start: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
         /// <summary>
-        /// •\¦”ñ•\¦
+        /// è¡¨ç¤ºéè¡¨ç¤º
         /// </summary>
         [field: SerializeField]
         public bool Visible { get; set; } = true;
 
         /// <summary>
-        /// ‘Î‰‚·‚éCityObjectGroup
+        /// å¯¾å¿œã™ã‚‹CityObjectGroup
         /// </summary>
         [SerializeField]
         private PLATEAUCityObjectGroup cityObjectGroup = null;
 
         /// <summary>
-        /// “¹˜Hƒ^ƒCƒv
+        /// é“è·¯ã‚¿ã‚¤ãƒ—
         /// </summary>
         [field: SerializeField]
         public RRoadTypeMask RoadTypes { get; set; }
@@ -661,35 +677,35 @@ namespace PLATEAU.RoadNetwork.Graph
         public int LodLevel { get; set; }
 
         /// <summary>
-        /// eƒOƒ‰ƒt
+        /// è¦ªã‚°ãƒ©ãƒ•
         /// </summary>
         private RGraph graph = null;
 
         /// <summary>
-        /// \¬•Ó
+        /// æ§‹æˆè¾º
         /// </summary>
         private HashSet<REdge> edges = new HashSet<REdge>();
 
         //----------------------------------
-        // end: ƒtƒB[ƒ‹ƒh
+        // end: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
 
         /// <summary>
-        /// \¬•Ó
+        /// æ§‹æˆè¾º
         /// </summary>
         public IReadOnlyCollection<REdge> Edges => edges;
 
         /// <summary>
-        /// Ú‘±–Ê
+        /// æ¥ç¶šé¢
         /// </summary>
         public RGraph Graph => graph;
 
         /// <summary>
-        /// ŠÖ˜A‚·‚éCityObjectGroup
+        /// é–¢é€£ã™ã‚‹CityObjectGroup
         /// </summary>
         public PLATEAUCityObjectGroup CityObjectGroup => cityObjectGroup;
 
-        // —LŒø‚Èƒ|ƒŠƒSƒ“‚©‚Ç‚¤‚©
+        // æœ‰åŠ¹ãªãƒãƒªã‚´ãƒ³ã‹ã©ã†ã‹
         public bool IsValid => edges.Count > 0;
 
         public RFace(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RRoadTypeMask roadType, int lodLevel)
@@ -701,7 +717,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// •Ó’Ç‰Á
+        /// è¾ºè¿½åŠ 
         /// </summary>
         /// <param name="edge"></param>
         public void AddEdge(REdge edge)
@@ -714,7 +730,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// eƒOƒ‰ƒtíœ
+        /// è¦ªã‚°ãƒ©ãƒ•å‰Šé™¤
         /// </summary>
         /// <param name="g"></param>
         public void RemoveGraph(RGraph g)
@@ -724,7 +740,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// eƒOƒ‰ƒt·‚µ‘Ö‚¦
+        /// è¦ªã‚°ãƒ©ãƒ•å·®ã—æ›¿ãˆ
         /// </summary>
         /// <param name="g"></param>
         public void SetGraph(RGraph g)
@@ -737,7 +753,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         ///// <summary>
-        ///// Šî–{ŒÄ‚Ô‚Ì‹Ö~. edge‚ğpos‚ÌŒã‚ë‚É’Ç‰Á‚·‚é
+        ///// åŸºæœ¬å‘¼ã¶ã®ç¦æ­¢. edgeã‚’posã®å¾Œã‚ã«è¿½åŠ ã™ã‚‹
         ///// </summary>
         ///// <param name="edge"></param>
         ///// <param name="pos"></param>
@@ -751,29 +767,32 @@ namespace PLATEAU.RoadNetwork.Graph
         //}
 
         /// <summary>
-        /// •Óíœ
+        /// è¾ºå‰Šé™¤
         /// </summary>
         /// <param name="edge"></param>
         public void RemoveEdge(REdge edge)
         {
             edges.Remove(edge);
-            // q‚©‚ç©•ª‚ğíœ
+            // å­ã‹ã‚‰è‡ªåˆ†ã‚’å‰Šé™¤
             edge.RemoveFace(this);
         }
 
         /// <summary>
-        /// •Ó‚Ì•ÏX
+        /// è¾ºã®å¤‰æ›´
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
         public void ChangeEdge(REdge from, REdge to)
         {
+            // fromã‚’å«ã‚“ã§ã„ãªã„å ´åˆã¯ç„¡è¦–ã™ã‚‹
+            if (edges.Contains(from) == false)
+                return;
             RemoveEdge(from);
             AddEdge(to);
         }
 
         /// <summary>
-        /// “¯‚¶Edge‚Å\¬‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©
+        /// åŒã˜Edgeã§æ§‹æˆã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
@@ -785,23 +804,24 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// Šî–{ŒÄ‚Ño‚µ‹Ö~. ©g‚ğdst‚Éƒ}[ƒW‚·‚é.
-        /// CityObjectGroup‚ªˆÙ‚È‚éê‡‚Íƒ}[ƒW‚Å‚«‚È‚¢.
-        /// moveEdge = false‚Ì‚Í©g‚ÌEdges‚ÍˆÚ“®‚µ‚È‚¢.
+        /// åŸºæœ¬å‘¼ã³å‡ºã—ç¦æ­¢. è‡ªèº«ã‚’dstã«ãƒãƒ¼ã‚¸ã™ã‚‹.
+        /// CityObjectGroupãŒç•°ãªã‚‹å ´åˆã¯ãƒãƒ¼ã‚¸ã§ããªã„.
+        /// moveEdge = falseã®æ™‚ã¯è‡ªèº«ã®Edgesã¯ç§»å‹•ã—ãªã„.
         /// </summary>
         /// <param name="dst"></param>
         /// <param name="moveEdge"></param>
-        public bool TryMergeTo(RFace dst, bool moveEdge = true)
+        public bool TryMergeTo(RFace dst)
         {
             if (dst.CityObjectGroup && CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
             {
-                Debug.LogWarning($"CityObjectGroup‚ªˆÙ‚È‚éFace‚Í“‡‚Å‚«‚Ü‚¹‚ñ. {CityObjectGroup} != {dst.CityObjectGroup}");
+                Debug.LogWarning($"CityObjectGroupãŒç•°ãªã‚‹Faceã¯çµ±åˆã§ãã¾ã›ã‚“. {CityObjectGroup} != {dst.CityObjectGroup}");
                 return false;
             }
 
             dst.RoadTypes |= RoadTypes;
             dst.cityObjectGroup = CityObjectGroup;
             dst.LodLevel = Mathf.Max(dst.LodLevel, LodLevel);
+
             foreach (var e in Edges)
                 dst.AddEdge(e);
             DisConnect();
@@ -810,15 +830,15 @@ namespace PLATEAU.RoadNetwork.Graph
 
 
         /// <summary>
-        /// ©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é
+        /// è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹
         /// </summary>
         public void DisConnect()
         {
-            // q‚É©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é‚æ‚¤‚É“`‚¦‚é
+            // å­ã«è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹ã‚ˆã†ã«ä¼ãˆã‚‹
             foreach (var e in Edges)
                 e.RemoveFace(this);
 
-            // e‚É©•ª‚ÌÚ‘±‚ğ‰ğœ‚·‚é‚æ‚¤‚É“`‚¦‚é
+            // è¦ªã«è‡ªåˆ†ã®æ¥ç¶šã‚’è§£é™¤ã™ã‚‹ã‚ˆã†ã«ä¼ãˆã‚‹
             Graph?.RemoveFace(this);
 
             edges.Clear();
@@ -829,20 +849,20 @@ namespace PLATEAU.RoadNetwork.Graph
     public class RGraph : ARnParts<RGraph>
     {
         //----------------------------------
-        // start: ƒtƒB[ƒ‹ƒh
+        // start: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
         private HashSet<RFace> faces = new HashSet<RFace>();
 
         //----------------------------------
-        // end: ƒtƒB[ƒ‹ƒh
+        // end: ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
         //----------------------------------
         /// <summary>
-        /// –Ê
+        /// é¢
         /// </summary>
         public IReadOnlyCollection<RFace> Faces => faces;
 
         /// <summary>
-        /// ‘SEdge‚ğæ“¾(d‚¢)
+        /// å…¨Edgeã‚’å–å¾—(é‡ã„)
         /// </summary>
         /// <returns></returns>
         public IEnumerable<REdge> GetAllEdges()
@@ -851,7 +871,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// ‘SVertex‚ğæ“¾(d‚¢)
+        /// å…¨Vertexã‚’å–å¾—(é‡ã„)
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RVertex> GetAllVertices()
@@ -860,7 +880,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// eFace’Ç‰Á
+        /// è¦ªFaceè¿½åŠ 
         /// </summary>
         /// <param name="face"></param>
         public void AddFace(RFace face)
@@ -874,7 +894,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// eFaceíœ
+        /// è¦ªFaceå‰Šé™¤
         /// </summary>
         /// <param name="face"></param>
         public void RemoveFace(RFace face)
@@ -912,13 +932,14 @@ namespace PLATEAU.RoadNetwork.Graph
     public static class RVertexEx
     {
         /// <summary>
-        /// faceSelector‚Åw’è‚µ‚½RFace‚¾‚¯‚ÌRRoadType‚ğ“‡‚µ‚Äæ“¾
+        /// faceSelectorã§æŒ‡å®šã—ãŸRFaceã ã‘ã®RRoadTypeã‚’çµ±åˆã—ã¦å–å¾—
         /// </summary>
         /// <param name="self"></param>
         /// <param name="faceSelector"></param>
         /// <returns></returns>
         public static RRoadTypeMask GetRoadType(this RVertex self, Func<RFace, bool> faceSelector)
         {
+            faceSelector ??= _ => true;
             RRoadTypeMask roadType = RRoadTypeMask.Empty;
             foreach (var face in self.GetFaces().Where(faceSelector))
             {
@@ -926,5 +947,25 @@ namespace PLATEAU.RoadNetwork.Graph
             }
             return roadType;
         }
+
+        /// <summary>
+        /// faceSelectorã§æŒ‡å®šã—ãŸRFaceã ã‘ã®LodLevelã®æœ€å¤§å€¤ã‚’å–å¾—
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="faceSelector"></param>
+        /// <returns></returns>
+        public static int GetMaxLodLevel(this RVertex self, Func<RFace, bool> faceSelector = null)
+        {
+            faceSelector ??= _ => true;
+            var lodLevel = 0;
+            foreach (var face in self.GetFaces().Where(faceSelector))
+            {
+                lodLevel = Mathf.Max(lodLevel, face.LodLevel);
+            }
+
+            return lodLevel;
+        }
+
+
     }
 }

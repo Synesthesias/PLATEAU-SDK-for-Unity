@@ -294,38 +294,6 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
-        public RnLineString Cut(float index, bool returnAfter)
-        {
-            // indexが整数の時で処理を変える
-            var isInt = Mathf.Abs(index - Mathf.RoundToInt(index)) < 1e-5f;
-            // 桁落ちを考えて, isInt時にはRoundを取る
-            var i = isInt ? Mathf.RoundToInt(index) : (int)index;
-            if (isInt == false)
-            {
-                if (i + 1 >= Points.Count)
-                {
-                    var x = 0;
-                }
-                var v = Vector3.Lerp(Points[i].Vertex, Points[i + 1].Vertex, index - i);
-                var p = new RnPoint(v);
-                Points.Insert(i + 1, p);
-                i = i + 1;
-            }
-
-            if (returnAfter)
-            {
-                var ret = Create(Points.Skip(i));
-                Points.RemoveRange(i + 1, Points.Count - (i + 1));
-                return ret;
-            }
-            else
-            {
-                var ret = Create(Points.Take(i + 1));
-                Points.RemoveRange(0, i);
-                return ret;
-            }
-        }
-
         // ---------------
         // Static Methods
         // ---------------

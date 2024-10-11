@@ -4,7 +4,6 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph.Drawer
@@ -17,7 +16,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // --------------------
         public bool visible = false;
         public bool showAll = true;
-
+        // シーン上で選択中のCityObjectGroupのみ表示する
         public bool onlySelectedCityObjectGroupVisible = true;
 
         public RRoadTypeMask showFaceType = RRoadTypeMask.All;
@@ -45,6 +44,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         public class FaceOption : DrawOption
         {
             public bool showOutline = true;
+            public bool showConvexVolume = false;
             public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
             public RRoadTypeMask showOutlineRemoveMask = RRoadTypeMask.Empty;
             public bool showCityObjectOutline = false;
@@ -68,7 +68,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             public bool showEdgeCount = false;
             public bool useAnyFaceVertexColor = false;
         }
-        public VertexOption vertexOption = new VertexOption();
+        public VertexOption vertexOption = new VertexOption { visible = false };
 
         [Serializable]
         public class RoadTypeMaskOption
@@ -189,11 +189,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             return ret;
         }
 
-        private IEnumerable<PLATEAUCityObjectGroup> GetSelectedCityObjectGroups()
-        {
-            return Selection.gameObjects.Select(go => go.GetComponent<PLATEAUCityObjectGroup>()).Where(cog => cog != null);
-        }
-
         private void Draw(VertexOption op, RVertex vertex, DrawWork work)
         {
             if (op.visible == false)
@@ -272,25 +267,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             work.visitedFaces.Add(face);
             if (onlySelectedCityObjectGroupVisible)
             {
-#if UNITY_EDITOR
-                var show = GetSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
+                var show = RnEx.GetSceneSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
                 if (show == false)
                     return;
-#endif
             }
 
             var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)
                 : face.ComputeOutlineVertices();
 
-            //bool isLoop = true;
-            //if (vertices.Count > 1)
-            //{
-            //    if ((vertices[0].Edges.Any(e => e.V0 == vertices[^1] || e.V1 == vertices[^1])) == false)
-            //    {
-            //        isLoop = false;
-            //    }
-
-            //}
             RGraphEx.OutlineVertex2Edge(vertices, out var edges);
             if (showId.HasFlag(RPartsFlag.Face))
             {
@@ -298,7 +282,11 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 DrawString($"F[{face.DebugMyId}]", center);
             }
 
-            if (op.showOutline)
+            if (op.showConvexVolume)
+            {
+                DrawArrows(face.ComputeConvexHullVertices().Select(v => v.Position), isLoop: true, color: edgeOption.color);
+            }
+            else if (op.showOutline)
             {
                 foreach (var e in edges)
                 {

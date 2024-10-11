@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PLATEAU.Editor.RoadNetwork.Structure
 {
@@ -109,6 +110,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         EditorGUILayout.LabelField($"Connect Roads [{lane.GetConnectedRoads(type).Select(l => l.DebugMyId).Join2String()}]");
                     }
                 }
+
+                lane.IsReverse = EditorGUILayout.Toggle("IsReverse", lane.IsReverse);
                 lane.Attributes = (RnLaneAttribute)EditorGUILayout.EnumFlagsField("Attribute", lane.Attributes);
                 Draw(RnLaneBorderType.Prev);
                 Draw(RnLaneBorderType.Next);
@@ -213,8 +216,13 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             ShowBase(road);
             using (new EditorGUI.DisabledScope(false))
             {
-                EditorGUILayout.LongField("Prev", (long)(road.Prev?.DebugMyId ?? ulong.MaxValue));
-                EditorGUILayout.LongField("Next", (long)(road.Next?.DebugMyId ?? ulong.MaxValue));
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LongField("Prev", (long)(road.Prev?.DebugMyId ?? ulong.MaxValue));
+                    EditorGUILayout.LongField("Next", (long)(road.Next?.DebugMyId ?? ulong.MaxValue));
+                    EditorGUILayout.LabelField($"LaneCount L({road.GetLeftLaneCount()})-R({road.GetRightLaneCount()})");
+                }
+
             }
 
             var roadGroup = road.CreateRoadGroupOrDefault();
@@ -439,27 +447,24 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
         }
 
-        public class WayEdit
-        {
-
-        }
-
         public class SideWalkEdit
         {
         }
 
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
-            var p = sideWalkEdit;
-            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
             }
         }
 
-        public void Reinitialize()
+        public void Clear()
         {
+            if (InstanceHelper == null)
+                return;
+            InstanceHelper.SelectedObjects?.Clear();
+            InstanceHelper.InVisibleObjects?.Clear();
         }
 
         private void Initialize()
@@ -480,6 +485,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (model == null)
                 return;
             var work = new Work();
+            if (GUILayout.Button("Clear"))
+            {
+                Clear();
+            }
+
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Lane Edit", GUILayout.Height(20));
 
@@ -502,6 +512,14 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("Road Edit", GUILayout.Height(20));
 
+            InstanceHelper.SelectedObjects.RemoveWhere(s =>
+            {
+                if (s is RnRoad && model.Roads.Contains(s) == false)
+                    return true;
+                if (s is RnIntersection && model.Intersections.Contains(s) == false)
+                    return true;
+                return false;
+            });
             foreach (var r in model.Roads)
             {
                 if (addTargetType == AddTargetType.Road && isAdded && r.DebugMyId == (ulong)addTargetId)

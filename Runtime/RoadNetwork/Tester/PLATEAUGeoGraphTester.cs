@@ -434,16 +434,6 @@ namespace PLATEAU.RoadNetwork.Tester
         }
         public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
 
-        public async Task<GranularityConvertResult> SplitCityObjectTest(SplitCityObjectTestParam p)
-        {
-            // 分割結合の設定です。
-            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
-            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(MeshGranularity.PerAtomicFeatureObject, 1),
-                p.targets.Select(t => t.gameObject).ToArray(), false);
-            // 分割結合します。
-            return await new CityGranularityConverter().ConvertAsync(conf);
-        }
-
         public void OnDrawGizmos()
         {
             LerpSegmentsTest(lerpSegmentsTest);

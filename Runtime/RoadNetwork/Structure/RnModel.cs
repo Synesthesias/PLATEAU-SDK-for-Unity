@@ -286,6 +286,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 catch (Exception e)
                 {
+                    Debug.LogException(e);
                 }
             }
         }
@@ -443,7 +444,6 @@ namespace PLATEAU.RoadNetwork.Structure
                         continue;
 
                     // #TODO : 中央線がある場合の処理
-
                     if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
                         continue;
 
@@ -456,7 +456,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     var rightLaneCount = num - leftLaneCount;
                     linkGroup.SetLaneCount(leftLaneCount, rightLaneCount);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Debug.LogException(e);
                     failedRoads.Add(link.DebugMyId);

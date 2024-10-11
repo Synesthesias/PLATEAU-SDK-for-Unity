@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace PLATEAU.Util
 {
-    public static class Vector2IntIntEx
+    public static class Vector2IntEx
     {
         /// <summary>
 		/// new Vector2Int(Mathf.Abs(self.x), Mathf.Abs(self.y))

@@ -1,12 +1,9 @@
-﻿using PLATEAU.Editor.RoadNetwork.CityObject;
-using PLATEAU.RoadNetwork.CityObject;
-using PLATEAU.RoadNetwork.CityObject.Drawer;
-using PLATEAU.RoadNetwork.Factory;
+﻿using PLATEAU.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Tester;
-using PLATEAU.RoadNetwork.Util;
-using System.Collections.Generic;
-using System.Linq;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +22,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
 
             base.OnInspectorGUI();
             if (GUILayout.Button("Create"))
-                obj.CreateNetwork();
+                obj.CreateNetwork().ContinueWithErrorCatch();
 
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -49,6 +46,13 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
             }
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();
+
+            var cityObjects = obj.GetComponent<PLATEAUSubDividedCityObjectGroup>();
+            if (GUILayout.Button("Create RGraph"))
+            {
+                var graph = cityObjects.gameObject.GetOrAddComponent<PLATEAURGraph>();
+                graph.Graph = obj.Factory.GraphFactory.CreateGraph(cityObjects.CityObjects);
+            }
         }
     }
 }

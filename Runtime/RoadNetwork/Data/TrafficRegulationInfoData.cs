@@ -1,9 +1,4 @@
-﻿using PlasticPipe;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,7 +27,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         Error = 0xfffffff
     }
-   
+
     /// <summary>
     /// 信号制御器に関わるデータをまとめた構造体
     /// </summary>
