@@ -334,23 +334,34 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             const float maxDistance = 1000.0f;
             var hits = Physics.RaycastAll(ray, maxDistance);    // 地形メッシュが埋まっていてもスナップ出来るように
+
+            var isTarget = false;
+            var closestDist = float.MaxValue;
+            Vector3 targetPos = Vector3.zero;
             foreach (RaycastHit hit in hits)
             {
-                var isTarget = false;
                 foreach (var f in filter)
                 {
                     if (hit.collider.name.Contains(f))
                     {
+                        var dis = Vector3.Distance(hit.point, ray.origin);
+                        if (dis < closestDist)
+                        {
+                            closestDist = dis;
+                            targetPos = hit.point;
+                        }
                         isTarget = true;
-                        break;
+                        continue;
                     }
                 }
-                if (isTarget)
-                {
-                    item.Vertex = hit.point;
-                    return;
-                }
             }
+
+            if (isTarget)
+            {
+                item.Vertex = targetPos;
+                return;
+            }
+
         }
 
 
