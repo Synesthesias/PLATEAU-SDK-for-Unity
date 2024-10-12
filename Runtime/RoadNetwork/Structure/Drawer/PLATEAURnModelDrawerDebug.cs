@@ -346,6 +346,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 }
             }
 
+            if (showPartsType.HasFlag(RnPartsTypeMask.Way))
+            {
+                way.GetLerpPoint(0.5f, out var p);
+                DebugEx.DrawString($"P[{way.DebugMyId}]", p);
+            }
+
             foreach (var p in way.Points)
             {
                 DrawPoint(p);
