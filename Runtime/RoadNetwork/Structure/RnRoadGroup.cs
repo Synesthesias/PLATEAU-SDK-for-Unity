@@ -641,6 +641,32 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public IReadOnlyCollection<RnSideWalkGroup> GetSideWalkGroups()
+        {
+            var sideWalks = new List<RnSideWalk>();
+            foreach (var road in Roads)
+            {
+                sideWalks.AddRange(road.GetSideWalks());
+            }
+
+            var groups = new List<RnSideWalkGroup>();
+            foreach (var sideWalk in sideWalks)
+            {
+                var group = groups.FirstOrDefault(g => g.SideWalks.Contains(sideWalk));
+                if (group == null)
+                {
+                    group = new RnSideWalkGroup(new List<RnSideWalk> { sideWalk });
+                    groups.Add(group);
+                }
+                else
+                {
+                    ((List<RnSideWalk>)group.SideWalks).Add(sideWalk);
+                }
+            }
+
+            return groups;
+        }
+
         /// <summary>
         /// 左側レーン数を変更する
         /// </summary>
@@ -897,6 +923,18 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return null;
+        }
+
+        public class RnSideWalkGroup
+        {
+            public RnSideWalkGroup(List<RnSideWalk> sideWalks)
+            {
+                this.sideWalks = sideWalks;
+            }
+
+            public IReadOnlyCollection<RnSideWalk> SideWalks => sideWalks;
+
+            List<RnSideWalk> sideWalks;
         }
 
     }
