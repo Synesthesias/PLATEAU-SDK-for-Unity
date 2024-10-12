@@ -156,7 +156,7 @@ namespace PLATEAU.Editor.RoadNetwork
             };
         }
 
-        private const float pointHndScaleFactor = 0.1f;
+        private const float pointHndScaleFactor = 0.15f;
         private const float laneHndScaleFactor = 0.4f;
         private const float linkHndScaleFactor = 0.5f;
         private const float signalLightHndScaleFactor = 0.2f;
@@ -605,44 +605,53 @@ namespace PLATEAU.Editor.RoadNetwork
                                     var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
 
 
-                                    if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
+                                    // ctrlを押しているか
+                                    if (Event.current.control == false)
                                     {
-                                        DeployPointMoveHandle(point, state, networkOperator, size);
-                                        continue;
-                                    }
-
-                                    if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
-                                    {
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                                        if (isClicked)
+                                        if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
                                         {
-                                            // parent.Pointsからpointを検索してインデックスを取得
-                                            var idx = parent.Points.ToList().IndexOf(point);
-                                            if (idx == -1)
-                                                continue;
-                                            state.delayCommand += () =>
-                                            {
-                                                networkOperator.AddPoint(parent, idx, new RnPoint(point.Vertex + Vector3.up));
-                                                Debug.Log("ポイント追加ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
+                                            DeployPointMoveHandle(point, state, networkOperator, size);
+                                            continue;
                                         }
-                                        continue;
                                     }
-
-                                    if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
+                                    else
                                     {
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                                        if (isClicked)
+                                        var currentEvent = Event.current;
                                         {
-                                            state.delayCommand += () =>
+                                            
+                                            if (currentEvent.shift == false)
                                             {
-                                                networkOperator.RemovePoint(parent, point);
-                                                Debug.Log("ポイント削除ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
+                                                var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkAddPointButtonHandleCap);
+                                                if (isClicked)
+                                                {
+                                                    // parent.Pointsからpointを検索してインデックスを取得
+                                                    var idx = parent.Points.ToList().IndexOf(point);
+                                                    if (idx == -1)
+                                                        continue;
+                                                    state.delayCommand += () =>
+                                                    {
+                                                        networkOperator.AddPoint(parent, idx, new RnPoint(point.Vertex + Vector3.up));
+                                                        Debug.Log("ポイント追加ボタンが押された");
+                                                    };
+                                                    state.isDirtyTarget = true;
+                                                    continue;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkRemovePointButtonHandleCap);
+                                                if (isClicked)
+                                                {
+                                                    state.delayCommand += () =>
+                                                    {
+                                                        networkOperator.RemovePoint(parent, point);
+                                                        Debug.Log("ポイント削除ボタンが押された");
+                                                    };
+                                                    state.isDirtyTarget = true;
+                                                    continue;
+                                                }
+                                            }
                                         }
-                                        continue;
                                     }
                                 }
                             }
@@ -1277,6 +1286,38 @@ namespace PLATEAU.Editor.RoadNetwork
                     Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
                     Handles.DrawWireCube(position + Vector3.forward * 0.07f, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
                     Handles.DrawWireCube(position + Vector3.back * 0.07f, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
+                    break;
+            }
+        }
+
+        static void RoadNetworkAddPointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.MouseMove:
+                case EventType.Layout:
+                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
+
+                    break;
+                case EventType.Repaint:
+                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
+                    Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
+                    Handles.DrawWireCube(position, new Vector3(size * 0.15f, size * pointHndScaleFactor, size));
+                    break;
+            }
+        }
+        static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.MouseMove:
+                case EventType.Layout:
+                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
+
+                    break;
+                case EventType.Repaint:
+                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
+                    Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
                     break;
             }
         }
