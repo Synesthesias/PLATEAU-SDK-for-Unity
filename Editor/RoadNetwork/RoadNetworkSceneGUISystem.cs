@@ -565,7 +565,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             }
                         }
 
-                        foreach (var lane in road.MainLanes)
+                        foreach (var lane in road.AllLanes)
                         {
                             if (state.isDirtyTarget)
                             {
