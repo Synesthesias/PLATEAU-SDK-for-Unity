@@ -618,9 +618,10 @@ namespace PLATEAU.Editor.RoadNetwork
                                     {
                                         var currentEvent = Event.current;
                                         {
-                                            
+                                            // ポイントの追加
                                             if (currentEvent.shift == false)
                                             {
+                                                // ポイントの追加ボタンの表示
                                                 var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkAddPointButtonHandleCap);
                                                 if (isClicked)
                                                 {
@@ -637,8 +638,10 @@ namespace PLATEAU.Editor.RoadNetwork
                                                     continue;
                                                 }
                                             }
+                                            // ポイントの削除
                                             else
                                             {
+                                                // ポイントの削除ボタンの表示
                                                 var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkRemovePointButtonHandleCap);
                                                 if (isClicked)
                                                 {
