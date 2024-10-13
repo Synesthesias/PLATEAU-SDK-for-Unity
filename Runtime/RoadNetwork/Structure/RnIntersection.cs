@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -216,7 +217,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// この境界とつながっているレーンリスト
+        /// この境界とつながっているレーンリスト. 基本的に0 or 1
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnLane> GetConnectedLanes()
@@ -286,6 +287,10 @@ namespace PLATEAU.RoadNetwork.Structure
             TargetTran = targetTran;
         }
 
+        /// <summary>
+        /// 隣接するRnRoadBaseを取得重複チェックはしていないので注意
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerable<RnRoadBase> GetNeighborRoads()
         {
             foreach (var neighbor in Neighbors)
@@ -295,6 +300,10 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 隣接道路との境界線を取得
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerable<RnBorder> GetBorders()
         {
             foreach (var neighbor in Neighbors.Where(n => n.Road != null))
@@ -469,7 +478,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
 
-                    void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType turnType)
+                    void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
                         var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
                         var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
@@ -482,7 +491,7 @@ namespace PLATEAU.RoadNetwork.Structure
                             new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
                             new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
                         }; ;
-                        tracks.Add(new RnTrack(from.Border, to.Border, spline, turnType));
+                        tracks.Add(new RnTrack(from.Border, to.Border, spline, edgeTurnType));
                     }
 
                     var outBounds = other.OutBoundBorders.ToList();
@@ -667,7 +676,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
     }
 
-
     public static class RnIntersectionEx
     {
         public class EdgeGroup
@@ -738,6 +746,29 @@ namespace PLATEAU.RoadNetwork.Structure
             ret[^1].LeftSide = ret[0];
 
             return ret;
+        }
+
+        /// <summary>
+        /// borderWayで指定したRnNeighborを取得する(基本的に0か1)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderWay"></param>
+        /// <returns></returns>
+        public static IEnumerable<RnNeighbor> FindEdges(this RnIntersection self, RnWay borderWay)
+        {
+            if (self == null || borderWay == null)
+                return Enumerable.Empty<RnNeighbor>();
+
+            return self.Edges.Where(e => e.Border?.IsSameLine(borderWay) ?? false);
+        }
+
+        /// <summary>
+        /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<RnLane> GetConnectedLanes(this RnIntersection self, RnWay borderWay)
+        {
+            return self.FindEdges(borderWay).SelectMany(n => n.GetConnectedLanes());
         }
 
 
