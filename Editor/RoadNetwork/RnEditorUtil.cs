@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return CheckAddTarget<T, T>(targets, addTargetId, out isAdded);
         }
 
-        public static long CheckAddTarget<T, U>(HashSet<T> targets, long addTargetId, out bool isAdded) where T : ARnParts<U>
+        public static long CheckAddTarget<T, U>(HashSet<T> targets, long addTargetId, out bool isAdded) where T : ARnParts<U> where U : ARnParts<U>
         {
             isAdded = false;
             using (new EditorGUILayout.HorizontalScope())

@@ -7,16 +7,27 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork
 {
     [Serializable]
-    public abstract class ARnParts<TSelf>
+    public abstract class ARnPartsBase
     {
-        private static ulong counter = 0;
-        [SerializeField] private ulong debugId;
+        [SerializeField]
+        private ulong debugId;
 
         public ulong DebugMyId => debugId;
 
-        protected ARnParts()
+        protected ARnPartsBase(ulong id)
         {
-            debugId = counter++;
+            debugId = id;
+        }
+    }
+
+    [Serializable]
+    public abstract class ARnParts<TSelf> : ARnPartsBase where TSelf : ARnParts<TSelf>
+    {
+        private static ulong counter = 0;
+
+        protected ARnParts()
+        : base(counter++)
+        {
         }
     }
 
@@ -43,47 +54,11 @@ namespace PLATEAU.RoadNetwork
         /// <typeparam name="T"></typeparam>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static long GetDebugMyIdOrDefault<T>(this T self) where T : ARnParts<T>
+        public static long GetDebugMyIdOrDefault(this ARnPartsBase self)
         {
             if (self == null)
                 return -1;
             return (long)self.DebugMyId;
-        }
-
-
-        /// <summary>
-        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static long GetDebugMyIdOrDefault<T>(this ARnParts<T> self)
-        {
-            if (self == null)
-                return -1;
-            return (long)self.DebugMyId;
-        }
-
-        /// <summary>
-        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static long GetDebugMyIdOrDefault(this RnRoad self)
-        {
-            return self.GetDebugMyIdOrDefault<RnRoadBase>();
-        }
-
-        /// <summary>
-        /// self.DebugMyIdをlong型で取得. nullの場合は-1を返す
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static long GetDebugMyIdOrDefault(this RnIntersection self)
-        {
-            return self.GetDebugMyIdOrDefault<RnRoadBase>();
         }
 
         /// <summary>
@@ -103,13 +78,13 @@ namespace PLATEAU.RoadNetwork
         /// <param name="self"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public static string GetDebugLabelOrDefault<T>(this T self, string prefix = null) where T : ARnParts<T>
+        public static string GetDebugLabelOrDefault(this ARnPartsBase self, string prefix = null)
         {
             if (self == null)
                 return "null";
-            if (prefix.IsNullOrEmpty() && s_debugIdPrefix.TryGetValue(self.GetType(), out prefix))
-                return $"{prefix}[{self.DebugMyId}]";
-            return self.DebugMyId.ToString();
+            if (prefix.IsNullOrEmpty())
+                s_debugIdPrefix.TryGetValue(self.GetType(), out prefix);
+            return $"{prefix}[{self.DebugMyId}]";
         }
 
         /// <summary>
@@ -119,7 +94,7 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public static string GetDebugIdLabelOrDefault(this RnWay self)
         {
-            return self.LineString.GetDebugLabelOrDefault("W");
+            return self.LineString.GetDebugLabelOrDefault();
         }
     }
 }
