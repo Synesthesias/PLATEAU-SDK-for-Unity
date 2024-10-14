@@ -416,7 +416,14 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     {
                         using (new EditorGUILayout.HorizontalScope())
                         {
-                            EditorGUILayout.LabelField($"Track[{track.GetDebugMyIdOrDefault()}] : From:{track.FromBorder.GetDebugMyIdOrDefault()} -> To:{track.ToBorder.GetDebugMyIdOrDefault()}");
+                            void ShowLabel(string label, RnNeighbor edge)
+                            {
+                                var lane = edge.GetConnectedLane();
+                                EditorGUILayout.LabelField($"{label}:{edge.Border.GetDebugIdLabelOrDefault()}/{edge?.Road?.GetDebugLabelOrDefault()}]/{lane.GetDebugLabelOrDefault()}");
+                            }
+                            EditorGUILayout.LabelField($"Track[{track.GetDebugLabelOrDefault()}]");
+                            ShowLabel("From", intersection.FindEdges(track.FromBorder).FirstOrDefault());
+                            ShowLabel("To", intersection.FindEdges(track.ToBorder).FirstOrDefault());
                             track.TurnType = (RnTurnType)EditorGUILayout.EnumPopup("TurnType", track.TurnType);
                         }
                     }

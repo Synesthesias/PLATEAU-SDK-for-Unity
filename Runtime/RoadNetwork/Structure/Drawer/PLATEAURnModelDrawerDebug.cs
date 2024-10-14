@@ -706,12 +706,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                             track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
                             track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
                             var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
-                            var s = e.Road is RnRoad ? "R" : "I";
                             var c = e.Road is RnRoad ? Color.green : Color.red;
                             DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
                         }
 
-                        Draw(0.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
                         Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
                     }
                 }
