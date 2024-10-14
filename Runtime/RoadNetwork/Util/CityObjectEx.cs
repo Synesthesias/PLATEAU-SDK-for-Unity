@@ -19,17 +19,7 @@ namespace PLATEAU.RoadNetwork.Util
         {
             if (!self)
                 return 0;
-            // #TODO : 親のオブジェクト名で見ているが専用の属性があるか確認すべき
-            foreach (var p in self.transform.GetParents())
-            {
-                var m = lodRegex.Match(p.name);
-                if (m.Success)
-                {
-                    return int.Parse(m.Groups[1].Value);
-                }
-            }
-
-            return 0;
+            return self.Lod;
         }
 
         public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)

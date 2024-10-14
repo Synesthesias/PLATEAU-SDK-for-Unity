@@ -54,9 +54,10 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public List<Action> DelayExec { get; } = new();
         }
 
-        private void ShowBase<T>(ARnParts<T> parts)
+        private void ShowBase(ARnPartsBase parts)
         {
-            RnEditorUtil.SelectToggle($"Id '{parts.GetDebugMyIdOrDefault()}'", InstanceHelper.SelectedObjects, parts);
+            using var _ = new EditorGUILayout.HorizontalScope();
+            RnEditorUtil.SelectToggle($"select", InstanceHelper.SelectedObjects, parts);
             RnEditorUtil.VisibleToggle(InstanceHelper.InVisibleObjects, parts);
         }
 
@@ -78,8 +79,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
 
             public LaneWidthEdit widthEdit = new LaneWidthEdit();
-
-            public ulong laneNormalId = ulong.MaxValue;
             public float rightWayPos = 0f;
             public float leftWayPos = 0f;
         }
@@ -109,6 +108,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         EditorGUILayout.LabelField($"Connect Roads [{lane.GetConnectedRoads(type).Select(l => l.DebugMyId).Join2String()}]");
                     }
                 }
+
+                lane.IsReverse = EditorGUILayout.Toggle("IsReverse", lane.IsReverse);
                 lane.Attributes = (RnLaneAttribute)EditorGUILayout.EnumFlagsField("Attribute", lane.Attributes);
                 Draw(RnLaneBorderType.Prev);
                 Draw(RnLaneBorderType.Next);
@@ -162,6 +163,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     lane.TrySetWidth(p.widthEdit.width, p.widthEdit.moveOption);
                 }
+
             }
 
             if (p.widthEdit.moveWidth != 0f)
@@ -213,48 +215,72 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             ShowBase(road);
             using (new EditorGUI.DisabledScope(false))
             {
-                EditorGUILayout.LongField("Prev", (long)(road.Prev?.DebugMyId ?? ulong.MaxValue));
-                EditorGUILayout.LongField("Next", (long)(road.Next?.DebugMyId ?? ulong.MaxValue));
+                using var _ = (new EditorGUILayout.HorizontalScope());
+                EditorGUILayout.LabelField($"Prev: {road.Prev.GetDebugLabelOrDefault()} | Next: {road.Next.GetDebugLabelOrDefault()}");
+                EditorGUILayout.LabelField($"LaneCount L({road.GetLeftLaneCount()})-R({road.GetRightLaneCount()})");
+            }
+
+            RnEditorUtil.Separator();
+            if (RnEditorUtil.Foldout("Lanes", p.Foldouts))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var lane in road.AllLanesWithMedian)
+                {
+                    var foldout =
+                        RnEditorUtil.Foldout($"{(lane.IsMedianLane ? "[Median]" : "")}{lane.GetDebugLabelOrDefault()}",
+                            p.Foldouts, lane);
+                    if (!foldout)
+                        continue;
+
+                    RnEditorUtil.Separator();
+                    using var _ = new EditorGUI.IndentLevelScope();
+                    EditLane(lane, work);
+                }
+            }
+
+            RnEditorUtil.Separator();
+            if (RnEditorUtil.Foldout("SideWalks", p.Foldouts))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var sideWalk in road.SideWalks)
+                {
+                    var foldout = RnEditorUtil.Foldout(sideWalk.GetDebugLabelOrDefault(), p.Foldouts, sideWalk);
+                    if (!foldout)
+                        continue;
+                    using var _ = new EditorGUI.IndentLevelScope();
+                    RnEditorUtil.Separator();
+                    EditSideWalk(sideWalk, work);
+                }
             }
 
             var roadGroup = road.CreateRoadGroupOrDefault();
-            if (roadGroup != null)
+            if (RnEditorUtil.Foldout("RoadGroupOption", p.Foldouts, ("RoadGroupOption", road)))
             {
-                using (new EditorGUILayout.VerticalScope())
-                {
-                    EditorGUILayout.LabelField("LaneCount");
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        using (new EditorGUILayout.HorizontalScope())
-                        {
-                            EditorGUILayout.LabelField($"L({roadGroup.GetLeftLaneCount()})->", GUILayout.Width(80));
-                            p.leftLaneCount = EditorGUILayout.IntField("", p.leftLaneCount, GUILayout.Width(80));
-                            if (GUILayout.Button("Change"))
-                            {
-                                roadGroup.SetLeftLaneCount(p.leftLaneCount);
-                            }
-                            EditorGUILayout.LabelField($"R({roadGroup.GetRightLaneCount()})->", GUILayout.Width(80));
-                            p.rightLaneCount = EditorGUILayout.IntField(p.rightLaneCount, GUILayout.Width(80));
-                            if (GUILayout.Button("Change"))
-                            {
-                                roadGroup.SetRightLaneCount(p.rightLaneCount);
-                            }
-                        }
-                        using (new EditorGUILayout.HorizontalScope())
-                        {
-                        }
-                        if (GUILayout.Button("Change Both"))
-                        {
-                            roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
-                        }
-                    }
-                }
-
                 if (GUILayout.Button("Align"))
                 {
                     roadGroup.Align();
                 }
 
+                EditorGUILayout.LabelField($"LaneCount");
+                using (new EditorGUI.IndentLevelScope())
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        p.leftLaneCount = EditorGUILayout.IntField($"Left({roadGroup.GetLeftLaneCount()}) ->", roadGroup.GetLeftLaneCount());
+                        if (GUILayout.Button("Change Left"))
+                            work.DelayExec.Add(() => roadGroup.SetLeftLaneCount(p.leftLaneCount));
+                    }
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        p.rightLaneCount = EditorGUILayout.IntField($"Right({roadGroup.GetRightLaneCount()}) -> ", p.rightLaneCount);
+                        if (GUILayout.Button("Change Right"))
+                            work.DelayExec.Add(() => roadGroup.SetRightLaneCount(p.rightLaneCount));
+                    }
+                    if (GUILayout.Button("Change Both"))
+                    {
+                        roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
+                    }
+                }
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
@@ -271,84 +297,27 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
 
             }
-
-            if (GUILayout.Button("DisConnect"))
+            if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", road)))
             {
-                road.DisConnect(false);
-            }
+                using var indent = new EditorGUI.IndentLevelScope();
+                if (GUILayout.Button("DisConnect"))
+                {
+                    work.DelayExec.Add(() => road.DisConnect(false));
+                }
 
-            if (GUILayout.Button("Convert2Intersection"))
-            {
-                work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
-            }
+                if (GUILayout.Button("Convert2Intersection"))
+                {
+                    work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
+                }
 
-            foreach (var lane in road.MainLanes)
-            {
-                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
-                if (foldout)
-                {
-                    RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        p.Foldouts.Add(lane);
-                        EditLane(lane, work);
-                    }
-                }
-                else
-                {
-                    p.Foldouts.Remove(lane);
-                }
-            }
-
-            RnEditorUtil.Separator();
-            EditorGUILayout.TextField("MedianLane");
-            if (road.MedianLane != null)
-            {
-                var lane = road.MedianLane;
-                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(lane), $"Lane {lane.GetDebugMyIdOrDefault()}");
-                if (foldout)
-                {
-                    RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        p.Foldouts.Add(lane);
-                        EditLane(lane, work);
-                    }
-                }
-                else
-                {
-                    p.Foldouts.Remove(lane);
-                }
-            }
-
-            RnEditorUtil.Separator();
-            EditorGUILayout.TextField("SideWalk");
-            foreach (var sideWalk in road.SideWalks)
-            {
-                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
-                if (foldout)
-                {
-                    RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        p.Foldouts.Add(sideWalk);
-                        EditSideWalk(sideWalk, work);
-                    }
-                }
-                else
-                {
-                    p.Foldouts.Remove(sideWalk);
-                }
             }
         }
         private class IntersectionEdit
         {
             public long convertPrevRoadId = -1;
             public long convertNextRoadId = -1;
-            public HashSet<object> Foldouts { get; } = new HashSet<object>();
 
-            // TrackのFoldout状態
-            public HashSet<object> TrackFoldouts { get; } = new HashSet<object>();
+            public HashSet<object> Foldouts { get; } = new HashSet<object>();
 
             // Trackのスクロール位置
             public Vector2 trackScrollPosition;
@@ -363,84 +332,83 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             ShowBase(intersection);
             using (new EditorGUI.DisabledScope(false))
             {
-                EditorGUILayout.LabelField("Intersection ID", intersection.DebugMyId.ToString());
-                EditorGUILayout.LabelField("Border");
-                using (new EditorGUI.IndentLevelScope())
+                if (RnEditorUtil.Foldout("Borders", p.Foldouts, ("Borders", intersection)))
                 {
                     foreach (var b in intersection.Neighbors)
                     {
-                        EditorGUILayout.LabelField($"Neighbor:{b.Road.GetDebugMyIdOrDefault()}, Border:{b.Border.GetDebugMyIdOrDefault()}");
+                        using var _ = new EditorGUI.IndentLevelScope();
+                        EditorGUILayout.LabelField($"{b.Road.GetDebugLabelOrDefault()}/{b.Border.GetDebugIdLabelOrDefault()}");
                     }
                 }
             }
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                p.convertPrevRoadId = EditorGUILayout.LongField("PrevRoadId", p.convertPrevRoadId);
-                p.convertNextRoadId = EditorGUILayout.LongField("NextRoadId", p.convertNextRoadId);
-
-                var prev = intersection.Neighbors.Select(n => n.Road)
-                    .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertPrevRoadId);
-                var next = intersection.Neighbors.Select(n => n.Road)
-                    .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertNextRoadId);
-
-                if (GUILayout.Button("Convert2Road"))
-                {
-                    work.DelayExec.Add(() => intersection.ParentModel.Convert2Road(intersection, prev, next));
-                }
-            }
-
-            if (GUILayout.Button("DisConnect"))
-            {
-                intersection.DisConnect(false);
-            }
-
-            if (GUILayout.Button("Build Track"))
-            {
-                intersection.BuildTracks();
-            }
-
             RnEditorUtil.Separator();
-            EditorGUILayout.TextField("Tracks");
-            if (RnEditorUtil.Foldout("Track", p.TrackFoldouts, this))
+            if (RnEditorUtil.Foldout("Tracks", p.Foldouts, ("Tracks", intersection)))
             {
-                using (var scope = new EditorGUILayout.ScrollViewScope(p.trackScrollPosition))
+                using var indent = new EditorGUI.IndentLevelScope();
+                if (GUILayout.Button("Build Track"))
                 {
-                    p.trackScrollPosition = scope.scrollPosition;
-                    foreach (var track in intersection.Tracks)
+                    intersection.BuildTracks();
+                }
+
+                using var scope = new EditorGUILayout.ScrollViewScope(p.trackScrollPosition);
+                p.trackScrollPosition = scope.scrollPosition;
+                foreach (var track in intersection.Tracks)
+                {
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        using (new EditorGUILayout.HorizontalScope())
+                        void ShowLabel(string label, RnNeighbor edge)
                         {
-                            EditorGUILayout.LabelField($"Track[{track.GetDebugMyIdOrDefault()}] : From:{track.FromBorder.GetDebugMyIdOrDefault()} -> To:{track.ToBorder.GetDebugMyIdOrDefault()}");
-                            track.TurnType = (RnTurnType)EditorGUILayout.EnumPopup("TurnType", track.TurnType);
+                            var lane = edge.GetConnectedLane();
+                            EditorGUILayout.LabelField($"{label}:{edge.Border.GetDebugIdLabelOrDefault()}/{edge?.Road?.GetDebugLabelOrDefault()}]/{lane.GetDebugLabelOrDefault()}");
                         }
+                        EditorGUILayout.LabelField($"{track.GetDebugLabelOrDefault()}");
+                        ShowLabel("From", intersection.FindEdges(track.FromBorder).FirstOrDefault());
+                        ShowLabel("To", intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        track.TurnType = (RnTurnType)EditorGUILayout.EnumPopup("TurnType", track.TurnType);
                     }
                 }
             }
 
             RnEditorUtil.Separator();
-            EditorGUILayout.TextField("SideWalk");
-            foreach (var sideWalk in intersection.SideWalks)
+            if (RnEditorUtil.Foldout("SideWalks", p.Foldouts, ("SideWalks", intersection)))
             {
-                var foldout = EditorGUILayout.Foldout(p.Foldouts.Contains(sideWalk), $"SideWalk {sideWalk.GetDebugMyIdOrDefault()}");
-                if (foldout)
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var sideWalk in intersection.SideWalks)
                 {
+                    var foldout = RnEditorUtil.Foldout(sideWalk.GetDebugLabelOrDefault(), p.Foldouts, sideWalk);
+                    if (!foldout)
+                        continue;
+                    using var _ = new EditorGUI.IndentLevelScope();
                     RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        p.Foldouts.Add(sideWalk);
-                        EditSideWalk(sideWalk, work);
-                    }
-                }
-                else
-                {
-                    p.Foldouts.Remove(sideWalk);
+                    EditSideWalk(sideWalk, work);
                 }
             }
-        }
 
-        public class WayEdit
-        {
+            if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", intersection)))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    p.convertPrevRoadId = EditorGUILayout.LongField("PrevRoadId", p.convertPrevRoadId);
+                    p.convertNextRoadId = EditorGUILayout.LongField("NextRoadId", p.convertNextRoadId);
+
+                    var prev = intersection.Neighbors.Select(n => n.Road)
+                        .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertPrevRoadId);
+                    var next = intersection.Neighbors.Select(n => n.Road)
+                        .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertNextRoadId);
+
+                    if (GUILayout.Button("Convert2Road"))
+                    {
+                        work.DelayExec.Add(() => intersection.ParentModel.Convert2Road(intersection, prev, next));
+                    }
+                }
+                if (GUILayout.Button("DisConnect"))
+                {
+                    work.DelayExec.Add(() => intersection.DisConnect(false));
+                }
+
+            }
 
         }
 
@@ -450,16 +418,22 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
-            var p = sideWalkEdit;
-            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
             }
         }
 
-        public void Reinitialize()
+        /// <summary>
+        /// 選択/非表示オブジェクトなどの情報を削除する
+        /// </summary>
+        public void ClearPickedObjects()
         {
+            if (InstanceHelper == null)
+                return;
+            FoldOuts.Clear();
+            InstanceHelper.SelectedObjects?.Clear();
+            InstanceHelper.InVisibleObjects?.Clear();
         }
 
         private void Initialize()
@@ -480,15 +454,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (model == null)
                 return;
             var work = new Work();
-            RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("Lane Edit", GUILayout.Height(20));
-
-            //addTargetId = RnEditorUtil.CheckAddTarget(InstanceHelper.TargetLanes, this.addTargetId, out var isAddLane);
-            // 内部でTargetLanesを更新するため、ToListでコピーを取得
-            foreach (var l in InstanceHelper.SelectedObjects.Select(x => x as RnLane).Where(x => x != null).ToList())
+            if (GUILayout.Button("Clear Picked Objects"))
             {
-                RnEditorUtil.Separator();
-                EditLane(l, work);
+                ClearPickedObjects();
             }
 
             bool isAdded;
@@ -500,43 +468,49 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
 
             RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("Road Edit", GUILayout.Height(20));
-
-            foreach (var r in model.Roads)
+            InstanceHelper.SelectedObjects.RemoveWhere(s =>
             {
-                if (addTargetType == AddTargetType.Road && isAdded && r.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.SelectedObjects.Add(r);
-                if (IsSceneSelected(r) == false && InstanceHelper.SelectedObjects.Contains(r) == false)
-                    continue;
+                if (s is RnRoad && model.Roads.Contains(s) == false)
+                    return true;
+                if (s is RnIntersection && model.Intersections.Contains(s) == false)
+                    return true;
+                return false;
+            });
 
-                var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(r), $"Road {r.GetDebugMyIdOrDefault()}");
-                if (foldout)
+            if (RnEditorUtil.Foldout($"Roads[{model.Roads.Count}]", FoldOuts))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var r in model.Roads)
                 {
+                    if (addTargetType == AddTargetType.Road && isAdded && r.DebugMyId == (ulong)addTargetId)
+                        InstanceHelper.SelectedObjects.Add(r);
+                    if (IsSceneSelected(r) == false && InstanceHelper.SelectedObjects.Contains(r) == false)
+                        continue;
+
+                    if (RnEditorUtil.Foldout($"Road {r.GetDebugMyIdOrDefault()}", FoldOuts, r) == false)
+                        continue;
+
                     RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
-                    {
-                        FoldOuts.Add(r);
-                        EditRoad(r, work);
-                    }
+                    using var _ = new EditorGUI.IndentLevelScope();
+                    EditRoad(r, work);
                 }
-                else
-                {
-                    FoldOuts.Remove(r);
-                }
-
             }
 
+
             RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("Intersection Edit", GUILayout.Height(20));
-            foreach (var i in model.Intersections)
+            if (RnEditorUtil.Foldout($"Intersections[{model.Intersections.Count}]", FoldOuts))
             {
-                if (addTargetType == AddTargetType.Intersection && isAdded && i.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.SelectedObjects.Add(i);
-                if (IsSceneSelected(i) == false && InstanceHelper.SelectedObjects.Contains(i) == false)
-                    continue;
-                var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(i), $"InterSection {i.GetDebugMyIdOrDefault()}");
-                if (foldout)
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var i in model.Intersections)
                 {
+                    if (addTargetType == AddTargetType.Intersection && isAdded && i.DebugMyId == (ulong)addTargetId)
+                        InstanceHelper.SelectedObjects.Add(i);
+                    if (IsSceneSelected(i) == false && InstanceHelper.SelectedObjects.Contains(i) == false)
+                        continue;
+
+                    if (RnEditorUtil.Foldout(i.GetDebugLabelOrDefault(), FoldOuts, i) == false)
+                        continue;
+
                     RnEditorUtil.Separator();
                     using (new EditorGUI.IndentLevelScope())
                     {
@@ -544,23 +518,20 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         EditIntersection(i, work);
                     }
                 }
-                else
-                {
-                    FoldOuts.Remove(i);
-                }
             }
 
             RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("Side Walk Edit", GUILayout.Height(20));
-            foreach (var sw in model.SideWalks)
+            if (RnEditorUtil.Foldout($"SideWalks[{model.SideWalks.Count}]", FoldOuts))
             {
-                if (addTargetType == AddTargetType.SideWalk && isAdded && sw.DebugMyId == (ulong)addTargetId)
-                    InstanceHelper.SelectedObjects.Add(sw);
-                if (IsSceneSelected(sw) == false && InstanceHelper.SelectedObjects.Contains(sw) == false)
-                    continue;
-                var foldout = EditorGUILayout.Foldout(FoldOuts.Contains(sw), $"SideWalk {sw.GetDebugMyIdOrDefault()}");
-                if (foldout)
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var sw in model.SideWalks)
                 {
+                    if (addTargetType == AddTargetType.SideWalk && isAdded && sw.DebugMyId == (ulong)addTargetId)
+                        InstanceHelper.SelectedObjects.Add(sw);
+                    if (IsSceneSelected(sw) == false && InstanceHelper.SelectedObjects.Contains(sw) == false)
+                        continue;
+                    if (RnEditorUtil.Foldout($"{sw.GetDebugLabelOrDefault()}", FoldOuts, sw) == false)
+                        continue;
                     RnEditorUtil.Separator();
                     using (new EditorGUI.IndentLevelScope())
                     {
@@ -568,11 +539,43 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         EditSideWalk(sw, work);
                     }
                 }
-                else
+            }
+
+            // 選択したレーン情報は表示しておく
+            RnEditorUtil.Separator();
+            if (RnEditorUtil.Foldout("Picked Lanes", FoldOuts))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                var pickedLanes = InstanceHelper.SelectedObjects.Select(x => x as RnLane).Where(x => x != null)
+                    .ToList();
+
+                //addTargetId = RnEditorUtil.CheckAddTarget(InstanceHelper.TargetLanes, this.addTargetId, out var isAddLane);
+                // 内部でTargetLanesを更新するため、ToListでコピーを取得
+                foreach (var l in pickedLanes)
                 {
-                    FoldOuts.Remove(sw);
+                    EditLane(l, work);
                 }
             }
+
+            RnEditorUtil.Separator();
+            if (RnEditorUtil.Foldout("Option", FoldOuts))
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Create Empty Road"))
+                        model.CreateEmptyRoadBetweenInteraction();
+
+                    if (GUILayout.Button("Remove Empty Road"))
+                        model.RemoveEmptyRoadBetweenIntersection();
+
+                    if (GUILayout.Button("Create Empty Intersection"))
+                        model.CreateEmptyIntersectionBetweenRoad();
+
+                    if (GUILayout.Button("Remove Empty Intersection"))
+                        model.RemoveEmptyIntersectionBetweenRoad();
+                }
+            }
+
 
             foreach (var e in work.DelayExec)
                 e.Invoke();

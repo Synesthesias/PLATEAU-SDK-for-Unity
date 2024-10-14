@@ -5,12 +5,10 @@ using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace PLATEAU.RoadNetwork.CityObject
 {
@@ -43,23 +41,22 @@ namespace PLATEAU.RoadNetwork.CityObject
                     }
                 }
 
-                var tris = Enumerable.Range(0, Triangles.Count / 3).ToList();
-
+                var triNum = Enumerable.Range(0, Triangles.Count / 3).ToList();
                 List<SubMesh> subMeshes = new List<SubMesh>();
-                while (tris.Any())
+                while (triNum.Any())
                 {
-                    var t = tris[0];
+                    var t = triNum[0];
                     var triIndices = new List<int> { t };
                     for (var a = 0; a < triIndices.Count; ++a)
                     {
                         var tt = triIndices[a];
-                        tris.Remove(tt);
+                        triNum.Remove(tt);
                         for (var i = 0; i < 3; i++)
                         {
                             var v = Triangles[tt * 3 + i];
                             foreach (var ttt in vertexToTriangle[v])
                             {
-                                if (tris.Contains(ttt) && triIndices.Contains(ttt) == false)
+                                if (triNum.Contains(ttt) && triIndices.Contains(ttt) == false)
                                     triIndices.Add(ttt);
                             }
                         }
@@ -74,6 +71,66 @@ namespace PLATEAU.RoadNetwork.CityObject
                 return subMeshes;
             }
 
+
+            /// <summary>
+            /// ポリゴンの外形頂点のインデックス配列を計算
+            /// </summary>
+            /// <returns></returns>
+            public List<List<int>> CreateOutlineIndices()
+            {
+                var ret = new List<List<int>>();
+
+                // 各辺を三角形に紐づける
+                // key : 辺の頂点インデックスのペア, 
+                Dictionary<(int i0, int i1), HashSet<int>> edgeToTriangle = new();
+
+                (int i0, int i1) GetEdge(int a, int b) => a > b ? (b, a) : (a, b);
+
+                for (var i = 0; i < Triangles.Count; i += 3)
+                {
+                    var t = i / 3;
+                    for (var x = 0; x < 3; x++)
+                    {
+                        var a = Triangles[i + x];
+                        var b = Triangles[i + (x + 1) % 3];
+                        var edge = GetEdge(a, b);
+                        edgeToTriangle.GetValueOrCreate(edge).Add(t);
+                    }
+                }
+
+                // 一つの三角形としか紐づいていない辺 => 外形
+                var outlineEdges = edgeToTriangle
+                    .Where(kv => kv.Value.Count == 1)
+                    .Select(kv => kv.Key)
+                    .ToList();
+
+                while (outlineEdges.Any())
+                {
+                    var edge = outlineEdges[0];
+                    outlineEdges.RemoveAt(0);
+                    var indices = new List<int> { edge.i0, edge.i1 };
+                    while (outlineEdges.Any())
+                    {
+                        var v0 = indices[0];
+                        var lastV = indices[^1];
+                        var index = outlineEdges.FindIndex(e => e.i1 == lastV || e.i0 == lastV);
+                        if (index < 0)
+                            break;
+
+                        var e = outlineEdges[index];
+                        outlineEdges.RemoveAt(index);
+                        // 1周した
+                        if (e.i1 == v0 || e.i0 == v0)
+                            break;
+
+                        // 逆側の頂点を追加
+                        indices.Add(e.i0 == lastV ? e.i1 : e.i0);
+                    }
+                    ret.Add(indices);
+                }
+
+                return ret;
+            }
             /// <summary>
             /// Deep
             /// </summary>
@@ -93,44 +150,49 @@ namespace PLATEAU.RoadNetwork.CityObject
             [field: SerializeField]
             public List<SubMesh> SubMeshes { get; set; } = new List<SubMesh>();
 
-            public void Merge(Dictionary<Vector3, Vector3> vertexConvertTable)
+            /// <summary>
+            /// 頂点削減. 都市モデルで全てのTriangleが独立(頂点バッファに同じ頂点が複数ある)していて
+            /// インデックスバッファサイズ = 頂点バッファサイズとなる用なモデルがあったので
+            /// </summary>
+            public void VertexReduction()
             {
-                var changed = GeoGraphEx.MergeMeshVertex(
-                    Vertices, vertexConvertTable, out var vert, out var indices);
-                if (changed == false)
-                    return;
-                Vertices = vert;
-                foreach (var s in SubMeshes)
+                // key   : 頂点
+                // value : 新しい頂点バッファの配列インデックス
+                var vertexMap = new Dictionary<Vector3, int>();
+                // 辞書に入れることで重複を削除
+                foreach (var v in Vertices)
                 {
-                    var tri = new HashSet<Vector3Int>();
-                    var newTriangles = new List<int>(s.Triangles.Count);
-                    for (var i = 0; i < s.Triangles.Count; i += 3)
+                    vertexMap.TryAdd(v, vertexMap.Count);
+                }
+
+                // 重複した頂点を削除したことにより三角形が崩れるかチェックする
+                var removeTriangleNum = 0;
+                foreach (var subMesh in SubMeshes)
+                {
+                    HashSet<(int, int, int)> newTriangleSet = new();
+                    for (var j = 0; j < subMesh.Triangles.Count; j += 3)
                     {
-                        var v0 = indices[s.Triangles[i]];
-                        var v1 = indices[s.Triangles[i + 1]];
-                        var v2 = indices[s.Triangles[i + 2]];
-                        // 3つの頂点が同じ場合は無視
-                        if (v0 == v1 && v1 == v2 && v2 == v0)
+                        var i = Enumerable.Range(0, 3).Select(i => vertexMap[Vertices[subMesh.Triangles[j + i]]]).ToList();
+                        if (i[0] == i[1] || i[0] == i[2] || i[1] == i[2])
                             continue;
 
-                        // 三角形にならない場合は削除
-                        // #NOTE : 接続情報が消える可能性があるがいったん許容
-                        if (v0 == v1 || v1 == v2 || v2 == v0)
-                            continue;
-                        var vs = new[] { v0, v1, v2 }.OrderBy(x => x).ToArray();
-                        var t = new Vector3Int(vs[0], vs[1], vs[2]);
-                        // 同じ頂点の三角形がすでに登録されていたら無視
-                        if (tri.Contains(t) == false)
-                        {
-                            tri.Add(t);
-                            newTriangles.Add(v0);
-                            newTriangles.Add(v1);
-                            newTriangles.Add(v2);
-                        }
+                        // 同じ三角形を削除するためにソート
+                        i.Sort();
+                        newTriangleSet.Add((i[0], i[1], i[2]));
                     }
-                    s.Triangles = newTriangles;
+                    removeTriangleNum += subMesh.Triangles.Count / 3 - newTriangleSet.Count;
+                    subMesh.Triangles = newTriangleSet.SelectMany(t => new[] { t.Item1, t.Item2, t.Item3 }).ToList();
                 }
+
+                var newVertices = new List<Vector3>(vertexMap.Count);
+                newVertices.AddRange(Enumerable.Repeat(Vector3.zero, vertexMap.Count));
+                foreach (var item in vertexMap)
+                    newVertices[item.Value] = item.Key;
+
+                DebugEx.Log($"Vertex size {Vertices.Count} -> {newVertices.Count}, Remove triangle = {removeTriangleNum}");
+                Vertices = newVertices;
             }
+
 
             public void Separate()
             {
@@ -165,8 +227,11 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public bool Visible { get; set; } = true;
 
+        /// <summary>
+        /// サイズは0 or 1
+        /// </summary>
         [field: SerializeField]
-        public List<Mesh> Meshes { get; set; } = new List<Mesh>();
+        public List<Mesh> Meshes { get; private set; } = new List<Mesh>();
 
         [field: SerializeField]
         public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
@@ -176,11 +241,11 @@ namespace PLATEAU.RoadNetwork.CityObject
 
         // 自分の道路タイプ
         [field: SerializeField]
-        public RRoadTypeMask SelfRoadType { get; set; } = RRoadTypeMask.Empty;
+        public RRoadTypeMask SelfRoadType { get; private set; } = RRoadTypeMask.Empty;
 
         // 親の道路タイプ
         [field: SerializeField]
-        public RRoadTypeMask ParentRoadType { get; set; } = RRoadTypeMask.Empty;
+        public RRoadTypeMask ParentRoadType { get; private set; } = RRoadTypeMask.Empty;
 
         public CityInfo.CityObjectList CityObjects
         {
@@ -244,15 +309,6 @@ namespace PLATEAU.RoadNetwork.CityObject
                     {
                         var v = m.GetVertexAt(i).ToUnityVector();
                         vertices.Add(v);
-                    }
-
-                    var totalIndexNum = 0;
-                    for (var i = 0; i < m.SubMeshCount; ++i)
-                    {
-                        var subMesh = m.GetSubMeshAt(i);
-                        var num = subMesh.EndIndex - subMesh.StartIndex + 1;
-                        Assert.IsTrue(num % 3 == 0, "invalid triangles");
-                        totalIndexNum += num;
                     }
 
                     var subMeshes = new List<SubMesh>(m.SubMeshCount);

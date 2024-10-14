@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,6 +15,7 @@ namespace PLATEAU.RoadNetwork
 
         public void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             var preZTest = Handles.zTest;
             Handles.zTest = CompareFunction.Always;
             var preCol = Gizmos.color;
@@ -28,7 +28,7 @@ namespace PLATEAU.RoadNetwork
 
             Gizmos.color = preCol;
             Handles.zTest = preZTest;
-
+#endif
         }
 
     }

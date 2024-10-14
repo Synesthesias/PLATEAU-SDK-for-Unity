@@ -68,23 +68,17 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public HashSet<object> SelectedObjects { get; } = new();
 
         [Serializable]
-        public class TrackOption : DrawOption
-        {
-            public float splitLength = 3f;
-            public TrackOption()
-            {
-                visible = false;
-                color = Color.green;
-            }
-        }
-
-        [Serializable]
         public class IntersectionOption
         {
             [Serializable]
             public class DrawTrackOption : DrawOption
             {
                 public bool useTurnTypeColor = false;
+
+                public Color disConnectedColor = Color.red;
+
+                // 接続先の道路タイプを表示する
+                public bool showConnectedRoadType = false;
 
                 public DrawTrackOption()
                 {
@@ -345,6 +339,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 }
             }
 
+            if (showPartsType.HasFlag(RnPartsTypeMask.Way))
+            {
+                way.GetLerpPoint(0.5f, out var p);
+                DebugEx.DrawString($"P[{way.DebugMyId}]", p);
+            }
+
             foreach (var p in way.Points)
             {
                 DrawPoint(p);
@@ -366,6 +366,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 非表示設定
             if (InVisibleObjects.Contains(sideWalk))
                 return;
+
             void DrawSideWalkWay(RnWay way, DrawOption op)
             {
                 if (op.visible == false)
@@ -671,6 +672,22 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     {
                         color = DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
                     }
+
+                    Color CheckRoad(RnWay trackBorderWay)
+                    {
+                        var edge = intersection.FindEdges(trackBorderWay).FirstOrDefault();
+                        if (edge?.Road is RnRoad)
+                        {
+                            if (intersection.GetConnectedLanes(trackBorderWay).Any() == false)
+                                return op.showTrack.disConnectedColor;
+                        }
+                        // 何もなければ変更なし
+                        return color;
+                    }
+
+                    color = CheckRoad(track.FromBorder);
+                    color = CheckRoad(track.ToBorder);
+
                     DrawArrows(Enumerable.Range(0, n)
                         .Select(i => 1f * i / (n - 1))
                         .Select(t =>
@@ -678,6 +695,23 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                             track.Spline.Evaluate(t, out var pos, out var tam, out var up);
                             return (Vector3)pos;
                         }), false, color: color);
+
+                    if (op.showTrack.showConnectedRoadType)
+                    {
+                        void Draw(float p, RnNeighbor e)
+                        {
+                            var i0 = Mathf.Floor(p);
+                            var i1 = Mathf.Ceil(p);
+                            track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
+                            track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
+                            var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
+                            var c = e.Road is RnRoad ? Color.green : Color.red;
+                            DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
+                        }
+
+                        Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
+                        Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                    }
                 }
             }
         }
@@ -719,10 +753,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 if (x is RnRoad r)
                 {
+                    if (r.ParentModel != roadNetwork)
+                        continue;
                     DrawRoad(r, VisibleType.GuiSelected);
                 }
                 else if (x is RnIntersection i)
                 {
+                    if (i.ParentModel != roadNetwork)
+                        continue;
                     DrawIntersection(i, VisibleType.GuiSelected);
                 }
                 else if (x is RnLane l)
