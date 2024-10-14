@@ -19,7 +19,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var rnmPoint = rnmContour[i];
                 tessContour[i].Position = new Vec3(rnmPoint.x, rnmPoint.y, rnmPoint.z);
             }
-            tess.AddContour(tessContour, ContourOrientation.Clockwise);
+            tess.AddContour(tessContour, ContourOrientation.Original);
             tess.Tessellate(LibTessDotNet.WindingRule.EvenOdd, LibTessDotNet.ElementType.Polygons, 3);
             
             // 結果をUnityのMeshにします。

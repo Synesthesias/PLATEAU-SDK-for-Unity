@@ -11,7 +11,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// 道路ネットワークから輪郭線を生成します。
     /// RnmはRoad Network to Meshの略です。
     /// </summary>
-    public class RnmContourGenerator : IRnmContourGenerator
+    internal class RnmContourGenerator : IRnmContourGenerator
     {
         public RnmContourList Generate(RnModel model)
         {
@@ -42,7 +42,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
 
     /// <summary> 道路ネットワークから望みの<see cref="RnWay"/>を収集するインターフェイスです。 </summary>
-    internal interface IRnmWayCollector
+    internal interface IRnWayCollector
     {
         IEnumerable<RnWay> Collect();
     }

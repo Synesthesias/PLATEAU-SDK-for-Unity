@@ -5,7 +5,7 @@ using System.Linq;
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary> 交差点の輪郭線を生成します。 </summary>
-    public class RnmContourGeneratorIntersection : IRnmContourGenerator
+    internal class RnmContourGeneratorIntersection : IRnmContourGenerator
     {
         public RnmContourList Generate(RnModel model)
         {
@@ -13,7 +13,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var inter in model.Intersections)
             {
                 // 交差点の外側に位置するWayをここに列挙します。
-                var outsideWaysCollectors = new IRnmWayCollector[]
+                var outsideWaysCollectors = new IRnWayCollector[]
                 {
                     new Sidewalk(inter), // 歩道と交差点の歩道の端。歩道から、交差点のカーブ部分が得られます。交差点の歩道の端から、一部隣接する道路の端が得られます。
                     new CarBorder(inter), // 車道のボーダー。車道と接する部分が得られます。
@@ -37,7 +37,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
 
         /// <summary> 交差点の車道のボーダーを返します </summary>
-        private class CarBorder : IRnmWayCollector
+        private class CarBorder : IRnWayCollector
         {
             private readonly RnIntersection inter;
 
@@ -55,7 +55,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
 
         /// <summary> 交差点の歩道と、歩道の端を返します </summary>
-        private class Sidewalk : IRnmWayCollector
+        private class Sidewalk : IRnWayCollector
         {
             private readonly RnIntersection inter;
 
@@ -82,7 +82,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// <summary>
         /// 交差点について、nonBorderEdgeのうち外側のものを返します。
         /// すなわち、nonBorderEdgeのうち、歩道のinsideWayと重ならず、StartEdgeWayともEndEdgeWayとも重ならないものを返します。 </summary>
-        private class OutsideBorderEdges : IRnmWayCollector
+        private class OutsideBorderEdges : IRnWayCollector
         {
             private readonly RnIntersection inter;
 
@@ -97,33 +97,21 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 {
                     bool isBorderOutside = true;
                     // 条件: 歩道のinsideWayと重ならない
-                    foreach (var insideWay in inter.SideWalks.Select(sw => sw.InsideWay))
-                    {
-                        if (ContourGeneratorCommon.NearestDist(nonBorder, insideWay) < 1)
-                        {
-                            isBorderOutside = false;
-                            break;
-                        }
-                    }
-
+                    var insideWays = inter.SideWalks.Select(sw => sw.InsideWay).SelectMany(w => w.Vertices);
+                    var nonBorder2 = new RnmLine(nonBorder).SubtractSeparate(insideWays, 1);
+                    
                     // 条件: StartEdgeWayともEndEdgeWayとも重ならない
-                    foreach (var edge in inter.Neighbors.Select(n => n.Road).Where(r => r != null)
-                                 .SelectMany(r => r.SideWalks).SelectMany(sw => sw.EdgeWays).Where(ew => ew != null))
-                    {
-                        if (ContourGeneratorCommon.NearestDist(nonBorder, edge) < 1)
-                        {
-                            isBorderOutside = false;
-                            break;
-                        }
-                    }
+                    var neighborEdges = inter.Neighbors.Select(n => n.Road).Where(r => r != null)
+                        .SelectMany(r => r.SideWalks).SelectMany(sw => sw.EdgeWays).Where(ew => ew != null).SelectMany(e => e.Vertices);
+                    var nonBorder3 = nonBorder2.SelectMany(nb => nb.SubtractSeparate(neighborEdges, 1));
 
-                    if (isBorderOutside) yield return nonBorder;
+                    foreach (var nb3 in nonBorder3) yield return new RnWay(new RnLineString(nb3.Vertices.Select(v => new RnPoint(v))));
                 }
             }
         }
 
         /// <summary> 交差点に隣接する道路の歩道の端を取得します。 </summary>
-        private class NeighborSidewalkEdges : IRnmWayCollector
+        private class NeighborSidewalkEdges : IRnWayCollector
         {
             private const float NearThreshold = 1f;
             private readonly RnIntersection inter;

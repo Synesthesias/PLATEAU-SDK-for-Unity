@@ -10,7 +10,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private static readonly Color ArrowColor1 = Color.green;
         private static readonly Color ArrowColor2 = new Color(0f, 0.6f, 0f);
 
-        public void Init(RnmContourList contoursArg)
+        internal void Init(RnmContourList contoursArg)
         {
             contours = contoursArg;
         }
