@@ -20,7 +20,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 道路ごとに輪郭を追加します。
             foreach (var road in model.Roads)
             {
-                var calc = new RnmContourCalculator();
+                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var calc = new RnmContourCalculator(targetObj);
                 
                 var sideWalks = road.SideWalks.ToArray(); // 歩道
                 

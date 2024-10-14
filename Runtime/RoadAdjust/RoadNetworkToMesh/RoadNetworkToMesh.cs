@@ -28,9 +28,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var comp = obj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
                 comp.Init(contour);
                 var mesh = new ContourToMesh().Generate(contour);
-                obj.AddComponent<MeshRenderer>();
+                var renderer = obj.AddComponent<MeshRenderer>();
                 var filter = obj.AddComponent<MeshFilter>();
                 filter.sharedMesh = mesh;
+                if (contour.SourceObject != null)
+                {
+                    var srcRenderer = contour.SourceObject.GetComponent<MeshRenderer>();
+                    var srcMats = srcRenderer.sharedMaterials;
+                    if (srcMats != null)
+                    {
+                        renderer.materials = srcMats;
+                    }
+                }
             }
             
         }

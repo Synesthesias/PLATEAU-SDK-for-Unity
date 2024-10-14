@@ -22,7 +22,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 };
 
                 // 交差点ごとの輪郭線を作ります。
-                var calc = new RnmContourCalculator();
+                var targetObj = inter.TargetTran == null ? null : inter.TargetTran.gameObject;
+                var calc = new RnmContourCalculator(targetObj);
                 foreach (var collector in outsideWaysCollectors)
                 {
                     calc.AddRangeLine(collector.Collect());

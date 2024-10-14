@@ -15,6 +15,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private List<RnmLine> lines = new ();
         private ConditionalLogger logger = new ConditionalLogger(() => true); // デバッグのときだけここをtrueにしてください
         private const float VerticesWeldDistThreshold = 2f;
+        private GameObject sourceObject;
+
+        public RnmContourCalculator(GameObject sourceObject)
+        {
+            this.sourceObject = sourceObject;
+        }
 
         public void AddLine(IEnumerable<Vector3> line)
         {
@@ -36,12 +42,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             if (lines.Count == 0)
             {
                 logger.Log("skipping RnmContour because no lines exist.");
-                return new RnmContour();
+                return new RnmContour(sourceObject);
             }
             RemoveDuplicateOrReverseLine();
             // RemoveDuplicateVertices(VerticesWeldDistThreshold);
             SortByNearestEdgeDist();
-            var contour = new RnmContour();
+            var contour = new RnmContour(sourceObject);
             // 最初の線を追加します。
             var line = lines[0];
             contour.AddVertices(line.Vertices);
@@ -95,7 +101,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             if (contour.Count < 3)
             {
                 logger.Log($"skipping because vertex count = {contour.Count}");
-                return new RnmContour();
+                return new RnmContour(sourceObject);
             }
 
             if (!contour.IsClockwise())

@@ -15,13 +15,17 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     public class RnmContour
     {
         [SerializeField] private List<Vector3> vertices = new ();
+        [SerializeField] private GameObject sourceObject;
+
+        public GameObject SourceObject => sourceObject;
         
-        public RnmContour(IEnumerable<Vector3> vertices)
+        public RnmContour(IEnumerable<Vector3> vertices, GameObject sourceObject)
         {
             this.vertices = vertices.ToList();
+            this.sourceObject = sourceObject;
         }
-        
-        public RnmContour(){}
+
+        public RnmContour(GameObject sourceObject) { this.sourceObject = sourceObject; }
 
         public int Count => vertices.Count;
         public Vector3 this[int index] => vertices[index];
