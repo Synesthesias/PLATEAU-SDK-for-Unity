@@ -1,7 +1,6 @@
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -50,7 +49,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         
 
         /// <summary>
-        /// <paramref name="dst"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
+        /// <paramref name="target"/>とその子に対して、ゲームオブジェクト名からマテリアルを復元します。
         /// ただし、FBXのマテリアルを使った方が良い状況ではそれを使います。
         /// </summary>
         public void RestoreTo(UniqueParentTransformList target)

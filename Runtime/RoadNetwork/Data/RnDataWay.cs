@@ -22,5 +22,14 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember(nameof(RnWay.LineString))]
         public RnID<RnDataLineString> LineString { get; set; }
 
+        /// <summary>
+        /// 同じ線分かどうか(向きや法線の逆転は考慮しない)
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsSameLine(RnDataWay other)
+        {
+            return LineString.IsValid && LineString == other.LineString;
+        }
     }
 }

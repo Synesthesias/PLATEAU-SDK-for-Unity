@@ -23,7 +23,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return CheckAddTarget<T, T>(targets, addTargetId, out isAdded);
         }
 
-        public static long CheckAddTarget<T, U>(HashSet<T> targets, long addTargetId, out bool isAdded) where T : ARnParts<U>
+        public static long CheckAddTarget<T, U>(HashSet<T> targets, long addTargetId, out bool isAdded) where T : ARnParts<U> where U : ARnParts<U>
         {
             isAdded = false;
             using (new EditorGUILayout.HorizontalScope())
@@ -92,14 +92,17 @@ namespace PLATEAU.Editor.RoadNetwork
         }
 
         /// <summary>
-        /// foldoutObjectsに入っていると展開/そうじゃない場合は折りたたみ
+        /// foldoutObjectsに入っていると展開/そうじゃない場合は折りたたみ.
+        /// obj = nullの場合はlabelをobjとして扱う
         /// </summary>
         /// <param name="label"></param>
         /// <param name="foldoutObjects"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static bool Foldout(string label, HashSet<object> foldoutObjects, object obj)
+        public static bool Foldout(string label, HashSet<object> foldoutObjects, object obj = null)
         {
+            // objがnullの場合はlabelをobjとして扱う
+            obj ??= label;
             var isNowVisible = foldoutObjects.Contains(obj);
             var isNextVisible = EditorGUILayout.Foldout(isNowVisible, label);
             if (isNowVisible == isNextVisible)

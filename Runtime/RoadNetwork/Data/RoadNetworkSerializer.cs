@@ -143,7 +143,7 @@ namespace PLATEAU.RoadNetwork.Data
             {
                 if (val == null)
                 {
-                    return RnID<TData>.Undefind;
+                    return RnID<TData>.Undefined;
                 }
 
                 if (Table.ContainsKey(val) == false)

@@ -56,6 +56,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         public class EdgeOption : DrawOption
         {
             public bool useAnyFaceVertexColor = false;
+            // 辺が属するFaceの数を表示する
+            public bool showNeighborCount = false;
         }
         public EdgeOption edgeOption = new EdgeOption();
 
@@ -241,6 +243,11 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 DrawLine(edge.V0.Position, edge.V1.Position, color);
                 if (showId.HasFlag(RPartsFlag.Edge))
                     DrawString($"[{edge.DebugMyId}]", (edge.V0.Position + edge.V1.Position) / 2);
+
+                if (op.showNeighborCount)
+                {
+                    DrawString($"{edge.Faces.Count}", (edge.V0.Position + edge.V1.Position) / 2);
+                }
             }
 
             Draw(vertexOption, edge.V0, work);

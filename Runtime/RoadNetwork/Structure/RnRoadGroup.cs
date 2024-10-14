@@ -120,6 +120,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnWay(RnLineString.Create(points), false, false);
         }
 
+        /// <summary>
+        /// dirで指定した側のレーンをnum個に分割する.
+        /// </summary>
+        /// <param name="num"></param>
+        /// <param name="dir"></param>
+        /// <param name="getSplitRate"></param>
+        /// <returns></returns>
         private Dictionary<RnRoad, List<RnLane>> SplitLane(int num, RnDir? dir, Func<int, float> getSplitRate = null)
         {
             if (num <= 0)
@@ -272,6 +279,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (i == 0)
                     PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
 
+                // 右車線の場合は反対にする
                 for (var j = leftCount + 1; j < lanes.Count; ++j)
                     lanes[j].Reverse();
 
@@ -283,7 +291,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// レーン数を変更する
+        /// レーン数を変更する.
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
@@ -311,13 +319,14 @@ namespace PLATEAU.RoadNetwork.Structure
                 var lanes = afterLanes[road];
 
                 if (i == Roads.Count - 1)
-                    NextIntersection?.ReplaceBorder(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
+                    NextIntersection?.ReplaceBorder(road, lanes.Select(l => l.NextBorder).ToList());
                 if (i == 0)
-                    PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
+                    PrevIntersection?.ReplaceBorder(road, lanes.Select(l => l.PrevBorder).ToList());
+                // 右車線の分
                 for (var j = leftCount; j < lanes.Count; ++j)
                     lanes[j].Reverse();
 
-                Roads[i].ReplaceLanes(lanes);
+                road.ReplaceLanes(lanes);
             }
 
             if (leftCount == 0 || rightCount == 0)
@@ -568,14 +577,16 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (Roads.Count <= 1)
                     return true;
-                var src = Roads[0];
-                for (var i = 1; i < Roads.Count; ++i)
+
+                for (var i = 0; i < Roads.Count; ++i)
                 {
-                    // 自分のPrevがi-1番目のRoadsじゃない場合は向きが逆
-                    if (Roads[i].Prev != src)
+                    // 自分のNextがi+1番目じゃない場合は向きが逆
+                    if (i < Roads.Count - 1 && Roads[i].Next != Roads[i + 1])
                         return false;
-                    // #TODO : laneのborderの向きも見る
-                    src = Roads[i];
+
+                    // 自分のPrevがi-1番目のRoadsじゃない場合は向きが逆
+                    if (i > 0 && Roads[i].Prev != Roads[i - 1])
+                        return false;
                 }
 
                 return true;
@@ -589,12 +600,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsAligned)
                 return;
-            var src = Roads[0];
-            for (var i = 1; i < Roads.Count; ++i)
+
+            for (var i = 0; i < Roads.Count; ++i)
             {
-                if (Roads[i].Prev != src)
+                // 自分のNextがi+1番目じゃない場合は向きが逆
+                if (i < Roads.Count - 1 && Roads[i].Next != Roads[i + 1])
                     Roads[i].Reverse();
-                src = Roads[i];
+
+                // 自分のPrevがi-1番目のRoadsじゃない場合は向きが逆
+                if (i > 0 && Roads[i].Prev != Roads[i - 1])
+                    Roads[i].Reverse();
             }
 
             // 境界線の向きもそろえる
