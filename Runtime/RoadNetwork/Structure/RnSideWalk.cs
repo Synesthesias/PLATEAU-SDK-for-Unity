@@ -81,6 +81,11 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 全てのWay
+        /// </summary>
+        public IEnumerable<RnWay> AllWays => SideWays.Concat(EdgeWays);
+
+        /// <summary>
         /// Inside/OutsideのWayが両方ともValidかどうか. (Edgeは角の道だとnullの場合もあり得るのでチェックしない)
         /// </summary>
         public bool IsValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault();
