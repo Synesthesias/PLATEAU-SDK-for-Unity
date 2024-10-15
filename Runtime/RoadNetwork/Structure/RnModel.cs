@@ -99,16 +99,29 @@ namespace PLATEAU.RoadNetwork.Structure
             return Roads.SelectMany(l => l.AllLanesWithMedian);
         }
 
+        public IEnumerable<RnNeighbor> CollectAllEdges()
+        {
+            return Intersections.SelectMany(i => i.Edges);
+        }
+
         /// <summary>
         /// Intersection/RoadのWayを全て取得
         /// </summary>
         /// <returns></returns>
         public IEnumerable<RnWay> CollectAllWays()
         {
-            return CollectAllLanes().SelectMany(l => l.AllBorders.Concat(l.BothWays)).Distinct();
+            // #TODO : 実際はもっとある
+            return CollectAllLanes()
+                .SelectMany(l => l.AllWays)
+                .Concat(CollectAllEdges().Select(e => e.Border))
+                .Concat(SideWalks.SelectMany(sw => sw.AllWays))
+                .Distinct();
         }
 
-        // #TODO : 実際はもっとある
+        /// <summary>
+        /// Modelが所持する全てのLineStringを取得
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RnLineString> CollectAllLineStrings()
         {
             return CollectAllWays().Select(w => w.LineString).Distinct();
@@ -456,9 +469,9 @@ namespace PLATEAU.RoadNetwork.Structure
                     var rightLaneCount = num - leftLaneCount;
                     linkGroup.SetLaneCount(leftLaneCount, rightLaneCount);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    //Debug.LogException(e);
+                    Debug.LogException(e);
                     failedRoads.Add(link.DebugMyId);
                 }
             }
