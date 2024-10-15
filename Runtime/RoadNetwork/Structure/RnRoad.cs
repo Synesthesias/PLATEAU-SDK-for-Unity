@@ -68,17 +68,21 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             get
             {
-                foreach (var lane in GetLeftLanes())
+                // このイテレータを回している途中でlane.IsReversedが変わると困るので
+                // 最初にカウントを取ってからにする
+                // mainLanesの前半がIsLeftLane, 後半がIsRightLaneである前提の挙動
+                var leftLaneCount = GetLeftLaneCount();
+                for (var i = 0; i < leftLaneCount; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
 
                 if (MedianLane != null)
                     yield return MedianLane;
 
-                foreach (var lane in GetRightLanes())
+                for (var i = leftLaneCount; i < mainLanes.Count; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
             }
         }
@@ -386,7 +390,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 逆転する
+        /// Next,Prevを逆転する.
+        /// その結果, レーンのIsReverseも逆転/mainLanesの配列順も逆転する
         /// </summary>
         public void Reverse()
         {

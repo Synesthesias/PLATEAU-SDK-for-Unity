@@ -289,13 +289,35 @@ namespace PLATEAU.RoadNetwork.Structure
                 road.SetMedianLane(median);
             }
         }
+        public void SetLaneCount(int leftCount, int rightCount)
+        {
+            if (IsValid == false)
+                return;
+            // 向きをそろえる
+            Align();
+
+            var nowLeft = GetLeftLaneCount();
+            var nowRight = GetRightLaneCount();
+
+            // すでにどっちのレーンもある場合
+            // or 0個の車線の道路の指定が0のままの場合は独立して分割する
+            if ((nowLeft > 0 || leftCount == 0) &&
+                (nowRight > 0 || rightCount == 0))
+            {
+                SetLeftLaneCount(leftCount);
+                SetRightLaneCount(rightCount);
+                return;
+            }
+
+            SetLaneCountImpl(leftCount, rightCount);
+        }
 
         /// <summary>
         /// レーン数を変更する.
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
-        public void SetLaneCount(int leftCount, int rightCount)
+        private void SetLaneCountImpl(int leftCount, int rightCount)
         {
             if (IsValid == false)
                 return;
@@ -416,7 +438,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 左車線が無い場合は左車線のサイズも含めて変更する
             if (GetLeftLaneCount() == 0)
             {
-                SetLaneCount(count, GetRightLaneCount());
+                SetLaneCountImpl(count, GetRightLaneCount());
             }
             // すでに左車線がある場合はそれだけで変更する
             else
@@ -438,7 +460,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 右車線が無い場合は左車線のサイズも含めて変更する
             if (GetRightLaneCount() == 0)
             {
-                SetLaneCount(GetLeftLaneCount(), count);
+                SetLaneCountImpl(GetLeftLaneCount(), count);
             }
             // すでに右車線がある場合はそれだけで変更する
             else
@@ -601,17 +623,42 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsAligned)
                 return;
 
-            for (var i = 0; i < Roads.Count; ++i)
+            // まずはRoadsのPrev/Nextの向きをそろえる
+            // Roads.Count <= 1の場合はIsAligned=trueなのでここでは
+            // インデックス範囲外チェックはしなくてよい
+            // 0番目が逆かどうかチェック
+            if (Roads[0].Next != Roads[1])
+                Roads[0].Reverse();
+            // 1番目以降が逆かどうかチェック
+            for (var i = 1; i < Roads.Count; ++i)
             {
-                // 自分のNextがi+1番目じゃない場合は向きが逆
-                if (i < Roads.Count - 1 && Roads[i].Next != Roads[i + 1])
-                    Roads[i].Reverse();
-
                 // 自分のPrevがi-1番目のRoadsじゃない場合は向きが逆
-                if (i > 0 && Roads[i].Prev != Roads[i - 1])
+                if (Roads[i].Prev != Roads[i - 1])
                     Roads[i].Reverse();
             }
 
+            // 次にLaneのPrev/Nextの向きをそろえる
+            // 0番目を基準にして, 1番目以降の道路をひとつ前の道路に合わせていく
+
+            // １車線しかない道路の場合それが左車線になるようにそろえるようにする
+            if (Roads[0].MainLanes.Count == 0 && Roads[0].GetLeftLaneCount() == 0)
+            {
+                foreach (var lane in Roads[0].AllLanesWithMedian)
+                    lane.Reverse();
+            }
+            for (var i = 1; i < Roads.Count; ++i)
+            {
+                var nowLanes = Roads[i].AllLanesWithMedian.ToList();
+                var prevLanes = Roads[i - 1].AllLanesWithMedian.ToList();
+                for (var j = 0; j < Mathf.Min(nowLanes.Count, prevLanes.Count); ++j)
+                {
+                    if (nowLanes[j].PrevBorder.IsSameLine(prevLanes[j].NextBorder) == false)
+                    {
+                        // #TODO : この結果RoadsのMainLanesの中身が左->右の規則が崩れないかのチェックが必要
+                        nowLanes[j].Reverse();
+                    }
+                }
+            }
             // 境界線の向きもそろえる
             foreach (var l in Roads)
                 l.AlignLaneBorder();
