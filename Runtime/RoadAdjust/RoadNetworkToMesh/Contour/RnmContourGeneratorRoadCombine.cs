@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
-    /// <summary> 道路の輪郭線を生成します。 </summary>
-    internal class RnmContourGeneratorRoad : IRnmContourGenerator
+    /// <summary> 道路の輪郭線を生成します。道路レーンはまとめます。 </summary>
+    internal class RnmContourGeneratorRoadCombine : IRnmContourGenerator
     {
 
         /// <summary> 車道の点と歩道の点が対応しているとみなす距離のしきい値 </summary>
-        private const float CarWalkMatchDistThreshold = 5.8f; // 歩道と車道の細かい差を拾わない程度には大きく、歩道から大きく形が外れた車道の形状を大雑把に披露程度には小さくした、経験則から来る数値
+        private const float CarWalkMatchDistThreshold = 5.8f; // 歩道と車道の細かい差を拾わない程度には大きく、歩道から大きく形が外れた車道の形状を大雑把に拾う程度には小さくした、経験則から来る数値
         
         
         public RnmContourList Generate(RnModel model)

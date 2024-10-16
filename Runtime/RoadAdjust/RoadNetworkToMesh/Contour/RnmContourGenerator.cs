@@ -13,15 +13,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmContourGenerator : IRnmContourGenerator
     {
+        private readonly IRnmContourGenerator[] generators;
+        
+        public RnmContourGenerator(IEnumerable<IRnmContourGenerator> generators)
+        {
+            this.generators = generators.ToArray();
+        }
+        
         public RnmContourList Generate(RnModel model)
         {
-            // ここに生成したい輪郭線を記載します。
-            var generators = new IRnmContourGenerator[]
-            {
-                new RnmContourGeneratorRoad(), // 道路
-                new RnmContourGeneratorIntersection() // 交差点
-            };
-
             var ret = new RnmContourList();
             foreach (var gen in generators)
             {
