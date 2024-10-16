@@ -46,6 +46,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             Road,
             Intersection,
             SideWalk,
+            LineString,
         }
 
         public class Work
@@ -103,9 +104,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     using (new EditorGUI.IndentLevelScope())
                     {
                         var border = lane.GetBorder(type);
-                        EditorGUILayout.LabelField($"BorderWay {border?.GetDebugMyIdOrDefault()}[{border?.LineString?.GetDebugMyIdOrDefault()}]");
-                        EditorGUILayout.LabelField($"Connect Lanes [{lane.GetConnectedLanes(type).Select(l => l.DebugMyId).Join2String()}]");
-                        EditorGUILayout.LabelField($"Connect Roads [{lane.GetConnectedRoads(type).Select(l => l.DebugMyId).Join2String()}]");
+                        EditorGUILayout.LabelField($"BorderWay {border?.GetDebugIdLabelOrDefault()}");
+                        EditorGUILayout.LabelField($"Connect Lanes [{lane.GetConnectedLanes(type).Select(l => l.GetDebugLabelOrDefault()).Join2String()}]");
+                        EditorGUILayout.LabelField($"Connect Roads [{lane.GetConnectedRoads(type).Select(l => l.GetDebugLabelOrDefault()).Join2String()}]");
                     }
                 }
 
@@ -116,8 +117,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    EditorGUILayout.LongField($"Left Way", lane.LeftWay.GetDebugMyIdOrDefault());
-                    EditorGUILayout.LongField($"Right Way", lane.RightWay.GetDebugMyIdOrDefault());
+                    EditorGUILayout.LabelField($"Left Way {lane.LeftWay.GetDebugIdLabelOrDefault()}");
+                    EditorGUILayout.LabelField($"Right Way {lane.RightWay.GetDebugIdLabelOrDefault()}");
                 }
             }
 
@@ -465,6 +466,18 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 addTargetType = (AddTargetType)EditorGUILayout.EnumPopup("AddTargetType", addTargetType);
                 addTargetId = EditorGUILayout.LongField("AddTarget", addTargetId);
                 isAdded = GUILayout.Button("+");
+            }
+
+            if (isAdded)
+            {
+                if (addTargetType == AddTargetType.LineString)
+                {
+                    var ls = model.CollectAllLineStrings()
+                        .FirstOrDefault(ls => ls != null && ls.DebugMyId == (ulong)addTargetId);
+                    if (ls != null)
+                        InstanceHelper.SelectedObjects.Add(ls);
+                }
+
             }
 
             RnEditorUtil.Separator();
