@@ -16,37 +16,51 @@ namespace PLATEAU.RoadNetwork.Structure
     /// <summary>
     /// 信号制御器
     /// </summary>
-    public class TrafficSignalLightController
+    [Serializable]
+    public class TrafficSignalLightController : ARnParts<TrafficSignalLightController>
     {
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalLightController() { }
+
         public TrafficSignalLightController(string id, RnIntersection node, in Vector3 position)
             : base()
         {
-            SelfId = id;
-            CorrespondingNode = node;
-            this.Position = position;
+            Parent = node;
+            //this.Position = position;
         }
 
-        // RnIDに変換予定？　AVNEWだと文字列
-        public string SelfId { get; private set; } = string.Empty;
-        public RnIntersection CorrespondingNode { get; private set; } = null;
+        // デバッグ用
+        public string DebugId { get=> "t_" + Parent.DebugMyId; }
+
+        // RnIntersection
+        public RnRoadBase Parent { get; private set; } = null;
+
+        public RnIntersection CorrespondingNode { get => Parent as RnIntersection; }
 
 
-        public bool GapImpedanceFlag { get; private set; } = false;
-        public List<TrafficSignalControllerPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControllerPattern>();
-        public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
+        //public bool GapImpedanceFlag { get; private set; } = false;
+        public List<TrafficSignalLight> TrafficLights { get; private set; } = new List<TrafficSignalLight>();
+        public List<TrafficSignalControllerPattern> SignalPatterns { get; private set; } = new List<TrafficSignalControllerPattern>();
 
-        public Vector3 Position { get; set; }
+        public Vector3 Position { get => Parent.GetCenter(); }
     }
 
     /// <summary>
     /// 信号灯器
     /// </summary>
-    public class TrafficSignalLight
+    public class TrafficSignalLight : ARnParts<TrafficSignalLight>
     {
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalLight() { }
+
         public TrafficSignalLight(TrafficSignalLightController controller, in Vector3 position)
         {
-            this.controller = controller;
-            this.position = position;
+            this.Parent = controller;
+            //this.position = position;
         }
 
         public void SetStatus(TrafficSignalLightBulb.Status status)
@@ -54,53 +68,96 @@ namespace PLATEAU.RoadNetwork.Structure
 
         }
 
-        /// <summary>
-        /// 対応する停止線
-        /// </summary>
-        public StopLine stopLine;
+        public TrafficSignalLightController Parent { get; private set; }
 
-        public Vector3 position;
+        public RnRoadBase Road { get; private set; }
 
-        TrafficSignalLightController controller;
+        public string LaneType { get; private set; }
+        public float Distance { get; private set; }
+
+        ///// <summary>
+        ///// 対応する停止線
+        ///// </summary>
+        //public StopLine stopLine;
+
+        public Vector3 Position { get=>Vector3.zero; }
+
     }
 
     /// <summary>
     /// 信号制御のパターン
     /// 開始時刻、制御パターンID、フェーズのリスト、信号灯のオフセットを持つ
     /// </summary>
-    public class TrafficSignalControllerPattern
+    public class TrafficSignalControllerPattern : ARnParts<TrafficSignalControllerPattern>
     {
-        public DateTime StartTime { get; private set; } = DateTime.MinValue;
-        public string ControlPatternId { get; private set; } = "_undefind";
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalControllerPattern() { }
+
+
+        public TrafficSignalLightController Parent { get; private set; }
         public List<TrafficSignalControllerPhase> Phases { get; private set; } = new List<TrafficSignalControllerPhase>();
-        public TrafficLightSignalOffset Offset { get; private set; } = null;
+        public float OffsetSeconds { get; private set; } = 0;
+        public TrafficSignalLight OffsetTrafficLight { get; private set; } = null;
+        public OffsetRelationType OffsetType { get; private set; } = OffsetRelationType.Absolute;
+        public DateTime StartOffsets { get; private set; } = DateTime.MinValue;
+
+        public string ControlPatternId { get; private set; } = "_undefind";
+
     }
 
     /// <summary>
     /// 信号制御のフェーズ
     /// 信号制御のパターンに含まれる要素
     /// </summary>
-    public class TrafficSignalControllerPhase
+    public class TrafficSignalControllerPhase : ARnParts<TrafficSignalControllerPhase>
     {
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalControllerPhase() { }
+
         public TrafficSignalControllerPhase(string id)
         {
             this.Name = id;
         }
-        public float SplitSeconds { get; set; }
-        public int EnterableVehicleType { get; set; }
-        public Dictionary<TrafficSignalLight, RnRoad> DirectionMap { get; set; }
+        public TrafficSignalControllerPattern Parent { get; private set; }
+        public int Order { get; private set; }
+        public float Split { get; set; }
+        public int EnterableVehicleTypeMask { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> BlueRoadPairs { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> YellowRoadPairs { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> RedRoadPairs { get; set; }
+
+        //public Dictionary<TrafficSignalLight, RnRoad> DirectionMap { get; set; }
 
         public string Name { get; set; }
     }
 
-    /// <summary>
-    /// 信号灯器の点灯をずらす
-    /// </summary>
-    public class TrafficLightSignalOffset
-    {
-        public TrafficSignalLight ReferenceSignalLight { get; set; }
-        public float Seconds { get; set; }
-    }
+    ///// <summary>
+    ///// 信号灯器の点灯をずらす
+    ///// </summary>
+    //public class TrafficLightSignalOffset
+    //{
+    //    public TrafficSignalLight ReferenceSignalLight { get; set; }
+    //    public float Seconds { get; set; }
+    //}
     
     /// <summary>
     /// 交通規制情報

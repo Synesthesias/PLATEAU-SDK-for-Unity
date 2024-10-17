@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     var sum = 0f;
                     pattern.Phases.ForEach(phase =>
                     {
-                        sum += phase.SplitSeconds;
+                        sum += phase.Split;
                     });
                     return sum;
                 }
@@ -197,8 +197,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                             var phase = system.SelectedSignalPhase;
  
                             var spllitField = phasePanelRoot.Q<FloatField>("Split");
-                            UIDocBindHelper.Helper.Bind(spllitField, nameof(phase.SplitSeconds), phase);
-                            spllitField.SetValueWithoutNotify(phase.SplitSeconds);
+                            UIDocBindHelper.Helper.Bind(spllitField, nameof(phase.Split), phase);
+                            spllitField.SetValueWithoutNotify(phase.Split);
                             spllitField.RegisterValueChangedCallback((e) =>
                             {
 
@@ -208,8 +208,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                             });
 
                             var maskField = phasePanelRoot.Q<MaskField>("EnterableCarTypeMask");
-                            UIDocBindHelper.Helper.Bind(maskField, nameof(phase.EnterableVehicleType), phase);
-                            maskField.SetValueWithoutNotify(phase.EnterableVehicleType);
+                            UIDocBindHelper.Helper.Bind(maskField, nameof(phase.EnterableVehicleTypeMask), phase);
+                            maskField.SetValueWithoutNotify(phase.EnterableVehicleTypeMask);
 
                         }
                         else

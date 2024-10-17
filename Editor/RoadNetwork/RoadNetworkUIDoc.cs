@@ -570,7 +570,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             {
                                 var pos = (item.Border[i] + item.Border[i + 1]) / 2.0f;
                                 var signalLight = new TrafficSignalLight(trafficController, pos);
-                                trafficController.SignalLights.Add(signalLight);
+                                trafficController.TrafficLights.Add(signalLight);
                             }
                         }
                     }

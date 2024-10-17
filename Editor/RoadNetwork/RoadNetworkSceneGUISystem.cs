@@ -786,10 +786,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (state.isContinue) continue;
 
                     // signalLight
-                    foreach (var signalLight in signalController.SignalLights)
+                    foreach (var signalLight in signalController.TrafficLights)
                     {
                         state.ResetLoopOperationFlags();
-                        ForeachSignalLight(editorSystem, signalController.SignalLights, signalLight, ref state);
+                        ForeachSignalLight(editorSystem, signalController.TrafficLights, signalLight, ref state);
 
                         if (state.isBreak) break;
                         if (state.isContinue) continue;
@@ -1263,7 +1263,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private void ForeachSignalLight(IRoadNetworkEditingSystem editorSystem, List<TrafficSignalLight> signalLights, TrafficSignalLight signalLight, ref SceneGUIState state)
         {
-            state.signalLightPos = signalLight.position;
+            state.signalLightPos = signalLight.Position;
 
             Vector3 pos2d_dis = Vector3.zero;
             var isDisplayNode = true;
@@ -1275,7 +1275,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
             {
-                var size = HandleUtility.GetHandleSize(signalLight.position) * signalLightHndScaleFactor;
+                var size = HandleUtility.GetHandleSize(signalLight.Position) * signalLightHndScaleFactor;
                 //bool isClicked = Handles.Button(signalLight.position, Quaternion.identity, size, size, RoadNetworkTrafficSignalLightCap);
                 var isClicked = Button2DOn3D(state, pos2d_dis, trafficLight_blueTex);
                 if (isClicked)
@@ -1327,7 +1327,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (isClicked)
                     {
                         editorSystem.SelectedRoadNetworkElement = signalController;
-                        Debug.Log(signalController.SelfId);
+                        Debug.Log(signalController.DebugId);
                     }
                 }
             }

@@ -143,19 +143,19 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// 信号灯器
     /// </summary>
-    [System.Serializable]
+    [System.Serializable, RoadNetworkSerializeData(typeof(TrafficSignalLight))]
     public class RnDataTrafficLight : IPrimitiveData
     {
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataTrafficLightController> Parent { get; set; }
-
+            
         /// <summary>
         /// 設置されている道路のID
         /// 注意　交差点ではない
         /// </summary>
         [field: SerializeField]
-        [RoadNetworkSerializeMember]
+        [RoadNetworkSerializeMember(nameof(TrafficSignalLight.Road))]
         public RnID<RnDataRoadBase> RoadId { get; set; }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace PLATEAU.RoadNetwork.Data
     /// フェーズを所持
     /// 実装途中
     /// </summary>
-    [System.Serializable]
+    [System.Serializable, RoadNetworkSerializeData(typeof(TrafficSignalControllerPattern))]
     public class RnDataTrafficSignalPattern : IPrimitiveData
     {
         [field: SerializeField]
@@ -228,7 +228,7 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// フェーズ
     /// </summary>
-    [System.Serializable]
+    [System.Serializable, RoadNetworkSerializeData(typeof(TrafficSignalControllerPhase))]
     public class RnDataTrafficSignalPhase : IPrimitiveData
     {
         [field: SerializeField]
