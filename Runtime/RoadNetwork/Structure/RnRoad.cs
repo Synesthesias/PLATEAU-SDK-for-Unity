@@ -258,7 +258,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// dirで指定した側の全レーンのBorderを統合した一つの大きなBorderを返す
         /// WayはLeft -> Right方向になっている
-        /// dir == nullの時は全レーン
+        /// dir == nullの時は中央分離帯含む全レーン
         /// </summary>
         /// <param name="type"></param>
         /// <param name="dir"></param>
@@ -266,27 +266,47 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnWay GetMergedBorder(RnLaneBorderType type, RnDir? dir = null)
         {
             var ret = new RnLineString();
-            foreach (var l in MainLanes.Where(l => dir == null || GetLaneDir(l) == dir))
+            foreach (var l in dir == null ? AllLanesWithMedian : MainLanes.Where(l => GetLaneDir(l) == dir))
             {
-                RnWay way = null;
-                var t = type;
-                var d = RnLaneBorderDir.Left2Right;
-                if (IsLeftLane(l) == false)
-                {
-                    t = t.GetOpposite();
-                    d = d.GetOpposite();
-                }
-
-                way = l.GetBorder(t);
+                RnWay way = GetBorderWay(l, type, RnLaneBorderDir.Left2Right);
                 if (way == null)
                     continue;
-                if (l.GetBorderDir(t) != d)
-                    way = way.ReversedWay();
-
                 foreach (var p in way.Points)
                     ret.AddPointOrSkip(p);
             }
             return new RnWay(ret);
+        }
+
+        /// <summary>
+        /// laneの車線に対して, RnRoad基準におけるborderTypeで指定した境界線を取ってくる
+        /// (laneのPrev/Nextをそのまま持ってくるわけではないことに注意)
+        /// この時境界線の方向はborderDirで指定する
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="borderType"></param>
+        /// <param name="borderDir"></param>
+        /// <returns></returns>
+        public RnWay GetBorderWay(RnLane lane, RnLaneBorderType borderType, RnLaneBorderDir borderDir)
+        {
+            if (lane.Parent != this)
+            {
+                DebugEx.LogWarning("自身の子レーンじゃないレーンに対してGetBorderWayが呼ばれました");
+                return null;
+            }
+
+            RnWay way = null;
+            if (IsLeftLane(lane) == false)
+            {
+                borderType = borderType.GetOpposite();
+                borderDir = borderDir.GetOpposite();
+            }
+
+            way = lane.GetBorder(borderType);
+            if (way == null)
+                return null;
+            if (lane.GetBorderDir(borderType) != borderDir)
+                way = way.ReversedWay();
+            return way;
         }
 
         /// <summary>
