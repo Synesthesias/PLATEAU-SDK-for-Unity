@@ -1337,17 +1337,17 @@ namespace PLATEAU.Editor.RoadNetwork
                 StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
                 foreach (var node in roadNetwork.Intersections)
                 {
-                    var name = sb.AppendFormat("Node{0}", id).ToString();
-                    var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    //var obj = new GameObject(name, typeof(MeshFilter));
-                    obj.transform.position = node.GetCenterPoint();
-                    obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
-                    //var obj = GameObject.InstantiateGameObjects(prefab,);
-                    //var obj = GameObject.Instantiate(
-                    //    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
-                    obj.name = name;
-                    obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
-                    var subData = new NodeEditorData(obj);
+                    //var name = sb.AppendFormat("Node{0}", id).ToString();
+                    //var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    ////var obj = new GameObject(name, typeof(MeshFilter));
+                    //obj.transform.position = node.GetCenterPoint();
+                    //obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
+                    ////var obj = GameObject.InstantiateGameObjects(prefab,);
+                    ////var obj = GameObject.Instantiate(
+                    ////    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
+                    //obj.name = name;
+                    //obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
+                    var subData = new NodeEditorData();
                     nodeEditorData.Add(node, subData);
 
                     id++;
@@ -1417,7 +1417,7 @@ namespace PLATEAU.Editor.RoadNetwork
                         var node1 = linkGroup.NextIntersection;
                         var editorData = new EditorData<RnRoadGroup>(linkGroup);
 
-                        var cn = new LinkGroupEditorData(editorData, nodeEditorData[node0], nodeEditorData[node1], linkGroup.Roads);
+                        var cn = new LinkGroupEditorData(editorData, linkGroup.Roads);
                         // 同じものを格納済みかチェック
                         var isContain = false;
                         foreach (var group in linkGroups)
@@ -1622,8 +1622,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     var cameraPos = camera.transform.position;
                     var val = data.Value;
-                    var transform = val.RefGameObject.transform;
-                    transform.LookAt(cameraPos, Vector3.up);
                 }
                 if (camera)
                 {
@@ -1664,8 +1662,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
                     // way用の編集データがない場合は作成
-                    CreateWayEditorData(system, roadGroupEditorData, wayEditorDataList);
-
+                    if (wayEditorDataList == null)
+                    {
+                        CreateWayEditorData(system, roadGroupEditorData, wayEditorDataList);
+                    }
                     var isMouseOnViewport = true;
                     if (currentState == State.Default)
                     {
@@ -1821,54 +1821,78 @@ namespace PLATEAU.Editor.RoadNetwork
                 IRoadNetworkEditingSystem system, EditorData<RnRoadGroup> roadGroupEditorData, List<WayEditorData> wayEditorDataList)
             {
                 // wayを重複無しでコレクションする
-                HashSet<RnWay> laneWays = new HashSet<RnWay>();
+                Dictionary<RnLane, HashSet<RnWay>> laneWays = new();
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var lane in road.AllLanes)
                     {
-                        laneWays.Add(lane.LeftWay);
-                        laneWays.Add(lane.RightWay);
+                        var ways = NewOrGetWays(laneWays, lane);
+                        ways.Add(lane.LeftWay);
+                        ways.Add(lane.RightWay);
                     }
                 }
 
-                HashSet<RnWay> sideWalkWays = new HashSet<RnWay>();
+                // 歩道のwayを重複無しでコレクションする
+                Dictionary<RnRoad, HashSet<RnWay>> sideWalkWays = new();    // wayはlaneに紐づいていたないためroadに紐づける
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalkWays.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
+                        var ways = NewOrGetWays(sideWalkWays, road);
+                        ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
                     }
                 }
 
+                // 中央分離帯のwayを重複無しでコレクションする
+                Dictionary<RnRoad, HashSet<RnWay>> medianWays = new();
+                foreach (var road in roadGroupEditorData.Ref.Roads)
+                {
+                    var ways = NewOrGetWays(medianWays, road);
+                    roadGroupEditorData.Ref.GetMedians(out var leftWays, out var rightWays);
+                    foreach (var way in leftWays)
+                    {
+                        ways.Add(way);
+                    }
+                    foreach (var way in rightWays)
+                    {
+                        ways.Add(way);
+                    }
+                }
 
-                // way用の編集データの作成
+                // way用の編集データの作成準備
                 if (wayEditorDataList == null)
                     wayEditorDataList = new List<WayEditorData>(laneWays.Count);
                 wayEditorDataList?.Clear();
 
-                foreach (var editingTarget in laneWays)
+                // 車線のwayから中央分離帯のwayを除外
+                foreach (var ways in laneWays.Values)
                 {
-                    if (editingTarget == null)
+                    foreach (var editingTarget in medianWays)
                     {
-                        continue;
+                        if (editingTarget.Value == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var medianWay in editingTarget.Value)
+                        {
+                            ways.Remove(medianWay);
+                        }
                     }
-                    var wayEditorData = new WayEditorData(editingTarget);
-                    wayEditorData.IsSideWalk = false;
-                    wayEditorDataList.Add(wayEditorData);
                 }
 
-                foreach (var editingTarget in sideWalkWays)
-                {
-                    if (editingTarget == null)
-                    {
-                        continue;
-                    }
-                    var wayEditorData = new WayEditorData(editingTarget);
-                    wayEditorData.IsSideWalk = true;
-                    wayEditorDataList.Add(new WayEditorData(editingTarget));
-                }
+                // 車線の編集用データを作成
+                CreateWayEditorData(wayEditorDataList, laneWays, WayEditorData.WayType.Main);
 
-                if (system.RoadNetworkSimpleEditModule.isEditingDetailMode) // 詳細編集モードではwayの選択は行わない
+                // 歩道の編集用データを作成
+                CreateWayEditorData(wayEditorDataList, sideWalkWays, WayEditorData.WayType.SideWalk);
+
+                // 中央分離帯の編集用データを作成
+                CreateWayEditorData(wayEditorDataList, medianWays, WayEditorData.WayType.Median);
+
+                // 詳細編集モードではwayの選択は行わない
+                var isWaySelectableMode = system.RoadNetworkSimpleEditModule.isEditingDetailMode;
+                if (isWaySelectableMode)
                 {
                     foreach (var wayEditorData in wayEditorDataList)
                     {
@@ -1876,6 +1900,35 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
                 roadGroupEditorData.TryAdd(wayEditorDataList);
+
+                static HashSet<RnWay> NewOrGetWays<_RnRoadNetworkClass>(Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, _RnRoadNetworkClass parent)
+                {
+                    HashSet<RnWay> ways = new HashSet<RnWay>();
+                    if (wayCollection.TryGetValue(parent, out ways) == false)
+                    {
+                        wayCollection.Add(parent, ways = new HashSet<RnWay>());
+                    }
+
+                    return ways;
+                }
+
+                static void CreateWayEditorData<_RnRoadNetworkClass>(List<WayEditorData> wayEditorDataList, Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, WayEditorData.WayType wayType)
+                {
+                    foreach (var editingTarget in wayCollection)
+                    {
+                        if (editingTarget.Value == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var way in editingTarget.Value)
+                        {
+                            var wayEditorData = new WayEditorData(way, editingTarget.Key as RnLane);
+                            wayEditorData.Type = wayType;
+                            wayEditorDataList.Add(wayEditorData);
+                        }
+                    }
+                }
 
                 //// 道路端のwayを編集不可能にする
                 //wayEditorDataList.First().IsSelectable = false;
