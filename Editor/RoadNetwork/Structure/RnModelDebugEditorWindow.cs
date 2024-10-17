@@ -267,7 +267,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        p.leftLaneCount = EditorGUILayout.IntField($"Left({roadGroup.GetLeftLaneCount()}) ->", roadGroup.GetLeftLaneCount());
+                        p.leftLaneCount = EditorGUILayout.IntField($"Left({roadGroup.GetLeftLaneCount()}) ->", p.leftLaneCount);
                         if (GUILayout.Button("Change Left"))
                             work.DelayExec.Add(() => roadGroup.SetLeftLaneCount(p.leftLaneCount));
                     }
