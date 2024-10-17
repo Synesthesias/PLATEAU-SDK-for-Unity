@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
+using System.Linq;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -49,6 +51,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
     /// <summary>
     /// 信号灯器
+    /// 注意　配置されている道路に交差点も設定出来るため注意
     /// </summary>
     public class TrafficSignalLight : ARnParts<TrafficSignalLight>
     {
@@ -57,10 +60,37 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public TrafficSignalLight() { }
 
-        public TrafficSignalLight(TrafficSignalLightController controller, in Vector3 position)
+        public TrafficSignalLight(TrafficSignalLightController controller, RnRoadBase road, List<RnWay> intersectionNeighborBorder)
         {
+            Assert.IsNotNull(controller);
             this.Parent = controller;
-            //this.position = position;
+            Assert.IsNotNull(road);
+            Road = road;
+
+            // intersectionNeighborBorderが必ずroadの境界線に含まれていることを確認
+            foreach (var intersectionBorder in intersectionNeighborBorder)
+            {
+                bool wasFound = false;
+                foreach (var border in road.GetBorders())
+                {
+                    if (intersectionBorder == border.EdgeWay)
+                    {
+                        wasFound = true;
+                        break;
+                    }
+                }
+                // ここの理屈が合っているか確認するためコメントアウト
+                //Assert.IsTrue(wasFound, "交差点の境界辺と道路の境界辺が一致しません");
+            }
+
+
+            // 道路と交差点の境界線の中心を疑似的に求める　（平均だと計算コストが高いため）
+            var a = intersectionNeighborBorder.First().First();
+            var b = intersectionNeighborBorder.Last().Last();
+            var center = (a + b) * 0.5f;
+
+
+            Neighbor = intersectionNeighborBorder;
         }
 
         public void SetStatus(TrafficSignalLightBulb.Status status)
@@ -70,17 +100,32 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public TrafficSignalLightController Parent { get; private set; }
 
+        /// <summary>
+        /// 交差点or道路
+        /// </summary>
         public RnRoadBase Road { get; private set; }
 
         public string LaneType { get; private set; }
         public float Distance { get; private set; }
+
+        public List<RnWay> Neighbor { get; private set; }
 
         ///// <summary>
         ///// 対応する停止線
         ///// </summary>
         //public StopLine stopLine;
 
-        public Vector3 Position { get=>Vector3.zero; }
+        public Vector3 Position 
+        { 
+            get
+            {
+                // 道路と交差点の境界線の中心を疑似的に求める　（平均だと計算コストが高いため）
+                var a = Neighbor.First().First();
+                var b = Neighbor.Last().Last();
+                var center = (a + b) * 0.5f;
+                return center;
+            }
+        }
 
     }
 

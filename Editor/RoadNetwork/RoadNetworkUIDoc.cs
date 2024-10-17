@@ -3,7 +3,6 @@ using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -563,15 +562,25 @@ namespace PLATEAU.Editor.RoadNetwork
                     {
                         var trafficController = new TrafficSignalLightController("SignalController" + node.DebugMyId, node, node.GetCenterPoint());
                         node.SignalController = trafficController;
+                        Dictionary<RnRoadBase, List<RnWay>> roads = new();
                         foreach (var item in node.Neighbors)
                         {
-                            var n = item.Border.Count();
-                            for (int i = 0; i < n - 1; i++)
-                            {
-                                var pos = (item.Border[i] + item.Border[i + 1]) / 2.0f;
-                                var signalLight = new TrafficSignalLight(trafficController, pos);
-                                trafficController.TrafficLights.Add(signalLight);
+                            List<RnWay> borderList = null;
+                            if (roads.TryGetValue(item.Road, out borderList) == false){
+                                borderList = new();
+                                roads.Add(item.Road, borderList);
                             }
+
+                            borderList.Add(item.Border);
+
+
+                        }
+
+                        Vector3 center = Vector3.zero;
+                        foreach (var road in roads)
+                        {
+                            var signalLight = new TrafficSignalLight(trafficController, road.Key/* as RnRoad*/, road.Value);
+                            trafficController.TrafficLights.Add(signalLight);
                         }
                     }
                 }
