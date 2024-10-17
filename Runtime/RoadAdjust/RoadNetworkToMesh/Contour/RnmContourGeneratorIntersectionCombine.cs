@@ -5,11 +5,11 @@ using System.Linq;
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary> 交差点の輪郭線を生成します。レーンは結合します。 </summary>
-    internal class RnmContourGeneratorIntersectionCombine : IRnmContourGenerator
+    internal class RnmContourMeshGeneratorIntersectionCombine : IRnmContourMeshGenerator
     {
-        public RnmContourList Generate(RnModel model)
+        public RnmContourMeshList Generate(RnModel model)
         {
-            var contours = new RnmContourList();
+            var cMeshes = new RnmContourMeshList();
             foreach (var inter in model.Intersections)
             {
                 // 交差点の外側に位置するWayをここに列挙します。
@@ -23,17 +23,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                 // 交差点ごとの輪郭線を作ります。
                 var targetObj = inter.TargetTran == null ? null : inter.TargetTran.gameObject;
-                var calc = new RnmContourCalculator(targetObj);
+                var calc = new RnmContourCalculator();
                 foreach (var collector in outsideWaysCollectors)
                 {
                     calc.AddRangeLine(collector.Collect());
                 }
 
                 var contour = calc.Calculate();
-                contours.Add(contour);
+                var cMesh = new RnmContourMesh(targetObj, contour);
+                cMeshes.Add(cMesh);
             }
 
-            return contours;
+            return cMeshes;
         }
 
 

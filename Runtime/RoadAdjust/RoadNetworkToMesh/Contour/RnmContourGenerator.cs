@@ -11,18 +11,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// 道路ネットワークから輪郭線を生成します。
     /// RnmはRoad Network to Meshの略です。
     /// </summary>
-    internal class RnmContourGenerator : IRnmContourGenerator
+    internal class RnmContourMeshGenerator : IRnmContourMeshGenerator
     {
-        private readonly IRnmContourGenerator[] generators;
+        private readonly IRnmContourMeshGenerator[] generators;
         
-        public RnmContourGenerator(IEnumerable<IRnmContourGenerator> generators)
+        public RnmContourMeshGenerator(IEnumerable<IRnmContourMeshGenerator> generators)
         {
             this.generators = generators.ToArray();
         }
         
-        public RnmContourList Generate(RnModel model)
+        public RnmContourMeshList Generate(RnModel model)
         {
-            var ret = new RnmContourList();
+            var ret = new RnmContourMeshList();
             foreach (var gen in generators)
             {
                 ret.AddRange(gen.Generate(model));
@@ -33,12 +33,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
     
     /// <summary>
-    /// 道路ネットワークから輪郭線を生成するインターフェイスです。
+    /// 道路ネットワークから輪郭線メッシュを生成するインターフェイスです。
     /// RnmはRoad Network to Meshの略です。
     /// </summary>
-    internal interface IRnmContourGenerator
+    internal interface IRnmContourMeshGenerator
     {
-        public RnmContourList Generate(RnModel model);
+        public RnmContourMeshList Generate(RnModel model);
     }
 
     /// <summary> 道路ネットワークから望みの<see cref="RnWay"/>を収集するインターフェイスです。 </summary>
@@ -48,7 +48,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
 
     /// <summary>
-    /// <see cref="IRnmContourGenerator"/>のサブクラスで使うための共通機能を提供します。
+    /// <see cref="IRnmContourMeshGenerator"/>のサブクラスで使うための共通機能を提供します。
     /// </summary>
     internal static class ContourGeneratorCommon
     {

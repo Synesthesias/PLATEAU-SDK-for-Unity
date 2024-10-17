@@ -8,18 +8,21 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class ContourToMesh
     {
-        public Mesh Generate(RnmContour rnmContour)
+        public Mesh Generate(RnmContourMesh rnmContourMesh)
         {
             // LibTessDotNetライブラリを使って、輪郭線をテッセレートします。
             var tess = new Tess();
-            int numPoint = rnmContour.Count;
-            var tessContour = new ContourVertex[numPoint];
-            for (int i = 0; i < numPoint; i++)
+            foreach (var rnmContour in rnmContourMesh)
             {
-                var rnmPoint = rnmContour[i];
-                tessContour[i].Position = new Vec3(rnmPoint.x, rnmPoint.y, rnmPoint.z);
+                int numPoint = rnmContour.Count;
+                var tessContour = new ContourVertex[numPoint];
+                for (int i = 0; i < numPoint; i++)
+                {
+                    var rnmPoint = rnmContour[i];
+                    tessContour[i].Position = new Vec3(rnmPoint.x , rnmPoint.y, rnmPoint.z);
+                }
+                tess.AddContour(tessContour, ContourOrientation.Original);
             }
-            tess.AddContour(tessContour, ContourOrientation.Original);
             tess.Tessellate(LibTessDotNet.WindingRule.EvenOdd, LibTessDotNet.ElementType.Polygons, 3);
             
             // 結果をUnityのMeshにします。

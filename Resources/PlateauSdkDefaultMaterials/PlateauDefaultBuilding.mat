@@ -190,7 +190,7 @@ Material:
     - _RequireSplitLighting: 0
     - _Side_AmbientOcclusion: 1
     - _Side_Blend: 30
-    - _Side_Metallic: 0
+    - _Side_Metallic: 1
     - _Side_NormalStrength: 1
     - _Side_Roughness: 1
     - _Side_Titling: 0.4
