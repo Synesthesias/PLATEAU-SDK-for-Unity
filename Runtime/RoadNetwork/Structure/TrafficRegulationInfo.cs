@@ -127,6 +127,37 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// RnIntersectionに接する各RnRoadに対してTrafficSignalLightを生成する
+        /// </summary>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public static IReadOnlyCollection<TrafficSignalLight> CreateTrafficLights(RnIntersection intersection)
+        {
+            TrafficSignalLightController controller = intersection.SignalController;
+            Dictionary<RnRoadBase, List<RnWay>> roads = new();
+            foreach (var item in intersection.Neighbors)
+            {
+                List<RnWay> borderList = null;
+                if (roads.TryGetValue(item.Road, out borderList) == false)
+                {
+                    borderList = new();
+                    roads.Add(item.Road, borderList);
+                }
+
+                borderList.Add(item.Border);
+
+            }
+
+            var lights = new List<TrafficSignalLight>(roads.Count);
+            foreach (var road in roads)
+            {
+                lights.Add(new TrafficSignalLight(controller, road.Key/* as RnRoad*/, road.Value));
+            }
+
+            return lights;
+        }
+
     }
 
     /// <summary>
