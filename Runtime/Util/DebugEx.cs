@@ -382,6 +382,15 @@ namespace PLATEAU.Util
             }
             return v;
         }
+
+        /// <summary>
+        /// 球を描画する
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
         public static void DrawSphere(Vector3 pos, float radius, Color? color = null, float duration = 0f, bool depthTest = true)
         {
             Vector4[] v = s_unitSphere;
@@ -400,6 +409,36 @@ namespace PLATEAU.Util
                 DrawLine(sX, eX, col, duration, depthTest);
                 DrawLine(sY, eY, col, duration, depthTest);
                 DrawLine(sZ, eZ, col, duration, depthTest);
+            }
+        }
+
+        /// <summary>
+        /// 円を描画
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="polygon">多角形のサイズ</param>
+        /// <param name="up"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawRegularPolygon(Vector3 pos, float radius, int polygon = 5, Vector3? up = null,
+            Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            up ??= Vector3.up;
+            var rot = Quaternion.AngleAxis(360f / polygon, up.Value);
+
+            var d = Vector3.right;
+            if (Vector3.Dot(d, up.Value) == 0f)
+                d = Vector3.forward;
+
+            d = Vector3.Cross(d, up.Value).normalized;
+            var p0 = radius * d;
+            for (var i = 0; i < polygon; ++i)
+            {
+                var p1 = rot * p0;
+                DebugEx.DrawLine(p0 + pos, p1 + pos, color, duration, depthTest);
+                p0 = p1;
             }
         }
 
@@ -510,6 +549,26 @@ namespace PLATEAU.Util
             Debug.Log(message);
         }
 
+        /// <summary>
+        /// Debug.LogWarningのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWarning(object message)
+        {
+            Debug.LogWarning(message);
+        }
+
+
+        /// <summary>
+        /// Debug.LogExceptionのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="e"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogException(Exception e)
+        {
+            Debug.LogException(e);
+        }
         /// <summary>
         /// Debug.LogErrorのラッパー. 後で切れるように
         /// </summary>

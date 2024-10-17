@@ -142,6 +142,17 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// Border/Side両方合わせた全てのWayを返す
+        /// </summary>
+        public IEnumerable<RnWay> AllWays
+        {
+            get
+            {
+                return BothWays.Concat(AllBorders);
+            }
+        }
+
+        /// <summary>
         /// 有効なレーンかどうか
         /// Left/Rightどっちも有効ならtrue
         /// </summary>

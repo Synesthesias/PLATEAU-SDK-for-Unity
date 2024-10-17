@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork.Data
         // PropertyDrawerでアクセスするため
         public const string IdFieldName = nameof(id);
 
-        public readonly static RnID<TPrimDataType> Undefind = new RnID<TPrimDataType> { id = -1 };
+        public static readonly RnID<TPrimDataType> Undefined = new RnID<TPrimDataType> { id = -1 };
 
         // Listのindexアクセスがintなのでuintじゃなくてintにしておく
         // structなので初期値は基本0. その時に不正値扱いにするために0は不正値とする
@@ -32,5 +32,13 @@ namespace PLATEAU.RoadNetwork.Data
             this.id = id + 1;
         }
 
+        public static bool operator ==(RnID<TPrimDataType> a, RnID<TPrimDataType> b)
+        {
+            return a.id == b.id;
+        }
+        public static bool operator !=(RnID<TPrimDataType> a, RnID<TPrimDataType> b)
+        {
+            return !(a == b);
+        }
     }
 }

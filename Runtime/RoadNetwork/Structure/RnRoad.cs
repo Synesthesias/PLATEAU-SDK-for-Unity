@@ -29,10 +29,10 @@ namespace PLATEAU.RoadNetwork.Structure
         // 対象のtranオブジェクト
         public PLATEAUCityObjectGroup TargetTran { get; set; }
 
-        // 接続先
+        // 接続先(nullの場合は接続なし)
         public RnRoadBase Next { get; private set; }
 
-        // 接続元
+        // 接続元(nullの場合は接続なし)
         public RnRoadBase Prev { get; private set; }
 
         // レーンリスト
@@ -61,23 +61,28 @@ namespace PLATEAU.RoadNetwork.Structure
         public IEnumerable<RnLane> AllLanes => MainLanes;
 
         /// <summary>
-        /// 中央分離帯を含めた全てのレーン
+        /// 中央分離帯を含めた全てのレーン。
+        /// 左車線 -> 中央分離帯 -> 右車線の順番になっている
         /// </summary>
         public IEnumerable<RnLane> AllLanesWithMedian
         {
             get
             {
-                foreach (var lane in GetLeftLanes())
+                // このイテレータを回している途中でlane.IsReversedが変わると困るので
+                // 最初にカウントを取ってからにする
+                // mainLanesの前半がIsLeftLane, 後半がIsRightLaneである前提の挙動
+                var leftLaneCount = GetLeftLaneCount();
+                for (var i = 0; i < leftLaneCount; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
 
                 if (MedianLane != null)
                     yield return MedianLane;
 
-                foreach (var lane in GetRightLanes())
+                for (var i = leftLaneCount; i < mainLanes.Count; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
             }
         }
@@ -214,7 +219,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetLeftLaneCount()
         {
-            //return lane.GetNextRoad() == Next;
             return GetLeftLanes().Count();
         }
 
@@ -224,7 +228,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public int GetRightLaneCount()
         {
-            //return lane.GetNextRoad() == Prev;
             return GetRightLanes().Count();
         }
 
@@ -294,14 +297,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type, bool includeMedian = true)
         {
-            // 左側
-            var lanes = MainLanes.TakeWhile(IsLeftLane);
-            // 中央分離帯
-            lanes = lanes.Concat(Enumerable.Repeat(MedianLane, MedianLane == null ? 0 : 1));
-            // 右側
-            lanes = lanes.Concat(MainLanes.SkipWhile(IsLeftLane));
-
-            foreach (var l in lanes)
+            // 左 -> 中央分離帯 -> 右の順番
+            foreach (var l in AllLanesWithMedian)
             {
                 var laneBorderType = type;
                 var laneBorderDir = RnLaneBorderDir.Left2Right;
@@ -393,13 +390,18 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 逆転する
+        /// Next,Prevを逆転する.
+        /// その結果, レーンのIsReverseも逆転/mainLanesの配列順も逆転する
         /// </summary>
         public void Reverse()
         {
             (Next, Prev) = (Prev, Next);
-            foreach (var lane in mainLanes)
-                lane.Reverse();
+
+            // 親の向きが変わるので,レーンの親に対する向きも変わる
+            // 各レーンのWayの向きは変えずにIsRevereだけ変える
+            // 左車線/右車線の関係が変わるので配列の並びも逆にする
+            foreach (var lane in AllLanesWithMedian)
+                lane.IsReverse = !lane.IsReverse;
             mainLanes.Reverse();
         }
 
