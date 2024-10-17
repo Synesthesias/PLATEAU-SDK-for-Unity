@@ -436,7 +436,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
 
             // 左車線が無い場合は左車線のサイズも含めて変更する
-            if (GetLeftLaneCount() == 0)
+            if (GetLeftLaneCount() == 0 || count == 0)
             {
                 SetLaneCountImpl(count, GetRightLaneCount());
             }
@@ -458,7 +458,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
 
             // 右車線が無い場合は左車線のサイズも含めて変更する
-            if (GetRightLaneCount() == 0)
+            if (GetRightLaneCount() == 0 || count == 0)
             {
                 SetLaneCountImpl(GetLeftLaneCount(), count);
             }
