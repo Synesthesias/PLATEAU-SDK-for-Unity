@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -101,7 +102,7 @@ namespace PLATEAU.RoadNetwork.Data
     /// <summary>
     /// 信号制御器
     /// </summary>
-    [System.Serializable]
+    [Serializable, RoadNetworkSerializeData(typeof(TrafficSignalLightController))]
     public class RnDataTrafficLightController : IPrimitiveData
     {
         /// <summary>
@@ -117,13 +118,6 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public List<RnID<RnDataTrafficLight>> TrafficLights { get; set; }
-
-        /// <summary>
-        /// オフセットの基準となる信号機
-        /// </summary>
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public RnID<RnDataTrafficLight> OffsetTrafficLight { get; set; }
 
         /// <summary>
         /// 制御バターン
@@ -204,6 +198,13 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public float OffsetSeconds { get; set; }
+
+        /// <summary>
+        /// オフセットの基準となる信号機
+        /// </summary>
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataTrafficLight> OffsetTrafficLight { get; set; }
 
         /// <summary>
         /// オフセットタイプ
