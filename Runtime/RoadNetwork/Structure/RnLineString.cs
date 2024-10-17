@@ -121,7 +121,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// index指定で前半/後半に分割する
+        /// index指定で前半/後半に分割したLineStringを返す(非破壊)
         /// </summary>
         /// <param name="index"></param>
         /// <param name="front"></param>

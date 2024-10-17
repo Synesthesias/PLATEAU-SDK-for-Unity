@@ -34,7 +34,7 @@ namespace PLATEAU.RoadNetwork.Tester
         public TunTypeTestParam turnTypeTest = new TunTypeTestParam();
 
         [Serializable]
-        public class RoadIntersectionTestParam
+        public class RoadSliceTestParam
         {
             public bool enable = false;
             public long rnRoadId = -1;
@@ -42,7 +42,7 @@ namespace PLATEAU.RoadNetwork.Tester
             public bool exec = false;
             public bool exec2 = false;
         }
-        [FormerlySerializedAs("lineStringIntersectionTest")] public RoadIntersectionTestParam roadIntersectionTest = new RoadIntersectionTestParam();
+        [FormerlySerializedAs("lineStringIntersectionTest")] public RoadSliceTestParam roadIntersectionTest = new RoadSliceTestParam();
 
         private IEnumerable<Transform> GetChildren(Transform self)
         {
@@ -102,7 +102,7 @@ namespace PLATEAU.RoadNetwork.Tester
             DebugEx.DrawString($"{type}", vertices[0].ToVector3(axis));
         }
 
-        private void RoadIntersectionTest(RoadIntersectionTestParam p)
+        private void RoadSliceTest(RoadSliceTestParam p)
         {
             var exec = p.exec;
             p.exec = false;
@@ -111,19 +111,20 @@ namespace PLATEAU.RoadNetwork.Tester
             if (p.enable == false)
                 return;
             var target = GameObject.FindAnyObjectByType<PLATEAURnStructureModel>();
-            if (!target || target.RoadNetwork == null)
+            var plateauRnStructureModel = target;
+            if (!plateauRnStructureModel || plateauRnStructureModel.RoadNetwork == null)
                 return;
 
             var edges = GeoGraphEx.GetEdges(GetVertices3D(), false).Select(s => new LineSegment3D(s.Item1, s.Item2)).ToList();
 
-            var roads = target.RoadNetwork.Roads.Where(r =>
+            var roads = plateauRnStructureModel.RoadNetwork.Roads.Where(r =>
                 p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList();
             foreach (var road in roads)
             {
                 var isCrossed = false;
                 foreach (var segment in edges)
                 {
-                    var res = road.GetLaneIntersections(segment);
+                    var res = road.GetLaneCrossPoints(segment);
                     if (res == null)
                         continue;
                     foreach (var v in res.TargetLines.SelectMany(w => w.Intersections))
@@ -135,15 +136,39 @@ namespace PLATEAU.RoadNetwork.Tester
 
                     if (exec && isCrossed)
                     {
-                        target.RoadNetwork.SliceRoadHorizontal(road, segment);
+                        plateauRnStructureModel.RoadNetwork.SliceRoadHorizontal(road, segment);
                     }
                 }
 
                 if (exec2 && edges.Count >= 3 && isCrossed)
                 {
-                    target.RoadNetwork.SliceRoadHorizontalAndConvert2Intersection(road, edges[0], edges[2]);
+                    plateauRnStructureModel.RoadNetwork.SliceRoadHorizontalAndConvert2Intersection(road, edges[0], edges[2]);
                 }
+            }
 
+            var intersections = plateauRnStructureModel.RoadNetwork.Intersections.Where(r =>
+                p.rnRoadId < 0 || r.GetDebugMyIdOrDefault() == p.rnRoadId).ToList();
+            foreach (var road in intersections)
+            {
+                var isCrossed = false;
+                foreach (var segment in edges)
+                {
+                    var res = road.GetEdgeCrossPoints(segment);
+                    if (res == null)
+                        continue;
+                    foreach (var v in res.TargetLines.SelectMany(w => w.Intersections))
+                    {
+                        DebugEx.DrawSphere(v.v, 0.3f, Color.red);
+                        DebugEx.DrawString($"{v.index}", v.v);
+                        isCrossed = true;
+                    }
+
+                    if (exec && isCrossed)
+                    {
+                        var sliceRes = plateauRnStructureModel.RoadNetwork.SliceIntersectionHorizontal(road, segment);
+                        DebugEx.Log(sliceRes.Result);
+                    }
+                }
             }
         }
 
@@ -174,7 +199,7 @@ namespace PLATEAU.RoadNetwork.Tester
 
             EdgeBorderTest(edgeBorderTest);
             TurnTypeTest(turnTypeTest);
-            RoadIntersectionTest(roadIntersectionTest);
+            RoadSliceTest(roadIntersectionTest);
         }
 
     }

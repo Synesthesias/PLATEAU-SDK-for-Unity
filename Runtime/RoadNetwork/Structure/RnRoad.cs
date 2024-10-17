@@ -724,67 +724,18 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-
-        /// <summary>
-        /// Roadの全レーンの境界線との交点チェック結果
-        /// </summary>
-        public class LaneIntersectionResult
-        {
-            public class Intersection
-            {
-                /// <summary>
-                /// 対象線分
-                /// </summary>
-                public RnLineString LineString { get; set; }
-
-                /// <summary>
-                /// 交点情報.
-                /// index : LineString上の配列インデックス位置. 線分の途中の点の場合は小数になる
-                ///     v : 交点座標
-                /// </summary>
-                public List<(float index, Vector3 v)> Intersections { get; set; } = new();
-            }
-
-            /// <summary>
-            /// 交点チェック対象のLineString情報
-            /// </summary>
-            public List<Intersection> TargetLines { get; set; } = new();
-
-            public LineSegment3D LineSegment { get; set; }
-
-            // 対応するRoad
-            public RnRoad Road { get; set; }
-        }
-
-
         /// <summary>
         /// selfの全LinestringとlineSegmentの交点を取得する
         /// </summary>
         /// <param name="self"></param>
         /// <param name="lineSegment"></param>
         /// <returns></returns>
-        public static LaneIntersectionResult GetLaneIntersections(this RnRoad self, LineSegment3D lineSegment)
+        public static LineCrossPointResult GetLaneCrossPoints(this RnRoad self, LineSegment3D lineSegment)
         {
-            var ret = new LaneIntersectionResult { LineSegment = lineSegment, Road = self };
-
             var targetLines = self.AllLanesWithMedian
                 .SelectMany(l => l.BothWays)
-                .Concat(self.SideWalks.SelectMany(s => s.SideWays))
-                .Select(w => w.LineString)
-                .ToHashSet();
-
-            foreach (var way in targetLines)
-            {
-                var elem = new LaneIntersectionResult.Intersection { LineString = way };
-
-                foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
-                {
-                    elem.Intersections.Add((r.index, r.v));
-                }
-                ret.TargetLines.Add(elem);
-            }
-
-            return ret;
+                .Concat(self.SideWalks.SelectMany(s => s.SideWays));
+            return RnEx.GetLineIntersections(lineSegment, targetLines);
         }
     }
 }

@@ -273,8 +273,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
+        /// <summary>
+        /// 他の道路との境界線Edge取得
+        /// </summary>
         public IEnumerable<RnNeighbor> Neighbors => edges.Where(e => e.IsBorder);
 
+        /// <summary>
+        /// 輪郭のEdge取得
+        /// </summary>
         public IReadOnlyList<RnNeighbor> Edges => edges;
 
         // 交差点内のトラック
@@ -466,7 +472,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (eg.IsBorder == false)
                     continue;
 
-                var inBounds = eg.InBoundBorders.ToList();
+                var inBounds = eg.InBoundEdges.ToList();
                 foreach (var other in edgeGroups)
                 {
                     if (other.IsBorder == false || eg == other)
@@ -494,7 +500,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         tracks.Add(new RnTrack(from.Border, to.Border, spline, edgeTurnType));
                     }
 
-                    var outBounds = other.OutBoundBorders.ToList();
+                    var outBounds = other.OutBoundEdges.ToList();
                     if (turnType.IsLeft())
                     {
                         // 左折の場合は左側のレーンのみ作成する
@@ -680,19 +686,19 @@ namespace PLATEAU.RoadNetwork.Structure
     {
         public class EdgeGroup
         {
-            public RnRoadBase Key => Neighbors.First().Road;
+            public RnRoadBase Key => Edges.First().Road;
 
             // 時計回りになるように入っている
             // =(交差点の外から見て0が右側)
-            public List<RnNeighbor> Neighbors { get; } = new();
+            public List<RnNeighbor> Edges { get; } = new();
 
             public bool IsBorder => Key != null;
 
             // 流入してくるボーダー
-            public IEnumerable<RnNeighbor> InBoundBorders => Neighbors.Where(n => (n.GetFlowType() & RnFlowTypeMask.Inbound) != 0);
+            public IEnumerable<RnNeighbor> InBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Inbound) != 0);
 
             // 流出するボーダー
-            public IEnumerable<RnNeighbor> OutBoundBorders => Neighbors.Where(n => (n.GetFlowType() & RnFlowTypeMask.Outbound) != 0);
+            public IEnumerable<RnNeighbor> OutBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Outbound) != 0);
 
             // 右側
             public EdgeGroup RightSide { get; set; }
@@ -701,11 +707,12 @@ namespace PLATEAU.RoadNetwork.Structure
             public EdgeGroup LeftSide { get; set; }
 
             // 法線方向
-            public Vector3 Normal => Neighbors.First().Border.GetEdgeNormal(0).normalized;
+            public Vector3 Normal => Edges.First().Border.GetEdgeNormal(0).normalized;
         };
 
         /// <summary>
-        /// 交差点のEdgesをRoadごとにグループ化する
+        /// 交差点のEdgesをRoadごとにグループ化する.
+        /// RoadA -> null(境界線じゃない部分) -> RoadB -> null -> RoadC -> null -> RoadAのようになる
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -720,14 +727,14 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 var eg = ret[^1];
                 var e0 = self.Edges[i];
-                if (eg.Neighbors.Any() == false || eg.Key == e0.Road)
+                if (eg.Edges.Any() == false || eg.Key == e0.Road)
                 {
-                    eg.Neighbors.Add(e0);
+                    eg.Edges.Add(e0);
                 }
                 else
                 {
                     var next = new EdgeGroup();
-                    next.Neighbors.Add(e0);
+                    next.Edges.Add(e0);
                     eg.LeftSide = next;
                     next.RightSide = eg;
                     ret.Add(next);
@@ -739,7 +746,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (ret[0].Key == ret[^1].Key)
             {
-                ret[^1].Neighbors.AddRange(ret[0].Neighbors);
+                ret[^1].Edges.AddRange(ret[0].Edges);
                 ret.RemoveAt(0);
             }
             ret[0].RightSide = ret[^1];
@@ -772,6 +779,19 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
+        /// <summary>
+        /// selfの全LinestringとlineSegmentの交点を取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="lineSegment"></param>
+        /// <returns></returns>
+        public static LineCrossPointResult GetEdgeCrossPoints(this RnIntersection self, LineSegment3D lineSegment)
+        {
+            var targetLines = self.Edges
+                .Select(l => l.Border)
+                .Concat(self.SideWalks.SelectMany(s => s.SideWays));
+            return RnEx.GetLineIntersections(lineSegment, targetLines);
+        }
 #if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
