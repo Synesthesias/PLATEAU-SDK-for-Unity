@@ -1,51 +1,46 @@
+using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using PLATEAU.RoadNetwork.Structure;
-using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
 [ExecuteAlways]
 public class SplineToLineStringTest : MonoBehaviour
 {
-    SplineInstantiate m_SplineInstantiate;
+    SplineInstantiate splineInstantiate;
+    SplineContainer splineContainer;
     Spline spline = new Spline();
 
 #if UNITY_EDITOR
-    internal SplineInstantiate SplineInstantiate => m_SplineInstantiate;
+    internal SplineInstantiate SplineInstantiate => splineInstantiate;
+    internal SplineContainer SplineContainer => splineContainer;
 #endif
 
     void Awake()
     {
-        if (!gameObject.TryGetComponent(out m_SplineInstantiate))
-        {
-            m_SplineInstantiate = gameObject.AddComponent<SplineInstantiate>();
-            // m_SplineInstantiate.hideFlags = HideFlags.HideInInspector;
-        }
+        // SplineContainerを動的生成するとたまにスプライン編集モードにならないので、Awakeで生成して常に保持しておく
+        splineContainer = gameObject.GetComponent<SplineContainer>();
+        splineContainer ??= gameObject.AddComponent<SplineContainer>();
+        splineInstantiate = gameObject.GetComponent<SplineInstantiate>();
+        splineInstantiate ??= gameObject.AddComponent<SplineInstantiate>();
+        SplineInstantiate.Container = SplineContainer;
     }
 
     void OnDestroy()
     {
-        if (!gameObject.TryGetComponent(out m_SplineInstantiate))
+        if (!gameObject.TryGetComponent(out splineInstantiate))
         {
             return;
         }
 
         if (Application.isPlaying)
         {
-            Destroy(m_SplineInstantiate);
+            Destroy(splineInstantiate);
         }
     }
 
     public void CreateSpline(RnRoadGroup roadGroup)
     {
-        var container = GetComponent<SplineContainer>();
-        if (container == null)
-        {
-            container = gameObject.AddComponent<SplineContainer>();
-        }
         roadGroup.TryCreateSpline(out var spline, out var width);
         List<BezierKnot> knots = new List<BezierKnot>();
         BezierKnot prevKnot = new BezierKnot();
@@ -69,11 +64,14 @@ public class SplineToLineStringTest : MonoBehaviour
             spline.SetTangentMode(i, TangentMode.AutoSmooth);
         }
 
-        container.Splines = new Spline[] { spline };
-        SplineInstantiate.Container = container;
+        SplineContainer.Splines = new Spline[] { spline };
         this.spline = spline;
     }
 
+    public void ResetSpline()
+    {
+        SplineContainer.Splines = new List<Spline>();
+    }
 
     void OnDrawGizmos()
     {
@@ -83,6 +81,11 @@ public class SplineToLineStringTest : MonoBehaviour
             Gizmos.DrawLine(lineString[i] + Vector3.right, lineString[i + 1] + Vector3.right);
             Gizmos.DrawSphere(lineString[i] + Vector3.right, 1f);
         }
+    }
+
+    public Vector3[] ConvertSplineToLineString()
+    {
+        return ConvertSplineToLineString(spline);
     }
 
     private Vector3[] ConvertSplineToLineString(Spline spline)

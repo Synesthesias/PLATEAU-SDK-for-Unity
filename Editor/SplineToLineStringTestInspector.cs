@@ -1,5 +1,4 @@
 using PLATEAU.RoadNetwork.Structure;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.EditorTools;
@@ -32,11 +31,10 @@ public class SplineToLineStringTestInspector : Editor
             splineToLineStringTest.CreateSpline(roadGroup);
 
             // スプライン編集モードにする。(参考：EditorSplineUtility.SetKnotPlacementTool())
-            ToolManager.SetActiveContext<SplineToolContext>();
-            // TODO: ゲームオブジェクトを選択する
+            EditorApplication.delayCall += ToolManager.SetActiveContext<SplineToolContext>;
         }
 
-        if (GUILayout.Button("Convert To LineString"))
+        if (GUILayout.Button("End Edit"))
         {
             var container = splineToLineStringTest.GetComponent<SplineContainer>();
             if (container == null)
@@ -44,9 +42,12 @@ public class SplineToLineStringTestInspector : Editor
                 return;
             }
 
-            //roadGroup.
+            // LineStringに変換
+            splineToLineStringTest.ConvertSplineToLineString();
 
-            Selection.activeGameObject = null;
+            splineToLineStringTest.ResetSpline();
+
+            // Selection.activeGameObject = null;
         }
     }
 }
