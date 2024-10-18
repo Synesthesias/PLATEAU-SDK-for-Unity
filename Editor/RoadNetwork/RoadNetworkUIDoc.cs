@@ -558,7 +558,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var intersection = system.SelectedRoadNetworkElement as RnIntersection;
                 if (intersection != null)
                 {
-                    if (intersection.SignalController == null)
+                    if (Event.current.shift && intersection.SignalController == null)
                     {
                         var trafficController = new TrafficSignalLightController("SignalController" + intersection.DebugMyId, intersection, intersection.GetCenterPoint());
                         intersection.SignalController = trafficController;
