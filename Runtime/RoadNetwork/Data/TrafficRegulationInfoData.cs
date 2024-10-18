@@ -174,6 +174,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public float Distance { get; set; }
 
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public List<RnID<RnDataWay>> Neighbor { get; set; }
+
     }
 
     /// <summary>

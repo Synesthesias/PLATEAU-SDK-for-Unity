@@ -83,13 +83,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 //Assert.IsTrue(wasFound, "交差点の境界辺と道路の境界辺が一致しません");
             }
 
-
-            // 道路と交差点の境界線の中心を疑似的に求める　（平均だと計算コストが高いため）
-            var a = intersectionNeighborBorder.First().First();
-            var b = intersectionNeighborBorder.Last().Last();
-            var center = (a + b) * 0.5f;
-
-
+            Assert.IsNotNull(intersectionNeighborBorder);
             Neighbor = intersectionNeighborBorder;
         }
 
@@ -108,7 +102,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public string LaneType { get; private set; }
         public float Distance { get; private set; }
 
-        public List<RnWay> Neighbor { get; private set; }
+        public List<RnWay> Neighbor { get; private set; } = new List<RnWay>();
 
         ///// <summary>
         ///// 対応する停止線
@@ -116,9 +110,14 @@ namespace PLATEAU.RoadNetwork.Structure
         //public StopLine stopLine;
 
         public Vector3 Position 
-        { 
+        {
             get
             {
+                if (Neighbor == null)
+                    return Vector3.zero;
+                if (Neighbor.Count == 0)
+                    return Vector3.zero;
+
                 // 道路と交差点の境界線の中心を疑似的に求める　（平均だと計算コストが高いため）
                 var a = Neighbor.First().First();
                 var b = Neighbor.Last().Last();
