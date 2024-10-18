@@ -33,6 +33,7 @@ public class SplineToLineStringTestInspector : Editor
 
             // スプライン編集モードにする。(参考：EditorSplineUtility.SetKnotPlacementTool())
             ToolManager.SetActiveContext<SplineToolContext>();
+            // TODO: ゲームオブジェクトを選択する
         }
 
         if (GUILayout.Button("Convert To LineString"))

@@ -80,7 +80,8 @@ public class SplineToLineStringTest : MonoBehaviour
         var lineString = ConvertSplineToLineString(spline);
         for (int i = 0; i < lineString.Length - 1; i++)
         {
-            Gizmos.DrawLine(lineString[i], lineString[i + 1]);
+            Gizmos.DrawLine(lineString[i] + Vector3.right, lineString[i + 1] + Vector3.right);
+            Gizmos.DrawSphere(lineString[i] + Vector3.right, 1f);
         }
     }
 
@@ -96,12 +97,12 @@ public class SplineToLineStringTest : MonoBehaviour
 
         while (t < 1f)
         {
-            // 1m毎にスプラインから頂点を取ってきて、10m以上離れているか20度以上角度が異なる場合に頂点を追加
+            // 1m毎にスプライン上の点を取ってきて、10m以上離れているか20度以上角度が異なる場合に頂点として追加
             spline.GetPointAtLinearDistance(t, 1f, out float newT);
             var newPoint = spline.EvaluatePosition(newT);
             var newTangent = spline.EvaluateTangent(newT);
 
-            if (Vector3.Distance(prevPoint, newPoint) > 10 || Vector3.Angle(prevTangent, newTangent) > 20)
+            if (Vector3.Distance(prevPoint, newPoint) > 30 || Vector3.Angle(prevTangent, newTangent) > 20)
             {
                 lineString.Add(newPoint);
                 prevPoint = newPoint;
