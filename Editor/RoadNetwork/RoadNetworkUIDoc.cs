@@ -560,10 +560,17 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     if (Event.current.shift && intersection.SignalController == null)
                     {
+                        // 信号制御器の作成、信号機の作成
                         var trafficController = new TrafficSignalLightController("SignalController" + intersection.DebugMyId, intersection, intersection.GetCenterPoint());
                         intersection.SignalController = trafficController;
                         var lights = TrafficSignalLight.CreateTrafficLights(intersection);
                         trafficController.TrafficLights.AddRange(lights);
+                    }else if (Event.current.shift && intersection.SignalController != null)
+                    {
+                        // 信号制御器の削除、信号機の削除
+                        var lights = intersection.SignalController.TrafficLights;
+                        lights?.Clear();
+                        intersection.SignalController = null;
                     }
                 }
             }
