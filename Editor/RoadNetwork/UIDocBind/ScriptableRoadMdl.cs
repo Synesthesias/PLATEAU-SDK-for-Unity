@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public float LeftSideWalkWidth { get; set; }
         public float RightSideWalkWidth { get; set; }
         public float RoadWidth { get; set; }
-
+        public bool EnableSplieEdittingMode { get; set; }
         //public bool ChangeLeftLaneCount(int count);
         //public bool ChangeRightLaneCount(int count);
         //public bool SetEnableSideWalk(bool isEnable);
@@ -83,6 +83,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public float leftSideWalkWidth;
         public float rightSideWalkWidth;
         public float roadWidth;
+        public bool isSplineEdittingMode;
 
         public void Reset(IScriptableRoadMdl mdl)
         {
@@ -125,7 +126,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public float leftSideWalkWidth = 0.0f;
         public float rightSideWalkWidth = 0.0f;
         public float roadWidth = 0.0f;
-
+        public bool isSplineEdittingMode;
         ScriptableRoadMdlData cache;
 
 
@@ -208,6 +209,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             get => medianWidth; 
             set => SetPropety(value, ref medianWidth, nameof(medianWidth)); 
         }
+        public bool EnableSplieEdittingMode { get => isSplineEdittingMode; set => SetPropety(value, ref isSplineEdittingMode, nameof(isSplineEdittingMode)); }
 
         private static void SetPropety<_T>(in _T v, ref _T current, in string name)
             where _T : IEquatable<_T>
@@ -252,6 +254,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             leftSideWalkWidth = FindProperty("leftSideWalkWidth");
             rightSideWalkWidth = FindProperty("rightSideWalkWidth");
             roadWidth = FindProperty("roadWidth");
+            isSplineEdittingMode = FindProperty("isSplineEdittingMode");
 
             isApply = FindProperty("_isApply");
             //_numLeftLane = serializedObject.FindProperty("_numLeftLane");
@@ -275,6 +278,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public SerializedProperty leftSideWalkWidth;
         public SerializedProperty rightSideWalkWidth;
         public SerializedProperty roadWidth;
+        public SerializedProperty isSplineEdittingMode;
 
         public SerializedProperty isApply;
         //public UIDocBindHelper.IAccessor<int> _numLeftLane;
@@ -294,6 +298,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public float RightSideWalkWidth { get => rightSideWalkWidth.floatValue; set => rightSideWalkWidth.floatValue = value; }
         public float RoadWidth { get => roadWidth.floatValue; set => roadWidth.floatValue = value; }
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
+        public bool EnableSplieEdittingMode { get => isSplineEdittingMode.boolValue; set => isSplineEdittingMode.boolValue = value; }
 
         public bool ChangeLaneWidth(float width)
         {
@@ -377,11 +382,36 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 cache.rightSideWalkWidth = RightSideWalkWidth;
             }
 
+            if (cache.isSplineEdittingMode != EnableSplieEdittingMode)
+            {
+                Notify(EnableSplieEdittingMode, cache.isSplineEdittingMode, nameof(EnableSplieEdittingMode));
+                cache.isSplineEdittingMode = EnableSplieEdittingMode;
+            }
 
             if (isChanged)
             {
 
             }
+        }
+
+        public void UpdateSplineEditingMode()
+        {
+            if (EnableSplieEdittingMode)
+            {
+                var edittingTarget = new EditorData<RnRoadGroup>(GetRoadGroup());   // 別のブランチではScripatableRoadMdlはEditorData<RnRoadGroup>を使用しているためマージ後に置き換える
+                mod.SplineEditting.Enable(this, edittingTarget);
+            }
+            else
+            {
+                mod.SplineEditting.Apply();
+                mod.SplineEditting.Disable();
+            }
+        }
+
+        private RnRoadGroup GetRoadGroup()
+        {
+            var roadObj = targetObject as ScriptableRoadMdl;
+            return roadObj?.road;
         }
 
         private static void Notify<_T>(in _T post, in _T pre, in string name)

@@ -15,6 +15,7 @@
             <ui:FloatField label="左側歩道の幅" value="42.2" binding-path="leftSideWalkWidth" />
             <ui:FloatField label="右側歩道の幅" value="42.2" binding-path="rightSideWalkWidth" />
         </ui:GroupBox>
+        <ui:Toggle label="SplineEdittingMode" name="SplineEditorButton" binding-path="isSplineEdittingMode" />
         <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" name="ApplyButton" />
         <ui:VisualElement style="flex-direction: row; justify-content: space-between; display: none;">
             <ui:Button text="前の設定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NextButton" />
