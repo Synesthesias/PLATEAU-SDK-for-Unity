@@ -20,8 +20,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <summary>
         /// 処理フローのサンプル
         /// 想定している処理フローは以下の通り
-        /// 
-        /// 注意　このブランチでは適切にTerminate()が呼ばれることが無いため自分でテストを組む必要がある
         /// </summary>
         private static void SampleFlow()
         {
@@ -79,6 +77,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <param name="edittingTarget"></param>
         public void Initialize()
         {
+            if (IsInitialized)
+            {
+                Terminate();
+            }
+
             Debug.Log("Initialize()");
             Assert.IsFalse(IsInitialized, "既に初期化されています。");
             IsInitialized = true;
