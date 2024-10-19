@@ -1280,6 +1280,10 @@ namespace PLATEAU.Editor.RoadNetwork
             private IRoadNetworkEditingSystem system;
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
             private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
+
+            private EditingSystemSubMod.RnSplineEditting splineEditting = new EditingSystemSubMod.RnSplineEditting();
+            public EditingSystemSubMod.RnSplineEditting SplineEditting { get => splineEditting; }
+
             // 詳細編集モードかどうか
             private bool isEditingDetailMode = false;
 
@@ -1323,6 +1327,10 @@ namespace PLATEAU.Editor.RoadNetwork
             public void Init()
             {
                 ClearCache();
+
+                if (splineEditting.IsInitialized == true)
+                    splineEditting.Terminate();
+                splineEditting.Initialize();
 
                 nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Intersections.Count);
                 // ノードに紐づくオブジェクトを作成 editor用のデータを作成
@@ -1656,7 +1664,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 //Vector3 closestPointOnRay;   // 
                 if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
                 {
-                    Debug.Log(currentState);
+                    //Debug.Log(currentState);
                     //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 

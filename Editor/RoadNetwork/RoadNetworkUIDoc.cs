@@ -274,6 +274,14 @@ namespace PLATEAU.Editor.RoadNetwork
                         mdl.Apply();
                     };
                 }
+                if (element.Q<Toggle>("SplineEditorButton") is var toggle)
+                {
+                    toggle.RegisterValueChangedCallback((evt) =>
+                    {
+                        mdl.UpdateSplineEditingMode();
+                        mdl.IsEditingDetailMode = evt.newValue;
+                    });
+                }
                 //element.Unbind();
 
                 //linkGroupEditorData.LinkGroup;
