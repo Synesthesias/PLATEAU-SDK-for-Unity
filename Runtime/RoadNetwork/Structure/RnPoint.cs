@@ -36,6 +36,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static bool Equals(RnPoint x, RnPoint y, float sqrMagnitudeTolerance = 0f)
         {
+            // 参照一致か比較する
             if (ReferenceEquals(x, y))
             {
                 return true;
@@ -50,6 +51,10 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 return false;
             }
+
+            // チェック長さが0以下だと無視
+            if (sqrMagnitudeTolerance < 0f)
+                return false;
             return (x.Vertex - y.Vertex).sqrMagnitude <= sqrMagnitudeTolerance;
         }
     }

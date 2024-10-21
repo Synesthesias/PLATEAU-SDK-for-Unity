@@ -92,7 +92,7 @@ namespace PLATEAU.RoadNetwork.Structure
         // LineStringの向きが逆かどうか
         public bool IsReversed { get; set; } = false;
 
-        // 法線計算用. 進行方向左側が道かどうか
+        // 法線が進行方向に対して左側か右側か. trueなら右側
         public bool IsReverseNormal { get; set; } = false;
 
         // 頂点群
@@ -356,7 +356,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す
+        /// 自身をnum分割して返す. 分割できない(頂点空）の時は空リストを返す.
+        /// insertNewPoint=trueの時はselfにも新しい点を追加する
         /// </summary>
         /// <returns></returns>
         public List<RnWay> Split(int num, bool insertNewPoint, Func<int, float> rateSelector = null)
@@ -526,6 +527,39 @@ namespace PLATEAU.RoadNetwork.Structure
         public static float CalcLength(this RnWay self)
         {
             return self.LineString.CalcLength();
+        }
+
+        /// <summary>
+        /// selfの内部のLineStringにbackのLineStringを追加する
+        /// self.Points ... back.Pointsの順になるようにIsReverseを考慮して追加する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="back"></param>
+        public static void Append2LineString(this RnWay self, RnWay back)
+        {
+            if (self.IsReversed)
+            {
+                foreach (var p in back.Points)
+                    self.LineString.AddPointFrontOrSkip(p, -1f, -1f, -1f);
+            }
+            else
+            {
+                // IsReversedがfalseの時はそのまま追加
+                foreach (var p in back.Points)
+                    self.LineString.AddPointOrSkip(p, -1f, -1f, -1f);
+            }
+        }
+
+        /// <summary>
+        /// a,bのPointsを結合した新しいWayを作成する(a, bは非破壊)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static RnWay CreateMergedWay(RnWay a, RnWay b)
+        {
+            var ls = RnLineString.Create(a.Points.Concat(b.Points));
+            return new RnWay(ls);
         }
     }
 }

@@ -251,6 +251,15 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsValid == false)
                 return;
+
+            // 両方とも0はダメ
+            if (leftCount <= 0 && rightCount <= 0)
+            {
+                DebugEx.LogWarning($"両方の車線数に0を入れることはできません");
+                return;
+            }
+
+
             // 向きをそろえる
             Align();
 
@@ -293,6 +302,14 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsValid == false)
                 return;
+
+            // 両方とも0はダメ
+            if (leftCount <= 0 && rightCount <= 0)
+            {
+                DebugEx.LogWarning($"両方の車線数に0を入れることはできません");
+                return;
+            }
+
             // 向きをそろえる
             Align();
 
@@ -375,24 +392,27 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             Align();
             // 中央分離帯がないリンクは一度作成する
-            CreateMedianOrSkip(l => l.MedianLane == null);
-            foreach (var l in Roads)
+            if (width > 0f)
+                CreateMedianOrSkip(l => l.MedianLane == null);
+            foreach (var road in Roads)
             {
+                var nowWidth = road.GetMedianWidth();
+                var deltaWidth = width - nowWidth;
                 //// サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
                 //// 中央分離帯の幅を設定する
-                var centerLeft = l.GetLeftLanes().Last();
-                var centerRight = l.GetRightLanes().First();
+                var centerLeft = road.GetLeftLanes().Last();
+                var centerRight = road.GetRightLanes().First();
                 switch (moveOption)
                 {
                     case LaneWayMoveOption.MoveBothWay:
-                        centerLeft.RightWay?.MoveAlongNormal(-width * 0.5f);
-                        centerRight.RightWay?.MoveAlongNormal(-width * 0.5f);
+                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
+                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
                         break;
                     case LaneWayMoveOption.MoveLeftWay:
-                        centerLeft.RightWay?.MoveAlongNormal(-width);
+                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth);
                         break;
                     case LaneWayMoveOption.MoveRightWay:
-                        centerRight.RightWay?.MoveAlongNormal(-width);
+                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth);
                         break;
                 }
 
@@ -407,21 +427,108 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="moveOption"></param>
         public void RemoveMedian(LaneWayMoveOption moveOption = LaneWayMoveOption.MoveBothWay)
         {
-            SetMedianWidth(0f, moveOption);
+            if (IsValid == false)
+            {
+                DebugEx.LogError($"不正な道路に対してRemoveMedianが呼ばれました");
+                return;
+            }
+
             foreach (var road in Roads)
             {
                 if (road.MedianLane == null)
                     continue;
-                // l,rを同じにするため, r -> lに差し替え(向きをそろえるためにlを反転させる)
-                var before = road.MedianLane.RightWay;
-                var after = road.MedianLane.LeftWay.ReversedWay();
-                foreach (var lane in road.GetRightLanes())
+
+                // 中央線との境界の左車線を取得
+                var leftLane = road.GetLeftLanes().LastOrDefault();
+                var rightLane = road.GetRightLanes().FirstOrDefault();
+                if (leftLane == null || rightLane == null)
                 {
-                    if (lane.RightWay?.IsSameLine(before) ?? false)
+                    DebugEx.LogError($"中央分離帯があるのに, 片側車線しかない道路です");
+                    continue;
+                }
+
+                var borderTypes = new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next };
+
+                // laneの境界線に中央分離帯の境界線を追加する
+                // dirは境界線を取得するときの方向
+                // 左車線の場合は左->右の方向でとってきて後ろに追加する
+                // 右車線の場合は右->左の方向でとってきて後ろに追加する
+                void MergeBorder(RnLane lane, RnLaneBorderDir dir)
+                {
+                    var median = road.MedianLane;
+                    foreach (var borderType in borderTypes)
                     {
-                        lane.SetSideWay(RnDir.Right, after);
+                        // 左車線に追加するときも右車線に追加するときも
+                        // 必ず中央分離帯は右側にあるのでそれ前提
+                        // レーンの境界線をLeft->Right方向で求める
+                        var way = road.GetBorderWay(lane, borderType, dir);
+                        var medianWay = road.GetBorderWay(median, borderType, dir);
+                        way.Append2LineString(medianWay);
                     }
                 }
+
+                switch (moveOption)
+                {
+                    case LaneWayMoveOption.MoveLeftWay:
+                        {
+                            leftLane.SetSideWay(RnDir.Right, rightLane.RightWay.ReversedWay());
+                            MergeBorder(leftLane, RnLaneBorderDir.Left2Right);
+
+                            break;
+                        }
+                    case LaneWayMoveOption.MoveRightWay:
+                        {
+                            rightLane.SetSideWay(RnDir.Right, leftLane.RightWay.ReversedWay());
+                            MergeBorder(rightLane, RnLaneBorderDir.Right2Left);
+                            break;
+                        }
+                    case LaneWayMoveOption.MoveBothWay:
+                        {
+                            var median = road.MedianLane;
+                            foreach (var borderType in borderTypes)
+                            {
+                                var mWay = road.GetBorderWay(median, borderType, RnLaneBorderDir.Left2Right);
+                                var mWays = mWay.Split(2, false);
+                                var leftBorder = road.GetBorderWay(leftLane, borderType, RnLaneBorderDir.Left2Right);
+                                leftBorder.Append2LineString(mWays[0]);
+
+                                var rightBorder = road.GetBorderWay(rightLane, borderType, RnLaneBorderDir.Right2Left);
+                                rightBorder.Append2LineString(mWays[1].ReversedWay());
+                            }
+                            var left = leftLane.RightWay;
+                            var right = rightLane.RightWay.ReversedWay();
+
+                            // leftLaneから中央分離帯側の端点を取得
+                            RnPoint GetEdgePoint(RnLaneBorderType type)
+                            {
+                                if (leftLane.GetBorderDir(type) == RnLaneBorderDir.Left2Right)
+                                {
+                                    // 左 -> 右の場合は最後の点
+                                    return leftLane.GetBorder(type).GetPoint(-1);
+                                }
+                                else
+                                {
+                                    // 右 -> 左の場合は最初の点
+                                    return leftLane.GetBorder(type).GetPoint(0);
+                                }
+                            }
+
+                            var centerLine = RnEx.CreateInnerLerpLineString(
+                                left.Vertices.ToList()
+                                , right.Vertices.ToList()
+                                , GetEdgePoint(RnLaneBorderType.Prev)
+                                , GetEdgePoint(RnLaneBorderType.Next)
+                                , RnWayEx.CreateMergedWay(leftLane.PrevBorder, rightLane.PrevBorder)
+                                , RnWayEx.CreateMergedWay(leftLane.NextBorder, rightLane.NextBorder)
+                                , 0.5f);
+
+                            leftLane.SetSideWay(RnDir.Right, new RnWay(centerLine, false, true));
+                            rightLane.SetSideWay(RnDir.Right, new RnWay(centerLine, true, true));
+                            break;
+                        }
+
+                }
+                road.SetMedianLane(null);
             }
         }
 
@@ -436,7 +543,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
 
             // 左車線が無い場合は左車線のサイズも含めて変更する
-            if (GetLeftLaneCount() == 0)
+            if (GetLeftLaneCount() == 0 || count == 0)
             {
                 SetLaneCountImpl(count, GetRightLaneCount());
             }
@@ -458,7 +565,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
 
             // 右車線が無い場合は左車線のサイズも含めて変更する
-            if (GetRightLaneCount() == 0)
+            if (GetRightLaneCount() == 0 || count == 0)
             {
                 SetLaneCountImpl(GetLeftLaneCount(), count);
             }
