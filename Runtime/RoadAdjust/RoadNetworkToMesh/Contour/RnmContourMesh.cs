@@ -16,21 +16,21 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         [SerializeField] private GameObject sourceObject;
 
         public GameObject SourceObject => sourceObject;
-        
+
         public RnmContourMesh(GameObject sourceObject) { this.sourceObject = sourceObject; }
 
         public RnmContourMesh(GameObject sourceObject, IEnumerable<RnmContour> contours)
-        :this(sourceObject)
+            : this(sourceObject)
         {
             this.contours = contours.ToList();
         }
 
         public RnmContourMesh(GameObject sourceObject, RnmContour contour)
-        :this(sourceObject)
+            : this(sourceObject)
         {
             this.contours = new List<RnmContour> { contour };
         }
-        
+
         public int Count => contours.Count;
         public RnmContour this[int index] => contours[index];
         public void Add(RnmContour c) => contours.Add(c);
@@ -39,14 +39,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         {
             foreach (var contour in c.contours) Add(contour);
         }
-        
-        
+
         public IEnumerator<RnmContour> GetEnumerator() => contours.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        
     }
-    
+
     /// <summary> <see cref="RnmContourMesh"/>を複数保持します。 </summary>
     [Serializable]
     internal class RnmContourMeshList : IEnumerable<RnmContourMesh>
@@ -67,17 +64,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public void AddRange(RnmContourMeshList c)
         {
             foreach (var cMesh in c.meshes) Add(cMesh);
-        }
-
-        public void ShrinkContours(float diff)
-        {
-            foreach (var cMesh in meshes)
-            {
-                foreach(var contour in cMesh)
-                {
-                    contour.Shrink(diff);
-                }
-            }
         }
         
 

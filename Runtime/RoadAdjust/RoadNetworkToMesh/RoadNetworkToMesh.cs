@@ -1,5 +1,5 @@
-using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityInfo;
+using PLATEAU.Dataset;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
@@ -18,7 +18,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private readonly RnModel model;
         private readonly RnmLineSeparateType lineSeparateType;
         private const bool DebugMode = true;
-        private readonly ConditionalLogger logger = new ConditionalLogger(() => DebugMode);
         
         public RoadNetworkToMesh(RnModel model, RnmLineSeparateType lineSeparateType)
         {
@@ -58,9 +57,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     throw new ArgumentException($"Unknown {nameof(RnmLineSeparateType)}");
             }
             var contourMeshList = new RnmContourMeshGenerator(contourGenerators).Generate(model);
-
-            // テッセレーターの仕様で、同じ位置にある頂点は結合されますが、これはUV4を維持する上で不利となるため少し縮めて結合されないようにします。
-            if (lineSeparateType == RnmLineSeparateType.Combine) contourMeshList.ShrinkContours(0.001f);
             
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
@@ -70,6 +66,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 progressDisplay.SetProgress("", (float)i / contourMeshList.Count, "");
                 var contourMesh = contourMeshList[i];
                 var srcObj = contourMesh.SourceObject;
+                
+                var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
+                if (mesh.vertexCount == 0) continue;
+                
                 string dstObjName = srcObj == null ? "RoadUnknown" : srcObj.name;
                 var dstObj = new GameObject(dstObjName);
 
@@ -79,10 +79,35 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     comp.Init(contourMesh);
                 }
                 
-                var mesh = new ContourToMesh().Generate(contourMesh);
+                
                 var renderer = dstObj.AddComponent<MeshRenderer>();
                 var filter = dstObj.AddComponent<MeshFilter>();
                 filter.sharedMesh = mesh;
+                
+                // マテリアルを貼り付けます。
+                var dstMats = new Material[mesh.subMeshCount];
+                foreach(var (subMeshID, matType) in subMeshIDToMatType)
+                {
+                    var mat = matType switch
+                    {
+                        RnmMaterialType.CarLane => FallbackMaterial.LoadByPackage(PredefinedCityModelPackage.Road),
+                        RnmMaterialType.SideWalk => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadOfStone"),
+                        RnmMaterialType.MedianLane => FallbackMaterial.LoadByPackage(PredefinedCityModelPackage
+                            .Unknown),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    if (subMeshID >= dstMats.Length)
+                    {
+                        Debug.LogError($"subMeshID is out of range. subMeshID: {subMeshID}, dstMats.Length: {dstMats.Length}, verts count: {mesh.vertexCount}");
+                    }
+                    else
+                    {
+                        dstMats[subMeshID] = mat;
+                    }
+                    
+                }
+                renderer.sharedMaterials = dstMats;
+                
                 if (srcObj != null)
                 {
                     // UV4をコピーします。
@@ -95,15 +120,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         var dstAttr = dstObj.AddComponent<PLATEAUCityObjectGroup>();
                         dstAttr.CopyFrom(srcAttr);
                         dstObj.AddComponent<MeshCollider>();
-                    }
-
-
-                    // マテリアルをコピーします。
-                    var srcRenderer = srcObj.GetComponent<MeshRenderer>();
-                    var srcMats = srcRenderer.sharedMaterials;
-                    if (srcMats != null)
-                    {
-                        renderer.materials = srcMats;
                     }
                     
                     // 他のコンポーネントをコピーします。

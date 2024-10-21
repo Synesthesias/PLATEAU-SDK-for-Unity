@@ -1,6 +1,4 @@
 using PLATEAU.RoadNetwork.Structure;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
@@ -9,10 +7,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourMeshGeneratorRoadCombine : IRnmContourMeshGenerator
     {
 
-        /// <summary> 車道の点と歩道の点が対応しているとみなす距離のしきい値 </summary>
-        // private const float CarWalkMatchDistThreshold = 5.8f; // 歩道と車道の細かい差を拾わない程度には大きく、歩道から大きく形が外れた車道の形状を大雑把に拾う程度には小さくした、経験則から来る数値
-        
-        
         public RnmContourMeshList Generate(RnModel model)
         {
             var cMeshes = new RnmContourMeshList();

@@ -1,11 +1,8 @@
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
@@ -17,13 +14,17 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     public class RnmContour : IEnumerable<Vector3>
     {
         [SerializeField] private List<Vector3> vertices = new ();
+        public RnmMaterialType MaterialType { get; set; }
         
-        public RnmContour(IEnumerable<Vector3> vertices)
+        public RnmContour(IEnumerable<Vector3> vertices, RnmMaterialType material) : this(material)
         {
             this.vertices = vertices.ToList();
         }
-        
-        public RnmContour(){}
+
+        public RnmContour(RnmMaterialType material)
+        {
+            this.MaterialType = material;
+        }
 
 
         public int Count => vertices.Count;
@@ -58,29 +59,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
 
         public void Reverse() => vertices.Reverse();
-
-        /// <summary>
-        /// 輪郭線を<paramref name="diff"/>メートルだけ縮めます。
-        /// </summary>
-        public void Shrink(float diff)
-        {
-            if (Count <= 2) return;
-
-            var center = Vector3.zero;
-            foreach (var v in vertices)
-            {
-                center += v;
-            }
-            center /= Count;
-
-
-            for (int i = 0; i < Count; i++)
-            {
-                vertices[i] += (center - vertices[i]).normalized * diff;
-            }
-            
-        }
-
         
         public IEnumerator<Vector3> GetEnumerator()
         {
