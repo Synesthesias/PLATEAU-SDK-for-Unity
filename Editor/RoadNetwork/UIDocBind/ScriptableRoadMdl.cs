@@ -225,13 +225,22 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     public class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
     {
-        public SerializedScriptableRoadMdl(ScriptableRoadMdl mdl, RoadNetworkSimpleEditSysModule mod)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mdl"></param>
+        /// <param name="editorData">ScriptableRoadMdlで扱っているRnRoadGroupと対象が同じである必要</param>
+        /// <param name="mod"></param>
+        public SerializedScriptableRoadMdl(ScriptableRoadMdl mdl, EditorData<RnRoadGroup> editorData, RoadNetworkSimpleEditSysModule mod)
             : base(mdl)
         {
             Assert.IsNotNull(mdl);
             Assert.IsNotNull(mod);
+            Assert.IsTrue(mdl.road == editorData.Ref);
             //serializedObject = mdl;
             this.mod = mod;
+
+            this.editorData = editorData;
 
             //            public float _leftSideWalkWidth = 0.0f;
             //public float _rightSideWalkWidth = 0.0f;
@@ -259,6 +268,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         public RoadNetworkSimpleEditSysModule mod;
 
+        public EditorData<RnRoadGroup> editorData;
         public SerializedProperty road;
 
         public SerializedProperty isEditingDetailMode;
@@ -310,7 +320,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             bool isChanged = false;
             var roadObj = targetObject as ScriptableRoadMdl;
             var road = roadObj.road;
-
             if (cache.isEditingDetailMode != IsEditingDetailMode)
             {
                 //if (mod.CanSetDtailMode())
@@ -328,7 +337,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 cache.numLeftLane = NumLeftLane;
                 isChanged = true;
                 road.SetLeftLaneCount(NumLeftLane);
-
+                editorData.ClearSubData();
             }
             if (cache.numRightLane != NumRightLane)
             {
@@ -336,7 +345,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 cache.numRightLane = NumRightLane;
                 isChanged = true;
                 road.SetRightLaneCount(NumRightLane);
-
+                editorData.ClearSubData();
             }
             if (cache.medianWidth != MedianWidth) 
             {
@@ -347,6 +356,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 if (MedianWidth == 0.0f)
                 {
                     road.RemoveMedian();
+                    editorData.ClearSubData();
                 }
                 else
                 {
