@@ -11,13 +11,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         public RnWay Way { get; private set; }
         public MarkedWayType Type { get; private set; }
-        public bool Direction { get; private set; }
+        public bool IsReversed { get; private set; } // RnLane.IsReverseに相当します
 
-        public MarkedWay(RnWay way, MarkedWayType type, bool direction)
+        public MarkedWay(RnWay way, MarkedWayType type, bool isReversed)
         {
             Way = way;
             Type = type;
-            Direction = direction;
+            IsReversed = isReversed;
         }
     }
 
@@ -63,7 +63,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public class MarkedWayList
     {
         private List<MarkedWay> ways;
-        public IReadOnlyList<MarkedWay> Get => ways;
+        public IReadOnlyList<MarkedWay> Ways => ways;
 
         public MarkedWayList(List<MarkedWay> ways)
         {

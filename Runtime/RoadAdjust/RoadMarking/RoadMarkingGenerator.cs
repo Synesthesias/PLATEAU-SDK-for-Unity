@@ -30,11 +30,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             // 道路の線を取得します。
             var ways = new MarkedWayListComposer().ComposeFrom(targetNetwork);
             
-            var instances = new RoadMarkingCombiner(ways.Get.Count);
-            foreach (var way in ways.Get)
+            var instances = new RoadMarkingCombiner(ways.Ways.Count);
+            foreach (var way in ways.Ways)
             {
                 // 道路の線をメッシュに変換します。
-                var gen = way.Type.ToLineMeshGenerator(way.Direction);
+                var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
                 var points = way.Way.Points;
                 var instance = gen.GenerateMesh(points.Select(p => p.Vertex).ToArray());
                 

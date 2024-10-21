@@ -45,17 +45,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var matCombined = new SortedDictionary<RoadMarkingMaterial, Mesh>();
             foreach (var mat in mats)
             {
-                var combinees = instances.Where(i => i.MaterialType == mat).Select(i => i.CombineInstance).ToArray();
+                var combineTargets = instances.Where(i => i.MaterialType == mat).Select(i => i.CombineInstance).ToArray();
                 var combined = new Mesh();
-                combined.CombineMeshes(combinees, true);
+                combined.CombineMeshes(combineTargets, true);
                 matCombined.Add(mat, combined);
             }
             // マテリアルごとに結合したものをさらに結合して1つにします。
-            var allCombinees = matCombined.Select(
+            var allCombineTargets = matCombined.Select(
                     mc => new CombineInstance { mesh = mc.Value, transform = Matrix4x4.identity })
                     .ToArray();
             var allCombinedMesh = new Mesh();
-            allCombinedMesh.CombineMeshes(allCombinees, false);
+            allCombinedMesh.CombineMeshes(allCombineTargets, false);
             return allCombinedMesh;
         }
     }
@@ -70,11 +70,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     internal static class RoadMarkingMaterialExtension
     {
-        private static string materialFolder = "PlateauRoadMarkingMaterials";
-        private static string materialNameWhite = "PlateauRoadMarkingWhite";
-        private static string materialNameYellow = "PlateauRoadMarkingYellow";
-        private static Material materialWhite = Resources.Load<Material>(materialFolder + "/" + materialNameWhite);
-        private static Material materialYellow = Resources.Load<Material>(materialFolder + "/" + materialNameYellow);
+        private const string MaterialFolder = "PlateauRoadMarkingMaterials";
+        private const string MaterialNameWhite = "PlateauRoadMarkingWhite";
+        private const string MaterialNameYellow = "PlateauRoadMarkingYellow";
+        private static readonly Material materialWhite = Resources.Load<Material>(MaterialFolder + "/" + MaterialNameWhite);
+        private static readonly Material materialYellow = Resources.Load<Material>(MaterialFolder + "/" + MaterialNameYellow);
         
         /// <summary>
         /// 路上表示に使うマテリアルenumから実際のマテリアルを取得します。
