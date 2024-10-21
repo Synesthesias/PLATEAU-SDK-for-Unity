@@ -251,6 +251,15 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsValid == false)
                 return;
+
+            // 両方とも0はダメ
+            if (leftCount <= 0 && rightCount <= 0)
+            {
+                DebugEx.LogWarning($"両方の車線数に0を入れることはできません");
+                return;
+            }
+
+
             // 向きをそろえる
             Align();
 
@@ -293,6 +302,14 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsValid == false)
                 return;
+
+            // 両方とも0はダメ
+            if (leftCount <= 0 && rightCount <= 0)
+            {
+                DebugEx.LogWarning($"両方の車線数に0を入れることはできません");
+                return;
+            }
+
             // 向きをそろえる
             Align();
 
