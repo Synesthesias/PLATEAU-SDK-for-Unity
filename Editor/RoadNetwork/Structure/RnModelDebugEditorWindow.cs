@@ -267,7 +267,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        p.leftLaneCount = EditorGUILayout.IntField($"Left({roadGroup.GetLeftLaneCount()}) ->", roadGroup.GetLeftLaneCount());
+                        p.leftLaneCount = EditorGUILayout.IntField($"Left({roadGroup.GetLeftLaneCount()}) ->", p.leftLaneCount);
                         if (GUILayout.Button("Change Left"))
                             work.DelayExec.Add(() => roadGroup.SetLeftLaneCount(p.leftLaneCount));
                     }
@@ -282,21 +282,24 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         roadGroup.SetLaneCount(p.leftLaneCount, p.rightLaneCount);
                     }
                 }
+
+
+                p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
-                    p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
                     if (GUILayout.Button("SetMedianWidth"))
                     {
                         roadGroup.SetMedianWidth(p.medianWidth, p.medianWidthOption);
                     }
-
-                    if (GUILayout.Button("RemoveMedian"))
-                    {
-                        roadGroup.RemoveMedian(p.medianWidthOption);
-                    }
                 }
 
+
+
+                if (GUILayout.Button("RemoveMedian"))
+                {
+                    roadGroup.RemoveMedian(p.medianWidthOption);
+                }
             }
             if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", road)))
             {

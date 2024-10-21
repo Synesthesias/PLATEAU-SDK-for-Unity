@@ -130,7 +130,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// index指定で前半/後半に分割する
+        /// index指定で前半/後半に分割したLineStringを返す(非破壊)
         /// </summary>
         /// <param name="index"></param>
         /// <param name="front"></param>
@@ -174,7 +174,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 後ろの点が同じなら追加しない
+        /// 後ろに点を追加する
+        /// 1. 後ろの点が同じなら追加しない
+        /// 2. 追加した結果, 最後3点による二つの直線がほぼ同じ直線になる場合は中間点を削除する
         /// </summary>
         /// <param name="p"></param>
         /// <param name="distanceEpsilon">距離誤差</param>
@@ -182,28 +184,33 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="midPointTolerance">p0 -> p1 -> p2の３点があったときに、p0->p2の直線とp1の距離がこれ以下ならp1を削除する</param>
         public void AddPointOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon, float midPointTolerance = DefaultMidPointTolerance)
         {
+            if (p == null)
+                return;
             if (Points.Count > 0 && RnPoint.Equals(Points.Last(), p, distanceEpsilon < 0 ? -1f : distanceEpsilon * distanceEpsilon))
                 return;
-            if (Points.Count > 1)
-            {
-                var deg = Vector3.Angle(Points[^2].Vertex - Points[^1].Vertex, p.Vertex - Points[^1].Vertex);
-                if (Mathf.Abs(180f - deg) <= degEpsilon)
-                {
-                    Points.RemoveAt(Points.Count - 1);
-                }
-                else
-                {
-                    // 中間点があってもほぼ直線だった場合は中間点は削除する
-                    var segment = new LineSegment3D(Points[^2].Vertex, p.Vertex);
-                    var mid = Points[^1];
-                    var pos = segment.GetNearestPoint(mid.Vertex);
-                    if (midPointTolerance > 0f && (mid.Vertex - pos).sqrMagnitude < midPointTolerance * midPointTolerance)
-                    {
-                        Points.RemoveAt(Points.Count - 1);
-                    }
-                }
-            }
+            if (Points.Count > 1 && GeoGraphEx.IsCollinear(Points[^2], Points[^1], p.Vertex, degEpsilon, midPointTolerance))
+                Points.RemoveAt(Points.Count - 1);
             Points.Add(p);
+        }
+
+        /// <summary>
+        /// 先頭に点を追加する.
+        /// 1. 前の点が同じなら追加しない
+        /// 2. 追加した結果, 最初3点による二つの直線がほぼ同じ直線になる場合は中間点を削除する
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="distanceEpsilon">距離誤差</param>
+        /// <param name="degEpsilon">角度誤差(p0 -> p1 -> p2の角度が180±この値以内になるときp1を削除する</param>
+        /// <param name="midPointTolerance">p0 -> p1 -> p2の３点があったときに、p0->p2の直線とp1の距離がこれ以下ならp1を削除する</param>
+        public void AddPointFrontOrSkip(RnPoint p, float distanceEpsilon = DefaultDistanceEpsilon, float degEpsilon = DefaultDegEpsilon, float midPointTolerance = DefaultMidPointTolerance)
+        {
+            if (p == null)
+                return;
+            if (Points.Count > 0 && RnPoint.Equals(Points.First(), p, distanceEpsilon < 0 ? -1f : distanceEpsilon * distanceEpsilon))
+                return;
+            if (Points.Count > 1 && GeoGraphEx.IsCollinear(Points[1], Points[0], p.Vertex, degEpsilon, midPointTolerance))
+                Points.RemoveAt(0);
+            Points.Insert(0, p);
         }
 
         /// <summary>
@@ -212,7 +219,20 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="p"></param>
         public void AddPoint(RnPoint p)
         {
+            if (p == null)
+                return;
             Points.Add(p);
+        }
+
+        /// <summary>
+        /// 同じ点かどうかのチェック無しに追加する
+        /// </summary>
+        /// <param name="p"></param>
+        public void AddFrontPoint(RnPoint p)
+        {
+            if (p == null)
+                return;
+            Points.Insert(0, p);
         }
 
         public IEnumerator<Vector3> GetEnumerator()

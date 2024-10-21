@@ -345,7 +345,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Way))
             {
                 way.GetLerpPoint(0.5f, out var p);
-                DebugEx.DrawString($"P[{way.DebugMyId}]", p);
+                DebugEx.DrawString($"{way.GetDebugIdLabelOrDefault()}", p);
             }
 
             foreach (var p in way.Points)
@@ -637,7 +637,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 foreach (var eg in edgeGroup)
                 {
                     var color = DebugEx.GetDebugColor(i++, edgeGroup.Count);
-                    foreach (var n in eg.Neighbors)
+                    foreach (var n in eg.Edges)
                     {
                         DrawWay(n.Border, eg.IsBorder ? color : Color.white);
                         DrawString($"E[{x++}]", n.Border.GetLerpPoint(0.5f));
