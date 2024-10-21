@@ -283,6 +283,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     }
                 }
 
+
                 p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -292,6 +293,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         roadGroup.SetMedianWidth(p.medianWidth, p.medianWidthOption);
                     }
                 }
+
 
 
                 if (GUILayout.Button("RemoveMedian"))

@@ -730,6 +730,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsAligned)
                 return;
 
+
             // まずはRoadsのPrev/Nextの向きをそろえる
             // Roads.Count <= 1の場合はIsAligned=trueなのでここでは
             // インデックス範囲外チェックはしなくてよい

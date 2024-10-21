@@ -1,10 +1,9 @@
-using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor
 {
     /// <summary>
-    /// <see cref="IMaterialAdjustExecutor"/>の実行に必要な設定項目です。
+    /// <see cref="IMAExecutorV2"/>の実行に必要な設定項目です。
     /// 属性情報でのマテリアル分けの場合は、これの代わりにサブクラスである<see cref="MAExecutorConfByAttr"/>を使います。
     /// なおMAとはMaterialAdjustの略です。
     /// </summary>
