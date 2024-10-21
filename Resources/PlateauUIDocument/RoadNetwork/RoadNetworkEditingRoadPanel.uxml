@@ -10,7 +10,7 @@
             </ui:Label>
         </ui:GroupBox>
         <ui:GroupBox name="WidthGroup" style="display: flex;">
-            <ui:FloatField label="中央分離帯の幅" value="42.2" binding-path="medianWidth" />
+            <ui:Toggle label="中央分離帯の有無" binding-path="enableMedianLane" />
         </ui:GroupBox>
         <ui:Toggle label="左側歩道の有無" binding-path="EnableLeftSideWalk" />
         <ui:Toggle label="右側歩道の有無" binding-path="EnableRightSideWalk" />
