@@ -47,7 +47,11 @@ namespace PLATEAU.RoadNetwork.Tester
         private IEnumerable<Transform> GetChildren(Transform self)
         {
             for (var i = 0; i < self.childCount; i++)
-                yield return self.GetChild(i);
+            {
+                var child = self.GetChild(i);
+                if (child.gameObject.activeInHierarchy)
+                    yield return self.GetChild(i);
+            }
         }
 
         public List<Vector2> GetVertices()

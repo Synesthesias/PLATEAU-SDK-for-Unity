@@ -467,5 +467,34 @@ namespace PLATEAU.RoadNetwork.Structure
             var t = index - i1;
             return Vector3.Lerp(self[i1], self[i2], t);
         }
+
+        /// <summary>
+        /// selfの各線分がintervalより長い場合に間に点を置いていく
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="interval"></param>
+        public static void Refine(this RnLineString self, float interval)
+        {
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var p0 = self[i];
+                var p1 = self[i + 1];
+                var len = (p1 - p0).magnitude;
+
+                var c = len / interval;
+                var num = Mathf.FloorToInt(c);
+                if (num <= 0)
+                    continue;
+                var x = 1f / c;
+                var newPoints = new List<RnPoint>();
+                for (var j = 0; j < num; ++j)
+                {
+                    var t = (j + 1) * x;
+                    newPoints.Add(new RnPoint(Vector3.Lerp(p0, p1, t)));
+                }
+                self.Points.InsertRange(i + 1, newPoints);
+                i += newPoints.Count;
+            }
+        }
     }
 }

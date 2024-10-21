@@ -3,6 +3,7 @@ using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -171,11 +172,31 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
-        // この境界が道路と接続しているか
+        // この境界が道路と接続しているか(中央分離帯含む)
         public bool IsBorder => Road != null;
 
         // 有効値判定(Border != null)
         public bool IsValid => Border != null;
+
+        /// <summary>
+        /// 中央分離帯との境界線か
+        /// </summary>
+        public bool IsMedianBorder
+        {
+            get
+            {
+                if (IsBorder == false)
+                    return false;
+
+                if (Road is RnRoad road)
+                {
+                    if (road.MedianLane != null && road.MedianLane.AllBorders.Any(b => b.IsSameLine(Border)))
+                        return true;
+                }
+
+                return false;
+            }
+        }
 
         // この境界線に対して流入/流出するタイプを取得
         public RnFlowTypeMask GetFlowType()
@@ -768,6 +789,328 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return self.Edges.Where(e => e.Border?.IsSameLine(borderWay) ?? false);
         }
+
+        public class RecLine
+        {
+            public class PartialWay
+            {
+                public RnWay Way { get; set; }
+
+                public RnPoint Start { get; set; }
+
+                public RnPoint End { get; set; }
+
+                public PartialWay(RnWay way) : this(way, way.GetPoint(0), way.GetPoint(-1))
+                {
+                }
+
+                public PartialWay(RnWay way, RnPoint start, RnPoint end)
+                {
+                    Way = way;
+                    Start = start;
+                    End = end;
+                }
+
+                public PartialWayWork ToWork()
+                {
+                    return new PartialWayWork(this);
+                }
+            }
+
+            // right -> left方向（時計回り)に格納されている
+            public List<RnWay> Lines { get; } = new();
+
+            public List<RecLine> Parents { get; set; } = new();
+
+            public PartialWay LeftSide { get; set; }
+
+            public PartialWay RightSide { get; set; }
+
+            public class PartialWayWork : IList<RnPoint>
+            {
+                public RnWay Way { get; }
+
+                // 開始インデックス
+                public int StartIndex { get; private set; }
+
+                // 終了インデックス
+                public int EndIndex { get; private set; }
+
+                public PartialWayWork(PartialWay way)
+                {
+                    Way = way.Way;
+                    StartIndex = way.Way.FindPointIndex(way.Start);
+                    EndIndex = way.Way.FindPointIndex(way.End) + 1;
+                }
+
+
+                public IEnumerator<RnPoint> GetEnumerator()
+                {
+                    for (var i = StartIndex; i < EndIndex; ++i)
+                        yield return Way.GetPoint(i);
+                }
+
+                IEnumerator IEnumerable.GetEnumerator()
+                {
+                    return GetEnumerator();
+                }
+
+                public void Add(RnPoint item)
+                {
+                    Insert(Count, item);
+                }
+
+                public void Clear()
+                {
+                    // Clearは許可しない
+                    throw new NotImplementedException();
+                }
+
+                public bool Contains(RnPoint item)
+                {
+                    return Way.Points.Skip(StartIndex).Take(EndIndex - StartIndex).Contains(item);
+                }
+
+                public void CopyTo(RnPoint[] array, int arrayIndex)
+                {
+                    // CopyToは許可しない
+                    throw new NotImplementedException();
+                }
+
+                public bool Remove(RnPoint item)
+                {
+                    // Removeは許可しない
+                    throw new NotImplementedException();
+                }
+
+                public int Count => EndIndex - StartIndex;
+
+                public bool IsReadOnly => false;
+
+                public int IndexOf(RnPoint item)
+                {
+                    var wayIndex = Way.FindPointIndex(item);
+                    var index = FromWayIndex(wayIndex);
+                    // 範囲外
+                    if (index < 0 || index >= EndIndex)
+                        return -1;
+                    return index;
+                }
+
+                public void Insert(int index, RnPoint item)
+                {
+                    // Addと共通なのでCountも許可する
+                    if (index < 0 || index > Count)
+                        throw new ArgumentOutOfRangeException(nameof(index));
+                    var lineStringIndex = Way.SwitchIndex(ToWayIndex(index));
+                    Way.LineString.Points.Insert(lineStringIndex, item);
+                    EndIndex++;
+                }
+
+                public void RemoveAt(int index)
+                {
+                    if (index < 0 || index >= Count)
+                        throw new ArgumentOutOfRangeException(nameof(index));
+                    var lineStringIndex = Way.SwitchIndex(ToWayIndex(index));
+                    Way.LineString.Points.RemoveAt(lineStringIndex);
+                    EndIndex--;
+                }
+
+                public RnPoint this[int index]
+                {
+                    get
+                    {
+                        if (index < 0 || index >= Count)
+                            throw new ArgumentOutOfRangeException(nameof(index));
+                        return Way.GetPoint(ToWayIndex(index));
+                    }
+                    // setは許可しない
+                    set => throw new NotImplementedException();
+                }
+
+                public RnPoint Project(Vector3 pos, Vector3 dir)
+                {
+                    var nearest = Vector3.zero;
+                    float len = float.MaxValue;
+                    int minIndex = -1;
+                    var index = 0;
+
+                    foreach (var s in GeoGraphEx.GetEdges(this.Select(p => p.Vertex), false))
+                    {
+                        var seg = new LineSegment3D(s.Item1, s.Item2);
+
+                        if (seg.TryHalfLineIntersectionBy2D(pos, dir, AxisPlane.Xz, -1f, out var v, out var t1,
+                                out var _))
+                        {
+                            v = seg.Lerp(t1);
+                            if ((v - pos).sqrMagnitude < len)
+                            {
+                                minIndex = index;
+                                len = (v - pos).sqrMagnitude;
+                                nearest = v;
+                            }
+                        }
+
+                        index++;
+                    }
+
+                    if (minIndex < 0)
+                        return null;
+
+                    var tolerance = 1e-1f;
+                    if ((this[minIndex] - nearest).magnitude < tolerance)
+                    {
+                        if (minIndex == 0)
+                            return null;
+                        return this[minIndex];
+                    }
+
+                    if ((this[minIndex + 1] - nearest).magnitude < 1e-1f)
+                        return this[minIndex + 1];
+
+                    var p = new RnPoint(nearest);
+                    Insert(minIndex + 1, p);
+                    return p;
+                }
+
+                private int ToWayIndex(int index)
+                {
+                    return index + StartIndex;
+                }
+
+                private int FromWayIndex(int index)
+                {
+                    return index - StartIndex;
+                }
+            }
+
+            public RecLine CreateChild()
+            {
+                Vector2 Vec2(Vector3 v) => v.ToVector2(AxisPlane.Xz);
+
+                var leftWay = new PartialWayWork(LeftSide);
+                var rightWay = new PartialWayWork(RightSide);
+                var leftSides = new List<RnPoint> { leftWay[0], leftWay[1] };
+                var rightSides = new List<RnPoint> { rightWay[0], rightWay[1] };
+
+                float GetLastLength(List<RnPoint> sides)
+                {
+                    return Vec2(sides[^1].Vertex - sides[^2].Vertex).magnitude;
+                }
+                var leftLength = GetLastLength(leftSides);
+                var rightLength = GetLastLength(rightSides);
+
+                while (leftSides.Count < leftWay.Count || rightSides.Count < rightWay.Count)
+                {
+                    var isLeft = leftSides.Count < leftWay.Count &&
+                                 (rightSides.Count >= rightWay.Count || leftLength < rightLength);
+                    if (isLeft)
+                    {
+                        leftSides.Add(leftWay[leftSides.Count]);
+                    }
+                    else
+                    {
+                        rightSides.Add(rightWay[rightSides.Count]);
+                    }
+
+                    var convex = GeoGraph2D.ComputeConvexVolume(
+                        leftSides.Concat(rightSides)
+                        , v => v.Vertex, AxisPlane.Xz, sameLineTolerance: 1e-3f).ToHashSet();
+
+                    if (convex.Count != (leftSides.Count + rightSides.Count))
+                    {
+                        if (isLeft)
+                            leftSides.RemoveAt(leftSides.Count - 1);
+                        else
+                            rightSides.RemoveAt(rightSides.Count - 1);
+                        break;
+                    }
+
+                    if (isLeft)
+                        leftLength += GetLastLength(leftSides);
+                    else
+                        rightLength += GetLastLength(rightSides);
+                }
+
+                var left = new PartialWay(leftWay.Way, leftSides[0], leftSides[^1]);
+                var right = new PartialWay(rightWay.Way, rightSides[0], rightSides[^1]);
+
+                var right2LeftDir = (leftSides[0].Vertex - rightSides[0].Vertex);
+                if (leftLength < rightLength)
+                {
+                    var rp = rightWay.Project(leftSides[^1].Vertex, -right2LeftDir);
+                    if (rp != null)
+                        right.End = rp;
+                }
+                else
+                {
+                    var lp = leftWay.Project(rightSides[^1].Vertex, right2LeftDir);
+                    if (lp != null)
+                        left.End = lp;
+                }
+
+                var ret = new RecLine
+                {
+                    LeftSide = left,
+                    RightSide = right,
+                    Parents = new List<RecLine> { this }
+                };
+                var lens = Lines.Select(l => l.CalcLength()).ToList();
+
+                var sum = lens.Sum();
+                var w = 0f;
+                var last = right.End;
+                foreach (var f in lens)
+                {
+                    w += f / sum;
+                    var p = w > 1 - 1e-3f ? left.End : new RnPoint(Vector3.Lerp(right.End.Vertex, left.End.Vertex, w));
+                    ret.Lines.Add(new RnWay(RnLineString.Create(new[] { last, p })));
+                    last = p;
+                }
+
+                return ret;
+            }
+        }
+
+        public static List<RecLine> Create(this RnIntersection self)
+        {
+            var edgeGroups = self.CreateEdgeGroup();
+            var ret = new List<RecLine>();
+            Dictionary<RnLineString, RnLineString> buffer = new();
+
+            RecLine.PartialWay PartialWay(RnWay way)
+            {
+                var line = buffer.GetValueOrCreate(way.LineString, ls => ls.Clone());
+                var w = new RnWay(line, way.IsReversed, way.IsReverseNormal);
+                return new RecLine.PartialWay(w);
+            }
+
+            foreach (var index in Enumerable.Range(0, edgeGroups.Count))
+            {
+                var e = edgeGroups[index];
+                if (e.Key != null)
+                {
+                    var rc = new RecLine();
+                    rc.Lines.AddRange(e.Edges.Select(n => n.Border));
+                    var right = edgeGroups[(index - 1 + edgeGroups.Count) % edgeGroups.Count];
+                    var left = edgeGroups[(index + 1) % edgeGroups.Count];
+                    rc.LeftSide = PartialWay(left.Edges.First().Border);
+                    rc.RightSide = PartialWay(right.Edges.First().Border.ReversedWay());
+                    ret.Add(rc);
+                }
+            }
+            return ret;
+        }
+        public class LineStringTracer
+        {
+            public RnLineString LineString { get; set; }
+
+            // 先頭側から
+            public RnPoint FrontEnd { get; set; }
+
+            public RnPoint BackEnd { get; set; }
+        }
+
 
         /// <summary>
         /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)

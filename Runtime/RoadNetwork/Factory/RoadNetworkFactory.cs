@@ -37,7 +37,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // Lod3の歩道を追加するかどうか
         [field: SerializeField]
-        public bool AddLod3SideWalk { get; set; } = true;
+        public bool AddSideWalk { get; set; } = true;
 
         // 中央分離帯をチェックする
         [field: SerializeField]
@@ -630,7 +630,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 var sideWalks = work.CreateSideWalk(Lod1SideWalkSize);
                 foreach (var sideWalk in sideWalks)
                     ret.AddSideWalk(sideWalk);
-                if (AddLod3SideWalk)
+                if (AddSideWalk)
                 {
                     foreach (var fg in faceGroups)
                     {
