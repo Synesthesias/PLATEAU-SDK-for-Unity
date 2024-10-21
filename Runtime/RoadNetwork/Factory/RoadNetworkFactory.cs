@@ -58,9 +58,14 @@ namespace PLATEAU.RoadNetwork.Factory
         // 平滑化されたtranオブジェクトに対してContourMeshを使用するかどうか(基本true)
         [field: SerializeField]
         public bool UseContourMesh { get; set; } = true;
+
         // --------------------
         // end:フィールド
         // --------------------
+
+        // 中間データ
+        public Work FactoryWork { get; private set; }
+
 
 
         public enum RoadType
@@ -75,6 +80,7 @@ namespace PLATEAU.RoadNetwork.Factory
             Isolated,
         }
 
+        [Serializable]
         public class Work
         {
             public Dictionary<RFaceGroup, Tran> TranMap { get; } = new();
@@ -588,6 +594,8 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 var ret = new RnModel();
                 var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle, terminateSkipAngleDeg = TerminateSkipAngle };
+                FactoryWork = work;
+
                 foreach (var faceGroup in faceGroups)
                 {
                     var roadType = faceGroup.RoadTypes;
@@ -679,7 +687,6 @@ namespace PLATEAU.RoadNetwork.Factory
                         }
                     }
                 }
-
 
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();

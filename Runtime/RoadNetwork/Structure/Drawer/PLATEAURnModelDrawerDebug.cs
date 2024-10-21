@@ -153,6 +153,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public float validWayAlpha = 0.75f;
             public float invalidWayAlpha = 0.3f;
             public bool showAttrText = false;
+            public float reverseWayAlpha = 1f;
             public DrawOption showLeftWay = new DrawOption(true, Color.red);
             public DrawOption showRightWay = new DrawOption(true, Color.blue);
             // 境界線を表示する
@@ -166,6 +167,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             /// <returns></returns>
             public float GetLaneAlpha(RnLane self)
             {
+                if (self.IsReverse)
+                    return reverseWayAlpha;
                 if (self.IsBothConnectedLane)
                     return bothConnectedLaneAlpha;
                 if (self.IsValidWay)
@@ -342,7 +345,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (showPartsType.HasFlag(RnPartsTypeMask.Way))
             {
                 way.GetLerpPoint(0.5f, out var p);
-                DebugEx.DrawString($"P[{way.DebugMyId}]", p);
+                DebugEx.DrawString($"{way.GetDebugIdLabelOrDefault()}", p);
             }
 
             foreach (var p in way.Points)
@@ -448,6 +451,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         DebugEx.DrawString($"[{lane.DebugMyId}]next={type.ToString()}", lane.NextBorder.Points.Last() + offset, Vector2.up * 100);
                     DrawWay(lane.NextBorder, color: op.showNextBorder.color);
                 }
+            }
+
+            if (lane.NextBorder != null && lane.PrevBorder != null && lane.NextBorder.IsSameLine(lane.PrevBorder))
+            {
+                DebugEx.DrawString($"Invalid Border Lane ", lane.GetCenter());
             }
 
             if (showSplitLane && lane.HasBothBorder)
@@ -629,7 +637,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 foreach (var eg in edgeGroup)
                 {
                     var color = DebugEx.GetDebugColor(i++, edgeGroup.Count);
-                    foreach (var n in eg.Neighbors)
+                    foreach (var n in eg.Edges)
                     {
                         DrawWay(n.Border, eg.IsBorder ? color : Color.white);
                         DrawString($"E[{x++}]", n.Border.GetLerpPoint(0.5f));
@@ -770,6 +778,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 else if (x is RnSideWalk sw)
                 {
                     DrawSideWalk(sw, sideWalkRoadOp);
+                }
+                else if (x is RnLineString ls)
+                {
+                    DrawArrows(ls.Points.Select(p => p.Vertex), false, color: wayOp.normalWayArrowColor, arrowSize: wayOp.arrowSize);
+
                 }
             }
 

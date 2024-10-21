@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
@@ -67,17 +68,21 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             get
             {
-                foreach (var lane in GetLeftLanes())
+                // このイテレータを回している途中でlane.IsReversedが変わると困るので
+                // 最初にカウントを取ってからにする
+                // mainLanesの前半がIsLeftLane, 後半がIsRightLaneである前提の挙動
+                var leftLaneCount = GetLeftLaneCount();
+                for (var i = 0; i < leftLaneCount; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
 
                 if (MedianLane != null)
                     yield return MedianLane;
 
-                foreach (var lane in GetRightLanes())
+                for (var i = leftLaneCount; i < mainLanes.Count; ++i)
                 {
-                    yield return lane;
+                    yield return mainLanes[i];
                 }
             }
         }
@@ -253,7 +258,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// dirで指定した側の全レーンのBorderを統合した一つの大きなBorderを返す
         /// WayはLeft -> Right方向になっている
-        /// dir == nullの時は全レーン
+        /// dir == nullの時は中央分離帯含む全レーン
         /// </summary>
         /// <param name="type"></param>
         /// <param name="dir"></param>
@@ -261,27 +266,47 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnWay GetMergedBorder(RnLaneBorderType type, RnDir? dir = null)
         {
             var ret = new RnLineString();
-            foreach (var l in MainLanes.Where(l => dir == null || GetLaneDir(l) == dir))
+            foreach (var l in dir == null ? AllLanesWithMedian : MainLanes.Where(l => GetLaneDir(l) == dir))
             {
-                RnWay way = null;
-                var t = type;
-                var d = RnLaneBorderDir.Left2Right;
-                if (IsLeftLane(l) == false)
-                {
-                    t = t.GetOpposite();
-                    d = d.GetOpposite();
-                }
-
-                way = l.GetBorder(t);
+                RnWay way = GetBorderWay(l, type, RnLaneBorderDir.Left2Right);
                 if (way == null)
                     continue;
-                if (l.GetBorderDir(t) != d)
-                    way = way.ReversedWay();
-
                 foreach (var p in way.Points)
                     ret.AddPointOrSkip(p);
             }
             return new RnWay(ret);
+        }
+
+        /// <summary>
+        /// laneの車線に対して, RnRoad基準におけるborderTypeで指定した境界線を取ってくる
+        /// (laneのPrev/Nextをそのまま持ってくるわけではないことに注意)
+        /// この時境界線の方向はborderDirで指定する
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="borderType"></param>
+        /// <param name="borderDir"></param>
+        /// <returns></returns>
+        public RnWay GetBorderWay(RnLane lane, RnLaneBorderType borderType, RnLaneBorderDir borderDir)
+        {
+            if (lane.Parent != this)
+            {
+                DebugEx.LogWarning("自身の子レーンじゃないレーンに対してGetBorderWayが呼ばれました");
+                return null;
+            }
+
+            RnWay way = null;
+            if (IsLeftLane(lane) == false)
+            {
+                borderType = borderType.GetOpposite();
+                borderDir = borderDir.GetOpposite();
+            }
+
+            way = lane.GetBorder(borderType);
+            if (way == null)
+                return null;
+            if (lane.GetBorderDir(borderType) != borderDir)
+                way = way.ReversedWay();
+            return way;
         }
 
         /// <summary>
@@ -385,7 +410,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 逆転する
+        /// Next,Prevを逆転する.
+        /// その結果, レーンのIsReverseも逆転/mainLanesの配列順も逆転する
         /// </summary>
         public void Reverse()
         {
@@ -718,67 +744,18 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-
-        /// <summary>
-        /// Roadの全レーンの境界線との交点チェック結果
-        /// </summary>
-        public class LaneIntersectionResult
-        {
-            public class Intersection
-            {
-                /// <summary>
-                /// 対象線分
-                /// </summary>
-                public RnLineString LineString { get; set; }
-
-                /// <summary>
-                /// 交点情報.
-                /// index : LineString上の配列インデックス位置. 線分の途中の点の場合は小数になる
-                ///     v : 交点座標
-                /// </summary>
-                public List<(float index, Vector3 v)> Intersections { get; set; } = new();
-            }
-
-            /// <summary>
-            /// 交点チェック対象のLineString情報
-            /// </summary>
-            public List<Intersection> TargetLines { get; set; } = new();
-
-            public LineSegment3D LineSegment { get; set; }
-
-            // 対応するRoad
-            public RnRoad Road { get; set; }
-        }
-
-
         /// <summary>
         /// selfの全LinestringとlineSegmentの交点を取得する
         /// </summary>
         /// <param name="self"></param>
         /// <param name="lineSegment"></param>
         /// <returns></returns>
-        public static LaneIntersectionResult GetLaneIntersections(this RnRoad self, LineSegment3D lineSegment)
+        public static LineCrossPointResult GetLaneCrossPoints(this RnRoad self, LineSegment3D lineSegment)
         {
-            var ret = new LaneIntersectionResult { LineSegment = lineSegment, Road = self };
-
             var targetLines = self.AllLanesWithMedian
                 .SelectMany(l => l.BothWays)
-                .Concat(self.SideWalks.SelectMany(s => s.SideWays))
-                .Select(w => w.LineString)
-                .ToHashSet();
-
-            foreach (var way in targetLines)
-            {
-                var elem = new LaneIntersectionResult.Intersection { LineString = way };
-
-                foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
-                {
-                    elem.Intersections.Add((r.index, r.v));
-                }
-                ret.TargetLines.Add(elem);
-            }
-
-            return ret;
+                .Concat(self.SideWalks.SelectMany(s => s.SideWays));
+            return RnEx.GetLineIntersections(lineSegment, targetLines);
         }
     }
 }
