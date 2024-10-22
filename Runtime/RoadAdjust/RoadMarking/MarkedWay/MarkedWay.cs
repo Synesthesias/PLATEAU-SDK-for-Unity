@@ -1,6 +1,7 @@
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -63,7 +64,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public class MarkedWayList
     {
         private List<MarkedWay> ways;
-        public IReadOnlyList<MarkedWay> Get => ways;
+        public IReadOnlyList<MarkedWay> MarkedWays => ways;
 
         public MarkedWayList(List<MarkedWay> ways)
         {
@@ -77,12 +78,26 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         public void Add(MarkedWay way)
         {
+            if (way == null || way.Way == null || way.Way.Points == null)
+            {
+                Debug.LogWarning("way is null.");
+                return;
+            }
             ways.Add(way);
         }
 
         public void AddRange(MarkedWayList wayList)
         {
-            ways.AddRange(wayList.ways);
+            if (wayList == null)
+            {
+                Debug.LogWarning("wayList is null.");
+                return;
+            }
+
+            foreach (var way in wayList.ways)
+            {
+                Add(way);
+            }
         }
     }
 }

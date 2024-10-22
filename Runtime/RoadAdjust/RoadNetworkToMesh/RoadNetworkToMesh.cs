@@ -17,7 +17,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private readonly RnModel model;
         private readonly RnmLineSeparateType lineSeparateType;
-        private const bool DebugMode = true;
+        private const bool DebugMode = false;
         
         public RoadNetworkToMesh(RnModel model, RnmLineSeparateType lineSeparateType)
         {
@@ -88,21 +88,14 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var dstMats = new Material[mesh.subMeshCount];
                 foreach(var (subMeshID, matType) in subMeshIDToMatType)
                 {
-                    var mat = matType switch
-                    {
-                        RnmMaterialType.CarLane => FallbackMaterial.LoadByPackage(PredefinedCityModelPackage.Road),
-                        RnmMaterialType.SideWalk => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadOfStone"),
-                        RnmMaterialType.MedianLane => FallbackMaterial.LoadByPackage(PredefinedCityModelPackage
-                            .Unknown),
-                        _ => throw new ArgumentOutOfRangeException()
-                    };
+                    
                     if (subMeshID >= dstMats.Length)
                     {
                         Debug.LogError($"subMeshID is out of range. subMeshID: {subMeshID}, dstMats.Length: {dstMats.Length}, verts count: {mesh.vertexCount}");
                     }
                     else
                     {
-                        dstMats[subMeshID] = mat;
+                        dstMats[subMeshID] = matType.ToMaterial();
                     }
                     
                 }

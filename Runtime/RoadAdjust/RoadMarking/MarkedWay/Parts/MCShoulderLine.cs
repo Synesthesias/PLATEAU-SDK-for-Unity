@@ -15,6 +15,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             foreach (var road in model.Roads)
             {
                 var carLanes = road.MainLanes;
+                if (carLanes.Count == 0) continue;
                 // 端の車線について、そのLeftWayは歩道と車道の間です。
                 var firstLane = carLanes[0];
                 var lastLane = carLanes[^1];

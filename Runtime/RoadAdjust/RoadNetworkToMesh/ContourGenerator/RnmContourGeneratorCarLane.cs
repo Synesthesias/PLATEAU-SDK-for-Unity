@@ -48,8 +48,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // MainLanesの外にあるが、歩道に隣接していない部分
             var left = road.GetMergedSideWay(RnDir.Left);
             var right = road.GetMergedSideWay(RnDir.Right);
-            var sides = new List<IEnumerable<Vector3>> { left, right };
-            var walks = road.SideWalks;
+            var sides = new List<IEnumerable<Vector3>> { left, right }.Where(s => s != null);
+            var walks = road.SideWalks.Where(s => s != null).ToArray();
             var selfSideEdges = road.SideWalks
                 .SelectMany(s => s.EdgeWays);
             var neighborSideEdges = road
@@ -59,8 +59,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var sideEdges = neighborSideEdges.Concat(selfSideEdges).ToArray();
             foreach (var side in sides)
             {
-                if (walks.Any(w => AreTouching(side, w.OutsideWay))) continue;
-                if (walks.Any(w => AreTouching(side, w.InsideWay))) continue;
+                if (walks.Any(w => w.OutsideWay != null && AreTouching(side, w.OutsideWay))) continue;
+                if (walks.Any(w => w.InsideWay != null && AreTouching(side, w.InsideWay))) continue;
                 var touchingEdges = sideEdges.Where(e => AreTouching(side, e)).ToArray();
                 if(touchingEdges.Length == 0) continue;
                 var calc = new RnmContourCalculator(RnmMaterialType.CarLane);

@@ -15,6 +15,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private Vector3[] vertices;
         private int[] triangles;
         public RnmMaterialType MatType { get; private set; }
+        public int VertexCount => vertices.Length;
         
         public static RnmTessSubMesh Generate(Tess tess, RnmMaterialType matType)
         {
@@ -72,6 +73,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public void Add(RnmTessSubMesh subMesh)
         {
+            if (subMesh == null)
+            {
+                Debug.LogWarning("subMesh is null.");
+                return;
+            }
             subMeshes.Add(subMesh);
         }
 
@@ -87,8 +93,19 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var mat in mats)
             {
                 var matSubs = subMeshes.Where(s => s.MatType == mat).ToArray();
-                if (matSubs.Length == 0) continue;
-                var matCombines = matSubs.Select(s => s.ToCombineInstance());
+                if (matSubs.Length == 0)
+                {
+                    Debug.LogWarning("Invalid matSubs length.");
+                    continue;
+                }
+                var matCombines = 
+                    matSubs
+                        .Where(m => m.VertexCount > 0)
+                        .Select(s => s.ToCombineInstance())
+                        .ToArray();
+                
+                if(matCombines.Length == 0) continue;
+                
                 var matMesh = new Mesh();
                 matMesh.CombineMeshes(matCombines.ToArray(), true);
                 matMeshes.Add(matMesh);
