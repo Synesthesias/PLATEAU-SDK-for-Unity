@@ -1,0 +1,124 @@
+.unity-label{
+    margin: 0;
+    padding: 0;
+}
+
+/*--------- メニューボタン設定 ---------*/
+/* ラジオボタンカスタム */
+#MenuGroup .unity-radio-button{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 42px;
+    background-color: rgba(255, 255, 128, 0);
+    border-width: 1px;
+    border-color: rgb(136, 147, 146);
+    color: rgb(190, 200, 200);
+    font-weight: bold;
+
+}
+	.unity-radio-button__label:enabled{
+        color: rgb(190, 200, 200);
+        font-weight: bold;
+    }
+#MenuGroup .unity-radio-button > VisualElement{
+    display:none;
+}
+
+#MenuGroup .unity-radio-button:hover {
+    background-color: rgba(0, 88, 88, 0.25);
+}
+
+#MenuGroup .unity-radio-button:checked {
+    background-color: rgb(0, 88, 88);
+    border-color: rgb(136, 147, 146);
+
+}
+
+.unity-radio-button__checkmark-background {
+    width: 24px;
+    border-width: 0;
+    background-color: rgba(255, 255, 128, 0);
+}
+.unity-radio-button .unity-base-field__label{
+    min-width: 0;
+}
+
+/* メニューの角丸設定 */
+.MenuFirst {
+    margin: 0;
+    border-radius: 8px 0 0 0;
+}
+
+.MenuMiddle {
+    margin: 0;
+    border-radius: 0 0 0 0;
+}
+
+.MenuEnd {
+    margin: 0;
+    border-radius: 0 8px 0 0;
+}
+
+/*---------- テキストフィールド設定 ----------*/
+#InputGroup{
+    padding: 3px 10px;
+    color: rgb(255,255,255);
+
+}
+#InputGroup .unity-label:enabled{
+color: rgb(255,255,255);
+
+}
+#InputGroup .unity-integer-field__label{
+    width: 50%;
+}
+
+/* 入力フィールド設定 */
+#InputGroup .unity-integer-field__input{
+    background-color: rgb(42,42,42);
+     border-radius: 2px;
+     height: 20px;
+     padding: 0 10px ;
+     font-size: 10px;
+}
+#InputGroup .unity-base-text-field:focus:enabled > .unity-base-text-field__input{
+    border-color: rgba(0,88,88,1);
+}
+
+/* チェックボックス設定 */
+#InputGroup .unity-toggle__label{
+color: rgb(255,255,255);
+font-size: 12px;
+width: 50%;
+}
+#InputGroup .unity-toggle__checkmark{
+    background-color: rgb(42,42,42);
+    border-radius: 2px;
+    height: 20px;
+    width: 20px;
+    padding: 0 10px ;
+    font-size: 10px;
+    color: rgb(255,255,255);
+}
+#InputGroup .unity-toggle__input:focus > .unity-toggle__checkmark{
+    border-color: rgba(0,88,88,1);
+}
+#InputGroup .unity-toggle__input:checked > .unity-toggle__checkmark{
+    background-image:resource('Icon/Icon_check');
+}
+
+/*--------- カテゴリータイトル ---------*/
+#CategoryTitle {
+
+    background-color: rgb(62,62,62);
+    color: rgb(255,255,255);
+    margin: 0;
+    padding: 5px 10px;
+}
+#CategoryTitle .unity-label{
+    font-size: 12px;
+    -unity-font-style: bold;
+}

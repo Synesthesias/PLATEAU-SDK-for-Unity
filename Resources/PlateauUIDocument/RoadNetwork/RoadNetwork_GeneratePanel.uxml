@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:VisualElement name="RoadNetwork_GeneratePanel" style="flex-grow: 0;">
+        <ui:Label tabindex="-1" text="道路ネットワーク生成、路面標識生成、路面見た目向上を行います" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 12px; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="生成パラメータ" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
+            <ui:IntegerField label="車線幅(メートル )" value="3" name="RoadSizeField" style="align-items: center; font-size: 12px;" />
+            <ui:IntegerField label="歩道生成時の歩道幅" value="2" name="RoadSizeField" style="align-items: center; font-size: 12px;" />
+            <ui:Toggle label="Toggle" style="font-size: 12px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
