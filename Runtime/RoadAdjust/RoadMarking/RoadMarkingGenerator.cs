@@ -34,7 +34,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             foreach (var way in ways.MarkedWays)
             {
                 // 道路の線をメッシュに変換します。
-                var gen = way.Type.ToLineMeshGenerator(way.Direction);
+                var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
                 var points = way.Way.Points;
                 var instance = gen.GenerateMesh(points.Select(p => p.Vertex).ToArray());
                 

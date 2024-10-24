@@ -151,8 +151,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 道路のNext方向の交差点までの距離（対象道路を含まない距離） </summary>
         private float NextLength { get; }
         public float LengthBetweenCenterLine { get; }
-
-        private const float Inf = 999999;
+        
 
         /// <summary>
         /// 交差点を探し、その距離を計算します。
@@ -175,9 +174,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 nextLength += RoadLength(r);
             }
 
-            PrevLength = prev is RnIntersection ? prevLength : Inf;
-            NextLength = next is RnIntersection ? nextLength : Inf;
-            LengthBetweenCenterLine = Math.Min(prevLength + nextLength + RoadLength(road), Inf);
+            PrevLength = prev is RnIntersection ? prevLength : float.MaxValue;
+            NextLength = next is RnIntersection ? nextLength : float.MaxValue;
+            LengthBetweenCenterLine = Math.Min(prevLength + nextLength + RoadLength(road), float.MaxValue);
         }
 
         /// <summary>
@@ -187,7 +186,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// </summary>
         public float NearestDistFromIntersection(RnWay way, int wayIndexOrig)
         {
-            if (way.Count <= 1) return Inf;
+            if (way.Count <= 1) return float.MaxValue;
 
             var points = way.IsReversed ? way.Points.Reverse().ToArray() : way.Points.ToArray();
             int wayIndex = way.IsReversed ? way.Count - 1 - wayIndexOrig : wayIndexOrig;
