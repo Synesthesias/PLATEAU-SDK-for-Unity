@@ -12,8 +12,8 @@
         <ui:GroupBox name="WidthGroup" style="display: flex;">
             <ui:Toggle label="中央分離帯の有無" binding-path="enableMedianLane" />
         </ui:GroupBox>
-        <ui:Toggle label="左側歩道の有無" binding-path="EnableLeftSideWalk" />
-        <ui:Toggle label="右側歩道の有無" binding-path="EnableRightSideWalk" />
+        <ui:Toggle label="左側歩道の有無" binding-path="enableLeftSideWalk" />
+        <ui:Toggle label="右側歩道の有無" binding-path="enableRightSideWalk" />
         <ui:Button text="適用" parse-escape-sequences="true" display-tooltip-when-elided="true" binding-path="_isApply" name="ApplyButton" />
         <ui:VisualElement style="flex-direction: row; justify-content: space-between; display: none;">
             <ui:Button text="前の設定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NextButton" />

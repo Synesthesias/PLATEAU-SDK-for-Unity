@@ -3,6 +3,7 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -732,6 +733,24 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public RnWayGroup GetEdgeWays(RnDir dir)
+        {
+            var cap = Roads.Count * 2;
+            List<RnWay> ways = new List<RnWay>(cap);
+            foreach (var road in Roads)
+            {
+                var mainLanes = road.MainLanes;
+                var lane = RnDir.Left == dir ? mainLanes.FirstOrDefault() : mainLanes.LastOrDefault();
+                var wayDir = RnDir.Left;
+                wayDir = !lane.IsReverse ? wayDir : wayDir.GetOpposite();
+                wayDir = dir == RnDir.Left ? wayDir : wayDir.GetOpposite();
+                var way = lane.GetSideWay(wayDir);
+                if (way != null)
+                    ways.Add(way);
+            }
+            return new RnWayGroup(ways);
+        }
+
         public IReadOnlyCollection<RnSideWalkGroup> GetSideWalkGroups()
         {
             var sideWalks = new List<RnSideWalk>();
@@ -756,6 +775,73 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return groups;
+        }
+
+        public void GetSideWalkGroups(out IReadOnlyCollection<RnSideWalkGroup> left, out IReadOnlyCollection<RnSideWalkGroup> right)
+        {
+            var cap = Roads.Count * 2;
+            var leftSideWalks = new List<RnSideWalk>(cap);
+            var rightSideWalks = new List<RnSideWalk>(cap);
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in road.SideWalks)
+                {
+                    if (sideWalk.LaneType == RnSideWalkLaneType.LeftLane)
+                        leftSideWalks.Add(sideWalk);
+                    else if(sideWalk.LaneType == RnSideWalkLaneType.RightLane)
+                        rightSideWalks.Add(sideWalk);
+                    else
+                    {
+                        // 仮　未定義のものは右側に割り当てる　後ほど位置関係から識別しても良い
+                        rightSideWalks.Add(sideWalk);
+                    }
+                }
+            }
+
+            var leftGroup = new List<RnSideWalkGroup>
+            {
+                new RnSideWalkGroup(leftSideWalks)
+            };
+            var rightGroup = new List<RnSideWalkGroup>
+            {
+                new RnSideWalkGroup(rightSideWalks)
+            };
+
+            left = leftGroup;
+            right = rightGroup;
+
+        }
+
+        public void AddSideWalks(IReadOnlyCollection<RnSideWalkGroup> sideWalkGroup)
+        {
+            // todo 重複チェック必要
+
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in sideWalkGroup)
+                {
+                    foreach (var item in sideWalk.SideWalks)
+                    {
+                        road.AddSideWalk(item);
+                    }
+                }
+            }
+        }
+
+        public void RemoveSideWalks(IReadOnlyCollection<RnSideWalkGroup> sideWalks)
+        {
+            // todo 重複チェック必要
+
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in sideWalks)
+                {
+                    foreach (var item in sideWalk.SideWalks)
+                    {
+                        road.RemoveSideWalk(item);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -1169,5 +1255,16 @@ namespace PLATEAU.RoadNetwork.Structure
             List<RnSideWalk> sideWalks;
         }
 
+
+        public class RnWayGroup
+        {
+            public RnWayGroup(List<RnWay> ways)
+            {
+                Ways = ways;
+            }
+
+            public IReadOnlyCollection<RnWay> Ways { get; private set; }
+
+        }
     }
 }
