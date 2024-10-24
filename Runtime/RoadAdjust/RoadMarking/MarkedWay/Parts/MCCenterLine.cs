@@ -188,7 +188,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         {
             if (way.Count <= 1) return float.MaxValue;
 
-            var points = way.Points.ToArray();
+            var points = way.IsReversed ? way.Points.Reverse().ToArray() : way.Points.ToArray();
             int wayIndex = way.IsReversed ? way.Count - 1 - wayIndexOrig : wayIndexOrig;
 
             float prevLen = 0; // 道路の指定地点から、道路のprev方向の端までの距離

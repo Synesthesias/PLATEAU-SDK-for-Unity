@@ -28,6 +28,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnExecButtonPushed()
         {
             var modelComponent = Object.FindObjectOfType<PLATEAURnStructureModel>();
+            if (modelComponent == null)
+            {
+                Debug.LogError("道路ネットワークがありません。");
+                return;
+            }
             var model = modelComponent.RoadNetwork;
             var generator = new RoadMarkingGenerator(model);
             generator.Generate();

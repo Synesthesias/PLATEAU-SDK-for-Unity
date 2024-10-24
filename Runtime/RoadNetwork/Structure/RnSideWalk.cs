@@ -160,7 +160,15 @@ namespace PLATEAU.RoadNetwork.Structure
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay)
         {
             var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay);
-            parent.AddSideWalk(sideWalk);
+            if (parent != null)
+            {
+                parent.AddSideWalk(sideWalk);
+            }
+            else
+            {
+                Debug.LogWarning("parent is null.");
+            }
+            
             return sideWalk;
         }
     }

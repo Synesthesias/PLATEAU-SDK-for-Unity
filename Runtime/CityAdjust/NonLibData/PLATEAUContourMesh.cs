@@ -9,22 +9,22 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     public class PLATEAUContourMesh : MonoBehaviour
     {
-        public ContourMesh contourMesh;
+        public RnmContourMesh contourMesh;
 
-        public void Init(ContourMesh contour)
+        public void Init(RnmContourMesh contour)
         {
             contourMesh = contour;
         }
     }
 
     [Serializable]
-    public class ContourMesh
+    public class RnmContourMesh
     {
         public Vector3[] vertices;
         public int[] triangles;
         public Vector2[] uv4;
         
-        public ContourMesh(Vector3[] vertices, int[] triangles, Vector2[] uv4)
+        public RnmContourMesh(Vector3[] vertices, int[] triangles, Vector2[] uv4)
         {
             this.vertices = vertices;
             this.triangles = triangles;
