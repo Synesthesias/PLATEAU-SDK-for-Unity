@@ -623,7 +623,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var sideWalks = new List<RnSideWalk>();
             foreach (var road in Roads)
             {
-                sideWalks.AddRange(road.GetSideWalks());
+                sideWalks.AddRange(road.SideWalks);
             }
 
             var groups = new List<RnSideWalkGroup>();
@@ -642,6 +642,68 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return groups;
+        }
+
+        public void GetSideWalkGroups(out IReadOnlyCollection<RnSideWalkGroup> left, out IReadOnlyCollection<RnSideWalkGroup> right)
+        {
+            var cap = Roads.Count * 2;
+            var leftSideWalks = new List<RnSideWalk>(cap);
+            var rightSideWalks = new List<RnSideWalk>(cap);
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in road.SideWalks)
+                {
+                    if (sideWalk.OutsideWay.IsReversed)
+                        leftSideWalks.Add(sideWalk);
+                    else
+                        rightSideWalks.Add(sideWalk);
+                }
+            }
+
+            var leftGroup = new List<RnSideWalkGroup>
+            {
+                new RnSideWalkGroup(leftSideWalks)
+            };
+            var rightGroup = new List<RnSideWalkGroup>
+            {
+                new RnSideWalkGroup(rightSideWalks)
+            };
+
+            left = leftGroup;
+            right = rightGroup;
+
+        }
+
+        public void AddSideWalks(IReadOnlyCollection<RnSideWalkGroup> sideWalkGroup)
+        {
+            // todo 重複チェック必要
+
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in sideWalkGroup)
+                {
+                    foreach (var item in sideWalk.SideWalks)
+                    {
+                        road.AddSideWalk(item);
+                    }
+                }
+            }
+        }
+
+        public void RemoveSideWalks(IReadOnlyCollection<RnSideWalkGroup> sideWalks)
+        {
+            // todo 重複チェック必要
+
+            foreach (var road in Roads)
+            {
+                foreach (var sideWalk in sideWalks)
+                {
+                    foreach (var item in sideWalk.SideWalks)
+                    {
+                        road.RemoveSideWalk(item);
+                    }
+                }
+            }
         }
 
         /// <summary>
