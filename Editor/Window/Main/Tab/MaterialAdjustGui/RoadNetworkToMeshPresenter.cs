@@ -4,6 +4,7 @@ using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab
@@ -36,8 +37,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private void OnExecButtonPushed()
         {
-            var roadModel = Object.FindObjectOfType<PLATEAURnStructureModel>().RoadNetwork;
-            new RoadNetworkToMesh(roadModel, lineSeparateType).Generate();
+            var roadModel = Object.FindObjectOfType<PLATEAURnStructureModel>();
+            if (roadModel == null)
+            {
+                Debug.LogError("道路ネットワークがありません。");
+                return;
+            }
+            new RoadNetworkToMesh(roadModel.RoadNetwork, lineSeparateType).Generate();
         }
         
 
