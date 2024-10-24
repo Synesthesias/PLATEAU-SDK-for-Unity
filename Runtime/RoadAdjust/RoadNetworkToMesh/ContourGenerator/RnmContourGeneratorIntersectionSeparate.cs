@@ -109,12 +109,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     foreach (var b in nonBorder2)
                         yield return new RnWay(new RnLineString(b.Vertices.Select(v => new RnPoint(v))));
 
-                    // 条件: StartEdgeWayともEndEdgeWayとも重ならない
-                    // var neighborEdges = inter.Neighbors.Select(n => n.Road).Where(r => r != null)
-                    //     .SelectMany(r => r.SideWalks).SelectMany(sw => sw.EdgeWays).Where(ew => ew != null).SelectMany(e => e.Vertices);
-                    // var nonBorder3 = nonBorder2.SelectMany(nb => nb.SubtractSeparate(neighborEdges, 1));
-                    //
-                    // foreach (var nb3 in nonBorder3) yield return new RnWay(new RnLineString(nb3.Vertices.Select(v => new RnPoint(v))));
                 }
             }
         }

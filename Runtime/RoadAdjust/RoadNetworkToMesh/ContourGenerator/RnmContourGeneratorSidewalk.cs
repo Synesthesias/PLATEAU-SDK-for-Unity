@@ -43,48 +43,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 contours.Add(calc.Calculate());
             }
             
-            // 道路ネットワーク上、歩道が見当たらない場合は、SideWalkEdgesと外側の車道から推測される道路の外側部を歩道とします。
-            // if (/*road.SideWalks.Count == 0*/true)
-            // {
-            //     var selfSideEdges = road.SideWalks
-            //         .SelectMany(s => s.EdgeWays);
-            //     var neighborSideEdges = road
-            //         .GetNeighborRoads()
-            //         .SelectMany(r => r.SideWalks)
-            //         .SelectMany(s => s.EdgeWays);
-            //
-            //     var sideEdges = neighborSideEdges.Concat(selfSideEdges).ToArray();
-            //     sideEdges = sideEdges.Where(si => road.SideWalks.All(sw => !AreTouching(sw.OutsideWay, si))).ToArray();
-            //     
-            //     // 車道端
-            //     // 車道端に隣接する隣接歩道端を追加
-            //     contours.AddRange(NonSideWalkOutside(road, RnDir.Left, sideEdges));
-            //     contours.AddRange(NonSideWalkOutside(road, RnDir.Right, sideEdges));
-            // }
             
             return contours;
         }
-
-        // private IEnumerable<RnmContour> NonSideWalkOutside(RnRoad road, RnDir dir, RnWay[] sideEdges)
-        // {
-        //     var sideWay = road.GetMergedSideWay(dir);
-        //     if (sideWay == null) yield break;
-        //     var sideWalks = road.SideWalks.ToArray();
-        //     if (sideWalks.Length == 0) yield break;
-        //
-        //     bool isTouchingBorder =
-        //         AreTouching(road.GetMergedBorder(RnLaneBorderType.Next), sideWay) ||
-        //         AreTouching(road.GetMergedBorder(RnLaneBorderType.Prev), sideWay);
-        //     if (!isTouchingBorder) yield break;
-        //     
-        //     
-        //     var sideEdge = sideEdges.Where(s => AreTouching(s, sideWay));
-        //     var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
-        //     calc.AddRangeLine(sideEdge);
-        //     calc.AddLine(sideWay);
-        //     yield return calc.Calculate();
-        // }
-
         
     }
 }
