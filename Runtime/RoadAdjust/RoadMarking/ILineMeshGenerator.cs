@@ -90,45 +90,59 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         {
             // 破線の基点を揃えるために、方向によっては逆順にします。
             Vector3[] srcPoints = direction ? srcPointsArg.ToArray() : srcPointsArg.Reverse().ToArray();
+            if(srcPoints.Length <= 1) return new RoadMarkingInstance(new Mesh(), materialType);
+
+            // 始点から点iまでの距離を計算します。
+            var lengths = new float[srcPoints.Length];
+            lengths[0] = 0;
+            for(int i=1; i<lengths.Length; i++)
+            {
+                lengths[i] = lengths[i-1] + Vector3.Distance(srcPoints[i-1], srcPoints[i]);
+            }
             
-            float length = 0f;
-            bool isBlank = false;
+            float lenImComplete = 0;
+            float lenLineStart = 0;
+            var combines = new List<CombineInstance>();
             var gen = new SolidLineMeshGenerator(materialType);
             Queue<Vector3> drawQue = new Queue<Vector3>(); // これから描きたい実線部の線
-            var combines = new List<CombineInstance>();
-            for (int i = 0; i < srcPoints.Length; i++)
+            drawQue.Enqueue(srcPoints[0]);
+            bool isBlank = false;
+            for (int i = 1; i < srcPoints.Length; i++)
             {
-                if (i <= 0) continue;
-
-                float lengthIM1 = length; // srcPoints[i-1]までの長さ, I Minus 1 の略
-                float srcLen = Vector3.Distance(srcPoints[i - 1], srcPoints[i]);
-                float lengthI = lengthIM1 + srcLen;
-                if(!isBlank) drawQue.Enqueue(srcPoints[i-1]);
-                // srcPointsからなる線をDashLengthの長さで区切ります。
-                do
+                float lenDiff = Vector3.Distance(srcPoints[i], srcPoints[i - 1]);
+                if (lenDiff <= 0.0000001) continue;
+                lenImComplete += lenDiff;
+                while (lenImComplete > DashLength) // 2点の間に、DashLengthが複数入る場合に対応するためのwhileです。
                 {
-                    length += DashLength;
-                    float t = (length - lengthIM1) / srcLen;
-                    if (t >= 1) break;
-                    var lerpPos = Vector3.Lerp(srcPoints[i - 1], srcPoints[i], t);
+                    float lenLineEnd = lenLineStart + DashLength;
+                    float t = (lenLineEnd - lengths[i - 1]) / lenDiff;
+                    var lineEndPos = Vector3.Lerp(srcPoints[i - 1], srcPoints[i], t);
                     if (isBlank)
                     {
-                        drawQue.Enqueue(lerpPos); // 空白部の最後 = 次の実線部の最初として追加します
+                        // 空白部から実線部への切り替え時です。実線の最初の点を追加します。
+                        drawQue.Enqueue(lineEndPos);
                     }
-                    if (!isBlank)
+                    else
                     {
-                        // キューから線を描画します
-                        drawQue.Enqueue(lerpPos);
+                        // 実線部から空白部への切り替え時です。実線を生成し、描画キューを空にします。
+                        drawQue.Enqueue(lineEndPos);
                         var combine = gen.GenerateMesh(drawQue.ToArray()).CombineInstance;
                         combines.Add(combine);
                         drawQue.Clear();
                     }
 
                     isBlank = !isBlank;
-                } while (length < lengthI); 
-                length = lengthI;
-            }
+                    lenLineStart = lenLineEnd;
+                    lenImComplete -= DashLength;
+                }
 
+                if (!isBlank)
+                {
+                    drawQue.Enqueue(srcPoints[i]);
+                }
+                
+            }
+            
             var dstMesh = new Mesh();
             dstMesh.CombineMeshes(combines.ToArray());
             return new RoadMarkingInstance(dstMesh, materialType);

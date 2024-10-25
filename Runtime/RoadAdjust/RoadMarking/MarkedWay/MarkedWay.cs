@@ -1,27 +1,88 @@
 using PLATEAU.RoadNetwork.Structure;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
     /// <summary>
-    /// <see cref="RnWay"/>を拡張し、道路に車線の線を描くための情報を追加したクラスです。
+    /// 路面標示の線1つを表現するクラスです。
     /// </summary>
     public class MarkedWay
     {
-        public RnWay Way { get; private set; }
+        public MWLine Line { get; private set; }
         public MarkedWayType Type { get; private set; }
         public bool IsReversed { get; private set; } // RnLane.IsReverseに相当します
 
-        public MarkedWay(RnWay way, MarkedWayType type, bool isReversed)
+        public MarkedWay(MWLine line, MarkedWayType type, bool isReversed)
         {
-            Way = way;
+            Line = line;
             Type = type;
             IsReversed = isReversed;
         }
+
+
     }
 
+    /// <summary>
+    /// 路面標示の線の座標列です。
+    /// MWはMarkedWayの略です。
+    /// </summary>
+    public class MWLine : IEnumerable<Vector3>
+    {
+        private Vector3[] points;
+
+        public MWLine(IEnumerable<Vector3> points)
+        {
+            this.points = points.ToArray();
+        }
+
+        public IEnumerable<Vector3> Points
+        {
+            get
+            {
+                return points;
+            }
+            set
+            {
+                points = value.ToArray();
+            }
+        }
+
+        public Vector3 this[int index]
+        {
+            get => points[index];
+        }
+
+        public int Count => points.Length;
+
+        public float SumDistance()
+        {
+            if (points.Length == 0) return 0;
+            var p = points[0];
+            float len = 0;
+            for (int i = 1; i < points.Length; i++)
+            {
+                len += Vector3.Distance(points[i], p);
+            }
+
+            return len;
+        }
+        
+        public IEnumerator<Vector3> GetEnumerator()
+        {
+            foreach (var p in points) yield return p;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+    
     /// <summary> 道路の線を描くにあたって見た目が異なるタイプのenumです。 </summary>
     public enum MarkedWayType
     {
@@ -33,6 +94,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         LaneLine,
         /// <summary> 車道と歩道の間の線。路側帯線。 </summary>
         ShoulderLine,
+        /// <summary> 停止線 </summary>
+        StopLine,
         None
     }
 
@@ -51,6 +114,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 case MarkedWayType.LaneLine:
                     return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction);
                 case MarkedWayType.ShoulderLine:
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
+                case MarkedWayType.StopLine:
                     return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
@@ -78,7 +143,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         public void Add(MarkedWay way)
         {
-            if (way == null || way.Way == null || way.Way.Points == null)
+            if (way == null || way.Line == null)
             {
                 Debug.LogWarning("way is null.");
                 return;

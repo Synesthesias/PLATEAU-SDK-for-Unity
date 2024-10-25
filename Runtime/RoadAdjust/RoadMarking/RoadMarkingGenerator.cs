@@ -11,6 +11,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public class RoadMarkingGenerator
     {
         private readonly RnModel targetNetwork;
+        private const string MeshName = "RoadMarkingMesh";
         
         
         public RoadMarkingGenerator(RnModel targetNetwork)
@@ -29,14 +30,16 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             
             // 道路の線を取得します。
             var ways = new MarkedWayListComposer().ComposeFrom(targetNetwork);
+            ways.AddRange(new StopLineComposer().ComposeFrom(targetNetwork));
             
             var instances = new RoadMarkingCombiner(ways.MarkedWays.Count);
             foreach (var way in ways.MarkedWays)
             {
                 // 道路の線をメッシュに変換します。
                 var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
-                var points = way.Way.Points;
-                var instance = gen.GenerateMesh(points.Select(p => p.Vertex).ToArray());
+                new MWLineSmoother().Smooth(way.Line);
+                var points = way.Line.Points;
+                var instance = gen.GenerateMesh(points.ToArray());
                 
                 instances.Add(instance);
             }
@@ -59,6 +62,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             meshRenderer.sharedMaterials = RoadMarkingMaterialExtension.Materials();
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off; // 道路と重なっているので影は不要
             obj.transform.parent = dstParent;
+            mesh.name = "RoadMarkingMesh";
             return obj;
         }
     }

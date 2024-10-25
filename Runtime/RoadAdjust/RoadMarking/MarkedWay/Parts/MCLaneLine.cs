@@ -18,7 +18,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 // 車道のうち、端でない（路側帯線でない）もののLeftWayは車線境界線です。
                 for (int i = 1; i < carLanes.Count - 1; i++)
                 {
-                    ret.Add(new MarkedWay(carLanes[i].LeftWay, MarkedWayType.LaneLine, carLanes[i].IsReverse));
+                    ret.Add(new MarkedWay(new MWLine(carLanes[i].LeftWay), MarkedWayType.LaneLine, carLanes[i].IsReverse));
                 }
             }
             return ret;

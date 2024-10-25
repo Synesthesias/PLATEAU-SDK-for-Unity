@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -55,6 +56,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 var combineTargets = instances.Where(i => i.MaterialType == mat).Select(i => i.CombineInstance).ToArray();
                 var combined = new Mesh();
+                combined.indexFormat = IndexFormat.UInt32;
                 combined.CombineMeshes(combineTargets, true);
                 matCombined.Add(mat, combined);
             }
@@ -63,6 +65,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     mc => new CombineInstance { mesh = mc.Value, transform = Matrix4x4.identity })
                     .ToArray();
             var allCombinedMesh = new Mesh();
+            allCombinedMesh.indexFormat = IndexFormat.UInt32;
             allCombinedMesh.CombineMeshes(allCombineTargets, false);
             return allCombinedMesh;
         }
