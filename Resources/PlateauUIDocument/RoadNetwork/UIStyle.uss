@@ -122,3 +122,49 @@ width: 50%;
     font-size: 12px;
     -unity-font-style: bold;
 }
+/*--------- パーツ関連 ---------*/
+
+.ActionButton {
+    height: 40px;
+    border-radius: 4px;
+    border-color: rgb(0, 106, 106);
+    background-color: rgb(0, 106, 106);
+    color: rgb(255,255,255);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    visibility: visible;
+}
+
+.ActionButton > Label {
+    color: rgb(0, 55, 55);
+}
+
+.ActionButton:hover {
+    background-color: rgb(20, 118, 118);
+    background-color:rgb(20, 118, 118);
+}
+
+.ActionButton:active {
+    background-color: rgb(31, 124, 124);
+}
+
+.ActionButton:disabled {
+    background-color: rgb(221, 228, 227);
+}
+#Divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgb(190, 201, 200);
+    margin: 5px 0;
+}
+
+.unity-popup-field .unity-base-field__input {
+    background-color: rgb(42,42,42);
+    border-color: #646464   ;
+    height: 20px;
+    border-radius: 2px;
+}
+.unity-base-popup-field__arrow {
+    -unity-background-image-tint-color: rgb(217,217,217);
+}
