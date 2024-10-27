@@ -82,11 +82,13 @@ namespace PLATEAU.Editor.RoadNetwork
         private readonly IRoadNetworkEditingSystem system;
         private readonly RoadNetworkEditorAssets assets;
 
-        private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> paramterLayoutSet =
+        private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> createLayoutSet =
             new Dictionary<RoadNetworkEditMode, GenerateParameterFunc> {
             { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
             { RoadNetworkEditMode.EditRoadStructure, CreateEditRoadStructureLayout },
         };
+        // UIが無効化,切り替わる時にされるときに呼び出される　createLayoutSetで設定する
+        private Action finalizeAction;
 
         private static void CreateEditLaneWidthLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
@@ -227,51 +229,62 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // UIの追加
             root.Add(element);
-
             // 選択オブジェクト変更時のイベント設定 モデルオブジェクトの再設定を行う
-            system.OnChangedSelectRoadNetworkElement += (s, e) =>
+            system.OnChangedSelectRoadNetworkElement += Setup(doc, system, element);
+
+            doc.finalizeAction = () =>
             {
-                var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-                if (linkGroupEditorData == null)
-                    return;
-
-                // 無ければ生成する あれば流用する
-                var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
-
-                // 既存のモデルオブジェクトを解除
+                root.Remove(element);
                 element.Unbind();
+                system.OnChangedSelectRoadNetworkElement -= Setup(doc, system, element);    
 
-                //Bindingの設定
-                //var bp = element.BindProperty(test);
-                //element.BindProperty(bp);
-                element.TrackSerializedObjectValue(mdl, (se) =>
-                {
-                    var mod = system.RoadNetworkSimpleEditModule;
-                    var obj = se as IScriptableRoadMdl;
-                    if (mod.CanSetDtailMode())
-                    {
-                        if (mod.IsDetailMode() != obj.IsEditingDetailMode)
-                        {
-                           mod.SetDetailMode(obj.IsEditingDetailMode);
-                        }
-                    }
-
-                    //obj.Apply();
-                });
-                element.Bind(mdl);
-                if (element.Q<Button>("ApplyButton") is var btn)
-                {
-                    btn.clicked += () =>
-                    {
-                        mdl.Apply(system.RoadNetworkSimpleEditModule);
-                    };
-                }
-                //element.Unbind();
-
-                //linkGroupEditorData.LinkGroup;
-                //scale.value = system.GetScale(lane);
             };
 
+            static EventHandler Setup(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, TemplateContainer element)
+            {
+                return (s, e) =>
+                {
+                    var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+                    if (linkGroupEditorData == null)
+                        return;
+
+                    // 無ければ生成する あれば流用する
+                    var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
+
+                    // 既存のモデルオブジェクトを解除
+                    element.Unbind();
+
+                    //Bindingの設定
+                    //var bp = element.BindProperty(test);
+                    //element.BindProperty(bp);
+                    element.TrackSerializedObjectValue(mdl, (se) =>
+                    {
+                        var mod = system.RoadNetworkSimpleEditModule;
+                        var obj = se as IScriptableRoadMdl;
+                        if (mod.CanSetDtailMode())
+                        {
+                            if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                            {
+                                mod.SetDetailMode(obj.IsEditingDetailMode);
+                            }
+                        }
+
+                        //obj.Apply();
+                    });
+                    element.Bind(mdl);
+                    if (element.Q<Button>("ApplyButton") is var btn)
+                    {
+                        btn.clicked += () =>
+                        {
+                            mdl.Apply(system.RoadNetworkSimpleEditModule);
+                        };
+                    }
+                    //element.Unbind();
+
+                    //linkGroupEditorData.LinkGroup;
+                    //scale.value = system.GetScale(lane);
+                };
+            }
         }
 
         private SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
@@ -522,8 +535,15 @@ namespace PLATEAU.Editor.RoadNetwork
         private void UpdateMode(object _, EventArgs _1)
         {
             var mode = system.CurrentEditMode;
+
+            // 既存の生成済みのUIの破棄処理
+            finalizeAction?.Invoke();
+            finalizeAction = null;
+
             parameterView.Clear();
-            paramterLayoutSet[mode](this, system, assets, parameterView);
+
+            // UIの生成処理
+            createLayoutSet[mode](this, system, assets, parameterView);
         }
 
         private void SelectRoadNetwrokObject(object _, EventArgs _1)
