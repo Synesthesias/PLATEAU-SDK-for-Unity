@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:VisualElement name="SignalSettingPanel" style="flex-grow: 0; align-items: center; flex-shrink: 0;">
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.75); padding-top: 16px; padding-right: 16px; padding-bottom: 16px; padding-left: 16px; border-top-left-radius: 16px; border-top-right-radius: 16px; border-bottom-right-radius: 16px; border-bottom-left-radius: 16px; align-items: center;">
+            <ui:VisualElement style="flex-grow: 0; flex-direction: row; flex-shrink: 0;">
+                <ui:Toggle label="左折" name="LeftToggle" value="true" style="flex-direction: column-reverse; flex-wrap: nowrap; align-items: center; color: rgb(255, 255, 255); -unity-text-align: upper-center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+                <ui:Toggle label="直進" name="StraightToggle" value="true" style="flex-direction: column-reverse; flex-wrap: nowrap; align-items: center; color: rgb(255, 255, 255); -unity-text-align: upper-center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+                <ui:Toggle label="右折" name="RightToggle" value="true" style="flex-direction: column-reverse; flex-wrap: nowrap; align-items: center; color: rgb(255, 255, 255); -unity-text-align: upper-center; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+            </ui:VisualElement>
+            <ui:Button text="閉じる" parse-escape-sequences="true" display-tooltip-when-elided="true" class="OutlineButton" style="border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; font-size: 14px; width: 120px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SignalSettingArrow" style="flex-grow: 0; width: 26px; height: 18px;" />
+    </ui:VisualElement>
+</ui:UXML>
