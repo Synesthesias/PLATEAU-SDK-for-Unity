@@ -446,29 +446,41 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 try
                 {
-                    var linkGroup = link.CreateRoadGroup();
-                    foreach (var l in linkGroup.Roads)
+                    var roadGroup = link.CreateRoadGroup();
+                    foreach (var l in roadGroup.Roads)
                         visitedRoads.Add(l);
 
-                    linkGroup.Align();
-                    if (linkGroup.IsValid == false)
+                    roadGroup.Align();
+                    if (roadGroup.IsValid == false)
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
+                    if (roadGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
+                    var leftCount = roadGroup.GetLeftLaneCount();
+                    var rightCount = roadGroup.GetRightLaneCount();
+                    // すでにレーンが分かれている場合、左右で独立して分割を行う
+                    if (leftCount > 0 && rightCount > 0)
+                    {
+                        foreach (var dir in new[] { RnDir.Left, RnDir.Right })
+                        {
+                            var width = roadGroup.Roads.Select(r => r.GetLanes(dir).Sum(l => l.CalcWidth())).Min();
+                            var num = (int)(width / roadWidth);
+                            roadGroup.SetLaneCount(dir, num);
+                        }
+                    }
+                    // 
+                    else
+                    {
+                        var width = roadGroup.Roads.Select(l => l.MainLanes.Sum(l => l.CalcWidth())).Min();
+                        var num = (int)(width / roadWidth);
+                        if (num <= 1)
+                            continue;
 
-                    // #TODO : 中央線がある場合の処理
-                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
-                        continue;
+                        var leftLaneCount = (num + 1) / 2;
+                        var rightLaneCount = num - leftLaneCount;
+                        roadGroup.SetLaneCount(leftLaneCount, rightLaneCount);
+                    }
 
-                    var width = linkGroup.Roads.Select(l => l.MainLanes[0].CalcWidth()).Min();
-                    var num = (int)(width / roadWidth);
-                    if (num <= 1)
-                        continue;
-
-                    var leftLaneCount = (num + 1) / 2;
-                    var rightLaneCount = num - leftLaneCount;
-                    linkGroup.SetLaneCount(leftLaneCount, rightLaneCount);
                 }
                 catch (Exception e)
                 {
