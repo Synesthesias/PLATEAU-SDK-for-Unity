@@ -380,8 +380,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (p.showWayFilter != RnSideWalkWayTypeMask.None && sideWalk.GetValidWayTypeMask() != p.showWayFilter)
                 return;
 
-            if (p.showLaneTypeFilter != SideWalkLaneTypeMask.None &&
-                ((1 << (int)sideWalk.LaneType) & (int)p.showLaneTypeFilter) == 0)
+            // レーンタイプで見る
+            if (((1 << (int)sideWalk.LaneType) & (int)p.showLaneTypeFilter) == 0)
                 return;
 
             // 非表示設定
