@@ -77,6 +77,11 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
 
+        public void ClearCache()
+        {
+            cacheDataMap.Clear();
+        }
+
         private class CacheData<_Val>
         {
             public Func<_ListElement, _Val> selecter;

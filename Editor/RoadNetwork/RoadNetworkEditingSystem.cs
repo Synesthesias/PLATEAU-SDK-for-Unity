@@ -1316,7 +1316,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             State currentState = State.Default;
 
-            //private HashSet<LinkGroupEditorData> linkGroupEditorData = new HashSet<LinkGroupEditorData>();
             /// <summary>
             /// 計算や処理に必要な要素を初期化する
             /// </summary>
@@ -1538,8 +1537,9 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 nodeEditorData.Clear();
                 linkGroupEditorData.Clear();
+                linkGroupEditorData.ClearCache();
                 ptEditorData.Clear();
-
+                intersectionEditorData.Clear();
             }
 
             class _WayCalcData
