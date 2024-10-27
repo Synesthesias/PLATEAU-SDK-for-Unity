@@ -202,7 +202,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way, RnRoad parent)
+                void MoveWay(RnWay way, RnRoad parent, RnSideWalkLaneType laneType)
                 {
                     if (way == null)
                         return;
@@ -234,7 +234,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                     var startWay = CreateWay(new List<RnPoint> { points[0], way.GetPoint(0) });
                     var endWay = CreateWay(new List<RnPoint> { points[^1], way.GetPoint(-1) });
-                    var sideWalk = RnSideWalk.Create(parent, CreateWay(points), way, startWay, endWay);
+                    var sideWalk = RnSideWalk.Create(parent, CreateWay(points), way, startWay, endWay, laneType);
                     ret.Add(sideWalk);
                 }
 
@@ -247,9 +247,10 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         var leftLane = road.MainLanes.FirstOrDefault();
                         var rightLane = road.MainLanes.LastOrDefault();
-                        MoveWay(leftLane?.LeftWay, road);
-                        MoveWay(rightLane?.RightWay, road);
+                        MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane);
+                        MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane);
                     }
+                    // #TODO : 交差点も作る？
                 }
 
                 return ret;
@@ -655,7 +656,23 @@ namespace PLATEAU.RoadNetwork.Factory
                             var endWay = AsWay(endEdges, out var endCached);
                             var parent = work.TranMap.Values.FirstOrDefault(t =>
                                 t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
-                            var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay);
+
+                            RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
+                            if (parent?.Node is RnRoad road)
+                            {
+                                var way = road.GetMergedSideWay(RnDir.Left);
+                                if (insideWay != null)
+                                {
+                                    // #NOTE : 自動生成の段階だと線分共通なので同一判定でチェックする
+                                    // #TODO : 自動生成の段階で分かれているケースが存在するならは点や法線方向で判定するように変える
+                                    if (insideWay.IsSameLine(way))
+                                        laneType = RnSideWalkLaneType.LeftLane;
+                                    else
+                                        laneType = RnSideWalkLaneType.RightLane;
+                                }
+                            }
+
+                            var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay, laneType);
                             ret.AddSideWalk(sideWalk);
                         }
                     }
@@ -694,7 +711,7 @@ namespace PLATEAU.RoadNetwork.Factory
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                DebugEx.LogException(e);
                 throw;
             }
         }

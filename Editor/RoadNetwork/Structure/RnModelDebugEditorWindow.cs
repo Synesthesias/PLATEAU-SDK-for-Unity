@@ -425,6 +425,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
+                EditorGUILayout.EnumPopup("LaneType", sideWalk.LaneType);
             }
         }
 

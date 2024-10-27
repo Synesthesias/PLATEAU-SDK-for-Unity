@@ -726,7 +726,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 // 切断線の境界
                 var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
 
-                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay);
+                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay, sideWalk.LaneType);
                 sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
                 sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
                 self.AddSideWalk(newSideWalk);
