@@ -347,9 +347,9 @@ namespace PLATEAU.RoadNetwork.Structure
             return Create(vertices, -1, -1, -1f);
         }
 
-        public static RnLineString Create(IEnumerable<Vector3> vertices)
+        public static RnLineString Create(IEnumerable<Vector3> vertices, bool removeDuplicate = true)
         {
-            return Create(vertices.Select(v => new RnPoint(v)));
+            return Create(vertices.Select(v => new RnPoint(v)), removeDuplicate);
         }
 
         /// <summary>
@@ -475,6 +475,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="interval"></param>
         public static void Refine(this RnLineString self, float interval)
         {
+            // 余りに小さい場合は何もしない
+            if (interval <= 1e-3f)
+                return;
+
             for (var i = 0; i < self.Count - 1; ++i)
             {
                 var p0 = self[i];
@@ -495,6 +499,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 self.Points.InsertRange(i + 1, newPoints);
                 i += newPoints.Count;
             }
+        }
+
+        /// <summary>
+        /// selfの各線分がintervalより長い場合に間に点を置いて細分化したものを返す.非破壊
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public static RnLineString Refined(this RnLineString self, float interval)
+        {
+            var ret = self.Clone(false);
+            ret.Refine(interval);
+            return ret;
         }
     }
 }

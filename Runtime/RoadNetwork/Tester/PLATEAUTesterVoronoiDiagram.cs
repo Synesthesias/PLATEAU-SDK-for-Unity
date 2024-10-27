@@ -35,8 +35,21 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             if (p.enable == false)
                 return;
+            var tr = transform;
+            var lines = Enumerable.Range(0, tr.childCount)
+                .Select(i => tr.GetChild(i))
+                .Where(c => c.gameObject.activeInHierarchy)
+                .Select(c => c.GetComponent<PLATEAUGeoGraphTesterLineString>())
+                .Where(s => s != null)
+                .ToList();
 
-            foreach (var v in GetVertices())
+            var vertices = lines
+                .SelectMany(l =>
+                {
+                    return l.GetVertices3D();
+                })
+                .ToList();
+            foreach (var v in vertices.Select(a => new Vector2d(a.ToVector2(plane))))
             {
                 if (RnVoronoiEx.CalcBeachLine(v, p.lineY, out var parabola) == false)
                     continue;
@@ -46,7 +59,7 @@ namespace PLATEAU.RoadNetwork.Tester
                     for (var x = -p.rangeX; x <= p.rangeX; x += p.parabolaLineInterval)
                     {
                         var y = parabola.GetY(x);
-                        yield return new Vector2(x, y).ToVector3(plane);
+                        yield return new Vector2(x, (float)y).ToVector3(plane);
                     }
                 }
 
@@ -67,6 +80,10 @@ namespace PLATEAU.RoadNetwork.Tester
             public bool enable = false;
             public bool showWay = true;
             public float interval = 1;
+            public bool showAllEdge = false;
+            public bool method = false;
+            public float sphereSize = 0.1f;
+            public float lineLength = 100f;
         }
         public LerpLineSegmentsVoronoiTestParam lerpSegmentsVoronoiTest = new();
 
@@ -88,28 +105,43 @@ namespace PLATEAU.RoadNetwork.Tester
             var vertices = lines
                 .SelectMany(l =>
                 {
-                    var ls = RnLineString.Create(l.GetVertices3D());
-                    ls.Refine(param.interval);
+                    var ls = RnLineString.Create(l.GetVertices3D(), false);
+                    if (param.interval > 1)
+                        ls.Refine(param.interval);
                     return ls.Points.Select(v => new { line = l, v = v.Vertex });
                 })
                 .ToList();
 
-            var voronoiData = RnVoronoiEx.CalcVoronoiData(vertices, v => v.v.ToVector2(plane));
+            var voronoiData = RnVoronoiEx.CalcVoronoiData(vertices, v => new Vector2d(v.v.ToVector2(plane)));
 
-            foreach (var v in vertices)
+            for (var i = 0; i < vertices.Count; ++i)
             {
-                DebugEx.DrawSphere(v.v, 1f);
+                var v = vertices[i];
+                DebugEx.DrawSphere(v.v, param.sphereSize);
+                DebugEx.DrawString($"{i}", v.v, color: Color.red, fontSize: 20);
             }
 
+            Dictionary<Vector3, HashSet<int>> drawn = new();
+
+            void DrawPoint(Vector3 x, int a)
+            {
+                if (drawn.TryGetValue(x, out var p) == false)
+                {
+                    drawn[x] = new HashSet<int> { a };
+                    DebugEx.DrawSphere(x, param.sphereSize, color: Color.green);
+                }
+                drawn[x].Add(a);
+            }
             var colors = new List<int>();
+            Dictionary<Vector3, int> edgeCount = new();
             foreach (var e in voronoiData.Edges)
             {
-                if (e.Start == null && e.End == null)
-                    continue;
                 var color = DebugEx.GetDebugColor(childIndex++, 16);
 
-                if (e.LeftSitePoint.line == e.RightSitePoint.line)
+                if (param.showAllEdge == false && e.LeftSitePoint.line == e.RightSitePoint.line)
                     continue;
+
+
                 var c = e.LeftSitePoint.line.GetHashCode() ^ e.RightSitePoint.line.GetHashCode();
                 var index = colors.IndexOf(c);
                 if (index < 0)
@@ -119,12 +151,36 @@ namespace PLATEAU.RoadNetwork.Tester
                 }
                 color = DebugEx.GetDebugColor(index, 16);
 
-                var st = (e.Start ?? (e.End.Value - e.Direction * 100000)).ToVector3(plane);
-                var en = (e.End ?? (e.Start.Value + e.Direction * 100000)).ToVector3(plane);
+                // 完全な直線の場合サイトポイントの中間点(2等分線だから)
+                var mid = new Vector2d(((e.LeftSitePoint.v + e.RightSitePoint.v) * 0.5f).ToVector2(plane));
+                var st = Vector3.zero;
+                var en = Vector3.zero;
+                var d = e.Direction * param.lineLength;
+                if (e.Start == null && e.End == null)
+                {
+                    st = (mid - d).ToVector2().ToVector3(plane);
+                    en = (mid + d).ToVector2().ToVector3(plane);
+                }
+                else
+                {
+                    st = (e.Start ?? (e.End.Value - d)).ToVector2().ToVector3(plane);
+                    en = (e.End ?? (e.Start.Value + d)).ToVector2().ToVector3(plane);
+
+                }
 
                 DebugEx.DrawLine(st, en, color);
-                DebugEx.DrawString($"E", en);
-                DebugEx.DrawString($"S", st);
+                var p = (st + en) * 0.5f;
+                var n = (en - st).ToVector2(plane).normalized.Rotate(90).ToVector3(plane) * 0.1f;
+
+                var x = edgeCount.TryGetValue(p, out var l) ? l + 1 : 1;
+                edgeCount[p] = x;
+                DebugEx.DrawString($"{e.LeftSiteIndex}", p + n * x, color: Color.blue, fontSize: 20);
+                DebugEx.DrawString($"{e.RightSiteIndex}", p - n * x, color: Color.blue, fontSize: 20);
+
+                DrawPoint(st, 0);
+                DrawPoint(en, 0);
+                //DebugEx.DrawString($"E", en);
+                //DebugEx.DrawString($"S", st);
             }
 
             if (param.showWay)
@@ -169,26 +225,6 @@ namespace PLATEAU.RoadNetwork.Tester
 
             BeachLineTest(beachLineTestParam);
             VoronoiTest(lerpSegmentsVoronoiTest);
-
-            var voronoi = RnVoronoiEx.CalcVoronoiData(GetVertices3D(), v => v.ToVector2(plane));
-            var index = 0;
-            foreach (var e in voronoi.Edges)
-            {
-                if (e.Start == null)
-                    continue;
-                var color = DebugEx.GetDebugColor(index++, 16);
-                var st = e.Start.Value.ToVector3(plane);
-                var en = (e.End ?? (e.Start.Value + e.Direction * 100000)).ToVector3(plane);
-
-                DebugEx.DrawLine(st, en, color);
-                DebugEx.DrawString($"E", en);
-                DebugEx.DrawString($"S", st);
-            }
-
-            foreach (var p in voronoi.Points)
-            {
-                //DebugEx.DrawSphere(p.V.ToVector3(plane), sphereRadius, Color.blue);
-            }
         }
     }
 }

@@ -1072,7 +1072,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        public static List<RecLine> Create(this RnIntersection self)
+        public static List<RecLine> CreateRecLine(this RnIntersection self)
         {
             var edgeGroups = self.CreateEdgeGroup();
             var ret = new List<RecLine>();
