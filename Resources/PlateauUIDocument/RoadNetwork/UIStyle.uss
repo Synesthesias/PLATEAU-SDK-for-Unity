@@ -1,11 +1,9 @@
-.unity-label{
+.unity-label {
     margin: 0;
     padding: 0;
 }
 
-/*--------- メニューボタン設定 ---------*/
-/* ラジオボタンカスタム */
-#MenuGroup .unity-radio-button{
+#MenuGroup .unity-radio-button {
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
@@ -17,14 +15,15 @@
     border-color: rgb(136, 147, 146);
     color: rgb(190, 200, 200);
     font-weight: bold;
-
 }
-	.unity-radio-button__label:enabled{
-        color: rgb(190, 200, 200);
-        font-weight: bold;
-    }
-#MenuGroup .unity-radio-button > VisualElement{
-    display:none;
+
+.unity-radio-button__label:enabled {
+    color: rgb(190, 200, 200);
+    font-weight: bold;
+}
+
+#MenuGroup .unity-radio-button > VisualElement {
+    display: none;
 }
 
 #MenuGroup .unity-radio-button:hover {
@@ -34,7 +33,6 @@
 #MenuGroup .unity-radio-button:checked {
     background-color: rgb(0, 88, 88);
     border-color: rgb(136, 147, 146);
-
 }
 
 .unity-radio-button__checkmark-background {
@@ -42,11 +40,11 @@
     border-width: 0;
     background-color: rgba(255, 255, 128, 0);
 }
-.unity-radio-button .unity-base-field__label{
+
+.unity-radio-button .unity-base-field__label {
     min-width: 0;
 }
 
-/* メニューの角丸設定 */
 .MenuFirst {
     margin: 0;
     border-radius: 8px 0 0 0;
@@ -62,78 +60,158 @@
     border-radius: 0 8px 0 0;
 }
 
-/*---------- テキストフィールド設定 ----------*/
-#InputGroup{
+#EditMenu {
+    height: 64px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#EditMenu > .unity-radio-button {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 42px;
+    background-color: rgba(255, 255, 128, 0);
+    border-radius: 21px;
+    border-width: 1px;
+    border-color: rgb(136, 147, 146);
+    margin: 0;
+}
+
+#EditMenu > .unity-radio-button > VisualElement {
+    display: none;
+}
+
+#EditMenu > .unity-radio-button:checked {
+    background-color: rgb(50, 75, 75);
+}
+
+#InputGroup {
     padding: 3px 10px;
-    color: rgb(255,255,255);
-
+    color: rgb(255, 255, 255);
 }
-#InputGroup .unity-label:enabled{
-color: rgb(255,255,255);
 
+#InputGroup .unity-label:enabled {
+    color: rgb(255, 255, 255);
 }
-#InputGroup .unity-integer-field__label{
+
+#InputGroup .unity-integer-field__label {
     width: 50%;
 }
 
-/* 入力フィールド設定 */
-#InputGroup .unity-integer-field__input{
-    background-color: rgb(42,42,42);
-     border-radius: 2px;
-     height: 20px;
-     padding: 0 10px ;
-     font-size: 10px;
-}
-#InputGroup .unity-base-text-field:focus:enabled > .unity-base-text-field__input{
-    border-color: rgba(0,88,88,1);
+#InputGroup .unity-integer-field__input {
+    background-color: rgb(42, 42, 42);
+    border-radius: 2px;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
 }
 
-/* チェックボックス設定 */
-#InputGroup .unity-toggle__label{
-color: rgb(255,255,255);
-font-size: 12px;
-width: 50%;
+#InputGroup .unity-base-text-field:focus:enabled > .unity-base-text-field__input {
+    border-color: rgb(0, 88, 88);
 }
-#InputGroup .unity-toggle__checkmark{
-    background-color: rgb(42,42,42);
+
+#InputGroup .unity-toggle__label {
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    width: 50%;
+}
+
+#InputGroup .unity-toggle__checkmark {
+    background-color: rgb(42, 42, 42);
     border-radius: 2px;
     height: 20px;
     width: 20px;
-    padding: 0 10px ;
+    padding: 0 10px;
     font-size: 10px;
-    color: rgb(255,255,255);
-}
-#InputGroup .unity-toggle__input:focus > .unity-toggle__checkmark{
-    border-color: rgba(0,88,88,1);
-}
-#InputGroup .unity-toggle__input:checked > .unity-toggle__checkmark{
-    background-image:resource('Icon/Icon_check');
+    color: rgb(255, 255, 255);
 }
 
-/*--------- カテゴリータイトル ---------*/
+#InputGroup .unity-toggle__input:focus > .unity-toggle__checkmark {
+    border-color: rgb(0, 88, 88);
+}
+
+#InputGroup .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-image: resource('Icon/Icon_check');
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
 #CategoryTitle {
-
-    background-color: rgb(62,62,62);
-    color: rgb(255,255,255);
+    background-color: rgb(62, 62, 62);
+    color: rgb(255, 255, 255);
     margin: 0;
     padding: 5px 10px;
+    height: 30px;
+    justify-content: center;
 }
-#CategoryTitle .unity-label{
+
+#CategoryTitle .unity-label {
     font-size: 12px;
     -unity-font-style: bold;
 }
-/*--------- パーツ関連 ---------*/
+
+#EditModeButton {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    width: 180px;
+    height: 50px;
+    padding: 10px 16px;
+    background-color: rgba(103, 103, 103, 0.75);
+    border-width: 1px;
+    border-radius: 25px;
+    border-color: rgb(136, 147, 146);
+    color: rgb(0, 55, 55);
+    font-weight: bold;
+}
+
+#EditModeButton .unity-base-field__label {
+    min-width: 0;
+    width: 80%;
+}
+
+#EditModeButton .unity-toggle__checkmark {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-image: resource('Icon/Icon_EditButton_OFF');
+    -unity-background-image-tint-color: rgb(217, 217, 217);
+    border-color: rgb(136, 147, 146);
+    transition: 0.2s;
+}
+
+#EditModeButton > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-image: resource('Icon/Icon_EditButton_ON');
+    transition: 0.2s;
+}
+
+#EditModeButton:checked {
+    background-color: rgb(128, 213, 212);
+    border-color: rgb(136, 147, 146);
+    transition: 0.2s;
+}
+
+#EditModeButton .unity-base-field__input {
+    width: 24px;
+}
 
 .ActionButton {
     height: 40px;
     border-radius: 4px;
     border-color: rgb(0, 106, 106);
     background-color: rgb(0, 106, 106);
-    color: rgb(255,255,255);
+    color: rgb(255, 255, 255);
     display: flex;
     flex-direction: row;
     justify-content: center;
     visibility: visible;
+    transition: 0.2s;
 }
 
 .ActionButton > Label {
@@ -142,7 +220,8 @@ width: 50%;
 
 .ActionButton:hover {
     background-color: rgb(20, 118, 118);
-    background-color:rgb(20, 118, 118);
+    background-color: rgb(20, 118, 118);
+    transition: 0.2s;
 }
 
 .ActionButton:active {
@@ -152,6 +231,31 @@ width: 50%;
 .ActionButton:disabled {
     background-color: rgb(221, 228, 227);
 }
+
+.OutlineButton {
+    height: 40px;
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: rgb(136, 147, 146);
+    background-color: rgba(136, 147, 146, 0);
+    color: rgb(128, 213, 212);
+    font-size: 10px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.OutlineButton:hover {
+    background-color: rgba(136, 147, 146, 0.2);
+    transition: 0.2s;
+}
+
+.OutlineButton:active {
+    background-color: rgba(136, 147, 146, 0.4);
+    transition: 0.2s;
+}
+
 #Divider {
     width: 100%;
     height: 1px;
@@ -160,11 +264,237 @@ width: 50%;
 }
 
 .unity-popup-field .unity-base-field__input {
-    background-color: rgb(42,42,42);
-    border-color: #646464   ;
-    height: 20px;
+    background-color: rgb(42, 42, 42);
+    border-color: rgb(100, 100, 100);
+    height: auto;
     border-radius: 2px;
 }
+
 .unity-base-popup-field__arrow {
-    -unity-background-image-tint-color: rgb(217,217,217);
+    -unity-background-image-tint-color: rgb(217, 217, 217);
+}
+
+.unity-min-max-slider__dragger {
+    -unity-slice-left: 24;
+    -unity-slice-right: 24;
+    background-color: rgb(0, 88, 88);
+    height: 12px;
+    margin-top: -6px;
+    border-radius: 4px;
+    min-width: 10px;
+}
+
+.unity-min-max-slider__min-thumb {
+    border-radius: 4px;
+    margin-top: -6px;
+    background-color: rgb(0, 190, 190);
+    width: 20px;
+    height: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-left: -4px;
+}
+
+.unity-min-max-slider__max-thumb {
+    border-radius: 4px;
+    margin-top: -6px;
+    background-color: rgb(0, 190, 190);
+    width: 20px;
+    height: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-left: 4px;
+}
+
+Scroller #unity-dragger {
+    background-color: rgb(0, 88, 88);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+Scroller #unity-tracker {
+    background-color: rgb(96, 96, 96);
+}
+
+#unity-low-button {
+    background-color: rgb(79, 79, 79);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    -unity-background-image-tint-color: rgb(185, 185, 185);
+}
+
+#unity-high-button {
+    background-color: rgb(79, 79, 79);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    -unity-background-image-tint-color: rgb(185, 185, 185);
+}
+
+Scroller #unity-drag-container {
+}
+
+#Icon_Plus {
+    background-image: resource('Icon/Icon_Plus');
+}
+
+#Icon_Delete {
+    background-image: resource('Icon/Icon_Delete');
+}
+
+#SignalSettingArrow {
+    background-image: resource('Icon/SignalSettingArrow');
+}
+
+#Icon_Left_OFF {
+    background-image: resource('Icon/Icon_Left_OFF');
+}
+
+#Icon_Left_ON {
+    background-image: resource('Icon/Icon_Left_ON');
+}
+
+#Icon_Straight_OFF {
+    background-image: resource('Icon/Icon_Straight_OFF');
+}
+
+#Icon_Straight_ON {
+    background-image: resource('Icon/Icon_Straight_ON');
+}
+
+#Icon_Right_OFF {
+    background-image: resource('Icon/Icon_Right_OFF');
+}
+
+#Icon_Right_ON {
+    background-image: resource('Icon/Icon_Right_ON');
+}
+#TrafficLight_Blue {
+    background-image: resource('Icon/TrafficLight_Blue');
+}
+#TrafficLight_Yellow {
+    background-image: resource('Icon/TrafficLight_Yellow');
+}
+#TrafficLight_Red {
+    background-image: resource('Icon/TrafficLight_Red');
+}
+
+#LeftToggle {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 8px;
+    background-color: rgba(103, 103, 103, 0);
+    border-width: 0;
+    color: rgb(0, 55, 55);
+    font-weight: bold;
+}
+
+#LeftToggle .unity-base-field__label {
+    min-width: 0;
+    width: 80%;
+    padding-top: 10px;
+}
+
+#LeftToggle .unity-base-field__label:enabled {
+    color: rgb(255, 255, 255);
+}
+
+#LeftToggle .unity-toggle__checkmark {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-image: resource('Icon/Icon_Left_OFF');
+    -unity-background-image-tint-color: rgb(217, 217, 217);
+    border-color: rgb(136, 147, 146);
+    transition: 0.2s;
+}
+
+#LeftToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-image: resource('Icon/Icon_Left_ON');
+    transition: 0.2s;
+}
+
+#StraightToggle {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 8px;
+    background-color: rgba(103, 103, 103, 0);
+    border-width: 0;
+    color: rgb(0, 55, 55);
+    font-weight: bold;
+}
+
+#StraightToggle .unity-base-field__label {
+    min-width: 0;
+    width: 80%;
+    padding-top: 10px;
+}
+
+#StraightToggle .unity-base-field__label:enabled {
+    color: rgb(255, 255, 255);
+}
+
+#StraightToggle .unity-toggle__checkmark {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-image: resource('Icon/Icon_Straight_OFF');
+    -unity-background-image-tint-color: rgb(217, 217, 217);
+    border-color: rgb(136, 147, 146);
+    transition: 0.2s;
+}
+
+#StraightToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-image: resource('Icon/Icon_Straight_ON');
+    transition: 0.2s;
+}
+
+#RightToggle {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 8px;
+    background-color: rgba(103, 103, 103, 0);
+    border-width: 0;
+    color: rgb(0, 55, 55);
+    font-weight: bold;
+}
+
+#RightToggle .unity-base-field__label {
+    min-width: 0;
+    width: 80%;
+    padding-top: 10px;
+}
+
+#RightToggle .unity-base-field__label:enabled {
+    color: rgb(255, 255, 255);
+}
+
+#RightToggle .unity-toggle__checkmark {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-image: resource('Icon/Icon_Right_OFF');
+    -unity-background-image-tint-color: rgb(217, 217, 217);
+    border-color: rgb(136, 147, 146);
+    transition: 0.2s;
+}
+
+#RightToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-image: resource('Icon/Icon_Right_ON');
+    transition: 0.2s;
 }

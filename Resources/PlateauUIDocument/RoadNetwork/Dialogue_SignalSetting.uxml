@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement picking-mode="Ignore" style="flex-grow: 1; align-items: center; padding-top: 200px;">
+        <ui:VisualElement name="Dialogue" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0.75); padding-right: 40px; padding-top: 20px; padding-bottom: 20px; padding-left: 40px; border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; border-bottom-left-radius: 12px; -unity-text-align: upper-center;">
+            <ui:Label tabindex="-1" text="信号現示の設定をしてください" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 32px; color: rgb(255, 255, 255);" />
+            <ui:Label tabindex="-1" text="信号現示ボタンを押すと進行方向の設定が出来ます" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 24px; color: rgb(255, 255, 255);" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

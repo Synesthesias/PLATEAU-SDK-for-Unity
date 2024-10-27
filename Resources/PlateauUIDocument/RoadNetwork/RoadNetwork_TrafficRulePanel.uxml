@@ -1,0 +1,32 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="RoadNetwork_TimezonePanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_TimezonePanel" />
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:VisualElement name="RoadNetwork_TrafficRulePanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
+        <ui:Label tabindex="-1" text="交通規制情報を設定します" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 12px; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:VisualElement name="RoadEditPanel" style="flex-grow: 0; display: flex;">
+            <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
+                <ui:Label tabindex="-1" text="信号制御器設定" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="信号制御器設定を選択してください" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; padding-top: 6px; padding-bottom: 6px;" />
+            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 3px; padding-bottom: 3px; flex-direction: row; align-items: center; justify-content: flex-start;">
+                <ui:Label tabindex="-1" text="開始時刻" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-grow: 1;" />
+                <ui:IntegerField value="12" name="Hour" style="align-items: center; font-size: 12px; padding-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; width: 50px; justify-content: center;" />
+                <ui:Label tabindex="-1" text=":" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                <ui:IntegerField value="10" name="Hour" style="align-items: center; font-size: 12px; padding-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; width: 50px;" />
+                <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddTimezoneButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;">
+                    <ui:VisualElement name="Icon_Plus" style="flex-grow: 0; width: 18px; height: 18px; flex-shrink: 0;" />
+                    <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement name="Divider" style="flex-grow: 1; margin-top: 8px; margin-bottom: 8px;" />
+
+<ui:Instance template="RoadNetwork_TimezonePanel" name="RoadNetwork_TimezonePanel" />
+
+            <ui:VisualElement name="Divider" style="flex-grow: 1; margin-top: 8px; margin-bottom: 8px;" />
+            <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
+                <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    
+</ui:UXML>
