@@ -665,7 +665,9 @@ namespace PLATEAU.RoadNetwork.Factory
                                 {
                                     // #NOTE : 自動生成の段階だと線分共通なので同一判定でチェックする
                                     // #TODO : 自動生成の段階で分かれているケースが存在するならは点や法線方向で判定するように変える
-                                    if (insideWay.IsSameLine(way))
+                                    if (way == null)
+                                        laneType = RnSideWalkLaneType.Undefined;
+                                    else if (insideWay.IsSameLine(way))
                                         laneType = RnSideWalkLaneType.LeftLane;
                                     else
                                         laneType = RnSideWalkLaneType.RightLane;
