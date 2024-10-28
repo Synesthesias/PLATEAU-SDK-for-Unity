@@ -2073,6 +2073,53 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
 
+                public IReadOnlyCollection<RnNeighbor> ExitablePoints
+                {
+                    get
+                    {
+                        var d = intersection.GetSubData<ExitablePointEditorData>();
+                        if (d == null)
+                        {
+                            d = ExitablePointEditorData.Create(intersection);
+                            intersection.TryAdd(d);
+                        }
+                        return d.EnterablePoints;
+                    }
+                }
+
+                /// <summary>
+                /// 流入点と流出点を返す
+                /// </summary>
+                public (RnNeighbor, RnNeighbor) SelectedPoints
+                {
+                    get => (selectEntablePoint, selectExitablePoint);
+                }
+
+                public bool IsSelectdEntablePoint
+                {
+                    get => selectEntablePoint != null;
+                }
+
+                public void SetEntablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(EnterablePoints.Contains(neighbor));
+
+                    selectEntablePoint = neighbor;
+                }
+                
+                public void SetExitablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(ExitablePoints.Contains(neighbor));
+
+                    selectExitablePoint = neighbor;
+                }
+
                 //public void CreateSubData()
                 //{
                 //    intersection.ClearSubData();
@@ -2096,9 +2143,21 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 private EditorData<RnIntersection> intersection;
                 private bool activate = false;
+
+                private RnNeighbor selectEntablePoint = null;
+                private RnNeighbor selectExitablePoint = null;
+
                 private bool isShapeEditingMode = false;
 
-                private class EnterablePointEditorData
+                private class NeighborPointEditarData
+                {
+                    public IReadOnlyCollection<RnNeighbor> EnterablePoints { get => enterablePoints; }
+
+                    protected IReadOnlyCollection<RnNeighbor> enterablePoints = null;
+
+                }
+
+                private class EnterablePointEditorData : NeighborPointEditarData
                 {
                     public static EnterablePointEditorData Create(EditorData<RnIntersection> intersection)
                     {
@@ -2115,9 +2174,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     {
                     }
 
-                    public IReadOnlyCollection<RnNeighbor> EnterablePoints { get => enterablePoints; }
-
-                    IReadOnlyCollection<RnNeighbor> enterablePoints = null;
 
                     private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
                     {
@@ -2130,6 +2186,35 @@ namespace PLATEAU.Editor.RoadNetwork
                         return enterablePoints;
                     }
 
+                }
+
+                private class ExitablePointEditorData : NeighborPointEditarData
+                {
+                    public static ExitablePointEditorData Create(EditorData<RnIntersection> intersection)
+                    {
+                        var exitablePoints = CollectExitablePoints(intersection);
+
+                        var data = new ExitablePointEditorData()
+                        {
+                            enterablePoints = exitablePoints
+                        };
+                        return data;
+                    }
+
+                    private ExitablePointEditorData()
+                    {
+                    }
+
+                    private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(EditorData<RnIntersection> data)
+                    {
+                        var exitablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+                        foreach (var neighbor in data.Ref.Neighbors)
+                        {
+                            if (CheckExitablePoint(neighbor))
+                                exitablePoints.Add(neighbor);
+                        }
+                        return exitablePoints;
+                    }
                 }
             }
 
