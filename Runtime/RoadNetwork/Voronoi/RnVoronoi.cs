@@ -697,10 +697,16 @@ namespace PLATEAU.RoadNetwork.Voronoi
             }
 
 
-            public double GetY(Vector2d p, double x)
+            public bool TryGetY(Vector2d p, double x, out double y)
             {
-                RnVoronoiEx.CalcBeachLine(p, ly, out var parabola);
-                return parabola.GetY(x);
+                if (RnVoronoiEx.CalcBeachLine(p, ly, out var parabola))
+                {
+                    y = parabola.GetY(x);
+                    return true;
+                }
+
+                y = 0.0;
+                return false;
             }
 
             private VEdge Edge(VPoint start, int leftSiteIndex, int rightSiteIndex)
@@ -895,8 +901,6 @@ namespace PLATEAU.RoadNetwork.Voronoi
                     GetParabolaByX(newSite.x, out var centerLeft, out var centerRight);
                     if (centerLeft != centerRight)
                     {
-                        var hoge = 0;
-
                         var ps = new List<ArcParabola>();
                         foreach (var center in new[] { centerLeft, centerRight })
                         {
@@ -906,7 +910,10 @@ namespace PLATEAU.RoadNetwork.Voronoi
                                 center.cEvent = null;
                             }
 
-                            VPoint start = new VPoint(newSite.x, GetY(center.site, newSite.x));
+                            if (TryGetY(center.site, newSite.x, out var newSiteY) == false)
+                                throw new InvalidDataException("TryGetY");
+
+                            VPoint start = new VPoint(newSite.x, newSiteY);
                             Points.Add(start);
 
                             // startを起点に二つの半直線を作成
@@ -965,7 +972,9 @@ namespace PLATEAU.RoadNetwork.Voronoi
                         }
                         else
                         {
-                            VPoint start = new VPoint(newSite.x, GetY(center.site, newSite.x));
+                            // center.site.y > newSite.yなのでTryGetYは成功する
+                            TryGetY(center.site, newSite.x, out var newSiteY);
+                            VPoint start = new VPoint(newSite.x, newSiteY);
                             Points.Add(start);
 
                             // startを起点に二つの半直線を作成
@@ -1046,8 +1055,9 @@ namespace PLATEAU.RoadNetwork.Voronoi
                 var xr = ArcParabola.GetRightParent(p1);
                 var p0 = ArcParabola.GetLeftChild(xl);
                 var p2 = ArcParabola.GetRightChild(xr);
-
-                VPoint p = new VPoint(e.point.x, GetY(p1.site, e.point.x));
+                if (TryGetY(p1.site, e.point.x, out var pointY) == false)
+                    return;
+                VPoint p = new VPoint(e.point.x, pointY);
 
                 if (p0.cEvent != null)
                 {
@@ -1271,7 +1281,7 @@ namespace PLATEAU.RoadNetwork.Voronoi
         }
 
         /// <summary>
-        /// ビーチライン計算. p.y %lt; lineYの時は存在しない
+        /// ビーチライン計算. p.y &lt; lineYの時は存在しない
         /// </summary>
         /// <param name="p"></param>
         /// <param name="lineY"></param>
@@ -1280,7 +1290,7 @@ namespace PLATEAU.RoadNetwork.Voronoi
         public static bool CalcBeachLine(Vector2d p, double lineY, out Parabola ret)
         {
             double dp = 2 * (p.y - lineY);
-            if (dp <= 1e-6)
+            if (dp <= Epsilon)
             {
                 ret = new Parabola();
                 return false;
