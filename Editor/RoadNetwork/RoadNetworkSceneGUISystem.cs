@@ -481,53 +481,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     unionWay = ways.ToList();
 
                     Handles.BeginGUI();
-                    GUILayout.BeginArea(new Rect(100, 100, 200, 300));
-                    //GUILayout.BeginVertical();
-                    //GUILayout.Label("Ways");
-                    //foreach (var wayEditorData in wayEditorDataList)
-                    //{
-                    //    //// textフィールド版
-                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                    //    //var v = wayEditorData.SliderVarVals;
-                    //    //if (float.TryParse(s, out v))
-                    //    //{
-                    //    //    wayEditorData.SliderVarVals = v;
-                    //    //}
-
-                    //    // slider版
-                    //    const float minScaleLimit = -5.0f;
-                    //    const float maxScaleLimit = 5.0f;
-                    //    wayEditorData.SliderVarVals =
-                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
-
-                    //    GUILayout.Space(10);
-                    //}
-
-                    GUILayout.EndArea();
                     Handles.EndGUI();
-
-                    //// 変更あったものに対してのみ差分を適用する
-                    //foreach (var wayEditorData in wayEditorDataList)
-                    //{
-                    //    if (wayEditorData.IsChanged == false)
-                    //    {
-                    //        continue;
-                    //    }
-
-                    //    var target = wayEditorData.Ref;
-
-                    //    // デフォルトの状態に戻す
-                    //    var baseWay = wayEditorData.BaseWay;
-                    //    for (int i = 0; i < baseWay.Count; i++)
-                    //    {
-                    //        var p = baseWay[i];
-                    //        var p2 = target.GetPoint(i);
-                    //        p2.Vertex = p;
-                    //    }
-                    //    var offset = wayEditorData.SliderVarVals;
-                    //    target.MoveAlongNormal(offset);
-                    //    Debug.Log($"way.MoveAlongNormal({offset})");
-                    //}
                 }
                 else // 詳細モードでのみ表示
                 {
@@ -715,6 +669,51 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
 
                     systemState.Apply(state);
+
+                }
+            }
+
+            var intersectionEditorData = editorSystem.SelectedRoadNetworkElement as EditorData<RnIntersection>;
+            if (intersectionEditorData != null)
+            {
+                // 簡易モードで表示
+                if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+                {
+                    SceneGUIState state = new SceneGUIState();
+                    systemState.Init(out state);
+
+                    var currentCamera = SceneView.currentDrawingSceneView.camera;
+                    state.currentCamera = currentCamera;
+
+                    var EditingIntersectionMod = editorSystem.RoadNetworkSimpleEditModule.EditingIntersectionMod;
+                    var size = 2.0f;
+                    foreach (var item in EditingIntersectionMod.EnterablePoints)
+                    {
+                        // 流入点の位置にボタンを表示する
+                        if (Handles.Button(item.CalcCenter(), Quaternion.identity, size, size, RoadNetworkAddPointButtonHandleCap))
+                        {
+                            Debug.Log(item.ToString());
+                            // 流入点が選択された
+                            break;
+                        }
+                    }
+
+                    // 遅延実行 コレクションの要素数などを変化させる
+                    if (state.delayCommand != null)
+                        state.delayCommand.Invoke();
+
+                    // 変更を通知する
+                    if (state.isDirtyTarget)
+                    {
+                        editorSystem.NotifyChangedRoadNetworkObject2Editor();
+                    }
+
+                    systemState.Apply(state);
+
+
+                }
+                else // 詳細モードでのみ表示
+                {
 
                 }
             }

@@ -1309,6 +1309,9 @@ namespace PLATEAU.Editor.RoadNetwork
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
             _WayCalcData waySlideCalcCache = null;
 
+            public EditingIntersection EditingIntersectionMod { get => editingIntersection; }
+            private EditingIntersection editingIntersection = new();
+
             enum State
             {
                 Default,    // 通常の状態
@@ -2021,6 +2024,115 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
             }
+
+            public void Setup(EditorData<RnIntersection> data)
+            {
+                editingIntersection.SetTarget(data);
+                editingIntersection.Activate(true);
+            }
+
+            public void Terminate()
+            {
+                editingIntersection.SetTarget(null);
+                editingIntersection.Activate(false);
+            }
+
+            public class EditingIntersection
+            {
+                public bool SetTarget(EditorData<RnIntersection> intersection)
+                {
+                    if (this.intersection == intersection)
+                        return false;
+
+                    if (intersection == null)
+                    {
+                        Activate(false);
+                        return true;
+                    }
+
+                    this.intersection = intersection;
+                    return true;
+                }
+
+                public void Activate(bool activate)
+                {
+                    this.activate = activate;
+                }
+
+                public IReadOnlyCollection<RnNeighbor> EnterablePoints
+                {
+                    get
+                    {
+                        var d = intersection.GetSubData<EnterablePointEditorData>();
+                        if (d == null)
+                        {
+                            d = EnterablePointEditorData.Create(intersection);
+                            intersection.TryAdd(d);
+                        }
+                        return d.EnterablePoints;
+                    }
+                }
+
+                //public void CreateSubData()
+                //{
+                //    intersection.ClearSubData();
+
+                //    var enterablePointEditorData = EnterablePointEditorData.Create(intersection); 
+                //    intersection.TryAdd(enterablePointEditorData);
+                //}
+
+
+                private static bool CheckEnterablePoint(RnNeighbor neighbor)
+                {
+                    var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
+                    return isInboud;
+                }
+
+                private static bool CheckExitablePoint(RnNeighbor neighbor)
+                {
+                    var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
+                    return isOutbound;
+                }
+
+                private EditorData<RnIntersection> intersection;
+                private bool activate = false;
+                private bool isShapeEditingMode = false;
+
+                private class EnterablePointEditorData
+                {
+                    public static EnterablePointEditorData Create(EditorData<RnIntersection> intersection)
+                    {
+                        var enterablePoints = CollectEnterablePoints(intersection);
+
+                        var data = new EnterablePointEditorData()
+                        {
+                            enterablePoints = enterablePoints
+                        };
+                        return data;
+                    }
+                
+                    private EnterablePointEditorData()
+                    {
+                    }
+
+                    public IReadOnlyCollection<RnNeighbor> EnterablePoints { get => enterablePoints; }
+
+                    IReadOnlyCollection<RnNeighbor> enterablePoints = null;
+
+                    private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
+                    {
+                        var enterablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+                        foreach (var neighbor in data.Ref.Neighbors)
+                        {
+                            if (CheckEnterablePoint(neighbor))
+                                enterablePoints.Add(neighbor);
+                        }
+                        return enterablePoints;
+                    }
+
+                }
+            }
+
         }
     }
 
