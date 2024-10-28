@@ -691,10 +691,8 @@ namespace PLATEAU.Editor.RoadNetwork
                     var buttonSize = 2.0f;
 
                     bool isSelectdEntablePoint = EditingIntersectionMod.IsSelectdEntablePoint;
-                    var preColor = Gizmos.color;
                     if (isSelectdEntablePoint == false)
                     {
-                        Gizmos.color = Color.red;
                         foreach (var item in EditingIntersectionMod.EnterablePoints)
                         {
 
@@ -709,7 +707,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     else
                     {
-                        Gizmos.color = Color.blue;
                         foreach (var item in EditingIntersectionMod.ExitablePoints)
                         {
                             // 流出点の位置にボタンを表示する
@@ -721,7 +718,6 @@ namespace PLATEAU.Editor.RoadNetwork
                             }
                         }
                     }
-                    Gizmos.color = preColor;
 
                     // Trackの生成、削除に必要な設定が済んで更新できるか？
                     if (EditingIntersectionMod.CanTryUpdateTrack)
