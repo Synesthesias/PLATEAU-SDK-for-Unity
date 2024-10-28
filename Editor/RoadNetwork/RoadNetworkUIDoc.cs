@@ -230,59 +230,69 @@ namespace PLATEAU.Editor.RoadNetwork
             // UIの追加
             root.Add(element);
             // 選択オブジェクト変更時のイベント設定 モデルオブジェクトの再設定を行う
-            system.OnChangedSelectRoadNetworkElement += Setup(doc, system, element);
+            system.OnChangedSelectRoadNetworkElement += CreateSetup(doc, system, element);
 
             doc.finalizeAction = () =>
             {
                 root.Remove(element);
                 element.Unbind();
-                system.OnChangedSelectRoadNetworkElement -= Setup(doc, system, element);    
+                system.OnChangedSelectRoadNetworkElement -= CreateSetup(doc, system, element);    
 
             };
 
-            static EventHandler Setup(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, TemplateContainer element)
+            static EventHandler CreateSetup(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, TemplateContainer element)
             {
                 return (s, e) =>
                 {
                     var linkGroupEditorData = system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-                    if (linkGroupEditorData == null)
-                        return;
-
-                    // 無ければ生成する あれば流用する
-                    var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
-
-                    // 既存のモデルオブジェクトを解除
-                    element.Unbind();
-
-                    //Bindingの設定
-                    //var bp = element.BindProperty(test);
-                    //element.BindProperty(bp);
-                    element.TrackSerializedObjectValue(mdl, (se) =>
+                    if (linkGroupEditorData != null)
                     {
-                        var mod = system.RoadNetworkSimpleEditModule;
-                        var obj = se as IScriptableRoadMdl;
-                        if (mod.CanSetDtailMode())
+
+                        // 無ければ生成する あれば流用する
+                        var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
+
+                        // 既存のモデルオブジェクトを解除
+                        element.Unbind();
+
+                        //Bindingの設定
+                        //var bp = element.BindProperty(test);
+                        //element.BindProperty(bp);
+                        element.TrackSerializedObjectValue(mdl, (se) =>
                         {
-                            if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                            Debug.Log("changed");
+
+                            var mod = system.RoadNetworkSimpleEditModule;
+                            var obj = se as IScriptableRoadMdl;
+                            if (mod.CanSetDtailMode())
                             {
-                                mod.SetDetailMode(obj.IsEditingDetailMode);
+                                if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                                {
+                                    mod.SetDetailMode(obj.IsEditingDetailMode);
+                                }
                             }
-                        }
 
-                        //obj.Apply();
-                    });
-                    element.Bind(mdl);
-                    if (element.Q<Button>("ApplyButton") is var btn)
-                    {
-                        btn.clicked += () =>
+                            //obj.Apply();
+                        });
+                        element.Bind(mdl);
+                        if (element.Q<Button>("ApplyButton") is var btn)
                         {
-                            mdl.Apply(system.RoadNetworkSimpleEditModule);
-                        };
-                    }
-                    //element.Unbind();
+                            btn.clicked += () =>
+                            {
+                                mdl.Apply(system.RoadNetworkSimpleEditModule);
+                            };
+                        }
+                        //element.Unbind();
 
-                    //linkGroupEditorData.LinkGroup;
-                    //scale.value = system.GetScale(lane);
+                        //linkGroupEditorData.LinkGroup;
+                        //scale.value = system.GetScale(lane);
+                    }
+
+                    var intersectionData = system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
+                    if (intersectionData != null)
+                    {
+                        system.RoadNetworkSimpleEditModule?.Setup(intersectionData);
+                    }
+
                 };
             }
         }

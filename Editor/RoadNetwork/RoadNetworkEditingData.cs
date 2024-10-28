@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using PLATEAU.Editor.RoadNetwork;
+using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -774,5 +775,44 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
     }
+
+
+    public class EnterablePointEditorData : EditorSubData<RnIntersection>
+    {
+        protected override bool Construct()
+        {
+            enterablePoints = CollectEnterablePoints(Parent);
+            return true;
+        }
+
+        public IReadOnlyCollection<RnNeighbor> EnterablePoints { get => enterablePoints; }
+
+        IReadOnlyCollection<RnNeighbor> enterablePoints = null;
+
+        private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
+        {
+            var enterablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+            foreach (var neighbor in data.Ref.Neighbors)
+            {
+                if (CheckEnterablePoint(neighbor))
+                    enterablePoints.Add(neighbor);
+            }
+            return enterablePoints;
+        }
+
+        private static bool CheckEnterablePoint(RnNeighbor neighbor)
+        {
+            var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
+            return isInboud;
+        }
+
+        private static bool CheckExitablePoint(RnNeighbor neighbor)
+        {
+            var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
+            return isOutbound;
+        }
+
+    }
+
 
 }
