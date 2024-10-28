@@ -691,12 +691,15 @@ namespace PLATEAU.Editor.RoadNetwork
                     var buttonSize = 2.0f;
 
                     bool isSelectdEntablePoint = EditingIntersectionMod.IsSelectdEntablePoint;
+                    var preColor = Gizmos.color;
                     if (isSelectdEntablePoint == false)
                     {
+                        Gizmos.color = Color.red;
                         foreach (var item in EditingIntersectionMod.EnterablePoints)
                         {
+
                             // 流入点の位置にボタンを表示する
-                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkAddPointButtonHandleCap))
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkEntarablePointButtonHandleCap))
                             {
                                 EditingIntersectionMod.SetEntablePoint(item);
                                 // 流入点が選択された
@@ -706,10 +709,11 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     else
                     {
+                        Gizmos.color = Color.blue;
                         foreach (var item in EditingIntersectionMod.ExitablePoints)
                         {
                             // 流出点の位置にボタンを表示する
-                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkRemovePointButtonHandleCap))
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkExitablePointButtonHandleCap))
                             {
                                 // 流出点が選択された
                                 EditingIntersectionMod.SetExitablePoint(item);
@@ -717,6 +721,8 @@ namespace PLATEAU.Editor.RoadNetwork
                             }
                         }
                     }
+                    Gizmos.color = preColor;
+
 
                     // 遅延実行 コレクションの要素数などを変化させる
                     if (state.delayCommand != null)
@@ -1371,6 +1377,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     break;
             }
         }
+
         static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
@@ -1385,6 +1392,20 @@ namespace PLATEAU.Editor.RoadNetwork
                     Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
                     break;
             }
+        }
+
+        static void RoadNetworkEntarablePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            if (eventType == EventType.Repaint)
+                Handles.color = Color.red;
+            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
+        }
+
+        static void RoadNetworkExitablePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            if (eventType == EventType.Repaint)
+                Handles.color = Color.blue;
+            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
         }
 
         static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
