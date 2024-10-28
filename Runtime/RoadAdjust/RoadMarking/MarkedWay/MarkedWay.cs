@@ -101,22 +101,28 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     internal static class MarkedWayTypeExtension
     {
+        /// <summary> 法令で定められた、車線標示の線の太さです。 </summary>
+        private const float CarLaneLineWidth = 0.15f;
+
+        /// <summary> 法令で定められた、停止線の線の太さです。 </summary>
+        private const float StopLineWidth = 0.45f;
+        
         public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type, bool direction)
         {
             switch (type)
             {
                 case MarkedWayType.CenterLineOver6MWidth:
-                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White, CarLaneLineWidth);
                 case MarkedWayType.CenterLineUnder6MWidth:
-                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction);
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth);
                 case MarkedWayType.CenterLineNearIntersection:
-                    return new SolidLineMeshGenerator(RoadMarkingMaterial.Yellow);
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.Yellow, CarLaneLineWidth);
                 case MarkedWayType.LaneLine:
-                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction);
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth);
                 case MarkedWayType.ShoulderLine:
-                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White, CarLaneLineWidth);
                 case MarkedWayType.StopLine:
-                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White);
+                    return new SolidLineMeshGenerator(RoadMarkingMaterial.White, StopLineWidth);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }

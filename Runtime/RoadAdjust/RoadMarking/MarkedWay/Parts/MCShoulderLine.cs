@@ -19,8 +19,18 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 // 端の車線について、そのLeftWayは歩道と車道の間です。
                 var firstLane = carLanes[0];
                 var lastLane = carLanes[^1];
-                ret.Add(new MarkedWay(new MWLine(firstLane.LeftWay), MarkedWayType.ShoulderLine, firstLane.IsReverse));
-                ret.Add(new MarkedWay(new MWLine(lastLane.LeftWay), MarkedWayType.ShoulderLine, lastLane.IsReverse));
+                var firstLeft = firstLane.LeftWay;
+                var lastLeft = lastLane.LeftWay;
+                if (firstLeft != null)
+                {
+                    ret.Add(new MarkedWay(new MWLine(firstLane.LeftWay), MarkedWayType.ShoulderLine, firstLane.IsReverse));
+                }
+
+                if (lastLeft != null)
+                {
+                    ret.Add(new MarkedWay(new MWLine(lastLane.LeftWay), MarkedWayType.ShoulderLine, lastLane.IsReverse));
+                }
+                
             }
             return ret;
         }

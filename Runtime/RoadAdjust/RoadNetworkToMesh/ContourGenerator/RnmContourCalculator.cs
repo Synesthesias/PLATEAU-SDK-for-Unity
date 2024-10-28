@@ -14,7 +14,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private List<RnmLine> lines = new ();
         private readonly ConditionalLogger logger = new (() => false); // デバッグのときだけここをtrueにしてください
-        private const float VerticesWeldDistThreshold = 2f;
         private RnmMaterialType material;
 
         public RnmContourCalculator(RnmMaterialType material)
@@ -23,20 +22,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
         
 
-        public void AddLine(IEnumerable<Vector3> line)
+        public void AddLine(IEnumerable<Vector3> line, Vector2 startUV1, Vector2 endUV1)
         {
             var lineArray = line.ToArray();
-            if (lineArray.Length <= 0) return;
-            lines.Add(new RnmLine(lineArray));
+            if (lineArray.Length <= 1) return;
+            lines.Add(new RnmLine(lineArray, startUV1, endUV1));
+        }
+
+        public void AddRangeLine(IEnumerable<RnmLine> linesArg)
+        {
+            lines.AddRange(linesArg);
         }
         
-        public void AddRangeLine(IEnumerable<IEnumerable<Vector3>> linesArg)
-        {
-            foreach (var line in linesArg)
-            {
-                AddLine(line);
-            }
-        }
 
         public RnmContour Calculate()
         {
@@ -113,8 +110,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             for (int i = 0; i < remaining.Length; i++)
             {
                 var r = remaining[i];
-                var distFirst = Vector3.Distance(v, r[0]);
-                var distLast = Vector3.Distance(v, r[^1]);
+                var distFirst = Vector3.Distance(v.Position, r[0].Position);
+                var distLast = Vector3.Distance(v.Position, r[^1].Position);
                 if (distFirst < minDist)
                 {
                     minDist = distFirst;
@@ -142,10 +139,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             float distLast = float.MaxValue;
             foreach (var l in lines.Where(line => line != firstLine))
             {
-                dist = Math.Min(dist, Vector3.Distance(firstV, l[0]));
-                dist = Math.Min(dist, Vector3.Distance(firstV, l[^1]));
-                distLast = Math.Min(distLast, Vector3.Distance(firstVLast, l[0]));
-                distLast = Math.Min(distLast, Vector3.Distance(firstVLast, l[^1]));
+                dist = Math.Min(dist, Vector3.Distance(firstV.Position, l[0].Position));
+                dist = Math.Min(dist, Vector3.Distance(firstV.Position, l[^1].Position));
+                distLast = Math.Min(distLast, Vector3.Distance(firstVLast.Position, l[0].Position));
+                distLast = Math.Min(distLast, Vector3.Distance(firstVLast.Position, l[^1].Position));
             }
 
             return distLast < dist;
@@ -171,10 +168,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (lines[i] == line) continue;
                 var line2 = lines[i];
                 if (line.Count <= 0) continue;
-                foreach (var v1 in new Vector3[] { line[0], line[^1] })
+                foreach (var v1 in new Vector3[] { line[0].Position, line[^1].Position })
                 {
                     if (line2.Count <= 0) continue;
-                    foreach (var v2 in new Vector3[] { line2[0], line2[^1] })
+                    foreach (var v2 in new Vector3[] { line2[0].Position, line2[^1].Position })
                     {
                         minDist = Math.Min(minDist, Vector3.Distance(v1, v2));
                     }
@@ -214,7 +211,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             for (int i = 0; i < lines.Count; i++)
             {
                 var line1 = lines[i];
-                var nextLine = new List<Vector3>(line1.Count);
+                var nextLine = new List<RnmVertex>(line1.Count);
                 foreach (var v1 in line1)
                 {
                     bool isDuplicate = false;
@@ -223,7 +220,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         var line2 = lines[j];
                         foreach (var v2 in line2)
                         {
-                            if (Vector3.Distance(v1, v2) < threshold)
+                            if (Vector3.Distance(v1.Position, v2.Position) < threshold)
                             {
                                 isDuplicate = true;
                                 break;

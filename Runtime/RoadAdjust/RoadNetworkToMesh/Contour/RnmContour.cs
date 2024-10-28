@@ -11,12 +11,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// RnmはRoadNetworkToMeshの略です。
     /// </summary>
     [Serializable]
-    public class RnmContour : IEnumerable<Vector3>
+    public class RnmContour : IEnumerable<RnmVertex>
     {
-        [SerializeField] private List<Vector3> vertices = new ();
+        [SerializeField] private List<RnmVertex> vertices = new ();
         public RnmMaterialType MaterialType { get; set; }
         
-        public RnmContour(IEnumerable<Vector3> vertices, RnmMaterialType material) : this(material)
+        public RnmContour(IEnumerable<RnmVertex> vertices, RnmMaterialType material) : this(material)
         {
             this.vertices = vertices.ToList();
         }
@@ -29,7 +29,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public int Count => vertices.Count;
 
-        public Vector3 this[int index]
+        public RnmVertex this[int index]
         {
             get
             {
@@ -41,7 +41,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 vertices[index] = value;
             }
         }
-        public void AddVertices(IEnumerable<Vector3> v) => vertices.AddRange(v);
+        public void AddVertices(IEnumerable<RnmVertex> v) => vertices.AddRange(v);
 
         /// <summary>時計回りならtrue、反時計回りならfalseを返します。 </summary>
         public bool IsClockwise()
@@ -52,7 +52,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 var v1 = vertices[i];
                 var v2 = vertices[(i + 1) % Count];
-                sum += (v2.x - v1.x) * (v2.z + v1.z);
+                sum += (v2.Position.x - v1.Position.x) * (v2.Position.z + v1.Position.z);
             }
 
             return sum > 0;
@@ -60,7 +60,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public void Reverse() => vertices.Reverse();
         
-        public IEnumerator<Vector3> GetEnumerator()
+        public IEnumerator<RnmVertex> GetEnumerator()
         {
             return vertices.GetEnumerator();
         }

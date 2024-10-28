@@ -1,5 +1,6 @@
 using LibTessDotNet;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
@@ -21,10 +22,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 for (int i = 0; i < numPoint; i++)
                 {
                     var rnmPoint = rnmContour[i];
-                    tessContour[i].Position = new Vec3(rnmPoint.x , rnmPoint.y, rnmPoint.z);
+                    tessContour[i].Position = new Vec3(rnmPoint.Position.x , rnmPoint.Position.y, rnmPoint.Position.z);
+                    tessContour[i].Data = rnmPoint.UV1;
                 }
                 tess.AddContour(tessContour, ContourOrientation.Original);
-                tess.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3);
+                tess.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3, VertexCombine);
                 tessMesh.Add(RnmTessSubMesh.Generate(tess, rnmContour.MaterialType));
             }
             
@@ -32,5 +34,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return tessMesh.ToUnityMesh(out subMeshIDToMatType);
         }
         
+        private object VertexCombine(Vec3 position, object[] data, float[] weights)
+        {
+            var uv1Array = data.Select(d => (Vector2)d).ToArray();
+            var result = Vector2.zero;
+            for (int i = 0; i < data.Length; i++)
+            {
+                result += uv1Array[i] * weights[i];
+            }
+
+            return result;
+        }
     }
+    
+    
 }

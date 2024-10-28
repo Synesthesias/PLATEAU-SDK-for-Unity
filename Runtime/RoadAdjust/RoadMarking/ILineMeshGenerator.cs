@@ -17,13 +17,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// <summary> 実線の道路線メッシュを作ります。 </summary>
     internal class SolidLineMeshGenerator : ILineMeshGenerator
     {
-        private const float LineWidth = 0.15f;
         private const float HeightOffset = 0.05f;
         private RoadMarkingMaterial materialType;
+        private float lineWidth;
 
-        public SolidLineMeshGenerator(RoadMarkingMaterial materialType)
+        public SolidLineMeshGenerator(RoadMarkingMaterial materialType, float lineWidth)
         {
             this.materialType = materialType;
+            this.lineWidth = lineWidth;
         }
         
         public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points)
@@ -46,8 +47,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 forward.Normalize();
                 var right = Vector3.Cross(forward, Vector3.up).normalized;
 
-                vertices[i * 2] = points[i] + right * LineWidth * 0.5f + Vector3.up * HeightOffset;
-                vertices[i * 2 + 1] = points[i] - right * LineWidth * 0.5f + Vector3.up * HeightOffset;
+                vertices[i * 2] = points[i] + right * lineWidth * 0.5f + Vector3.up * HeightOffset;
+                vertices[i * 2 + 1] = points[i] - right * lineWidth * 0.5f + Vector3.up * HeightOffset;
                 if (i < points.Count - 1)
                 {
                     int baseIndex = i * 6;
@@ -79,11 +80,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         private const float DashLength = 5f;
         private bool direction;
         private RoadMarkingMaterial materialType;
+        private float lineWidth;
 
-        public DashedLineMeshGenerator(RoadMarkingMaterial materialType, bool direction)
+        public DashedLineMeshGenerator(RoadMarkingMaterial materialType, bool direction, float lineWidth)
         {
             this.materialType = materialType;
             this.direction = direction;
+            this.lineWidth = lineWidth;
         }
 
         public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> srcPointsArg)
@@ -103,7 +106,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             float lenImComplete = 0;
             float lenLineStart = 0;
             var combines = new List<CombineInstance>();
-            var gen = new SolidLineMeshGenerator(materialType);
+            var gen = new SolidLineMeshGenerator(materialType, lineWidth);
             Queue<Vector3> drawQue = new Queue<Vector3>(); // これから描きたい実線部の線
             drawQue.Enqueue(srcPoints[0]);
             bool isBlank = false;

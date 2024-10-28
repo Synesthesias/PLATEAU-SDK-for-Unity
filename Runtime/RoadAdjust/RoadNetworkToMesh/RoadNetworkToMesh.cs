@@ -17,7 +17,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private readonly RnModel model;
         private readonly RnmLineSeparateType lineSeparateType;
-        private const bool DebugMode = false;
+        private static readonly bool DebugMode = false;
         
         public RoadNetworkToMesh(RnModel model, RnmLineSeparateType lineSeparateType)
         {
