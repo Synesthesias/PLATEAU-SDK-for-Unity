@@ -666,7 +666,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 var edges = intersection.Edges.Where(e => e.IsBorder == false);
                 var vs =
-                    edges.SelectMany(e => e.Border.LineString.Refined(op.showRecLineRefineInterval).Select(v => new { e = e, v = v.Xz() })).ToList();
+                    edges.SelectMany(e => e.Border.LineString.Refined(op.showRecLineRefineInterval).Points.Select(p => new { e = e, p = p, v = p.Vertex.Xz() })).ToList();
                 var voronoiData = Voronoi.RnVoronoiEx.CalcVoronoiData(vs, v => new Vector2d(v.v));
 
                 //for (var i = 0; i < vertices.Count; ++i)
@@ -691,6 +691,38 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 Dictionary<Vector3, int> edgeCount = new();
                 var childIndex = 0;
                 var plane = AxisPlane.Xz;
+
+                Dictionary<RnNeighbor, Dictionary<RnNeighbor, List<int>>> pass = new();
+
+                var edgeStartIndices = voronoiData.Edges.Take(0)
+                    .ToDictionary(x => (RnRoadBase)null, x => x);
+                foreach (var from in intersection.CreateEdgeGroup())
+                {
+                    if (from.Key == null)
+                        continue;
+
+                    var centroid = Vector2Ex.Centroid(from.Edges.Select(e => e.Border.GetLerpPoint(0.5f).Xz()));
+
+
+                    var f = voronoiData.Edges.Where(e =>
+                    {
+                        if (e.LeftSitePoint.e != from.LeftSide.Edges[0] && e.RightSitePoint.e != from.LeftSide.Edges[0])
+                        {
+                            return false;
+                        }
+
+                        if (e.LeftSitePoint.e != from.RightSide.Edges[0] && e.RightSitePoint.e != from.RightSide.Edges[0])
+                        {
+                            return false;
+                        }
+
+                        return e.Start.HasValue;
+                    }).TryFindMin(v => (v.Start.Value.ToVector2() - centroid).sqrMagnitude, out var x);
+                    edgeStartIndices[from.Key] = x;
+                    if (x != null)
+                        DebugEx.DrawSphere(x.Start.Value.ToVector2().ToVector3(plane), 2f, color: Color.cyan);
+                }
+
                 foreach (var e in voronoiData.Edges)
                 {
                     var color = DebugEx.GetDebugColor(childIndex++, 16);
