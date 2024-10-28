@@ -776,18 +776,22 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
+    public abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
+    {
+        public IReadOnlyCollection<RnNeighbor> Points { get => points; }
 
-    public class EnterablePointEditorData : EditorSubData<RnIntersection>
+        protected IReadOnlyCollection<RnNeighbor> points = null;
+
+    }
+
+
+    public class EnterablePointEditorData : NeighborPointEditarData
     {
         protected override bool Construct()
         {
-            enterablePoints = CollectEnterablePoints(Parent);
+            points = CollectEnterablePoints(Parent);
             return true;
         }
-
-        public IReadOnlyCollection<RnNeighbor> EnterablePoints { get => enterablePoints; }
-
-        IReadOnlyCollection<RnNeighbor> enterablePoints = null;
 
         private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
         {
@@ -806,13 +810,35 @@ namespace PLATEAU.Editor.RoadNetwork
             return isInboud;
         }
 
+
+    }
+
+    public class ExitablePointEditorData : NeighborPointEditarData
+    {
+        protected override bool Construct()
+        {
+            points = CollectExitablePoints(Parent);
+            return true;
+        }
+
+        private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(EditorData<RnIntersection> data)
+        {
+            var exitablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+            foreach (var neighbor in data.Ref.Neighbors)
+            {
+                if (CheckExitablePoint(neighbor))
+                    exitablePoints.Add(neighbor);
+            }
+            return exitablePoints;
+        }
+
         private static bool CheckExitablePoint(RnNeighbor neighbor)
         {
             var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
             return isOutbound;
         }
 
-    }
 
+    }
 
 }

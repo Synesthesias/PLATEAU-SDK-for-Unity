@@ -1914,8 +1914,50 @@ namespace PLATEAU.Editor.RoadNetwork
                     get
                     {
                         var d = intersection.ReqSubData<EnterablePointEditorData>();
-                        return d.EnterablePoints;
+                        return d.Points;
                     }
+                }
+
+                public IReadOnlyCollection<RnNeighbor> ExitablePoints
+                {
+                    get
+                    {
+                        var d = intersection.ReqSubData<ExitablePointEditorData>();
+                        return d.Points;
+                    }
+                }
+
+                /// <summary>
+                /// 流入点と流出点を返す
+                /// </summary>
+                public (RnNeighbor, RnNeighbor) SelectedPoints
+                {
+                    get => (selectEntablePoint, selectExitablePoint);
+                }
+
+                public bool IsSelectdEntablePoint
+                {
+                    get => selectEntablePoint != null;
+                }
+
+                public void SetEntablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(EnterablePoints.Contains(neighbor));
+
+                    selectEntablePoint = neighbor;
+                }
+                
+                public void SetExitablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(ExitablePoints.Contains(neighbor));
+
+                    selectExitablePoint = neighbor;
                 }
 
                 //public void CreateSubData()
@@ -1930,8 +1972,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 private EditorData<RnIntersection> intersection;
                 private bool activate = false;
-                private bool isShapeEditingMode = false;
 
+                private RnNeighbor selectEntablePoint = null;
+                private RnNeighbor selectExitablePoint = null;
+
+                private bool isShapeEditingMode = false;
             }
 
         }
