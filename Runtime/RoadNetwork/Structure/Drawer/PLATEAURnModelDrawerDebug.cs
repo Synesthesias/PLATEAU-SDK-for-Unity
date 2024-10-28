@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
+using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug.SideWalkOption;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -185,6 +186,17 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class SideWalkOption
         {
+            [Serializable]
+            [Flags]
+            public enum SideWalkLaneTypeMask
+            {
+                None = 0,
+                Undefined = 1 << (RnSideWalkLaneType.Undefined),
+                LeftLane = 1 << (RnSideWalkLaneType.LeftLane),
+                RightLane = 1 << (RnSideWalkLaneType.RightLane),
+                All = ~0,
+            }
+
             public bool visible = true;
             public DrawOption showOutsideWay = new DrawOption(true, Color.red);
             public DrawOption showInsideWay = new DrawOption(true, Color.blue);
@@ -192,6 +204,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption showEndEdgeWay = new DrawOption(true, Color.yellow);
             // Noneの時はすべて表示. それ以外はRnSideWalk.GetValidWayTypeMaskが一致したものだけ表示する(不正なSideWalk検出用)
             public RnSideWalkWayTypeMask showWayFilter = RnSideWalkWayTypeMask.None;
+            public SideWalkLaneTypeMask showLaneTypeFilter = SideWalkLaneTypeMask.All;
+
         }
         [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
 
@@ -364,6 +378,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             // 一致判定
             if (p.showWayFilter != RnSideWalkWayTypeMask.None && sideWalk.GetValidWayTypeMask() != p.showWayFilter)
+                return;
+
+            // レーンタイプで見る
+            if (((1 << (int)sideWalk.LaneType) & (int)p.showLaneTypeFilter) == 0)
                 return;
 
             // 非表示設定

@@ -30,5 +30,9 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember("endEdgeWay")]
         public RnID<RnDataWay> EndEdgeWay { get; set; }
+
+        [field: SerializeField]
+        [RoadNetworkSerializeMember("laneType")]
+        public RnSideWalkLaneType LaneType { get; set; }
     }
 }
