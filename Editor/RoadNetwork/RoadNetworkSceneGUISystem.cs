@@ -723,6 +723,12 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     Gizmos.color = preColor;
 
+                    // Trackの生成、削除に必要な設定が済んで更新できるか？
+                    if (EditingIntersectionMod.CanTryUpdateTrack)
+                    {
+                        EditingIntersectionMod.UpdateTrack();
+                    }
+
 
                     // 遅延実行 コレクションの要素数などを変化させる
                     if (state.delayCommand != null)

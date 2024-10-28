@@ -1940,6 +1940,11 @@ namespace PLATEAU.Editor.RoadNetwork
                     get => selectEntablePoint != null;
                 }
 
+                public bool CanTryUpdateTrack
+                {
+                    get => selectEntablePoint != null && selectExitablePoint != null;
+                }
+
                 public void SetEntablePoint(RnNeighbor neighbor)
                 {
                     Assert.IsNotNull(neighbor);
@@ -1958,6 +1963,29 @@ namespace PLATEAU.Editor.RoadNetwork
                     Assert.IsTrue(ExitablePoints.Contains(neighbor));
 
                     selectExitablePoint = neighbor;
+                }
+
+                /// <summary>
+                /// 選択状態やトラックの有無で処理を分岐する
+                /// </summary>
+                public void UpdateTrack()
+                {
+                    Assert.IsTrue(CanTryUpdateTrack);
+
+                    var track = intersection.Ref.FindTrack(selectEntablePoint, selectExitablePoint);
+                    if (track != null)
+                        intersection.Ref.RemoveTrack(track);
+                    else
+                        intersection.Ref.TryAddOrUpdateTrack(selectEntablePoint, selectExitablePoint);
+
+                    selectEntablePoint = null;
+                    selectExitablePoint = null;
+                }
+
+                public void RemoveTarck()
+                {
+                    selectEntablePoint = null;
+                    selectExitablePoint = null;
                 }
 
                 //public void CreateSubData()

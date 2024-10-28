@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork.Structure
@@ -396,6 +397,19 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public RnTrack FindTrack(RnNeighbor from, RnNeighbor to)
+        {
+            var c = tracks.FindAll(t => t.FromBorder == from.Border);
+            var res = c.FindAll(t => t.ToBorder == to.Border);
+            Assert.IsTrue(res.Count <= 1);    // fromとtoの組み合わせが重複することは無いはず
+            return res.Count == 0 ? null : res.First();
+        }
+
+        public bool ContainTrack(RnNeighbor from, RnNeighbor to)
+        {
+            return FindTrack(from, to) != null;
+        }
+
         /// <summary>
         /// トラック情報を追加/更新する.
         /// 同じfrom/toのトラックがすでにある場合は上書きする. そうでない場合は追加する
@@ -417,6 +431,48 @@ namespace PLATEAU.RoadNetwork.Structure
             // track追加
             tracks.Add(track);
             return true;
+        }
+
+        public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
+        {
+            const float tangentLength = 10f;
+            var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, AxisPlane.Xz);
+
+            var track = CreateTrack(from, to, turnType);
+            return TryAddOrUpdateTrack(track);
+
+            RnTrack CreateTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            {
+                var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
+                var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+
+                from.Border.GetLerpPoint(0.5f, out var fromPos);
+                to.Border.GetLerpPoint(0.5f, out var toPos);
+
+                var spline = new Spline
+                        {
+                            new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
+                            new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
+                        }; ;
+                return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
+            }
+        }
+
+        public void RemoveTrack(RnTrack track)
+        {
+            tracks.Remove(track);
+        }
+
+        public void RemoveTrack(RnNeighbor from, RnNeighbor to)
+        {
+            var track = FindTrack(from, to);
+            if (track == null)
+            {
+                Assert.IsTrue(false);   // 現状 Trackは必ず存在する操作しか提供されないはず
+                return;
+            }
+
+            tracks.Remove(track);
         }
 
         /// <summary>
