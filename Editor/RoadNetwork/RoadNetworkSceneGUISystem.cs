@@ -685,16 +685,36 @@ namespace PLATEAU.Editor.RoadNetwork
                     var currentCamera = SceneView.currentDrawingSceneView.camera;
                     state.currentCamera = currentCamera;
 
+                    
                     var EditingIntersectionMod = editorSystem.RoadNetworkSimpleEditModule.EditingIntersectionMod;
-                    var size = 2.0f;
-                    foreach (var item in EditingIntersectionMod.EnterablePoints)
+
+                    var buttonSize = 2.0f;
+
+                    bool isSelectdEntablePoint = EditingIntersectionMod.IsSelectdEntablePoint;
+                    if (isSelectdEntablePoint == false)
                     {
-                        // 流入点の位置にボタンを表示する
-                        if (Handles.Button(item.CalcCenter(), Quaternion.identity, size, size, RoadNetworkAddPointButtonHandleCap))
+                        foreach (var item in EditingIntersectionMod.EnterablePoints)
                         {
-                            Debug.Log(item.ToString());
-                            // 流入点が選択された
-                            break;
+                            // 流入点の位置にボタンを表示する
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkAddPointButtonHandleCap))
+                            {
+                                EditingIntersectionMod.SetEntablePoint(item);
+                                // 流入点が選択された
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in EditingIntersectionMod.ExitablePoints)
+                        {
+                            // 流出点の位置にボタンを表示する
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkRemovePointButtonHandleCap))
+                            {
+                                // 流出点が選択された
+                                EditingIntersectionMod.SetExitablePoint(item);
+                                break;
+                            }
                         }
                     }
 
