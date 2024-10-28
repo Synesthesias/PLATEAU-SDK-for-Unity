@@ -230,6 +230,11 @@ namespace PLATEAU.RoadNetwork.Structure
             return RnFlowTypeMask.Empty;
         }
 
+        public Vector3 CalcCenter()
+        {
+            return Border.GetLerpPoint(0.5f);   // 計算負荷削減のため way[0], way[way.Count-1]の平均でもいいかも
+        }
+
         /// <summary>
         /// この境界とつながっているレーン
         /// </summary>
