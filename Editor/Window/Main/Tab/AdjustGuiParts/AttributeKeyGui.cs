@@ -49,7 +49,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                 EditorGUIUtility.labelWidth = 100;
                 if (PlateauEditorStyle.MainButton("属性情報キーを選択"))
                 {
-                    AttrKeySelectWindow.Open(this, selectedObjectsGetter(), parentWindow);
+                    var window = AttrKeySelectWindow.Open();
+                    window.Init(this, selectedObjectsGetter(), parentWindow);
                 }
                 AttrKey = EditorGUILayout.TextField("属性情報キー", AttrKey);
             }

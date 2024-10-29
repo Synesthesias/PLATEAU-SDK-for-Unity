@@ -2,6 +2,7 @@
 using PLATEAU.Editor.Window.Main.Tab;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI;
 using UnityEditor;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main
 {
@@ -10,7 +11,7 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal class PlateauWindow : PlateauWindowBase
     {
-        private PlateauWindowGui gui;
+        private TabWithImage tabs;
 
         [MenuItem("PLATEAU/PLATEAU SDK")]
         public static void Open()
@@ -19,10 +20,10 @@ namespace PLATEAU.Editor.Window.Main
             window.Show();
         }
         
-        protected override IEditorDrawable InitGui()
+        protected override VisualElementDisposable CreateGui()
         {
             // タブの内容を依存性注入により定義します。
-            var tabs = new TabWithImage(
+            tabs = new TabWithImage(
                 80,
                 // インポート
                 new TabElementWithImage("dark_icon_import.png", new CityAddGui(this)),
@@ -45,17 +46,13 @@ namespace PLATEAU.Editor.Window.Main
                 // エクスポート
                 new TabElementWithImage("dark_icon_export.png", new CityExportGui()),
                 // 属性情報
-                new TabElementWithImage("dark_icon_information.png", new CityAttributeGui(this))
+                new TabElementWithImage("dark_icon_information.png", new CityAttributeGui(this)),
+                // 道路調整
+                new TabElementWithImage("dark_icon_road.png", new RoadAdjustGui())
             );
-            return new PlateauWindowGui(tabs);
+            
+            return new VisualElementDisposable(tabs.CreateGui(), tabs.Dispose);
         }
-
-        protected override IEditorDrawable InitFooterGui()
-        {
-            return new PlateauWindowFooterGui();
-        }
-
-        /// <summary> テストからアクセスする用 </summary>
-        internal const string NameOfInnerGuiField = nameof(gui);
+        
     }
 }

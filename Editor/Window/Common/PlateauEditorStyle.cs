@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Window.Common
         private const string ImageRoundButton = "round-button.png";
         private const string ImageRoundWindowWide = "round-window-wide.png";
         private const string ImageRoundTab = "round-tab.png";     
-        private const string ImageRoundLineFrame = "round_line_frame.png";
+        public const string ImageRoundLineFrame = "round_line_frame.png";
 
         public static readonly Color AreaGizmoBoxColor = new Color(0f, 84f / 255f, 1f);
         
@@ -849,7 +849,7 @@ namespace PLATEAU.Editor.Window.Common
         /// 画像ファイルのパスがキャッシュのキーとなります。
         /// </summary>
         /// <param name="relativePath">画像ファイルの相対パスで、 <see cref="imageDirPath"/>を基準としたパスを指定します。</param>
-        private static Texture2D LoadTexture(string relativePath)
+        public static Texture2D LoadTexture(string relativePath)
         {
             string assetPath = Path.Combine(imageDirPath, relativePath);
             if (cachedTexture.TryGetValue(assetPath, out var cacheHitTexture))

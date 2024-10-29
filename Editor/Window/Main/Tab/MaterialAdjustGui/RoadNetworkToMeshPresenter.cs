@@ -4,6 +4,7 @@ using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab
@@ -28,8 +29,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 new ButtonElement("", "道路ネットワークをメッシュに反映", OnExecButtonPushed)
             );
         }
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
 
-        public void Draw()
+        private void Draw()
         {
             guis.Draw();
         }

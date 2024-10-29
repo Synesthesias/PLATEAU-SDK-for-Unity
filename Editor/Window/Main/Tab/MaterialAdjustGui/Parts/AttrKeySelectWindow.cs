@@ -1,6 +1,7 @@
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using UnityEditor;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
@@ -12,19 +13,41 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private IAttrKeySelectResultReceiver resultReceiver;
         private UniqueParentTransformList targets;
         private EditorWindow mainWindow;
+        private AttrKeySelectGui gui;
+        private bool isInitialized;
 
-        public static void Open(IAttrKeySelectResultReceiver resultReceiver, UniqueParentTransformList targets, EditorWindow parentWindow)
+        public static AttrKeySelectWindow Open()
         {
             var window = GetWindow<AttrKeySelectWindow>("属性情報キー選択");
-            window.resultReceiver = resultReceiver;
-            window.targets = targets;
-            window.mainWindow = parentWindow;
+            
             window.Show();
+            return window;
         }
 
-        protected override IEditorDrawable InitGui()
+        public void Init(IAttrKeySelectResultReceiver resultReceiverArg, UniqueParentTransformList targetsArg,
+            EditorWindow parentWindowArg)
         {
-            return new AttrKeySelectGui(targets, resultReceiver, mainWindow, this);
+            resultReceiver = resultReceiverArg;
+            targets = targetsArg;
+            mainWindow = parentWindowArg;
+            gui = new AttrKeySelectGui(targets, resultReceiver, mainWindow, this);
+            isInitialized = true;
+        }
+
+        protected override VisualElementDisposable CreateGui()
+        {
+            var container = new IMGUIContainer(() =>
+            {
+                if(!isInitialized) return;
+                PlateauEditorStyle.SetCurrentWindow(this);
+                gui.Draw();
+            });
+            return new VisualElementDisposable(container, Dispose);
+        }
+
+        private void Dispose()
+        {
+            gui.Dispose();
         }
     }
 

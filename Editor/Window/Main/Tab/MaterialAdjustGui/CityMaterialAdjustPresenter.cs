@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using ProgressBar = PLATEAU.Util.ProgressBar;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
@@ -101,11 +103,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 );
             this.parentEditorWindow = parentEditorWindow;
         }
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
 
         /// <summary>
         /// GUIを描画します
         /// </summary>
-        public void Draw()
+        private void Draw()
         {
             // 描画メイン
             Views.Draw();

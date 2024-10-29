@@ -1,6 +1,7 @@
 ﻿using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -18,7 +19,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
             };
         }
         
-        public void Draw()
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
+        
+        private void Draw()
         {
             PlateauEditorStyle.SubTitle("モデルデータのインポートを行います。");
             PlateauEditorStyle.Heading("都市の追加", PlateauEditorStyle.IconPathBuilding);
