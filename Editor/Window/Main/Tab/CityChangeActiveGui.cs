@@ -10,6 +10,7 @@ using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -29,8 +30,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// シーン上にゲームオブジェクトとして存在するパッケージとそのLODです。
         /// </summary>
         private PackageToLodMinMax packageToLodMinMax;
+
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
         
-        public void Draw()
+        private void Draw()
         {
             PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
             using (PlateauEditorStyle.VerticalScopeLevel1())
