@@ -3,6 +3,7 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main
 {
@@ -14,7 +15,13 @@ namespace PLATEAU.Editor.Window.Main
         // 設定してもないのにエラーアイコンが出ると邪魔なので。
         private bool isSrcGameObjModified = false;
         private bool isAssetPathModified = false;
-        public void Draw()
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
+        
+        private void Draw()
         {   
             // ヘッダー
             PlateauEditorStyle.Heading("Assetsに保存", null);
@@ -105,6 +112,7 @@ namespace PLATEAU.Editor.Window.Main
         {
         }
         
+
         public void OnTabUnselect()
         {
         }

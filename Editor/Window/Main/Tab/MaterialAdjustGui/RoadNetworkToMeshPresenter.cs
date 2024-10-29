@@ -29,8 +29,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 new ButtonElement("", "道路ネットワークをメッシュに反映", OnExecButtonPushed)
             );
         }
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
 
-        public void Draw()
+        private void Draw()
         {
             guis.Draw();
         }
