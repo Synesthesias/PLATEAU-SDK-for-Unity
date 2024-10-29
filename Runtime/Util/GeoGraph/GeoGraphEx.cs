@@ -280,6 +280,37 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// a,b,cが同一直線上にあるかどうかを返す
+        /// 角度/距離の誤差を許容する
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <param name="degEpsilon">角度誤差(baとbcのなす角度が180±この値以内になるとき同一直線判定</param>
+        /// <param name="midPointTolerance">線分abとbの距離がこれ以下なら同一直線判定</param>
+        /// <returns></returns>
+        public static bool IsCollinear(Vector3 a, Vector3 b, Vector3 c, float degEpsilon = 0f, float midPointTolerance = 0f)
+        {
+            // 角度による同一直線チェック
+            if (degEpsilon >= 0f)
+            {
+                var deg = Vector3.Angle(a - b, c - b);
+                if (Mathf.Abs(180f - deg) <= degEpsilon)
+                    return true;
+            }
+
+            // 中間点があってもほぼ直線だった場合は中間点は削除する
+            if (midPointTolerance >= 0f)
+            {
+                var segment = new LineSegment3D(a, c);
+                var pos = segment.GetNearestPoint(b);
+                return midPointTolerance > 0f && (b - pos).sqrMagnitude <= midPointTolerance * midPointTolerance;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
         /// </summary>
         /// <param name="vertices"></param>

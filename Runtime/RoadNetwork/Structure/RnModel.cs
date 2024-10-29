@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -502,6 +503,17 @@ namespace PLATEAU.RoadNetwork.Structure
             TerminateCutLine,
             // 切断線が交差している
             CrossCutLine,
+
+            // 交差点自体が不正
+            InvalidIntersection,
+            // 交差点の境界線を切断
+            IntersectionBorderSliced,
+            // 交差点のEdgeが片側だけ切断された
+            IntersectionPartiallySlicedEdge,
+            // 交差点で複数の入口を切断するのはダメ
+            IntersectionMultipleEdgeSliced,
+            // 交差点で分断された入口が存在しなかった
+            IntersectionNoEdgeSliced,
         }
 
         /// <summary>
@@ -587,9 +599,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lineSegment"></param>
         /// <param name="res"></param>
         /// <returns></returns>
-        public static RoadCutResult CanSliceRoadHorizontal(this RnModel self, RnRoad road, LineSegment3D lineSegment, out LaneIntersectionResult res)
+        public static RoadCutResult CanSliceRoadHorizontal(this RnModel self, RnRoad road, LineSegment3D lineSegment, out LineCrossPointResult res)
         {
-            res = road.GetLaneIntersections(lineSegment);
+            res = road.GetLaneCrossPoints(lineSegment);
             if (res == null)
                 return RoadCutResult.InvalidRoad;
 
@@ -604,7 +616,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             bool IsSliced(RnWay way)
             {
-                return way != null && targetLines.Any(t => t.LineString == way.LineString);
+                return way != null && targetLines.Any(t => t.LineString == way.LineString && t.Intersections.Count > 0);
             }
 
             // 分断されないレーンが存在する
@@ -636,6 +648,89 @@ namespace PLATEAU.RoadNetwork.Structure
                 return RoadCutResult.TerminateCutLine;
 
             return RoadCutResult.Success;
+        }
+
+        /// <summary>
+        /// wayのlineStringだけ差し替えて他同じ物を返す
+        /// </summary>
+        /// <param name="lineString"></param>
+        /// <param name="way"></param>
+        /// <returns></returns>
+        private static RnWay CopyWay(RnLineString lineString, RnWay way)
+        {
+            if (way == null || lineString == null)
+                return null;
+            return new RnWay(lineString, way.IsReversed, way.IsReverseNormal);
+        }
+
+        private static void SliceSideWalks(
+            this RnModel self
+            , IEnumerable<RnSideWalk> sideWalks
+            , LineSegment2D lineSegment2D
+            , Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable
+            , RnRoadBase newNextRoad
+            , Func<RnLineString, bool> isPrevSide)
+        {
+            foreach (var sideWalk in sideWalks)
+            {
+                // 曲がり角だと歩道が3個所入っていたりすることがある.
+                // その場合歩道に関しては交わらない場合もあり得るので
+
+                // 今回交わらない歩道の場合はそのままだが、親が変わるかだけチェックする
+                if (lineTable.ContainsKey(sideWalk.InsideWay.LineString) == false &&
+                    lineTable.ContainsKey(sideWalk.OutsideWay.LineString) == false)
+                {
+                    if (isPrevSide(sideWalk.InsideWay.LineString) == false)
+                    {
+                        newNextRoad.AddSideWalk(sideWalk);
+                    }
+
+                    continue;
+                }
+
+                var inside = lineTable.GetValueOrDefault(sideWalk.InsideWay.LineString);
+                var outside = lineTable.GetValueOrDefault(sideWalk.OutsideWay.LineString);
+
+                var nextInsideWay = CopyWay(inside.next, sideWalk.InsideWay);
+                var nextOutsideWay = CopyWay(outside.next, sideWalk.OutsideWay);
+
+                var prevInsideWay = CopyWay(inside.prev, sideWalk.InsideWay);
+                var prevOutsideWay = CopyWay(outside.prev, sideWalk.OutsideWay);
+
+                var (startEdgeWay, endEdgeWay) = (sideWalk.StartEdgeWay, sideWalk.EndEdgeWay);
+
+                // LineStringのfront側がlineSegmentのどっち側にあるか
+                if (startEdgeWay != null)
+                {
+                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.prev[0], inside.prev[1], 0.5f).Xz());
+                    // selfのprev側がlineSegmentのどっち側にあるか
+                    var startSign = lineSegment2D.Sign(startEdgeWay[0].Xz());
+                    // startがprevと逆なら入れ替える
+                    if (prevSign != startSign)
+                    {
+                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
+                    }
+                }
+                else if (endEdgeWay != null)
+                {
+                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.next[0], inside.next[1], 0.5f).Xz());
+                    // selfのprev側がlineSegmentのどっち側にあるか
+                    var startSign = lineSegment2D.Sign(endEdgeWay[0].Xz());
+                    // startがprevと逆なら入れ替える
+                    if (prevSign != startSign)
+                    {
+                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
+                    }
+                }
+
+                // 切断線の境界
+                var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
+
+                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay, sideWalk.LaneType);
+                sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
+                sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
+                self.AddSideWalk(newSideWalk);
+            }
         }
 
         /// <summary>
@@ -684,14 +779,6 @@ namespace PLATEAU.RoadNetwork.Structure
             // 新しく生成されるRoad
             var newNextRoad = new RnRoad(road.TargetTran);
 
-            // wayのlineStringだけ差し替えて他同じ物を返す
-            RnWay CopyWay(RnLineString lineString, RnWay way)
-            {
-                if (way == null || lineString == null)
-                    return null;
-                return new RnWay(lineString, way.IsReversed, way.IsReverseNormal);
-            }
-
             // roadをprev/next側で分断して, next側をnewRoadにする
             foreach (var lane in road.AllLanesWithMedian)
             {
@@ -739,69 +826,255 @@ namespace PLATEAU.RoadNetwork.Structure
             newNextRoad.Next?.ReplaceNeighbor(road, newNextRoad);
             self.AddRoad(newNextRoad);
 
-
-            foreach (var sideWalk in road.SideWalks)
-            {
-                // 曲がり角だと歩道が3個所入っていたりすることがある.
-                // その場合歩道に関しては交わらない場合もあり得るので
-
-                // 今回交わらない歩道の場合はそのままだが、親が変わるかだけチェックする
-                if (lineTable.ContainsKey(sideWalk.InsideWay.LineString) == false &&
-                    lineTable.ContainsKey(sideWalk.OutsideWay.LineString) == false)
-                {
-                    if (IsPrevSide(sideWalk.InsideWay.LineString) == false)
-                    {
-                        newNextRoad.AddSideWalk(sideWalk);
-                    }
-
-                    continue;
-                }
-
-                var inside = lineTable.GetValueOrDefault(sideWalk.InsideWay.LineString);
-                var outside = lineTable.GetValueOrDefault(sideWalk.OutsideWay.LineString);
-
-                var nextInsideWay = CopyWay(inside.next, sideWalk.InsideWay);
-                var nextOutsideWay = CopyWay(outside.next, sideWalk.OutsideWay);
-
-                var prevInsideWay = CopyWay(inside.prev, sideWalk.InsideWay);
-                var prevOutsideWay = CopyWay(outside.prev, sideWalk.OutsideWay);
-
-                var (startEdgeWay, endEdgeWay) = (sideWalk.StartEdgeWay, sideWalk.EndEdgeWay);
-
-                // LineStringのfront側がlineSegmentのどっち側にあるか
-                if (startEdgeWay != null)
-                {
-                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.prev[0], inside.prev[1], 0.5f).Xz());
-                    // selfのprev側がlineSegmentのどっち側にあるか
-                    var startSign = lineSegment2D.Sign(startEdgeWay[0].Xz());
-                    // startがprevと逆なら入れ替える
-                    if (prevSign != startSign)
-                    {
-                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
-                    }
-                }
-                else if (endEdgeWay != null)
-                {
-                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.next[0], inside.next[1], 0.5f).Xz());
-                    // selfのprev側がlineSegmentのどっち側にあるか
-                    var startSign = lineSegment2D.Sign(endEdgeWay[0].Xz());
-                    // startがprevと逆なら入れ替える
-                    if (prevSign != startSign)
-                    {
-                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
-                    }
-                }
-
-                // 切断線の境界
-                var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
-
-                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay);
-                sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
-                sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
-                self.AddSideWalk(newSideWalk);
-            }
+            // 歩道周りを処理する
+            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad, IsPrevSide);
 
             return new SliceRoadHorizontalResult { Result = RoadCutResult.Success, PrevRoad = road, NextRoad = newNextRoad, };
+        }
+
+        public class SliceIntersectionCheckResult
+        {
+            public LineCrossPointResult CrossPointResult { get; set; }
+
+            // 対象のEdgeGroup
+            public RnIntersectionEx.EdgeGroup TargetEdgeGroup { get; set; }
+
+            // 切断されたLineString
+            public List<RnLineString> SlicedEdgeLines { get; } = new();
+
+            // 切断対象の歩道
+            public List<RnSideWalk> SlicedSideWalks { get; } = new();
+        }
+
+        public class SliceIntersectionResult
+        {
+            // 切断結果
+            public RoadCutResult Result { get; set; }
+
+            // 切断で分離されたRoad
+            public RnRoad PrevRoad { get; set; }
+
+            // 元のIntersection側
+            public RnIntersection NextIntersection { get; set; }
+        }
+
+        /// <summary>
+        /// roadの水平切断可能かチェックする
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="inter"></param>
+        /// <param name="lineSegment"></param>
+        /// <param name="res"></param>
+        /// <returns></returns>
+        public static RoadCutResult CanSliceIntersectionHorizontal(this RnModel self, RnIntersection inter, LineSegment3D lineSegment, out SliceIntersectionCheckResult res)
+        {
+            res = new SliceIntersectionCheckResult();
+            res.CrossPointResult = inter.GetEdgeCrossPoints(lineSegment);
+            if (res.CrossPointResult == null)
+                return RoadCutResult.InvalidRoad;
+
+            // 同じLineStringを２回以上交わってはいけない
+            if (res.CrossPointResult.TargetLines.All(i => i.Intersections.Count <= 1) == false)
+                return RoadCutResult.InvalidCutLine;
+
+            var targetLines = res.CrossPointResult.TargetLines;
+
+            bool IsSliced(RnWay way)
+            {
+                return way != null && targetLines.Any(t => t.LineString == way.LineString && t.Intersections.Count > 0);
+            }
+
+            // 切断していいのは一つの境界線から延びる左右の線のみ
+            var edgeGroups = inter.CreateEdgeGroup();
+
+            // 境界線を分断するのは禁止
+            if (inter.Neighbors.Any(n => IsSliced(n.Border)))
+                return RoadCutResult.IntersectionBorderSliced;
+
+            RnIntersectionEx.EdgeGroup targetEdgeGroup = null;
+            foreach (var edgeGroup in edgeGroups.Where(e => e.Key != null))
+            {
+                // 左右が境界線であってはならない. 境界線ではない場合Edgeは一つのはず
+                var left = edgeGroup.LeftSide;
+                var right = edgeGroup.RightSide;
+                if (left.Key != null || left.Edges.Count != 1)
+                    continue;
+                if (right.Key != null || right.Edges.Count != 1)
+                    continue;
+
+                // どっちも切断されている場所のみ有効
+                var leftSliced = IsSliced(left.Edges[0].Border);
+                var rightSliced = IsSliced(right.Edges[0].Border);
+                if (leftSliced && rightSliced)
+                {
+                    if (targetEdgeGroup != null)
+                        return RoadCutResult.IntersectionMultipleEdgeSliced;
+
+                    targetEdgeGroup = edgeGroup;
+                }
+            }
+
+            if (targetEdgeGroup == null)
+                return RoadCutResult.IntersectionNoEdgeSliced;
+            res.TargetEdgeGroup = targetEdgeGroup;
+            var leftEdge = targetEdgeGroup.LeftSide;
+            var rightEdge = targetEdgeGroup.RightSide;
+            // 歩道チェック
+            foreach (var sw in inter.SideWalks)
+            {
+                if (sw.IsValid == false)
+                    return RoadCutResult.InvalidSideWalk;
+
+                // 歩道は角の道だったりすると前後で分かれていたりするので交わらない場合もある
+                // ただし、inside/outsideがどっちも交わるかどっちも交わらないかしか許さない
+                var slicedCount = sw.SideWays.Count(IsSliced);
+                if (!(slicedCount == 0 || slicedCount == 2))
+                    return RoadCutResult.PartiallySlicedSideWalkExist;
+
+                if (slicedCount > 0)
+                    res.SlicedSideWalks.Add(sw);
+            }
+
+            // LineStringの端点と交わってはいけない
+            if (targetLines
+                .Where(l => l.Intersections.Any())
+                .Any(l =>
+                    l.Intersections[0].index <= CutIndexTolerance &&
+                    l.Intersections[0].index >= l.LineString.Count - 1 - CutIndexTolerance))
+                return RoadCutResult.TerminateCutLine;
+
+            return RoadCutResult.Success;
+        }
+
+        /// <summary>
+        /// interをlineSegmentで水平分割し、1つのRoadと1つのIntersectionに分割する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="inter"></param>
+        /// <param name="lineSegment"></param>
+        public static SliceIntersectionResult SliceIntersectionHorizontal(this RnModel self, RnIntersection inter, LineSegment3D lineSegment)
+        {
+            var check = self.CanSliceIntersectionHorizontal(inter, lineSegment, out var inters);
+            if (check != RoadCutResult.Success)
+                return new SliceIntersectionResult { Result = check };
+
+            var lineSegment2D = lineSegment.To2D(AxisPlane.Xz);
+
+            // key   : 元のLineString
+            // value : 分割後のselfのprev/next側のLineString
+            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable = new();
+
+            // 分割後LineStringがprev/nextどっち側かの判定用
+            var prevBorder = inters.TargetEdgeGroup.Edges[0].Border;
+            // selfのprev側がlineSegmentのどっち側にあるか
+            var prevBorderSign = lineSegment2D.Sign(prevBorder[0].Xz());
+            bool IsPrevSide(RnLineString ls)
+            {
+                // LineStringのfront側がlineSegmentのどっち側にあるか
+                var sign = lineSegment2D.Sign(ls[0].Xz());
+                return sign == prevBorderSign;
+            }
+
+            // LineStringの分割テーブルを作成
+            foreach (var cross in inters.CrossPointResult.TargetLines)
+            {
+                if (cross.Intersections.Any() == false)
+                    continue;
+                var item = cross.Intersections.First();
+                cross.LineString.SplitByIndex(item.index, out var front, out var back);
+                var (prev, next) = (front, back);
+                var isReversed = IsPrevSide(front) == false;
+                if (isReversed)
+                    (next, prev) = (prev, next);
+
+                lineTable[cross.LineString] = (prev, next, back.Points[0], isReversed);
+            }
+
+            // 新しく生成されるRoad
+            var newNextRoad = new RnRoad(inter.TargetTran);
+
+
+
+            var leftEdge = inters.TargetEdgeGroup.LeftSide.Edges[0];
+            var rightEdge = inters.TargetEdgeGroup.RightSide.Edges[0];
+
+            var leftRes = lineTable[leftEdge.Border.LineString];
+            leftEdge.Border = CopyWay(leftRes.next, leftEdge.Border);
+            var newRoadLeftWay = new RnWay(leftRes.prev);
+
+            var rightRes = lineTable[rightEdge.Border.LineString];
+            rightEdge.Border = CopyWay(rightRes.next, rightEdge.Border);
+            //　時計回りなので右側は逆にする
+            var newRoadRightWay = new RnWay(rightRes.prev).ReversedWay();
+
+            // 新しい道路のprevBorders(左 -> 右)
+            var prevBorders = inters.TargetEdgeGroup.Edges.Select(e => e.Border.ReversedWay()).Reverse().ToList();
+            var prevBorderLength = prevBorders.Select(b => b.LineString.CalcLength()).ToList();
+            var prevBorderTotalLength = prevBorderLength.Sum();
+            var prevBorderRates = new List<float>();
+            foreach (var x in prevBorderLength)
+            {
+                var a = prevBorderRates.LastOrDefault() + x / prevBorderTotalLength;
+                prevBorderRates.Add(a);
+            }
+
+            var leftPoint = newRoadLeftWay.GetPoint(-1);
+            var rightPoint = newRoadRightWay.GetPoint(-1);
+
+            var nextBorderPoints = Enumerable.Range(0, prevBorders.Count + 1)
+                .Select(i =>
+            {
+                if (i == 0)
+                    return leftPoint;
+                if (i == prevBorders.Count)
+                    return rightPoint;
+
+                return new RnPoint(Vector3.Lerp(leftPoint.Vertex, rightPoint.Vertex, prevBorderRates[i - 1]));
+            }).ToList();
+
+            var nextBorders = Enumerable.Range(0, nextBorderPoints.Count - 1)
+                .Select(i =>
+                    new RnWay(RnLineString.Create(new List<RnPoint> { nextBorderPoints[i], nextBorderPoints[i + 1] })))
+                .ToList();
+
+            var leftWay = newRoadLeftWay;
+            for (var i = 0; i < prevBorders.Count; ++i)
+            {
+                var prev = prevBorders[i];
+                var next = nextBorders[i];
+
+                var rightWay = newRoadRightWay;
+
+                if (i < prevBorders.Count - 1)
+                {
+                    rightWay = new RnWay(RnEx.CreateInnerLerpLineString(
+                        newRoadLeftWay.Vertices.ToList()
+                        , newRoadRightWay.Vertices.ToList()
+                        , prev.GetPoint(-1)
+                        , next.GetPoint(-1)
+                        , prev
+                        , next
+                        , prevBorderRates[i]
+                    ));
+                }
+
+                newNextRoad.AddMainLane(new RnLane(leftWay, rightWay, prev, next));
+                leftWay = rightWay;
+            }
+
+            inter.RemoveNeighbors(n => n.Road == inters.TargetEdgeGroup.Key);
+            foreach (var w in nextBorders)
+                inter.AddEdge(newNextRoad, w);
+
+            newNextRoad.SetPrevNext(inters.TargetEdgeGroup.Key, inter);
+
+            // ひとつ前の道路の隣接情報を置き換える
+            inters.TargetEdgeGroup.Key?.ReplaceNeighbor(inter, newNextRoad);
+
+            self.AddRoad(newNextRoad);
+            SliceSideWalks(self, inters.SlicedSideWalks, lineSegment2D, lineTable, newNextRoad, IsPrevSide);
+
+            return new SliceIntersectionResult { Result = RoadCutResult.Success, PrevRoad = newNextRoad, NextIntersection = inter, };
         }
 
     }

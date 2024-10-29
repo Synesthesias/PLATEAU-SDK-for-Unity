@@ -1,14 +1,8 @@
-﻿using Codice.Client.Common;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
-using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -561,23 +555,22 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             if (system.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
             {
-                var node = system.SelectedRoadNetworkElement as RnIntersection;
-                if (node != null)
+                var intersection = system.SelectedRoadNetworkElement as RnIntersection;
+                if (intersection != null)
                 {
-                    if (node.SignalController == null)
+                    if (Event.current.shift && intersection.SignalController == null)
                     {
-                        var trafficController = new TrafficSignalLightController("SignalController" + node.DebugMyId, node, node.GetCenterPoint());
-                        node.SignalController = trafficController;
-                        foreach (var item in node.Neighbors)
-                        {
-                            var n = item.Border.Count();
-                            for (int i = 0; i < n - 1; i++)
-                            {
-                                var pos = (item.Border[i] + item.Border[i + 1]) / 2.0f;
-                                var signalLight = new TrafficSignalLight(trafficController, pos);
-                                trafficController.SignalLights.Add(signalLight);
-                            }
-                        }
+                        // 信号制御器の作成、信号機の作成
+                        var trafficController = new TrafficSignalLightController("SignalController" + intersection.DebugMyId, intersection, intersection.GetCenterPoint());
+                        intersection.SignalController = trafficController;
+                        var lights = TrafficSignalLight.CreateTrafficLights(intersection);
+                        trafficController.TrafficLights.AddRange(lights);
+                    }else if (Event.current.shift && intersection.SignalController != null)
+                    {
+                        // 信号制御器の削除、信号機の削除
+                        var lights = intersection.SignalController.TrafficLights;
+                        lights?.Clear();
+                        intersection.SignalController = null;
                     }
                 }
             }

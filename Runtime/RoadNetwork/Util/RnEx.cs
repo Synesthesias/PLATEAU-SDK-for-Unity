@@ -50,6 +50,36 @@ namespace PLATEAU.RoadNetwork.Util
         }
     }
 
+
+    /// <summary>
+    /// LineSegmentとLineStringとの交点チェック結果
+    /// </summary>
+    public class LineCrossPointResult
+    {
+        public class Intersection
+        {
+            /// <summary>
+            /// 対象線分
+            /// </summary>
+            public RnLineString LineString { get; set; }
+
+            /// <summary>
+            /// 交点情報.
+            /// index : LineString上の配列インデックス位置. 線分の途中の点の場合は小数になる
+            ///     v : 交点座標
+            /// </summary>
+            public List<(float index, Vector3 v)> Intersections { get; set; } = new();
+        }
+
+        /// <summary>
+        /// 交点チェック対象のLineString情報
+        /// </summary>
+        public List<Intersection> TargetLines { get; set; } = new();
+
+        public LineSegment3D LineSegment { get; set; }
+    }
+
+
     public static class RnEx
     {
         /// <summary>
@@ -139,6 +169,29 @@ namespace PLATEAU.RoadNetwork.Util
                 , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
 
             return line;
+        }
+
+        public static LineCrossPointResult GetLineIntersections(LineSegment3D lineSegment, IEnumerable<RnWay> ways)
+        {
+            var ret = new LineCrossPointResult { LineSegment = lineSegment };
+
+            // 全てのwayのLineStringを取得
+            var targetLines = ways
+                .Select(w => w.LineString)
+                .ToHashSet();
+
+            foreach (var way in targetLines)
+            {
+                var elem = new LineCrossPointResult.Intersection { LineString = way };
+
+                foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
+                {
+                    elem.Intersections.Add((r.index, r.v));
+                }
+                ret.TargetLines.Add(elem);
+            }
+
+            return ret;
         }
     }
 }

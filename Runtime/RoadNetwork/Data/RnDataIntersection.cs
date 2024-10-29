@@ -79,6 +79,10 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public bool IsEmptyIntersection { get; set; }
 
+        [field: SerializeField]
+        [RoadNetworkSerializeMember]
+        public RnID<RnDataTrafficLightController> SignalController { get; set; }
+
 
         public IEnumerable<RnDataNeighbor> Neighbors => Edges.Where(e => e.Road.IsValid);
 
