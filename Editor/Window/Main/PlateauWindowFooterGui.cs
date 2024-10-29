@@ -1,6 +1,7 @@
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main
 {
@@ -8,6 +9,12 @@ namespace PLATEAU.Editor.Window.Main
     {
         private static readonly PlateauEditorStyle.ColorLightDark s_questionnaireBtnBackGroundColor = new("#165454", "#2aeaea");
         private static readonly Color s_textColor = new(196f/255f, 196f/255f, 196f/255f);
+
+        public VisualElement CreateGui()
+        {
+            var footerContainer = new IMGUIContainer(Draw);
+            return footerContainer;
+        }
         
         public void Draw()
         {

@@ -2,6 +2,7 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadNetwork.Structure;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -20,7 +21,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
             );
         }
         
-        public void Draw()
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
+        }
+        
+        private void Draw()
         {
             guis.Draw();
         }
