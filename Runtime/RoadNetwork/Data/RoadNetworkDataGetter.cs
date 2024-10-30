@@ -1,7 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -33,6 +33,17 @@ namespace PLATEAU.RoadNetwork.Data
         /// </summary>
         /// <param name="data"></param>
 
+        public IReadOnlyDictionary<_Type, RnID<_Type>> GenerateIdTable<_Type>(IReadOnlyList<_Type> dataList)
+            where _Type : IPrimitiveData
+        {
+            Dictionary<_Type, RnID<_Type>> table = new Dictionary<_Type, RnID<_Type>>(dataList.Count);
+            for (int i = 0; i < dataList.Count; i++)
+            {
+                var g = GetIDGeneratable<_Type>();
+                table.Add(dataList[i], new RnID<_Type>(i, g));
+            }
+            return table;
+        }
 
         public IReadOnlyList<RnDataRoadBase> GetRoadBases()
         {
@@ -105,5 +116,35 @@ namespace PLATEAU.RoadNetwork.Data
             }
         }
 
+        private IRnIDGeneratable GetIDGeneratable<_Type>()
+            where _Type : IPrimitiveData
+        {
+            switch (typeof(_Type).Name)
+            {
+                case nameof(RnRoadBase):
+                    return primStorage.RoadBases;
+                case nameof(RnDataLane):
+                    return primStorage.Lanes;
+                case nameof(RnDataBlock):
+                    return primStorage.Blocks;
+                case nameof(RnDataWay):
+                    return primStorage.Ways;
+                case nameof(RnDataLineString):
+                    return primStorage.LineStrings;
+                case nameof(RnDataPoint):
+                    return primStorage.Points;
+                case nameof(RnDataTrafficLightController):
+                    return primStorage.TrafficLightControllers;
+                case nameof(RnDataTrafficLight):
+                    return primStorage.TrafficLights;
+                case nameof(RnDataTrafficSignalPattern):
+                    return primStorage.TrafficSignalPatterns;
+                case nameof(RnDataTrafficSignalPhase):
+                    return primStorage.TrafficSignalPhases;
+            }
+
+            Assert.IsTrue(false);   // 未対応の型
+            return null;
+        }
     }
 }
