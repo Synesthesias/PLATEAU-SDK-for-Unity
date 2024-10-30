@@ -413,7 +413,7 @@ namespace PLATEAU.RoadNetwork.Data
 
         public RoadNetworkStorage Serialize(RnModel roadNetworkModel)
         {
-            var ret = new RoadNetworkStorage();
+            var ret = new RoadNetworkStorage { FactoryVersion = roadNetworkModel.FactoryVersion, };
             var refTable = CreateReferenceTable();
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLightControllers);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLights);
@@ -475,7 +475,7 @@ namespace PLATEAU.RoadNetwork.Data
                     roadNetworkStorage.PrimitiveDataStorage.SideWalks);
 
             refTable.ConvertAll();
-            var ret = new RnModel();
+            var ret = new RnModel { FactoryVersion = roadNetworkStorage.FactoryVersion };
             foreach (var r in roadBases)
             {
                 if (r is RnIntersection n)

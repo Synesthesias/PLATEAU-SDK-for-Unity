@@ -110,7 +110,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     subVertices = new List<RnPoint> { end };
                     len -= length;
                     // 次の長さを更新
-                    length = GetLength(subVertices.Count);
+                    length = GetLength(ret.Count);
                 }
                 if (subVertices.LastOrDefault() != p1)
                     subVertices.Add(p1);

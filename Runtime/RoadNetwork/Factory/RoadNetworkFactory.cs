@@ -16,6 +16,12 @@ namespace PLATEAU.RoadNetwork.Factory
     [Serializable]
     public partial class RoadNetworkFactory
     {
+        /// <summary>
+        /// 自動生成バージョン. 作成時に番号埋め込んでおいてどのバージョンで作られたかを見れるようにする.
+        /// メジャー/マイナー分けたいので文字列
+        /// </summary>
+        public static readonly string FactoryVersion = "1.0";
+
         // --------------------
         // start:フィールド
         // --------------------
@@ -593,7 +599,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     return m0 == m1;
                 }).ToList();
 
-                var ret = new RnModel();
+                var ret = new RnModel { FactoryVersion = FactoryVersion, };
                 var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle, terminateSkipAngleDeg = TerminateSkipAngle };
                 FactoryWork = work;
 

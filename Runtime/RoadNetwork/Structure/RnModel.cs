@@ -19,6 +19,11 @@ namespace PLATEAU.RoadNetwork.Structure
         // start: フィールド
         //----------------------------------
 
+        /// <summary>
+        /// 自動生成で作成されたときのバージョン. これが現在のバージョンよりも古い場合はデータが古い可能性がある.
+        /// RoadNetworkFactory.FactoryVersion参照
+        /// </summary>
+        public string FactoryVersion { get; set; } = "";
 
         // #NOTE : Editorが重いのでSerialize対象にしない
         private List<RnRoad> roads = new List<RnRoad>();
@@ -252,6 +257,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)
         {
+            FactoryVersion = storage.FactoryVersion;
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
             CopyFrom(model);
