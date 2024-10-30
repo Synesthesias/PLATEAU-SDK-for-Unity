@@ -28,11 +28,15 @@ namespace PLATEAU.RoadNetwork.Data
 
         private PrimitiveDataStorage primStorage;
 
-        /// <summary>
-        /// データの取得関数群
-        /// </summary>
-        /// <param name="data"></param>
 
+        /// <summary>
+        /// 取得したデータ群からIDテーブルを生成する
+        /// 注意　要素数の増減があった時には再度テーブルを作成する必要がある
+        /// 
+        /// </summary>
+        /// <typeparam name="_Type"></typeparam>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
         public IReadOnlyDictionary<_Type, RnID<_Type>> GenerateIdTable<_Type>(IReadOnlyList<_Type> dataList)
             where _Type : IPrimitiveData
         {
@@ -44,6 +48,11 @@ namespace PLATEAU.RoadNetwork.Data
             }
             return table;
         }
+
+        /// <summary>
+        /// データの取得関数群
+        /// </summary>
+        /// <param name="data"></param>
 
         public IReadOnlyList<RnDataRoadBase> GetRoadBases()
         {
