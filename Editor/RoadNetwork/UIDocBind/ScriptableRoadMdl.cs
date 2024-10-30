@@ -360,8 +360,15 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 }
                 else
                 {
-                    const float medianWidth = 10.0f;
-                    road.SetMedianWidth(medianWidth, LaneWayMoveOption.MoveBothWay);
+                    var isSuc = road.CreateMedianOrSkip();
+                    if (isSuc == false)
+                    {
+                        Debug.Log("CreateMedianOrSkip() : 作成に失敗");
+                    }
+                    editorData.ClearSubData();
+
+                    // ToDo ここで作成したMedianに対してeditorDataで所持している値を適用する
+                    //...
                 }
             }
 
