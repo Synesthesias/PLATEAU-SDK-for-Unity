@@ -1,10 +1,22 @@
 ﻿using PLATEAU.Util;
-using System.Collections;
-using System.Collections.Generic;
+using PLATEAU.Util.Async;
+using PLATEAU.CityInfo;
+using PLATEAU.CityGML;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Factory;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.UIElements;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using static PLATEAU.RoadNetwork.Tester.PLATEAURoadNetworkTester;
+using PLATEAU.RoadNetwork.Tester;
+using PLATEAU.Editor.RoadNetwork.Tester;
+using PLATEAU.Editor.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure.Drawer;   // Todo 削除予定
+
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -85,6 +97,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             return Get<IntegerField>(key);
         }
 
+        protected FloatField GetF(string key)
+        {
+            return Get<FloatField>(key);
+        }
+
         protected Toggle GetT(string key)
         {
             return Get<Toggle>(key);
@@ -109,6 +126,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     {
         static readonly string name = "RoadNetwork_GeneratePanel";
 
+        GameObject selfGameObject = null;
+
         public RoadGenerate() : base(name)
         {
         }
@@ -124,10 +143,40 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
 
+            var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (rnMdl == null)
+            {
+                GameObject obj = new GameObject("RoadNetworkTester");
+                obj.AddComponent<PLATEAURoadNetworkTester>();   // Todo 現状Testerが必要？
+                obj.AddComponent<PLATEAURnStructureModel>();
+                obj.AddComponent<PLATEAURnModelDrawerDebug>();
+                rnMdl = obj.GetComponent<PLATEAURnStructureModel>();
+            }
+
+
+            selfGameObject = rnMdl.gameObject;
+            var factory = rnMdl.GetComponent<PLATEAURoadNetworkTester>().Factory;
+
+
+            // 初期値の設定
+            // Todo (int)でキャストしているものはVisualElementの型が違うので修正依頼を行う
+            GetI("RoadSizeField").value = (int)factory.RoadSize;
+            GetI("SideWalkSize").value = (int)factory.Lod1SideWalkSize;
+            GetT("Add_Lod_Side_Walk").value = factory.AddLod3SideWalk;
+            GetT("Check_Median").value = factory.CheckMedian;
+
+            GetI("Merge_Cell_Size").value = (int)factory.GraphFactory.mergeCellSize;
+            GetI("Merge_Cell_Length").value = factory.GraphFactory.mergeCellLength;
+            GetI("Remove_Mid_Point_Tolerance").value = (int)factory.GraphFactory.removeMidPointTolerance;
+            GetI("Terminate_Allow_Edge_Angle").value = (int)factory.TerminateAllowEdgeAngle;
+            GetT("Ignore_Highwaay").value = factory.IgnoreHighway;
+
+
+            // 生成ボタンを押した時の挙動
             generateButton.clicked += () =>
             {
                 var roadSize = GetI("RoadSizeField").value;
-                var sudeWalklSize = GetI("RoadSizeField").value;
+                var sideWalklSize = GetI("SideWalkSize").value;
                 var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
                 var checkMedian = GetT("Check_Median").value;
 
@@ -136,10 +185,60 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var midPointTolerrance = GetI("Remove_Mid_Point_Tolerance").value;
                 var allowEdgeAngle = GetI("Terminate_Allow_Edge_Angle").value;
                 var ignoreHighway = GetT("Ignore_Highwaay").value;
- 
+
+                selfGameObject = rnMdl.gameObject;
+                factory.RoadSize = roadSize;
+                factory.Lod1SideWalkSize = sideWalklSize;
+                factory.AddLod3SideWalk = lodSideWalk;
+                factory.CheckMedian = checkMedian;
+
+                factory.GraphFactory.mergeCellSize = cellSize;
+                factory.GraphFactory.mergeCellLength = cellLen;
+                factory.GraphFactory.removeMidPointTolerance = midPointTolerrance;
+                factory.TerminateAllowEdgeAngle = allowEdgeAngle;
+                factory.IgnoreHighway = ignoreHighway;
+
+                //CreateNetwork().ContinueWithErrorCatch();
+                selfGameObject.GetComponent<PLATEAURoadNetworkTester>().CreateNetwork().ContinueWithErrorCatch();
+
+
                 Debug.Log("GenerateButton clicked");
 
             };
+
+            /// <summary>
+            /// 道路ネットワークを作成する
+            /// </summary>
+            /// <returns></returns>
+            async Task CreateNetwork()
+            {
+                var go = selfGameObject;
+                var targets = GetTargetCityObjects();
+                var req = factory.CreateRequest(targets, go);
+                await factory.CreateRnModelAsync(req);
+            }
+
+            List<PLATEAUCityObjectGroup> GetTargetCityObjects()
+            {
+                List<TestTargetPresets> TargetPresets;
+                string TargetPresetName;
+                const bool TargetAll = true;
+
+                var ret = TargetAll
+                    ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                    : TargetPresets
+                        .FirstOrDefault(s => s.name == TargetPresetName)
+                        ?.targets;
+                if (ret == null)
+                    return new List<PLATEAUCityObjectGroup>();
+
+                return ret
+                    .Where(c => c.transform.childCount == 0)
+                    .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
+                    .Distinct()
+                    .ToList();
+            }
+
         }
 
         public override void Terminate(VisualElement root)
