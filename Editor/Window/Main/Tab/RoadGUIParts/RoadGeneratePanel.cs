@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     public abstract class RoadAdjustGuiPartBase
     {
         private readonly string uxmlPath;
-        protected VisualElement Gui { get; private set; }
+        protected VisualElement self { get; private set; }
 
         protected RoadAdjustGuiPartBase(string name)
         {
@@ -29,13 +29,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <param name="root"></param>
         public virtual void Init(VisualElement root)
         {
-            if (root.Contains(Gui))
+            if (root.Contains(self))
             {
-                Terminate(Gui);
+                Terminate(self);
             }
             
-            Gui = CreateGUI();
-            root.Add(Gui);
+            self = CreateGUI();
+            root.Add(self);
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <param name="root"></param>
         public virtual void Terminate(VisualElement root)
         {
-            if (root.Contains(Gui) == false)
+            if (root.Contains(self) == false)
                 return;
 
-            root.Remove(Gui);
+            root.Remove(self);
         }
 
         protected VisualElement CreateGUI()
@@ -61,6 +61,33 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
 
             return visualTree.CloneTree();
+        }
+
+        /// <summary>
+        /// 値を取得する
+        /// </summary>
+        /// <typeparam name="_Type"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected _Type Get<_Type>(string key)
+                    where _Type : VisualElement
+        {
+            var v = self.Q<_Type>(key);
+            if (v == null)
+            {
+                Debug.LogError($"Can't find {key}");
+            }
+            return v;
+        }
+
+        protected IntegerField GetI(string key)
+        {
+            return Get<IntegerField>(key);
+        }
+
+        protected Toggle GetT(string key)
+        {
+            return Get<Toggle>(key);
         }
 
         /// <summary>
@@ -82,7 +109,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     {
         static readonly string name = "RoadNetwork_GeneratePanel";
 
-
         public RoadGenerate() : base(name)
         {
         }
@@ -90,6 +116,30 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         public override void Init(VisualElement root)
         {
             base.Init(root);
+
+            var generateButton = self.Q<Button>("GenerateButton");
+            if (generateButton == null)
+            {
+                Debug.LogError("Failed to load GenerateButton");
+                return;
+            }
+
+            generateButton.clicked += () =>
+            {
+                var roadSize = GetI("RoadSizeField").value;
+                var sudeWalklSize = GetI("RoadSizeField").value;
+                var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
+                var checkMedian = GetT("Check_Median").value;
+
+                var cellSize = GetI("Merge_Cell_Size").value;
+                var cellLen = GetI("Merge_Cell_Length").value;
+                var midPointTolerrance = GetI("Remove_Mid_Point_Tolerance").value;
+                var allowEdgeAngle = GetI("Terminate_Allow_Edge_Angle").value;
+                var ignoreHighway = GetT("Ignore_Highwaay").value;
+ 
+                Debug.Log("GenerateButton clicked");
+
+            };
         }
 
         public override void Terminate(VisualElement root)
