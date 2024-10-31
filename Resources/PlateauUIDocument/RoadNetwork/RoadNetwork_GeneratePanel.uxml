@@ -6,8 +6,8 @@
             <ui:Label tabindex="-1" text="生成パラメータ" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
-            <ui:IntegerField label="車線幅(メートル )" value="3" name="RoadSizeField" style="align-items: center; font-size: 12px;" />
-            <ui:IntegerField label="歩道生成時の歩道幅" value="2" name="SideWalkSize" style="align-items: center; font-size: 12px;" />
+            <ui:FloatField label="車線幅(メートル )" value="42.2" name="RoadSizeField" style="font-size: 12px; background-color: rgba(255, 255, 255, 0); -unity-background-image-tint-color: rgb(0, 0, 0); border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); background-image: none; text-shadow: 0 0 0 rgba(0, 0, 0, 0);" />
+            <ui:FloatField label="歩道生成時の歩道幅" value="42.2" name="SideWalkSize" />
             <ui:Toggle label="道路LOD3の歩道情報を利用" name="Add_Lod_Side_Walk" style="font-size: 12px;" />
             <ui:Toggle label="中央分離帯を作成" name="Check_Median" style="font-size: 12px;" />
         </ui:VisualElement>
@@ -16,10 +16,10 @@
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
             <ui:VisualElement style="flex-grow: 1; padding-left: 10px;">
-                <ui:IntegerField label="頂点結合のセルサイズ（メートル）&#x9;" value="3" name="Merge_Cell_Size" style="align-items: center; font-size: 12px;" />
+                <ui:FloatField label="頂点結合のセルサイズ（メートル）&#x9;" value="42.2" name="Merge_Cell_Size" />
                 <ui:IntegerField label="頂点結合の距離（セル数）" value="3" name="Merge_Cell_Length" style="align-items: center; font-size: 12px;" />
-                <ui:IntegerField label="同一直線に近い中間点を削除する距離" value="3" name="Remove_Mid_Point_Tolerance" style="align-items: center; font-size: 12px;" />
-                <ui:IntegerField label="行き止まり線の拡大許容角度" value="3" name="Terminate_Allow_Edge_Angle" style="align-items: center; font-size: 12px;" />
+                <ui:FloatField label="同一直線に近い中間点を削除する距離" value="42.2" name="Remove_Mid_Point_Tolerance" />
+                <ui:FloatField label="行き止まり線の拡大許容角度" value="42.2" name="Terminate_Allow_Edge_Angle" />
                 <ui:Toggle label="中央分離帯を作成" name="Ignore_Highwaay" style="font-size: 12px;" />
             </ui:VisualElement>
         </ui:VisualElement>

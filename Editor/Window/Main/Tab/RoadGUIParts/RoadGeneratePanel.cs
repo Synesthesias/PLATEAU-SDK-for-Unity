@@ -160,30 +160,30 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             // 初期値の設定
             // Todo (int)でキャストしているものはVisualElementの型が違うので修正依頼を行う
-            GetI("RoadSizeField").value = (int)factory.RoadSize;
-            GetI("SideWalkSize").value = (int)factory.Lod1SideWalkSize;
+            GetF("RoadSizeField").value = factory.RoadSize;
+            GetF("SideWalkSize").value = factory.Lod1SideWalkSize;
             GetT("Add_Lod_Side_Walk").value = factory.AddLod3SideWalk;
             GetT("Check_Median").value = factory.CheckMedian;
 
-            GetI("Merge_Cell_Size").value = (int)factory.GraphFactory.mergeCellSize;
+            GetF("Merge_Cell_Size").value = factory.GraphFactory.mergeCellSize;
             GetI("Merge_Cell_Length").value = factory.GraphFactory.mergeCellLength;
-            GetI("Remove_Mid_Point_Tolerance").value = (int)factory.GraphFactory.removeMidPointTolerance;
-            GetI("Terminate_Allow_Edge_Angle").value = (int)factory.TerminateAllowEdgeAngle;
+            GetF("Remove_Mid_Point_Tolerance").value = factory.GraphFactory.removeMidPointTolerance;
+            GetF("Terminate_Allow_Edge_Angle").value = factory.TerminateAllowEdgeAngle;
             GetT("Ignore_Highwaay").value = factory.IgnoreHighway;
 
 
             // 生成ボタンを押した時の挙動
             generateButton.clicked += () =>
             {
-                var roadSize = GetI("RoadSizeField").value;
-                var sideWalklSize = GetI("SideWalkSize").value;
+                var roadSize = GetF("RoadSizeField").value;
+                var sideWalklSize = GetF("SideWalkSize").value;
                 var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
                 var checkMedian = GetT("Check_Median").value;
 
-                var cellSize = GetI("Merge_Cell_Size").value;
+                var cellSize = GetF("Merge_Cell_Size").value;
                 var cellLen = GetI("Merge_Cell_Length").value;
-                var midPointTolerrance = GetI("Remove_Mid_Point_Tolerance").value;
-                var allowEdgeAngle = GetI("Terminate_Allow_Edge_Angle").value;
+                var midPointTolerrance = GetF("Remove_Mid_Point_Tolerance").value;
+                var allowEdgeAngle = GetF("Terminate_Allow_Edge_Angle").value;
                 var ignoreHighway = GetT("Ignore_Highwaay").value;
 
                 selfGameObject = rnMdl.gameObject;
