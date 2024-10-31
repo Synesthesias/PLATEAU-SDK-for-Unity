@@ -402,16 +402,6 @@ namespace PLATEAU.RoadNetwork.Structure
            return Roads.Any(l => l.MedianLane != null);
         }
 
-        public bool HasMedians()
-        {
-           return Roads.Any(l => l.MedianLane != null);
-        }
-
-        public bool HasMedians()
-        {
-           return Roads.Any(l => l.MedianLane != null);
-        }
-
         /// <summary>
         /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨
         /// </summary>
