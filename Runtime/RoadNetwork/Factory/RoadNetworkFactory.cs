@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // RGraph作るときのファクトリパラメータ
         [field: SerializeField]
-        public RGraphFactory GraphFactory { get; set; }
+        public RGraphFactory GraphFactory { get; set; } = new();
 
         // 中間データを保存する
         [field: SerializeField]
