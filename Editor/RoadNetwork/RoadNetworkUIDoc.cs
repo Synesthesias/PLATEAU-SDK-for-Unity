@@ -84,13 +84,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private readonly Dictionary<RoadNetworkEditMode, GenerateParameterFunc> createLayoutSet =
             new Dictionary<RoadNetworkEditMode, GenerateParameterFunc> {
-            { RoadNetworkEditMode._EditLaneShape, CreateEditLaneShapeLayout },
-            { RoadNetworkEditMode._EditLaneStructure, CreateEditLaneStructureLayout },
             { RoadNetworkEditMode.EditTrafficRegulation, CreateTrafficRegulationLayout },
-            { RoadNetworkEditMode._AddLane, CreateAddLaneLayout },
-            { RoadNetworkEditMode._AddLink, CreateAddLinkLayout },
-            { RoadNetworkEditMode._AddNode, CreateAddNodeLayout },
-            { RoadNetworkEditMode._EditLaneWidth, CreateEditLaneWidthLayout },
             { RoadNetworkEditMode.EditRoadStructure, CreateEditRoadStructureLayout },
         };
         // UIが無効化,切り替わる時にされるときに呼び出される　createLayoutSetで設定する

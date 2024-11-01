@@ -29,13 +29,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     public enum RoadNetworkEditMode
     {
-        _EditLaneShape,
-        _EditLaneStructure,
         EditTrafficRegulation,// 交通規制編集
-        _AddLane,    // debugOperationの機能を個々に移してもいいかも
-        _AddLink,    // debugOperationの機能を個々に移してもいいかも
-        _AddNode,    // debugOperationの機能を個々に移してもいいかも
-        _EditLaneWidth,    // debugOperationの機能を個々に移してもいいかも
         EditRoadStructure,    // 道路構造編集
     }
 

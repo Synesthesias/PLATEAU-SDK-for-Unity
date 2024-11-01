@@ -321,9 +321,13 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
                 if (EnableLeftSideWalk)
                 {
-                    var c = editorData.GetSubData<WayEditorDataLeft>().sideWalkGroup;
-                    if (c != null)
-                        road.AddSideWalks(c);
+                    var e = editorData.GetSubData<WayEditorDataLeft>();
+                    if (e != null)
+                    {
+                        var c = e.sideWalkGroup;
+                        if (c != null)
+                            road.AddSideWalks(c);
+                    }
                 }
                 else
                 {

@@ -95,6 +95,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             pts.Capacity = (connections.Count + 3) * 2;
             foreach (var item in connections)
             {
+                if (item == null)
+                    continue;
+
                 var roadGroup = selectingElement as EditorData<RnRoadGroup>;
                 if (item.LinkGroup == roadGroup)
                 {
