@@ -271,12 +271,13 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 //}
             }
 
+            bool isChangedLane = false;
             if (cache.numLeftLane != NumLeftLane)
             {
                 Notify(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
                 cache.numLeftLane = NumLeftLane;
                 isChanged = true;
-                road.SetLeftLaneCount(NumLeftLane);
+                isChangedLane = true;
                 editorData.ClearSubData();
             }
             if (cache.numRightLane != NumRightLane)
@@ -284,9 +285,14 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 Notify(NumRightLane, cache.numRightLane, nameof(NumRightLane));
                 cache.numRightLane = NumRightLane;
                 isChanged = true;
-                road.SetRightLaneCount(NumRightLane);
+                isChangedLane = true;
                 editorData.ClearSubData();
             }
+            if (isChangedLane)
+            {
+                road.SetLaneCount(NumLeftLane, NumRightLane);
+            }
+
             if (cache.enableMedianLane != EnableMedianLane) 
             {
                 Notify(EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
