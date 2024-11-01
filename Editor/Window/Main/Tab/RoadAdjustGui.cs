@@ -145,9 +145,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         val.userData = gui;
                     }
                     if (val.value)
-                        gui.Init(root);
+                        gui.Init0(root);
                     else
-                        gui.Terminate(root);
+                        gui.Terminate0(root);
                 }
             }
             return true;
