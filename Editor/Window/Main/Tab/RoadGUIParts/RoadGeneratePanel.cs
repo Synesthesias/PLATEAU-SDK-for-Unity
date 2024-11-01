@@ -33,21 +33,27 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             rootKey = name;
         }
 
-        /// <summary>
-        /// 初期化
-        /// 終了処理がされていない状態での呼び出しも考慮する
-        /// Todo 継承先では引数のrootを渡さないようにしたい(別ブランチで対応済みなはず この関数がInit0という名前になっている)
-        /// </summary>
-        /// <param name="root"></param>
-        public virtual void Init(VisualElement root)
+        public void Init0(VisualElement root)
         {
             if (root.Contains(self))
             {
                 Terminate(self);
             }
-            
+
+
             self = GetRoot(root);
             self.style.display = DisplayStyle.Flex;
+
+            Init(root);
+        }
+
+        /// <summary>
+        /// 初期化
+        /// 終了処理がされていない状態での呼び出しも考慮する
+        /// </summary>
+        /// <param name="root"></param>
+        public virtual void Init(VisualElement root)
+        {
         }
 
         /// <summary>
@@ -55,12 +61,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// 初期化されていない状態での呼び出しも考慮する
         /// </summary>
         /// <param name="root"></param>
-        public virtual void Terminate(VisualElement root)
+        public virtual void Terminate0(VisualElement root)
         {
             if (root.Contains(self) == false)
                 return;
 
             self.style.display = DisplayStyle.None;
+
+            Terminate(root);
+        }
+        public virtual void Terminate(VisualElement root)
+        {
         }
 
         /// <summary>
@@ -137,7 +148,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 GameObject obj = new GameObject("RoadNetworkTester");
                 obj.AddComponent<PLATEAURoadNetworkTester>();   // Todo 現状Testerが必要？
                 obj.AddComponent<PLATEAURnStructureModel>();
-                obj.AddComponent<PLATEAURnModelDrawerDebug>();
+                //obj.AddComponent<PLATEAURnModelDrawerDebug>();    // Testerで生成されるため
                 rnMdl = obj.GetComponent<PLATEAURnStructureModel>();
             }
 
