@@ -34,6 +34,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             uxmlPath = CreateUXMLFilePath(name);
         }
 
+        public void Init0(VisualElement root)
+        {
+            if (root.Contains(self))
+            {
+                Terminate(self);
+            }
+
+
+            self = CreateGUI();
+            root.Add(self);
+
+            Init(root);
+        }
+
         /// <summary>
         /// 初期化
         /// 終了処理がされていない状態での呼び出しも考慮する
@@ -41,13 +55,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <param name="root"></param>
         public virtual void Init(VisualElement root)
         {
-            if (root.Contains(self))
-            {
-                Terminate(self);
-            }
-            
-            self = CreateGUI();
-            root.Add(self);
         }
 
         /// <summary>
@@ -55,12 +62,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// 初期化されていない状態での呼び出しも考慮する
         /// </summary>
         /// <param name="root"></param>
-        public virtual void Terminate(VisualElement root)
+        public virtual void Terminate0(VisualElement root)
         {
             if (root.Contains(self) == false)
                 return;
 
             root.Remove(self);
+
+            Terminate(root);
+        }
+        public virtual void Terminate(VisualElement root)
+        {
         }
 
         protected VisualElement CreateGUI()
@@ -149,7 +161,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 GameObject obj = new GameObject("RoadNetworkTester");
                 obj.AddComponent<PLATEAURoadNetworkTester>();   // Todo 現状Testerが必要？
                 obj.AddComponent<PLATEAURnStructureModel>();
-                obj.AddComponent<PLATEAURnModelDrawerDebug>();
+                //obj.AddComponent<PLATEAURnModelDrawerDebug>();    // Testerで生成されるため
                 rnMdl = obj.GetComponent<PLATEAURnStructureModel>();
             }
 
