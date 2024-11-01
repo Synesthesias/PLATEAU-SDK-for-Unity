@@ -356,6 +356,8 @@ namespace PLATEAU.Editor.RoadNetwork
                     continue;
 
                 var subData = item.GetSubData<LinkGroupEditorData>();
+                if (subData == null)
+                    continue;
 
                 var p1 = subData.A.GetCenter();
                 var p2 = subData.B.GetCenter();
@@ -878,90 +880,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            // レーンの構造変更機能が有効である
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneStructure)
-            {
-                var offset = Vector3.up * signalLightHndScaleFactor;
-                var scaleHandlePos = state.lanePos + offset;
-
-                var sizeOffset = laneHndScaleFactor;
-                var size = HandleUtility.GetHandleSize(scaleHandlePos) * sizeOffset;
-                var isClickedSplit = Handles.Button(scaleHandlePos, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                if (isClickedSplit)
-                {
-                    // 車線数を増やす
-                    state.delayCommand += () =>
-                    {
-                        // IRoadNetworkEditOperationを通してないので通知が通らないので注意 修正する
-                        var newLanes = lane.SplitLaneSelf(2);   // 元のレーンを含めてLaneが３つになる
-                        if (newLanes == null)
-                            return;
-                        parent.RemoveLane(lane);
-                        foreach (var newLane in newLanes)
-                        {
-                            parent.AddMainLane(newLane);
-                        }
-                        Debug.Log("車線数を増やすボタンが押された");
-
-                    };
-                    state.isDirtyTarget = true;
-                }
-
-                // 仮　車線数を減らす　ParentLinkがnullであるためレーンを選択できないので適当なレーンを削除する
-                var isClickedRemove = Handles.Button(scaleHandlePos + Vector3.right * size * 1.5f, Quaternion.identity, size, size, RoadNetworkRemoveLaneButtonHandleCap);
-                if (isClickedRemove)
-                {
-                    state.delayCommand += () =>
-                    {
-                        editorSystem.EditOperation.RemoveMainLane(parent, lane);
-                        Debug.Log("車線数を減らすボタンが押された");
-                    };
-                    state.isDirtyTarget = true;
-                }
-
-            }
-
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
-            {
-                //if (bIsHandleLock == null || bIsHandleLock == lane)
-                //{
-                //    // １つのレーンの幅員を増やす
-                //    if (lane.LeftWay.Count > 0)
-                //    {
-                //        var leftCenterIdx = lane.LeftWay.Count / 2;
-                //        var scaleHandlePos = lane.LeftWay[leftCenterIdx];
-                //        var dir = Vector3.up;
-                //        if (lane.LeftWay.Count >= 2)
-                //        {
-                //            dir = lane.LeftWay.GetVertexNormal(leftCenterIdx - 1);
-                //            dir.Normalize();
-                //        }
-
-                //        var size = HandleUtility.GetHandleSize(scaleHandlePos);
-                //        EditorGUI.BeginChangeCheck();
-                //        var scale = Handles.ScaleHandle(Vector3.one, scaleHandlePos, Quaternion.identity, size);
-                //        if (EditorGUI.EndChangeCheck())
-                //        {
-                //            bIsHandleLock = lane;
-                //            foreach (var way in lane.BothWays)
-                //            {
-                //                int i = 0;
-                //                foreach (var point in way.Points)
-                //                {
-                //                    var vertNorm = way.GetVertexNormal(i++);
-                //                    point.Vertex = point + (scale - 1) * 0.1f * vertNorm;
-                //                    state.isDirtyTarget = true;
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            bIsHandleLock = null;
-                //        }
-                //    }
-                //}
-            }
-
         }
 
         private bool IsContains(DisplayHndMaskSet mask)
@@ -1065,57 +983,6 @@ namespace PLATEAU.Editor.RoadNetwork
             //    }
             //}
 
-            if (sys.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
-            {
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
-                {
-                    EditorGUI.BeginChangeCheck();
-                    //var vertPos = DeployTranslateHandle(point);
-                    var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        var res = networkOperator.MovePoint(point, vertPos);
-                        state.isDirtyTarget = true;
-                        Debug.Assert(res.IsSuccess);
-                    }
-                    return;
-                }
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
-                {
-                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                    if (isClicked)
-                    {
-                        // parent.Pointsからpointを検索してインデックスを取得
-                        var idx = parent.Points.ToList().IndexOf(point);
-                        if (idx == -1)
-                            return;
-                        state.delayCommand += () =>
-                        {
-                            networkOperator.AddPoint(parent, idx, new RnPoint(point.Vertex + Vector3.up));
-                            Debug.Log("ポイント追加ボタンが押された");
-                        };
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
-                {
-                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                    if (isClicked)
-                    {
-                        state.delayCommand += () =>
-                        {
-                            networkOperator.RemovePoint(parent, point);
-                            Debug.Log("ポイント削除ボタンが押された");
-                        };
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-            }
         }
         private void ForeachAllBorderPoints(IRoadNetworkEditingSystem sys, RnRoad link, RnWay parent, RnPoint point, ref SceneGUIState state, Vector3 offset)
         {
@@ -1135,45 +1002,7 @@ namespace PLATEAU.Editor.RoadNetwork
             if (isEditable)
             {
                 // Lane追加モードの処理
-                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLane)
-                {
-                    var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
-                    if (isClicked)
-                    {
-                        sys.RoadNetworkSimpleLaneGenerateModule.AddBorder(link, parent, point);
-                        if (sys.RoadNetworkSimpleLaneGenerateModule.CanBuild())
-                        {
-                            state.delayCommand += () =>
-                            {
-                                Debug.Log("Laneが追加された");
-                                sys.RoadNetworkSimpleLaneGenerateModule.Build();
-                            };
 
-                        }
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-
-                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLink)
-                {
-                    var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
-                    if (isClicked)
-                    {
-                        sys.RoadNetworkSimpleLinkGenerateModule.AddPoint(link.ParentModel, point);
-                        if (sys.RoadNetworkSimpleLinkGenerateModule.CanBuild())
-                        {
-                            state.delayCommand += () =>
-                            {
-                                Debug.Log("Linkが追加された");
-                                sys.RoadNetworkSimpleLinkGenerateModule.Build();
-                            };
-
-                        }
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
             }
         }
 
