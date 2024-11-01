@@ -387,10 +387,16 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var road in Roads)
             {
-                var centerLeft = road.GetLeftLanes().Last();
-                var centerRight = road.GetRightLanes().First();
-                lWays.Add(centerLeft.RightWay);
-                rWays.Add(centerRight.RightWay);
+                if (road.GetLeftLaneCount() > 0)
+                {
+                    var centerLeft = road.GetLeftLanes()?.Last();
+                    lWays.Add(centerLeft.RightWay);
+                }
+                if (road.GetRightLaneCount() > 0)
+                {
+                    var centerRight = road.GetRightLanes()?.First();
+                    rWays.Add(centerRight.RightWay);
+                }
             }
 
             left = lWays;
