@@ -111,6 +111,17 @@
     padding: 0 10px;
     font-size: 14px;
 }
+#InputGroup .unity-float-field__label {
+    width: 50%;
+}
+
+#InputGroup .unity-float-field__input {
+    background-color: rgb(42, 42, 42);
+    border-radius: 2px;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
+}
 
 #InputGroup .unity-base-text-field:focus:enabled > .unity-base-text-field__input {
     border-color: rgb(0, 88, 88);
