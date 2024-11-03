@@ -84,6 +84,7 @@ namespace PLATEAU.RoadNetwork.Tester
             public bool method = false;
             public float sphereSize = 0.1f;
             public float lineLength = 100f;
+            public bool showEdgeIndex = false;
         }
         public LerpLineSegmentsVoronoiTestParam lerpSegmentsVoronoiTest = new();
 
@@ -123,24 +124,25 @@ namespace PLATEAU.RoadNetwork.Tester
 
             Dictionary<Vector3, HashSet<int>> drawn = new();
 
-            void DrawPoint(Vector3 x, int a)
+            void DrawPoint(Vector3 v, int a)
             {
-                if (drawn.TryGetValue(x, out var p) == false)
+                if (drawn.TryGetValue(v, out var p) == false)
                 {
-                    drawn[x] = new HashSet<int> { a };
-                    DebugEx.DrawSphere(x, param.sphereSize, color: Color.green);
+                    drawn[v] = new HashSet<int> { a };
+                    DebugEx.DrawSphere(v, param.sphereSize, color: Color.green);
                 }
-                drawn[x].Add(a);
+                if (drawn.ContainsKey(v))
+                    drawn[v].Add(a);
             }
             var colors = new List<int>();
             Dictionary<Vector3, int> edgeCount = new();
-            foreach (var e in voronoiData.Edges)
+            foreach (var item in voronoiData.Edges.Select((v, i) => new { v, i }))
             {
+                var e = item.v;
                 var color = DebugEx.GetDebugColor(childIndex++, 16);
 
                 if (param.showAllEdge == false && e.LeftSitePoint.line == e.RightSitePoint.line)
                     continue;
-
 
                 var c = e.LeftSitePoint.line.GetHashCode() ^ e.RightSitePoint.line.GetHashCode();
                 var index = colors.IndexOf(c);
@@ -176,6 +178,11 @@ namespace PLATEAU.RoadNetwork.Tester
                 edgeCount[p] = x;
                 DebugEx.DrawString($"{e.LeftSiteIndex}", p + n * x, color: Color.blue, fontSize: 20);
                 DebugEx.DrawString($"{e.RightSiteIndex}", p - n * x, color: Color.blue, fontSize: 20);
+
+                if (param.showEdgeIndex)
+                {
+                    DebugEx.DrawString($"{item.i}", p, color: Color.white, fontSize: 20);
+                }
 
                 DrawPoint(st, 0);
                 DrawPoint(en, 0);
