@@ -40,5 +40,21 @@ namespace PLATEAU.RoadNetwork.Data
         {
             return !(a == b);
         }
+
+        public bool Equals(RnID<TPrimDataType> other)
+        {
+            return id == other.id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is RnID<TPrimDataType> other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return id;
+        }
+
     }
 }
