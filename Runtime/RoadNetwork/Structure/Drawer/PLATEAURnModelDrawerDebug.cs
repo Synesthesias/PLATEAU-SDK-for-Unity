@@ -83,6 +83,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // 接続先の道路タイプを表示する
                 public bool showConnectedRoadType = false;
 
+                // スプライン描画するときに何m間隔で描画するか
+                public float drawSplineInterval = 3f;
+
+                // スプラインのノットで描画する
+                public bool showKnots = false;
                 public DrawTrackOption()
                 {
                     visible = true;
@@ -343,7 +348,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 if (wayOp.showEdgeNormal && i < way.Count - 1)
                 {
                     var p = (v + way[i + 1]) * 0.5f;
-                    var nn = way.GetEdgeNormal(i).normalized;
+                    var nn = way.GetEdgeNormal(i);
                     DrawArrow(p, p + nn, bodyColor: Color.blue);
                 }
 
@@ -859,7 +864,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 foreach (var track in intersection.Tracks)
                 {
-                    var n = 5;
 
                     var color = op.showTrack.color;
                     if (op.showTrack.useTurnTypeColor)
@@ -881,31 +885,43 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                     color = CheckRoad(track.FromBorder);
                     color = CheckRoad(track.ToBorder);
-
-                    DrawArrows(Enumerable.Range(0, n)
-                        .Select(i => 1f * i / (n - 1))
-                        .Select(t =>
-                        {
-                            track.Spline.Evaluate(t, out var pos, out var tam, out var up);
-                            return (Vector3)pos;
-                        }), false, color: color);
-
-                    if (op.showTrack.showConnectedRoadType)
+                    if (op.showTrack.showKnots)
                     {
-                        void Draw(float p, RnNeighbor e)
-                        {
-                            var i0 = Mathf.Floor(p);
-                            var i1 = Mathf.Ceil(p);
-                            track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
-                            track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
-                            var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
-                            var c = e.Road is RnRoad ? Color.green : Color.red;
-                            DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
-                        }
-
-                        Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
-                        Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        DrawArrows(track.Spline.Knots.Select(k => (Vector3)k.Position), false, color: color);
                     }
+                    else
+                    {
+                        var length = GeoGraphEx.GetEdges(track.Spline.Knots.Select(k => k.Position), false)
+                            .Sum(x => ((Vector3)(x.Item1) - (Vector3)(x.Item2)).magnitude);
+                        var n = Mathf.Max(3, Mathf.FloorToInt(length / Mathf.Max(0.1f, op.showTrack.drawSplineInterval)));
+
+                        DrawArrows(Enumerable.Range(0, n)
+                            .Select(i => 1f * i / (n - 1))
+                            .Select(t =>
+                            {
+                                track.Spline.Evaluate(t, out var pos, out var tam, out var up);
+                                return (Vector3)pos;
+                            }), false, color: color);
+
+                        if (op.showTrack.showConnectedRoadType)
+                        {
+                            void Draw(float p, RnNeighbor e)
+                            {
+                                var i0 = Mathf.Floor(p);
+                                var i1 = Mathf.Ceil(p);
+                                track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
+                                track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
+                                var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
+                                var c = e.Road is RnRoad ? Color.green : Color.red;
+                                DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
+                            }
+
+                            Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
+                            Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        }
+                    }
+
+
                 }
             }
         }

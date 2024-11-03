@@ -481,43 +481,138 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="tangentLength"></param>
         /// <param name="splitLength"></param>
-        /// <param name="allowUTurn">Uターンを許可する</param>
-        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowUTurn = false)
+        /// <param name="allowSelfTrack">同じ道路への遷移を許可する</param>
+        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowSelfTrack = false)
         {
             tracks.Clear();
 
             var edgeGroups = this.CreateEdgeGroup();
 
-            foreach (var eg in edgeGroups)
+            foreach (var eg in edgeGroups.Where(e => e.IsBorder))
             {
-                if (eg.IsBorder == false)
-                    continue;
-
                 var inBounds = eg.InBoundEdges.ToList();
-                foreach (var other in edgeGroups)
+
+                foreach (var other in edgeGroups.Where(e => e.IsBorder && e != eg))
                 {
-                    if (other.IsBorder == false || eg == other)
+                    // Uターンを許可しない場合
+                    if (eg.Key == other.Key && allowSelfTrack == false)
                         continue;
 
-                    // Uターンを許可しない場合
-                    if (eg.Key == other.Key && allowUTurn == false)
-                        continue;
+                    // 隣り合っている場合.
+                    RnWay way = null;
+
+                    List<float> widthTable = null;
+                    if (eg.LeftSide == other.RightSide)
+                    {
+                        var ls = RnLineString.Create(eg.LeftSide.Edges.SelectMany(e => e.Border.Points));
+                        way = new RnWay(ls.Refined(1f), false, true);
+                        widthTable = Enumerable.Range(0, way.Count).Select(x => 100f).ToList();
+                    }
+                    else if (eg.RightSide == other.LeftSide)
+                    {
+                        var ls = RnLineString.Create(eg.RightSide.Edges.SelectMany(e => e.Border.Points));
+                        way = new RnWay(ls.Refined(1f), true, false);
+
+                        var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
+
+                        widthTable = way.Points.Select(x =>
+                        {
+                            oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
+                            return distance;
+                        }).ToList();
+
+
+                    }
 
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
 
                     void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
-                        var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
-                        var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+                        var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
+                        var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2);
 
                         from.Border.GetLerpPoint(0.5f, out var fromPos);
                         to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                        var spline = new Spline
+                        List<BezierKnot> knots = new();
+                        knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
+
+                        if (way != null && way.Count > 2)
                         {
-                            new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
-                            new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
-                        }; ;
+                            Vector3 EdgeNormal(int startVertexIndex)
+                            {
+                                var p0 = way[startVertexIndex];
+                                var p1 = way[startVertexIndex + 1];
+                                // Vector3.Crossは左手系なので逆
+                                var ret = (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
+                                if (way.IsReverseNormal)
+                                    ret = -ret;
+                                return ret;
+                            }
+
+                            var sLen = (way[0] - fromPos).magnitude;
+                            var eLen = (way[^1] - toPos).magnitude;
+
+                            var length = way.CalcLength();
+                            var len = 0f;
+
+                            var index = 0;
+                            // 現在見る点と次の点の辺/頂点の法線を保存しておく
+                            // 線分の法線
+                            var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
+                            // 頂点の法線
+                            var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
+                            var delta = 1f;
+
+                            for (var i = 0; i < way.Count - 1; i++)
+                            {
+                                var en0 = edgeNormal[index];
+                                var en1 = edgeNormal[(index + 1) & 1];
+                                var vn = vertexNormal[index];
+                                // 形状維持するためにオフセット距離を変える
+                                // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                                var m = Vector3.Dot(vn, en0);
+                                var d = delta;
+                                bool isZero = Mathf.Abs(m) < 1e-5f;
+                                if (isZero == false)
+                                    d /= m;
+
+                                if (i < way.Count - 2)
+                                {
+                                    edgeNormal[index] = EdgeNormal(i + 1);
+                                    vertexNormal[index] =
+                                        (edgeNormal[index] + vertexNormal[(index + 1) & 1]).normalized;
+                                }
+
+                                index = (index + 1) & 1;
+                                if (i != 0)
+                                {
+                                    var dIn = (way[i] - way[i - 1]);
+                                    var dOut = (way[i + 1] - way[i]);
+
+                                    len += dIn.magnitude;
+                                    var p = len / length;
+                                    //var l = Mathf.Lerp(sLen, eLen, p) * d;
+                                    //var l = sLen * d;
+                                    var l = Mathf.Lerp(Mathf.Min(sLen, widthTable[i]), eLen, p) * Mathf.Lerp(d, 1f, p);
+                                    var pos = way[i] + vn * l;
+                                    knots.Add(new(pos, 0.5f * dIn, 0.5f * dOut.normalized));
+                                }
+                                delta = d * Vector3.Dot(vn, en1);
+                            }
+
+                            var dSt = (Vector3)(knots[0].Position) - fromPos;
+                            knots.Insert(0, new(fromPos, -0.5f * dSt, 0.5f * dSt));
+                            knots.Add(new(toPos, tangentLength * toNormal, -tangentLength * toNormal));
+                        }
+                        else
+                        {
+                            knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
+                            knots.Add(new(toPos, tangentLength * toNormal, -tangentLength * toNormal));
+
+                        }
+
+                        var spline = new Spline(knots);
                         tracks.Add(new RnTrack(from.Border, to.Border, spline, edgeTurnType));
                     }
 
@@ -594,7 +689,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// selfの全頂点の重心を返す
         /// </summary>
-        /// <param name="self"></param>
         /// <returns></returns>
         public override Vector3 GetCenter()
         {
@@ -733,7 +827,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 交差点のEdgesをRoadごとにグループ化する.
-        /// RoadA -> null(境界線じゃない部分) -> RoadB -> null -> RoadC -> null -> RoadAのようになる
+        /// RoadA -> null(境界線じゃない部分) -> RoadB -> null -> RoadC -> null -> RoadAのようになる.
+        /// 順番はEdgesの順番を保持する
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
