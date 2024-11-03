@@ -250,7 +250,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 頂点の法線ベクトルを返す. キャッシュ化されており, DirtyFlagをtrueにすると再計算される
+        /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
@@ -269,7 +270,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 上(Vector3.up)から見て半時計回りを向いている. . 正規化はされていない
+        /// 上(Vector3.up)から見て半時計回りを向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -278,7 +279,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var p0 = this[startVertexIndex];
             var p1 = this[startVertexIndex + 1];
             // Vector3.Crossは左手系なので逆
-            return -Vector3.Cross(Vector3.up, p1 - p0);
+            return (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
         }
 
         /// <summary>
@@ -394,16 +395,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 線分の長さを取得
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static float CalcLength(this RnLineString self)
-        {
-            return LineUtil.GetLineSegmentLength(self);
-        }
-
-        /// <summary>
         /// selfをlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
         /// 実際に返る交点はself上の点とその時のインデックス(float)
         /// </summary>
@@ -434,20 +425,22 @@ namespace PLATEAU.RoadNetwork.Structure
         public static void GetNearestPoint(this RnLineString self, Vector3 v, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            distance = float.MaxValue;
+            var sqrDistance = float.MaxValue;
             pointIndex = -1f;
             for (var i = 0; i < self.Count - 1; ++i)
             {
                 var segment = new LineSegment3D(self[i], self[i + 1]);
                 var p = segment.GetNearestPoint(v, out var distanceFromStart);
                 var d = (p - v).sqrMagnitude;
-                if (d < distance)
+                if (d < sqrDistance)
                 {
                     nearest = p;
-                    distance = d;
+                    sqrDistance = d;
                     pointIndex = i + distanceFromStart / segment.Magnitude;
                 }
             }
+
+            distance = Mathf.Sqrt(sqrDistance);
         }
 
         /// <summary>
@@ -485,18 +478,16 @@ namespace PLATEAU.RoadNetwork.Structure
                 var p1 = self[i + 1];
                 var len = (p1 - p0).magnitude;
 
-                var c = len / interval;
-                var num = Mathf.FloorToInt(c);
-                if (num <= 0)
-                    continue;
-                var x = 1f / c;
+                var num = len / interval;
                 var newPoints = new List<RnPoint>();
-                for (var j = 0; j < num; ++j)
+                for (var j = 1; j < num; ++j)
                 {
-                    var t = (j + 1) * x;
+                    var t = j / num;
                     newPoints.Add(new RnPoint(Vector3.Lerp(p0, p1, t)));
                 }
-                self.Points.InsertRange(i + 1, newPoints);
+
+                if (newPoints.Count > 0)
+                    self.Points.InsertRange(i + 1, newPoints);
                 i += newPoints.Count;
             }
         }

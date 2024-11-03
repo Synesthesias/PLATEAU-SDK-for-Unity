@@ -641,13 +641,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 HashSet<float> indices = new();
                 foreach (var p in leftWay.Points)
                 {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
                     indices.Add(index);
                 }
 
                 foreach (var p in rightWay.Points)
                 {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
                     indices.Add(index);
                 }
 

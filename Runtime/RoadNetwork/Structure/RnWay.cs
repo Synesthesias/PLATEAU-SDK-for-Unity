@@ -227,7 +227,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
-        /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
@@ -257,7 +257,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 道の外側を向いている. 正規化はされていない
+        /// 道の外側を向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -391,7 +391,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 頂点数が2の時は特殊処理
             if (Count == 2)
             {
-                var n = GetEdgeNormal(0).normalized;
+                var n = GetEdgeNormal(0);
                 foreach (var p in Points)
                     p.Vertex += n * offset;
 
@@ -401,7 +401,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
             // 線分の法線
-            var edgeNormal = new[] { GetEdgeNormal(0).normalized, GetEdgeNormal(Mathf.Min(Count - 1, 1)).normalized };
+            var edgeNormal = new[] { GetEdgeNormal(0), GetEdgeNormal(Mathf.Min(Count - 1, 1)) };
             // 頂点の法線
             var vertexNormal = new[] { GetVertexNormal(0), GetVertexNormal(1) };
             var delta = offset;
