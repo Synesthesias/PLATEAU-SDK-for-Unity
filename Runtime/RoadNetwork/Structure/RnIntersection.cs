@@ -495,8 +495,8 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var eg in edgeGroups.Where(e => e.IsBorder))
             {
                 var inBounds = eg.InBoundEdges.ToList();
-
                 foreach (var other in edgeGroups.Where(e => e.IsBorder && e != eg))
+
                 {
                     // Uターンを許可しない場合
                     if (eg.Key == other.Key && allowSelfTrack == false)

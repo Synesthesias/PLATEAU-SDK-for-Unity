@@ -39,6 +39,13 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable]
     public class RoadNetworkStorage : IRoadNetworkDynamicEditable
     {
+        /// <summary>
+        /// 自動生成で作成されたときのバージョン. これが現在のバージョンよりも古い場合はデータが古い可能性がある.
+        /// RoadNetworkFactory.FactoryVersion参照
+        /// </summary>
+        [field: SerializeField]
+        public string FactoryVersion { get; set; } = "";
+
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
         [SerializeField]
@@ -109,13 +116,13 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         private PrimitiveStorage<RnDataTrafficLightController> trafficLightControllers = new PrimitiveStorage<RnDataTrafficLightController>();
 
-        [field: SerializeField] 
+        [field: SerializeField]
         private PrimitiveStorage<RnDataTrafficLight> trafficLights = new PrimitiveStorage<RnDataTrafficLight>();
 
-        [field: SerializeField] 
+        [field: SerializeField]
         private PrimitiveStorage<RnDataTrafficSignalPattern> trafficSignalPatterns = new PrimitiveStorage<RnDataTrafficSignalPattern>();
 
-        [field: SerializeField] 
+        [field: SerializeField]
         private PrimitiveStorage<RnDataTrafficSignalPhase> trafficSignalPhases = new PrimitiveStorage<RnDataTrafficSignalPhase>();
 
         public PrimitiveStorage<RnDataPoint> Points { get => points; }
