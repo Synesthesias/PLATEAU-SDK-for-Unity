@@ -573,9 +573,8 @@ namespace PLATEAU.RoadNetwork.Structure
                         from.Border.GetLerpPoint(0.5f, out var fromPos);
                         to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                        List<BezierKnot> knots = new();
+                        List<BezierKnot> knots = new() { new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal) };
 
-                        knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
                         void AddKnots(Vector3 pos)
                         {
                             // #NOTE : 戻りが発生しないように90度以上の角度を持つ場合は無視する
@@ -621,15 +620,16 @@ namespace PLATEAU.RoadNetwork.Structure
 
                             var index = 0;
 
-
-                            var isStartReverse = Vector3.Dot(fromPos - way[0], fromNormal) < 0;
-                            var isEndReverse = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0;
+                            // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
+                            var sSign = Vector3.Dot(fromPos - way[0], EdgeNormal(0)) < 0 ? -1 : 1;
+                            var eSign = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0 ? -1 : 1;
 
                             // 現在見る点と次の点の辺/頂点の法線を保存しておく
                             // 線分の法線
                             var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
-                            //if (isStartReverse)
-                            //    edgeNormal[0] = -edgeNormal[0];
+                            // 先頭の法線が逆の場合計算がおかしくなるので反転して最後に適用するときに戻す
+                            if (sSign < 0)
+                                edgeNormal[0] = edgeNormal[0].AxisSymmetric(way[1] - way[0]);
                             // 頂点の法線
                             var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
                             var delta = 1f;
@@ -661,17 +661,10 @@ namespace PLATEAU.RoadNetwork.Structure
                                     var p = len / length;
 
                                     var sL = Mathf.Min(sLen, widthTable[i]);
-                                    //if (isStartReverse)
-                                    //    sL = -sL;
-
                                     var eL = Mathf.Min(eLen, widthTable[i]);
-                                    //if (isEndReverse)
-                                    //    eL = -eL;
-                                    // #TODO : * Mathf.Lerp(d, 1f, p)を入れると, 始点と終点で中央線の左右が分かれるような状況でおかしくなるので一時的に切る
-
                                     //var l = Mathf.Lerp(sL, eL, p) * d;
                                     //var l = sL * d;
-                                    var l = Mathf.Lerp(sL, eL, p);// * Mathf.Lerp(d, 1f, p);
+                                    var l = Mathf.Lerp(sSign * sL, eSign * eL, p) * Mathf.Lerp(d, 1f, p);
                                     var pos = way[i] + vn * l;
                                     AddKnots(pos);
                                 }
