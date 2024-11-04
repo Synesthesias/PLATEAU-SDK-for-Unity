@@ -20,7 +20,7 @@ namespace PLATEAU.RoadNetwork.Factory
         /// 自動生成バージョン. 作成時に番号埋め込んでおいてどのバージョンで作られたかを見れるようにする.
         /// メジャー/マイナー分けたいので文字列
         /// </summary>
-        public static readonly string FactoryVersion = "1.0";
+        public static readonly string FactoryVersion = "1.1";
 
         // --------------------
         // start:フィールド
