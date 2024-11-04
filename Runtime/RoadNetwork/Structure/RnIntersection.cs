@@ -1,11 +1,13 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
+using PLATEAU.RoadNetwork.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -486,6 +488,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             tracks.Clear();
 
+            var centerGraph = this.CreateCenterLineGraph();
+
             var edgeGroups = this.CreateEdgeGroup();
 
             foreach (var eg in edgeGroups.Where(e => e.IsBorder))
@@ -501,27 +505,62 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 隣り合っている場合.
                     RnWay way = null;
 
+                    // 反対側に行き過ぎないように
+                    // ベースとなる線分と, 反対側の線分の距離テーブル
+                    // ベース線分がother.RightSideの場合は, other.LeftSideとの距離テーブルを作成する
+                    // ベース線分が中央線の場合はother.RightSideとの距離テーブルを作成する
+                    //   |  A  | 
+                    //   |  .  |
+                    //   |  .   ------  C
+                    //   |  .  ....... 
+                    //   |  .   ------
+                    //   |  .  |
+                    //   |  B  |
+                    // .は中央線. |-は輪郭線
+                    // B -> Aに行く場合は, B.LeftSide == A.RightSide なので AのLeftSideとの距離テーブルを作成
+                    // B -> Cに行く場合は, 右折なので中央線をベースラインに使う. -> CのRightSideと中央線の距離テーブルを作成
                     List<float> widthTable = null;
+
+
+                    // 左側で隣接している場合はそれをそのまま使う
                     if (eg.LeftSide == other.RightSide)
                     {
                         var ls = RnLineString.Create(eg.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         way = new RnWay(ls.Refined(1f), false, true);
-                        widthTable = Enumerable.Range(0, way.Count).Select(x => 100f).ToList();
-                    }
-                    else if (eg.RightSide == other.LeftSide)
-                    {
-                        var ls = RnLineString.Create(eg.RightSide.Edges.SelectMany(e => e.Border.Points));
-                        way = new RnWay(ls.Refined(1f), true, false);
-
-                        var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
-
+                        var oLs = RnLineString.Create(other.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         widthTable = way.Points.Select(x =>
                         {
                             oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
                             return distance;
                         }).ToList();
+                    }
+                    //else if (eg.RightSide == other.LeftSide)
+                    //{
+                    //    var ls = RnLineString.Create(eg.RightSide.Edges.SelectMany(e => e.Border.Points));
+                    //    way = new RnWay(ls.Refined(1f), true, false);
 
+                    //    var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
 
+                    //    widthTable = way.Points.Select(x =>
+                    //    {
+                    //        oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
+                    //        return distance;
+                    //    }).ToList();
+                    //}
+                    // それ以外の場合は中央線を使う
+                    else
+                    {
+                        way = centerGraph.CenterLines.GetValueOrDefault(eg.Key)?.GetValueOrDefault(other.Key);
+                        var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
+
+                        if (way != null)
+                        {
+                            widthTable = way.Points.Select(x =>
+                            {
+                                oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
+                                return distance;
+                            }).ToList();
+                        }
                     }
 
                     var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
@@ -529,14 +568,37 @@ namespace PLATEAU.RoadNetwork.Structure
                     void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
                         var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
-                        var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2);
 
                         from.Border.GetLerpPoint(0.5f, out var fromPos);
                         to.Border.GetLerpPoint(0.5f, out var toPos);
 
                         List<BezierKnot> knots = new();
-                        knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
 
+                        knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
+                        void AddKnots(Vector3 pos)
+                        {
+                            // #NOTE : 戻りが発生しないように90度以上の角度を持つ場合は無視する
+                            if (knots.Count >= 2)
+                            {
+                                Vector3 d1 = pos - (Vector3)knots[^1].Position;
+                                Vector3 d2 = knots[^1].Position - knots[^2].Position;
+
+                                if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
+                                    return;
+                            }
+
+                            var tanIn = 0.5f * (knots[^1].Position - (float3)pos);
+                            var knot = new BezierKnot(pos, tanIn, -tanIn);
+                            var last = knots[^1];
+                            last.TangentOut = -knot.TangentIn;
+                            knots[^1] = last;
+                            knots.Add(knot);
+                        }
+
+
+                        // ベースラインを法線方向に動かしてトラックラインを作成する
+                        // 入口の道路幅と出口の道路幅が違うので, 法線方向へのオフセットも距離に応じて線形補完する
+                        // そのうえで、なるべく輪郭を崩さないようにする処理も入れる
                         if (way != null && way.Count > 2)
                         {
                             Vector3 EdgeNormal(int startVertexIndex)
@@ -587,29 +649,21 @@ namespace PLATEAU.RoadNetwork.Structure
                                 index = (index + 1) & 1;
                                 if (i != 0)
                                 {
-                                    var dIn = (way[i] - way[i - 1]);
-                                    var dOut = (way[i + 1] - way[i]);
-
-                                    len += dIn.magnitude;
+                                    len += (way[i] - way[i - 1]).magnitude;
                                     var p = len / length;
                                     //var l = Mathf.Lerp(sLen, eLen, p) * d;
                                     //var l = sLen * d;
                                     var l = Mathf.Lerp(Mathf.Min(sLen, widthTable[i]), eLen, p) * Mathf.Lerp(d, 1f, p);
                                     var pos = way[i] + vn * l;
-                                    knots.Add(new(pos, 0.5f * dIn, 0.5f * dOut.normalized));
+                                    AddKnots(pos);
                                 }
                                 delta = d * Vector3.Dot(vn, en1);
                             }
-
-                            var dSt = (Vector3)(knots[0].Position) - fromPos;
-                            knots.Insert(0, new(fromPos, -0.5f * dSt, 0.5f * dSt));
-                            knots.Add(new(toPos, tangentLength * toNormal, -tangentLength * toNormal));
+                            AddKnots(toPos);
                         }
                         else
                         {
-                            knots.Add(new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal));
-                            knots.Add(new(toPos, tangentLength * toNormal, -tangentLength * toNormal));
-
+                            AddKnots(toPos);
                         }
 
                         var spline = new Spline(knots);
@@ -884,6 +938,205 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return self.Edges.Where(e => e.Border?.IsSameLine(borderWay) ?? false);
         }
+
+        /// <summary>
+        /// 交差点内で各道路への中央ラインを通る経路グラフ
+        /// </summary>
+
+        public class CenterLineGraph
+        {
+            /// <summary>
+            /// ボロノイ図の各点
+            /// </summary>
+            public class SitePoint
+            {
+                public RnNeighbor Edge { get; set; }
+
+                public RnPoint Point { get; set; }
+            }
+
+            public class SiteNode
+            {
+                // 位置
+                public RnPoint Vertex { get; set; }
+
+                // 接続ノード
+                public List<SiteNode> Neighbors { get; } = new();
+
+                /// <summary>
+                /// 依存するボロノイ辺情報
+                /// </summary>
+                public HashSet<VoronoiData<SitePoint>.Edge> SiteEdges { get; } = new();
+
+                /// <summary>
+                /// 自身が道路の入り口を表す場合. その道路の参照. そうでない場合はnull
+                /// </summary>
+                public RnRoadBase StartKey { get; set; }
+
+                public bool IsAlongTo(EdgeGroup eg)
+                {
+                    var lt = eg.LeftSide.Edges[0];
+                    var rt = eg.RightSide.Edges[0];
+                    return SiteEdges.Any(e =>
+                    {
+                        var l = e.LeftSitePoint.Edge;
+                        var r = e.RightSitePoint.Edge;
+                        return (l == lt || r == lt) && (l == rt || r == rt);
+                    });
+                }
+            }
+
+            /// <summary>
+            /// 中央ラインの各点
+            /// </summary>
+            public List<SiteNode> Nodes { get; } = new();
+
+            public Dictionary<RnRoadBase, Dictionary<RnRoadBase, RnWay>> CenterLines { get; } = new();
+        }
+
+        /// <summary>
+        /// 交差点内で各道路への中央ラインを通る経路グラフを作成する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="refineInterval"></param>
+        /// <returns></returns>
+        public static CenterLineGraph CreateCenterLineGraph(this RnIntersection self, float refineInterval = 3f)
+        {
+            // 境界線じゃない外周部分のedge取得
+            var outlines = self.Edges.Where(e => e.IsBorder == false);
+
+            // 十分に細かい線分に分割したうえでボロノイ分割を行う.
+            // 左右で別のEdgeGroupのボロノイ辺を繋ぐと中央ラインが見えてくる
+            var vs =
+                outlines.SelectMany(e => e.Border.LineString.Refined(refineInterval).Points.Select(p => new CenterLineGraph.SitePoint { Edge = e, Point = p })).ToList();
+            var vd = RnVoronoiEx.CalcVoronoiData(vs, v => new Vector2d(v.Point.Vertex.Xz()));
+
+            var ret = new CenterLineGraph();
+            CenterLineGraph.SiteNode AddNode(Vector2d? v, VoronoiData<CenterLineGraph.SitePoint>.Edge e)
+            {
+                if (v == null)
+                    return null;
+
+                var l = e.LeftSitePoint.Point.Vertex;
+                var r = e.RightSitePoint.Point.Vertex;
+
+                var lenL = (v.Value.ToVector2() - l.Xz()).magnitude;
+                var lenR = (v.Value.ToVector2() - r.Xz()).magnitude;
+
+                var y = Mathf.Lerp(l.y, r.y, lenL / (lenL + lenR));
+                var vertex = new Vector3((float)v.Value.x, y, (float)v.Value.y);
+
+                var n = ret.Nodes.FirstOrDefault(n => (n.Vertex.Vertex.Xz() - vertex.Xz()).magnitude < 0.5f);
+                if (n == null)
+                {
+                    n = new CenterLineGraph.SiteNode { Vertex = new RnPoint(vertex) };
+                    ret.Nodes.Add(n);
+                }
+
+                n.SiteEdges.Add(e);
+
+                return n;
+            }
+
+            foreach (var e in vd.Edges)
+            {
+                // 同じEdge同士は無視
+                if (e.LeftSitePoint.Edge == e.RightSitePoint.Edge)
+                    continue;
+
+                var st = AddNode(e.Start, e);
+                var en = AddNode(e.End, e);
+                if (st != null && en != null)
+                {
+                    st?.Neighbors?.Add(en);
+                    en?.Neighbors?.Add(st);
+                }
+            }
+
+            foreach (var eg in self.CreateEdgeGroup())
+            {
+                if (eg.Key == null)
+                    continue;
+                var centroid = Vector2Ex.Centroid(eg.Edges.Select(e => e.Border.GetLerpPoint(0.5f).Xz()));
+
+
+                var minDistance = float.MaxValue;
+                CenterLineGraph.SiteNode minSiteNode = null;
+                foreach (var n in ret.Nodes)
+                {
+                    if (n.IsAlongTo(eg) == false)
+                        continue;
+
+                    var ls = RnLineString.Create(eg.Edges.Select(e => e.Border).SelectMany(e => e.Points));
+                    var way = new RnWay(ls, false, false);
+                    if (way.IsOutSide(n.Vertex, out var nearest, out var distance))
+                        continue;
+
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        minSiteNode = n;
+                    }
+                }
+
+                if (minSiteNode != null)
+                {
+                    minSiteNode.StartKey = eg.Key;
+                }
+            }
+
+            // ダイクストラ法でお互いの道路までの経路を求める
+            Dictionary<RnRoadBase, RnWay> Dijkstra(CenterLineGraph.SiteNode start)
+            {
+                Dictionary<CenterLineGraph.SiteNode, (float len, CenterLineGraph.SiteNode last)> dict = new();
+                HashSet<CenterLineGraph.SiteNode> visited = new();
+                dict[start] = (0, null);
+                while (dict.Any(x => visited.Contains(x.Key) == false))
+                {
+                    dict.Where(x => visited.Contains(x.Key) == false).TryFindMin(x => x.Value.len, out var e);
+                    visited.Add(e.Key);
+                    foreach (var n in e.Key.Neighbors)
+                    {
+                        var d = e.Value.len + (n.Vertex.Vertex - e.Key.Vertex.Vertex).magnitude;
+                        if (dict.TryAdd(n, (d, e.Key)) == false)
+                        {
+                            if (d < dict[n].len)
+                            {
+                                dict[n] = (d, e.Key);
+                            }
+                        }
+                    }
+                }
+
+                var paths = new Dictionary<RnRoadBase, RnWay>();
+                foreach (var x in ret.Nodes.Where(x => x.StartKey != null && x != start))
+                {
+                    if (dict.ContainsKey(x) == false)
+                        continue;
+
+                    var points = new List<RnPoint>();
+                    points.Add(x.Vertex);
+                    var n = x;
+                    while (n != null && dict.ContainsKey(n))
+                    {
+                        n = dict[n].last;
+                        if (n != null)
+                            points.Add(n.Vertex);
+                    }
+
+                    points.Reverse();
+                    paths[x.StartKey] = new RnWay(RnLineString.Create(points));
+                }
+
+                return paths;
+            }
+
+            foreach (var n in ret.Nodes.Where(x => x.StartKey != null))
+                ret.CenterLines[n.StartKey] = Dijkstra(n);
+
+            return ret;
+        }
+
 
         public class RecLine
         {
@@ -1196,16 +1449,6 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             return ret;
         }
-        public class LineStringTracer
-        {
-            public RnLineString LineString { get; set; }
-
-            // 先頭側から
-            public RnPoint FrontEnd { get; set; }
-
-            public RnPoint BackEnd { get; set; }
-        }
-
 
         /// <summary>
         /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)

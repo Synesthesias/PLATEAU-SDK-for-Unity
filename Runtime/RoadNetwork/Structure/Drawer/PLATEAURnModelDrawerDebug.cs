@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
-using PLATEAU.RoadNetwork.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -113,8 +112,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public bool showEdgeGroup = false;
 
             public bool showRecLine = false;
-            public bool showRecLine2 = false;
-            public float showRecLineRefineInterval = 5f;
+            public bool showTrackCenterLine = false;
+            public float showTrackCenterLineRefineInterval = 5f;
             public float showRecLineHalfLineLength = 10f;
 
             public int showRecLineNest = 3;
@@ -667,114 +666,13 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             }
 
-            if (op.showRecLine2)
+            if (op.showTrackCenterLine)
             {
-                var edges = intersection.Edges.Where(e => e.IsBorder == false);
-                var vs =
-                    edges.SelectMany(e => e.Border.LineString.Refined(op.showRecLineRefineInterval).Points.Select(p => new { e = e, p = p, v = p.Vertex.Xz() })).ToList();
-                var voronoiData = Voronoi.RnVoronoiEx.CalcVoronoiData(vs, v => new Vector2d(v.v));
-
-                //for (var i = 0; i < vertices.Count; ++i)
-                //{
-                //    var v = vertices[i];
-                //    DebugEx.DrawSphere(v.v, param.sphereSize);
-                //    DebugEx.DrawString($"{i}", v.v, color: Color.red, fontSize: 20);
-                //}
-
-                Dictionary<Vector3, HashSet<int>> drawn = new();
-
-                void DrawPoint(Vector3 x, int a)
+                var centerLineGraph = intersection.CreateCenterLineGraph(op.showTrackCenterLineRefineInterval);
+                foreach (var n in centerLineGraph.CenterLines)
                 {
-                    if (drawn.TryGetValue(x, out var p) == false)
-                    {
-                        drawn[x] = new HashSet<int> { a };
-                        // DebugEx.DrawSphere(x, param.sphereSize, color: Color.green);
-                    }
-                    drawn[x].Add(a);
-                }
-                var colors = new List<int>();
-                Dictionary<Vector3, int> edgeCount = new();
-                var childIndex = 0;
-                var plane = AxisPlane.Xz;
-
-                Dictionary<RnNeighbor, Dictionary<RnNeighbor, List<int>>> pass = new();
-
-                var edgeStartIndices = voronoiData.Edges.Take(0)
-                    .ToDictionary(x => (RnRoadBase)null, x => x);
-                foreach (var from in intersection.CreateEdgeGroup())
-                {
-                    if (from.Key == null)
-                        continue;
-
-                    var centroid = Vector2Ex.Centroid(from.Edges.Select(e => e.Border.GetLerpPoint(0.5f).Xz()));
-
-
-                    var f = voronoiData.Edges.Where(e =>
-                    {
-                        if (e.LeftSitePoint.e != from.LeftSide.Edges[0] && e.RightSitePoint.e != from.LeftSide.Edges[0])
-                        {
-                            return false;
-                        }
-
-                        if (e.LeftSitePoint.e != from.RightSide.Edges[0] && e.RightSitePoint.e != from.RightSide.Edges[0])
-                        {
-                            return false;
-                        }
-
-                        return e.Start.HasValue;
-                    }).TryFindMin(v => (v.Start.Value.ToVector2() - centroid).sqrMagnitude, out var x);
-                    edgeStartIndices[from.Key] = x;
-                    if (x != null)
-                        DebugEx.DrawSphere(x.Start.Value.ToVector2().ToVector3(plane), 2f, color: Color.cyan);
-                }
-
-                foreach (var e in voronoiData.Edges)
-                {
-                    var color = DebugEx.GetDebugColor(childIndex++, 16);
-
-                    if (/*param.showAllEdge == false &&*/ e.LeftSitePoint.e == e.RightSitePoint.e)
-                        continue;
-
-
-                    var c = e.LeftSitePoint.e.GetHashCode() ^ e.RightSitePoint.e.GetHashCode();
-                    var index = colors.IndexOf(c);
-                    if (index < 0)
-                    {
-                        index = colors.Count;
-                        colors.Add(c);
-                    }
-                    color = DebugEx.GetDebugColor(index, 16);
-
-                    // 完全な直線の場合サイトポイントの中間点(2等分線だから)
-                    var mid = new Vector2d(((e.LeftSitePoint.v + e.RightSitePoint.v) * 0.5f));
-                    var st = Vector3.zero;
-                    var en = Vector3.zero;
-                    var d = e.Direction * op.showRecLineHalfLineLength;
-                    if (e.Start == null && e.End == null)
-                    {
-                        st = (mid - d).ToVector2().ToVector3(plane);
-                        en = (mid + d).ToVector2().ToVector3(plane);
-                    }
-                    else
-                    {
-                        st = (e.Start ?? (e.End.Value - d)).ToVector2().ToVector3(plane);
-                        en = (e.End ?? (e.Start.Value + d)).ToVector2().ToVector3(plane);
-
-                    }
-
-                    DebugEx.DrawLine(st, en, color);
-                    var p = (st + en) * 0.5f;
-                    var n = (en - st).ToVector2(plane).normalized.Rotate(90).ToVector3(plane) * 0.1f;
-
-                    var x = edgeCount.TryGetValue(p, out var l) ? l + 1 : 1;
-                    edgeCount[p] = x;
-                    //DebugEx.DrawString($"{e.LeftSiteIndex}", p + n * x, color: Color.blue, fontSize: 20);
-                    //DebugEx.DrawString($"{e.RightSiteIndex}", p - n * x, color: Color.blue, fontSize: 20);
-
-                    DrawPoint(st, 0);
-                    DrawPoint(en, 0);
-                    //DebugEx.DrawString($"E", en);
-                    //DebugEx.DrawString($"S", st);
+                    foreach (var e in n.Value)
+                        DrawWay(e.Value, Color.blue);
                 }
                 return;
             }

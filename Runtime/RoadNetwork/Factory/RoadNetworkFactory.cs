@@ -694,7 +694,7 @@ namespace PLATEAU.RoadNetwork.Factory
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                DebugEx.LogException(e);
                 throw;
             }
         }
