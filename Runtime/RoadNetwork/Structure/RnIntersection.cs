@@ -548,7 +548,8 @@ namespace PLATEAU.RoadNetwork.Structure
                     //    }).ToList();
                     //}
                     // それ以外の場合は中央線を使う
-                    else
+                    // ただし自分自身に戻る(Uターン)の場合は中央線使わない
+                    else if (eg.Key != other.Key)
                     {
                         way = centerGraph.CenterLines.GetValueOrDefault(eg.Key)?.GetValueOrDefault(other.Key);
                         var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
@@ -619,9 +620,16 @@ namespace PLATEAU.RoadNetwork.Structure
                             var len = 0f;
 
                             var index = 0;
+
+
+                            var isStartReverse = Vector3.Dot(fromPos - way[0], fromNormal) < 0;
+                            var isEndReverse = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0;
+
                             // 現在見る点と次の点の辺/頂点の法線を保存しておく
                             // 線分の法線
                             var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
+                            //if (isStartReverse)
+                            //    edgeNormal[0] = -edgeNormal[0];
                             // 頂点の法線
                             var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
                             var delta = 1f;
@@ -651,9 +659,19 @@ namespace PLATEAU.RoadNetwork.Structure
                                 {
                                     len += (way[i] - way[i - 1]).magnitude;
                                     var p = len / length;
-                                    //var l = Mathf.Lerp(sLen, eLen, p) * d;
-                                    //var l = sLen * d;
-                                    var l = Mathf.Lerp(Mathf.Min(sLen, widthTable[i]), eLen, p) * Mathf.Lerp(d, 1f, p);
+
+                                    var sL = Mathf.Min(sLen, widthTable[i]);
+                                    //if (isStartReverse)
+                                    //    sL = -sL;
+
+                                    var eL = Mathf.Min(eLen, widthTable[i]);
+                                    //if (isEndReverse)
+                                    //    eL = -eL;
+                                    // #TODO : * Mathf.Lerp(d, 1f, p)を入れると, 始点と終点で中央線の左右が分かれるような状況でおかしくなるので一時的に切る
+
+                                    //var l = Mathf.Lerp(sL, eL, p) * d;
+                                    //var l = sL * d;
+                                    var l = Mathf.Lerp(sL, eL, p);// * Mathf.Lerp(d, 1f, p);
                                     var pos = way[i] + vn * l;
                                     AddKnots(pos);
                                 }
