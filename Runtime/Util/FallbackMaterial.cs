@@ -16,7 +16,7 @@ namespace PLATEAU.Util
         private static readonly IReadOnlyDictionary<PredefinedCityModelPackage, string> PackageToMaterialFileName =
             new Dictionary<PredefinedCityModelPackage, string>
             {
-                {PredefinedCityModelPackage.Building, "PlateauDefaultBuilding"},
+                {PredefinedCityModelPackage.Building, "PlateauDefaultBuildingA"},
                 {PredefinedCityModelPackage.Road, "PlateauDefaultRoad"},
                 {PredefinedCityModelPackage.UrbanPlanningDecision, "PlateauDefaultUrbanPlanningDecision"},
                 {PredefinedCityModelPackage.LandUse, "PlateauDefaultLandUse"},
@@ -51,13 +51,6 @@ namespace PLATEAU.Util
                 return new Material(RenderUtil.DefaultMaterial);
             }
             
-            // string matPath = Path.Combine(MaterialPathUtil.BaseMaterialDir, FallbackFolderName, matFileName);
-            // #if UNITY_EDITOR
-            // var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-            // return mat ? mat : new Material(RenderUtil.DefaultMaterial);
-            // #else
-            // throw new NotImplementedException("This function is only supported in editor."); 
-            // #endif
             var mat = Resources.Load<Material>("PlateauSdkDefaultMaterials/" + matFileName);
             return mat ? mat : new Material(RenderUtil.DefaultMaterial);
         }
