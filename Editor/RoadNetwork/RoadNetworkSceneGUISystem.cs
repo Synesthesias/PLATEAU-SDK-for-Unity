@@ -98,7 +98,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private int displayHandleMask = 0;
         private Vector3 handleLockPos;
-        private RnLane bIsHandleLock = null;
+        // private RnLane bIsHandleLock = null;
 
 
         //string nodeTexPath = "Assets/PlateauUnitySDK/Editor/RoadNetwork/Textures/Node.png";
@@ -262,8 +262,8 @@ namespace PLATEAU.Editor.RoadNetwork
             Update3DHandle(network, ref state);
 
 
-            int toolbarInt = 0;
-            string[] toolbarStrings = { "Toolbar1", "Toolbar2", "Toolbar3", "キャンセル" };
+            // int toolbarInt = 0;
+            // string[] toolbarStrings = { "Toolbar1", "Toolbar2", "Toolbar3", "キャンセル" };
             //RnWay way;
             //way.SegmentIntersectionXz(Vector3.zero, Vector3.one, out Vector3 p1, out Vector3 p2);
 
@@ -296,33 +296,33 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private bool LoadTexture()
         {
-            var isSuc = true;
+            // var isSuc = true;
             nodeTex = AssetDatabase.LoadAssetAtPath<Texture2D>(nodeTexPath);
             if (nodeTex == null)
             {
                 Debug.LogError("テクスチャが見つかりませんでした: " + nodeTexPath);
-                isSuc = false;
+                // isSuc = false;
             }
 
             laneTex = AssetDatabase.LoadAssetAtPath<Texture2D>(laneTexPath);
             if (laneTex == null)
             {
                 Debug.LogError("テクスチャが見つかりませんでした: " + laneTexPath);
-                isSuc = false;
+                // isSuc = false;
             }
 
             trafficLightControllerTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLightControllerPath);
             if (trafficLightControllerTex == null)
             {
                 Debug.LogError("テクスチャが見つかりませんでした: " + trafficLightControllerPath);
-                isSuc = false;
+                // isSuc = false;
             }
 
             trafficLight_blueTex = AssetDatabase.LoadAssetAtPath<Texture2D>(trafficLight_blueTexPath);
             if (trafficLight_blueTex == null)
             {
                 Debug.LogError("テクスチャが見つかりませんでした: " + trafficLight_blueTexPath);
-                isSuc = false;
+                // isSuc = false;
             }
 
             return true;

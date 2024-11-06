@@ -380,7 +380,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="width"></param>
         /// <param name="moveOption"></param>
-        [Obsolete("非推奨. 個別にWayを動かす or ExpandMedianWidthを使うこと")]
+        // [Obsolete("非推奨. 個別にWayを動かす or ExpandMedianWidthを使うこと")]
         public bool SetMedianWidth(float width, LaneWayMoveOption moveOption)
         {
             if (HasMedian() == false)
