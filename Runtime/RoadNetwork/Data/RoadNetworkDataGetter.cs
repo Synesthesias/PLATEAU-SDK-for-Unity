@@ -130,7 +130,7 @@ namespace PLATEAU.RoadNetwork.Data
         {
             switch (typeof(_Type).Name)
             {
-                case nameof(RnRoadBase):
+                case nameof(RnDataRoadBase):
                     return primStorage.RoadBases;
                 case nameof(RnDataLane):
                     return primStorage.Lanes;
@@ -152,7 +152,7 @@ namespace PLATEAU.RoadNetwork.Data
                     return primStorage.TrafficSignalPhases;
             }
 
-            Assert.IsTrue(false);   // 未対応の型
+            Assert.IsTrue(false, "未対応の型");   // 未対応の型
             return null;
         }
     }
