@@ -494,8 +494,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
                         var spline = new Spline
                         {
-                            new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
-                            new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
+                            // ここで型名 "BezierKnot"を省略すると、環境によってはコンパイルエラーになります。
+                            new BezierKnot(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
+                            new BezierKnot(toPos, tangentLength *toNormal, -tangentLength *toNormal)
                         }; ;
                         tracks.Add(new RnTrack(from.Border, to.Border, spline, edgeTurnType));
                     }
