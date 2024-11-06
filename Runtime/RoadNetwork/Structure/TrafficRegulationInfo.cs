@@ -70,12 +70,12 @@ namespace PLATEAU.RoadNetwork.Structure
             // intersectionNeighborBorderが必ずroadの境界線に含まれていることを確認
             foreach (var intersectionBorder in intersectionNeighborBorder)
             {
-                bool wasFound = false;
+                // bool wasFound = false;
                 foreach (var border in road.GetBorders())
                 {
                     if (intersectionBorder == border.EdgeWay)
                     {
-                        wasFound = true;
+                        // wasFound = true;
                         break;
                     }
                 }
