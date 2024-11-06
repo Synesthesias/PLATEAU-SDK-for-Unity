@@ -48,8 +48,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
-                new InstancedCityModelDict(),
-                new NameToExportedMaterialsDict(subMeshConverter)
+                new NameToExportedMaterialsDict(subMeshConverter),
+                new NonLibComponentsDict()
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
             
@@ -148,8 +148,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         }
         
         /// <summary>
-        /// エクスポートしたFBXにはNormalがないので、そのままインポートすると「ノーマルがないので計算します」という警告がたくさん出ます。
-        /// これを抑制するため、インポート設定のノーマルを「計算する」に変更します。
+        /// FBX設定を調整します。
         /// </summary>
         private static void AdjustFbxImportSettings(string targetFolderPath)
         {
@@ -161,7 +160,16 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 ModelImporter importer = AssetImporter.GetAtPath(PathUtil.FullPathToAssetsPath(fbxPath)) as ModelImporter;
                 if (importer != null)
                 {
+                    // エクスポートしたFBXにはNormalがないので、そのままインポートすると「ノーマルがないので計算します」という警告がたくさん出ます。
+                    // これを抑制するため、インポート設定のノーマルを「計算する」に変更します。
                     importer.importNormals = ModelImporterNormals.Calculate;
+
+                    // Unityの最適化を切る設定にします。
+                    // これをしないと、PLATEAUの標準作業手順書の仕様を満たさなくなります。
+                    // 例えば、luseの頂点の順番は、頂点を順番に繋いだときに交差しない多角形になることが手順書で定められています。
+                    // ここで最適化が働いてしまうと、頂点の順番が変わってしまい、順番上はぐちゃぐちゃに交差する多角形になってしまいます。
+                    importer.optimizeMeshVertices = false;
+                    importer.optimizeMeshPolygons = false;
                 }
             }
 #else

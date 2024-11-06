@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
@@ -30,36 +32,30 @@ namespace PLATEAU.RoadNetwork.Data
         /// データの取得関数群
         /// </summary>
         /// <param name="data"></param>
-        
-        public IReadOnlyList<RoadNetworkDataNode> GetNodes()
+
+
+        public IReadOnlyList<RnDataRoadBase> GetRoadBases()
         {
-            return primStorage.Nodes.DataList;
+            return primStorage.RoadBases.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataTrack> GetTracks()
-        {
-            return primStorage.Tracks.DataList;
-        }
-        public IReadOnlyList<RoadNetworkDataLink> GetLinks()
-        {
-            return primStorage.Links.DataList;
-        }
-        public IReadOnlyList<RoadNetworkDataLane> GetLanes()
+
+        public IReadOnlyList<RnDataLane> GetLanes()
         {
             return primStorage.Lanes.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataBlock> GetBlocks()
+        public IReadOnlyList<RnDataBlock> GetBlocks()
         {
             return primStorage.Blocks.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataWay> GetWays()
+        public IReadOnlyList<RnDataWay> GetWays()
         {
             return primStorage.Ways.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataLineString> GetLineStrings()
+        public IReadOnlyList<RnDataLineString> GetLineStrings()
         {
             return primStorage.LineStrings.DataList;
         }
-        public IReadOnlyList<RoadNetworkDataPoint> GetPoints()
+        public IReadOnlyList<RnDataPoint> GetPoints()
         {
             return primStorage.Points.DataList;
         }
@@ -70,14 +66,12 @@ namespace PLATEAU.RoadNetwork.Data
         /// <param name="data"></param>
         public void Validate()
         {
-            TestNull(nameof(RoadNetworkDataNode), GetNodes());
-            TestNull(nameof(RoadNetworkDataTrack), GetTracks());
-            TestNull(nameof(RoadNetworkDataLink), GetLinks());
-            TestNull(nameof(RoadNetworkDataLane), GetLanes());
-            TestNull(nameof(RoadNetworkDataBlock), GetBlocks());
-            TestNull(nameof(RoadNetworkDataWay), GetWays());
-            TestNull(nameof(RoadNetworkDataLineString), GetLineStrings());
-            TestNull(nameof(RoadNetworkDataPoint), GetPoints());
+            TestNull(nameof(RnRoadBase), GetRoadBases());
+            TestNull(nameof(RnDataLane), GetLanes());
+            TestNull(nameof(RnDataBlock), GetBlocks());
+            TestNull(nameof(RnDataWay), GetWays());
+            TestNull(nameof(RnDataLineString), GetLineStrings());
+            TestNull(nameof(RnDataPoint), GetPoints());
 
             void TestNull(string name, object a)
             {

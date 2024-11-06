@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ namespace Tests.RoadNetworkTest
         public void GetAllMemberRecursivelyTest()
         {
             var vertices = Enumerable.Repeat(Vector3.one, 5).ToList();
-            var lineString = RoadNetworkLineString.Create(vertices);
-            var obj = new RoadNetworkWay(lineString);
+            var lineString = RnLineString.Create(vertices);
+            var obj = new RnWay(lineString);
             {
-                var ret = TypeUtil.GetAllMembersRecursively<RoadNetworkLineString>(obj).ToList();
+                var ret = TypeUtil.GetAllMembersRecursively<RnLineString>(obj).ToList();
                 Assert.IsTrue(lineString == ret.FirstOrDefault()?.Item2, "lineString == ret.FirstOrDefault()?.Item2");
             }
             {

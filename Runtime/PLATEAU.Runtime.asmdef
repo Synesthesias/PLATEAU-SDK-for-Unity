@@ -2,7 +2,10 @@
     "name": "PLATEAU.Runtime",
     "rootNamespace": "PLATEAU",
     "references": [
-        "libplateau"
+        "libplateau",
+        "Unity.Splines",
+        "Unity.Mathematics",
+        "LibTessDotNet"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

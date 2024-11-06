@@ -42,6 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public static readonly string TrafficRegulationPanel = "RoadNetworkTrafficRegulationPanel.uxml";
         public static readonly string RoadNetworkPatternPanel = "RoadNetworkPatternPanel.uxml";
         public static readonly string RoadNetworkTrafficLightPatternPhasePanel = "RoadNetworkTrafficLightPatternPhasePanel.uxml";
+        public static readonly string RoadNetworkEditingRoadPanel = "RoadNetworkEditingRoadPanel.uxml";
 
 
         // ロードしたアセット
@@ -84,21 +85,28 @@ namespace PLATEAU.Editor.RoadNetwork
             if (IsLoaded())
                 return;
 
-            visualTreeAssets = new Dictionary<string, VisualTreeAsset>
+            var assetList = new HashSet<string>
             {
-                { EditorAssetName, LoadAsset(EditorAssetName) },
-                { DataIDField, LoadAsset(DataIDField) },
-                { FilePathField, LoadAsset(FilePathField) },
-                { IntField, LoadAsset(IntField) },
-                { NameField, LoadAsset(NameField) },
-                { StatusMultiSelector, LoadAsset(StatusMultiSelector) },
-                { StatusSelector, LoadAsset(StatusSelector) },
-                { ToggleBox, LoadAsset(ToggleBox) },
-                { Vec3Field, LoadAsset(Vec3Field) },
-                { FloatFieldAsset, LoadAsset(FloatFieldAsset) },
-                { ParameterBoxAssetName, LoadAsset(ParameterBoxAssetName) },
-                { TrafficRegulationPanel, LoadAsset(TrafficRegulationPanel) },
+                EditorAssetName,
+                DataIDField,
+                FilePathField,
+                IntField,
+                NameField,
+                StatusMultiSelector,
+                StatusSelector,
+                ToggleBox,
+                Vec3Field,
+                FloatFieldAsset,
+                ParameterBoxAssetName,
+                TrafficRegulationPanel,
+                RoadNetworkEditingRoadPanel,
             };
+
+            visualTreeAssets = new Dictionary<string, VisualTreeAsset>(assetList.Count);
+            foreach ( var asset in assetList)
+            {
+                visualTreeAssets.Add(asset, LoadAsset(asset));
+            }
         }
 
 

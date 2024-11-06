@@ -10,7 +10,6 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal class PlateauWindow : PlateauWindowBase
     {
-        private readonly ScrollView scrollView = new ();
         private PlateauWindowGui gui;
 
         [MenuItem("PLATEAU/PLATEAU SDK")]
@@ -29,12 +28,18 @@ namespace PLATEAU.Editor.Window.Main
                 new TabElementWithImage("dark_icon_import.png", new CityAddGui(this)),
                 // モデル調整
                 new TabElementWithImage("dark_icon_modify.png",
-                    // 入れ子タブ
+                    // モデル調整内の入れ子タブ
                     new TabWithFrame(
                         new TabElement("Assetsに保存", new ConvertToAssetGui()),
                         new TabElement("ゲームオブジェクト\nON/OFF", new CityChangeActiveGui()),
                         new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustPresenter(this)),
-                        new TabElement("地形変換/高さ合わせ", new CityTerrainConvertGui(this))
+                        new TabElement("地形変換/高さ合わせ", new CityTerrainConvertGui(this))//,
+                        // new TabElement("道路調整",
+                        //     // 道路調整内の入れ子タブ
+                        //     new TabWithFrame(
+                        //         new TabElement("道路見た目補正", new RoadEnhancePresenter()),
+                        //         new TabElement("道路変更", new RoadNetworkToMeshPresenter()))
+                        // )
                     )
                 ),
                 // エクスポート

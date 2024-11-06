@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -36,6 +37,19 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawLine(Vector3 start, Vector3 end, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Debug.DrawLine(start, end, color ?? Color.white, duration, depthTest);
+        }
+
+        /// <summary>
         /// start -> endの方向に矢印を描画する
         /// </summary>
         /// <param name="start"></param>
@@ -60,17 +74,18 @@ namespace PLATEAU.Util
 
             var bodyColorImpl = bodyColor ?? Color.white;
 
-            Debug.DrawLine(start, end, bodyColorImpl, duration, depthTest);
-            up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
-
-            var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
-            var a2 = Quaternion.AngleAxis(-90, up) * a1;
-
-            a1 = a1.normalized;
-            a2 = a2.normalized;
-            var arrowColorImpl = arrowColor ?? bodyColorImpl;
-            Debug.DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
-            Debug.DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
+            DrawLine(start, end, bodyColorImpl, duration, depthTest);
+            if (arrowSize > 0f)
+            {
+                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
+                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
+                var a2 = Quaternion.AngleAxis(-90, up) * a1;
+                a1 = a1.normalized;
+                a2 = a2.normalized;
+                var arrowColorImpl = arrowColor ?? bodyColorImpl;
+                DrawLine(end + a1 * arrowSize, end, arrowColorImpl, duration);
+                DrawLine(end + a2 * arrowSize, end, arrowColorImpl, duration);
+            }
         }
 
         /// <summary>
@@ -107,7 +122,7 @@ namespace PLATEAU.Util
             , bool depthTest = true)
         {
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
-                Debug.DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
+                DrawLine(e.Item1, e.Item2, color ?? Color.white, duration, depthTest);
         }
 
         public static void DrawCenters(IEnumerable<Vector3> vertices
@@ -208,7 +223,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -224,7 +239,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -248,7 +263,7 @@ namespace PLATEAU.Util
 
                 var p0 = parabola.GetPoint(x0);
                 var p1 = parabola.GetPoint(x1);
-                Debug.DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
+                DrawLine(p0.ToVec3(showXz), p1.ToVec3(showXz), color ?? Color.white, duration, depthTest);
             }
         }
 
@@ -283,6 +298,285 @@ namespace PLATEAU.Util
                 };
                 DebugEx.DrawLines(v, true, color, duration, depthTest);
             }
+        }
+
+        public static void DrawMesh(Mesh mesh, Matrix4x4 mat, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Dictionary<int, HashSet<int>> refers = new Dictionary<int, HashSet<int>>();
+            for (var i = 0; i < mesh.triangles.Length; i += 3)
+            {
+                var v = new[]
+                {
+                    mat * mesh.vertices[mesh.triangles[i]],
+                    mat * mesh.vertices[mesh.triangles[i + 1]],
+                    mat *mesh.vertices[mesh.triangles[i + 2]]
+                }.Select(x => new Vector3(x.x, x.y, x.z));
+                DebugEx.DrawLines(v, true, color, duration, depthTest);
+            }
+        }
+
+        public static void DrawPlateauMesh(PolygonMesh.Mesh mesh, Matrix4x4 mat, Color? color = null,
+            float duration = 0f, bool depthTest = true)
+        {
+            for (var i = 0; i < mesh.SubMeshCount; ++i)
+            {
+                var subMesh = mesh.GetSubMeshAt(i);
+                for (var j = subMesh.StartIndex; j <= subMesh.EndIndex; j += 3)
+                {
+                    var v0 = mesh.GetVertexAt(mesh.GetIndiceAt(j));
+                    var v1 = mesh.GetVertexAt(mesh.GetIndiceAt(j + 1));
+                    var v2 = mesh.GetVertexAt(mesh.GetIndiceAt(j + 2));
+
+                    var v = new[]
+                    {
+                        mat * v0.ToUnityVector(),
+                        mat * v1.ToUnityVector(),
+                        mat * v2.ToUnityVector()
+                    }.Select(x => new Vector3(x.x, x.y, x.z));
+                    DebugEx.DrawLines(v, true, color, duration, depthTest);
+                }
+            }
+
+        }
+
+        public static void DrawPlateauPolygonMeshNode(Matrix4x4 parentMatrix, PolygonMesh.Node node, Color? color = null,
+            float duration = 0f, bool depthTest = true)
+        {
+            if (node == null)
+                return;
+            var pos = node.LocalPosition.ToUnityVector();
+            var rot = node.LocalRotation.ToUnityQuaternion();
+            var scale = node.LocalScale.ToUnityVector();
+            var mat = parentMatrix * Matrix4x4.TRS(pos, rot, scale);
+            DrawPlateauMesh(node.Mesh, mat, color);
+            for (var i = 0; i < node.ChildCount; ++i)
+            {
+                DrawPlateauPolygonMeshNode(mat, node.GetChildAt(i), color, duration, depthTest);
+            }
+        }
+
+        public static void DrawPlateauPolygonMeshModel(PLATEAU.PolygonMesh.Model model, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            for (var i = 0; i < model.RootNodesCount; ++i)
+            {
+                var node = model.GetRootNodeAt(i);
+                DrawPlateauPolygonMeshNode(Matrix4x4.identity, node, color);
+            }
+        }
+
+        // https://github.com/Unity-Technologies/Graphics/pull/2287/files#diff-cc2ed84f51a3297faff7fd239fe421ca1ca75b9643a22f7808d3a274ff3252e9
+        // Sphere with radius of 1
+        private static readonly Vector4[] s_unitSphere = MakeUnitSphere(16);
+        private static Vector4[] MakeUnitSphere(int len)
+        {
+            Debug.Assert(len > 2);
+            var v = new Vector4[len * 3];
+            for (int i = 0; i < len; i++)
+            {
+                var f = i / (float)len;
+                float c = Mathf.Cos(f * (float)(Math.PI * 2.0));
+                float s = Mathf.Sin(f * (float)(Math.PI * 2.0));
+                v[0 * len + i] = new Vector4(c, s, 0, 1);
+                v[1 * len + i] = new Vector4(0, c, s, 1);
+                v[2 * len + i] = new Vector4(s, 0, c, 1);
+            }
+            return v;
+        }
+
+        /// <summary>
+        /// 球を描画する
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawSphere(Vector3 pos, float radius, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            Vector4[] v = s_unitSphere;
+            int len = s_unitSphere.Length / 3;
+            var col = color ?? Color.white;
+            Vector4 p = pos;
+            p.w = 1f;
+            for (int i = 0; i < len; i++)
+            {
+                var sX = p + radius * v[0 * len + i];
+                var eX = p + radius * v[0 * len + (i + 1) % len];
+                var sY = p + radius * v[1 * len + i];
+                var eY = p + radius * v[1 * len + (i + 1) % len];
+                var sZ = p + radius * v[2 * len + i];
+                var eZ = p + radius * v[2 * len + (i + 1) % len];
+                DrawLine(sX, eX, col, duration, depthTest);
+                DrawLine(sY, eY, col, duration, depthTest);
+                DrawLine(sZ, eZ, col, duration, depthTest);
+            }
+        }
+
+        /// <summary>
+        /// 円を描画
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="radius"></param>
+        /// <param name="polygon">多角形のサイズ</param>
+        /// <param name="up"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawRegularPolygon(Vector3 pos, float radius, int polygon = 5, Vector3? up = null,
+            Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+            up ??= Vector3.up;
+            var rot = Quaternion.AngleAxis(360f / polygon, up.Value);
+
+            var d = Vector3.right;
+            if (Vector3.Dot(d, up.Value) == 0f)
+                d = Vector3.forward;
+
+            d = Vector3.Cross(d, up.Value).normalized;
+            var p0 = radius * d;
+            for (var i = 0; i < polygon; ++i)
+            {
+                var p1 = rot * p0;
+                DebugEx.DrawLine(p0 + pos, p1 + pos, color, duration, depthTest);
+                p0 = p1;
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedLine(Vector3 st, Vector3 en, Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, float duration = 0f,
+            bool depthTest = true)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DebugEx.DrawLine(p0, p1, color, duration, depthTest);
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        /// <param name="arrowSize"></param>
+        /// <param name="arrowUp"></param>
+        /// <param name="arrowColor"></param>
+        public static void DrawDashedArrow(Vector3 st, Vector3 en
+            , Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, float duration = 0f, bool depthTest = true, float arrowSize = 0.5f, Vector3? arrowUp = null, Color? arrowColor = null)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DebugEx.DrawArrow(p0, p1, arrowSize, arrowUp, color, arrowColor: arrowColor, duration: duration, depthTest: depthTest);
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedLines(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f, float duration = 0f,
+            bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedLine(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
+
+        /// <summary>
+        /// デバッグで破線(矢印)を描画する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f, float duration = 0f,
+            bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
+
+        /// <summary>
+        /// Debug.Logのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void Log(object message)
+        {
+            Debug.Log(message);
+        }
+
+        /// <summary>
+        /// Debug.LogWarningのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWarning(object message)
+        {
+            Debug.LogWarning(message);
+        }
+
+
+        /// <summary>
+        /// Debug.LogExceptionのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="e"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogException(Exception e)
+        {
+            Debug.LogException(e);
+        }
+        /// <summary>
+        /// Debug.LogErrorのラッパー. 後で切れるように
+        /// </summary>
+        /// <param name="message"></param>
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object message)
+        {
+            Debug.LogError(message);
         }
     }
 }

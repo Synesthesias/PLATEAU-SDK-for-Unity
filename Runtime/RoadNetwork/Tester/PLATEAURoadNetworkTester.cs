@@ -1,25 +1,44 @@
 ﻿using PLATEAU.CityGML;
-using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Drawer;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Structure.Drawer;
+using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using PLATEAUCityObjectGroup = PLATEAU.CityInfo.PLATEAUCityObjectGroup;
 
-namespace PLATEAU.RoadNetwork
+namespace PLATEAU.RoadNetwork.Tester
 {
     [Serializable]
-    public class PLATEAURoadNetworkTester : MonoBehaviour, IRoadNetworkObject
+    [RequireComponent(typeof(PLATEAURnModelDrawerDebug))]
+    public class PLATEAURoadNetworkTester : MonoBehaviour
     {
-        [SerializeField] private RoadNetworkDrawerDebug drawer = new RoadNetworkDrawerDebug();
+        // --------------------
+        // start:フィールド
+        // --------------------
+        [field: SerializeField]
+        public RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
 
-        [field: SerializeField] private RoadNetworkFactory Factory { get; set; } = new RoadNetworkFactory();
+        // シーンに配置している全てのPLATEAUCityObjectGroupを対象にするか
+        [field: SerializeField]
+        private bool TargetAll { get; set; } = true;
 
-        [field: SerializeField] public RoadNetworkModel RoadNetwork { get; set; }
+        // 道路ネットワーク作成用のPLATEAUCityObjectGroupのプリセットテーブル
+        [field: SerializeField]
+        public List<TestTargetPresets> TargetPresets { get; set; } = new();
+
+        // 今回作成するPLATEAUCityObjectGroupのプリセットテーブル
+        [field: SerializeField]
+        public string TargetPresetName { get; set; } = "";
+
+        // --------------------
+        // end:フィールド
+        // --------------------
 
         [Serializable]
         public class TestTargetPresets
@@ -28,56 +47,56 @@ namespace PLATEAU.RoadNetwork
             public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
         }
 
-        public List<TestTargetPresets> savedTargets = new List<TestTargetPresets>();
-
-        [SerializeField] private bool targetAll = false;
-
-        [Serializable]
-        public class SplitCityObjectTestParam
+        public List<PLATEAUCityObjectGroup> GetTargetCityObjects()
         {
-            public List<PLATEAUCityObjectGroup> targets = new List<PLATEAUCityObjectGroup>();
-            public bool doDestroySrcObject = false;
-        }
-        public SplitCityObjectTestParam splitCityObjectTestParam = new SplitCityObjectTestParam();
+            var ret = TargetAll
+                ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                : TargetPresets
+                    .FirstOrDefault(s => s.name == TargetPresetName)
+                    ?.targets;
+            if (ret == null)
+                return new List<PLATEAUCityObjectGroup>();
 
-        public string targetPresetName = "";
-
-        public void OnDrawGizmos()
-        {
-            drawer.Draw(RoadNetwork);
+            return ret
+                .Where(c => c.transform.childCount == 0)
+                .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
+                .Distinct()
+                .ToList();
         }
 
-        public async Task SplitCityObjectAsync()
+        /// <summary>
+        /// 道路ネットワークを作成する
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateNetwork()
         {
-            var p = splitCityObjectTestParam;
-            // 分割結合の設定です。
-            // https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/runtimeAPI.html
-            var conf = new GranularityConvertOptionUnity(new GranularityConvertOption(ConvertGranularity.PerAtomicFeatureObject, 1),
-                p.targets.Select(t => t.gameObject).ToArray(), p.doDestroySrcObject);
-            var d = await new CityGranularityConverter().ConvertAsync(conf);
+            var go = gameObject;
+            var targets = GetTargetCityObjects();
+            var req = Factory.CreateRequest(targets, go);
+            await Factory.CreateRnModelAsync(req);
         }
 
-        public void CreateNetwork()
+        /// <summary>
+        /// 同名のCityObjectGroupがあった場合に最大のLODのもの以外を非表示にする
+        /// </summary>
+        public void RemoveSameNameCityObjectGroup()
         {
-            if (targetAll)
+            var groups = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>();
+
+            foreach (var g in groups.GroupBy(g => g.gameObject.name)
+                         .Where(g => g.Count() > 1))
             {
-                var allTargets = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
-                    .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
-                    .ToList();
+                var level = g.Select(a => a.GetLodLevel()).Max();
+                g.TryFindMax(a => a.GetLodLevel(), out var maxG);
 
-                RoadNetwork = Factory.CreateNetwork(allTargets);
-            }
-            else
-            {
-                // 重複は排除する
-                var targets = savedTargets.FirstOrDefault(s => s.name == targetPresetName);
-                if (targets != null)
+                foreach (var a in g)
                 {
-                    targets.targets = targets.targets.Distinct().ToList();
-                    RoadNetwork = Factory.CreateNetwork(targets.targets);
+                    if (a != maxG)
+                    {
+                        a.gameObject.SetActive(false);
+                    }
                 }
             }
         }
-
     }
 }

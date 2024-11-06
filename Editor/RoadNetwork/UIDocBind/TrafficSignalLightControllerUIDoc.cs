@@ -1,4 +1,4 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
-namespace PLATEAU.Editor.RoadNetwork
+namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
     /// <summary>
     /// 交通信号灯制御器関連のUIDocumentのバインドや挙動の定義を行うクラス
@@ -61,7 +61,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (trafficLightController != null)
                 {
                     // 新しい交通信号制御パターンの追加
-                    trafficLightController.ControlPatternData.Add(new TrafficSignalControllerPattern());
+                    trafficLightController.SignalPatterns.Add(new TrafficSignalControllerPattern());
                     // パターンリストの同期
                     SyncTrafficLightControlPatternList(assets, panelInst, trafficLightController);
                 }
@@ -76,9 +76,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (trafficLightController != null)
                 {
                     // パターンが存在する場合、最後のパターンを削除
-                    if (trafficLightController.ControlPatternData.Count > 0)
+                    if (trafficLightController.SignalPatterns.Count > 0)
                     {
-                        trafficLightController.ControlPatternData.RemoveAt(trafficLightController.ControlPatternData.Count - 1);
+                        trafficLightController.SignalPatterns.RemoveAt(trafficLightController.SignalPatterns.Count - 1);
                         // パターンリストの同期
                         SyncTrafficLightControlPatternList(assets, panelInst, trafficLightController);
                     }
@@ -128,7 +128,7 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var radioBtnAsset = assets.GetAsset(RoadNetworkEditorAssets.RadioButton);
                 // 信号制御パターンリストの同期
-                SyncTrafficLightControlPatternList(trafficLightController.ControlPatternData, radioBtnGroup, radioBtnAsset);
+                SyncTrafficLightControlPatternList(trafficLightController.SignalPatterns, radioBtnGroup, radioBtnAsset);
             }
             else
             {
@@ -177,15 +177,15 @@ namespace PLATEAU.Editor.RoadNetwork
                     var radioBtn = inst.Q<RadioButton>("RadioButton");
                     var refSignalLight = "none";
                     var Seconds = 0.0f;
-                    if (item.Offset != null)
+                    if (item.OffsetTrafficLight != null)
                     {
-                        refSignalLight = item.Offset.ReferenceSignalLight.ToString();
-                        Seconds = item.Offset.Seconds;
+                        refSignalLight = item.OffsetTrafficLight.ToString();
+                        Seconds = item.OffsetSeconds;
                     }
 
                     radioBtn.label =
                         String.Format("{0} {1} {2} {3} {4}",
-                        item.StartTime.ToShortDateString(),
+                        item.StartOffsets.ToShortDateString(),
                         item.ControlPatternId,
                         "未計算",
                         refSignalLight,
@@ -193,7 +193,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     radioBtn.RegisterValueChangedCallback((e) =>
                     {
-                        var userData = UIDocBind.GetUserData(e) as TrafficSignalControllerPattern;
+                        var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPattern;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
                         system.SelectedSignalControllerPattern = userData;

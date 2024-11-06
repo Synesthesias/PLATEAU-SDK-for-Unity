@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.RoadNetwork.Structure;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -10,7 +11,7 @@ namespace PLATEAU.RoadNetwork.Data
     /// </summary>
     public interface IRoadNetworkObject
     {
-        public RoadNetworkModel RoadNetwork { get; }
+        public RnModel RoadNetwork { get; }
     }
 
     /// <summary>
@@ -38,6 +39,13 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable]
     public class RoadNetworkStorage : IRoadNetworkDynamicEditable
     {
+        /// <summary>
+        /// 自動生成で作成されたときのバージョン. これが現在のバージョンよりも古い場合はデータが古い可能性がある.
+        /// RoadNetworkFactory.FactoryVersion参照
+        /// </summary>
+        [field: SerializeField]
+        public string FactoryVersion { get; set; } = "";
+
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 
         [SerializeField]
@@ -90,12 +98,6 @@ namespace PLATEAU.RoadNetwork.Data
         }
     }
 
-    //[System.Serializable]
-    //public struct TrafficRegulationStorage
-    //{
-    //    public TrafficRegulationInfo[] regulationCollection;
-    //}
-
     /// <summary>
     /// 
     /// </summary>
@@ -106,49 +108,61 @@ namespace PLATEAU.RoadNetwork.Data
         // 大きくメモリを確保してそこから切り出す形に修正する
         // Listで確保しているストレージは配列にして初期化処理、解放処理の最適化
 
-        public PrimitiveStorage<TrafficRegulationInfoData> RegulationCollection { get => regulationCollection; }
-
-        public PrimitiveStorage<RoadNetworkDataPoint> Points { get => points; }
-        public PrimitiveStorage<RoadNetworkDataLineString> LineStrings { get => lineStrings; }
-
-
-        [field: SerializeField]
-        public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
-            new PrimitiveStorage<TrafficRegulationInfoData>();
-
-        [field: SerializeField] private PrimitiveStorage<RoadNetworkDataPoint> points = new PrimitiveStorage<RoadNetworkDataPoint>();
+        public PrimitiveStorage<RnDataTrafficLightController> TrafficLightControllers { get => trafficLightControllers; }
+        public PrimitiveStorage<RnDataTrafficLight> TrafficLights { get => trafficLights; }
+        public PrimitiveStorage<RnDataTrafficSignalPattern> TrafficSignalPatterns { get => trafficSignalPatterns; }
+        public PrimitiveStorage<RnDataTrafficSignalPhase> TrafficSignalPhases { get => trafficSignalPhases; }
 
         [field: SerializeField]
-        private PrimitiveStorage<RoadNetworkDataLineString> lineStrings =
-            new PrimitiveStorage<RoadNetworkDataLineString>();
+        private PrimitiveStorage<RnDataTrafficLightController> trafficLightControllers = new PrimitiveStorage<RnDataTrafficLightController>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataLane> Lanes { get; set; }
-            = new PrimitiveStorage<RoadNetworkDataLane>();
+        private PrimitiveStorage<RnDataTrafficLight> trafficLights = new PrimitiveStorage<RnDataTrafficLight>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataBlock> Blocks { get; set; } =
-            new PrimitiveStorage<RoadNetworkDataBlock>();
+        private PrimitiveStorage<RnDataTrafficSignalPattern> trafficSignalPatterns = new PrimitiveStorage<RnDataTrafficSignalPattern>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataLink> Links { get; set; } = new PrimitiveStorage<RoadNetworkDataLink>();
+        private PrimitiveStorage<RnDataTrafficSignalPhase> trafficSignalPhases = new PrimitiveStorage<RnDataTrafficSignalPhase>();
+
+        public PrimitiveStorage<RnDataPoint> Points { get => points; }
+        public PrimitiveStorage<RnDataLineString> LineStrings { get => lineStrings; }
+
+
+        //[field: SerializeField]
+        //public PrimitiveStorage<TrafficRegulationInfoData> regulationCollection =
+        //    new PrimitiveStorage<TrafficRegulationInfoData>();
+
+        [field: SerializeField] private PrimitiveStorage<RnDataPoint> points = new PrimitiveStorage<RnDataPoint>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataNode> Nodes { get; set; } = new PrimitiveStorage<RoadNetworkDataNode>();
+        private PrimitiveStorage<RnDataLineString> lineStrings =
+            new PrimitiveStorage<RnDataLineString>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataWay> Ways { get; set; } = new PrimitiveStorage<RoadNetworkDataWay>();
+        public PrimitiveStorage<RnDataLane> Lanes { get; set; }
+            = new PrimitiveStorage<RnDataLane>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RoadNetworkDataTrack> Tracks { get; set; } =
-            new PrimitiveStorage<RoadNetworkDataTrack>();
+        public PrimitiveStorage<RnDataBlock> Blocks { get; set; } =
+            new PrimitiveStorage<RnDataBlock>();
+
+        [field: SerializeField]
+        public PrimitiveStorage<RnDataWay> Ways { get; set; } = new PrimitiveStorage<RnDataWay>();
+
+        [field: SerializeField]
+        public PrimitiveStorage<RnDataRoadBase> RoadBases { get; set; } = new PrimitiveStorage<RnDataRoadBase>();
+
+        [field: SerializeField]
+        public PrimitiveStorage<RnDataSideWalk> SideWalks { get; set; } = new();
+
 
         // #NOTE : structだとgetterでとってきたときにコピーが返る -> それに対してWriteしても元データが書き換わらないのでclassにする
         [Serializable]
         public class PrimitiveStorage<TPrimType> : IRnIDGeneratable
             where TPrimType : IPrimitiveData
         {
-            [SerializeField] private List<TPrimType> dataList = new List<TPrimType>();
+            [SerializeField, SerializeReference] private List<TPrimType> dataList = new List<TPrimType>();
             // 未使用のデータインデックス アプリを次回起動した際にインデックスを利用できるように残す
             [SerializeField] private List<int> freeDataIndices = new List<int>();
 

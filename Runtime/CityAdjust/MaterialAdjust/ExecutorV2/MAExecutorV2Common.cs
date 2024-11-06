@@ -25,10 +25,10 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
         public void Prepare(UniqueParentTransformList target, out NonLibData.NonLibDataHolder nonLibData, out GameMaterialIDRegistry materialRegistry, out GranularityConvertResult sceneResult)
         {
             nonLibData = new NonLibData.NonLibDataHolder(
-                new InstancedCityModelDict(),
                 new NameToAttrsDict(),
                 new PositionRotationDict(),
-                new GmlIdToSerializedCityObj()
+                new GmlIdToSerializedCityObj(),
+                new NonLibComponentsDict()
             );
             nonLibData.ComposeFrom(target);
             materialRegistry = new GameMaterialIDRegistry();
