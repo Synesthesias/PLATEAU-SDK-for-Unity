@@ -95,7 +95,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 foreach (var nonBorder in inter.Edges.Where(e => !e.IsBorder).Select(e => e.Border))
                 {
-                    bool isBorderOutside = true;
+                    // bool isBorderOutside = true;
                     // 条件: 歩道のinsideWayと重ならない
                     var insideWays = inter.SideWalks.Select(sw => sw.InsideWay).SelectMany(w => w.Vertices);
                     var nonBorder2 = new RnmLine(nonBorder).SubtractSeparate(insideWays, 1);
