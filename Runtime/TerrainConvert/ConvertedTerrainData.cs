@@ -305,7 +305,11 @@ namespace PLATEAU.TerrainConvert
                         heightmapData.maxUV,
                         true);
                     var mesh = MeshConverter.Convert(nativeMesh, name);
-                    var gameObject = await mesh.PlaceToScene(GetTransformByName(srcGameObjs, heightmapData.name).parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
+
+                    var srcTrans = GetTransformByName(srcGameObjs, heightmapData.name);
+                    string prevTextureName = TextureName(srcTrans);
+                    
+                    var gameObject = await mesh.PlaceToScene(srcTrans.parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
 
                     var smoothedDem = gameObject.AddComponent<PLATEAUSmoothedDem>();
                     smoothedDem.HeightMapData = heightmapData;
@@ -322,6 +326,7 @@ namespace PLATEAU.TerrainConvert
                     
                     var material = gameObject.GetComponent<MeshRenderer>().sharedMaterial;
                     material.mainTexture = LoadTexture2dWithoutAlpha(heightmapData.diffuseTexturePath);
+                    material.mainTexture.name = prevTextureName;
                     material.SetColor("_BaseColor", Color.white);
                     material.SetFloat("_Smoothness", 0f);
                     result.Add(gameObject);
@@ -336,6 +341,18 @@ namespace PLATEAU.TerrainConvert
             {
                 child.PlaceMeshToSceneRecursive(result, srcGameObjs, option, false, nextRecursiveDepth);
             }
+        }
+
+        private string TextureName(Transform trans)
+        {
+            var renderer = trans.GetComponent<MeshRenderer>();
+            if (renderer == null) return "";
+            var material = renderer.sharedMaterial;
+            if (material == null) return "";
+            var texture = material.mainTexture;
+            if (texture == null) return "";
+            return texture.name;
+
         }
     }
 }
