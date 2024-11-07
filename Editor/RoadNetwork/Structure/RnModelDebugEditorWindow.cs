@@ -264,7 +264,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                 if (GUILayout.Button("Merge"))
                 {
-                    work.DelayExec.Add(() => roadGroup.MergeToOneRoad());
+                    work.DelayExec.Add(() => roadGroup.MergeRoads());
                 }
 
                 EditorGUILayout.LabelField($"LaneCount");

@@ -855,7 +855,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 複数のRoadsを1つのRoadにまとめる
         /// </summary>
-        public void MergeToOneRoad()
+        public void MergeRoads()
         {
             Align();
 
