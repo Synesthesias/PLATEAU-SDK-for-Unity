@@ -573,7 +573,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         from.Border.GetLerpPoint(0.5f, out var fromPos);
                         to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                        List<BezierKnot> knots = new() { new(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal) };
+                        List<BezierKnot> knots = new() { new BezierKnot(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal) };
 
                         void AddKnots(Vector3 pos)
                         {
