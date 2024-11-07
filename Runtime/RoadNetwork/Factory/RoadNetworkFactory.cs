@@ -208,7 +208,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way, RnRoad parent, RnSideWalkLaneType laneType)
+                void MoveWay(RnWay way, RnRoadBase parent, RnSideWalkLaneType laneType)
                 {
                     if (way == null)
                         return;
@@ -256,7 +256,11 @@ namespace PLATEAU.RoadNetwork.Factory
                         MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane);
                         MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane);
                     }
-                    // #TODO : 交差点も作る？
+                    else if (tran.Node is RnIntersection intersection)
+                    {
+                        foreach (var edge in intersection.Edges.Where(x => x.IsBorder == false))
+                            MoveWay(edge.Border, intersection, RnSideWalkLaneType.Undefined);
+                    }
                 }
 
                 return ret;
