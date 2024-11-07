@@ -538,9 +538,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (last != null)
                 {
-                    var ang = Vector2.SignedAngle(-last.Value.Direction, e.Direction);
-                    if (ang < 0)
-                        ang += 360f;
+                    var ang = Vector2.Angle(last.Value.Direction, e.Direction);
                     ret += ang;
                 }
 

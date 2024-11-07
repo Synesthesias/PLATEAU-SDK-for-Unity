@@ -652,5 +652,95 @@ namespace PLATEAU.RoadNetwork.Structure
             var d = v - nearest;
             return set.Any(i => Vector2.Dot(self.GetEdgeNormal(i).Xz(), d.Xz()) >= 0f);
         }
+
+        /// <summary>
+        /// 開始時はstartOffset, 終了時はendOffsetだけ移動し, その間を線分と法線を使って補完しながら移動する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="startOffset"></param>
+        /// <param name="endOffset"></param>
+        public static void MoveLerpAlongNormal(this RnWay self, Vector3 startOffset, Vector3 endOffset)
+        {
+            if (self.IsValid == false)
+                return;
+
+            if (self.Count == 2)
+            {
+                self.GetPoint(0).Vertex += startOffset;
+                self.GetPoint(1).Vertex += endOffset;
+                return;
+            }
+
+            var index = 0;
+
+
+            // 現在見る点と次の点の辺/頂点の法線を保存しておく
+            // 線分の法線
+
+            Vector3 EdgeNormal(int i)
+            {
+                return self.GetEdgeNormal(i);
+            }
+
+            var sLen = startOffset.magnitude;
+            var eLen = endOffset.magnitude;
+            var sDir = startOffset.normalized;
+            var eDir = endOffset.normalized;
+            // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
+            var sSign = Mathf.Sign(Vector3.Dot(startOffset, EdgeNormal(0)));
+            var eSign = Mathf.Sign(Vector3.Dot(endOffset, EdgeNormal(self.Count - 2)));
+
+            var edgeNormal = new[] { sDir * sSign, EdgeNormal(1) };
+            // 頂点の法線
+            var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
+            var delta = 1f;
+
+
+            var totalLength = self.CalcLength();
+            var nowLength = 0f;
+
+            var pointOffset = new Vector3[self.Count];
+            pointOffset[0] = startOffset;
+            pointOffset[self.Count - 1] = endOffset;
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var en0 = edgeNormal[index];
+                var en1 = edgeNormal[(index + 1) & 1];
+                var vn = vertexNormal[index];
+
+                // 形状維持するためにオフセット距離を変える
+                // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                var m = Vector3.Dot(vn, en0);
+                // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
+                var d = delta;
+                bool isZero = Mathf.Abs(m) < 1e-5f;
+                if (isZero == false)
+                    d /= m;
+
+                if (i < self.Count - 2)
+                {
+                    edgeNormal[index] = EdgeNormal(Mathf.Min(self.Count - 2, i + 1));
+                    vertexNormal[index] = (edgeNormal[0] + edgeNormal[1]).normalized;
+                    index = (index + 1) & 1;
+                }
+
+                if (i != 0)
+                {
+                    var p = nowLength / totalLength;
+                    var l = Mathf.Lerp(sSign * sLen, eSign * eLen, p) * Mathf.Lerp(d, 1f, p);
+                    pointOffset[i] = vn * l;
+                }
+                // 次の頂点計算のためにen1線分の移動量を入れる
+                delta = d * Vector3.Dot(vn, en1);
+                nowLength += (self[i + 1] - self[i]).magnitude;
+
+            }
+
+            for (var i = 0; i < self.Count; ++i)
+            {
+                self.GetPoint(i).Vertex += pointOffset[i];
+            }
+        }
+
     }
 }

@@ -637,25 +637,24 @@ namespace PLATEAU.RoadNetwork.Structure
                             var sLen = (way[0] - fromPos).magnitude;
                             var eLen = (way[^1] - toPos).magnitude;
 
-                            var length = way.CalcLength();
-                            var len = 0f;
-
-                            var index = 0;
-
                             // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
                             var sSign = Vector3.Dot(fromPos - way[0], EdgeNormal(0)) < 0 ? -1 : 1;
                             var eSign = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0 ? -1 : 1;
 
+                            var index = 0;
                             // 現在見る点と次の点の辺/頂点の法線を保存しておく
                             // 線分の法線
                             var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
                             // 先頭の法線が逆の場合計算がおかしくなるので反転して最後に適用するときに戻す
                             if (sSign < 0)
                                 edgeNormal[0] = edgeNormal[0].AxisSymmetric(way[1] - way[0]);
+
                             // 頂点の法線
                             var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
-                            var delta = 1f;
 
+                            var length = way.CalcLength();
+                            var len = 0f;
+                            var delta = 1f;
                             for (var i = 0; i < way.Count - 1; i++)
                             {
                                 var en0 = edgeNormal[index];

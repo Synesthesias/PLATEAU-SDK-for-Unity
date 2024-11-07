@@ -534,7 +534,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 foreach (var r in group.Roads)
                     work.Visited.Add(r);
 
-                if (roadOp.showRoadGroup.showSpline && group.TryCreateSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
+                if (roadOp.showRoadGroup.showSpline && group.TryCreateSimpleSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
                 {
                     var n = spline.Count;
                     if (roadOp.showRoadGroup.showSplineKnot)

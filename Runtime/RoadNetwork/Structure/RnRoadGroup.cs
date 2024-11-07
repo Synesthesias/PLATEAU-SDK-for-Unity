@@ -700,38 +700,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
                 var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, prevBorder, nextBorder, 0.5f, pointSkipDistance);
 
+                if (r.TryGetNearestDistance(line, out var w) == false)
+                    return false;
+
                 points.AddRange(line.Points.Select(p => p.Vertex));
-                width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
 
-                HashSet<float> indices = new();
-                foreach (var p in leftWay.Points)
-                {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
-                    indices.Add(index);
-                }
-
-                foreach (var p in rightWay.Points)
-                {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
-                    indices.Add(index);
-                }
-
-                foreach (var i in Enumerable.Range(0, line.Count))
-                    indices.Add(i);
-
-                // 左右それぞれで最も小さい幅の２倍にする
-                // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
-                var leftWidth = float.MaxValue;
-                var rightWidth = float.MaxValue;
-                foreach (var i in indices)
-                {
-                    var v = line.GetLerpPoint(i);
-                    leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
-                    leftWidth = Mathf.Min(leftWidth, wl);
-                    rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
-                    rightWidth = Mathf.Min(rightWidth, wr);
-                }
-                width = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 0.5f, width);
+                width = Mathf.Min(w, width);
             }
 
             for (var i = 0; i < points.Count; i++)
@@ -756,82 +730,49 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool TryCreateSimpleSpline(out Spline spline, out float width, float tangentLength = 1f, float pointSkipDistance = 1e-3f)
         {
-            Align();
             spline = new Spline();
             width = float.MaxValue;
-            var points = new List<Vector3>();
-            foreach (var r in Roads)
+            if (Roads.Count != 1)
             {
-                if (r.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
-                    return false;
-                var prevBorder = r.GetMergedBorder(RnLaneBorderType.Prev, null);
-                var nextBorder = r.GetMergedBorder(RnLaneBorderType.Next, null);
-                var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
-                var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
-                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, prevBorder, nextBorder, 0.5f, pointSkipDistance);
+                DebugEx.LogError($"This operation is only supported when Roads.Count == 1. Current count = {Roads.Count}.");
+                return false;
+            }
+            Align();
 
-
-                var minAngle = float.MaxValue;
-                RnWay way = null;
-                foreach (var l in r.AllLanesWithMedian)
+            var road = Roads[0];
+            var minAngle = float.MaxValue;
+            RnWay way = null;
+            foreach (var l in road.AllLanesWithMedian)
+            {
+                foreach (var w in l.BothWays)
                 {
-                    foreach (var w in l.AllWays)
+                    var ang = w.LineString.CalcTotalAngle2D();
+                    if (ang < minAngle)
                     {
-                        var ang = w.LineString.CalcTotalAngle2D();
-                        if (ang < minAngle)
-                        {
-                            minAngle = ang;
-
-                            way = r.IsLeftLane(l) ? w : w.ReversedWay();
-
-
-                        }
+                        minAngle = ang;
+                        way = road.IsLeftLane(l) ? w : w.ReversedWay();
                     }
                 }
-
-                points.AddRange(line.Points.Select(p => p.Vertex));
-                width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
-
-                HashSet<float> indices = new();
-                foreach (var p in leftWay.Points)
-                {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
-                    indices.Add(index);
-                }
-
-                foreach (var p in rightWay.Points)
-                {
-                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
-                    indices.Add(index);
-                }
-
-                foreach (var i in Enumerable.Range(0, line.Count))
-                    indices.Add(i);
-
-                // 左右それぞれで最も小さい幅の２倍にする
-                // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
-                var leftWidth = float.MaxValue;
-                var rightWidth = float.MaxValue;
-                foreach (var i in indices)
-                {
-                    var v = line.GetLerpPoint(i);
-                    leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
-                    leftWidth = Mathf.Min(leftWidth, wl);
-                    rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
-                    rightWidth = Mathf.Min(rightWidth, wr);
-                }
-                width = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 0.5f, width);
             }
 
-            for (var i = 0; i < points.Count; i++)
+            if (way == null)
+                return false;
+
+
+            var prevBorder = road.GetMergedBorder(RnLaneBorderType.Prev, null);
+            var nextBorder = road.GetMergedBorder(RnLaneBorderType.Next, null);
+            var prevOffset = prevBorder.GetLerpPoint(0.5f) - way[0];
+            var nextOffset = nextBorder.GetLerpPoint(0.5f) - way[^1];
+
+            way = way.Clone(true);
+            way.MoveLerpAlongNormal(prevOffset, nextOffset);
+            for (var i = 0; i < way.Count; i++)
             {
-                var dirIn = (i == 0 ? (points[i + 1] - points[i]) : (points[i] - points[i - 1])).normalized;
-                var dirOut = i == (points.Count - 1) ? dirIn : (points[i + 1] - points[i]).normalized;
-                spline.Add(new BezierKnot(points[i], dirIn * tangentLength, dirOut * tangentLength));
+                var dirIn = (i == 0 ? (way[i + 1] - way[i]) : (way[i] - way[i - 1])).normalized;
+                var dirOut = i == (way.Count - 1) ? dirIn : (way[i + 1] - way[i]).normalized;
+                spline.Add(new BezierKnot(way[i], dirIn * tangentLength, dirOut * tangentLength));
             }
-
-
-            return true;
+            return road.TryGetNearestDistance(way.LineString, out width);
         }
 
         /// <summary>

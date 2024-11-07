@@ -763,5 +763,56 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Concat(self.SideWalks.SelectMany(s => s.SideWays));
             return RnEx.GetLineIntersections(lineSegment, targetLines);
         }
+
+        /// <summary>
+        /// selfの内部をlineが取っているとしたときに, selfの両端のWayとlineの最も近い点との距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="line"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static bool TryGetNearestDistance(this RnRoad self, RnLineString line, out float distance)
+        {
+            distance = 0f;
+            if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+                return false;
+            var prevBorder = self.GetMergedBorder(RnLaneBorderType.Prev, null);
+            var nextBorder = self.GetMergedBorder(RnLaneBorderType.Next, null);
+            var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
+            var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
+
+            distance = Mathf.Min(distance, prevBorder.CalcLength(), nextBorder.CalcLength());
+
+            HashSet<float> indices = new();
+            foreach (var p in leftWay.Points)
+            {
+                line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
+                indices.Add(index);
+            }
+
+            foreach (var p in rightWay.Points)
+            {
+                line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
+                indices.Add(index);
+            }
+
+            foreach (var i in Enumerable.Range(0, line.Count))
+                indices.Add(i);
+
+            // 左右それぞれで最も小さい幅の２倍にする
+            // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
+            var leftWidth = float.MaxValue;
+            var rightWidth = float.MaxValue;
+            foreach (var i in indices)
+            {
+                var v = line.GetLerpPoint(i);
+                leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
+                leftWidth = Mathf.Min(leftWidth, wl);
+                rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
+                rightWidth = Mathf.Min(rightWidth, wr);
+            }
+            distance = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 2f, distance);
+            return true;
+        }
     }
 }
