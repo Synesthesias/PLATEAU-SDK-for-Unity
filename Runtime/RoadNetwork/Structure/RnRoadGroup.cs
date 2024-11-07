@@ -104,6 +104,22 @@ namespace PLATEAU.RoadNetwork.Structure
             return roads.SelectMany(l => l.GetLeftLanes());
         }
 
+        /// <summary>
+        /// RnDirで指定した側のレーンを取得する
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public IEnumerable<RnLane> GetLanes(RnDir dir)
+        {
+            return dir switch
+            {
+                RnDir.Left => GetLeftLanes(),
+                RnDir.Right => GetRightLanes(),
+                _ => throw new ArgumentOutOfRangeException($"GetLanes ({dir})")
+            };
+        }
+
         private RnWay ConnectWays(IEnumerable<RnWay> ways)
         {
             var points = new List<RnPoint>();
@@ -191,7 +207,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        private void SetLaneCount(int count, RnDir dir)
+        private void SetLaneCountImpl(int count, RnDir dir)
         {
             if (IsValid == false)
                 return;
@@ -576,7 +592,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // すでに左車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCount(count, RnDir.Left);
+                SetLaneCountImpl(count, RnDir.Left);
             }
         }
 
@@ -598,7 +614,28 @@ namespace PLATEAU.RoadNetwork.Structure
             // すでに右車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCount(count, RnDir.Right);
+                SetLaneCountImpl(count, RnDir.Right);
+            }
+        }
+
+        /// <summary>
+        /// RnDirで指定した側のレーン数を設定する
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="count"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SetLaneCount(RnDir dir, int count)
+        {
+            switch (dir)
+            {
+                case RnDir.Left:
+                    SetLeftLaneCount(count);
+                    break;
+                case RnDir.Right:
+                    SetRightLaneCount(count);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dir), dir, $"SetLaneCount({dir})");
             }
         }
 
