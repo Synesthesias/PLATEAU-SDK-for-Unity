@@ -9,11 +9,6 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RnRoad))]
     public class RnDataRoad : RnDataRoadBase
     {
-        // 対象のtranオブジェクト
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public PLATEAUCityObjectGroup TargetTran { get; set; }
-
         [field: SerializeField]
         [RoadNetworkSerializeMember]
         public RnID<RnDataRoadBase> Next { get; set; }

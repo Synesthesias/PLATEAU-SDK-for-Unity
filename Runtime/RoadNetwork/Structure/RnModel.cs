@@ -140,7 +140,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="buildTracks">変換後にTrackの生成を行う</param>
         public void Convert2Intersection(RnRoad road, bool buildTracks = true)
         {
-            var intersection = new RnIntersection(road.TargetTran);
+            var intersection = new RnIntersection(road.TargetTrans);
 
             // 左右のWayとBorderを使って交差点とする
             road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
@@ -181,7 +181,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Where(n => n.Road == prev || n.Road == next)
                 .ToList();
 
-            var road = new RnRoad(intersection.TargetTran);
+            var road = new RnRoad(intersection.TargetTrans);
             road.SetPrevNext(prev, next);
 
             // #TODO : 
@@ -200,6 +200,11 @@ namespace PLATEAU.RoadNetwork.Structure
             if (sideWalks.Contains(sideWalk))
                 return;
             sideWalks.Add(sideWalk);
+        }
+
+        public void RemoveSideWalk(RnSideWalk sideWalk)
+        {
+            sideWalks.Remove(sideWalk);
         }
 
         public void AddRoadBase(RnRoadBase roadBase)
@@ -439,6 +444,25 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var n in model.SideWalks)
                 AddSideWalk(n);
+        }
+
+        /// <summary>
+        /// 連続した道路を一つのRoadにまとめる
+        /// </summary>
+        public void MergeRoadGroup()
+        {
+            var visitedRoads = new HashSet<RnRoad>();
+            var roads = Roads.ToList();
+            foreach (var road in roads)
+            {
+                if (visitedRoads.Contains(road))
+                    continue;
+
+                var roadGroup = road.CreateRoadGroup();
+                foreach (var l in roadGroup.Roads)
+                    visitedRoads.Add(l);
+                roadGroup.MergeToOneRoad();
+            }
         }
 
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
@@ -795,7 +819,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // 新しく生成されるRoad
-            var newNextRoad = new RnRoad(road.TargetTran);
+            var newNextRoad = new RnRoad(road.TargetTrans);
 
             // roadをprev/next側で分断して, next側をnewRoadにする
             foreach (var lane in road.AllLanesWithMedian)
@@ -1009,7 +1033,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // 新しく生成されるRoad
-            var newNextRoad = new RnRoad(inter.TargetTran);
+            var newNextRoad = new RnRoad(inter.TargetTrans);
 
 
 
@@ -1080,7 +1104,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 leftWay = rightWay;
             }
 
-            inter.RemoveNeighbors(n => n.Road == inters.TargetEdgeGroup.Key);
+            inter.RemoveEdges(n => n.Road == inters.TargetEdgeGroup.Key);
             foreach (var w in nextBorders)
                 inter.AddEdge(newNextRoad, w);
 

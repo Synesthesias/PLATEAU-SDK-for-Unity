@@ -271,11 +271,6 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 自分が所属するRoadNetworkModel
-        public RnModel ParentModel { get; set; }
-
-        // 対象のtranオブジェクト
-        public PLATEAUCityObjectGroup TargetTran { get; set; }
 
         // 交差点の外形情報. 時計回り/反時計回りかは保証されていないが, 連結はしている
         private List<RnNeighbor> edges = new List<RnNeighbor>();
@@ -294,8 +289,6 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
-        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
-
         /// <summary>
         /// 他の道路との境界線Edge取得
         /// </summary>
@@ -313,7 +306,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnIntersection(PLATEAUCityObjectGroup targetTran)
         {
-            TargetTran = targetTran;
+            AddTargetTran(targetTran);
+        }
+
+        public RnIntersection(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        {
+            foreach (var t in targetTrans)
+                AddTargetTran(t);
         }
 
         /// <summary>
@@ -370,13 +369,35 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret / cnt;
         }
 
-        public void ReplaceBorder(RnRoad link, List<RnWay> borders)
+        /// <summary>
+        /// roadとの境界線をbordersに置き換える
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="borders"></param>
+        public void ReplaceEdges(RnRoad road, List<RnWay> borders)
         {
-            RemoveNeighbors(n => n.Road == link);
-            edges.AddRange(borders.Select(b => new RnNeighbor { Road = link, Border = b }));
+            RemoveEdges(n => n.Road == road);
+            edges.AddRange(borders.Select(b => new RnNeighbor { Road = road, Border = b }));
         }
 
-        public void RemoveNeighbors(Func<RnNeighbor, bool> predicate)
+
+        /// <summary>
+        /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える
+        /// </summary>
+        /// <param name="border"></param>
+        /// <param name="afterRoad"></param>
+        public void ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
+        {
+            foreach (var e in edges.Where(e => e.Border.IsSameLine(border)))
+                e.Road = afterRoad;
+        }
+
+
+        /// <summary>
+        /// predicateで指定した隣接情報を削除する
+        /// </summary>
+        /// <param name="predicate"></param>
+        public void RemoveEdges(Func<RnNeighbor, bool> predicate)
         {
             for (var i = 0; i < edges.Count; i++)
             {
@@ -428,9 +449,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="road"></param>
         /// <param name="lane"></param>
-        public void RemoveNeighbor(RnRoad road, RnLane lane)
+        public void RemoveEdge(RnRoad road, RnLane lane)
         {
-            RemoveNeighbors(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
+            RemoveEdges(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
         }
 
         /// <summary>
@@ -441,7 +462,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             // 削除するBorderに接続しているレーンも削除
             var borders = edges.Where(n => n.Road == other).Select(n => n.Border).ToList();
-            RemoveNeighbors(n => n.Road == other);
+            RemoveEdges(n => n.Road == other);
         }
 
         /// <summary>
@@ -449,6 +470,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public override void DisConnect(bool removeFromModel)
         {
+            base.DisConnect(removeFromModel);
             // リンクを削除する
             foreach (var e in Edges)
             {

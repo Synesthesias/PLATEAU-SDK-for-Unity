@@ -713,6 +713,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+                // 連続した道路を一つにまとめる
+                ret.MergeRoadGroup();
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);

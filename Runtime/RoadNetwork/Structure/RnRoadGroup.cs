@@ -233,14 +233,14 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (i == Roads.Count - 1 && NextIntersection != null)
                 {
                     foreach (var l in beforeLanes)
-                        NextIntersection.RemoveNeighbor(road, l);
+                        NextIntersection.RemoveEdge(road, l);
                     foreach (var l in lanes)
                         NextIntersection.AddEdge(road, l.NextBorder);
                 }
                 if (i == 0 && PrevIntersection != null)
                 {
                     foreach (var l in beforeLanes)
-                        PrevIntersection.RemoveNeighbor(road, l);
+                        PrevIntersection.RemoveEdge(road, l);
                     foreach (var l in lanes)
                         PrevIntersection.AddEdge(road, l.PrevBorder);
                 }
@@ -300,9 +300,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 var lanes = afterLanes[road];
 
                 if (i == Roads.Count - 1)
-                    NextIntersection?.ReplaceBorder(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
+                    NextIntersection?.ReplaceEdges(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
                 if (i == 0)
-                    PrevIntersection?.ReplaceBorder(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
+                    PrevIntersection?.ReplaceEdges(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
 
                 // 右車線の場合は反対にする
                 for (var j = leftCount + 1; j < lanes.Count; ++j)
@@ -374,9 +374,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 var lanes = afterLanes[road];
 
                 if (i == Roads.Count - 1)
-                    NextIntersection?.ReplaceBorder(road, lanes.Select(l => l.NextBorder).ToList());
+                    NextIntersection?.ReplaceEdges(road, lanes.Select(l => l.NextBorder).ToList());
                 if (i == 0)
-                    PrevIntersection?.ReplaceBorder(road, lanes.Select(l => l.PrevBorder).ToList());
+                    PrevIntersection?.ReplaceEdges(road, lanes.Select(l => l.PrevBorder).ToList());
                 // 右車線の分
                 for (var j = leftCount; j < lanes.Count; ++j)
                     lanes[j].Reverse();
@@ -505,7 +505,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         // レーンの境界線をLeft->Right方向で求める
                         var way = road.GetBorderWay(lane, borderType, dir);
                         var medianWay = road.GetBorderWay(median, borderType, dir);
-                        way.Append2LineString(medianWay);
+                        way.AppendBack2LineString(medianWay);
                     }
                 }
 
@@ -532,10 +532,10 @@ namespace PLATEAU.RoadNetwork.Structure
                                 var mWay = road.GetBorderWay(median, borderType, RnLaneBorderDir.Left2Right);
                                 var mWays = mWay.Split(2, false);
                                 var leftBorder = road.GetBorderWay(leftLane, borderType, RnLaneBorderDir.Left2Right);
-                                leftBorder.Append2LineString(mWays[0]);
+                                leftBorder.AppendBack2LineString(mWays[0]);
 
                                 var rightBorder = road.GetBorderWay(rightLane, borderType, RnLaneBorderDir.Right2Left);
-                                rightBorder.Append2LineString(mWays[1].ReversedWay());
+                                rightBorder.AppendBack2LineString(mWays[1].ReversedWay());
                             }
                             var left = leftLane.RightWay;
                             var right = rightLane.RightWay.ReversedWay();
@@ -746,6 +746,95 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 中央を通るスプラインとその幅を取得する
+        /// 幅は中間点から取得するので完璧な値ではない
+        /// </summary>
+        /// <param name="spline"></param>
+        /// <param name="width"></param>
+        /// <param name="tangentLength"></param>
+        /// <param name="pointSkipDistance"></param>
+        /// <returns></returns>
+        public bool TryCreateSimpleSpline(out Spline spline, out float width, float tangentLength = 1f, float pointSkipDistance = 1e-3f)
+        {
+            Align();
+            spline = new Spline();
+            width = float.MaxValue;
+            var points = new List<Vector3>();
+            foreach (var r in Roads)
+            {
+                if (r.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+                    return false;
+                var prevBorder = r.GetMergedBorder(RnLaneBorderType.Prev, null);
+                var nextBorder = r.GetMergedBorder(RnLaneBorderType.Next, null);
+                var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
+                var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
+                var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, prevBorder, nextBorder, 0.5f, pointSkipDistance);
+
+
+                var minAngle = float.MaxValue;
+                RnWay way = null;
+                foreach (var l in r.AllLanesWithMedian)
+                {
+                    foreach (var w in l.AllWays)
+                    {
+                        var ang = w.LineString.CalcTotalAngle2D();
+                        if (ang < minAngle)
+                        {
+                            minAngle = ang;
+
+                            way = r.IsLeftLane(l) ? w : w.ReversedWay();
+
+
+                        }
+                    }
+                }
+
+                points.AddRange(line.Points.Select(p => p.Vertex));
+                width = Mathf.Min(width, prevBorder.CalcLength(), nextBorder.CalcLength());
+
+                HashSet<float> indices = new();
+                foreach (var p in leftWay.Points)
+                {
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    indices.Add(index);
+                }
+
+                foreach (var p in rightWay.Points)
+                {
+                    line.GetNearestPoint(p.Vertex, out var v, out var index, out var distance);
+                    indices.Add(index);
+                }
+
+                foreach (var i in Enumerable.Range(0, line.Count))
+                    indices.Add(i);
+
+                // 左右それぞれで最も小さい幅の２倍にする
+                // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
+                var leftWidth = float.MaxValue;
+                var rightWidth = float.MaxValue;
+                foreach (var i in indices)
+                {
+                    var v = line.GetLerpPoint(i);
+                    leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
+                    leftWidth = Mathf.Min(leftWidth, wl);
+                    rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
+                    rightWidth = Mathf.Min(rightWidth, wr);
+                }
+                width = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 0.5f, width);
+            }
+
+            for (var i = 0; i < points.Count; i++)
+            {
+                var dirIn = (i == 0 ? (points[i + 1] - points[i]) : (points[i] - points[i - 1])).normalized;
+                var dirOut = i == (points.Count - 1) ? dirIn : (points[i + 1] - points[i]).normalized;
+                spline.Add(new BezierKnot(points[i], dirIn * tangentLength, dirOut * tangentLength));
+            }
+
+
+            return true;
+        }
+
+        /// <summary>
         /// 向きがそろっているかどうか
         /// </summary>
         public bool IsAligned
@@ -777,7 +866,6 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (IsAligned)
                 return;
-
 
             // まずはRoadsのPrev/Nextの向きをそろえる
             // Roads.Count <= 1の場合はIsAligned=trueなのでここでは
@@ -822,6 +910,158 @@ namespace PLATEAU.RoadNetwork.Structure
             if (Roads[0].Prev != PrevIntersection)
                 (PrevIntersection, NextIntersection) = (NextIntersection, PrevIntersection);
         }
+
+        /// <summary>
+        /// 複数のRoadsを1つのRoadにまとめる
+        /// </summary>
+        public void MergeToOneRoad()
+        {
+            Align();
+
+            if (Roads.Count <= 1)
+                return;
+
+            // マージ先の道路
+            var dstRoad = Roads[0];
+            var dstLanes = dstRoad.AllLanesWithMedian.ToList();
+            var dstSideWalks = dstRoad.SideWalks.ToList();
+
+            for (var i = 1; i < Roads.Count; i++)
+            {
+                // マージ元の道路. dstRoadに統合されて消える
+                var srcRoad = Roads[i];
+                var srcLanes = srcRoad.AllLanesWithMedian.ToList();
+
+                // SideWalksと共通のLineStringもあるので2回追加しないように記録しておく
+                HashSet<RnLineString> visited = new();
+                for (var j = 0; j < srcLanes.Count; ++j)
+                {
+                    var srcLane = srcLanes[j];
+
+                    // 順方向(左車線)
+                    if (srcRoad.IsLeftLane(srcLane))
+                    {
+                        var dstLane = dstLanes.FirstOrDefault(l => l.NextBorder.IsSameLine(srcLane.PrevBorder));
+                        if (dstLane == null)
+                            throw new NullReferenceException($"l");
+                        dstLane.LeftWay?.AppendBack2LineString(srcLane.LeftWay);
+                        visited.Add(dstLane.LeftWay?.LineString);
+                        if (j == srcLanes.Count - 1)
+                        {
+                            dstLane.RightWay?.AppendBack2LineString(srcLane.RightWay);
+                            visited.Add(dstLane.RightWay?.LineString);
+                        }
+
+                        dstLane.SetBorder(RnLaneBorderType.Next, srcLane.NextBorder);
+                    }
+                    // 逆方向(右車線)
+                    else
+                    {
+                        var dstLane = dstLanes.FirstOrDefault(l => l.PrevBorder.IsSameLine(srcLane.NextBorder));
+                        if (dstLane == null)
+                            throw new NullReferenceException($"l");
+                        dstLane.RightWay?.AppendFront2LineString(srcLane.RightWay);
+                        visited.Add(dstLane.RightWay?.LineString);
+                        if (j == srcLanes.Count - 1)
+                        {
+                            dstLane.LeftWay?.AppendFront2LineString(srcLane.LeftWay);
+                            visited.Add(dstLane.LeftWay?.LineString);
+                        }
+
+                        dstLane.SetBorder(RnLaneBorderType.Prev, srcLane.PrevBorder);
+                    }
+                }
+
+                var srcSideWalks = srcRoad.SideWalks.ToList();
+                foreach (var srcSw in srcSideWalks)
+                {
+                    var found = false;
+                    foreach (var dstSw in dstSideWalks)
+                    {
+                        void Merge(bool reverse, Action<RnWay, RnWay> merger)
+                        {
+                            var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
+                            var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
+                            if (dstSw.InsideWay != null)
+                            {
+                                if (visited.Contains(dstSw.InsideWay.LineString) == false)
+                                {
+                                    merger(dstSw.InsideWay, insideWay);
+                                    visited.Add(dstSw.InsideWay.LineString);
+                                }
+
+                                insideWay = dstSw.InsideWay;
+                            }
+
+                            if (dstSw.OutsideWay != null)
+                            {
+                                if (visited.Contains(dstSw.OutsideWay.LineString) == false)
+                                {
+                                    merger(dstSw.OutsideWay, outsideWay);
+                                    visited.Add(dstSw.OutsideWay.LineString);
+                                }
+
+                                outsideWay = dstSw.OutsideWay;
+                            }
+
+                            dstSw.SetSideWays(outsideWay, insideWay);
+                            found = true;
+                        }
+
+                        // start - startで重なっている場合
+                        if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                        {
+                            Merge(true, RnWayEx.AppendFront2LineString);
+                            dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
+                        }
+                        // start - endで重なっている場合
+                        else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                        {
+                            Merge(false, RnWayEx.AppendFront2LineString);
+                            dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
+                        }
+                        // end - endで重なっている場合
+                        else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                        {
+                            Merge(true, RnWayEx.AppendBack2LineString);
+                            dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
+                        }
+                        // end - startで重なっている場合
+                        else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                        {
+                            Merge(false, RnWayEx.AppendBack2LineString);
+                            dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
+                        }
+
+                        if (found)
+                            break;
+                    }
+
+                    // マージできなかった歩道は直接追加
+                    if (found == false)
+                    {
+                        dstRoad.AddSideWalk(srcSw);
+                        dstSideWalks.Add(srcSw);
+                    }
+                }
+                dstRoad.AddTargetTrans(srcRoad.TargetTrans);
+                srcRoad.DisConnect(true);
+            }
+
+            if (NextIntersection != null)
+            {
+                NextIntersection.RemoveEdges(r => r.Road == Roads[^1]);
+                foreach (var l in dstLanes)
+                {
+                    NextIntersection.AddEdge(dstRoad, dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right));
+                }
+            }
+
+            dstRoad.SetPrevNext(PrevIntersection, NextIntersection);
+
+            roads = new[] { dstRoad }.ToList();
+        }
+
 
         // ---------------
         // Static Methods

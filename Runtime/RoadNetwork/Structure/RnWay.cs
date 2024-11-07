@@ -492,6 +492,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsSameLine(RnWay other, bool onlyReferenceEqual = true)
         {
+            if (other == null)
+                return false;
             if (onlyReferenceEqual)
                 return LineString == other.LineString;
             return RnLineString.Equals(LineString, other.LineString);
@@ -535,6 +537,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="pos"></param>
         /// <param name="nearest"></param>
         /// <param name="pointIndex"></param>
+        /// <param name="distance"></param>
         /// <returns></returns>
         public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
@@ -571,18 +574,49 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="self"></param>
         /// <param name="back"></param>
-        public static void Append2LineString(this RnWay self, RnWay back)
+        public static void AppendBack2LineString(this RnWay self, RnWay back)
         {
+            if (back == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLine(back))
+                return;
             if (self.IsReversed)
             {
                 foreach (var p in back.Points)
-                    self.LineString.AddPointFrontOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointFrontOrSkip(p, 0f, 0f, 0f);
             }
             else
             {
                 // IsReversedがfalseの時はそのまま追加
                 foreach (var p in back.Points)
-                    self.LineString.AddPointOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointOrSkip(p, 0f, 0f, 0f);
+            }
+        }
+        /// <summary>
+        /// selfの内部のLineStringにfrontのLineStringを追加する
+        /// back.Points... self.Pointsの順になるようにIsReverseを考慮して追加する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="front"></param>
+        public static void AppendFront2LineString(this RnWay self, RnWay front)
+        {
+            if (front == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLine(front))
+                return;
+            if (self.IsReversed)
+            {
+                // IsReversedの時は逆順に後ろに追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0, 0);
+            }
+            else
+            {
+                // falseの時は逆順に前に追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointFrontOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0f, 0f);
             }
         }
 

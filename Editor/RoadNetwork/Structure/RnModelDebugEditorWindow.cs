@@ -255,11 +255,16 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
 
             var roadGroup = road.CreateRoadGroupOrDefault();
-            if (RnEditorUtil.Foldout("RoadGroupOption", p.Foldouts, ("RoadGroupOption", road)))
+            if (RnEditorUtil.Foldout($"RoadGroupOption [{roadGroup.Roads.Count}]", p.Foldouts, ("RoadGroupOption", road)))
             {
                 if (GUILayout.Button("Align"))
                 {
-                    roadGroup.Align();
+                    work.DelayExec.Add(() => roadGroup.Align());
+                }
+
+                if (GUILayout.Button("Merge"))
+                {
+                    work.DelayExec.Add(() => roadGroup.MergeToOneRoad());
                 }
 
                 EditorGUILayout.LabelField($"LaneCount");
@@ -635,7 +640,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
             if (roadBase == null)
                 return false;
-            return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
+            return roadBase.TargetTrans.Any(RnEx.IsEditorSceneSelected);
         }
         /// <summary>
         /// Scene上で選択されているかどうか

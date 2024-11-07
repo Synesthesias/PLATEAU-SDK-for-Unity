@@ -23,12 +23,6 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 自分が所属するRoadNetworkModel
-        public RnModel ParentModel { get; set; }
-
-        // 対象のtranオブジェクト
-        public PLATEAUCityObjectGroup TargetTran { get; set; }
-
         // 接続先(nullの場合は接続なし)
         public RnRoadBase Next { get; private set; }
 
@@ -49,8 +43,6 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // end: フィールド
         //----------------------------------
-
-        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
         // 車線レーンリスト(参照のみ)
         // 必ず左車線 -> 右車線の順番になっている( そうなるように追加する必要がある)
@@ -128,7 +120,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnRoad(PLATEAUCityObjectGroup targetTran)
         {
-            TargetTran = targetTran;
+            AddTargetTran(targetTran);
+        }
+
+        public RnRoad(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        {
+            foreach (var targetTran in targetTrans)
+                AddTargetTran(targetTran);
         }
 
         /// <summary>
@@ -158,7 +156,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
-        private bool IsLeftLane(RnLane lane)
+        public bool IsLeftLane(RnLane lane)
         {
             return lane.IsReverse == false;
         }
@@ -168,7 +166,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
-        private bool IsRightLane(RnLane lane)
+        public bool IsRightLane(RnLane lane)
         {
             return lane.IsReverse == true;
         }
@@ -423,6 +421,11 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var lane in AllLanesWithMedian)
                 lane.IsReverse = !lane.IsReverse;
             mainLanes.Reverse();
+
+            foreach (var sw in SideWalks)
+            {
+                sw.ReverseLaneType();
+            }
         }
 
         /// <summary>
@@ -575,11 +578,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public override void DisConnect(bool removeFromModel)
         {
+            base.DisConnect(removeFromModel);
             Prev?.UnLink(this);
             Next?.UnLink(this);
             SetPrevNext(null, null);
             if (removeFromModel)
+            {
                 ParentModel?.RemoveRoad(this);
+            }
+
             foreach (var lane in mainLanes)
             {
                 lane.DisConnectBorder();
@@ -617,7 +624,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// selfの全頂点の重心を返す
         /// </summary>
-        /// <param name="self"></param>
         /// <returns></returns>
         public override Vector3 GetCenter()
         {
