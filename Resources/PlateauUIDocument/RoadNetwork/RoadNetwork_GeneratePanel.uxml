@@ -29,7 +29,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="Divider" style="flex-grow: 1;" />
         <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
-            <ui:Button text="生成" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GenerateButton" class="ActionButton" style="width: 200px;" />
+            <ui:Button text="生成" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
