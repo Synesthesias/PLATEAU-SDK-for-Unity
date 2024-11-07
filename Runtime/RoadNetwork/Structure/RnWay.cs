@@ -13,7 +13,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// </summary>
     public class RnWayPoints : IReadOnlyList<RnPoint>
     {
-        private RnWay way;
+        private readonly RnWay way;
 
         public RnWayPoints(RnWay way)
         {
@@ -157,6 +157,12 @@ namespace PLATEAU.RoadNetwork.Structure
         // 2頂点以上ある有効な道かどうか
         public bool IsValid => LineString?.IsValid ?? false;
 
+        /// <summary>
+        /// RnWay生成
+        /// </summary>
+        /// <param name="lineString"></param>
+        /// <param name="isReversed">LineStringの向きが逆かどうか</param>
+        /// <param name="isReverseNormal">法線が進行方向に対して左側か右側か. trueなら右側</param>
         public RnWay(RnLineString lineString, bool isReversed = false, bool isReverseNormal = false)
         {
             LineString = lineString;
@@ -202,6 +208,28 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// IsReversed ? Count - 1 - index : index
+        /// LineStringとWayのインデックスの相互変換
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public int SwitchIndex(int index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
+        /// IsReversed ? Count - 1 - index : index
+        /// LineStringとWayのインデックスの相互変換(float版)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public float SwitchIndex(float index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
         /// 頂点アクセス
         /// </summary>
         /// <param name="index"></param>
@@ -216,7 +244,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
-        /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
@@ -246,7 +274,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 道の外側を向いている. 正規化はされていない
+        /// 道の外側を向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -380,7 +408,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 頂点数が2の時は特殊処理
             if (Count == 2)
             {
-                var n = GetEdgeNormal(0).normalized;
+                var n = GetEdgeNormal(0);
                 foreach (var p in Points)
                     p.Vertex += n * offset;
 
@@ -390,7 +418,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
             // 線分の法線
-            var edgeNormal = new[] { GetEdgeNormal(0).normalized, GetEdgeNormal(Mathf.Min(Count - 1, 1)).normalized };
+            var edgeNormal = new[] { GetEdgeNormal(0), GetEdgeNormal(Mathf.Min(Count - 1, 1)) };
             // 頂点の法線
             var vertexNormal = new[] { GetVertexNormal(0), GetVertexNormal(1) };
             var delta = offset;
@@ -487,26 +515,34 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// nearestからRnWay上の最も近い点を探す
+        /// self.GetPoint(index) == pointとなるindexを返す. 見つからない場合は-1が返る.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static int FindPointIndex(this RnWay self, RnPoint point)
+        {
+            var index = self.LineString.Points.IndexOf(point);
+            if (index < 0)
+                return index;
+            return self.SwitchIndex(index);
+        }
+
+        /// <summary>
+        /// posからRnWay上の最も近い点を探す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="pos"></param>
         /// <param name="nearest"></param>
+        /// <param name="pointIndex"></param>
         /// <returns></returns>
-        public static bool FindNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest)
+        public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            float len = float.MaxValue;
-            foreach (var s in GeoGraphEx.GetEdges(self, false))
-            {
-                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos);
-                if ((nearest - v).sqrMagnitude < len)
-                {
-                    len = (nearest - v).sqrMagnitude;
-                    nearest = v;
-                }
-            }
-            return len < float.MaxValue;
+            var minLen = float.MaxValue;
+
+            self.LineString.GetNearestPoint(pos, out nearest, out pointIndex, out distance);
+            pointIndex = self.SwitchIndex(pointIndex);
         }
 
         /// <summary>
@@ -560,6 +596,27 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var ls = RnLineString.Create(a.Points.Concat(b.Points));
             return new RnWay(ls);
+        }
+
+        /// <summary>
+        /// selfの方向に対してvが外側(法線と同じ側)かどうか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <param name="nearest"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static bool IsOutSide(this RnWay self, Vector3 v, out Vector3 nearest, out float distance)
+        {
+            self.GetNearestPoint(v, out nearest, out var pointIndex, out distance);
+
+            var st = Mathf.Clamp((int)pointIndex, 0, self.Count - 2);
+            var en = Mathf.Clamp(Mathf.CeilToInt(pointIndex - 1), 0, self.Count - 2);
+
+            HashSet<int> set = new HashSet<int> { st, en };
+
+            var d = v - nearest;
+            return set.Any(i => Vector2.Dot(self.GetEdgeNormal(i).Xz(), d.Xz()) >= 0f);
         }
     }
 }

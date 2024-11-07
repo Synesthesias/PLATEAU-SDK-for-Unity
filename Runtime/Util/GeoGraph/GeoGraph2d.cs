@@ -40,7 +40,7 @@ namespace PLATEAU.Util.GeoGraph
             }
         }
         /// <summary>
-        /// 
+        /// 凸包を計算する. 戻り値の0番,^1番は同じものが入る
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="vertices"></param>

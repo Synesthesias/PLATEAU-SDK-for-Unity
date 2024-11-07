@@ -352,7 +352,7 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceにする
+        /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceGroupにする.
         /// </summary>
         /// <param name="self"></param>
         /// <param name="isMatch"></param>

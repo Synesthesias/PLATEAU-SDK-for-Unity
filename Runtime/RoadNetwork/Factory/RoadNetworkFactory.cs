@@ -20,7 +20,7 @@ namespace PLATEAU.RoadNetwork.Factory
         /// 自動生成バージョン. 作成時に番号埋め込んでおいてどのバージョンで作られたかを見れるようにする.
         /// メジャー/マイナー分けたいので文字列
         /// </summary>
-        public static readonly string FactoryVersion = "1.0";
+        public static readonly string FactoryVersion = "1.1";
 
         // --------------------
         // start:フィールド
@@ -43,7 +43,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
         // Lod3の歩道を追加するかどうか
         [field: SerializeField]
-        public bool AddLod3SideWalk { get; set; } = true;
+        public bool AddSideWalk { get; set; } = true;
 
         // 中央分離帯をチェックする
         [field: SerializeField]
@@ -637,7 +637,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 var sideWalks = work.CreateSideWalk(Lod1SideWalkSize);
                 foreach (var sideWalk in sideWalks)
                     ret.AddSideWalk(sideWalk);
-                if (AddLod3SideWalk)
+                if (AddSideWalk)
                 {
                     foreach (var fg in faceGroups)
                     {
