@@ -1281,8 +1281,8 @@ namespace PLATEAU.Editor.RoadNetwork
             private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
             private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
 
-            private EditingSystemSubMod.RnSplineEditting splineEditting = new EditingSystemSubMod.RnSplineEditting();
-            public EditingSystemSubMod.RnSplineEditting SplineEditting { get => splineEditting; }
+            private EditingSystemSubMod.RnSplineEditing splineEditting = new EditingSystemSubMod.RnSplineEditing();
+            public EditingSystemSubMod.RnSplineEditing SplineEditting { get => splineEditting; }
 
             // 詳細編集モードかどうか
             private bool isEditingDetailMode = false;

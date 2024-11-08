@@ -5,7 +5,9 @@
         "Unity.Formats.Fbx.Editor",
         "libplateau",
         "PLATEAU.Runtime",
-        "Unity.Splines"
+        "Unity.Splines",
+        "Unity.Splines.Editor",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [
         "Editor"
