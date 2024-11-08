@@ -185,9 +185,10 @@ namespace PLATEAU.CityImport.Import.Convert
 
                 if (!string.IsNullOrEmpty(this.parentGmlID))
                     cityObjList.outsideParent = this.parentGmlID;
-            
-                foreach (var id in indexList)
+
+                for (int i = 0; i < indexList.Count; i++)
                 {
+                    var id = indexList[i];
                     if (id.PrimaryID == id.AtomicID) continue;
                     var childCityObj = serializedCityObjectGetter.GetDstCityObjectByGmlID(id.AtomicID, id.Index);
                     if (childCityObj == null) continue;
@@ -203,22 +204,8 @@ namespace PLATEAU.CityImport.Import.Convert
 
         private CityObjectIndex GetCurrentCityObjectIndex(CityObjectIndex id, Node node, string gmlID)
         {
-            // Nodeから、idに対応するCityObjectIndexを取得します。
-            // 見つからなかった場合、このクラスに記録されたCityObjectIndexを返します。
-            // FIXME: Node優先なら全部Nodeで良いのでは。このクラスにCityObjectIndexを記録するなど、無駄な処理があるのでは。
+
             var currentID = new CityObjectIndex(id.PrimaryIndex, id.AtomicIndex);
-            if (node.Mesh != null)
-            {
-                var col = node.Mesh.CityObjectList;
-                var indices = col.GetAllKeys();
-                Func<CityObjectIndex, bool> searchPredicate = idx => col.GetAtomicID(idx) == gmlID;
-                if (indices.Any(searchPredicate))
-                {
-                    var nodeIdx = indices.First(searchPredicate);
-                    return nodeIdx;
-                }
-                
-            }
             return currentID;
         }
 
