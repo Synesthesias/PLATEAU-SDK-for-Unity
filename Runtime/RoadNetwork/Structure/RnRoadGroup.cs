@@ -222,6 +222,10 @@ namespace PLATEAU.RoadNetwork.Structure
             if (afterLanes == null)
                 return;
 
+            // 最後に隣接する交差点のトラックの再生成を行うためのキャッシュ
+            // 隣接情報が確定した後でトラック生成を行う必要があるので、ここでキャッシュしておく
+            HashSet<RnLineString> newNextBorders = new();
+            HashSet<RnLineString> newPrevBorders = new();
             // Roadsに変更を加えるのは最後にまとめて必要がある
             // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
             for (var i = 0; i < Roads.Count; ++i)
@@ -235,14 +239,21 @@ namespace PLATEAU.RoadNetwork.Structure
                     foreach (var l in beforeLanes)
                         NextIntersection.RemoveEdge(road, l);
                     foreach (var l in lanes)
+                    {
                         NextIntersection.AddEdge(road, l.NextBorder);
+                        newNextBorders.Add(l.NextBorder.LineString);
+                    }
+
                 }
                 if (i == 0 && PrevIntersection != null)
                 {
                     foreach (var l in beforeLanes)
                         PrevIntersection.RemoveEdge(road, l);
                     foreach (var l in lanes)
+                    {
                         PrevIntersection.AddEdge(road, l.PrevBorder);
+                        newPrevBorders.Add(l.PrevBorder.LineString);
+                    }
                 }
 
                 // 右車線の場合は反対にする
@@ -255,6 +266,12 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 Roads[i].ReplaceLanes(lanes, dir);
             }
+
+            if (NextIntersection != null && newNextBorders.Any())
+                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+
+            if (PrevIntersection != null && newPrevBorders.Any())
+                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
         }
 
         /// <summary>
@@ -292,6 +309,11 @@ namespace PLATEAU.RoadNetwork.Structure
             if (afterLanes == null)
                 return;
 
+            // 最後に隣接する交差点のトラックの再生成を行うためのキャッシュ
+            // 隣接情報が確定した後でトラック生成を行う必要があるので、ここでキャッシュしておく
+            List<RnLineString> newNextBorders = new();
+            List<RnLineString> newPrevBorders = new();
+
             // Roadsに変更を加えるのは最後にまとめて必要がある
             // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
             for (var i = 0; i < Roads.Count; ++i)
@@ -299,10 +321,17 @@ namespace PLATEAU.RoadNetwork.Structure
                 var road = Roads[i];
                 var lanes = afterLanes[road];
 
-                if (i == Roads.Count - 1)
-                    NextIntersection?.ReplaceEdges(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
-                if (i == 0)
-                    PrevIntersection?.ReplaceEdges(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
+                if (i == Roads.Count - 1 && NextIntersection != null)
+                {
+                    NextIntersection.ReplaceEdges(Roads[^1], lanes.Select(l => l.NextBorder).ToList());
+                    newNextBorders.AddRange(lanes.Select(l => l.NextBorder.LineString));
+                }
+
+                if (i == 0 && PrevIntersection != null)
+                {
+                    PrevIntersection.ReplaceEdges(Roads[0], lanes.Select(l => l.PrevBorder).ToList());
+                    newPrevBorders.AddRange(lanes.Select(l => l.PrevBorder.LineString));
+                }
 
                 // 右車線の場合は反対にする
                 for (var j = leftCount + 1; j < lanes.Count; ++j)
@@ -313,7 +342,82 @@ namespace PLATEAU.RoadNetwork.Structure
                 road.ReplaceLanes(lanes);
                 road.SetMedianLane(median);
             }
+
+            if (NextIntersection != null && newNextBorders.Any())
+                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+
+            if (PrevIntersection != null && newPrevBorders.Any())
+                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
         }
+
+        /// <summary>
+        /// レーン数を変更する. 中央分離帯は削除する
+        /// </summary>
+        /// <param name="leftCount"></param>
+        /// <param name="rightCount"></param>
+        private void SetLaneCountWithoutMedian(int leftCount, int rightCount)
+        {
+            if (IsValid == false)
+                return;
+            // 既に指定の数になっている場合は何もしない
+            if (Roads.All(l => l.GetLeftLaneCount() == leftCount && l.GetRightLaneCount() == rightCount))
+                return;
+
+            // 向きをそろえる
+            Align();
+
+            var num = leftCount + rightCount;
+            var afterLanes = SplitLane(num, null);
+            if (afterLanes == null)
+                return;
+
+            // 最後に隣接する交差点のトラックの再生成を行うためのキャッシュ
+            // 隣接情報が確定した後でトラック生成を行う必要があるので、ここでキャッシュしておく
+            List<RnLineString> newNextBorders = new();
+            List<RnLineString> newPrevBorders = new();
+
+            // Roadsに変更を加えるのは最後にまとめて必要がある
+            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
+            for (var i = 0; i < Roads.Count; ++i)
+            {
+                var road = Roads[i];
+                var lanes = afterLanes[road];
+
+                if (i == Roads.Count - 1)
+                {
+                    NextIntersection?.ReplaceEdges(road, lanes.Select(l => l.NextBorder).ToList());
+                    newNextBorders.AddRange(lanes.Select(l => l.NextBorder.LineString));
+                }
+
+                if (i == 0 && PrevIntersection != null)
+                {
+                    PrevIntersection?.ReplaceEdges(road, lanes.Select(l => l.PrevBorder).ToList());
+                    newPrevBorders.AddRange(lanes.Select(l => l.PrevBorder.LineString));
+                }
+
+                // 右車線の分
+                for (var j = leftCount; j < lanes.Count; ++j)
+                    lanes[j].Reverse();
+
+                road.ReplaceLanes(lanes);
+            }
+
+            // 中央分離帯を削除する
+            foreach (var l in Roads)
+                l.SetMedianLane(null);
+
+            if (NextIntersection != null && newNextBorders.Any())
+                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+
+            if (PrevIntersection != null && newPrevBorders.Any())
+                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+        }
+
+        /// <summary>
+        /// レーン数を変更する
+        /// </summary>
+        /// <param name="leftCount"></param>
+        /// <param name="rightCount"></param>
         public void SetLaneCount(int leftCount, int rightCount)
         {
             if (IsValid == false)
@@ -346,50 +450,69 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// レーン数を変更する. 中央分離帯は削除する
+        /// 左側レーン数を変更する
         /// </summary>
-        /// <param name="leftCount"></param>
-        /// <param name="rightCount"></param>
-        private void SetLaneCountWithoutMedian(int leftCount, int rightCount)
+        /// <param name="count"></param>
+        public void SetLeftLaneCount(int count)
         {
-            if (IsValid == false)
-                return;
             // 既に指定の数になっている場合は何もしない
-            if (Roads.All(l => l.GetLeftLaneCount() == leftCount && l.GetRightLaneCount() == rightCount))
+            if (GetLeftLaneCount() == count)
                 return;
 
-            // 向きをそろえる
-            Align();
-
-            var num = leftCount + rightCount;
-            var afterLanes = SplitLane(num, null);
-            if (afterLanes == null)
-                return;
-
-            // Roadsに変更を加えるのは最後にまとめて必要がある
-            // (RnRoads.IsLeftLane等が隣のRoadに依存するため. 途中で変更すると、後続の処理が破綻する可能性がある)
-            for (var i = 0; i < Roads.Count; ++i)
+            // 左車線が無い場合は全車線含めて変更する
+            if (GetLeftLaneCount() == 0 || count == 0)
             {
-                var road = Roads[i];
-                var lanes = afterLanes[road];
-
-                if (i == Roads.Count - 1)
-                    NextIntersection?.ReplaceEdges(road, lanes.Select(l => l.NextBorder).ToList());
-                if (i == 0)
-                    PrevIntersection?.ReplaceEdges(road, lanes.Select(l => l.PrevBorder).ToList());
-                // 右車線の分
-                for (var j = leftCount; j < lanes.Count; ++j)
-                    lanes[j].Reverse();
-
-                road.ReplaceLanes(lanes);
+                SetLaneCountWithoutMedian(count, GetRightLaneCount());
             }
-
-            // 中央分離帯を削除する
-            foreach (var l in Roads)
-                l.SetMedianLane(null);
+            // すでに左車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCountImpl(count, RnDir.Left);
+            }
         }
 
+        /// <summary>
+        /// 右側レーン数を変更する
+        /// </summary>
+        /// <param name="count"></param>
+        public void SetRightLaneCount(int count)
+        {
+            // 既に指定の数になっている場合は何もしない
+            if (GetRightLaneCount() == count)
+                return;
 
+            // 右車線が無い場合は全車線含めて変更する
+            if (GetRightLaneCount() == 0 || count == 0)
+            {
+                SetLaneCountWithoutMedian(GetLeftLaneCount(), count);
+            }
+            // すでに右車線がある場合はそれだけで変更する
+            else
+            {
+                SetLaneCountImpl(count, RnDir.Right);
+            }
+        }
+
+        /// <summary>
+        /// RnDirで指定した側のレーン数を設定する
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <param name="count"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SetLaneCount(RnDir dir, int count)
+        {
+            switch (dir)
+            {
+                case RnDir.Left:
+                    SetLeftLaneCount(count);
+                    break;
+                case RnDir.Right:
+                    SetRightLaneCount(count);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dir), dir, $"SetLaneCount({dir})");
+            }
+        }
 
         /// <summary>
         /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨
@@ -574,70 +697,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        /// <summary>
-        /// 左側レーン数を変更する
-        /// </summary>
-        /// <param name="count"></param>
-        public void SetLeftLaneCount(int count)
-        {
-            // 既に指定の数になっている場合は何もしない
-            if (GetLeftLaneCount() == count)
-                return;
 
-            // 左車線が無い場合は全車線含めて変更する
-            if (GetLeftLaneCount() == 0 || count == 0)
-            {
-                SetLaneCountWithoutMedian(count, GetRightLaneCount());
-            }
-            // すでに左車線がある場合はそれだけで変更する
-            else
-            {
-                SetLaneCountImpl(count, RnDir.Left);
-            }
-        }
-
-        /// <summary>
-        /// 右側レーン数を変更する
-        /// </summary>
-        /// <param name="count"></param>
-        public void SetRightLaneCount(int count)
-        {
-            // 既に指定の数になっている場合は何もしない
-            if (GetRightLaneCount() == count)
-                return;
-
-            // 右車線が無い場合は全車線含めて変更する
-            if (GetRightLaneCount() == 0 || count == 0)
-            {
-                SetLaneCountWithoutMedian(GetLeftLaneCount(), count);
-            }
-            // すでに右車線がある場合はそれだけで変更する
-            else
-            {
-                SetLaneCountImpl(count, RnDir.Right);
-            }
-        }
-
-        /// <summary>
-        /// RnDirで指定した側のレーン数を設定する
-        /// </summary>
-        /// <param name="dir"></param>
-        /// <param name="count"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void SetLaneCount(RnDir dir, int count)
-        {
-            switch (dir)
-            {
-                case RnDir.Left:
-                    SetLeftLaneCount(count);
-                    break;
-                case RnDir.Right:
-                    SetRightLaneCount(count);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(dir), dir, $"SetLaneCount({dir})");
-            }
-        }
 
         /// <summary>
         /// まだ中央分離帯がない場合は作成する.

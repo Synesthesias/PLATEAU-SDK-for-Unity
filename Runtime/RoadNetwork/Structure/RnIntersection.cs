@@ -374,7 +374,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="road"></param>
         /// <param name="borders"></param>
-        public void ReplaceEdges(RnRoad road, List<RnWay> borders)
+        /// <param name="reBuildTrack"></param>
+        public void ReplaceEdges(RnRoad road, List<RnWay> borders, bool reBuildTrack = true)
         {
             RemoveEdges(n => n.Road == road);
             edges.AddRange(borders.Select(b => new RnNeighbor { Road = road, Border = b }));
@@ -460,8 +461,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
         {
-            // 削除するBorderに接続しているレーンも削除
-            var borders = edges.Where(n => n.Road == other).Select(n => n.Border).ToList();
             RemoveEdges(n => n.Road == other);
         }
 
@@ -499,29 +498,109 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public class BuildTrackOption
+        {
+            /// <summary>
+            /// スプラインのTangentの長さ
+            /// </summary>
+            public float TangentLength { get; set; } = 10f;
+
+            /// <summary>
+            /// 同じ道路への侵入を許可する
+            /// </summary>
+            public bool AllowSelfTrack { get; set; } = false;
+
+            /// <summary>
+            /// 生成前に,既存のTrackをクリアする
+            /// </summary>
+            public bool ClearTracks { get; set; } = true;
+
+            /// <summary>
+            /// 現在存在しないトラックのみをビルド対象とする(ClearTracks=trueだと実質的に全トラックが対象)
+            /// </summary>
+            public bool UnCreatedTrackOnly { get; set; } = true;
+
+            /// <summary>
+            /// ここで指定されたLineStringを境界とするトラックのみビルド対象とする.
+            /// 空の場合は全てのトラックが対象となる
+            /// </summary>
+            public HashSet<RnLineString> TargetBorderLineStrings { get; set; } = new();
+
+            /// <summary>
+            /// ビルド対象のトラックかどうか
+            /// </summary>
+            public bool IsBuildTarget(RnIntersection intersection, RnNeighbor from, RnNeighbor to)
+            {
+                if (intersection == null)
+                    return false;
+
+                if (UnCreatedTrackOnly)
+                {
+                    // すでに存在するトラックは対象外
+                    if (intersection.tracks.Any(t => t.IsSameInOut(from.Border, to.Border)))
+                        return false;
+                }
+
+                if (TargetBorderLineStrings.Count != 0)
+                {
+                    if (TargetBorderLineStrings.Contains(from.Border.LineString) == false
+                        && TargetBorderLineStrings.Contains(to.Border.LineString) == false)
+                        return false;
+                }
+
+                return true;
+            }
+
+            public static BuildTrackOption Default() => new();
+
+            public static BuildTrackOption UnBuiltTracks()
+            {
+                var ret = new BuildTrackOption
+                {
+                    ClearTracks = false,
+                    UnCreatedTrackOnly = true,
+                };
+
+                return ret;
+            }
+
+            /// <summary>
+            /// 指定した境界線に関係するトラックのみビルド対象とする
+            /// </summary>
+            /// <param name="borders"></param>
+            /// <returns></returns>
+            public static BuildTrackOption WithBorder(IEnumerable<RnLineString> borders)
+            {
+                var ret = new BuildTrackOption
+                {
+                    ClearTracks = false,
+                    // 指定したトラックのみビルド対象とする
+                    TargetBorderLineStrings = borders.Where(x => x != null).ToHashSet(),
+                };
+
+                return ret;
+            }
+        }
 
         /// <summary>
-        /// 
+        /// Trackの再生成
         /// </summary>
-        /// <param name="tangentLength"></param>
-        /// <param name="splitLength"></param>
-        /// <param name="allowSelfTrack">同じ道路への遷移を許可する</param>
-        public void BuildTracks(float tangentLength = 10f, float splitLength = 2f, bool allowSelfTrack = false)
+        /// <param name="op"></param>
+        public void BuildTracks(BuildTrackOption op = null)
         {
-            tracks.Clear();
+            op ??= new();
+            if (op.ClearTracks)
+                tracks.Clear();
 
             var centerGraph = this.CreateCenterLineGraph();
-
             var edgeGroups = this.CreateEdgeGroup();
-
-            foreach (var eg in edgeGroups.Where(e => e.IsBorder))
+            foreach (var fromEg in edgeGroups.Where(e => e.IsBorder))
             {
-                var inBounds = eg.InBoundEdges.ToList();
-                foreach (var other in edgeGroups.Where(e => e.IsBorder && e != eg))
-
+                var inBounds = fromEg.InBoundEdges.ToList();
+                foreach (var toEg in edgeGroups.Where(e => e.IsBorder && e != fromEg))
                 {
                     // Uターンを許可しない場合
-                    if (eg.Key == other.Key && allowSelfTrack == false)
+                    if (fromEg.Key == toEg.Key && op.AllowSelfTrack == false)
                         continue;
 
                     // 隣り合っている場合.
@@ -545,11 +624,11 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
                     // 左側で隣接している場合はそれをそのまま使う
-                    if (eg.LeftSide == other.RightSide)
+                    if (fromEg.LeftSide == toEg.RightSide)
                     {
-                        var ls = RnLineString.Create(eg.LeftSide.Edges.SelectMany(e => e.Border.Points));
+                        var ls = RnLineString.Create(fromEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         way = new RnWay(ls.Refined(1f), false, true);
-                        var oLs = RnLineString.Create(other.LeftSide.Edges.SelectMany(e => e.Border.Points));
+                        var oLs = RnLineString.Create(toEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         widthTable = way.Points.Select(x =>
                         {
                             oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
@@ -571,10 +650,10 @@ namespace PLATEAU.RoadNetwork.Structure
                     //}
                     // それ以外の場合は中央線を使う
                     // ただし自分自身に戻る(Uターン)の場合は中央線使わない
-                    else if (eg.Key != other.Key)
+                    else if (fromEg.Key != toEg.Key)
                     {
-                        way = centerGraph.CenterLines.GetValueOrDefault(eg.Key)?.GetValueOrDefault(other.Key);
-                        var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
+                        way = centerGraph.CenterLines.GetValueOrDefault(fromEg.Key)?.GetValueOrDefault(toEg.Key);
+                        var oLs = RnLineString.Create(toEg.RightSide.Edges.SelectMany(e => e.Border.Points));
 
                         if (way != null)
                         {
@@ -586,16 +665,20 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
                     }
 
-                    var turnType = RnTurnTypeEx.GetTurnType(-eg.Normal, other.Normal, AxisPlane.Xz);
+                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
 
                     void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
+                        // 対象外のものは無視
+                        if (op.IsBuildTarget(this, from, to) == false)
+                            return;
+
                         var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
 
                         from.Border.GetLerpPoint(0.5f, out var fromPos);
                         to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                        List<BezierKnot> knots = new() { new BezierKnot(fromPos, tangentLength * fromNormal, -tangentLength * fromNormal) };
+                        List<BezierKnot> knots = new() { new BezierKnot(fromPos, op.TangentLength * fromNormal, -op.TangentLength * fromNormal) };
 
                         void AddKnots(Vector3 pos)
                         {
@@ -699,10 +782,11 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
 
                         var spline = new Spline(knots);
-                        tracks.Add(new RnTrack(from.Border, to.Border, spline, edgeTurnType));
+                        var track = new RnTrack(from.Border, to.Border, spline, edgeTurnType);
+                        TryAddOrUpdateTrack(track);
                     }
 
-                    var outBounds = other.OutBoundEdges.ToList();
+                    var outBounds = toEg.OutBoundEdges.ToList();
                     if (turnType.IsLeft())
                     {
                         // 左折の場合は左側のレーンのみ作成する
