@@ -551,8 +551,16 @@ namespace PLATEAU.RoadNetwork.Structure
                 return true;
             }
 
+            /// <summary>
+            /// 全トラックの再生成
+            /// </summary>
+            /// <returns></returns>
             public static BuildTrackOption Default() => new();
 
+            /// <summary>
+            /// 未生成のトラックだけを対象とする
+            /// </summary>
+            /// <returns></returns>
             public static BuildTrackOption UnBuiltTracks()
             {
                 var ret = new BuildTrackOption
