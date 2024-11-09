@@ -221,7 +221,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
             var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay, laneType);
-            parent.AddSideWalk(sideWalk);
+            parent?.AddSideWalk(sideWalk);
             return sideWalk;
         }
     }
