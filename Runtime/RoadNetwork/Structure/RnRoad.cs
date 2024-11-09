@@ -765,8 +765,8 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの内部をlineが通っている場合、lineに幅を持たせてもselfのLane内をはみ出さないような最大の幅をdistanceに格納する。
-        /// #NOTE : selfの内部をlineが通っていない場合のチェックはしていないので注意
+        /// selfの両端のWayとlineの最も近い点との距離をdistanceに格納する
+        /// その結果, lineがselfの内部を通っているときは, lineに幅を持たせてもselfのLane内をはみ出さないような最大の幅となる
         /// </summary>
         /// <param name="self"></param>
         /// <param name="line"></param>
