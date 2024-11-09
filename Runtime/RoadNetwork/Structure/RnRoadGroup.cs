@@ -760,7 +760,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
                 var line = RnEx.CreateInnerLerpLineString(leftWay.Vertices.ToList(), rightWay.Vertices.ToList(), start, end, prevBorder, nextBorder, 0.5f, pointSkipDistance);
 
-                if (r.TryGetMaximumCrossingWidthInLanes(line, out var w) == false)
+                if (r.TryGetNearestDistanceToSideWays(line, out var w) == false)
                     return false;
 
                 points.AddRange(line.Points.Select(p => p.Vertex));
@@ -832,7 +832,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var dirOut = i == (way.Count - 1) ? dirIn : (way[i + 1] - way[i]).normalized;
                 spline.Add(new BezierKnot(way[i], dirIn * tangentLength, dirOut * tangentLength));
             }
-            return road.TryGetMaximumCrossingWidthInLanes(way.LineString, out width);
+            return road.TryGetNearestDistanceToSideWays(way.LineString, out width);
         }
 
         /// <summary>

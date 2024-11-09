@@ -772,7 +772,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="line"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public static bool TryGetMaximumCrossingWidthInLanes(this RnRoad self, RnLineString line, out float distance)
+        public static bool TryGetNearestDistanceToSideWays(this RnRoad self, RnLineString line, out float distance)
         {
             if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
             {
