@@ -765,23 +765,25 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの内部をlineが取っているとしたときに, selfの両端のWayとlineの最も近い点との距離を返す
+        /// selfの内部をlineが通っている場合、lineに幅を持たせてもselfのLane内をはみ出さないような最大の幅をdistanceに格納する。
+        /// #NOTE : selfの内部をlineが通っていない場合のチェックはしていないので注意
         /// </summary>
         /// <param name="self"></param>
         /// <param name="line"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public static bool TryGetNearestDistance(this RnRoad self, RnLineString line, out float distance)
+        public static bool TryGetMaximumCrossingWidthInLanes(this RnRoad self, RnLineString line, out float distance)
         {
-            distance = 0f;
             if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+            {
+                distance = 0f;
                 return false;
+            }
+
             var prevBorder = self.GetMergedBorder(RnLaneBorderType.Prev, null);
             var nextBorder = self.GetMergedBorder(RnLaneBorderType.Next, null);
-            var start = new RnPoint(prevBorder.GetLerpPoint(0.5f));
-            var end = new RnPoint(nextBorder.GetLerpPoint(0.5f));
 
-            distance = Mathf.Min(distance, prevBorder.CalcLength(), nextBorder.CalcLength());
+            distance = Mathf.Min(prevBorder.CalcLength(), nextBorder.CalcLength());
 
             HashSet<float> indices = new();
             foreach (var p in leftWay.Points)

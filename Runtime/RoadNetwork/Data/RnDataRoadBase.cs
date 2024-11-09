@@ -10,7 +10,7 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RnRoadBase))]
     public class RnDataRoadBase : IPrimitiveData
     {
-        // 互換性のために残しておく. シミュレーター側で使っていないなら消す
+        // TODO : 互換性のために残しておく. シミュレーター側で使っているようなので.使われなくなったら消す
         [Obsolete("UseTargetTrans")]
         public PLATEAUCityObjectGroup TargetTran => TargetTrans.FirstOrDefault();
 

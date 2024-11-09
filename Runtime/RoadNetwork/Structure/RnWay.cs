@@ -654,7 +654,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 開始時はstartOffset, 終了時はendOffsetだけ移動し, その間を線分と法線を使って補完しながら移動する
+        /// Wayを法線方向に沿って各頂点を補間しながら移動させる。
+        /// 最初の頂点はstartOffset分だけ、最後の頂点はendOffset分だけ移動され、
+        /// 間の頂点は線形補間されたオフセットとWayの頂点法線をつかってなるべく元の形状を維持するように移動される。
         /// </summary>
         /// <param name="self"></param>
         /// <param name="startOffset"></param>

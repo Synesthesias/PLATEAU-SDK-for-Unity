@@ -13,16 +13,6 @@ namespace PLATEAU.RoadNetwork.Structure
     [Serializable]
     public class RnLineString : ARnParts<RnLineString>, IReadOnlyList<Vector3>
     {
-
-        public class AddPointOption
-        {
-            public float DistanceEpsilon { get; set; } = -1;
-
-            public float DegEpsilon { get; set; } = -1;
-
-            public float MidPointTolerance { get; set; } = -1f;
-        }
-
         //----------------------------------
         // start: フィールド
         //----------------------------------
