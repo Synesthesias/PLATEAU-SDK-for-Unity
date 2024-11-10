@@ -813,7 +813,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
                 rightWidth = Mathf.Min(rightWidth, wr);
             }
-            distance = Mathf.Min(Mathf.Min(rightWidth, leftWidth) * 2f, distance);
+            distance = Mathf.Min(Mathf.Min(rightWidth, leftWidth), distance);
             return true;
         }
     }
