@@ -96,6 +96,11 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 window.Reinitialize();
             }
+
+            public void ReInitialize()
+            {
+                throw new System.NotImplementedException();
+            }
         }
 
     }
