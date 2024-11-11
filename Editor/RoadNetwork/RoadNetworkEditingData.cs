@@ -261,11 +261,11 @@ namespace PLATEAU.Editor.RoadNetwork
     }
     public class LinkGroupEditorData
     {
-        public LinkGroupEditorData(EditorData<RnRoadGroup> parent, IReadOnlyCollection<RnRoad> links)
+        public LinkGroupEditorData(EditorData<RnRoadGroup> parent)
         {
             Assert.IsNotNull(parent);
             Assert.IsNotNull(parent.Ref);
-            LinkGroup = parent;
+            RoadGroup = parent;
 
             var a = parent.Ref.PrevIntersection;
             var b = parent.Ref.NextIntersection;
@@ -283,8 +283,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 B = a;
             }
 
-            Assert.IsNotNull(links);
-            ConnectionLinks = links;
+            ConnectionLinks = parent.Ref.Roads;
             // LinksがNode A,Bに接続されているかチェックするデバッグ機能
         }
 
@@ -298,9 +297,9 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public void AlignNumLane()
         {
-            var nR = LinkGroup.Ref.GetRightLaneCount();
-            var nL = LinkGroup.Ref.GetLeftLaneCount();
-            LinkGroup.Ref.SetLaneCount(nL, nR);
+            var nR = RoadGroup.Ref.GetRightLaneCount();
+            var nL = RoadGroup.Ref.GetLeftLaneCount();
+            RoadGroup.Ref.SetLaneCount(nL, nR);
         }
 
 
@@ -310,32 +309,22 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public IReadOnlyCollection<RnRoad> ConnectionLinks { get; private set; }
 
-        public EditorData<RnRoadGroup> LinkGroup { get; private set; }
+        public EditorData<RnRoadGroup> RoadGroup { get; private set; }
 
         public List<Vector3> CacheRoadPosList { get; set; }
-
-        public IReadOnlyList<IEnumerable<RnLane>> RigthLanesGroup
-        {
-            get
-            {
-                // Link間でレーン数が違う場合に処理が出来ない　合わせる処理が必要？
-                throw new NotImplementedException("仕様が未定のため未実装");
-                //return null;
-            }
-        }
 
         public IEnumerable<RnLane> RightLanes
         {
             get
             {
-                return LinkGroup.Ref.GetRightLanes();
+                return RoadGroup.Ref.GetRightLanes();
             }
         }
         public IEnumerable<RnLane> LeftLanes
         {
             get
             {
-                return LinkGroup.Ref.GetLeftLanes();
+                return RoadGroup.Ref.GetLeftLanes();
             }
         }
 
@@ -355,8 +344,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 return obj.GetHashCode();
             }
         }
-
-
 
     }
 

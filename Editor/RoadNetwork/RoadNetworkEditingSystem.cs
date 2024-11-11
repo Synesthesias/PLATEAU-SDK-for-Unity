@@ -1408,13 +1408,13 @@ namespace PLATEAU.Editor.RoadNetwork
                         var node1 = linkGroup.NextIntersection;
                         var editorData = new EditorData<RnRoadGroup>(linkGroup);
 
-                        var cn = new LinkGroupEditorData(editorData, linkGroup.Roads);
+                        var cn = new LinkGroupEditorData(editorData);
                         // 同じものを格納済みかチェック
                         var isContain = false;
                         foreach (var group in linkGroups)
                         {
-                            var prev = group.LinkGroup.Ref.PrevIntersection;
-                            var next = group.LinkGroup.Ref.NextIntersection;
+                            var prev = group.RoadGroup.Ref.PrevIntersection;
+                            var next = group.RoadGroup.Ref.NextIntersection;
 
                             bool isSamePrev, isSameNext;
 

@@ -358,7 +358,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 var subData = item.GetSubData<LinkGroupEditorData>();
                 if (subData == null)
                 {
-                    subData = new LinkGroupEditorData(item, item.Ref.Roads);
+                    subData = new LinkGroupEditorData(item);
                     item.TryAdd(subData);
                 }
 

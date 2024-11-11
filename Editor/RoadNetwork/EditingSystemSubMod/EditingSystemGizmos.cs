@@ -99,7 +99,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     continue;
 
                 var roadGroup = selectingElement as EditorData<RnRoadGroup>;
-                if (item.LinkGroup == roadGroup)
+                if (item.RoadGroup == roadGroup)
                 {
                     continue;
                 }
