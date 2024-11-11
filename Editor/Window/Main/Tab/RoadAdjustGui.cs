@@ -52,10 +52,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return false;
             }
 
-            // 仮　不要な要素を非表示にする
+            // 仮　不要な要素を削除する(非表示だとRoadEditPanelでButtonのクリックイベントやtextを設定出来なかった。取得は出来た。)
             var s = main.Q<UnityEngine.UIElements.ScrollView>();
-            if (s != null)
-                s.style.display = DisplayStyle.None;
+            main.Remove(s);
 
             // 各radioButtonの取得
             var menuGroup = main.Q<VisualElement>("MenuGroup");
