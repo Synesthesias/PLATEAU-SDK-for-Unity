@@ -71,20 +71,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             void UpdateRoadNetworkGUISystem()
             {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
+                var editor = RoadNetworkEditingSystem.SingletonInstance;
+                if (editor == null)
                     return;
 
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
+                var guiSystem = editor.SceneGUISystem;
                 guiSystem.OnSceneGUI(target as PLATEAURnStructureModel);
             }
         }
