@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         //public bool SetEditingTarget(INodeConnectionLink target);
 
         //public INodeConnectionLink EditingTarget{ get; set; }
-        public void Apply();
+        public void Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
         // 値の設定後に確認するようにする
@@ -128,39 +128,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
         // cacheとの比較を行い、変更があれば変更を通知する
-        public void Apply()
+        public void Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
-            //if (cache.numLeftLane != NumLeftLane)
-            //{
-            //    Notify(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
-            //    cache.numLeftLane = NumLeftLane;
-            //}
-            //if (cache.numRightLane != NumRightLane)
-            //{
-            //    Notify(NumRightLane, cache.numRightLane, nameof(NumRightLane));
-            //    cache.numRightLane = NumRightLane;
-            //}
-            //if (cache.medianWidth != MedianWidth)
-            //{
-            //    Notify(MedianWidth, cache.medianWidth, nameof(MedianWidth));
-            //    cache.medianWidth = MedianWidth;
-            //}
-            //if (cache.leftSideWalkWidth != LeftSideWalkWidth)
-            //{
-            //    Notify(LeftSideWalkWidth, cache.leftSideWalkWidth, nameof(LeftSideWalkWidth));
-            //    cache.leftSideWalkWidth = LeftSideWalkWidth;
-            //}
-            //if (cache.rightSideWalkWidth != RightSideWalkWidth)
-            //{
-            //    Notify(RightSideWalkWidth, cache.rightSideWalkWidth, nameof(RightSideWalkWidth));
-            //    cache.rightSideWalkWidth = RightSideWalkWidth;
-            //}
-            //if (cache.roadWidth != RoadWidth)
-            //{
-            //    Notify(RoadWidth, cache.roadWidth, nameof(RoadWidth));
-            //    cache.roadWidth = RoadWidth;
-            //}
         }
         public bool IsSuccess { get; set; }
 
@@ -231,14 +201,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         /// <param name="mdl"></param>
         /// <param name="editorData">ScriptableRoadMdlで扱っているRnRoadGroupと対象が同じである必要</param>
         /// <param name="mod"></param>
-        public SerializedScriptableRoadMdl(ScriptableRoadMdl mdl, EditorData<RnRoadGroup> editorData, RoadNetworkSimpleEditSysModule mod)
+        public SerializedScriptableRoadMdl(ScriptableRoadMdl mdl, EditorData<RnRoadGroup> editorData)
             : base(mdl)
         {
             Assert.IsNotNull(mdl);
-            Assert.IsNotNull(mod);
             Assert.IsTrue(mdl.road == editorData.Ref);
             //serializedObject = mdl;
-            this.mod = mod;
 
             this.editorData = editorData;
 
@@ -265,8 +233,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
             ResetCache();
         }
-
-        public RoadNetworkSimpleEditSysModule mod;
 
         public EditorData<RnRoadGroup> editorData;
         public SerializedProperty road;
@@ -309,7 +275,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
 
-        public void Apply()
+        public void Apply(RoadNetworkSimpleEditSysModule mod)
         {
             if (this.road == null)
             {

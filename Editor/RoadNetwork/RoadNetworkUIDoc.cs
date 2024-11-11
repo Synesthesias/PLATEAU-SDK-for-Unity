@@ -263,7 +263,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     btn.clicked += () =>
                     {
-                        mdl.Apply();
+                        mdl.Apply(system.RoadNetworkSimpleEditModule);
                     };
                 }
                 //element.Unbind();
@@ -277,19 +277,8 @@ namespace PLATEAU.Editor.RoadNetwork
         private SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
-            var mdl = linkGroupEditorData.GetSubData<SerializedScriptableRoadMdl>();
-            if (mdl == null)
-            {
-                // UIへバインドするモデルオブジェクトの生成
-                var testObj = ScriptableObject.CreateInstance<ScriptableRoadMdl>();
-                testObj.Construct(linkGroupEditorData.Ref);
-                mdl = new SerializedScriptableRoadMdl(testObj, linkGroupEditorData, system.RoadNetworkSimpleEditModule);
-
-                // 参照を持たせる
-                linkGroupEditorData.TryAdd(mdl);
-            }
-
-            return mdl;
+            var mdl = linkGroupEditorData.ReqSubData<ScriptableObjectFolder>();
+            return mdl.Item;
         }
 
         private static void CreateAddLinkLayout(RoadNetworkUIDoc doc, IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement element)

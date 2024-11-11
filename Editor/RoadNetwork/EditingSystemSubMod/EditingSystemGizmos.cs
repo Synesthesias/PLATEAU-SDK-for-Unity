@@ -81,12 +81,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData,
             RnWay slideDummyWay)
         {
-            if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<LinkGroupEditorData> eConn) == false)
+            if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<RoadGroupEditorData> eConn) == false)
             {
                 Assert.IsTrue(false);
                 return;
             }
-            List<LinkGroupEditorData> connections = eConn.ToList();
+            List<RoadGroupEditorData> connections = eConn.ToList();
             connections.Remove(null);
 
             // 仮　専用ノード間の繋がりを描画
@@ -154,7 +154,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
 
 
-                var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
+                var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>().Raw;
 
                 // 車線のwayを描画
                 foreach (var wayEditorData in wayEditorDataList)
@@ -177,7 +177,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         way.Add(p);
                     }
                         
-                    var parent = wayEditorData.Parent;
+                    var parent = wayEditorData.ParentLane;
                     Debug.Assert(parent != null);
                     if (parent.IsReverse == false)
                     {

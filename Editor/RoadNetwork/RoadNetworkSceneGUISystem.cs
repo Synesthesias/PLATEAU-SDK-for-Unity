@@ -345,7 +345,7 @@ namespace PLATEAU.Editor.RoadNetwork
             var nodeIconPosOffset = Vector3.up * 0;
             var roadIconPosOffset = Vector3.up * 0;
 
-            IReadOnlyCollection<LinkGroupEditorData> cns = connections.Select(c => c.GetSubData<LinkGroupEditorData>()).ToList();
+            IReadOnlyCollection<RoadGroupEditorData> cns = connections.Select(c => c.GetSubData<RoadGroupEditorData>()).ToList();
 
             var camera = SceneView.currentDrawingSceneView.camera;
 
@@ -355,12 +355,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (item == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
-                var subData = item.GetSubData<LinkGroupEditorData>();
-                if (subData == null)
-                {
-                    subData = new LinkGroupEditorData(item);
-                    item.TryAdd(subData);
-                }
+                var subData = item.ReqSubData<RoadGroupEditorData>();
 
                 var p1 = subData.A.GetCenter();
                 var p2 = subData.B.GetCenter();
