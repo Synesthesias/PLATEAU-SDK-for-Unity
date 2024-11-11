@@ -27,7 +27,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     internal class RoadMarkingCombiner
     {
         /// <summary> 結合対象 </summary>
-        private List<RoadMarkingInstance> instances;
+        private readonly List<RoadMarkingInstance> instances;
 
         public RoadMarkingCombiner(int capacity)
         {
@@ -35,7 +35,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         }
 
         /// <summary> 結合対象を追加します。 </summary>
-        public void Add(RoadMarkingInstance instance) => instances.Add(instance);
+        public void Add(RoadMarkingInstance instance)
+        {
+            if (instance == null)
+            {
+                Debug.LogWarning("RoadMarkingInstance is null");
+                return;
+            }
+            instances.Add(instance);
+        }
 
         /// <summary> 結合します。 </summary>
         public Mesh Combine()

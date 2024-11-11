@@ -183,8 +183,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
-            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay, laneType);
-            parent.AddSideWalk(sideWalk);
+            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay ,laneType);
+            if (parent != null)
+            {
+                parent.AddSideWalk(sideWalk);
+            }
+            else
+            {
+                Debug.LogWarning("parent is null.");
+            }
             return sideWalk;
         }
     }

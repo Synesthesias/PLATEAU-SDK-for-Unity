@@ -50,7 +50,12 @@ namespace PLATEAU.Util
             {
                 return new Material(RenderUtil.DefaultMaterial);
             }
-            
+
+            return LoadByMaterialFileName(matFileName);
+        }
+        
+        public static Material LoadByMaterialFileName(string matFileName)
+        {
             var mat = Resources.Load<Material>("PlateauSdkDefaultMaterials/" + matFileName);
             return mat ? mat : new Material(RenderUtil.DefaultMaterial);
         }

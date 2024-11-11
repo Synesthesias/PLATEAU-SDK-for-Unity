@@ -14,9 +14,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var ret = new MarkedWayList();
             foreach (var road in model.Roads)
             {
-                if (!road.TryGetMergedSideWay(null, out var leftWay, out var rightWay)) continue;
-                ret.Add(new MarkedWay(leftWay, MarkedWayType.ShoulderLine, true));
-                ret.Add(new MarkedWay(rightWay, MarkedWayType.ShoulderLine, false));
+                var carLanes = road.MainLanes;
+                if (carLanes.Count == 0) continue;
+                // 端の車線について、そのLeftWayは歩道と車道の間です。
+                var firstLane = carLanes[0];
+                var lastLane = carLanes[^1];
+                ret.Add(new MarkedWay(firstLane.LeftWay, MarkedWayType.ShoulderLine, firstLane.IsReverse));
+                ret.Add(new MarkedWay(lastLane.LeftWay, MarkedWayType.ShoulderLine, lastLane.IsReverse));
             }
             return ret;
         }

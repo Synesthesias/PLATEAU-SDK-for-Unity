@@ -13,8 +13,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourCalculator
     {
         private List<RnmLine> lines = new ();
-        private ConditionalLogger logger = new ConditionalLogger(() => true); // デバッグのときだけここをtrueにしてください
+        private readonly ConditionalLogger logger = new (() => false); // デバッグのときだけここをtrueにしてください
         private const float VerticesWeldDistThreshold = 2f;
+        private RnmMaterialType material;
+
+        public RnmContourCalculator(RnmMaterialType material)
+        {
+            this.material = material;
+        }
+        
 
         public void AddLine(IEnumerable<Vector3> line)
         {
@@ -36,45 +43,34 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             if (lines.Count == 0)
             {
                 logger.Log("skipping RnmContour because no lines exist.");
-                return new RnmContour();
+                return new RnmContour(material);
             }
             RemoveDuplicateOrReverseLine();
             // RemoveDuplicateVertices(VerticesWeldDistThreshold);
             SortByNearestEdgeDist();
-            var contour = new RnmContour();
+            var contour = new RnmContour(material);
             // 最初の線を追加します。
             var line = lines[0];
-            contour.AddVertices(line.Vertices);
             line.IsProcessed = true;
-            bool lineDirectionLast = true; // 次に繋げるのが末尾方向ならtrue, 最初方向ならfalseです。
+            bool lineDirectionLast; // 次に繋げるのが末尾方向ならtrue, 最初方向ならfalseです。
+            if (FirstDirection(lines.ToArray(), line))
+            {
+                contour.AddVertices(line);
+                lineDirectionLast = true; 
+            }
+            else
+            {
+                contour.AddVertices(line.Reverse());
+                lineDirectionLast = false;
+            }
+            
             
             // 線の末尾について、もっとも近い点を探して繋いでいきます。
             while (lines.Any(l => !l.IsProcessed))
             {
                 var remaining = lines.Where(l => !l.IsProcessed).ToArray();
-                int minID = -1;
-                float minDist = float.MaxValue;
-                var v = lineDirectionLast ? line[^1] : line[0]; // 繋げたい線の起点
-                bool rConnectedDirectionLast = false;
-                // 未処理の線の中で、最も近い線を探します。
-                for (int i = 0; i < remaining.Length; i++)
-                {
-                    var r = remaining[i];
-                    var distFirst = Vector3.Distance(v, r[0]);
-                    var distLast = Vector3.Distance(v, r[^1]);
-                    if (distFirst < minDist)
-                    {
-                        minDist = distFirst;
-                        minID = i;
-                        rConnectedDirectionLast = false;
-                    }
-                    if (distLast < minDist)
-                    {
-                        minDist = distLast;
-                        minID = i;
-                        rConnectedDirectionLast = true;
-                    }
-                }
+                
+                int minID = NearestLine(remaining, lineDirectionLast, line, out bool rConnectedDirectionLast);
                 var minLine = remaining[minID];
                 // 線を繋ぎます。
                 if (rConnectedDirectionLast)
@@ -95,7 +91,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             if (contour.Count < 3)
             {
                 logger.Log($"skipping because vertex count = {contour.Count}");
-                return new RnmContour();
+                return new RnmContour(material);
             }
 
             if (!contour.IsClockwise())
@@ -103,6 +99,56 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 contour.Reverse();
             }
             return contour;
+        }
+        
+        /// <summary>
+        /// 未処理の線の中で、最も近い線を探します。
+        /// </summary>
+        private int NearestLine(RnmLine[] remaining, bool lineDirectionLast, RnmLine line, out bool rConnectedDirectionLast)
+        {
+            int minID = -1;
+            float minDist = float.MaxValue;
+            rConnectedDirectionLast = false;
+            var v = lineDirectionLast ? line[^1] : line[0]; // 繋げたい線の起点
+            for (int i = 0; i < remaining.Length; i++)
+            {
+                var r = remaining[i];
+                var distFirst = Vector3.Distance(v, r[0]);
+                var distLast = Vector3.Distance(v, r[^1]);
+                if (distFirst < minDist)
+                {
+                    minDist = distFirst;
+                    minID = i;
+                    rConnectedDirectionLast = false;
+                }
+                if (distLast < minDist)
+                {
+                    minDist = distLast;
+                    minID = i;
+                    rConnectedDirectionLast = true;
+                }
+            }
+            return minID;
+        }
+
+        /// <summary>
+        /// 計算で最初に追加する線を、どちら向きに追加すべきか
+        /// </summary>
+        private bool FirstDirection(RnmLine[] lines, RnmLine firstLine)
+        {
+            var firstV = firstLine[0];
+            var firstVLast = firstLine[^1];
+            float dist = float.MaxValue;
+            float distLast = float.MaxValue;
+            foreach (var l in lines.Where(line => line != firstLine))
+            {
+                dist = Math.Min(dist, Vector3.Distance(firstV, l[0]));
+                dist = Math.Min(dist, Vector3.Distance(firstV, l[^1]));
+                distLast = Math.Min(distLast, Vector3.Distance(firstVLast, l[0]));
+                distLast = Math.Min(distLast, Vector3.Distance(firstVLast, l[^1]));
+            }
+
+            return distLast < dist;
         }
         
 
