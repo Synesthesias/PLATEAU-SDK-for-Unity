@@ -389,7 +389,40 @@ namespace PLATEAU.RoadNetwork.Structure
                 l.SetMedianLane(null);
         }
 
+        /// <summary>
+        /// 中央分離帯を取得する
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        public void GetMedians(
+            out IReadOnlyCollection<RnWay> left,
+            out IReadOnlyCollection<RnWay> right)
+        {
+            var lWays = new List<RnWay>(Roads.Count);
+            var rWays = new List<RnWay>(Roads.Count);
 
+            foreach (var road in Roads)
+            {
+                if (road.GetLeftLaneCount() > 0)
+                {
+                    var centerLeft = road.GetLeftLanes()?.Last();
+                    lWays.Add(centerLeft.RightWay);
+                }
+                if (road.GetRightLaneCount() > 0)
+                {
+                    var centerRight = road.GetRightLanes()?.First();
+                    rWays.Add(centerRight.RightWay);
+                }
+            }
+
+            left = lWays;
+            right = rWays;
+        }
+
+        public bool HasMedians()
+        {
+           return Roads.Any(l => l.MedianLane != null);
+        }
 
         /// <summary>
         /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨

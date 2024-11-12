@@ -101,18 +101,78 @@ namespace PLATEAU.Editor.RoadNetwork
         }
 
         /// <summary>
+        /// サブデータをリクエストする。
+        /// 存在すればそれを返して、なければ生成して返す
         /// 頻繁に呼ばないように注意する
         /// </summary>
         /// <typeparam name="_Type"></typeparam>
         /// <returns></returns>
-        public _Type GetSubData<_Type>()
-            where _Type : class
+        public _Type ReqSubData<_Type>()
+            where _Type : EditorSubData<_BaseData>, new()
         {
+            // 既存データの探索
             foreach (var item in userData)
             {
                 if (item is _Type)
                     return (_Type)item;
             }
+
+            // データが存在しないので生成する
+            var d = new _Type();
+            var isSuc = d.Construct(this);
+            if (isSuc)
+            {
+                Add(d);
+                return d;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// サブデータの新規追加（初期化時の最適化用）
+        /// 初めてのサブテータを追加する時のみ利用可能
+        /// </summary>
+        /// <typeparam name="_Type"></typeparam>
+        /// <returns></returns>
+        public _Type Add<_Type>()
+            where _Type : EditorSubData<_BaseData>, new()
+        {
+            // 既存データの探索
+            foreach (var item in userData)
+            {
+                Assert.IsFalse(item is _Type);   // 重複登録は不可
+            }
+
+            // データ作成
+            var d = new _Type();
+            var isSuc = d.Construct(this);
+            if (isSuc)
+            {
+                Add(d);
+                return d;
+            }
+
+            return null;
+        }
+
+
+        /// <summary>
+        /// サブデータを取得する
+        /// nullの可能性あり
+        /// </summary>
+        /// <typeparam name="_Type"></typeparam>
+        /// <returns></returns>
+        public _Type GetSubData<_Type>()
+            where _Type : EditorSubData<_BaseData>, new()
+        {
+            // 既存データの探索
+            foreach (var item in userData)
+            {
+                if (item is _Type)
+                    return (_Type)item;
+            }
+
             return null;
         }
 
@@ -123,16 +183,32 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <typeparam name="_Type"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        public bool TryAdd<_Type>(_Type data)
-            where _Type : class
+        private _Type Add<_Type>(_Type data)
+            where _Type : EditorSubData<_BaseData>, new()
         {
-            var isNull = GetSubData<_Type>() == null;
-            if (isNull)
+            Assert.IsFalse(userData.Contains(data));
+            userData.Add(data);
+            return data;
+        }
+
+        /// <summary>
+        /// 内部データのクリア
+        /// データの構成に変更が出て既存のデータが古くなった際に使ったりする
+        /// 例　EditorData<RnRoadGroup>　内部データでwayのリストを持っている。この時Laneが削除などされればこの関数を呼ぶ必要が出てくる
+        /// </summary>
+        public void ClearSubData()
+        {
+            userData.Clear();
+        }
+
+        public void ClearSubData<_Type>()
+            where _Type : EditorSubData<_BaseData>, new()
+        {
+            var subData = GetSubData<_Type>();
+            if (subData != null)
             {
-                userData.Add(data);
-                return true;
+                userData.Remove(subData);
             }
-            return false;
         }
 
         public _BaseData Ref { get; private set; }
@@ -145,13 +221,11 @@ namespace PLATEAU.Editor.RoadNetwork
         public bool IsEditable { get; set; } = false;
     }
 
-    public class PointEditorData
+    public class PointEditorData : EditorSubData<RnPoint>
     {
-        public PointEditorData(RnPoint point)
+        public PointEditorData()
+            : base()
         {
-            Assert.IsNotNull(point);
-            refPoint = point;
-            UpdateBasePosition();
         }
 
         /// <summary>
@@ -181,6 +255,13 @@ namespace PLATEAU.Editor.RoadNetwork
             refPoint.Vertex = basePosition + cacheTranslate;
         }
 
+        protected override bool Construct()
+        {
+            refPoint = Parent.Ref;
+            UpdateBasePosition();
+            return true;
+        }
+
         // 参照中のポイント
         private RnPoint refPoint;
         // 基準の座標
@@ -192,17 +273,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
     public class NodeEditorData
     {
-        public NodeEditorData(GameObject gameObject)
+        public NodeEditorData()
         {
-            Assert.IsNotNull(gameObject);
-            this.RefGameObject = gameObject;
-            UpdateBaseTransform();
             PointWithWeight.Clear();
-        }
-
-        public void UpdateBaseTransform()
-        {
-            baseTransform = new CacheTransform(RefGameObject.transform);
         }
 
         public bool AddPoint(EditorData<RnPoint> point, float weight)
@@ -228,16 +301,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        public void ApplyTranslate()
-        {
-            var translate = RefGameObject.transform.position - baseTransform.position;
-            foreach (var item in PointWithWeight)
-            {
-                var ptData = item.Value.data;
-                ptData.Translate(translate * item.Value.weight);
-            }
-        }
-
         private struct CacheTransform
         {
             public CacheTransform(Transform transform)
@@ -247,24 +310,67 @@ namespace PLATEAU.Editor.RoadNetwork
 
             public Vector3 position;
         }
-        public GameObject RefGameObject;
         private CacheTransform baseTransform;
 
         private Dictionary<EditorData<RnPoint>, (PointEditorData data, float weight)> PointWithWeight { get; set; } =
             new Dictionary<EditorData<RnPoint>, (PointEditorData, float)>();
 
-        public List<LinkGroupEditorData> Connections { get; private set; } = new List<LinkGroupEditorData>();
+        public List<RoadGroupEditorData> Connections { get; private set; } = new List<RoadGroupEditorData>();
 
         public bool IsIntersection { get => Connections.Count >= 3; }
 
     }
-    public class LinkGroupEditorData
+
+    public abstract class EditorSubData<_Parent>
+        where _Parent : class
     {
-        public LinkGroupEditorData(EditorData<RnRoadGroup> parent, NodeEditorData a, NodeEditorData b, IReadOnlyCollection<RnRoad> links)
+        public bool Construct(EditorData<_Parent> parent)
         {
+            Assert.IsNull(Parent);  // 再初期化を許可しない
+
             Assert.IsNotNull(parent);
             Assert.IsNotNull(parent.Ref);
-            LinkGroup = parent;
+            Parent = parent;
+
+            // 派生クラスのコンストラクト
+            Construct();
+
+            return true;
+        }
+
+        protected abstract bool Construct();
+
+        protected EditorData<_Parent> Parent { get; private set; }
+    }
+
+    public class RoadGroupEditorData : EditorSubData<RnRoadGroup>
+    {
+        public RoadGroupEditorData()
+            : base()
+        {
+        }
+
+        public override int GetHashCode()
+        {
+            return A.GetHashCode() + B.GetHashCode();
+        }
+
+        /// <summary>
+        /// レーン数を統一する
+        /// </summary>
+        public void AlignNumLane()
+        {
+            var nR = RoadGroup.Ref.GetRightLaneCount();
+            var nL = RoadGroup.Ref.GetLeftLaneCount();
+            RoadGroup.Ref.SetLaneCount(nL, nR);
+        }
+
+        protected override bool Construct()
+        {
+            RoadGroup = Parent;
+
+            var a = Parent.Ref.PrevIntersection;
+            var b = Parent.Ref.NextIntersection;
 
             Assert.IsNotNull(a);
             Assert.IsNotNull(b);
@@ -279,80 +385,52 @@ namespace PLATEAU.Editor.RoadNetwork
                 B = a;
             }
 
-            Assert.IsNotNull(links);
-            ConnectionLinks = links;
+            ConnectionLinks = Parent.Ref.Roads;
             // LinksがNode A,Bに接続されているかチェックするデバッグ機能
+
+            return true;
         }
 
-        public override int GetHashCode()
-        {
-            return A.GetHashCode() + B.GetHashCode();
-        }
-
-        /// <summary>
-        /// レーン数を統一する
-        /// </summary>
-        public void AlignNumLane()
-        {
-            var nR = LinkGroup.Ref.GetRightLaneCount();
-            var nL = LinkGroup.Ref.GetLeftLaneCount();
-            LinkGroup.Ref.SetLaneCount(nL, nR);
-        }
-
-
-
-        public NodeEditorData A { get; private set; }
-        public NodeEditorData B { get; private set; }
+        public RnIntersection A { get; private set; }
+        public RnIntersection B { get; private set; }
 
         public IReadOnlyCollection<RnRoad> ConnectionLinks { get; private set; }
 
-        public EditorData<RnRoadGroup> LinkGroup { get; private set; }
+        public EditorData<RnRoadGroup> RoadGroup { get; private set; }
 
         public List<Vector3> CacheRoadPosList { get; set; }
-
-        public IReadOnlyList<IEnumerable<RnLane>> RigthLanesGroup
-        {
-            get
-            {
-                // Link間でレーン数が違う場合に処理が出来ない　合わせる処理が必要？
-                throw new NotImplementedException("仕様が未定のため未実装");
-                //return null;
-            }
-        }
 
         public IEnumerable<RnLane> RightLanes
         {
             get
             {
-                return LinkGroup.Ref.GetRightLanes();
+                return RoadGroup.Ref.GetRightLanes();
             }
         }
         public IEnumerable<RnLane> LeftLanes
         {
             get
             {
-                return LinkGroup.Ref.GetLeftLanes();
+                return RoadGroup.Ref.GetLeftLanes();
             }
         }
 
 
         // Person オブジェクトの比較をカスタマイズするクラス
-        public class Comparer : IEqualityComparer<LinkGroupEditorData>
+        public class Comparer : IEqualityComparer<RoadGroupEditorData>
         {
-            public bool Equals(LinkGroupEditorData x, LinkGroupEditorData y)
+            public bool Equals(RoadGroupEditorData x, RoadGroupEditorData y)
             {
                 // 名前が同じ場合は同一とみなす
                 return x.A == y.A && x.B == y.B;
             }
 
-            public int GetHashCode(LinkGroupEditorData obj)
+            public int GetHashCode(RoadGroupEditorData obj)
             {
                 // 名前のハッシュコードを返す
                 return obj.GetHashCode();
             }
         }
-
-
 
     }
 
@@ -436,15 +514,200 @@ namespace PLATEAU.Editor.RoadNetwork
     }
 
     /// <summary>
+    /// WayEditorDataのリストをサブデータ化したクラス
+    /// </summary>
+    public class WayEditorDataList : EditorSubData<RnRoadGroup>
+    {
+        public WayEditorDataList()
+        {
+        }
+
+        public IReadOnlyList<WayEditorData> Raw { get => wayEditorDataList; }
+        private List<WayEditorData> wayEditorDataList;
+
+        protected override bool Construct()
+        {
+            CreateWayEditorData(Parent);
+            return true;
+        }
+
+        public void SetSelectable(bool enable)
+        {
+            foreach (var wayEditorData in wayEditorDataList)
+            {
+                wayEditorData.IsSelectable = enable;
+            }
+        }
+
+        private void CreateWayEditorData(EditorData<RnRoadGroup> roadGroupEditorData)
+        {
+            // wayを重複無しでコレクションする
+            Dictionary<RnLane, HashSet<RnWay>> laneWays = new();
+            foreach (var road in roadGroupEditorData.Ref.Roads)
+            {
+                foreach (var lane in road.AllLanes)
+                {
+                    var ways = NewOrGetWays(laneWays, lane);
+                    ways.Add(lane.LeftWay);
+                    ways.Add(lane.RightWay);
+                }
+            }
+
+            // 歩道のwayを重複無しでコレクションする
+            Dictionary<RnRoad, HashSet<RnWay>> sideWalkWays = new();    // wayはlaneに紐づいていたないためroadに紐づける
+            foreach (var road in roadGroupEditorData.Ref.Roads)
+            {
+                foreach (var sideWalk in road.SideWalks)
+                {
+                    var ways = NewOrGetWays(sideWalkWays, road);
+                    ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
+                }
+            }
+
+            // 中央分離帯のwayを重複無しでコレクションする
+            Dictionary<RnRoad, HashSet<RnWay>> medianWays = new();
+            foreach (var road in roadGroupEditorData.Ref.Roads)
+            {
+                var ways = NewOrGetWays(medianWays, road);
+                roadGroupEditorData.Ref.GetMedians(out var leftWays, out var rightWays);
+                foreach (var way in leftWays)
+                {
+                    ways.Add(way);
+                }
+                foreach (var way in rightWays)
+                {
+                    ways.Add(way);
+                }
+            }
+
+            // way用の編集データの作成準備
+            if (wayEditorDataList == null)
+                wayEditorDataList = new List<WayEditorData>(laneWays.Count);
+            wayEditorDataList?.Clear();
+
+            // 車線のwayから中央分離帯のwayを除外
+            foreach (var ways in laneWays.Values)
+            {
+                foreach (var editingTarget in medianWays)
+                {
+                    if (editingTarget.Value == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var medianWay in editingTarget.Value)
+                    {
+                        ways.Remove(medianWay);
+                    }
+                }
+            }
+
+            // 車線の編集用データを作成
+            CreateWayEditorData(wayEditorDataList, laneWays, WayEditorData.WayType.Main);
+
+            // 歩道の編集用データを作成
+            CreateWayEditorData(wayEditorDataList, sideWalkWays, WayEditorData.WayType.SideWalk);
+
+            // 中央分離帯の編集用データを作成
+            CreateWayEditorData(wayEditorDataList, medianWays, WayEditorData.WayType.Median);
+
+            static HashSet<RnWay> NewOrGetWays<_RnRoadNetworkClass>(Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, _RnRoadNetworkClass parent)
+            {
+                HashSet<RnWay> ways = new HashSet<RnWay>();
+                if (wayCollection.TryGetValue(parent, out ways) == false)
+                {
+                    wayCollection.Add(parent, ways = new HashSet<RnWay>());
+                }
+
+                return ways;
+            }
+
+            static void CreateWayEditorData<_RnRoadNetworkClass>(List<WayEditorData> wayEditorDataList, Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, WayEditorData.WayType wayType)
+            {
+                foreach (var editingTarget in wayCollection)
+                {
+                    if (editingTarget.Value == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var way in editingTarget.Value)
+                    {
+                        var wayEditorData = new WayEditorData(way, editingTarget.Key as RnLane);
+                        wayEditorData.Type = wayType;
+                        wayEditorDataList.Add(wayEditorData);
+                    }
+                }
+            }
+
+            //// 道路端のwayを編集不可能にする
+            //wayEditorDataList.First().IsSelectable = false;
+            //wayEditorDataList.Last().IsSelectable = false;
+
+            // 下　もしかしたらwayを結合して扱う必要があるかも
+            // 道路端のwayを編集不可能にする
+            //var firstRoad = roadGroupEditorData.Ref.Roads.First();
+            //var leftEdgeLane = firstRoad.MainLanes.First();
+            //wayEditorDataList.Find(x => x.Ref == leftEdgeLane.LeftWay).IsSelectable = false;
+            //var rightEdgeLane = firstRoad.MainLanes.Last();
+            //if (leftEdgeLane == rightEdgeLane)  // レーンが一つしかない時は反対側のレーンを参照する
+            //{
+            //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.RightWay).IsSelectable = false;
+            //}
+            //else
+            //{
+            //    if (rightEdgeLane.LeftWay != null)
+            //    {
+            //        rightEdgeLane.GetBorderDir(RnLaneBorderType.)
+            //        wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+
+            //    }
+            //    wayEditorDataList.Find(x => x.Ref == rightEdgeLane.LeftWay).IsSelectable = false;
+            //}
+
+        }
+
+    }
+
+    /// <summary>
+    /// ScriptableObjectを保持用
+    /// 旧仕様との差分を吸収するためのクラス
+    /// </summary>
+    public class ScriptableObjectFolder : EditorSubData<RnRoadGroup>
+    {
+        protected override bool Construct()
+        {
+            // UIへバインドするモデルオブジェクトの生成
+            var testObj = ScriptableObject.CreateInstance<UIDocBind.ScriptableRoadMdl>();
+            testObj.Construct(Parent.Ref);
+            Item = new UIDocBind.SerializedScriptableRoadMdl(testObj, Parent);
+
+            return true;
+        }
+
+        public UIDocBind.SerializedScriptableRoadMdl Item { get; private set; }
+    }
+
+    /// <summary>
     /// Wayをスライドさせるためのデータ
     /// </summary>
     public class WayEditorData
     {
-        public WayEditorData(RnWay target)
+        public enum WayType
+        {
+            Undefind = 0,   // 無効値　システムエラー
+            Main,
+            SideWalk,
+            Median
+        }
+
+        public WayEditorData(RnWay target, RnLane parent)
         {
             Assert.IsNotNull(target);
             BaseWay = target.Vertices.ToList();
             Ref = target;
+
+            ParentLane = parent;    // null許容
         }
 
         float sliderVarVals;
@@ -468,13 +731,13 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public List<Vector3> BaseWay { get; private set; } = new List<Vector3>();
         public RnWay Ref { get; private set; } = null;
-
+        public RnLane ParentLane { get; private set; } = null;
         /// <summary>
         /// 選択可能か？
         /// </summary>
         public bool IsSelectable { get; set; } = true;
 
-        public bool IsSideWalk { get; set; } = false;
+        public WayType Type { get; set; } = WayEditorData.WayType.Undefind;
     }
 
 }
