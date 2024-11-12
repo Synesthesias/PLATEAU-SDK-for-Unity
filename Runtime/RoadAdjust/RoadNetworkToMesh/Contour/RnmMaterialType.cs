@@ -10,7 +10,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public enum RnmMaterialType
     {
-        CarLane, // 車道
+        RoadCarLane, // 車道（交差点でない道路）
+        IntersectionCarLane, // 車道（交差点）
         SideWalk, // 歩道
         MedianLane, // 中央分離帯
     }
@@ -21,7 +22,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         {
             var mat = type switch
             {
-                RnmMaterialType.CarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUV"),
+                RnmMaterialType.RoadCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUV"),
+                RnmMaterialType.IntersectionCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoad"),
                 RnmMaterialType.SideWalk => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUVTile"),
                 RnmMaterialType.MedianLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadStoneAsphalt"),
                 _ => throw new ArgumentOutOfRangeException()

@@ -36,7 +36,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             for (int i = 0; i < carLaneCount; i++)
             {
                 var lane = road.MainLanes[i];
-                var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
+                var calc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
                 bool reverse = lane.IsReverse;
                 float laneUvLeft = ((float)i) / carLaneCount;
                 float laneUvRight = (((float)i) + 1) / carLaneCount;
@@ -96,7 +96,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (walks.Any(w => w.InsideWay != null && AreTouching(side, w.InsideWay))) continue;
                 var touchingEdges = sideEdges.Where(e => AreTouching(side, e)).ToArray();
                 if(touchingEdges.Length == 0) continue;
-                var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
+                var calc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
                 calc.AddLine(side, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
                 foreach (var touchingEdge in touchingEdges)
                 {

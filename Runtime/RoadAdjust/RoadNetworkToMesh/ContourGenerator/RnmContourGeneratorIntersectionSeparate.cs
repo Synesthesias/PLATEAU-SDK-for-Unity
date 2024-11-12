@@ -42,7 +42,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private RnmContour CarContour(RnIntersection inter)
         {
             var edges = inter.Edges.Select(e => e.Border);
-            var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
+            var calc = new RnmContourCalculator(RnmMaterialType.IntersectionCarLane);
             foreach (var edge in edges)
             {
                 calc.AddLine(edge, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
