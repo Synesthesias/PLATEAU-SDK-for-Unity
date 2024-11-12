@@ -442,7 +442,7 @@ namespace PLATEAU.Editor.RoadNetwork
     {
         public enum WayType
         {
-            _Undefind = 0,
+            Undefind = 0,   // 無効値　システムエラー
             Main,
             SideWalk,
             Median
@@ -484,7 +484,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public bool IsSelectable { get; set; } = true;
 
-        public WayType Type { get; set; } = WayEditorData.WayType._Undefind;
+        public WayType Type { get; set; } = WayEditorData.WayType.Undefind;
     }
 
 }
