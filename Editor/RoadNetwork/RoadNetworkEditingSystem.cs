@@ -1263,7 +1263,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public class RoadNetworkSimpleEditSysModule
         {
-            public List<EditorData<RnRoadGroup>> Connections { get => linkGroupEditorData; }
+            public List<EditorData<RnRoadGroup>> Connections { get => roadGroupEditorData; }
             public RoadNetworkSimpleEditSysModule(GameObject root, RnModel rnModel, IRoadNetworkEditingSystem system)
             {
                 ReConstruct(root, rnModel, system);
@@ -1279,7 +1279,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData = new Dictionary<RnIntersection, EditorData<RnIntersection>>();
             private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
-            private EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
+            private EditorDataList<EditorData<RnRoadGroup>> roadGroupEditorData = new EditorDataList<EditorData<RnRoadGroup>>();
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
             _WayCalcData waySlideCalcCache = null;
 
@@ -1433,7 +1433,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             nodeEditorData[node0].Connections.Add(cn);
                             nodeEditorData[node1].Connections.Add(cn);
                             roadGroups.Add(cn);
-                            linkGroupEditorData.Add(editorData);
+                            roadGroupEditorData.Add(editorData);
                         }
 
                         calcedNeighbor.Add(neighbor);
@@ -1450,7 +1450,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
 
                 // 仮 編集可能なデータに勝手に修正
-                foreach (var linkGroupEditorData in linkGroupEditorData)
+                foreach (var linkGroupEditorData in roadGroupEditorData)
                 {
                     var data = linkGroupEditorData.Ref;
                     var nl = data.GetLeftLaneCount();
@@ -1465,7 +1465,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
 
                 // キャッシュの生成
-                linkGroupEditorData.AddCache("linkGroup", (d) =>
+                roadGroupEditorData.AddCache("linkGroup", (d) =>
                 {
                     if (d.IsEditable == false)
                     {
@@ -1509,7 +1509,7 @@ namespace PLATEAU.Editor.RoadNetwork
             private void ClearCache()
             {
                 nodeEditorData.Clear();
-                linkGroupEditorData.Clear();
+                roadGroupEditorData.Clear();
                 ptEditorData.Clear();
 
             }
@@ -1628,7 +1628,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // マウス位置に近いwayを算出
 
-                if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<RoadGroupEditorData> eConn) == false)
+                if (this.roadGroupEditorData.TryGetCache<RoadGroupEditorData>("linkGroup", out var eConn) == false)
                 {
                     Assert.IsTrue(false);
                     return;
@@ -1771,7 +1771,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     gizmosSys.Update(
                         system.SelectedRoadNetworkElement,
                         waySlideCalcCache?.ClosestWay,
-                        linkGroupEditorData,
+                        this.roadGroupEditorData,
                         dummyWay);
                     var cmds = gizmosSys.BuildDrawCommands();
                     gizmosdrawer.DrawFuncs.Clear();
@@ -1779,7 +1779,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     // guiの更新
 
-                    guisys.connections = linkGroupEditorData;
+                    guisys.connections = this.roadGroupEditorData;
                     //if (connections.Count > 0)
                     //{
                     //    Handles.DrawLines(pts);
