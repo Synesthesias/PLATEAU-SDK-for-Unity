@@ -252,8 +252,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 //element.BindProperty(bp);
                 element.TrackSerializedObjectValue(mdl, (se) =>
                 {
-                    Debug.Log("changed");
-
                     var mod = system.RoadNetworkSimpleEditModule;
                     var obj = se as IScriptableRoadMdl;
                     if (mod.CanSetDtailMode())

@@ -306,7 +306,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             where _T : IEquatable<_T>
         {
             var s = string.Format("Changed property : {0}, {1} to {2}.", name, pre, post);
-            Debug.Log(s);
+            //Debug.Log(s); // デバッグ用
         }
 
     }

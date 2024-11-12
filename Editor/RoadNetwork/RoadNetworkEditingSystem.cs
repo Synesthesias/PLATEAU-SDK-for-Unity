@@ -1656,8 +1656,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 //Vector3 closestPointOnRay;   // 
                 if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
                 {
-                    Debug.Log(currentState);
-                    //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
+                    //var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref); // デバッグ用
                     var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
 
                     // way用の編集データがない場合は作成

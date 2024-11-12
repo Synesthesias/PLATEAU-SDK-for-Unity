@@ -232,7 +232,6 @@ namespace PLATEAU.Editor.RoadNetwork
             if (EnableLimitSceneViewDefaultContorl)
             {
                 HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
-                Debug.Log("disenable defautl contorl");
             }
 
             if (nodeTex == null)
@@ -374,7 +373,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
                     if (isClicked)
                     {
-                        Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
+                        //Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
                         editorSystem.SelectedRoadNetworkElement = item;
                         return;
                     }
@@ -486,89 +485,12 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     unionWay = ways.ToList();
 
-                    // 仕様上動かしてはいけないwayを除外する
-                    //// レーンが一つの場合は必ず歩道に接するので
-                    //if (lanes.Count == 1)
-                    //{
-                    //    unionWay.Clear();
-                    //}
-                    //else if (lanes.Count > 0)
-                    //{
-                    //    unionWay.Remove(lanes[0].LeftWay);
-                    //    var otherLane = lanes[lanes.Count - 1];
-                    //    unionWay.Remove(otherLane.RightWay);
-                    //}
-
-                    //var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    //var nSlider = unionWay.Count; // 左右の
-                    //if (wayEditorDataList == null)
-                    {
-                        //wayEditorDataList = new List<WayEditorData>(nSlider);
-                        //foreach (var editingTarget in unionWay)
-                        //{
-                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        //}
-                        //roadGroupEditorData.TryAdd(wayEditorDataList);
-                    }
-
-                    //Assert.IsNotNull(wayEditorDataList);
-                    //if (wayEditorDataList.Count != nSlider)
-                    //{
-                    //    wayEditorDataList.Clear();
-                    //    wayEditorDataList.Capacity = nSlider;
-                    //    foreach (var editingTarget in unionWay)
-                    //    {
-                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
-                    //    }
-                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
-                    //GUILayout.BeginVertical();
-                    //GUILayout.Label("Ways");
-                    //foreach (var wayEditorData in wayEditorDataList)
-                    //{
-                    //    //// textフィールド版
-                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                    //    //var v = wayEditorData.SliderVarVals;
-                    //    //if (float.TryParse(s, out v))
-                    //    //{
-                    //    //    wayEditorData.SliderVarVals = v;
-                    //    //}
-
-                    //    // slider版
-                    //    const float minScaleLimit = -5.0f;
-                    //    const float maxScaleLimit = 5.0f;
-                    //    wayEditorData.SliderVarVals =
-                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
-
-                    //    GUILayout.Space(10);
-                    //}
 
                     GUILayout.EndArea();
                     Handles.EndGUI();
 
-                    //// 変更あったものに対してのみ差分を適用する
-                    //foreach (var wayEditorData in wayEditorDataList)
-                    //{
-                    //    if (wayEditorData.IsChanged == false)
-                    //    {
-                    //        continue;
-                    //    }
-
-                    //    var target = wayEditorData.Ref;
-
-                    //    // デフォルトの状態に戻す
-                    //    var baseWay = wayEditorData.BaseWay;
-                    //    for (int i = 0; i < baseWay.Count; i++)
-                    //    {
-                    //        var p = baseWay[i];
-                    //        var p2 = target.GetPoint(i);
-                    //        p2.Vertex = p;
-                    //    }
-                    //    var offset = wayEditorData.SliderVarVals;
-                    //    target.MoveAlongNormal(offset);
-                    //    Debug.Log($"way.MoveAlongNormal({offset})");
-                    //}
                 }
                 else // 詳細モードでのみ表示
                 {
