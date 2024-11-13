@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -370,15 +371,15 @@ namespace PLATEAU.RoadNetwork.Structure
             switch (dir)
             {
                 case RnDir.Left:
-                    {
-                        var lane = MainLanes[0];
-                        return IsLeftLane(lane) ? lane?.LeftWay : lane?.RightWay?.ReversedWay();
-                    }
+                {
+                    var lane = MainLanes[0];
+                    return IsLeftLane(lane) ? lane?.LeftWay : lane?.RightWay?.ReversedWay();
+                }
                 case RnDir.Right:
-                    {
-                        var lane = MainLanes[^1];
-                        return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay?.ReversedWay();
-                    }
+                {
+                    var lane = MainLanes[^1];
+                    return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay?.ReversedWay();
+                }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dir), dir, null);
             }
@@ -657,6 +658,26 @@ namespace PLATEAU.RoadNetwork.Structure
             var ret = new RnRoad(targetTran);
             ret.AddMainLane(lane);
             return ret;
+        }
+
+        /// <summary>
+        /// Lane内のWayの内、最も左のWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public RnWay GetLeftWayOfLanes()
+        {
+            var lane = MainLanes.First();
+            return IsLeftLane(lane) ? lane?.LeftWay : lane?.RightWay;
+        }
+
+        /// <summary>
+        /// Lane内のWayの内、最も右のWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public RnWay GetRightWayOfLanes()
+        {
+            var lane = MainLanes.Last();
+            return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay;
         }
     }
 

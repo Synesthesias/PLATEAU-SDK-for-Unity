@@ -461,6 +461,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var roadGroup = road.CreateRoadGroup();
                 foreach (var l in roadGroup.Roads)
                     visitedRoads.Add(l);
+
                 roadGroup.MergeRoads();
             }
         }

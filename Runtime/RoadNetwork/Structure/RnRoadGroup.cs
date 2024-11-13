@@ -994,6 +994,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 NextIntersection.RemoveEdges(r => r.Road == Roads[^1]);
                 foreach (var l in dstLanes)
                 {
+                    if (l is null)
+                    {
+                        Debug.LogError($"lane is null");
+                        continue;
+                    }
                     NextIntersection.AddEdge(dstRoad, dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right));
                 }
             }
