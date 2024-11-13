@@ -145,6 +145,26 @@ namespace PLATEAU.Editor.RoadNetwork
             return newSystem;
         }
 
+        public static void TryTerminate(
+            RoadNetworkEditingSystem oldSystem, VisualElement root)
+        {
+            if (root == null)
+            {
+                Debug.LogError("Root is null.");
+                return;
+            }
+
+            if (oldSystem != null)
+            {
+                oldSystem.system.Instance.ReInitialize();
+                oldSystem.Terminate();
+            }
+
+            // 仮
+            RoadNetworkEditingSystem.SingletonInstance = null;
+            return;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1919,6 +1939,13 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 editingIntersection.SetTarget(null);
                 editingIntersection.Activate(false);
+                gizmosSys.Clear();
+
+                var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();
+                if (gizmosDrawer != null)
+                {
+                    gizmosDrawer.DrawFuncs.Clear();
+                }
             }
 
             public class EditingIntersection

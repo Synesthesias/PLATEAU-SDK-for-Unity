@@ -67,6 +67,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         }
 
+        public void Clear()
+        {
+            drawFuncs.Clear();
+            intersectionConnectionLinePairs.Clear();
+            selectingWay.Clear();
+            leftLaneWayList.Clear();
+            rightLaneWayList.Clear();
+            medianWayList.Clear();
+            sideWalks.Clear();
+            slideDummyWayList.Clear();
+            intersectionOutline.Clear();
+            intersectionBorder.Clear();
+        }
 
         /// <summary>
         /// 描画コマンド生成に必要なデータを更新する
