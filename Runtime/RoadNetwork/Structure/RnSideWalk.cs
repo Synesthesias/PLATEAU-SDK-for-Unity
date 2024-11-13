@@ -14,6 +14,20 @@ namespace PLATEAU.RoadNetwork.Structure
         EndEdge = 1 << 3,
     }
 
+    /// <summary>
+    /// 道路専用. 手動編集で道路の左側/右側どっちに所属するかが取りたいみたいなので専用フラグを用意する.
+    /// 交差点だと意味がない
+    /// </summary>
+    public enum RnSideWalkLaneType
+    {
+        // 交差点 or その他(デフォルト値)
+        Undefined,
+        // 左レーン
+        LeftLane,
+        // 右レーン
+        RightLane,
+    }
+
     public class RnSideWalk : ARnParts<RnSideWalk>
     {
         //----------------------------------
@@ -38,6 +52,8 @@ namespace PLATEAU.RoadNetwork.Structure
         // シリアライズ化の為にフィールドに
         private RnWay endEdgeWay;
 
+        private RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
+
         //----------------------------------
         // end: フィールド
         //----------------------------------
@@ -51,6 +67,12 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnWay StartEdgeWay => startEdgeWay;
 
         public RnWay EndEdgeWay => endEdgeWay;
+
+        public RnSideWalkLaneType LaneType
+        {
+            get => laneType;
+            set => laneType = value;
+        }
 
         /// <summary>
         /// 左右のWay(OutsideWay, InsideWay)を列挙
@@ -92,13 +114,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnSideWalk() { }
 
-        private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay)
+        private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType)
         {
             this.parentRoad = parent;
             this.outsideWay = outsideWay;
             this.insideWay = insideWay;
             this.startEdgeWay = startEdgeWay;
             this.endEdgeWay = endEdgeWay;
+            this.laneType = laneType;
         }
 
         public RnSideWalkWayTypeMask GetValidWayTypeMask()
@@ -156,10 +179,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="insideWay"></param>
         /// <param name="startEdgeWay"></param>
         /// <param name="endEdgeWay"></param>
+        /// <param name="laneType"></param>
         /// <returns></returns>
-        public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay)
+        public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
-            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay);
+            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay ,laneType);
             if (parent != null)
             {
                 parent.AddSideWalk(sideWalk);
@@ -168,7 +192,6 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 Debug.LogWarning("parent is null.");
             }
-            
             return sideWalk;
         }
     }

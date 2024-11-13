@@ -104,6 +104,22 @@ namespace PLATEAU.RoadNetwork.Structure
             return roads.SelectMany(l => l.GetLeftLanes());
         }
 
+        /// <summary>
+        /// RnDirで指定した側のレーンを取得する
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public IEnumerable<RnLane> GetLanes(RnDir dir)
+        {
+            return dir switch
+            {
+                RnDir.Left => GetLeftLanes(),
+                RnDir.Right => GetRightLanes(),
+                _ => throw new ArgumentOutOfRangeException($"GetLanes ({dir})")
+            };
+        }
+
         private RnWay ConnectWays(IEnumerable<RnWay> ways)
         {
             var points = new List<RnPoint>();
@@ -191,7 +207,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        private void SetLaneCount(int count, RnDir dir)
+        private void SetLaneCountImpl(int count, RnDir dir)
         {
             if (IsValid == false)
                 return;
@@ -326,15 +342,15 @@ namespace PLATEAU.RoadNetwork.Structure
                 return;
             }
 
-            SetLaneCountImpl(leftCount, rightCount);
+            SetLaneCountWithoutMedian(leftCount, rightCount);
         }
 
         /// <summary>
-        /// レーン数を変更する.
+        /// レーン数を変更する. 中央分離帯は削除する
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
-        private void SetLaneCountImpl(int leftCount, int rightCount)
+        private void SetLaneCountWithoutMedian(int leftCount, int rightCount)
         {
             if (IsValid == false)
                 return;
@@ -368,32 +384,58 @@ namespace PLATEAU.RoadNetwork.Structure
                 road.ReplaceLanes(lanes);
             }
 
-            if (leftCount == 0 || rightCount == 0)
-            {
-                foreach (var l in Roads)
-                    l.SetMedianLane(null);
-            }
-            else
-            {
-                // 中央分離帯があるリンクだけ更新する(ない場合はなにもしない
-                CreateMedianOrSkip(l => l.MedianLane != null);
-            }
+            // 中央分離帯を削除する
+            foreach (var l in Roads)
+                l.SetMedianLane(null);
         }
 
+        /// <summary>
+        /// 中央分離帯を取得する
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        public void GetMedians(
+            out IReadOnlyCollection<RnWay> left,
+            out IReadOnlyCollection<RnWay> right)
+        {
+            var lWays = new List<RnWay>(Roads.Count);
+            var rWays = new List<RnWay>(Roads.Count);
+
+            foreach (var road in Roads)
+            {
+                if (road.GetLeftLaneCount() > 0)
+                {
+                    var centerLeft = road.GetLeftLanes()?.Last();
+                    lWays.Add(centerLeft.RightWay);
+                }
+                if (road.GetRightLaneCount() > 0)
+                {
+                    var centerRight = road.GetRightLanes()?.First();
+                    rWays.Add(centerRight.RightWay);
+                }
+            }
+
+            left = lWays;
+            right = rWays;
+        }
+
+        public bool HasMedians()
+        {
+           return Roads.Any(l => l.MedianLane != null);
+        }
 
         /// <summary>
-        /// 中央分離帯の幅を設定する.
+        /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨
         /// </summary>
         /// <param name="width"></param>
         /// <param name="moveOption"></param>
+        [Obsolete("非推奨. 個別にWayを動かす or ExpandMedianWidthを使うこと")]
         public bool SetMedianWidth(float width, LaneWayMoveOption moveOption)
         {
-            if (GetLeftLaneCount() == 0 || GetRightLaneCount() == 0)
+            if (HasMedian() == false)
                 return false;
+
             Align();
-            // 中央分離帯がないリンクは一度作成する
-            if (width > 0f)
-                CreateMedianOrSkip(l => l.MedianLane == null);
             foreach (var road in Roads)
             {
                 var nowWidth = road.GetMedianWidth();
@@ -415,9 +457,42 @@ namespace PLATEAU.RoadNetwork.Structure
                         centerRight.RightWay?.MoveAlongNormal(-deltaWidth);
                         break;
                 }
-
-                //l.MedianLane?.TrySetWidth(width, moveOption);
             }
+            return true;
+        }
+
+        /// <summary>
+        /// 中央分離帯の幅を拡縮する. deltaWidthが正なら幅が増加する
+        /// </summary>
+        /// <param name="deltaWidth"></param>
+        /// <param name="moveOption"></param>
+        /// <returns></returns>
+        public bool ExpandMedianWidth(float deltaWidth, LaneWayMoveOption moveOption)
+        {
+            if (HasMedian() == false)
+                return false;
+            Align();
+            foreach (var road in Roads)
+            {
+                //// サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
+                //// 中央分離帯の幅を設定する
+                var centerLeft = road.GetLeftLanes().Last();
+                var centerRight = road.GetRightLanes().First();
+                switch (moveOption)
+                {
+                    case LaneWayMoveOption.MoveBothWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
+                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
+                        break;
+                    case LaneWayMoveOption.MoveLeftWay:
+                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth);
+                        break;
+                    case LaneWayMoveOption.MoveRightWay:
+                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth);
+                        break;
+                }
+            }
+
             return true;
         }
 
@@ -542,15 +617,15 @@ namespace PLATEAU.RoadNetwork.Structure
             if (GetLeftLaneCount() == count)
                 return;
 
-            // 左車線が無い場合は左車線のサイズも含めて変更する
+            // 左車線が無い場合は全車線含めて変更する
             if (GetLeftLaneCount() == 0 || count == 0)
             {
-                SetLaneCountImpl(count, GetRightLaneCount());
+                SetLaneCountWithoutMedian(count, GetRightLaneCount());
             }
             // すでに左車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCount(count, RnDir.Left);
+                SetLaneCountImpl(count, RnDir.Left);
             }
         }
 
@@ -564,67 +639,73 @@ namespace PLATEAU.RoadNetwork.Structure
             if (GetRightLaneCount() == count)
                 return;
 
-            // 右車線が無い場合は左車線のサイズも含めて変更する
+            // 右車線が無い場合は全車線含めて変更する
             if (GetRightLaneCount() == 0 || count == 0)
             {
-                SetLaneCountImpl(GetLeftLaneCount(), count);
+                SetLaneCountWithoutMedian(GetLeftLaneCount(), count);
             }
             // すでに右車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCount(count, RnDir.Right);
+                SetLaneCountImpl(count, RnDir.Right);
             }
         }
 
         /// <summary>
-        /// 中央分離帯を作成するかスキップする
+        /// RnDirで指定した側のレーン数を設定する
         /// </summary>
-        private void CreateMedianOrSkip(Func<RnRoad, bool> createTarget)
+        /// <param name="dir"></param>
+        /// <param name="count"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SetLaneCount(RnDir dir, int count)
         {
-            Dictionary<RnPoint, RnPoint> replace = new Dictionary<RnPoint, RnPoint>();
-            foreach (var l in Roads)
+            switch (dir)
             {
-                if (createTarget != null && createTarget(l) == false)
-                    continue;
-
-                var centerLeft = l.GetLeftLanes().Last();
-                var rightWay = centerLeft.Replace2Clone(RnDir.Right, true);
-                var leftWay = centerLeft.RightWay;
-                leftWay = new RnWay(leftWay.LineString, leftWay.IsReversed, !leftWay.IsReverseNormal);
-                var st = rightWay.GetPoint(0);
-                var en = rightWay.GetPoint(-1);
-                var afterSt = replace.GetValueOrCreate(st, r => st.Clone());
-                var afterEn = replace.GetValueOrCreate(en, r => en.Clone());
-
-                var prev = centerLeft.GetBorder(RnLaneBorderType.Prev, RnLaneBorderDir.Left2Right);
-                var next = centerLeft.GetBorder(RnLaneBorderType.Next, RnLaneBorderDir.Left2Right);
-                prev.LineString.ReplacePoint(st, afterSt);
-                next.LineString.ReplacePoint(en, afterEn);
-                leftWay.SetPoint(0, prev.GetPoint(-1));
-                leftWay.SetPoint(-1, next.GetPoint(-1));
-
-                var prevLineString = RnLineString.Create(new[] { afterSt, st }, false);
-                var nextLineString = RnLineString.Create(new[] { afterEn, en }, false);
-
-                var prevBorder = new RnWay(prevLineString, isReverseNormal: true);
-                var nextBorder = new RnWay(nextLineString);
-                var medianLane = new RnLane(leftWay, rightWay, prevBorder, nextBorder);
-                l.SetMedianLane(medianLane);
-
-                // 交差点側にも情報を埋め込む(外形が崩れるので)
-                if (l.Prev is RnIntersection prevInter)
-                {
-                    prevInter.AddEdge(l, prevBorder.ReversedWay());
-                    prevInter.Align();
-                }
-
-                if (l.Next is RnIntersection nextInter)
-                {
-                    nextInter.AddEdge(l, nextBorder.ReversedWay());
-                    nextInter.Align();
-                }
-
+                case RnDir.Left:
+                    SetLeftLaneCount(count);
+                    break;
+                case RnDir.Right:
+                    SetRightLaneCount(count);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dir), dir, $"SetLaneCount({dir})");
             }
+        }
+
+        /// <summary>
+        /// まだ中央分離帯がない場合は作成する.
+        /// medianWidthは作成時の中央分離帯の幅. 最低1m. ただし目安であり、実際の幅は最小のレーン幅に合わせる
+        /// </summary>
+        /// <param name="medianWidth"></param>
+        /// <param name="maxMedianLaneRate">中央分離帯の割合が全体の道のこれを超えないようにする</param>
+        public bool CreateMedianOrSkip(float medianWidth = 1f, float maxMedianLaneRate = 0.5f)
+        {
+            // 全ての道路に中央分離帯がある場合は何もしない
+            if (HasMedian())
+                return false;
+            // 両方にレーンが無いと作成しない
+            if (GetLeftLaneCount() == 0 || GetRightLaneCount() == 0)
+            {
+                DebugEx.LogWarning($"中央分離帯を作成するには左右の車線が必要");
+                return false;
+            }
+
+            medianWidth = Mathf.Max(1, medianWidth);
+            // 1番小さい幅レーンの道幅が1[m]になるように中央分離帯を作成する
+            var width = Roads.Min(r => r.AllLanesWithMedian.Sum(l => l.CalcWidth()));
+            var medianRate = Mathf.Min(maxMedianLaneRate, medianWidth / width);
+            SetLaneCountWithMedian(GetLeftLaneCount(), GetRightLaneCount(), medianRate);
+            return true;
+        }
+
+        /// <summary>
+        /// 中央分離帯があるかどうか.
+        /// 構成するすべての道路に中央分離帯がある場合にtrueを返す
+        /// </summary>
+        /// <returns></returns>
+        public bool HasMedian()
+        {
+            return Roads.All(r => r.MedianLane != null);
         }
 
         /// <summary>

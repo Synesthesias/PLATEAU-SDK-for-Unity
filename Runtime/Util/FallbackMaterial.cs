@@ -16,7 +16,7 @@ namespace PLATEAU.Util
         private static readonly IReadOnlyDictionary<PredefinedCityModelPackage, string> PackageToMaterialFileName =
             new Dictionary<PredefinedCityModelPackage, string>
             {
-                {PredefinedCityModelPackage.Building, "PlateauDefaultBuilding"},
+                {PredefinedCityModelPackage.Building, "PlateauDefaultBuildingA"},
                 {PredefinedCityModelPackage.Road, "PlateauDefaultRoad"},
                 {PredefinedCityModelPackage.UrbanPlanningDecision, "PlateauDefaultUrbanPlanningDecision"},
                 {PredefinedCityModelPackage.LandUse, "PlateauDefaultLandUse"},

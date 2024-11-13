@@ -33,5 +33,25 @@ namespace PLATEAU.Util
             compare ??= Comparer<TResult>.Default;
             return self.TryFindCompare(selector, (v1, v2) => compare.Compare(v1, v2) > 0, out minElement);
         }
+
+        /// <summary>
+        /// selfに対して、最初にpredicateがtrueになる要素のindexを返す
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static int FindFirstIndex<TSource>(this IEnumerable<TSource> self, Func<TSource, bool> predicate)
+        {
+            var i = 0;
+            foreach (var elem in self)
+            {
+                if (predicate(elem))
+                    return i;
+                i++;
+            }
+
+            return -1;
+        }
     }
 }

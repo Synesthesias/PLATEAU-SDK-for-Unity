@@ -232,7 +232,6 @@ namespace PLATEAU.Editor.RoadNetwork
             if (EnableLimitSceneViewDefaultContorl)
             {
                 HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
-                Debug.Log("disenable defautl contorl");
             }
 
             if (nodeTex == null)
@@ -332,7 +331,6 @@ namespace PLATEAU.Editor.RoadNetwork
         public Color connectionColor = Color.blue;
 
         public ICollection<EditorData<RnIntersection>> intersections = new EditorData<RnIntersection>[0];
-        //public List<Vector3> intersections = new List<Vector3>();
         public Color intersectionColor = Color.green;
         public float intersectionRadius = 30.0f;
 
@@ -347,7 +345,7 @@ namespace PLATEAU.Editor.RoadNetwork
             var nodeIconPosOffset = Vector3.up * 0;
             var roadIconPosOffset = Vector3.up * 0;
 
-            IReadOnlyCollection<LinkGroupEditorData> cns = connections.Select(c => c.GetSubData<LinkGroupEditorData>()).ToList();
+            IReadOnlyCollection<RoadGroupEditorData> cns = connections.Select(c => c.GetSubData<RoadGroupEditorData>()).ToList();
 
             var camera = SceneView.currentDrawingSceneView.camera;
 
@@ -357,10 +355,10 @@ namespace PLATEAU.Editor.RoadNetwork
                 if (item == editorSystem.SelectedRoadNetworkElement)
                     continue;
 
-                var subData = item.GetSubData<LinkGroupEditorData>();
+                var subData = item.ReqSubData<RoadGroupEditorData>();
 
-                var p1 = subData.A.RefGameObject.transform.position;
-                var p2 = subData.B.RefGameObject.transform.position;
+                var p1 = subData.A.GetCenter();
+                var p2 = subData.B.GetCenter();
                 var btnP = (p1 + p2) / 2.0f;
 
 
@@ -374,7 +372,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
                     if (isClicked)
                     {
-                        Debug.Log(subData.A.RefGameObject.name + "-" + subData.B.RefGameObject.name);
+                        //Debug.Log(subData.A.ToString() + "-" + subData.B.ToString()); // デバッグ用
                         editorSystem.SelectedRoadNetworkElement = item;
                         return;
                     }
@@ -382,13 +380,8 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
 
-            // ノードが重複して描画されるので nodeEitorDataで走査
-            HashSet<NodeEditorData> nodeEitorData = new HashSet<NodeEditorData>(connections.Count * 2);
-            foreach (var item in cns)
-            {
-                nodeEitorData.Add(item.A);
-                nodeEitorData.Add(item.B);
-            }
+            // ノード
+            var nodeEitorData = intersections;
 
             //foreach (var item in nodeEitorData)
             //{
@@ -486,89 +479,12 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                     unionWay = ways.ToList();
 
-                    // 仕様上動かしてはいけないwayを除外する
-                    //// レーンが一つの場合は必ず歩道に接するので
-                    //if (lanes.Count == 1)
-                    //{
-                    //    unionWay.Clear();
-                    //}
-                    //else if (lanes.Count > 0)
-                    //{
-                    //    unionWay.Remove(lanes[0].LeftWay);
-                    //    var otherLane = lanes[lanes.Count - 1];
-                    //    unionWay.Remove(otherLane.RightWay);
-                    //}
-
-                    var wayEditorDataList = roadGroupEditorData.GetSubData<List<WayEditorData>>();
-                    //var nSlider = unionWay.Count; // 左右の
-                    if (wayEditorDataList == null)
-                    {
-                        //wayEditorDataList = new List<WayEditorData>(nSlider);
-                        //foreach (var editingTarget in unionWay)
-                        //{
-                        //    wayEditorDataList.Add(new WayEditorData(editingTarget));
-                        //}
-                        //roadGroupEditorData.TryAdd(wayEditorDataList);
-                    }
-
-                    Assert.IsNotNull(wayEditorDataList);
-                    //if (wayEditorDataList.Count != nSlider)
-                    //{
-                    //    wayEditorDataList.Clear();
-                    //    wayEditorDataList.Capacity = nSlider;
-                    //    foreach (var editingTarget in unionWay)
-                    //    {
-                    //        wayEditorDataList.Add(new WayEditorData(editingTarget));
-                    //    }
-                    //}
                     Handles.BeginGUI();
                     GUILayout.BeginArea(new Rect(100, 100, 200, 300));
-                    //GUILayout.BeginVertical();
-                    //GUILayout.Label("Ways");
-                    //foreach (var wayEditorData in wayEditorDataList)
-                    //{
-                    //    //// textフィールド版
-                    //    //var s = GUILayout.TextField(wayEditorData.SliderVarVals.ToString());
-                    //    //var v = wayEditorData.SliderVarVals;
-                    //    //if (float.TryParse(s, out v))
-                    //    //{
-                    //    //    wayEditorData.SliderVarVals = v;
-                    //    //}
-
-                    //    // slider版
-                    //    const float minScaleLimit = -5.0f;
-                    //    const float maxScaleLimit = 5.0f;
-                    //    wayEditorData.SliderVarVals =
-                    //        GUILayout.HorizontalSlider(wayEditorData.SliderVarVals, minScaleLimit, maxScaleLimit);
-
-                    //    GUILayout.Space(10);
-                    //}
 
                     GUILayout.EndArea();
                     Handles.EndGUI();
 
-                    // 変更あったものに対してのみ差分を適用する
-                    foreach (var wayEditorData in wayEditorDataList)
-                    {
-                        if (wayEditorData.IsChanged == false)
-                        {
-                            continue;
-                        }
-
-                        var target = wayEditorData.Ref;
-
-                        // デフォルトの状態に戻す
-                        var baseWay = wayEditorData.BaseWay;
-                        for (int i = 0; i < baseWay.Count; i++)
-                        {
-                            var p = baseWay[i];
-                            var p2 = target.GetPoint(i);
-                            p2.Vertex = p;
-                        }
-                        var offset = wayEditorData.SliderVarVals;
-                        target.MoveAlongNormal(offset);
-                        Debug.Log($"way.MoveAlongNormal({offset})");
-                    }
                 }
                 else // 詳細モードでのみ表示
                 {
@@ -786,10 +702,10 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (state.isContinue) continue;
 
                     // signalLight
-                    foreach (var signalLight in signalController.SignalLights)
+                    foreach (var signalLight in signalController.TrafficLights)
                     {
                         state.ResetLoopOperationFlags();
-                        ForeachSignalLight(editorSystem, signalController.SignalLights, signalLight, ref state);
+                        ForeachSignalLight(editorSystem, signalController.TrafficLights, signalLight, ref state);
 
                         if (state.isBreak) break;
                         if (state.isContinue) continue;
@@ -962,90 +878,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            // レーンの構造変更機能が有効である
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneStructure)
-            {
-                var offset = Vector3.up * signalLightHndScaleFactor;
-                var scaleHandlePos = state.lanePos + offset;
-
-                var sizeOffset = laneHndScaleFactor;
-                var size = HandleUtility.GetHandleSize(scaleHandlePos) * sizeOffset;
-                var isClickedSplit = Handles.Button(scaleHandlePos, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                if (isClickedSplit)
-                {
-                    // 車線数を増やす
-                    state.delayCommand += () =>
-                    {
-                        // IRoadNetworkEditOperationを通してないので通知が通らないので注意 修正する
-                        var newLanes = lane.SplitLaneSelf(2);   // 元のレーンを含めてLaneが３つになる
-                        if (newLanes == null)
-                            return;
-                        parent.RemoveLane(lane);
-                        foreach (var newLane in newLanes)
-                        {
-                            parent.AddMainLane(newLane);
-                        }
-                        Debug.Log("車線数を増やすボタンが押された");
-
-                    };
-                    state.isDirtyTarget = true;
-                }
-
-                // 仮　車線数を減らす　ParentLinkがnullであるためレーンを選択できないので適当なレーンを削除する
-                var isClickedRemove = Handles.Button(scaleHandlePos + Vector3.right * size * 1.5f, Quaternion.identity, size, size, RoadNetworkRemoveLaneButtonHandleCap);
-                if (isClickedRemove)
-                {
-                    state.delayCommand += () =>
-                    {
-                        editorSystem.EditOperation.RemoveMainLane(parent, lane);
-                        Debug.Log("車線数を減らすボタンが押された");
-                    };
-                    state.isDirtyTarget = true;
-                }
-
-            }
-
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
-            {
-                //if (bIsHandleLock == null || bIsHandleLock == lane)
-                //{
-                //    // １つのレーンの幅員を増やす
-                //    if (lane.LeftWay.Count > 0)
-                //    {
-                //        var leftCenterIdx = lane.LeftWay.Count / 2;
-                //        var scaleHandlePos = lane.LeftWay[leftCenterIdx];
-                //        var dir = Vector3.up;
-                //        if (lane.LeftWay.Count >= 2)
-                //        {
-                //            dir = lane.LeftWay.GetVertexNormal(leftCenterIdx - 1);
-                //            dir.Normalize();
-                //        }
-
-                //        var size = HandleUtility.GetHandleSize(scaleHandlePos);
-                //        EditorGUI.BeginChangeCheck();
-                //        var scale = Handles.ScaleHandle(Vector3.one, scaleHandlePos, Quaternion.identity, size);
-                //        if (EditorGUI.EndChangeCheck())
-                //        {
-                //            bIsHandleLock = lane;
-                //            foreach (var way in lane.BothWays)
-                //            {
-                //                int i = 0;
-                //                foreach (var point in way.Points)
-                //                {
-                //                    var vertNorm = way.GetVertexNormal(i++);
-                //                    point.Vertex = point + (scale - 1) * 0.1f * vertNorm;
-                //                    state.isDirtyTarget = true;
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            bIsHandleLock = null;
-                //        }
-                //    }
-                //}
-            }
-
         }
 
         private bool IsContains(DisplayHndMaskSet mask)
@@ -1149,57 +981,6 @@ namespace PLATEAU.Editor.RoadNetwork
             //    }
             //}
 
-            if (sys.CurrentEditMode == RoadNetworkEditMode._EditLaneShape)
-            {
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
-                {
-                    EditorGUI.BeginChangeCheck();
-                    //var vertPos = DeployTranslateHandle(point);
-                    var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        var res = networkOperator.MovePoint(point, vertPos);
-                        state.isDirtyTarget = true;
-                        Debug.Assert(res.IsSuccess);
-                    }
-                    return;
-                }
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
-                {
-                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                    if (isClicked)
-                    {
-                        // parent.Pointsからpointを検索してインデックスを取得
-                        var idx = parent.Points.ToList().IndexOf(point);
-                        if (idx == -1)
-                            return;
-                        state.delayCommand += () =>
-                        {
-                            networkOperator.AddPoint(parent, idx, new RnPoint(point.Vertex + Vector3.up));
-                            Debug.Log("ポイント追加ボタンが押された");
-                        };
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-
-                if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
-                {
-                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                    if (isClicked)
-                    {
-                        state.delayCommand += () =>
-                        {
-                            networkOperator.RemovePoint(parent, point);
-                            Debug.Log("ポイント削除ボタンが押された");
-                        };
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-            }
         }
         private void ForeachAllBorderPoints(IRoadNetworkEditingSystem sys, RnRoad link, RnWay parent, RnPoint point, ref SceneGUIState state, Vector3 offset)
         {
@@ -1219,51 +1000,13 @@ namespace PLATEAU.Editor.RoadNetwork
             if (isEditable)
             {
                 // Lane追加モードの処理
-                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLane)
-                {
-                    var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
-                    if (isClicked)
-                    {
-                        sys.RoadNetworkSimpleLaneGenerateModule.AddBorder(link, parent, point);
-                        if (sys.RoadNetworkSimpleLaneGenerateModule.CanBuild())
-                        {
-                            state.delayCommand += () =>
-                            {
-                                Debug.Log("Laneが追加された");
-                                sys.RoadNetworkSimpleLaneGenerateModule.Build();
-                            };
 
-                        }
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
-
-                if (sys.CurrentEditMode == RoadNetworkEditMode._AddLink)
-                {
-                    var isClicked = Handles.Button(point + offset, Quaternion.identity, size, size, Handles.SphereHandleCap);
-                    if (isClicked)
-                    {
-                        sys.RoadNetworkSimpleLinkGenerateModule.AddPoint(link.ParentModel, point);
-                        if (sys.RoadNetworkSimpleLinkGenerateModule.CanBuild())
-                        {
-                            state.delayCommand += () =>
-                            {
-                                Debug.Log("Linkが追加された");
-                                sys.RoadNetworkSimpleLinkGenerateModule.Build();
-                            };
-
-                        }
-                        state.isDirtyTarget = true;
-                    }
-                    return;
-                }
             }
         }
 
         private void ForeachSignalLight(IRoadNetworkEditingSystem editorSystem, List<TrafficSignalLight> signalLights, TrafficSignalLight signalLight, ref SceneGUIState state)
         {
-            state.signalLightPos = signalLight.position;
+            state.signalLightPos = signalLight.Position;
 
             Vector3 pos2d_dis = Vector3.zero;
             var isDisplayNode = true;
@@ -1275,7 +1018,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditTrafficRegulation)
             {
-                var size = HandleUtility.GetHandleSize(signalLight.position) * signalLightHndScaleFactor;
+                var size = HandleUtility.GetHandleSize(signalLight.Position) * signalLightHndScaleFactor;
                 //bool isClicked = Handles.Button(signalLight.position, Quaternion.identity, size, size, RoadNetworkTrafficSignalLightCap);
                 var isClicked = Button2DOn3D(state, pos2d_dis, trafficLight_blueTex);
                 if (isClicked)
@@ -1327,7 +1070,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (isClicked)
                     {
                         editorSystem.SelectedRoadNetworkElement = signalController;
-                        Debug.Log(signalController.SelfId);
+                        Debug.Log(signalController.DebugId);
                     }
                 }
             }

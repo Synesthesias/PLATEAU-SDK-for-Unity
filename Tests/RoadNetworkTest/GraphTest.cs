@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
+using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using UnityEngine;
@@ -25,6 +27,32 @@ namespace Tests.RoadNetworkTest
             var del = Mathf.Abs(lhs - rhs);
             var label = $"[{index}] {a.ToLogString()}/{b.ToLogString()}[{p}].  |{lhs}| != {rhs}({p} & {bLen})";
             Assert.IsTrue(del < 1e-1f, label);
+        }
+
+        [Test()]
+        public void RnWayNormalTest()
+        {
+            var points = new List<Vector3>()
+            {
+                new Vector3(0, 0, 0)
+                , new Vector3(1, 0, 0)
+                , new Vector3(1, 0, 1)
+            };
+
+
+
+            var ls = RnLineString.Create(points);
+            var way = new RnWay(ls, false, false);
+
+            var n1 = way.GetEdgeNormal(0);
+            var n2 = way.GetEdgeNormal(1);
+
+            void Check(Vector3 pos, bool isOut)
+            {
+                var res = way.IsOutSide(pos, out var n, out var o);
+                Assert.AreEqual(isOut, res, $"{pos}");
+            }
+            Check(new Vector3(0.5f, 0, 0.5f), true);
         }
 
         [Test()]

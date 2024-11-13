@@ -19,6 +19,11 @@ namespace PLATEAU.RoadNetwork.Structure
         // start: フィールド
         //----------------------------------
 
+        /// <summary>
+        /// 自動生成で作成されたときのバージョン. これが現在のバージョンよりも古い場合はデータが古い可能性がある.
+        /// RoadNetworkFactory.FactoryVersion参照
+        /// </summary>
+        public string FactoryVersion { get; set; } = "";
 
         // #NOTE : Editorが重いのでSerialize対象にしない
         private List<RnRoad> roads = new List<RnRoad>();
@@ -252,6 +257,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void Deserialize(RoadNetworkStorage storage, bool removeEmptyCheck = true)
         {
+            FactoryVersion = storage.FactoryVersion;
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(storage);
             CopyFrom(model);
@@ -446,29 +452,41 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 try
                 {
-                    var linkGroup = link.CreateRoadGroup();
-                    foreach (var l in linkGroup.Roads)
+                    var roadGroup = link.CreateRoadGroup();
+                    foreach (var l in roadGroup.Roads)
                         visitedRoads.Add(l);
 
-                    linkGroup.Align();
-                    if (linkGroup.IsValid == false)
+                    roadGroup.Align();
+                    if (roadGroup.IsValid == false)
                         continue;
 
-                    if (linkGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
+                    if (roadGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
+                    var leftCount = roadGroup.GetLeftLaneCount();
+                    var rightCount = roadGroup.GetRightLaneCount();
+                    // すでにレーンが分かれている場合、左右で独立して分割を行う
+                    if (leftCount > 0 && rightCount > 0)
+                    {
+                        foreach (var dir in new[] { RnDir.Left, RnDir.Right })
+                        {
+                            var width = roadGroup.Roads.Select(r => r.GetLanes(dir).Sum(l => l.CalcWidth())).Min();
+                            var num = (int)(width / roadWidth);
+                            roadGroup.SetLaneCount(dir, num);
+                        }
+                    }
+                    // 
+                    else
+                    {
+                        var width = roadGroup.Roads.Select(l => l.MainLanes.Sum(l => l.CalcWidth())).Min();
+                        var num = (int)(width / roadWidth);
+                        if (num <= 1)
+                            continue;
 
-                    // #TODO : 中央線がある場合の処理
-                    if (linkGroup.Roads.Any(l => l.MainLanes.Count != 1))
-                        continue;
+                        var leftLaneCount = (num + 1) / 2;
+                        var rightLaneCount = num - leftLaneCount;
+                        roadGroup.SetLaneCount(leftLaneCount, rightLaneCount);
+                    }
 
-                    var width = linkGroup.Roads.Select(l => l.MainLanes[0].CalcWidth()).Min();
-                    var num = (int)(width / roadWidth);
-                    if (num <= 1)
-                        continue;
-
-                    var leftLaneCount = (num + 1) / 2;
-                    var rightLaneCount = num - leftLaneCount;
-                    linkGroup.SetLaneCount(leftLaneCount, rightLaneCount);
                 }
                 catch (Exception e)
                 {
@@ -726,7 +744,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 // 切断線の境界
                 var midEdgeWay = new RnWay(RnLineString.Create(new[] { inside.midPoint, outside.midPoint }));
 
-                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay);
+                var newSideWalk = RnSideWalk.Create(newNextRoad, nextOutsideWay, nextInsideWay, midEdgeWay, endEdgeWay, sideWalk.LaneType);
                 sideWalk.SetSideWays(prevOutsideWay, prevInsideWay);
                 sideWalk.SetEdgeWays(startEdgeWay, midEdgeWay);
                 self.AddSideWalk(newSideWalk);

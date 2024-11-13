@@ -20,6 +20,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         public bool onlySelectedCityObjectGroupVisible = true;
 
         public RRoadTypeMask showFaceType = RRoadTypeMask.All;
+        public RRoadTypeMask removeFaceType = RRoadTypeMask.Empty;
 
         [Flags]
         public enum RPartsFlag
@@ -212,7 +213,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 text += $"({vertex.Position.x:F2},{vertex.Position.z:F2})";
 
             DrawString(text, vertex.Position, fontSize: op.size, color: GetColor(vertex.GetTypeMaskOrDefault(op.useAnyFaceVertexColor)));
-
+            //DebugEx.DrawSphere(vertex.Position, 0.3f, color: GetColor(vertex.GetTypeMaskOrDefault(op.useAnyFaceVertexColor)));
             if (TargetVertices.Contains(vertex))
             {
                 if (op.neighborOption.visible)
@@ -266,6 +267,9 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 return;
 
             if (face.RoadTypes.HasAnyFlag(showFaceType) == false)
+                return;
+
+            if (face.RoadTypes.HasAnyFlag(removeFaceType))
                 return;
 
             if (work.visitedFaces.Contains(face))

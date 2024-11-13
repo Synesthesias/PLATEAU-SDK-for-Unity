@@ -12,6 +12,12 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable]
     public struct RnID<TPrimDataType> where TPrimDataType : IPrimitiveData
     {
+
+        public override int GetHashCode()
+        {
+            return id;
+        }
+
         // PropertyDrawerでアクセスするため
         public const string IdFieldName = nameof(id);
 
@@ -39,6 +45,15 @@ namespace PLATEAU.RoadNetwork.Data
         public static bool operator !=(RnID<TPrimDataType> a, RnID<TPrimDataType> b)
         {
             return !(a == b);
+        }
+        public bool Equals(RnID<TPrimDataType> other)
+        {
+            return id == other.id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is RnID<TPrimDataType> other && Equals(other);
         }
     }
 }

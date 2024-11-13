@@ -1,11 +1,13 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
+using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug.SideWalkOption;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -80,6 +82,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // 接続先の道路タイプを表示する
                 public bool showConnectedRoadType = false;
 
+                // スプライン描画するときに何m間隔で描画するか
+                public float drawSplineInterval = 3f;
+
+                // スプラインのノットで描画する
+                public bool showKnots = false;
                 public DrawTrackOption()
                 {
                     visible = true;
@@ -91,13 +98,25 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public VisibleType visibleType = VisibleType.All;
             public DrawTrackOption showTrack = new();
 
+            // 非境界線の表示オプション
             public DrawOption showNonBorderEdge = new(true, Color.magenta * 0.7f);
 
+            // 境界線表示オプション
             public DrawOption showBorderEdge = new(true, Color.cyan * 0.7f);
+
+            // 中央分離帯との境界線オプション
+            public DrawOption showMedianBorderEdge = new(true, Color.yellow * 0.7f);
 
             public bool showEdgeIndex = false;
 
             public bool showEdgeGroup = false;
+
+            public bool showRecLine = false;
+            public bool showTrackCenterLine = false;
+            public float showTrackCenterLineRefineInterval = 5f;
+            public float showRecLineHalfLineLength = 10f;
+
+            public int showRecLineNest = 3;
         }
         [SerializeField] public IntersectionOption intersectionOp = new IntersectionOption();
 
@@ -185,6 +204,17 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class SideWalkOption
         {
+            [Serializable]
+            [Flags]
+            public enum SideWalkLaneTypeMask
+            {
+                None = 0,
+                Undefined = 1 << (RnSideWalkLaneType.Undefined),
+                LeftLane = 1 << (RnSideWalkLaneType.LeftLane),
+                RightLane = 1 << (RnSideWalkLaneType.RightLane),
+                All = ~0,
+            }
+
             public bool visible = true;
             public DrawOption showOutsideWay = new DrawOption(true, Color.red);
             public DrawOption showInsideWay = new DrawOption(true, Color.blue);
@@ -192,6 +222,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption showEndEdgeWay = new DrawOption(true, Color.yellow);
             // Noneの時はすべて表示. それ以外はRnSideWalk.GetValidWayTypeMaskが一致したものだけ表示する(不正なSideWalk検出用)
             public RnSideWalkWayTypeMask showWayFilter = RnSideWalkWayTypeMask.None;
+            public SideWalkLaneTypeMask showLaneTypeFilter = SideWalkLaneTypeMask.All;
+
         }
         [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
 
@@ -328,7 +360,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 if (wayOp.showEdgeNormal && i < way.Count - 1)
                 {
                     var p = (v + way[i + 1]) * 0.5f;
-                    var nn = way.GetEdgeNormal(i).normalized;
+                    var nn = way.GetEdgeNormal(i);
                     DrawArrow(p, p + nn, bodyColor: Color.blue);
                 }
 
@@ -366,6 +398,10 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (p.showWayFilter != RnSideWalkWayTypeMask.None && sideWalk.GetValidWayTypeMask() != p.showWayFilter)
                 return;
 
+            // レーンタイプで見る
+            if (((1 << (int)sideWalk.LaneType) & (int)p.showLaneTypeFilter) == 0)
+                return;
+
             // 非表示設定
             if (InVisibleObjects.Contains(sideWalk))
                 return;
@@ -396,7 +432,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (op.visible == false)
                 return;
 
-            if (op.visibleType.HasFlag(visibleType) == false)
+            if ((visibleType & op.visibleType) == 0)
                 return;
 
             if (work.IsVisited(lane) == false)
@@ -478,7 +514,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 visibleType &= ~VisibleType.NonSelected;
             }
 
-            if (op.visibleType.HasFlag(visibleType) == false)
+            if ((visibleType & op.visibleType) == 0)
                 return;
 
             if (work.IsVisited(road) == false)
@@ -611,7 +647,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (RnEx.IsEditorSceneSelected(intersection.CityObjectGroup))
                 visibleType |= VisibleType.SceneSelected;
 
-            if (op.visibleType.HasFlag(visibleType) == false)
+            if ((visibleType & op.visibleType) == 0)
                 return;
 
             if (work.IsVisited(intersection) == false)
@@ -647,25 +683,95 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             }
 
+            if (op.showTrackCenterLine)
+            {
+                var centerLineGraph = intersection.CreateCenterLineGraph(op.showTrackCenterLineRefineInterval);
+                foreach (var n in centerLineGraph.CenterLines)
+                {
+                    foreach (var e in n.Value)
+                        DrawWay(e.Value, Color.blue);
+                }
+                return;
+            }
+
+            if (op.showRecLine)
+            {
+                var rec = intersection.CreateRecLine();
+
+                for (var i = 0; i < rec.Count; ++i)
+                {
+                    var color = DebugEx.GetDebugColor(i, rec.Count);
+                    void Draw(RnIntersectionEx.RecLine r, int no)
+                    {
+                        if (r.LeftSide != null)
+                        {
+                            var left = r.LeftSide.ToWork();
+                            DrawArrows(left.Select(l => l.Vertex), color: color + Color.red);
+                        }
+
+                        if (r.RightSide != null)
+                        {
+                            var right = r.RightSide.ToWork();
+                            DrawArrows(right.Select(l => l.Vertex), color: color + Color.blue);
+                        }
+
+                        foreach (var x in r.Lines)
+                        {
+                            DrawWay(x, color: color);
+                            DrawString($"{no}", x.GetLerpPoint(0.5f));
+                        }
+                    }
+                    var r = rec[i];
+
+
+                    if (r.LeftSide != null && r.RightSide != null)
+                    {
+                        var left = r.LeftSide.Way.ToList();
+                        var right = r.RightSide.Way.ToList();
+                        var x = GeoGraphEx.GetInnerLerpSegments(left, right, AxisPlane.Xz, 0.5f);
+                        // DrawArrows(x, color: color + Color.green);
+                    }
+                    Draw(r, 0);
+                    for (var j = 0; j < op.showRecLineNest; ++j)
+                    {
+                        try
+                        {
+                            r = r.CreateChild();
+                            Draw(r, j + 1);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogException(e);
+                            break;
+                        }
+                    }
+                }
+
+                return;
+            }
 
             //foreach (var n in intersection.Edges)
             for (var i = 0; i < intersection.Edges.Count; i++)
             {
                 var n = intersection.Edges[i];
-                if (op.showNonBorderEdge.visible && n.Road == null)
+
+                void Draw(DrawOption p)
                 {
-                    DrawWay(n.Border, op.showNonBorderEdge.color);
+                    if (p.visible == false)
+                        return;
+                    DrawWay(n.Border, p.color);
                     var pos = n.Border.GetLerpPoint(0.5f);
                     if (op.showEdgeIndex)
                         DrawString($"B[{i}]", pos);
                 }
 
-                if (op.showBorderEdge.visible && n.Road != null)
+                if (n.IsBorder)
                 {
-                    DrawWay(n.Border, op.showBorderEdge.color);
-                    var pos = n.Border.GetLerpPoint(0.5f);
-                    if (op.showEdgeIndex)
-                        DrawString($"B[{i}]", pos);
+                    Draw(n.IsMedianBorder ? op.showMedianBorderEdge : op.showBorderEdge);
+                }
+                else
+                {
+                    Draw(op.showNonBorderEdge);
                 }
             }
 
@@ -673,7 +779,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 foreach (var track in intersection.Tracks)
                 {
-                    var n = 5;
 
                     var color = op.showTrack.color;
                     if (op.showTrack.useTurnTypeColor)
@@ -695,31 +800,43 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                     color = CheckRoad(track.FromBorder);
                     color = CheckRoad(track.ToBorder);
-
-                    DrawArrows(Enumerable.Range(0, n)
-                        .Select(i => 1f * i / (n - 1))
-                        .Select(t =>
-                        {
-                            track.Spline.Evaluate(t, out var pos, out var tam, out var up);
-                            return (Vector3)pos;
-                        }), false, color: color);
-
-                    if (op.showTrack.showConnectedRoadType)
+                    if (op.showTrack.showKnots)
                     {
-                        void Draw(float p, RnNeighbor e)
-                        {
-                            var i0 = Mathf.Floor(p);
-                            var i1 = Mathf.Ceil(p);
-                            track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
-                            track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
-                            var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
-                            var c = e.Road is RnRoad ? Color.green : Color.red;
-                            DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
-                        }
-
-                        Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
-                        Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        DrawArrows(track.Spline.Knots.Select(k => (Vector3)k.Position), false, color: color);
                     }
+                    else
+                    {
+                        var length = GeoGraphEx.GetEdges(track.Spline.Knots.Select(k => k.Position), false)
+                            .Sum(x => ((Vector3)(x.Item1) - (Vector3)(x.Item2)).magnitude);
+                        var n = Mathf.Max(3, Mathf.FloorToInt(length / Mathf.Max(0.1f, op.showTrack.drawSplineInterval)));
+
+                        DrawArrows(Enumerable.Range(0, n)
+                            .Select(i => 1f * i / (n - 1))
+                            .Select(t =>
+                            {
+                                track.Spline.Evaluate(t, out var pos, out var tam, out var up);
+                                return (Vector3)pos;
+                            }), false, color: color);
+
+                        if (op.showTrack.showConnectedRoadType)
+                        {
+                            void Draw(float p, RnNeighbor e)
+                            {
+                                var i0 = Mathf.Floor(p);
+                                var i1 = Mathf.Ceil(p);
+                                track.Spline.Evaluate(i0 / (n - 1), out var v0, out var _, out var _);
+                                track.Spline.Evaluate(i1 / (n - 1), out var v1, out var _, out var _);
+                                var v = Vector3.Lerp(v0, v1, 1f - (p - i0));
+                                var c = e.Road is RnRoad ? Color.green : Color.red;
+                                DebugEx.DrawRegularPolygon(v, 0.5f, color: c);
+                            }
+
+                            Draw(0.5f, intersection.FindEdges(track.FromBorder).FirstOrDefault());
+                            Draw(n - 1.5f, intersection.FindEdges(track.ToBorder).FirstOrDefault());
+                        }
+                    }
+
+
                 }
             }
         }

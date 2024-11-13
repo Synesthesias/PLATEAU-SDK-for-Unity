@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlateauDefaultBuilding
+  m_Name: PlateauDefaultBuildingA
   m_Shader: {fileID: -6465566751694194690, guid: 3435b4a85b3a83d40a3708fc958943d7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -88,23 +88,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_EmissionTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: c30bbae260635114fbad1df881d1d272, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_MainTexture:
-        m_Texture: {fileID: 2800000, guid: 74f22415146618b44bd1784c3bd85966, type: 3}
+        m_Texture: {fileID: 2800000, guid: db5d1c54e93040c469d5e6755fed6c85, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_MetallicTexture:
-        m_Texture: {fileID: 2800000, guid: 222d1832c2496dc4581b827b2b7e8269, type: 3}
+        m_Texture: {fileID: 2800000, guid: 732eb5fa44bc35248b5e729234a05614, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_NormalMap:
-        m_Texture: {fileID: 2800000, guid: a5284df6860f19045b10ba13e4e03b11, type: 3}
+        m_Texture: {fileID: 2800000, guid: 48f1ee8b89bbc344db1ee7ea2625584d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Side_RoughnessTexture:
-        m_Texture: {fileID: 2800000, guid: 057b902f75009f14ea8519a9804c8579, type: 3}
+        m_Texture: {fileID: 2800000, guid: e468708e23d31e54eb4946a4ef4b2ec6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_AmbientOcclusionTex:
@@ -120,19 +120,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_MainTexture:
-        m_Texture: {fileID: 2800000, guid: 28d7f8a12c1726347b22eac64b7b26de, type: 3}
+        m_Texture: {fileID: 2800000, guid: ceeea7aabbe469c41b11453f78d131a5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_MetallicTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 781c7c350c84c6f4bba9888afdd1b317, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_NormalMap:
-        m_Texture: {fileID: 2800000, guid: 0d640d83fbf032448bfeb16182a99ca0, type: 3}
+        m_Texture: {fileID: 2800000, guid: 737c79270672eb4479b594960d19a3e0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Top_RoughnessTexture:
-        m_Texture: {fileID: 2800000, guid: 38423b5464aed244ea45e0783fdc256c, type: 3}
+        m_Texture: {fileID: 2800000, guid: c47f76423cb357b47a63452292a798d9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -192,8 +192,8 @@ Material:
     - _Side_Blend: 30
     - _Side_Metallic: 1
     - _Side_NormalStrength: 1
-    - _Side_Roughness: 0.856
-    - _Side_Titling: 0.4
+    - _Side_Roughness: 1
+    - _Side_Titling: 0.056
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -211,10 +211,10 @@ Material:
     - _SurfaceType: 0
     - _Top_AmbientOcclusion: 1
     - _Top_Blend: 30
-    - _Top_Metallic: 0.395
-    - _Top_NormalStrength: 1
-    - _Top_Roughness: 0.707
-    - _Top_Titling: 0.3
+    - _Top_Metallic: 1
+    - _Top_NormalStrength: 2
+    - _Top_Roughness: 1
+    - _Top_Titling: 0.2
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
@@ -232,8 +232,8 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _MainColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
-    - _Side_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Side_EmissionColor: {r: 1, g: 1, b: 1, a: 0}
     - _Top_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &1110575683163837157

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
+using System.Linq;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -16,37 +18,73 @@ namespace PLATEAU.RoadNetwork.Structure
     /// <summary>
     /// 信号制御器
     /// </summary>
-    public class TrafficSignalLightController
+    [Serializable]
+    public class TrafficSignalLightController : ARnParts<TrafficSignalLightController>
     {
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalLightController() { }
+
         public TrafficSignalLightController(string id, RnIntersection node, in Vector3 position)
             : base()
         {
-            SelfId = id;
-            CorrespondingNode = node;
-            this.Position = position;
+            Parent = node;
+            //this.Position = position;
         }
 
-        // RnIDに変換予定？　AVNEWだと文字列
-        public string SelfId { get; private set; } = string.Empty;
-        public RnIntersection CorrespondingNode { get; private set; } = null;
+        // デバッグ用
+        public string DebugId { get=> "t_" + Parent.DebugMyId; }
+
+        // RnIntersection
+        public RnRoadBase Parent { get; private set; } = null;
+
+        public RnIntersection CorrespondingNode { get => Parent as RnIntersection; }
 
 
-        public bool GapImpedanceFlag { get; private set; } = false;
-        public List<TrafficSignalControllerPattern> ControlPatternData { get; private set; } = new List<TrafficSignalControllerPattern>();
-        public List<TrafficSignalLight> SignalLights { get; private set; } = new List<TrafficSignalLight>();
+        //public bool GapImpedanceFlag { get; private set; } = false;
+        public List<TrafficSignalLight> TrafficLights { get; private set; } = new List<TrafficSignalLight>();
+        public List<TrafficSignalControllerPattern> SignalPatterns { get; private set; } = new List<TrafficSignalControllerPattern>();
 
-        public Vector3 Position { get; set; }
+        public Vector3 Position { get => Parent.GetCenter(); }
     }
 
     /// <summary>
     /// 信号灯器
+    /// 注意　配置されている道路に交差点も設定出来るため注意
     /// </summary>
-    public class TrafficSignalLight
+    public class TrafficSignalLight : ARnParts<TrafficSignalLight>
     {
-        public TrafficSignalLight(TrafficSignalLightController controller, in Vector3 position)
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalLight() { }
+
+        public TrafficSignalLight(TrafficSignalLightController controller, RnRoadBase road, List<RnWay> intersectionNeighborBorder)
         {
-            this.controller = controller;
-            this.position = position;
+            Assert.IsNotNull(controller);
+            this.Parent = controller;
+            Assert.IsNotNull(road);
+            Road = road;
+
+            // intersectionNeighborBorderが必ずroadの境界線に含まれていることを確認
+            foreach (var intersectionBorder in intersectionNeighborBorder)
+            {
+                // bool wasFound = false;
+                foreach (var border in road.GetBorders())
+                {
+                    if (intersectionBorder == border.EdgeWay)
+                    {
+                        // wasFound = true;
+                        break;
+                    }
+                }
+                // ここの理屈が合っているか確認するためコメントアウト
+                //Assert.IsTrue(wasFound, "交差点の境界辺と道路の境界辺が一致しません");
+            }
+
+            Assert.IsNotNull(intersectionNeighborBorder);
+            Neighbor = intersectionNeighborBorder;
         }
 
         public void SetStatus(TrafficSignalLightBulb.Status status)
@@ -54,53 +92,147 @@ namespace PLATEAU.RoadNetwork.Structure
 
         }
 
+        public TrafficSignalLightController Parent { get; private set; }
+
         /// <summary>
-        /// 対応する停止線
+        /// 交差点or道路
         /// </summary>
-        public StopLine stopLine;
+        public RnRoadBase Road { get; private set; }
 
-        public Vector3 position;
+        public string LaneType { get; private set; }
+        public float Distance { get; private set; }
 
-        TrafficSignalLightController controller;
+        public List<RnWay> Neighbor { get; private set; } = new List<RnWay>();
+
+        ///// <summary>
+        ///// 対応する停止線
+        ///// </summary>
+        //public StopLine stopLine;
+
+        public Vector3 Position 
+        {
+            get
+            {
+                if (Neighbor == null)
+                    return Vector3.zero;
+                if (Neighbor.Count == 0)
+                    return Vector3.zero;
+
+                // 道路と交差点の境界線の中心を疑似的に求める　（平均だと計算コストが高いため）
+                var a = Neighbor.First().First();
+                var b = Neighbor.Last().Last();
+                var center = (a + b) * 0.5f;
+                return center;
+            }
+        }
+
+        /// <summary>
+        /// RnIntersectionに接する各RnRoadに対してTrafficSignalLightを生成する
+        /// </summary>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public static IReadOnlyCollection<TrafficSignalLight> CreateTrafficLights(RnIntersection intersection)
+        {
+            TrafficSignalLightController controller = intersection.SignalController;
+            Dictionary<RnRoadBase, List<RnWay>> roads = new();
+            foreach (var item in intersection.Neighbors)
+            {
+                List<RnWay> borderList = null;
+                if (roads.TryGetValue(item.Road, out borderList) == false)
+                {
+                    borderList = new();
+                    roads.Add(item.Road, borderList);
+                }
+
+                borderList.Add(item.Border);
+
+            }
+
+            var lights = new List<TrafficSignalLight>(roads.Count);
+            foreach (var road in roads)
+            {
+                lights.Add(new TrafficSignalLight(controller, road.Key/* as RnRoad*/, road.Value));
+            }
+
+            return lights;
+        }
+
     }
 
     /// <summary>
     /// 信号制御のパターン
     /// 開始時刻、制御パターンID、フェーズのリスト、信号灯のオフセットを持つ
     /// </summary>
-    public class TrafficSignalControllerPattern
+    public class TrafficSignalControllerPattern : ARnParts<TrafficSignalControllerPattern>
     {
-        public DateTime StartTime { get; private set; } = DateTime.MinValue;
-        public string ControlPatternId { get; private set; } = "_undefind";
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalControllerPattern() { }
+
+
+        public TrafficSignalLightController Parent { get; private set; }
         public List<TrafficSignalControllerPhase> Phases { get; private set; } = new List<TrafficSignalControllerPhase>();
-        public TrafficLightSignalOffset Offset { get; private set; } = null;
+        public float OffsetSeconds { get; private set; } = 0;
+        public TrafficSignalLight OffsetTrafficLight { get; private set; } = null;
+        public OffsetRelationType OffsetType { get; private set; } = OffsetRelationType.Absolute;
+        public DateTime StartOffsets { get; private set; } = DateTime.MinValue;
+
+        public string ControlPatternId { get; private set; } = "_undefind";
+
     }
 
     /// <summary>
     /// 信号制御のフェーズ
     /// 信号制御のパターンに含まれる要素
     /// </summary>
-    public class TrafficSignalControllerPhase
+    public class TrafficSignalControllerPhase : ARnParts<TrafficSignalControllerPhase>
     {
+        /// <summary>
+        /// デシリアライズ用
+        /// </summary>
+        public TrafficSignalControllerPhase() { }
+
         public TrafficSignalControllerPhase(string id)
         {
             this.Name = id;
         }
-        public float SplitSeconds { get; set; }
-        public int EnterableVehicleType { get; set; }
-        public Dictionary<TrafficSignalLight, RnRoad> DirectionMap { get; set; }
+        public TrafficSignalControllerPattern Parent { get; private set; }
+        public int Order { get; private set; }
+        public float Split { get; set; }
+        public int EnterableVehicleTypeMask { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> BlueRoadPairs { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> YellowRoadPairs { get; set; }
+
+        /// <summary>
+        /// 青信号時に通過出来る道路のID
+        /// 注意　交差点のIDではない
+        /// </summary>
+        public List<RnRoadBase> RedRoadPairs { get; set; }
+
+        //public Dictionary<TrafficSignalLight, RnRoad> DirectionMap { get; set; }
 
         public string Name { get; set; }
     }
 
-    /// <summary>
-    /// 信号灯器の点灯をずらす
-    /// </summary>
-    public class TrafficLightSignalOffset
-    {
-        public TrafficSignalLight ReferenceSignalLight { get; set; }
-        public float Seconds { get; set; }
-    }
+    ///// <summary>
+    ///// 信号灯器の点灯をずらす
+    ///// </summary>
+    //public class TrafficLightSignalOffset
+    //{
+    //    public TrafficSignalLight ReferenceSignalLight { get; set; }
+    //    public float Seconds { get; set; }
+    //}
     
     /// <summary>
     /// 交通規制情報

@@ -284,23 +284,28 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
 
 
-                p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
-                using (new EditorGUILayout.HorizontalScope())
+
+                if (roadGroup.HasMedian())
                 {
-                    p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
-                    if (GUILayout.Button("SetMedianWidth"))
+                    p.medianWidthOption = (LaneWayMoveOption)EditorGUILayout.EnumPopup("MoveOption", p.medianWidthOption);
+                    if (GUILayout.Button("RemoveMedian"))
                     {
-                        roadGroup.SetMedianWidth(p.medianWidth, p.medianWidthOption);
+                        roadGroup.RemoveMedian(p.medianWidthOption);
                     }
                 }
-
-
-
-                if (GUILayout.Button("RemoveMedian"))
+                else
                 {
-                    roadGroup.RemoveMedian(p.medianWidthOption);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        p.medianWidth = EditorGUILayout.FloatField("MedianWidth", p.medianWidth);
+                        if (GUILayout.Button("CreateMedian"))
+                        {
+                            roadGroup.CreateMedianOrSkip(p.medianWidth);
+                        }
+                    }
                 }
             }
+
             if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", road)))
             {
                 using var indent = new EditorGUI.IndentLevelScope();
@@ -425,6 +430,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
+                EditorGUILayout.EnumPopup("LaneType", sideWalk.LaneType);
             }
         }
 

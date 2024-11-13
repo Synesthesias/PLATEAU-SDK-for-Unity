@@ -102,6 +102,17 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return true;
         }
 
+        private bool IsSameWithReverse(RnmLine other)
+        {
+            if (Count != other.Count) return false;
+            for (int i = 0; i < Count; i++)
+            {
+                if (Vector3.Distance(this[i], other[Count - i - 1]) > 0.01f) return false;
+            }
+
+            return true;
+        }
+
         /// <summary> 線が一致する、または順番を逆転させたら一致する </summary>
         public bool IsSameOrReverseWith(RnmLine other)
         {

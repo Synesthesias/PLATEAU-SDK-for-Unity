@@ -404,13 +404,21 @@ namespace PLATEAU.RoadNetwork.Data
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataIntersection));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataRoad));
             refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrack));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrafficLightController));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrafficLight));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrafficSignalPattern));
+            refTable.CreateMemberReferenceOrSkip(typeof(RnDataTrafficSignalPhase));
             return refTable;
         }
 
         public RoadNetworkStorage Serialize(RnModel roadNetworkModel)
         {
-            var ret = new RoadNetworkStorage();
+            var ret = new RoadNetworkStorage { FactoryVersion = roadNetworkModel.FactoryVersion, };
             var refTable = CreateReferenceTable();
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLightControllers);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLights);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPatterns);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPhases);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes);
@@ -452,6 +460,10 @@ namespace PLATEAU.RoadNetwork.Data
         public RnModel Deserialize(RoadNetworkStorage roadNetworkStorage)
         {
             var refTable = CreateReferenceTable();
+            var trafficControllers = CollectForDeserialize<RnDataTrafficLightController, TrafficSignalLightController>(refTable, roadNetworkStorage.PrimitiveDataStorage.TrafficLightControllers);
+            var lights = CollectForDeserialize<RnDataTrafficLight, TrafficSignalLight>(refTable, roadNetworkStorage.PrimitiveDataStorage.TrafficLights);
+            var patterns = CollectForDeserialize<RnDataTrafficSignalPattern, TrafficSignalControllerPattern>(refTable, roadNetworkStorage.PrimitiveDataStorage.TrafficSignalPatterns);
+            var phases = CollectForDeserialize<RnDataTrafficSignalPhase, TrafficSignalControllerPhase>(refTable, roadNetworkStorage.PrimitiveDataStorage.TrafficSignalPhases);
             var points = CollectForDeserialize<RnDataPoint, RnPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
             var lineStrings = CollectForDeserialize<RnDataLineString, RnLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
             var blocks = CollectForDeserialize<RnDataBlock, RnBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
@@ -463,7 +475,7 @@ namespace PLATEAU.RoadNetwork.Data
                     roadNetworkStorage.PrimitiveDataStorage.SideWalks);
 
             refTable.ConvertAll();
-            var ret = new RnModel();
+            var ret = new RnModel { FactoryVersion = roadNetworkStorage.FactoryVersion };
             foreach (var r in roadBases)
             {
                 if (r is RnIntersection n)
