@@ -25,6 +25,18 @@ PLATEAU SDK for Unityを利用することで、実世界を舞台にしたア�
 ◆PLATEAU SLackコミュニティはどなたでもご参加いただけます。
 参加希望の方は、[お問い合わせページ](https://www.mlit.go.jp/plateau/contact/)よりお気軽にお問い合わせください。
 
+# PLATEAU SDK-Toolkits for Unity
+![Toolkitsmainvisual](https://github.com/user-attachments/assets/7660f28e-fe6f-4294-ac41-529776a951f3)
+
+PLATEAU SDK for Unity のアドオン機能としてPLATEAU SDK-Toolkits for Unityをご用意しています。  
+PLATEAU SDK-Toolkits for Unityは、PLATEAUの提供する「3D都市モデル」のデータを利用したUnity上でのアプリケーション開発を支援するツールキット群です。  
+ぜひお試しください。   
+
+ダウンロードリンクは以下の通りです:  
+[PLATEAU SDK-Toolkits （Rendering Toolkit / Sandbox Toolkit / PLATEAU Utilities）](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity/releases/)  
+[Maps Toolkit](https://github.com/Project-PLATEAU/PLATEAU-SDK-Maps-Toolkit-for-Unity/releases)　　  
+[AR Extensions](https://github.com/Project-PLATEAU/PLATEAU-SDK-AR-Extensions-for-Unity/releases)　　  
+
 # サンプルプロジェクト
 本SDKを使用して作成されたサンプルプロジェクトを配布しています。
 - [2024年のGISサンプル](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity-GISSample)
