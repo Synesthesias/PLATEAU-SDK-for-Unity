@@ -25,7 +25,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     tessContour[i].Position = new Vec3(rnmPoint.Position.x , rnmPoint.Position.y, rnmPoint.Position.z);
                     tessContour[i].Data = rnmPoint.UV1;
                 }
-                tess.AddContour(tessContour, ContourOrientation.Original);
+                tess.AddContour(tessContour);
                 tess.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3, VertexCombine);
                 tessMesh.Add(RnmTessSubMesh.Generate(tess, rnmContour.MaterialType));
             }

@@ -12,9 +12,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmTessSubMesh
     {
-        private Vector3[] vertices;
-        private Vector2[] uv1;
-        private int[] triangles;
+        private readonly Vector3[] vertices;
+        private readonly Vector2[] uv1;
+        private readonly int[] triangles;
         public RnmMaterialType MatType { get; private set; }
         public int VertexCount => vertices.Length;
         

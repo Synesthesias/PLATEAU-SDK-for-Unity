@@ -12,6 +12,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         private readonly RnModel targetNetwork;
         private const string MeshName = "RoadMarkingMesh";
+        private const string GameObjName = "RoadMarking";
         
         
         public RoadMarkingGenerator(RnModel targetNetwork)
@@ -50,20 +51,19 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         
 
-        private GameObject GenerateGameObj(Mesh mesh, Transform dstParent)
+        private void GenerateGameObj(Mesh mesh, Transform dstParent)
         {
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             mesh.RecalculateBounds();
-            var obj = new GameObject("RoadMarking");
+            var obj = new GameObject(GameObjName);
             var meshFilter = obj.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
             var meshRenderer = obj.AddComponent<MeshRenderer>();
             meshRenderer.sharedMaterials = RoadMarkingMaterialExtension.Materials();
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off; // 道路と重なっているので影は不要
             obj.transform.parent = dstParent;
-            mesh.name = "RoadMarkingMesh";
-            return obj;
+            mesh.name = MeshName;
         }
     }
 }

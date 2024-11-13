@@ -1,5 +1,4 @@
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
@@ -195,9 +194,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
 
             // プロパティをコピーします。
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance) ??
-                                        throw new ArgumentNullException(
-                                            "type.GetProperties(BindingFlags.Public | BindingFlags.Instance)");
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (PropertyInfo property in properties)
             {
                 if (property.CanRead && property.CanWrite)

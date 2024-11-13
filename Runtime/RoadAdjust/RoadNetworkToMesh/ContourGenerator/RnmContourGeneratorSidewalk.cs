@@ -1,4 +1,3 @@
-using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,18 +50,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     var (uvY1, uvY2) = outsideReverse ? (1, 0) : (0, 1);
                     calc.AddLine(outside, new Vector2(0, uvY1), new Vector2(0, uvY2));
                 }
-
-                // var edgeStart = sideWalk.StartEdgeWay;
-                // if (edgeStart != null)
-                // {
-                //     calc.AddLine(edgeStart, new Vector2(1, 0), new Vector2(0, 0));
-                // }
-                //
-                // var edgeEnd = sideWalk.EndEdgeWay;
-                // if (edgeEnd != null)
-                // {
-                //     calc.AddLine(edgeEnd, new Vector2(1, 1), new Vector2(0, 1));
-                // }
 
                 contours.Add(calc.Calculate());
             }

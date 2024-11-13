@@ -1,5 +1,3 @@
-using PLATEAU.Util;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;

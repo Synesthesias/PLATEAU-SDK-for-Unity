@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
@@ -13,7 +12,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     [Serializable]
     public class RnmContour : IEnumerable<RnmVertex>
     {
-        [SerializeField] private List<RnmVertex> vertices = new ();
+        private List<RnmVertex> vertices = new ();
         public RnmMaterialType MaterialType { get; set; }
         
         public RnmContour(IEnumerable<RnmVertex> vertices, RnmMaterialType material) : this(material)

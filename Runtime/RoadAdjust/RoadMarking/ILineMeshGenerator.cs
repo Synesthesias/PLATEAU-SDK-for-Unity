@@ -47,8 +47,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 forward.Normalize();
                 var right = Vector3.Cross(forward, Vector3.up).normalized;
 
-                vertices[i * 2] = points[i] + right * lineWidth * 0.5f + Vector3.up * HeightOffset;
-                vertices[i * 2 + 1] = points[i] - right * lineWidth * 0.5f + Vector3.up * HeightOffset;
+                vertices[i * 2] = points[i] + right * (lineWidth * 0.5f) + Vector3.up * HeightOffset;
+                vertices[i * 2 + 1] = points[i] - right * (lineWidth * 0.5f) + Vector3.up * HeightOffset;
                 if (i < points.Count - 1)
                 {
                     int baseIndex = i * 6;

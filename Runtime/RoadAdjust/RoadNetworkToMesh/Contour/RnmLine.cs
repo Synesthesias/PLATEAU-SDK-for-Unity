@@ -1,4 +1,3 @@
-using PLATEAU.RoadNetwork.Structure;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,17 +100,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
             return true;
         }
-
-        private bool IsSameWithReverse(RnmLine other)
-        {
-            if (Count != other.Count) return false;
-            for (int i = 0; i < Count; i++)
-            {
-                if (Vector3.Distance(this[i], other[Count - i - 1]) > 0.01f) return false;
-            }
-
-            return true;
-        }
+        
 
         /// <summary> 線が一致する、または順番を逆転させたら一致する </summary>
         public bool IsSameOrReverseWith(RnmLine other)
@@ -120,14 +109,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
         
         /// <summary>
-        /// この線の頂点群のうち、 <paramref name="subtract"/> のいずれかと同じ位置にある点を除外し、
+        /// この線の頂点群のうち、 <paramref name="subtractArg"/> のいずれかと同じ位置にある点を除外し、
         /// 除外したところで線を分けた線群を返します。
         /// 同じ位置とみなす距離のしきい値を<paramref name="distThreshold"/>で指定します。
         /// </summary>
-        public IEnumerable<RnmLine> SubtractSeparate(IEnumerable<Vector3> subtract,
+        public IEnumerable<RnmLine> SubtractSeparate(IEnumerable<Vector3> subtractArg,
             float distThreshold)
         {
             var nextLine = new List<RnmVertex>();
+            var subtract = subtractArg.ToArray();
             foreach (var baseV in Vertices)
             {
                 bool shouldSubtract = false;
@@ -164,7 +154,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public IEnumerator<RnmVertex> GetEnumerator()
         {
-            return ((IEnumerable<RnmVertex>)Vertices).GetEnumerator();
+            foreach (var vertex in Vertices)
+            {
+                yield return vertex;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

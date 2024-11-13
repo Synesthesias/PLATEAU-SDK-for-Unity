@@ -3,11 +3,11 @@ using PLATEAU.RoadNetwork.Structure;
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
     /// <summary>
-    /// 道路ネットワークをもとに、車線を引く対象となる<see cref="MarkedLine"/>のリスト<see cref="MarkedWayList"/>を生成します。
+    /// 道路ネットワークをもとに、車線を引く対象となる<see cref="MarkedWay"/>のリスト<see cref="MarkedWayList"/>を生成します。
     /// </summary>
     public class MarkedWayListComposer : IMarkedWayListComposer
     {
-        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedLine"/>を収集します。 </summary>
+        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWayList"/>を収集します。 </summary>
         public MarkedWayList ComposeFrom(RnModel model)
         {
             // ここに、どの線を追加したいか記述します。

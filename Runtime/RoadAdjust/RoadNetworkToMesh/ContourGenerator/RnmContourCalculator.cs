@@ -14,7 +14,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private List<RnmLine> lines = new ();
         private readonly ConditionalLogger logger = new (() => false); // デバッグのときだけここをtrueにしてください
-        private RnmMaterialType material;
+        private readonly RnmMaterialType material;
 
         public RnmContourCalculator(RnmMaterialType material)
         {
@@ -43,7 +43,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 return new RnmContour(material);
             }
             RemoveDuplicateOrReverseLine();
-            // RemoveDuplicateVertices(VerticesWeldDistThreshold);
             SortByNearestEdgeDist();
             var contour = new RnmContour(material);
             // 最初の線を追加します。
@@ -131,13 +130,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// <summary>
         /// 計算で最初に追加する線を、どちら向きに追加すべきか
         /// </summary>
-        private bool FirstDirection(RnmLine[] lines, RnmLine firstLine)
+        private bool FirstDirection(RnmLine[] linesArg, RnmLine firstLine)
         {
             var firstV = firstLine[0];
             var firstVLast = firstLine[^1];
             float dist = float.MaxValue;
             float distLast = float.MaxValue;
-            foreach (var l in lines.Where(line => line != firstLine))
+            foreach (var l in linesArg.Where(line => line != firstLine))
             {
                 dist = Math.Min(dist, Vector3.Distance(firstV.Position, l[0].Position));
                 dist = Math.Min(dist, Vector3.Distance(firstV.Position, l[^1].Position));
@@ -168,10 +167,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (lines[i] == line) continue;
                 var line2 = lines[i];
                 if (line.Count <= 0) continue;
-                foreach (var v1 in new Vector3[] { line[0].Position, line[^1].Position })
+                foreach (var v1 in new [] { line[0].Position, line[^1].Position })
                 {
                     if (line2.Count <= 0) continue;
-                    foreach (var v2 in new Vector3[] { line2[0].Position, line2[^1].Position })
+                    foreach (var v2 in new [] { line2[0].Position, line2[^1].Position })
                     {
                         minDist = Math.Min(minDist, Vector3.Distance(v1, v2));
                     }
@@ -203,37 +202,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if(!isDuplicate) newLines.Add(lineI);
             }
             lines = newLines;
-        }
-
-
-        private void RemoveDuplicateVertices(float threshold)
-        {
-            for (int i = 0; i < lines.Count; i++)
-            {
-                var line1 = lines[i];
-                var nextLine = new List<RnmVertex>(line1.Count);
-                foreach (var v1 in line1)
-                {
-                    bool isDuplicate = false;
-                    for (int j = i + 1; j < lines.Count; j++)
-                    {
-                        var line2 = lines[j];
-                        foreach (var v2 in line2)
-                        {
-                            if (Vector3.Distance(v1.Position, v2.Position) < threshold)
-                            {
-                                isDuplicate = true;
-                                break;
-                            }
-                        }
-                        if (isDuplicate) break;
-                    }
-                    if (!isDuplicate) nextLine.Add(v1);
-                }
-                lines[i] = new RnmLine(nextLine);
-            }
-
-            lines = lines.Where(l => l.Count >= 1).ToList();
         }
         
         
