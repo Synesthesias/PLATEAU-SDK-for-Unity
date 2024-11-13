@@ -83,7 +83,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 self.Q<Toggle>("EnableMedianLane").bindingPath = "enableMedianLane";
                 self.Q<Toggle>("EnableLeftSideWalk").bindingPath = "enableLeftSideWalk";
                 self.Q<Toggle>("EnableRightSideWalk").bindingPath = "enableRightSideWalk";
-
+                var d = self.Q<Toggle>("DetailEditMode");
+                if (d != null)
+                    d.bindingPath = "isEditingDetailMode";
 
                 // 編集システムの初期化
                 EditorInterface =
@@ -144,6 +146,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     // 既存のモデルオブジェクトを解除
                     element.Unbind();
 
+                    // 仮　詳細編集モード
+                    element.TrackSerializedObjectValue(mdl, (se) =>
+                    {
+                        var mod = system.RoadNetworkSimpleEditModule;
+                        var obj = se as IScriptableRoadMdl;
+                        if (mod.CanSetDtailMode())
+                        {
+                            if (mod.IsDetailMode() != obj.IsEditingDetailMode)
+                            {
+                                mod.SetDetailMode(obj.IsEditingDetailMode);
+                            }
+                        }
+                    });
+
                     // モデルのバインド
                     element.Bind(mdl);
 
@@ -166,17 +182,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 {
                     system.RoadNetworkSimpleEditModule?.Setup(intersectionData);
 
-                    var applyIntersectionButton = element.Q<Button>("ApplyIntersectionButton");
-                    if (applyIntersectionButton == null)
-                    {
-                        Debug.LogError("ApplyIntersectionButton is not found.");
-                        return;
-                    }
-                    applyIntersectionButton.clicked += () =>
-                    {
-                        Debug.Log("clicked apply12");
+                    //var applyIntersectionButton = element.Q<Button>("ApplyIntersectionButton");
+                    //if (applyIntersectionButton == null)
+                    //{
+                    //    Debug.LogError("ApplyIntersectionButton is not found.");
+                    //    return;
+                    //}
+                    //applyIntersectionButton.clicked += () =>
+                    //{
+                    //    Debug.Log("clicked apply12");
 
-                    };
+                    //};
 
                 }
 
