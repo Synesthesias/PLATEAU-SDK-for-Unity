@@ -13,19 +13,23 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 if (road.Next is RnIntersection)
                 {
                     var nextBorder = new MWLine(road.GetMergedBorder(RnLaneBorderType.Next, RnDir.Left));
-                    wayList.Add(new MarkedWay(nextBorder, MarkedWayType.StopLine, false));
+                    AddStopLine(wayList, nextBorder);
                 }
 
                 if (road.Prev is RnIntersection)
                 {
                     var prevBorder = new MWLine(road.GetMergedBorder(RnLaneBorderType.Prev, RnDir.Right));
-                    wayList.Add(new MarkedWay(prevBorder, MarkedWayType.StopLine, false));
+                    AddStopLine(wayList, prevBorder);
                 }
             }
 
             return wayList;
         }
-        
 
+
+        private void AddStopLine(MarkedWayList wayList, MWLine border)
+        {
+            wayList.Add(new MarkedWay(border, MarkedWayType.StopLine, false));
+        }
     }
 }
