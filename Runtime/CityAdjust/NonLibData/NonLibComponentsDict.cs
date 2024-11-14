@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                 foreach (var comp in comps)
                 {
                     if (comp == null) continue;
-                    CopyComponent(comp, dst.gameObject);
+                    new ComponentCopier().CopyComponent(comp, dst.gameObject);
                 }
 
                 return NextSearchFlow.Continue;
@@ -61,60 +62,6 @@ namespace PLATEAU.CityAdjust.NonLibData
             if (c == null) return false;
             if (c is Transform or Renderer or PLATEAUCityObjectGroup or MeshCollider or MeshFilter) return false;
             return true;
-        }
-
-        /// <summary>
-        /// コンポーネントをコピーします。
-        /// </summary>
-        private void CopyComponent(Component srcComp, GameObject dstObj)
-        {
-            Type type = srcComp.GetType();
-            Component dstComp = dstObj.GetComponent(type);
-            try
-            {
-                if (dstComp == null)
-                {
-                    dstComp = dstObj.AddComponent(type);
-                }
-            }
-            catch (Exception)
-            {
-                Debug.LogWarning($"Could not copy component {type.Name} to {dstObj.name}. Skipping.");
-                return;
-            }
-
-            // フィールドをコピーします。
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (FieldInfo field in fields)
-            {
-                try
-                {
-                    field.SetValue(dstComp, field.GetValue(srcComp));
-                }
-                catch (Exception)
-                {
-                    Debug.LogWarning($"Failed to write field {field.Name} of {type.Name}. Skipping.");
-                }
-                
-            }
-            
-            // プロパティをコピーします。
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.CanRead && property.CanWrite)
-                {
-                    try
-                    {
-                        property.SetValue(dstComp, property.GetValue(srcComp));
-                    }
-                    catch (Exception)
-                    {
-                        Debug.LogWarning($"Failed to write property {property.Name} of {type.Name}. Skipping.");
-                    }
-                    
-                }
-            }
         }
     }
 }

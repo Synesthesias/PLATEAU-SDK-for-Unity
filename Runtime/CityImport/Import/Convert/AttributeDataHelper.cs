@@ -181,17 +181,18 @@ namespace PLATEAU.CityImport.Import.Convert
             CityObjectList cityObjList = new CityObjectList();
             foreach (var cityObjSer in cityObjSerArr)
             {
-                cityObjSer.CityObjectIndex = GetCurrentCityObjectIndex(index, currentNode, cityObjSer.GmlID).ToArray(); // 分割結合時に必要
+                cityObjSer.CityObjectIndex = index.ToArray(); // 分割結合時に必要
 
                 if (!string.IsNullOrEmpty(this.parentGmlID))
                     cityObjList.outsideParent = this.parentGmlID;
-            
-                foreach (var id in indexList)
+
+                for (int i = 0; i < indexList.Count; i++)
                 {
+                    var id = indexList[i];
                     if (id.PrimaryID == id.AtomicID) continue;
                     var childCityObj = serializedCityObjectGetter.GetDstCityObjectByGmlID(id.AtomicID, id.Index);
                     if (childCityObj == null) continue;
-                    childCityObj.CityObjectIndex = GetCurrentCityObjectIndex(id.Index, currentNode, id.AtomicID).ToArray(); // 分割結合時に必要
+                    childCityObj.CityObjectIndex = id.Index.ToArray(); // 分割結合時に必要
                     cityObjSer.Children.Add(childCityObj);
                 }
                 cityObjList.rootCityObjects.Add(cityObjSer);
@@ -199,27 +200,6 @@ namespace PLATEAU.CityImport.Import.Convert
             
             cityObjList.outsideChildren = outsideChildrenList;
             return cityObjList;
-        }
-
-        private CityObjectIndex GetCurrentCityObjectIndex(CityObjectIndex id, Node node, string gmlID)
-        {
-            // Nodeから、idに対応するCityObjectIndexを取得します。
-            // 見つからなかった場合、このクラスに記録されたCityObjectIndexを返します。
-            // FIXME: Node優先なら全部Nodeで良いのでは。このクラスにCityObjectIndexを記録するなど、無駄な処理があるのでは。
-            var currentID = new CityObjectIndex(id.PrimaryIndex, id.AtomicIndex);
-            if (node.Mesh != null)
-            {
-                var col = node.Mesh.CityObjectList;
-                var indices = col.GetAllKeys();
-                Func<CityObjectIndex, bool> searchPredicate = idx => col.GetAtomicID(idx) == gmlID;
-                if (indices.Any(searchPredicate))
-                {
-                    var nodeIdx = indices.First(searchPredicate);
-                    return nodeIdx;
-                }
-                
-            }
-            return currentID;
         }
 
         /// <summary>
@@ -250,7 +230,7 @@ namespace PLATEAU.CityImport.Import.Convert
                 if (id.PrimaryID != id.AtomicID) continue; // まずは主要地物から見る
                 
                 // TODO 下の処理は GetByIDメソッド内にまとめられそう？
-                cityObj.CityObjectIndex = GetCurrentCityObjectIndex(id.Index, currentNode, id.PrimaryID).ToArray(); // 分割結合時に必要
+                cityObj.CityObjectIndex = id.Index.ToArray(); // 分割結合時に必要
                 
                 // var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, id.Index);
                 if (!chidrenMap.ContainsKey(id.PrimaryID)) continue;

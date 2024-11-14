@@ -713,11 +713,15 @@ namespace PLATEAU.RoadNetwork.Factory
                                 continue;
 
                             // 中央分離帯の幅が道路の幅を超えている場合は分割
-                            var borderWidth = road.MainLanes[0].CalcWidth();
-                            if (CheckMedian && borderWidth > medianWidth)
+                            if (road.MainLanes.Count > 0)
                             {
-                                linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
+                                var borderWidth = road.MainLanes[0].CalcWidth();
+                                if (CheckMedian && borderWidth > medianWidth)
+                                {
+                                    linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
+                                }
                             }
+                            
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);
                         }

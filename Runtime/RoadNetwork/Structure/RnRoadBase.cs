@@ -37,6 +37,11 @@ namespace PLATEAU.RoadNetwork.Structure
         public IReadOnlyList<RnSideWalk> SideWalks => sideWalks;
 
         /// <summary>
+        /// 使っている個所があったので後方互換で残しておく
+        /// </summary>
+        public PLATEAUCityObjectGroup TargetTran => TargetTrans.FirstOrDefault();
+
+        /// <summary>
         /// 歩道sideWalkを追加する.
         /// sideWalkの親情報も書き換える
         /// </summary>
