@@ -26,6 +26,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         private void SubDivide(MWLine line)
         {
+            if (line.Count <= 1) return;
             var nextPoints = new List<Vector3>();
             for (int i = 0; i < line.Count - 1; i++)
             {
@@ -78,6 +79,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         private void Optimize(MWLine line)
         {
+            if(line.Count <= 2) return;
             // 隣り合う3点で角度に変化がない場合、中間点を削除します。
             var shouldRemove = new bool[line.Count];
             shouldRemove[0] = false;
