@@ -492,6 +492,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsSameLine(RnWay other, bool onlyReferenceEqual = true)
         {
+            if (other == null)
+                return false;
             if (onlyReferenceEqual)
                 return LineString == other.LineString;
             return RnLineString.Equals(LineString, other.LineString);
@@ -535,6 +537,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="pos"></param>
         /// <param name="nearest"></param>
         /// <param name="pointIndex"></param>
+        /// <param name="distance"></param>
         /// <returns></returns>
         public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
@@ -571,18 +574,49 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="self"></param>
         /// <param name="back"></param>
-        public static void Append2LineString(this RnWay self, RnWay back)
+        public static void AppendBack2LineString(this RnWay self, RnWay back)
         {
+            if (back == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLine(back))
+                return;
             if (self.IsReversed)
             {
                 foreach (var p in back.Points)
-                    self.LineString.AddPointFrontOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointFrontOrSkip(p, 0f, 0f, 0f);
             }
             else
             {
                 // IsReversedがfalseの時はそのまま追加
                 foreach (var p in back.Points)
-                    self.LineString.AddPointOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointOrSkip(p, 0f, 0f, 0f);
+            }
+        }
+        /// <summary>
+        /// selfの内部のLineStringにfrontのLineStringを追加する
+        /// back.Points... self.Pointsの順になるようにIsReverseを考慮して追加する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="front"></param>
+        public static void AppendFront2LineString(this RnWay self, RnWay front)
+        {
+            if (front == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLine(front))
+                return;
+            if (self.IsReversed)
+            {
+                // IsReversedの時は逆順に後ろに追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0, 0);
+            }
+            else
+            {
+                // falseの時は逆順に前に追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointFrontOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0f, 0f);
             }
         }
 
@@ -618,5 +652,97 @@ namespace PLATEAU.RoadNetwork.Structure
             var d = v - nearest;
             return set.Any(i => Vector2.Dot(self.GetEdgeNormal(i).Xz(), d.Xz()) >= 0f);
         }
+
+        /// <summary>
+        /// Wayを法線方向に沿って各頂点を補間しながら移動させる。
+        /// 最初の頂点はstartOffset分だけ、最後の頂点はendOffset分だけ移動され、
+        /// 間の頂点は線形補間されたオフセットとWayの頂点法線をつかってなるべく元の形状を維持するように移動される。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="startOffset"></param>
+        /// <param name="endOffset"></param>
+        public static void MoveLerpAlongNormal(this RnWay self, Vector3 startOffset, Vector3 endOffset)
+        {
+            if (self.IsValid == false)
+                return;
+
+            if (self.Count == 2)
+            {
+                self.GetPoint(0).Vertex += startOffset;
+                self.GetPoint(1).Vertex += endOffset;
+                return;
+            }
+
+            var index = 0;
+
+
+            // 現在見る点と次の点の辺/頂点の法線を保存しておく
+            // 線分の法線
+
+            Vector3 EdgeNormal(int i)
+            {
+                return self.GetEdgeNormal(i);
+            }
+
+            var sLen = startOffset.magnitude;
+            var eLen = endOffset.magnitude;
+            var sDir = startOffset.normalized;
+            var eDir = endOffset.normalized;
+            // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
+            var sSign = Mathf.Sign(Vector3.Dot(startOffset, EdgeNormal(0)));
+            var eSign = Mathf.Sign(Vector3.Dot(endOffset, EdgeNormal(self.Count - 2)));
+
+            var edgeNormal = new[] { sDir * sSign, EdgeNormal(1) };
+            // 頂点の法線
+            var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
+            var delta = 1f;
+
+
+            var totalLength = self.CalcLength();
+            var nowLength = 0f;
+
+            var pointOffset = new Vector3[self.Count];
+            pointOffset[0] = startOffset;
+            pointOffset[self.Count - 1] = endOffset;
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var en0 = edgeNormal[index];
+                var en1 = edgeNormal[(index + 1) & 1];
+                var vn = vertexNormal[index];
+
+                // 形状維持するためにオフセット距離を変える
+                // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                var m = Vector3.Dot(vn, en0);
+                // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
+                var d = delta;
+                bool isZero = Mathf.Abs(m) < 1e-5f;
+                if (isZero == false)
+                    d /= m;
+
+                if (i < self.Count - 2)
+                {
+                    edgeNormal[index] = EdgeNormal(Mathf.Min(self.Count - 2, i + 1));
+                    vertexNormal[index] = (edgeNormal[0] + edgeNormal[1]).normalized;
+                    index = (index + 1) & 1;
+                }
+
+                if (i != 0)
+                {
+                    var p = nowLength / totalLength;
+                    var l = Mathf.Lerp(sSign * sLen, eSign * eLen, p) * Mathf.Lerp(d, 1f, p);
+                    pointOffset[i] = vn * l;
+                }
+                // 次の頂点計算のためにen1線分の移動量を入れる
+                delta = d * Vector3.Dot(vn, en1);
+                nowLength += (self[i + 1] - self[i]).magnitude;
+
+            }
+
+            for (var i = 0; i < self.Count; ++i)
+            {
+                self.GetPoint(i).Vertex += pointOffset[i];
+            }
+        }
+
     }
 }

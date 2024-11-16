@@ -3,6 +3,7 @@ using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -59,7 +60,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             public bool IsSceneSelected(RnRoadBase roadBase)
             {
-                return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
+                return roadBase.TargetTrans.Any(RnEx.IsEditorSceneSelected);
             }
         }
 

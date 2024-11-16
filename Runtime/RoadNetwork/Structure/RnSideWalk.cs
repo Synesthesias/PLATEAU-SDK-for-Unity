@@ -139,14 +139,21 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 親情報の再設定
+        /// 強制的に親を変更する. 構造壊れるので扱い注意.
+        /// 基本的にはChangeParentを使うこと
         /// </summary>
         /// <param name="parent"></param>
-        public void ChangeParent(RnRoadBase parent)
+        public void SetParent(RnRoadBase parent)
         {
-            // 以前の親からは削除する
-            parent?.RemoveSideWalk(this);
             this.parentRoad = parent;
+        }
+
+        /// <summary>
+        /// 親からのリンク解除
+        /// </summary>
+        public void UnLinkFromParent()
+        {
+            ParentRoad?.RemoveSideWalk(this);
         }
 
         /// <summary>
@@ -163,12 +170,42 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 境界のWayを再設定(使い方によっては構造壊れるので注意)
         /// </summary>
-        /// <param name="startEdgeWay"></param>
-        /// <param name="endEdgeWay"></param>
-        public void SetEdgeWays(RnWay startEdgeWay, RnWay endEdgeWay)
+        /// <param name="startWay"></param>
+        /// <param name="endWay"></param>
+        public void SetEdgeWays(RnWay startWay, RnWay endWay)
         {
-            this.startEdgeWay = startEdgeWay;
-            this.endEdgeWay = endEdgeWay;
+            this.startEdgeWay = startWay;
+            this.endEdgeWay = endWay;
+        }
+
+        /// <summary>
+        /// 境界のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="startWay"></param>
+        public void SetStartEdgeWay(RnWay startWay)
+        {
+            this.startEdgeWay = startWay;
+        }
+
+        /// <summary>
+        /// 境界のWayを再設定(使い方によっては構造壊れるので注意)
+        /// </summary>
+        /// <param name="endWay"></param>
+        public void SetEndEdgeWay(RnWay endWay)
+        {
+            this.endEdgeWay = endWay;
+        }
+
+        /// <summary>
+        /// レーンタイプを入れ替え
+        /// </summary>
+        public void ReverseLaneType()
+        {
+            // レーンタイプを入れ替え
+            if (LaneType == RnSideWalkLaneType.LeftLane)
+                LaneType = RnSideWalkLaneType.RightLane;
+            else if (LaneType == RnSideWalkLaneType.RightLane)
+                LaneType = RnSideWalkLaneType.LeftLane;
         }
 
         /// <summary>
@@ -183,15 +220,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
-            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay ,laneType);
-            if (parent != null)
-            {
-                parent.AddSideWalk(sideWalk);
-            }
-            else
-            {
-                Debug.LogWarning("parent is null.");
-            }
+            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay, laneType);
+            parent?.AddSideWalk(sideWalk);
             return sideWalk;
         }
     }

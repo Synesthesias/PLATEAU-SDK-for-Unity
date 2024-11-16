@@ -17,7 +17,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var road in model.Roads)
             {
                 var contours = GenerateCarLane(road);
-                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var targetObj = road.TargetTrans == null ? null : road.TargetTran.gameObject;
                 var contourMeshes = new RnmContourMeshList
                 (
                     contours.Select(c => new RnmContourMesh(targetObj, c))
@@ -44,7 +44,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 calc.AddRangeLine(lines.Where(l => l != null));
                 yield return calc.Calculate();
             }
-            
+
             // MainLanesの外にあるが、歩道に隣接していない部分
             var left = road.GetMergedSideWay(RnDir.Left);
             var right = road.GetMergedSideWay(RnDir.Right);
@@ -62,13 +62,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (walks.Any(w => w.OutsideWay != null && AreTouching(side, w.OutsideWay))) continue;
                 if (walks.Any(w => w.InsideWay != null && AreTouching(side, w.InsideWay))) continue;
                 var touchingEdges = sideEdges.Where(e => AreTouching(side, e)).ToArray();
-                if(touchingEdges.Length == 0) continue;
+                if (touchingEdges.Length == 0) continue;
                 var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
-                calc.AddRangeLine(new [] { side }.Concat(touchingEdges));
+                calc.AddRangeLine(new[] { side }.Concat(touchingEdges));
                 yield return calc.Calculate();
             }
         }
-        
+
         private bool AreTouching(IEnumerable<Vector3> a, IEnumerable<Vector3> bArg)
         {
             var b = bArg.ToArray();

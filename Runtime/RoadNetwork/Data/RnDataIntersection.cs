@@ -65,11 +65,6 @@ namespace PLATEAU.RoadNetwork.Data
     [Serializable, RoadNetworkSerializeData(typeof(RnIntersection))]
     public class RnDataIntersection : RnDataRoadBase
     {
-        // 対象のtranオブジェクト
-        [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnIntersection.TargetTran))]
-        public PLATEAUCityObjectGroup TargetTran { get; set; }
-
         // 隣接情報
         [field: SerializeField]
         [RoadNetworkSerializeMember("edges")]

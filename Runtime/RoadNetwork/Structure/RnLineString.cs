@@ -29,9 +29,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnLineString()
         {
-            
+
         }
-        
+
         public RnLineString(IEnumerable<RnPoint> points)
         {
             Points = points.ToList();
@@ -328,9 +328,10 @@ namespace PLATEAU.RoadNetwork.Structure
         // Static Methods
         // ---------------
 
-        public const float DefaultDistanceEpsilon = 0f;
-        public const float DefaultDegEpsilon = 0.5f;
-        public const float DefaultMidPointTolerance = 0.3f;
+        private const float DefaultDistanceEpsilon = 0f;
+        private const float DefaultDegEpsilon = 0.5f;
+        private const float DefaultMidPointTolerance = 0.3f;
+
 
         /// <summary>
         /// 頂点リストから線分を生成する
@@ -384,7 +385,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
     }
 
-    public static class RoadNetworkLineStringEx
+    public static class RnLineStringEx
     {
         public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = AxisPlane.Xz)
         {
@@ -511,6 +512,29 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var ret = self.Clone(false);
             ret.Refine(interval);
+            return ret;
+        }
+
+        /// <summary>
+        /// LineStringの線分群が成す角度の合計を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcTotalAngle2D(this RnLineString self)
+        {
+            var ret = 0f;
+            LineSegment2D? last = null;
+            foreach (var e in self.GetEdges2D())
+            {
+                if (last != null)
+                {
+                    var ang = Vector2.Angle(last.Value.Direction, e.Direction);
+                    ret += ang;
+                }
+
+                last = e;
+            }
+
             return ret;
         }
     }
