@@ -1,21 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-     <ui:Template name="RoadNetwork_RegenerateRoadPanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_RegenerateRoadPanel" />
+    <ui:Template name="RoadNetwork_RegenerateRoadPanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_RegenerateRoadPanel" />
     <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
     <ui:VisualElement name="RoadNetwork_EditPanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
-        <ui:Label tabindex="-1" text="道路ネットワーク編集と、それをもとに道路再生成を行います" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 12px; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:Label tabindex="-1" text="道路ネットワーク編集と、それをもとに道路再生成を行います" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
         <ui:VisualElement style="flex-grow: 1; align-items: center; padding-top: 6px; padding-bottom: 6px;">
             <ui:Toggle label="編集モード" name="EditModeButton" style="-unity-text-align: upper-center;" />
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="編集モード中は建物の選択ができません" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; padding-top: 6px; padding-bottom: 6px;" />
-        <ui:GroupBox name="EditMenu" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 15px; padding-bottom: 15px;">
-            <ui:RadioButton label="道路編集" value="true" style="border-top-right-radius: 0; border-bottom-right-radius: 0;" />
-            <ui:RadioButton label="交差点編集" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-width: 0;" />
-        </ui:GroupBox>
-        <ui:VisualElement name="RoadEditPanel" style="flex-grow: 0; display: flex;">
+        <ui:VisualElement name="RoadEditPanel" style="flex-grow: 0;">
             <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
                 <ui:Label tabindex="-1" text="道路編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
             </ui:VisualElement>
-            <ui:Label tabindex="-1" text="道路を選択してください" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; padding-top: 6px; padding-bottom: 6px;" />
             <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
                 <ui:Label tabindex="-1" text="車線数" parse-escape-sequences="true" display-tooltip-when-elided="true" style="padding-top: 8px; padding-bottom: 8px;" />
                 <ui:IntegerField label="左側" value="3" name="LeftSide" style="align-items: center; font-size: 12px; padding-left: 16px;" />
@@ -29,28 +24,31 @@
                     <ui:IntegerField label="右側歩道の幅" value="3" name="WidthOfRightSidewalk" style="align-items: center; font-size: 12px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="Divider" style="flex-grow: 1;" />
-            <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
+            <ui:VisualElement style="flex-grow: 1; padding-top: 8px; padding-bottom: 8px; align-items: center;">
                 <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Divider" style="flex-grow: 1;" />
+            <ui:VisualElement style="flex-grow: 1; margin-bottom: 16px; margin-top: 8px; flex-direction: row; align-items: center;">
+                <ui:Label tabindex="-1" text="スプライン編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); flex-shrink: 1; width: 100%;" />
+                <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadSplineStartButton" class="LightActionButton" />
+                <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadSplineStopButton" class="LightActionButton" style="display: none;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="IntersectionEditPanel" style="flex-grow: 0; display: flex;">
             <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
                 <ui:Label tabindex="-1" text="交差点編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
             </ui:VisualElement>
-            <ui:Label tabindex="-1" text="交差点を選択してください" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); -unity-text-align: upper-center; padding-top: 6px; padding-bottom: 6px;" />
-            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; flex-direction: row; align-items: center; justify-content: space-between;">
-                <ui:Label tabindex="-1" text="新規経路" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-                <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;">
-                    <ui:VisualElement name="Icon_Plus" style="flex-grow: 0; width: 18px; height: 18px; flex-shrink: 0;" />
-                    <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-                </ui:Button>
+            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px; padding-bottom: 8px; flex-direction: row; align-items: center; justify-content: space-between;">
+                <ui:Label tabindex="-1" text="経路追加・削除" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
+                <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionEditStartButton" class="LightActionButton" />
+                <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionEditStopButton" class="LightActionButton" />
             </ui:VisualElement>
-            <ui:VisualElement name="Divider" style="flex-grow: 1;" />
-            <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
-                <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
+            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 8px; padding-bottom: 16px; flex-direction: row; align-items: center; justify-content: space-between;">
+                <ui:Label tabindex="-1" text="スプライン編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
+                <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStartButton" class="LightActionButton" />
+                <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStopButton" class="LightActionButton" />
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" />
     </ui:VisualElement>
-<ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" />
 </ui:UXML>
