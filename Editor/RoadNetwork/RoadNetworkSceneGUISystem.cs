@@ -357,10 +357,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 var subData = item.ReqSubData<RoadGroupEditorData>();
 
-                var p1 = subData.A.GetCenter();
-                var p2 = subData.B.GetCenter();
-                var btnP = (p1 + p2) / 2.0f;
-
+                var btnP = subData.GetCenter();
 
                 Vector3 pos2d_dis = Vector3.zero;
                 pos2d_dis = camera.WorldToScreenPoint(btnP + roadIconPosOffset);

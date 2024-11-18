@@ -1474,54 +1474,65 @@ namespace PLATEAU.Editor.RoadNetwork
                             continue;
                         }
 
-                        // 接続先にNodeが無い場合はスキップ　仮
-                        if (linkGroup.PrevIntersection == null || linkGroup.NextIntersection == null)
-                        {
-                            continue;
-                        }
+                        //// 接続先にNodeが無い場合はスキップ　仮
+                        //if (linkGroup.PrevIntersection == null || linkGroup.NextIntersection == null)
+                        //{
+                        //    continue;
+                        //}
 
-                        var node0 = linkGroup.PrevIntersection;
-                        var node1 = linkGroup.NextIntersection;
+                        var prevIntersection = linkGroup.PrevIntersection;
+                        var nextIntersection = linkGroup.NextIntersection;
                         var editorData = new EditorData<RnRoadGroup>(linkGroup);
                         // 同じものを格納済みかチェック
                         var isContain = false;
                         foreach (var group in roadGroups)
                         {
-                            var prev = group.RoadGroup.Ref.PrevIntersection;
-                            var next = group.RoadGroup.Ref.NextIntersection;
-
-                            bool isSamePrev, isSameNext;
-
-                            isSamePrev = prev == linkGroup.PrevIntersection;
-                            isSameNext = next == linkGroup.NextIntersection;
-                            isContain = isSamePrev && isSameNext;
-
-                            if (isContain == false)
+                            isContain = RnRoadGroup.IsSameRoadGroup(group.RoadGroup.Ref, linkGroup);
+                            if (isContain == true)
                             {
-                                isSamePrev = next == linkGroup.PrevIntersection;
-                                isSameNext = prev == linkGroup.NextIntersection;
-                                isContain = isSamePrev && isSameNext;
+                                break;
                             }
-                        }
-                        if (isContain == false)
-                        {
-                            var cn = editorData.Add<RoadGroupEditorData>();
-                            nodeEditorData[node0].Connections.Add(cn);
-                            nodeEditorData[node1].Connections.Add(cn);
-                            roadGroups.Add(cn);
-                            roadGroupEditorData.Add(editorData);
-                        }
+                            //var a = group.RoadGroup.Ref == linkGroup;
+                            //var prev = group.RoadGroup.Ref.PrevIntersection;
+                            //var next = group.RoadGroup.Ref.NextIntersection;
 
+                            //bool isSamePrev, isSameNext;
+
+                            //isSamePrev = prev == prevIntersection;
+                            //isSameNext = next == nextIntersection;
+                            //isContain = isSamePrev && isSameNext;
+
+                            //if (isContain == false)
+                            //{
+                            //    isSamePrev = next == prevIntersection;
+                            //    isSameNext = prev == nextIntersection;
+                            //    isContain = isSamePrev && isSameNext;
+                            //}
+                        }
+                        if (isContain)
+                            continue;
+
+                        // 編集用データを追加
+                        var rgEditorData = editorData.Add<RoadGroupEditorData>();
+                        if (prevIntersection != null)
+                            nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
+                        if (nextIntersection != null)
+                            nodeEditorData[nextIntersection].Connections.Add(rgEditorData);
+                        roadGroups.Add(rgEditorData);
+                        roadGroupEditorData.Add(editorData);
+
+                        // 計算済みとして追加
                         calcedNeighbor.Add(neighbor);
-                        var otherNode = intersection == node0 ? node1 : node0;
-                        var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
-                        foreach (var otherNeighbor in otherNode.Neighbors)
-                        {
-                            if (otherLink == otherNeighbor.Road)
-                            {
-                                calcedNeighbor.Add(otherNeighbor);
-                            }
-                        }
+                        //// 反対側も追加
+                        //var otherNode = intersection == prevIntersection ? nextIntersection : prevIntersection;
+                        //var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
+                        //foreach (var otherNeighbor in otherNode.Neighbors)
+                        //{
+                        //    if (otherLink == otherNeighbor.Road)
+                        //    {
+                        //        calcedNeighbor.Add(otherNeighbor);
+                        //    }
+                        //}
                     }
                 }
 
