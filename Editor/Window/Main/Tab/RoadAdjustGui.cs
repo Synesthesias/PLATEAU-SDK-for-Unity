@@ -38,7 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         }
 
         /// <summary>
-        /// 初期化
+        /// 道路ネットワークメインタブの初期化
         /// </summary>
         /// <param name="container"></param>
         /// <returns></returns>
@@ -51,11 +51,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 Debug.LogError("Failed InitRoadNetworkMain()");
                 return false;
             }
-
-            // 仮　不要な要素を非表示にする
-            var s = main.Q<UnityEngine.UIElements.ScrollView>();
-            if (s != null)
-                s.style.display = DisplayStyle.None;
 
             // 各radioButtonの取得
             var menuGroup = main.Q<VisualElement>("MenuGroup");

@@ -11,10 +11,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using static PLATEAU.RoadNetwork.Tester.PLATEAURoadNetworkTester;
-using PLATEAU.RoadNetwork.Tester;
-using PLATEAU.Editor.RoadNetwork.Tester;
-using PLATEAU.Editor.RoadNetwork;
+using static PLATEAU.RoadNetwork.Tester.PLATEAURoadNetworkTester;   // Testerを使わず生成するようにする
+using PLATEAU.RoadNetwork.Tester;             // Todo 削除予定
 using PLATEAU.RoadNetwork.Structure.Drawer;   // Todo 削除予定
 
 
@@ -26,17 +24,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     /// </summary>
     public abstract class RoadAdjustGuiPartBase
     {
-        private readonly string uxmlPath;
+        // 対応するVisualElementのキー
+        private readonly string rootKey;
         protected VisualElement self { get; private set; }
 
         protected RoadAdjustGuiPartBase(string name)
         {
-            uxmlPath = CreateUXMLFilePath(name);
+            rootKey = name;
         }
 
         /// <summary>
         /// 初期化
         /// 終了処理がされていない状態での呼び出しも考慮する
+        /// Todo 継承先では引数のrootを渡さないようにしたい(別ブランチで対応済みなはず この関数がInit0という名前になっている)
         /// </summary>
         /// <param name="root"></param>
         public virtual void Init(VisualElement root)
@@ -46,8 +46,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 Terminate(self);
             }
             
-            self = CreateGUI();
-            root.Add(self);
+            self = GetRoot(root);
+            self.style.display = DisplayStyle.Flex;
         }
 
         /// <summary>
@@ -60,19 +60,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             if (root.Contains(self) == false)
                 return;
 
-            root.Remove(self);
+            self.style.display = DisplayStyle.None;
         }
 
-        protected VisualElement CreateGUI()
+        /// <summary>
+        /// 該当する
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        private VisualElement GetRoot(VisualElement root)
         {
-            var visualTree =
-                AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
-            if (visualTree == null)
-            {
-                Debug.LogError("Failed to load gui.");
-            }
-
-            return visualTree.CloneTree();
+            return root.Q<VisualElement>(rootKey);
         }
 
         /// <summary>
@@ -107,16 +105,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             return Get<Toggle>(key);
         }
 
-        /// <summary>
-        /// ファイル名からパスを作成する
-        /// ファイル名には拡張子、ディレクトリを除く
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        private string CreateUXMLFilePath(string fileName)
-        {
-            return $"Packages/{PathUtil.packageFormalName}/Resources/PlateauUIDocument/RoadNetwork/{fileName}.uxml";
-        }
     }
 
     /// <summary>
