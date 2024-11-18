@@ -426,6 +426,10 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public List<Vector3> CacheRoadPosList { get; set; }
 
+        /// <summary>
+        /// 中心点の計算
+        /// </summary>
+        /// <returns></returns>
         public Vector3 GetCenter()
         {
             var p1 = RoadGroup.Ref.Roads.First().GetCenter();

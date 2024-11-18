@@ -1474,16 +1474,9 @@ namespace PLATEAU.Editor.RoadNetwork
                             continue;
                         }
 
-                        //// 接続先にNodeが無い場合はスキップ　仮
-                        //if (linkGroup.PrevIntersection == null || linkGroup.NextIntersection == null)
-                        //{
-                        //    continue;
-                        //}
-
+                        // 同じものを格納済みかチェック
                         var prevIntersection = linkGroup.PrevIntersection;
                         var nextIntersection = linkGroup.NextIntersection;
-                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
-                        // 同じものを格納済みかチェック
                         var isContain = false;
                         foreach (var group in roadGroups)
                         {
@@ -1492,27 +1485,12 @@ namespace PLATEAU.Editor.RoadNetwork
                             {
                                 break;
                             }
-                            //var a = group.RoadGroup.Ref == linkGroup;
-                            //var prev = group.RoadGroup.Ref.PrevIntersection;
-                            //var next = group.RoadGroup.Ref.NextIntersection;
-
-                            //bool isSamePrev, isSameNext;
-
-                            //isSamePrev = prev == prevIntersection;
-                            //isSameNext = next == nextIntersection;
-                            //isContain = isSamePrev && isSameNext;
-
-                            //if (isContain == false)
-                            //{
-                            //    isSamePrev = next == prevIntersection;
-                            //    isSameNext = prev == nextIntersection;
-                            //    isContain = isSamePrev && isSameNext;
-                            //}
                         }
                         if (isContain)
                             continue;
 
                         // 編集用データを追加
+                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
                         var rgEditorData = editorData.Add<RoadGroupEditorData>();
                         if (prevIntersection != null)
                             nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
@@ -1523,16 +1501,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
                         // 計算済みとして追加
                         calcedNeighbor.Add(neighbor);
-                        //// 反対側も追加
-                        //var otherNode = intersection == prevIntersection ? nextIntersection : prevIntersection;
-                        //var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
-                        //foreach (var otherNeighbor in otherNode.Neighbors)
-                        //{
-                        //    if (otherLink == otherNeighbor.Road)
-                        //    {
-                        //        calcedNeighbor.Add(otherNeighbor);
-                        //    }
-                        //}
                     }
                 }
 
