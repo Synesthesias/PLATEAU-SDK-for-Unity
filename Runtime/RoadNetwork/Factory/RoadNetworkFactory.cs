@@ -730,6 +730,9 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 // 連続した道路を一つにまとめる
                 ret.MergeRoadGroup();
+                // 交差点との境界線が垂直になるようにする
+                ret.AdjustRoadGroupBorder();
+                // 道路を分割する
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);

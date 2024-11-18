@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1102,6 +1103,99 @@ namespace PLATEAU.RoadNetwork.Structure
             roads = new[] { dstRoad }.ToList();
         }
 
+
+        /// <summary>
+        /// 交差点との境界線の角度を調整する(進行方向に垂直になるようにする)
+        /// </summary>
+        public void AdjustBorder()
+        {
+            Align();
+            static void Adjust(RnRoad road, RnLaneBorderType borderType, RnIntersection inter)
+            {
+                if (inter == null)
+                    return;
+
+                if (road.TryGetAdjustBorderSegment(borderType, out var borderLeft2Right))
+                {
+                    var leftWay = road.GetMergedSideWay(RnDir.Left);
+                    var rightWay = road.GetMergedSideWay(RnDir.Right);
+
+                    // 交差点がわの輪郭を崩さないように元の位置に点を追加しておく
+                    void DuplicatePoints(RnPoint p, Vector3 checkVertex)
+                    {
+                        // pとcheckVertexが同一点の場合は点を増やすことはしない
+                        if ((p.Vertex - checkVertex).sqrMagnitude < 1e-6f)
+                            return;
+                        foreach (var e in inter.Edges.Where(e =>
+                                 e.Road != road && e.Border.LineString.Contains(p)))
+                        {
+                            var i = e.Border.LineString.Points.IndexOf(p);
+                            if (i == 0)
+                            {
+                                e.Border.LineString.Points.Insert(1, new RnPoint(p.Vertex));
+                            }
+                            else if (i == e.Border.LineString.Points.Count - 1)
+                            {
+                                e.Border.LineString.Points.Insert(e.Border.LineString.Points.Count - 1, new RnPoint(p.Vertex));
+                            }
+                        }
+                    }
+                    var lastPointIndex = borderType == RnLaneBorderType.Prev ? 0 : -1;
+                    DuplicatePoints(leftWay.GetPoint(lastPointIndex), borderLeft2Right.Start);
+                    DuplicatePoints(rightWay.GetPoint(lastPointIndex), borderLeft2Right.End);
+
+                    void AdjustWay(RnLane lane, RnWay way)
+                    {
+                        if (lane.IsReverse)
+                            way = way.ReversedWay();
+                        var p = way.GetPoint(lastPointIndex);
+                        var n = borderLeft2Right.GetNearestPoint(p.Vertex);
+                        p.Vertex = n;
+                    }
+                    var lanes = road.AllLanesWithMedian.ToList();
+                    var newBorders = new List<RnWay>(lanes.Count);
+                    for (var i = 0; i < lanes.Count; ++i)
+                    {
+                        var lane = lanes[i];
+                        AdjustWay(lane, lane.LeftWay);
+                        if (i == lanes.Count - 1)
+                            AdjustWay(lane, lane.RightWay);
+
+                        var l = lane.LeftWay;
+                        var r = lane.RightWay;
+                        if (road.IsLeftLane(lane) == false)
+                        {
+                            l = l.ReversedWay();
+                            r = r.ReversedWay();
+                        }
+                        var ls = RnLineString.Create(new List<RnPoint>
+                    {
+                        l.GetPoint(lastPointIndex), r.GetPoint(lastPointIndex)
+                    });
+                        var way = new RnWay(ls);
+                        newBorders.Add(way);
+                    }
+
+                    inter.ReplaceEdges(road, newBorders);
+                    for (var i = 0; i < lanes.Count; ++i)
+                    {
+                        var b = newBorders[i];
+                        var lane = lanes[i];
+                        if (road.IsLeftLane(lane))
+                        {
+                            lane.SetBorder(borderType, b);
+                        }
+                        else
+                        {
+                            lane.SetBorder(borderType.GetOpposite(), b.ReversedWay());
+                        }
+                    }
+
+                }
+            }
+            Adjust(Roads[^1], RnLaneBorderType.Next, NextIntersection);
+            Adjust(Roads[0], RnLaneBorderType.Prev, PrevIntersection);
+        }
 
         // ---------------
         // Static Methods

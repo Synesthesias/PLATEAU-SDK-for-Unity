@@ -465,6 +465,24 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 道路グループの交差点との境界線の角度を調整する(垂直になるようにする)
+        /// </summary>
+        public void AdjustRoadGroupBorder()
+        {
+            var visitedRoads = new HashSet<RnRoad>();
+            var roads = Roads.ToList();
+            foreach (var road in roads)
+            {
+                if (visitedRoads.Contains(road))
+                    continue;
+                var roadGroup = road.CreateRoadGroup();
+                foreach (var l in roadGroup.Roads)
+                    visitedRoads.Add(l);
+                roadGroup.AdjustBorder();
+            }
+        }
+
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();

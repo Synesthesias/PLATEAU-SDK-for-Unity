@@ -309,6 +309,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         }
                     }
                 }
+
+                if (GUILayout.Button("Adjust Border"))
+                {
+                    work.DelayExec.Add(() => roadGroup.AdjustBorder());
+                }
             }
 
             if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", road)))

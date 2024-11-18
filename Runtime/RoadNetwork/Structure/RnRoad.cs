@@ -681,7 +681,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return self.Prev == other ? null : self.Prev;
             }
 
-            throw new InvalidDataException($"{self.DebugMyId} is not road {other.DebugMyId}");
+            throw new InvalidDataException($"{self.DebugMyId} is not neighbor road {other.DebugMyId}");
         }
 
         /// <summary>
@@ -815,6 +815,65 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             distance = Mathf.Min(Mathf.Min(rightWidth, leftWidth), distance);
             return true;
+        }
+
+        /// <summary>
+        /// roadのMergedSideWayから計算された進行方向に垂直な境界線を取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderType"></param>
+        /// <param name="adjustedBorderLeft2Right">垂直な境界線(左車線->右車線の方向)</param>
+        /// <returns></returns>
+        public static bool TryGetAdjustBorderSegment(this RnRoad self, RnLaneBorderType borderType, out LineSegment3D adjustedBorderLeft2Right)
+        {
+            adjustedBorderLeft2Right = new LineSegment3D();
+            var leftWay = self.GetMergedSideWay(RnDir.Left);
+            var rightWay = self.GetMergedSideWay(RnDir.Right);
+            if (!leftWay.IsValidOrDefault() || !rightWay.IsValidOrDefault())
+                return false;
+
+            // Xz平面で交点を求める
+            LineSegment3D leftSeg, rightSeg;
+            if (borderType == RnLaneBorderType.Next)
+            {
+                leftSeg = new LineSegment3D(leftWay[^2], leftWay[^1]);
+                rightSeg = new LineSegment3D(rightWay[^2], rightWay[^1]);
+            }
+            else if (borderType == RnLaneBorderType.Prev)
+            {
+                leftSeg = new LineSegment3D(leftWay[1], leftWay[0]);
+                rightSeg = new LineSegment3D(rightWay[1], rightWay[0]);
+            }
+            else
+            {
+                throw new ArgumentException($"TryGetAdjustBorderSegment. Invalid border type ${borderType}");
+            }
+            var plane = AxisPlane.Xz;
+            var leftSeg2D = leftSeg.To2D(plane);
+            var rightSeg2D = rightSeg.To2D(plane);
+            // leftWay/rightWayの最後の直線の2等分線に対して直角な線
+            var ray2D = GeoGraph2D.LerpRay(leftSeg2D.Ray, rightSeg2D.Ray, 0.5f);
+            var left2RightDir = ray2D.direction.Rotate(90f);
+            if (Vector2.Dot(rightSeg2D.End - leftSeg2D.End, left2RightDir) < 0)
+                left2RightDir = -left2RightDir;
+
+            // leftWayの方が手前にある
+            if (rightSeg2D.TryHalfLineIntersection(leftSeg2D.End, left2RightDir, out var rOut, out var rT1,
+                    out var lT1))
+            {
+                adjustedBorderLeft2Right
+                    = new LineSegment3D(leftSeg.End, rightSeg.Lerp(rT1));
+                return true;
+            }
+            // rightWayの方が手前にある
+            if (leftSeg2D.TryHalfLineIntersection(rightSeg2D.End, -left2RightDir, out var lOut, out var lT2,
+                         out var rT2))
+            {
+                adjustedBorderLeft2Right
+                    = new LineSegment3D(leftSeg.Lerp(lT2), rightSeg.End);
+                return true;
+            }
+            return false;
         }
     }
 }

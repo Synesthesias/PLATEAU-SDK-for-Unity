@@ -138,6 +138,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public RoadGroupOption showRoadGroup = new RoadGroupOption { visible = false, showSpline = true, color = Color.green };
             public bool showSideEdge = false;
             public bool showEmptyRoadLabel = false;
+            public bool showAdjustBorder = false;
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
             public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
         }
@@ -617,6 +618,18 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                         last = lane.GetCenter();
                     }
+                }
+            }
+
+            if (op.showAdjustBorder)
+            {
+                foreach (var bType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
+                {
+                    if (road.TryGetAdjustBorderSegment(bType, out var adjustBorder))
+                    {
+                        DebugEx.DrawArrow(adjustBorder.Start, adjustBorder.End);
+                    }
+
                 }
             }
 
