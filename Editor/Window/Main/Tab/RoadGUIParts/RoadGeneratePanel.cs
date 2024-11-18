@@ -162,7 +162,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             // Todo (int)でキャストしているものはVisualElementの型が違うので修正依頼を行う
             GetF("RoadSizeField").value = factory.RoadSize;
             GetF("SideWalkSize").value = factory.Lod1SideWalkSize;
-            GetT("Add_Lod_Side_Walk").value = factory.AddLod3SideWalk;
+            GetT("Add_Lod_Side_Walk").value = factory.AddSideWalk;
             GetT("Check_Median").value = factory.CheckMedian;
 
             GetF("Merge_Cell_Size").value = factory.GraphFactory.mergeCellSize;
@@ -189,7 +189,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 selfGameObject = rnMdl.gameObject;
                 factory.RoadSize = roadSize;
                 factory.Lod1SideWalkSize = sideWalklSize;
-                factory.AddLod3SideWalk = lodSideWalk;
+                factory.AddSideWalk = lodSideWalk;
                 factory.CheckMedian = checkMedian;
 
                 factory.GraphFactory.mergeCellSize = cellSize;
