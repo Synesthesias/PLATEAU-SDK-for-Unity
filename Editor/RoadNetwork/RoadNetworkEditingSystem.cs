@@ -190,7 +190,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
-        private const float SnapHightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
+        private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
 
         private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
 
@@ -352,7 +352,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             if (isTarget)
             {
-                item.Vertex = targetPos + Vector3.up * SnapHightOffset;
+                item.Vertex = targetPos + Vector3.up * SnapHeightOffset;
                 return;
             }
 
