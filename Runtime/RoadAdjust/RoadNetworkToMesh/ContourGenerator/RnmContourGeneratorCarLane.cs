@@ -31,17 +31,49 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public IEnumerable<RnmContour> GenerateCarLane(RnRoad road)
         {
             // 車道
-            foreach (var lane in road.MainLanes)
+            int carLaneCount = road.MainLanes.Count;
+            for (int i = 0; i < carLaneCount; i++)
             {
-                var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
-                var lines = new List<IEnumerable<Vector3>>
+                var lane = road.MainLanes[i];
+                var calc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
+                bool reverse = lane.IsReverse;
+                float laneUvLeft = ((float)i) / carLaneCount;
+                float laneUvRight = (((float)i) + 1) / carLaneCount;
+                float nextUvY = reverse ? 0 : 1;
+                float prevUvY = reverse ? 1 : 0;
+                
+                // Next側の境界を追加します。
+                var nextBorder = lane.GetBorder(RnLaneBorderType.Next);
+                if (nextBorder != null)
                 {
-                    lane.GetBorder(RnLaneBorderType.Next),
-                    lane.GetBorder(RnLaneBorderType.Prev),
-                    lane.RightWay,
-                    lane.LeftWay
-                };
-                calc.AddRangeLine(lines.Where(l => l != null));
+                    var (uvX1, uvX2) = nextBorder.IsReversed ? (laneUvRight, laneUvLeft):(laneUvLeft, laneUvRight);
+                    calc.AddLine(nextBorder, new Vector2(uvX1, nextUvY), new Vector2(uvX2,nextUvY));
+                }
+                
+                // Prev側の境界を追加します。
+                var prevBorder = lane.GetBorder(RnLaneBorderType.Prev);
+                if (prevBorder != null)
+                {
+                    var (uvX1, uvX2) = prevBorder.IsReversed ? (laneUvRight, laneUvLeft):(laneUvLeft, laneUvRight);
+                    calc.AddLine(prevBorder, new Vector2(uvX1, prevUvY), new Vector2(uvX2, prevUvY));
+                }
+                
+                // 右側の境界を追加します。
+                var rightWay = lane.RightWay;
+                if (rightWay != null)
+                {
+                    var uvX = lane.IsReverse ? laneUvLeft : laneUvRight;
+                    calc.AddLine(rightWay, new Vector2(uvX, prevUvY), new Vector2(uvX, nextUvY));
+                }
+                
+                // 左側の境界を追加します。
+                var leftWay = lane.LeftWay;
+                if (leftWay != null)
+                {
+                    var uvX = lane.IsReverse ? laneUvRight : laneUvLeft;
+                    calc.AddLine(leftWay, new Vector2(uvX, prevUvY), new Vector2(uvX, nextUvY));
+                }
+
                 yield return calc.Calculate();
             }
 
@@ -62,11 +94,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (walks.Any(w => w.OutsideWay != null && AreTouching(side, w.OutsideWay))) continue;
                 if (walks.Any(w => w.InsideWay != null && AreTouching(side, w.InsideWay))) continue;
                 var touchingEdges = sideEdges.Where(e => AreTouching(side, e)).ToArray();
-                if (touchingEdges.Length == 0) continue;
-                var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
-                calc.AddRangeLine(new[] { side }.Concat(touchingEdges));
+                if(touchingEdges.Length == 0) continue;
+                var calc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
+                calc.AddLine(side, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+                foreach (var touchingEdge in touchingEdges)
+                {
+                    calc.AddLine(touchingEdge, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+                }
                 yield return calc.Calculate();
             }
+            
         }
 
         private bool AreTouching(IEnumerable<Vector3> a, IEnumerable<Vector3> bArg)

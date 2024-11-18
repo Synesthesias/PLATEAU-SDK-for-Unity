@@ -42,8 +42,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private RnmContour CarContour(RnIntersection inter)
         {
             var edges = inter.Edges.Select(e => e.Border);
-            var calc = new RnmContourCalculator(RnmMaterialType.CarLane);
-            calc.AddRangeLine(edges);
+            var calc = new RnmContourCalculator(RnmMaterialType.IntersectionCarLane);
+            foreach (var edge in edges)
+            {
+                calc.AddLine(edge, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+            }
             return calc.Calculate();
         }
 
@@ -53,7 +56,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
             var lines = new List<IEnumerable<Vector3>> { sideWalk.InsideWay, sideWalk.OutsideWay};
             lines.AddRange(sideWalk.EdgeWays);
-            calc.AddRangeLine(lines.Where(l => l != null));
+            foreach (var line in lines.Where(l => l != null))
+            {
+                calc.AddLine(line, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+            }
             return calc.Calculate();
         }
 
@@ -80,7 +86,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
                     var lines = new List<IEnumerable<Vector3>> { border };
                     lines.AddRange(matchingSideEdges);
-                    calc.AddRangeLine(lines);
+                    foreach (var line in lines)
+                    {
+                        calc.AddLine(line, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+                    }
                     yield return calc.Calculate();
                 }
             }
@@ -104,10 +113,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 {
                     // bool isBorderOutside = true;
                     // 条件: 歩道のinsideWayと重ならない
-                    var insideWays = inter.SideWalks.Select(sw => sw.InsideWay).SelectMany(w => w.Vertices);
-                    var nonBorder2 = new RnmLine(nonBorder).SubtractSeparate(insideWays, 1);
+                    var sideWalks = inter.SideWalks;
+                    var rnInsideWays = sideWalks.Select(sw => sw.InsideWay).Where(w => w != null);
+                    var insideWays = rnInsideWays.SelectMany(w => w.Vertices);
+                    var rnmLine = new RnmLine(nonBorder, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+                    var nonBorder2 = rnmLine.SubtractSeparate(insideWays, 1);
                     foreach (var b in nonBorder2)
-                        yield return new RnWay(new RnLineString(b.Vertices.Select(v => new RnPoint(v))));
+                        yield return new RnWay(new RnLineString(b.Vertices.Select(v => new RnPoint(v.Position))));
 
                 }
             }

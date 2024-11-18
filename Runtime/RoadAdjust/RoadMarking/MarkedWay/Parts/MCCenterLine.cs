@@ -67,9 +67,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                             lineString.AddPoint(new RnPoint(lerpedPoint));
 
                             // 線を追加
-                            var dstWay = new RnWay(new RnLineString(lineString.Points), srcWay.IsReversed,
-                                srcWay.IsReverseNormal);
-                            ret.Add(new MarkedWay(dstWay, prevInterType, lane.IsReverse));
+                            var dstLine = new MWLine(lineString.Points.Select(p => p.Vertex));
+                            ret.Add(new MarkedWay(dstLine, prevInterType, lane.IsReverse));
                             lineString = new RnLineString(); // リセット
                             lineString.AddPoint(new RnPoint(lerpedPoint)); // 次の始点
                         }
@@ -79,8 +78,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     }
 
                     if (lineString.Count > 0)
-                        ret.Add(new MarkedWay(new RnWay(new RnLineString(lineString.Points), srcWay.IsReversed,
-                            srcWay.IsReverseNormal), prevInterType, lane.IsReverse));
+                        ret.Add(new MarkedWay(new MWLine(lineString.Points.Select(p => p.Vertex)), prevInterType, lane.IsReverse));
                     break; // センターラインは道路につき1つだけ
                 }
             }

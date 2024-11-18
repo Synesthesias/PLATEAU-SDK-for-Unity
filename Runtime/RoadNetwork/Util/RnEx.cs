@@ -1,9 +1,7 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR

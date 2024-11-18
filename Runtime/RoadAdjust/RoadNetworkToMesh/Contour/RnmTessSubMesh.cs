@@ -12,8 +12,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmTessSubMesh
     {
-        private Vector3[] vertices;
-        private int[] triangles;
+        private readonly Vector3[] vertices;
+        private readonly Vector2[] uv1;
+        private readonly int[] triangles;
         public RnmMaterialType MatType { get; private set; }
         public int VertexCount => vertices.Length;
         
@@ -22,16 +23,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return TessToTessMesh(tess, matType);
         }
 
-        private RnmTessSubMesh(Vector3[] vertices, int[] triangles, RnmMaterialType matType)
+        private RnmTessSubMesh(Vector3[] vertices, int[] triangles, Vector2[] uv1, RnmMaterialType matType)
         {
             this.vertices = vertices;
             this.triangles = triangles;
+            this.uv1 = uv1;
             this.MatType = matType;
         }
 
         private static RnmTessSubMesh TessToTessMesh(Tess tess, RnmMaterialType matType)
         {
             int numTriangle = tess.ElementCount;
+            int numVertex = tess.VertexCount;
             var triangles = new int[numTriangle * 3];
             for (int i = 0; i < numTriangle; i++)
             {
@@ -40,14 +43,20 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 triangles[i*3+2] = tess.Elements[i*3+2];
             }
             
-            var vertices = new Vector3[tess.VertexCount];
-            for (int i = 0; i < tess.VertexCount; i++)
+            var vertices = new Vector3[numVertex];
+            for (int i = 0; i < numVertex; i++)
             {
                 var tessVert = tess.Vertices[i];
                 vertices[i] = new Vector3(tessVert.Position.X, tessVert.Position.Y, tessVert.Position.Z);
             }
 
-            return new RnmTessSubMesh(vertices, triangles, matType);
+            var uv1 = new Vector2[numVertex];
+            for (int i = 0; i < numVertex; i++)
+            {
+                uv1[i] = (Vector2)tess.Vertices[i].Data;
+            }
+
+            return new RnmTessSubMesh(vertices, triangles, uv1, matType);
         }
 
         public CombineInstance ToCombineInstance()
@@ -58,7 +67,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         private Mesh ToUnityMesh()
         {
-            var mesh = new Mesh { vertices = vertices, triangles = triangles };
+            var mesh = new Mesh { vertices = vertices, triangles = triangles, uv = uv1 };
             return mesh;
         }
     }

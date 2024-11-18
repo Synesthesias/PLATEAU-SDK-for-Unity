@@ -33,9 +33,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     if (contour.Count == 0) continue;
                     for (int i = 0; i < contour.Count - 1; i++)
                     {
-                        DrawArrow(contour[i], contour[i + 1]);
+                        DrawArrow(contour[i].Position, contour[i + 1].Position);
                     }
-                    DrawArrow(contour[^1], contour[0]);
+                    DrawArrow(contour[^1].Position, contour[0].Position);
                 }
                 
             }
