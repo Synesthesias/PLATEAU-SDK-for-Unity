@@ -11,7 +11,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public class MWLineSmoother
     {
         private const float SubDivideDistance = 3f;
-        private const float SmoothResolutionDistance = 1.5f;
+        private const float SmoothResolutionDistance = 0.5f;
         private const float OptimizeAngleThreshold = 2f; // 度数法
 
 

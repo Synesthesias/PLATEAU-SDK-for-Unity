@@ -60,11 +60,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         public float SumDistance()
         {
             if (points.Length == 0) return 0;
-            var p = points[0];
             float len = 0;
             for (int i = 1; i < points.Length; i++)
             {
-                len += Vector3.Distance(points[i], p);
+                len += Vector3.Distance(points[i], points[i-1]);
             }
 
             return len;
