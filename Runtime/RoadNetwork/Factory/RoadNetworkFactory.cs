@@ -204,11 +204,11 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public List<RnSideWalk> CreateSideWalk(float lod1SideWalkSize)
             {
-                var visited = new Dictionary<RnPoint, (RnPoint pos, Vector3 normal)>();
+                var visited = new Dictionary<RnPoint, (RnPoint pos, List<Vector3> normal)>();
 
                 var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way, RnRoad parent, RnSideWalkLaneType laneType)
+                void MoveWay(RnWay way, RnRoadBase parent, RnSideWalkLaneType laneType)
                 {
                     if (way == null)
                         return;
@@ -220,7 +220,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         .ToList();
 
                     // 始点/終点は除いて法線と逆方向に動かす
-                    var points = new List<RnPoint> { };
+                    var outsidePoints = new List<RnPoint> { };
                     foreach (var i in Enumerable.Range(0, way.Count))
                     {
                         var p = way.GetPoint(i);
@@ -229,18 +229,25 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             var before = new RnPoint(p.Vertex);
                             p.Vertex -= n * lod1SideWalkSize;
-                            visited[p] = new(before, n); //new VertexInfo { Normal = n, Position = last };
-                            points.Add(before);
+                            visited[p] = new(before, new List<Vector3> { n }); //new VertexInfo { Normal = n, Position = last };
+                            outsidePoints.Add(before);
                         }
                         else
                         {
                             var last = visited[p];
-                            points.Add(last.pos);
+                            // すでに移動済みの法線成分は除いて移動する
+                            foreach (var nn in last.normal)
+                            {
+                                n -= Vector3.Dot(n, nn) * nn;
+                            }
+                            p.Vertex -= n * lod1SideWalkSize;
+                            last.normal.Add(n);
+                            outsidePoints.Add(last.pos);
                         }
                     }
-                    var startWay = CreateWay(new List<RnPoint> { points[0], way.GetPoint(0) });
-                    var endWay = CreateWay(new List<RnPoint> { points[^1], way.GetPoint(-1) });
-                    var sideWalk = RnSideWalk.Create(parent, CreateWay(points), way, startWay, endWay, laneType);
+                    var startWay = CreateWay(new List<RnPoint> { outsidePoints[0], way.GetPoint(0) });
+                    var endWay = CreateWay(new List<RnPoint> { outsidePoints[^1], way.GetPoint(-1) });
+                    var sideWalk = RnSideWalk.Create(parent, CreateWay(outsidePoints), way, startWay, endWay, laneType);
                     ret.Add(sideWalk);
                 }
 
@@ -256,7 +263,11 @@ namespace PLATEAU.RoadNetwork.Factory
                         MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane);
                         MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane);
                     }
-                    // #TODO : 交差点も作る？
+                    else if (tran.Node is RnIntersection intersection)
+                    {
+                        foreach (var edge in intersection.Edges.Where(x => x.IsBorder == false))
+                            MoveWay(edge.Border, intersection, RnSideWalkLaneType.Undefined);
+                    }
                 }
 
                 return ret;
@@ -717,6 +728,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+                // 連続した道路を一つにまとめる
+                ret.MergeRoadGroup();
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);

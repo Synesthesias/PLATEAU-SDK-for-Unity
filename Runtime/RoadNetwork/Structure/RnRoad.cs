@@ -23,12 +23,6 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        // 自分が所属するRoadNetworkModel
-        public RnModel ParentModel { get; set; }
-
-        // 対象のtranオブジェクト
-        public PLATEAUCityObjectGroup TargetTran { get; set; }
-
         // 接続先(nullの場合は接続なし)
         public RnRoadBase Next { get; private set; }
 
@@ -49,8 +43,6 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
         // end: フィールド
         //----------------------------------
-
-        public override PLATEAUCityObjectGroup CityObjectGroup => TargetTran;
 
         // 車線レーンリスト(参照のみ)
         // 必ず左車線 -> 右車線の順番になっている( そうなるように追加する必要がある)
@@ -128,7 +120,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnRoad(PLATEAUCityObjectGroup targetTran)
         {
-            TargetTran = targetTran;
+            AddTargetTran(targetTran);
+        }
+
+        public RnRoad(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        {
+            foreach (var targetTran in targetTrans)
+                AddTargetTran(targetTran);
         }
 
         /// <summary>
@@ -158,7 +156,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
-        private bool IsLeftLane(RnLane lane)
+        public bool IsLeftLane(RnLane lane)
         {
             return lane.IsReverse == false;
         }
@@ -168,7 +166,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <returns></returns>
-        private bool IsRightLane(RnLane lane)
+        public bool IsRightLane(RnLane lane)
         {
             return lane.IsReverse == true;
         }
@@ -423,6 +421,11 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var lane in AllLanesWithMedian)
                 lane.IsReverse = !lane.IsReverse;
             mainLanes.Reverse();
+
+            foreach (var sw in SideWalks)
+            {
+                sw.ReverseLaneType();
+            }
         }
 
         /// <summary>
@@ -575,11 +578,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public override void DisConnect(bool removeFromModel)
         {
+            base.DisConnect(removeFromModel);
             Prev?.UnLink(this);
             Next?.UnLink(this);
             SetPrevNext(null, null);
             if (removeFromModel)
+            {
                 ParentModel?.RemoveRoad(this);
+            }
+
             foreach (var lane in mainLanes)
             {
                 lane.DisConnectBorder();
@@ -617,7 +624,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// selfの全頂点の重心を返す
         /// </summary>
-        /// <param name="self"></param>
         /// <returns></returns>
         public override Vector3 GetCenter()
         {
@@ -756,6 +762,59 @@ namespace PLATEAU.RoadNetwork.Structure
                 .SelectMany(l => l.BothWays)
                 .Concat(self.SideWalks.SelectMany(s => s.SideWays));
             return RnEx.GetLineIntersections(lineSegment, targetLines);
+        }
+
+        /// <summary>
+        /// selfの両端のWayとlineの最も近い点との距離をdistanceに格納する
+        /// その結果, lineがselfの内部を通っているときは, lineに幅を持たせてもselfのLane内をはみ出さないような最大の幅となる
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="line"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static bool TryGetNearestDistanceToSideWays(this RnRoad self, RnLineString line, out float distance)
+        {
+            if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+            {
+                distance = 0f;
+                return false;
+            }
+
+            var prevBorder = self.GetMergedBorder(RnLaneBorderType.Prev, null);
+            var nextBorder = self.GetMergedBorder(RnLaneBorderType.Next, null);
+
+            distance = Mathf.Min(prevBorder.CalcLength(), nextBorder.CalcLength());
+
+            HashSet<float> indices = new();
+            foreach (var p in leftWay.Points)
+            {
+                line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
+                indices.Add(index);
+            }
+
+            foreach (var p in rightWay.Points)
+            {
+                line.GetNearestPoint(p.Vertex, out var v, out var index, out var _);
+                indices.Add(index);
+            }
+
+            foreach (var i in Enumerable.Range(0, line.Count))
+                indices.Add(i);
+
+            // 左右それぞれで最も小さい幅の２倍にする
+            // 各点に置けるwl+wrの最小値だと、wl << wrの場合があったりすると中心線をずらす必要があるので苦肉の策
+            var leftWidth = float.MaxValue;
+            var rightWidth = float.MaxValue;
+            foreach (var i in indices)
+            {
+                var v = line.GetLerpPoint(i);
+                leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
+                leftWidth = Mathf.Min(leftWidth, wl);
+                rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
+                rightWidth = Mathf.Min(rightWidth, wr);
+            }
+            distance = Mathf.Min(Mathf.Min(rightWidth, leftWidth), distance);
+            return true;
         }
     }
 }

@@ -507,7 +507,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (op.visible == false)
                 return;
 
-            if (RnEx.IsEditorSceneSelected(road.CityObjectGroup))
+            if (road.TargetTrans.Any(RnEx.IsEditorSceneSelected))
             {
                 visibleType |= VisibleType.SceneSelected;
                 visibleType &= ~VisibleType.NonSelected;
@@ -519,7 +519,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (work.IsVisited(road) == false)
                 return;
 
-            if (targetTran && targetTran != road.TargetTran)
+            if (targetTran && road.TargetTrans.Contains(targetTran))
                 return;
 
             // 非表示設定
@@ -533,7 +533,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 foreach (var r in group.Roads)
                     work.Visited.Add(r);
 
-                if (roadOp.showRoadGroup.showSpline && group.TryCreateSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
+                if (roadOp.showRoadGroup.showSpline && group.TryCreateSimpleSpline(out var spline, out var width, pointSkipDistance: roadOp.showRoadGroup.pointSkipDistance))
                 {
                     var n = spline.Count;
                     if (roadOp.showRoadGroup.showSplineKnot)
@@ -643,7 +643,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (op.visible == false)
                 return;
 
-            if (RnEx.IsEditorSceneSelected(intersection.CityObjectGroup))
+            if (intersection.TargetTrans.Any(RnEx.IsEditorSceneSelected))
                 visibleType |= VisibleType.SceneSelected;
 
             if ((visibleType & op.visibleType) == 0)
@@ -652,7 +652,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             if (work.IsVisited(intersection) == false)
                 return;
 
-            if (targetTran && targetTran != intersection.TargetTran)
+            if (targetTran && intersection.TargetTrans.Contains(targetTran))
                 return;
 
             // 非表示設定

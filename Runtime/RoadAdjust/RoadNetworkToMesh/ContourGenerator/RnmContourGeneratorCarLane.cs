@@ -17,7 +17,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var road in model.Roads)
             {
                 var contours = GenerateCarLane(road);
-                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var targetObj = road.TargetTrans == null ? null : road.TargetTran.gameObject;
                 var contourMeshes = new RnmContourMeshList
                 (
                     contours.Select(c => new RnmContourMesh(targetObj, c))
@@ -76,7 +76,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                 yield return calc.Calculate();
             }
-            
+
             // MainLanesの外にあるが、歩道に隣接していない部分
             var left = road.GetMergedSideWay(RnDir.Left);
             var right = road.GetMergedSideWay(RnDir.Right);
@@ -105,7 +105,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             
         }
-        
+
         private bool AreTouching(IEnumerable<Vector3> a, IEnumerable<Vector3> bArg)
         {
             var b = bArg.ToArray();

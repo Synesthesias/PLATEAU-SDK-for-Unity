@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
@@ -221,7 +222,22 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (IsValidWay == false)
                     return null;
 
-                var vertices = GeoGraphEx.GetInnerLerpSegments(LeftWay.Vertices.ToList(), RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
+                var prevBorder = PrevBorder ??
+                                 new RnWay(RnLineString.Create(new List<Vector3> { LeftWay[0], RightWay[0] }));
+                var nextBorder = NextBorder ??
+                                 new RnWay(RnLineString.Create(new List<Vector3>() { LeftWay[^1], RightWay[^1] }));
+
+                var st = prevBorder.GetLerpPoint(0.5f);
+                var en = nextBorder.GetLerpPoint(0.5f);
+                var vertices = RnEx.CreateInnerLerpLineString(
+                    LeftWay.Vertices.ToList()
+                    , RightWay.Vertices.ToList()
+                    , new RnPoint(st)
+                    , new RnPoint(en)
+                    , prevBorder
+                    , nextBorder
+                    , 0.5f);
+
                 centerWay = new RnWay(RnLineString.Create(vertices));
                 return centerWay;
             }

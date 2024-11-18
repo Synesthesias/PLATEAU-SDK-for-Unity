@@ -796,21 +796,6 @@ namespace PLATEAU.RoadNetwork.Voronoi
             /// <returns></returns>
             public string ToTreeString(BeachLine root)
             {
-                var height = GetHeight(root);
-
-                // 対象になるようにdigitは奇数にする
-                // ただし-1があるので最低3になる
-                var digit = (int)Math.Floor(Math.Log10(Math.Pow(2, height)));
-                if (digit % 2 == 0)
-                    digit++;
-                digit = Mathf.Max(3, digit);
-
-                static string Centering(string text, int length)
-                {
-                    var pad = length - text.Length;
-                    var left = pad / 2;
-                    return text.PadLeft(left + text.Length).PadRight(length);
-                }
                 return root.BuildString(x => $"{x.SiteIndex}");
             }
         }

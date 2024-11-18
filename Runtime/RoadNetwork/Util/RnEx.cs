@@ -143,6 +143,20 @@ namespace PLATEAU.RoadNetwork.Util
 #endif
         }
 
+        /// <summary>
+        /// leftVerticesとrightVerticesの間をtで補間した点列を生成する.
+        /// start/endはそれぞれの端点.
+        /// startBorder/endBorderはそれぞれの端点のボーダーでstartBorder/LeftVertices/endBorder/RightVerticesで囲まれた範囲の外に出ないようにチェックするためのもの
+        /// </summary>
+        /// <param name="leftVertices"></param>
+        /// <param name="rightVertices"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="startBorder"></param>
+        /// <param name="endBorder"></param>
+        /// <param name="t"></param>
+        /// <param name="pointSkipDistance"></param>
+        /// <returns></returns>
         public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, RnWay startBorder, RnWay endBorder, float t, float pointSkipDistance = 1e-3f)
         {
             var line = new RnLineString();
