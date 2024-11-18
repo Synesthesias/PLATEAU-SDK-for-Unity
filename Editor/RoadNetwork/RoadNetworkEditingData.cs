@@ -379,17 +379,36 @@ namespace PLATEAU.Editor.RoadNetwork
             var a = Parent.Ref.PrevIntersection;
             var b = Parent.Ref.NextIntersection;
 
-            Assert.IsNotNull(a);
-            Assert.IsNotNull(b);
-            if (a.GetHashCode() > b.GetHashCode())
+            if (a != null && b != null)         // 両方がnullでない場合
             {
-                A = a;
-                B = b;
+                if (a.GetHashCode() > b.GetHashCode())
+                {
+                    A = a;
+                    B = b;
+                }
+                else
+                {
+                    A = b;
+                    B = a;
+                }
+            }
+            else if (a != null || b != null)    // 片方がnullである場合
+            {
+                if (a == null)
+                {
+                    A = b;
+                    B = null;
+                }
+                else
+                {
+                    B = a;
+                    A = null;
+                }
             }
             else
             {
-                A = b;
-                B = a;
+                A = null;
+                B = null;
             }
 
             ConnectionLinks = Parent.Ref.Roads;
@@ -406,6 +425,13 @@ namespace PLATEAU.Editor.RoadNetwork
         public EditorData<RnRoadGroup> RoadGroup { get; private set; }
 
         public List<Vector3> CacheRoadPosList { get; set; }
+
+        public Vector3 GetCenter()
+        {
+            var p1 = RoadGroup.Ref.Roads.First().GetCenter();
+            var p2 = RoadGroup.Ref.Roads.Last().GetCenter();
+            return (p1 + p2) * 0.5f;
+        }
 
         public IEnumerable<RnLane> RightLanes
         {
