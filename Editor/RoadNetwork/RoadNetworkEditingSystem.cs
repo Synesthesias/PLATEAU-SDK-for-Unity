@@ -307,12 +307,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public static void SnapPointsToDemAndTran(IEnumerable<RnPoint> items)
         {
-            Ray ray;
-            const float rayDis = 1000.0f;
             foreach (var item in items)
             {
-                ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
-                SnapPointToObj(item, ray, "dem_", "tran_");
+                SnapPointToDemAndTran(item);
             }
         }
 
@@ -320,7 +317,7 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             Ray ray;
             const float rayDis = 1000.0f;
-            ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down * rayDis);
+            ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down);
             SnapPointToObj(item, ray, "dem_", "tran_");
         }
 
