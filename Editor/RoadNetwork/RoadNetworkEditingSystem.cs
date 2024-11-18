@@ -317,13 +317,13 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             Ray ray;
             const float rayDis = 1000.0f;
+            const float maxRayDistance = rayDis * 2.0f;
             ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down);
-            SnapPointToObj(item, ray, "dem_", "tran_");
+            SnapPointToObj(item, ray, maxRayDistance, "dem_", "tran_");
         }
 
-        public static void SnapPointToObj(RnPoint item, in Ray ray, params string[] filter)
+        public static void SnapPointToObj(RnPoint item, in Ray ray, float maxDistance, params string[] filter)
         {
-            const float maxDistance = 1000.0f;
             var hits = Physics.RaycastAll(ray, maxDistance);    // 地形メッシュが埋まっていてもスナップ出来るように
 
             var isTarget = false;

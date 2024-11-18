@@ -687,7 +687,8 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 var mousePos = Event.current.mousePosition;
                 var ray = HandleUtility.GUIPointToWorldRay(mousePos);
-                RoadNetworkEditingSystem.SnapPointToObj(point, ray, "dem_", "tran_");
+                const float maxRayDistance = 1000.0f;
+                RoadNetworkEditingSystem.SnapPointToObj(point, ray, maxRayDistance, "dem_", "tran_");
                 //var res = networkOperator.MovePoint(point, vertPos);
                 state.isDirtyTarget = true;
                 //Debug.Assert(res.IsSuccess);
@@ -1238,7 +1239,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        static void RoadNetworkLinkHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkLinkHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
@@ -1259,7 +1260,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        static void RoadNetworkLaneHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkLaneHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
@@ -1276,7 +1277,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        static void RoadNetworkSplitLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkSplitLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
@@ -1293,7 +1294,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        static void RoadNetworkAddPointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkAddPointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
@@ -1309,7 +1310,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     break;
             }
         }
-        static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
@@ -1325,7 +1326,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        private static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
             {
