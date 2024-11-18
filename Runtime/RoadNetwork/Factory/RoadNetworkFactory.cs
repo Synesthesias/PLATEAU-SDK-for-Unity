@@ -312,11 +312,14 @@ namespace PLATEAU.RoadNetwork.Factory
             public List<Line> Lines { get; } = new List<Line>();
 
             // 隣接オブジェクトの数
-            public int NeighborCount => Lines.Where(l => l.IsBorder).Count();
+            public int NeighborCount => Lines.Count(l => l.IsBorder);
 
             // LodLevel
             public int LodLevel => Faces.Any() ? Faces.Max(f => f.LodLevel) : 0;
 
+            /// <summary>
+            /// 道路形状タイプ(道路/交差点/行き止まり/孤島)
+            /// </summary>
             public RoadType RoadType
             {
                 get
@@ -396,6 +399,14 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 孤立
                 if (RoadType == RoadType.Isolated)
                 {
+                    // 孤立した中央分離帯は道路構造の生成対象から外す
+                    // (道路に完全内包する中央分離帯だったりと無意味なので)
+                    if (FaceGroup.RoadTypes.IsMedian())
+                    {
+                        DebugEx.LogWarning($"skip : {cityObjectGroup} is isolated median ");
+                        return null;
+                    }
+
                     var way = Work.CreateWay(Vertices);
                     var road = RnRoad.CreateIsolatedRoad(cityObjectGroup, way);
                     return road;
@@ -721,7 +732,7 @@ namespace PLATEAU.RoadNetwork.Factory
                                     linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
                                 }
                             }
-                            
+
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);
                         }
