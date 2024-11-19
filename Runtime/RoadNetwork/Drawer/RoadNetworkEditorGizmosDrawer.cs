@@ -1,5 +1,6 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -35,15 +36,5 @@ namespace PLATEAU.RoadNetwork
             Handles.zTest = preZTest;
 #endif
         }
-
-
-        void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null,
-            float lineLength = 3f, float spaceLength = 1f)
-        {
-            const float yOffset = 0.0f;
-            DebugEx.DrawDashedArrows(vertices.Select(v => v.PutY(v.y + yOffset)), isLoop, color, lineLength, spaceLength);
-        }
-
-
     }
 }
