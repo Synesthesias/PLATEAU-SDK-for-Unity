@@ -1,9 +1,11 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
@@ -34,6 +36,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         // 歩道
         private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
+
+        private List<RnWay> mainLaneCenterWay = new List<RnWay>();
 
         // 選択中のwayをスライドした時の結果表示
         private List<List<Vector3>> slideDummyWayList = new List<List<Vector3>>();
@@ -79,6 +83,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             slideDummyWayList.Clear();
             intersectionOutline.Clear();
             intersectionBorder.Clear();
+            mainLaneCenterWay.Clear();
         }
 
         /// <summary>
@@ -201,6 +206,21 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         rightLaneWayList.Add(way);
                     }
                 }
+
+                // 車線の向きを描画
+                mainLaneCenterWay.Clear();
+                foreach (var road in roadGroupEditorData.Ref.Roads)
+                {
+                    foreach (var lane in road.MainLanes)
+                    {
+                        var centerWay = lane.CreateCenterWay();
+                        if (centerWay == null)
+                            continue;
+                        mainLaneCenterWay.Add(centerWay);
+                    }
+                }
+
+
 
                 // 歩道のwayを描画
                 foreach (var wayEditorData in wayEditorDataList)
@@ -339,6 +359,28 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             AddDrawFunc(ref drawFuncs, intersectionBorder, intersectionBorderColor);
 
             AddDrawFunc(ref drawFuncs, medianWayList, medianWayColor);
+
+
+            if (mainLaneCenterWay.Count > 0)
+            {
+                drawFuncs.Add(()=>{
+                    foreach (var centerWay in mainLaneCenterWay)
+                    {
+                        var color = Color.green;
+                        DrawDashedArrows(centerWay, color: color);
+                    }
+                });
+            }
+            ////var color = op.showCenterWay.color.PutA(op.GetLaneAlpha(lane));
+            //var color = Color.green;
+            //DrawDashedArrows(centerWay, color: color);
+
+            void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null,
+                float lineLength = 3f, float spaceLength = 1f)
+            {
+                const float yOffset = 0.0f;
+                DebugEx.DrawDashedArrows(vertices.Select(v => v.PutY(v.y + yOffset)), isLoop, color, lineLength, spaceLength);
+            }
 
             return drawFuncs;
         }
