@@ -1,10 +1,13 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
@@ -65,6 +68,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 
         private readonly Color intersectionOutlineColor = Color.gray;
         private readonly Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
+
+        private readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
 
         public EditingSystemGizmos()
         {
@@ -360,26 +365,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             AddDrawFunc(ref drawFuncs, medianWayList, medianWayColor);
 
-
             if (mainLaneCenterWay.Count > 0)
             {
                 drawFuncs.Add(()=>{
                     foreach (var centerWay in mainLaneCenterWay)
                     {
-                        var color = Color.green;
-                        DrawDashedArrows(centerWay, color: color);
+                        Gizmos.color = mainLaneCenterWayColor;
+                        DrawDashedArrowsLocal(centerWay);
                     }
                 });
             }
-            ////var color = op.showCenterWay.color.PutA(op.GetLaneAlpha(lane));
-            //var color = Color.green;
-            //DrawDashedArrows(centerWay, color: color);
 
-            void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null,
+            void DrawDashedArrowsLocal(IEnumerable<Vector3> vertices, bool isLoop = false,
                 float lineLength = 3f, float spaceLength = 1f)
             {
-                const float yOffset = 0.0f;
-                DebugEx.DrawDashedArrows(vertices.Select(v => v.PutY(v.y + yOffset)), isLoop, color, lineLength, spaceLength);
+                const float yOffset = 0.5f;
+                DrawDashedArrows(vertices.Select(v => v.PutY(v.y + yOffset)), isLoop, lineLength, spaceLength);
             }
 
             return drawFuncs;
@@ -420,6 +421,168 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             return true;
         }
 
+
+        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, float lineLength = 3f, float spaceLength = 1f)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedArrow(e.Item1, e.Item2, lineLength, spaceLength);
+        }
+
+
+        /// <summary>
+        /// デバッグで破線(矢印)を描画する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isLoop"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f,
+            bool depthTest = true)
+        {
+            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
+                DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, depthTest);
+        }
+
+        public static void DrawDashedArrow(Vector3 st, Vector3 en, float lineLength = 1f, float spaceLength = 0.2f, float arrowSize = 0.5f, Vector3? arrowUp = null)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DrawArrow(p0, p1, arrowSize, arrowUp);
+            }
+        }
+
+        /// <summary>
+        /// デバッグで破線を描画する
+        /// </summary>
+        /// <param name="st"></param>
+        /// <param name="en"></param>
+        /// <param name="color"></param>
+        /// <param name="lineLength"></param>
+        /// <param name="spaceLength"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        /// <param name="arrowSize"></param>
+        /// <param name="arrowUp"></param>
+        /// <param name="arrowColor"></param>
+        public static void DrawDashedArrow(Vector3 st, Vector3 en
+            , Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, bool depthTest = true, float arrowSize = 0.5f, Vector3? arrowUp = null, Color? arrowColor = null)
+        {
+            var len = (en - st).magnitude;
+
+            var n = len / (lineLength + spaceLength);
+            if (n <= 0f)
+                return;
+
+            var offset = 1f / n;
+            var s = offset * lineLength / (lineLength + spaceLength);
+
+            for (var t = 0f; t < 1f; t += offset)
+            {
+                var p0 = Vector3.Lerp(st, en, t);
+                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
+                DrawArrow(p0, p1, arrowSize, arrowUp, color, arrowColor: arrowColor, depthTest: depthTest);
+            }
+        }
+
+        public static void DrawArrow(
+              Vector3 start
+            , Vector3 end
+            , float arrowSize = 0.5f
+            , Vector3? arrowUp = null)
+        {
+            Vector3 up = arrowUp ?? Vector3.up;
+
+            DrawLine(start, end);
+            if (arrowSize > 0f)
+            {
+                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
+                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
+                var a2 = Quaternion.AngleAxis(-90, up) * a1;
+                a1 = a1.normalized;
+                a2 = a2.normalized;
+                DrawLine(end + a1 * arrowSize, end);
+                DrawLine(end + a2 * arrowSize, end);
+            }
+        }
+        /// <summary>
+        /// start -> endの方向に矢印を描画する
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="arrowSize"></param>
+        /// <param name="arrowUp"></param>
+        /// <param name="bodyColor"></param>
+        /// <param name="arrowColor">矢印部分だけの色. nullの場合はcolorと同じ</param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawArrow(
+            Vector3 start
+            , Vector3 end
+            , float arrowSize = 0.5f
+            , Vector3? arrowUp = null
+            , Color? bodyColor = null
+            , Color? arrowColor = null
+            , bool depthTest = true)
+        {
+            Vector3 up = arrowUp ?? Vector3.up;
+
+            var bodyColorImpl = bodyColor ?? Color.white;
+
+            DrawLine(start, end, bodyColorImpl, depthTest);
+            if (arrowSize > 0f)
+            {
+                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
+                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
+                var a2 = Quaternion.AngleAxis(-90, up) * a1;
+                a1 = a1.normalized;
+                a2 = a2.normalized;
+                var arrowColorImpl = arrowColor ?? bodyColorImpl;
+                DrawLine(end + a1 * arrowSize, end, arrowColorImpl, depthTest);
+                DrawLine(end + a2 * arrowSize, end, arrowColorImpl, depthTest);
+            }
+        }
+
+        /// <summary>
+        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawLine(Vector3 start, Vector3 end)
+        {
+            Gizmos.DrawLine(start, end);
+        }
+
+        /// <summary>
+        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        /// <param name="depthTest"></param>
+        public static void DrawLine(Vector3 start, Vector3 end, Color? color, bool depthTest)
+        {
+            Gizmos.color = color ?? Color.white;
+            Handles.zTest = depthTest ? CompareFunction.Always : CompareFunction.LessEqual;
+            Gizmos.DrawLine(start, end);
+        }
 
     }
 }
