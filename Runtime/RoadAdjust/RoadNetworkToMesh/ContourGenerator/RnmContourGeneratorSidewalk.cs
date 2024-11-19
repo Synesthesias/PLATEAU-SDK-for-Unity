@@ -10,14 +10,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmContourMeshGeneratorSidewalk : IRnmContourMeshGenerator
     {
+        private const float PileUpHeight = 0.15f;
+        
         public RnmContourMeshList Generate(RnModel model)
         {
             var contours = new RnmContourMeshList();
             foreach (var road in model.Roads)
             {
-                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var targetObjs = road.TargetTrans.Select(t => t.gameObject);
                 var sideWalkContours = GenerateSidewalks(road);
-                var sideWalkContourMeshes = new RnmContourMeshList(sideWalkContours.Select(s => new RnmContourMesh(targetObj, s)));
+                var sideWalkContourMeshes = new RnmContourMeshList(sideWalkContours.Select(s => new RnmContourMesh(targetObjs, s)));
                 contours.AddRange(sideWalkContourMeshes);
             }
 
@@ -51,7 +53,14 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     calc.AddLine(outside, new Vector2(0, uvY1), new Vector2(0, uvY2));
                 }
 
-                contours.Add(calc.Calculate());
+                var contour = calc.Calculate();
+                
+                // 歩道の段差を作成
+                var modifier =
+                    new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), PileUpHeight);
+                contour.AddModifier(modifier);
+                
+                contours.Add(contour);
             }
             
             

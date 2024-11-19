@@ -13,11 +13,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 道路ごとに輪郭を追加します。
             foreach (var road in model.Roads)
             {
-                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var targetObjs = road.TargetTrans.Select(t => t.gameObject);
 
                 var carLanes = new RnmContourMeshGeneratorCarLane().GenerateCarLane(road);
                 var sideWalks = new RnmContourMeshGeneratorSidewalk().GenerateSidewalks(road);
-                var cMesh = new RnmContourMesh(targetObj, carLanes.Concat(sideWalks));
+                var cMesh = new RnmContourMesh(targetObjs, carLanes.Concat(sideWalks));
                 cMeshes.Add(cMesh);
             }
 

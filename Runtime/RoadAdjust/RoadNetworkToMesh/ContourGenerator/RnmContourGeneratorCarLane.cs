@@ -17,10 +17,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var road in model.Roads)
             {
                 var contours = GenerateCarLane(road);
-                var targetObj = road.TargetTrans == null ? null : road.TargetTran.gameObject;
+                var targetObjs = road.TargetTrans.Select(cog => cog.gameObject);
                 var contourMeshes = new RnmContourMeshList
                 (
-                    contours.Select(c => new RnmContourMesh(targetObj, c))
+                    contours.Select(c => new RnmContourMesh(targetObjs, c))
                 );
                 contourMeshList.AddRange(contourMeshes);
             }

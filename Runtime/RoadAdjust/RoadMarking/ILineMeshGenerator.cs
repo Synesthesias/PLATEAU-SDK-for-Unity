@@ -7,6 +7,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// <summary>
     /// 線に沿ったメッシュを生成します。
     /// サブクラスによって実線か破線かを使い分けます。
+    /// 線ポリゴンの法線方向はY軸正方向です。
     /// </summary>
     internal interface ILineMeshGenerator
     {

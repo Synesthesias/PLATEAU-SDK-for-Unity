@@ -64,12 +64,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 progressDisplay.SetProgress("", (float)i / contourMeshList.Count, "");
                 var contourMesh = contourMeshList[i];
-                var srcObj = contourMesh.SourceObject;
+                var srcObjs = contourMesh.SourceObjects;
                 
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
                 if (mesh.vertexCount == 0) continue;
                 
-                string dstObjName = srcObj == null ? "RoadUnknown" : srcObj.name;
+                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : srcObjs[0].name;
                 var dstObj = new GameObject(dstObjName);
 
                 if (DebugMode)
@@ -100,13 +100,14 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
                 renderer.sharedMaterials = dstMats;
                 
-                if (srcObj != null)
+                if (srcObjs.Length > 0)
                 {
                     // UV4をコピーします。
-                    new RnmUV4Copier().Copy(srcObj, dstObj);
+                    new RnmUV4Copier().Copy(srcObjs, dstObj);
 
                     // 属性情報をコピーします。
-                    var srcAttr = srcObj.GetComponent<PLATEAUCityObjectGroup>();
+                    // FIXME: srcObjsが複数のケースに未対応
+                    var srcAttr = srcObjs[0].GetComponent<PLATEAUCityObjectGroup>();
                     if (srcAttr != null)
                     {
                         var dstAttr = dstObj.AddComponent<PLATEAUCityObjectGroup>();
@@ -115,12 +116,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     }
                     
                     // 他のコンポーネントをコピーします。
+                    // FIXME: srcObjsが複数のケースに未対応
                     new ComponentCopier(
                         ignoreTypes: new[]
                         { // 上述で作るコンポーネントは除外します。
                             typeof(MeshFilter), typeof(MeshRenderer), typeof(PLATEAUCityObjectGroup), typeof(MeshCollider)
                         })
-                        .Copy(srcObj, dstObj);
+                        .Copy(srcObjs[0], dstObj);
                     
                 }
             }
