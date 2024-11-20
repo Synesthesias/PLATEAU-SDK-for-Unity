@@ -247,6 +247,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private void Terminate()
         {
             simpleEditSysModule?.Terminate();
+
             //var children = rootVisualElement.Children().ToArray();
             //foreach (var item in children)
             //{
@@ -1923,8 +1924,12 @@ namespace PLATEAU.Editor.RoadNetwork
                 var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();
                 if (gizmosDrawer != null)
                 {
-                    gizmosDrawer.DrawFuncs.Clear();
+                    gizmosDrawer.Clear();
                 }
+
+                EditorApplication.update -= Update;
+                ClearCache();
+
             }
 
             public class EditingIntersection

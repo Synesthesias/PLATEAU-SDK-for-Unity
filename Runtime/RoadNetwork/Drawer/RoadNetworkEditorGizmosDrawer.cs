@@ -17,7 +17,10 @@ namespace PLATEAU.RoadNetwork
         private List<System.Action> drawFuncs = new List<System.Action>();
         public List<System.Action> DrawFuncs { get { return drawFuncs; } }
 
-        public List<RnWay> LaneCeterWay { get; set; } = new List<RnWay>();
+        public void Clear()
+        {
+            DrawFuncs.Clear();
+        }
 
         public void OnDrawGizmos()
         {
