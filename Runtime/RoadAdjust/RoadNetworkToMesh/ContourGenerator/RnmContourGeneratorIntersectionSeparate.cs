@@ -8,8 +8,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 交差点の輪郭線を生成します。レーンは分割します。
     /// </summary>
-    internal class RnmContourMeshGeneratorIntersectionSeparate: IRnmContourMeshGenerator
+    internal class RnmContourGeneratorIntersectionSeparate: IRnmContourGenerator
     {
+        private const float PileUpHeight = 0.15f;
+        
         public RnmContourMeshList Generate(RnModel model)
         {
             var cMeshes = new RnmContourMeshList();
@@ -60,7 +62,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 calc.AddLine(line, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
             }
-            return calc.Calculate();
+
+            var contour = calc.Calculate();
+            var modifier = new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), PileUpHeight);
+            contour.AddModifier(modifier);
+            
+            return contour;
         }
 
         /// <summary> ネットワーク上では歩道判定でないが車道の外側の部分 </summary>

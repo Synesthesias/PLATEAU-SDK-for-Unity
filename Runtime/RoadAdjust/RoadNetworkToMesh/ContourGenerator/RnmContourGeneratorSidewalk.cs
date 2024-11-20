@@ -8,7 +8,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 歩道の輪郭線を生成します。レーンは分割します。
     /// </summary>
-    internal class RnmContourMeshGeneratorSidewalk : IRnmContourMeshGenerator
+    internal class RnmContourGeneratorSidewalk : IRnmContourGenerator
     {
         private const float PileUpHeight = 0.15f;
         

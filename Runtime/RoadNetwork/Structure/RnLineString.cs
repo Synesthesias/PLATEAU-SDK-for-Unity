@@ -245,7 +245,17 @@ namespace PLATEAU.RoadNetwork.Structure
             return GetEnumerator();
         }
 
-        public Vector3 this[int index] => Points[index].Vertex;
+        public Vector3 this[int index]
+        {
+            get
+            {
+                return Points[index].Vertex;
+            }
+            set
+            {
+                Points[index].Vertex = value;
+            }
+        }
 
         /// <summary>
         /// 線分の長さを計算する

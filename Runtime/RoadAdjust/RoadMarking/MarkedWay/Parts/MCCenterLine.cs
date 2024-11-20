@@ -24,12 +24,20 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 var carLanes = road.MainLanes;
                 var widthType = GetCenterLineTypeOfWidth(road);
                 var interDistCalc = new IntersectionDistCalc(road);
+                bool medianLaneExist = road.MedianLane != null;
 
                 for (int i = 0; i < carLanes.Count; i++)
                 {
                     var lane = carLanes[i];
-                    // 次のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
+                    // 隣のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
                     bool isCenterLane = i < carLanes.Count - 1 && lane.IsReverse != carLanes[i + 1].IsReverse;
+                    // 中央分離帯がある場合、センターラインは2つになるので、隣チェックを両方向で行います。
+                    if (medianLaneExist)
+                    {
+                        isCenterLane |= i >= 1 && lane.IsReverse != carLanes[i - 1].IsReverse;
+                    }
+                    
+                    
                     if (!isCenterLane)
                     {
                         continue;
@@ -79,7 +87,12 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
                     if (lineString.Count > 0)
                         ret.Add(new MarkedWay(new MWLine(lineString.Points.Select(p => p.Vertex)), prevInterType, lane.IsReverse));
-                    break; // センターラインは道路につき1つだけ
+
+                    // センターラインの数は、中央分離帯がなければ最大1個、あれば最大2個です。
+                    if ((ret.Count == 1 && !medianLaneExist) || (ret.Count == 2 && medianLaneExist))
+                    {
+                        break;
+                    }
                 }
             }
 

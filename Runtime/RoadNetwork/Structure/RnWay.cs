@@ -240,6 +240,10 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 return LineString[ToRawIndex(index)];
             }
+            set
+            {
+                LineString[ToRawIndex(index)] = value;
+            }
         }
 
         /// <summary>
