@@ -12,13 +12,22 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class RoadMarkingInstance
     {
-        public CombineInstance CombineInstance { get; }
+        public CombineInstance CombineInstance { get; private set; }
         public RoadMarkingMaterial MaterialType { get; }
 
         public RoadMarkingInstance(Mesh mesh, RoadMarkingMaterial materialType)
         {
             CombineInstance = new CombineInstance{mesh = mesh, transform = Matrix4x4.identity};
             MaterialType = materialType;
+        }
+
+        public void Translate(Vector3 moveVector)
+        {
+            CombineInstance = new CombineInstance
+            {
+                mesh = CombineInstance.mesh,
+                transform = Matrix4x4.Translate(moveVector) * CombineInstance.transform
+            };
         }
     }
 
@@ -30,9 +39,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 結合対象 </summary>
         private readonly List<RoadMarkingInstance> instances;
 
-        public RoadMarkingCombiner(int capacity)
+        public RoadMarkingCombiner()
         {
-            instances = new List<RoadMarkingInstance>(capacity);
+            instances = new List<RoadMarkingInstance>();
         }
 
         /// <summary> 結合対象を追加します。 </summary>
@@ -44,12 +53,20 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             }
             instances.Add(instance);
         }
+        
+        public void AddRange(IEnumerable<RoadMarkingInstance> instances)
+        {
+            foreach (var instance in instances)
+            {
+                Add(instance);
+            }
+        }
 
         /// <summary> 結合します。 </summary>
         public Mesh Combine()
         {
             // マテリアルごとに結合します。
-            var mats = (RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial));
+            var mats = ((RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial))).Where(m => m != RoadMarkingMaterial.None);
             var matCombined = new SortedDictionary<RoadMarkingMaterial, Mesh>();
             foreach (var mat in mats)
             {
@@ -75,7 +92,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal enum RoadMarkingMaterial
     {
-        White, Yellow
+        None, White, Yellow
     }
 
     internal static class RoadMarkingMaterialExtension
@@ -97,6 +114,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     return new Material(materialWhite);
                 case RoadMarkingMaterial.Yellow:
                     return new Material(materialYellow);
+                case RoadMarkingMaterial.None:
+                    Debug.LogWarning("material is none.");
+                    return null;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(material), material, null);
             }
@@ -105,7 +125,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         public static Material[] Materials()
         {
             var mats = (RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial));
-            return mats.Select(m => m.ToMaterial()).ToArray();
+            return mats
+                .Where(m => m != RoadMarkingMaterial.None)
+                .Select(m => m.ToMaterial()).ToArray();
         }
     }
 }

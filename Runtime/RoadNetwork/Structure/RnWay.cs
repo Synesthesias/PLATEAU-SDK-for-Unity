@@ -65,7 +65,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (SameLineIsEqual)
             {
-                return x.IsSameLine(y);
+                return x.IsSameLineReference(y);
             }
 
             return x.IsReversed == y.IsReversed && x.IsReverseNormal == y.IsReverseNormal && Equals(x.LineString, y.LineString);
@@ -174,6 +174,13 @@ namespace PLATEAU.RoadNetwork.Structure
             LineString = lineString;
             IsReversed = isReversed;
             IsReverseNormal = isReverseNormal;
+        }
+        
+        public RnWay(RnWay other)
+        {
+            LineString = other.LineString.Clone(true);
+            IsReversed = other.IsReversed;
+            IsReverseNormal = other.IsReverseNormal;
         }
 
         public RnWay(RnWay src, bool cloneVertex = true)
@@ -501,18 +508,34 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 同じ線分かどうか
+        /// 同じ線分かどうか（参照を比較）
         /// </summary>
-        /// <param name="other"></param>
-        /// <param name="onlyReferenceEqual"></param>
-        /// <returns></returns>
-        public bool IsSameLine(RnWay other, bool onlyReferenceEqual = true)
+        public bool IsSameLineReference(RnWay other)
         {
             if (other == null)
                 return false;
-            if (onlyReferenceEqual)
-                return LineString == other.LineString;
-            return RnLineString.Equals(LineString, other.LineString);
+            return LineString == other.LineString;
+            
+        }
+
+        /// <summary>
+        /// 同じ線分かどうか（点配列の内容を比較）
+        /// </summary>
+        public bool IsSameLineSequence(RnWay other)
+        {
+            if (other == null) return false;
+            if (Count != other.Count) return false;
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = GetPoint(i).Vertex;
+                var p2 = other.GetPoint(i).Vertex;
+                const float Threshold = 0.001f;
+                if (Math.Abs(p1.x - p2.x) > Threshold) return false;
+                if (Math.Abs(p1.y - p2.y) > Threshold) return false;
+                if (Math.Abs(p1.z - p2.z) > Threshold) return false;
+            }
+
+            return true;
         }
     }
 
@@ -606,7 +629,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (back == null)
                 return;
             // 自己挿入は禁止
-            if (self.IsSameLine(back))
+            if (self.IsSameLineReference(back))
                 return;
             if (self.IsReversed)
             {
@@ -631,7 +654,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (front == null)
                 return;
             // 自己挿入は禁止
-            if (self.IsSameLine(front))
+            if (self.IsSameLineReference(front))
                 return;
             if (self.IsReversed)
             {
