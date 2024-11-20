@@ -11,4 +11,12 @@
 > [!NOTE]
 > PLATEAU Slackコミュニティにどなたでもご参加いただけます。  
 > 参加希望の方は、お問い合わせページよりお気軽にお問い合わせください。  
-> **[◆お問い合わせページはこちら](https://www.mlit.go.jp/plateau/contact/)**
+> **[◆お問い合わせページはこちら](https://www.mlit.go.jp/plateau/contact/)**  
+
+ 
+> [!NOTE]
+> PLATEAU SDK-Toolkits for Unity
+>3D都市モデルを利用したUnity上でのアプリケーション開発を支援するツールキット群として、  
+> 「PLATEAU SDK-Toolkits for Unity」を公開しています。  
+>PLATEAU SDK-Toolkits for Unity は PLATEAU SDK for Unity を前提とするアドオンですので、是非あわせてご利用ください。  
+ **[◆PLATEAU SDK-Toolkits for Unityのリポジトリはこちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity)**
