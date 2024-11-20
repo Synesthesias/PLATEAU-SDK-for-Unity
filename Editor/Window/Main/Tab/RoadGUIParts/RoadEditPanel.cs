@@ -60,6 +60,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 Debug.LogError("EditModeToggle is not found.");
                 return;
             }
+            editModeToggle.value = RoadNetworkEditingSystem.SingletonInstance?.system != null;
             editModeToggle.RegisterCallback<ChangeEvent<bool>>((evt) =>
             {
                 if (evt.newValue)
@@ -102,12 +103,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return system;
             }
 
-            void TerminateSystem_(VisualElement root, IRoadNetworkEditingSystem system)
-            {
-                root.Unbind();
-                system.OnChangedSelectRoadNetworkElement -= SetupMethod;
-                RoadNetworkEditingSystem.TryTerminate(EditorInterface, root);
-            }
 
             //// 適用ボタンの処理
             //var applyRoadButton = root.Q<Button>("ApplyRoadButton");
@@ -126,9 +121,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         public override void Terminate(VisualElement root)
         {
-            //todoシステムが有効であるならTerminateを呼ぶ
-            
+            var sys = RoadNetworkEditingSystem.SingletonInstance?.system;
+            if (sys != null)
+                TerminateSystem_(root, sys);
             base.Terminate(root);
+        }
+
+        void TerminateSystem_(VisualElement root, IRoadNetworkEditingSystem system)
+        {
+            root.Unbind();
+            system.OnChangedSelectRoadNetworkElement -= SetupMethod;
+            RoadNetworkEditingSystem.TryTerminate(EditorInterface, root);
         }
 
         static EventHandler CreateSetup(RoadEditPanel panel, IRoadNetworkEditingSystem system, VisualElement element)
