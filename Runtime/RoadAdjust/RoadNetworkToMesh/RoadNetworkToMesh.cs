@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
@@ -38,6 +39,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
             // 調整します。
             var model = new RnmModelAdjuster().Adjust(srcModel);
+            new RoadNetworkLineSmoother().Smooth(model);
             
             // 生成すべき輪郭線を定義します。
             IRnmContourGenerator[] contourGenerators;

@@ -32,6 +32,11 @@ namespace PLATEAU.RoadNetwork.Structure
 
         }
 
+        public RnLineString(int initialSize)
+        {
+            Points = new RnPoint[initialSize].ToList();
+        }
+
         public RnLineString(IEnumerable<RnPoint> points)
         {
             Points = points.ToList();

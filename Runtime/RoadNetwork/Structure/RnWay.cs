@@ -124,6 +124,16 @@ namespace PLATEAU.RoadNetwork.Structure
                 for (var i = 0; i < Count; i++)
                     yield return GetPoint(i);
             }
+
+            set
+            {
+                var points = value.ToArray();
+                LineString = new RnLineString(points.Length);
+                for (int i = 0; i < points.Length; i++)
+                {
+                    SetPoint(i, points[i]);
+                }
+            }
         }
 
         /// <summary>
