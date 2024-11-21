@@ -35,10 +35,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             using var progressDisplay = new ProgressDisplayDialogue();
             
             progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中...", 0f, "");
-
-
+            
+            // 調整します。
             var model = new RnmModelAdjuster().Adjust(srcModel);
             
+            // 生成すべき輪郭線を定義します。
             IRnmContourGenerator[] contourGenerators;
             switch (lineSeparateType)
             {

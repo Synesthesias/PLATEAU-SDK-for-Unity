@@ -10,7 +10,7 @@ namespace PLATEAU.RoadAdjust
     /// </summary>
     public class RnmModelAdjuster
     {
-        private const float SideWalkShrinkDist = 0.3f;
+        private const float ShrinkDist = 0.3f;
         public RnModel Adjust(RnModel srcModel)
         {
             // 変更対象はディープコピーです。
@@ -26,9 +26,26 @@ namespace PLATEAU.RoadAdjust
                 // そのため3Dモデル上は歩道をずらします。
                 foreach (var sideWalk in road.SideWalks)
                 {
-                    MoveToward(sideWalk.InsideWay, sideWalk.OutsideWay, SideWalkShrinkDist);
+                    MoveToward(sideWalk.InsideWay, sideWalk.OutsideWay, ShrinkDist, 0, 0);
                     // 歩道を狭くした分、車道を広くする必要がありますが、
                     // 両者は共通のRnWayを持つため、片方を変更するともう片方も変更されます。
+                }
+
+                // 中央分離帯も同じ理由で狭くします
+                var median = road.MedianLane;
+                if (median != null)
+                {
+                    MoveToward(median.LeftWay, median.RightWay, ShrinkDist, 0, 0);
+                    MoveToward(median.RightWay, median.LeftWay, ShrinkDist, 0, 0);
+                }
+            }
+            foreach(var intersection in model.Intersections)
+            {
+                // 上の歩道を狭くする処理と同様に交差点も狭くします。
+                // ただし、交差点の端の点だけは歩道と共有するため、移動の重複を防ぐため除外します。
+                foreach (var sideWalk in intersection.SideWalks)
+                {
+                    MoveToward(sideWalk.InsideWay, sideWalk.OutsideWay, ShrinkDist, 1, 1);
                 }
             }
 
@@ -37,15 +54,17 @@ namespace PLATEAU.RoadAdjust
 
         /// <summary>
         /// <paramref name="srcWay"/>を、<paramref name="targetWay"/>の方向に<paramref name="dist"/>だけ移動します。
+        /// <param name="skipFirst"><paramref name="srcWay"/>の最初からこの数をスキップします。</param>
+        /// <param name="skipLast"><paramref name="srcWay"/>の最後からこの数をスキップします。</param>
         /// </summary>
-        private void MoveToward(RnWay srcWay, RnWay targetWay, float dist)
+        private void MoveToward(RnWay srcWay, RnWay targetWay, float dist, int skipFirst, int skipLast)
         {
             if (targetWay == null || targetWay.Count == 0) return;
             if (srcWay == null || srcWay.Count == 0) return;
             
             var targetPoints = targetWay.Points.ToArray();
             int srcCount = srcWay.Count;
-            for (int i = 0; i < srcCount; i++)
+            for (int i = skipFirst; i < srcCount - skipLast; i++)
             {
                 float minSqrDist = float.MaxValue;
                 int nearestID = 0;
