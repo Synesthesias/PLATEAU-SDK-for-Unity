@@ -10,7 +10,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmContourGeneratorSidewalk : IRnmContourGenerator
     {
-        private const float PileUpHeight = 0.15f;
+        public const float PileUpHeightSideWalk = 0.15f;
+        public const float PileUpHeightCurb = 0.16f; // PileUpHeightSideWalkより大きくしないと見た目上の不具合があります
+        public const float CurbWidth = 0.2f;
         
         public RnmContourMeshList Generate(RnModel model)
         {
@@ -34,33 +36,44 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 歩道
             foreach (var sideWalk in road.SideWalks)
             {
-                var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
 
                 var inside = sideWalk.InsideWay;
-                if (inside != null)
-                {
-                    calc.AddLine(inside, new Vector2(1, 0), new Vector2(1, 1));
-                }
-
                 var outside = sideWalk.OutsideWay;
-                if (outside != null)
-                {
-                    bool outsideReverse =
-                        inside != null &&
-                        Vector3.Distance(inside[0], outside[0]) > Vector3.Distance(inside[0], outside[^1]);
-                    
-                    var (uvY1, uvY2) = outsideReverse ? (1, 0) : (0, 1);
-                    calc.AddLine(outside, new Vector2(0, uvY1), new Vector2(0, uvY2));
-                }
-
-                var contour = calc.Calculate();
+                if (inside == null || outside == null) continue;
+                var curbBoundary = new RnWay(inside);
+                new RnmModelAdjuster().MoveToward(curbBoundary, outside, CurbWidth, 0, 0);
                 
+                
+
+                bool outsideReverse =
+                    Vector3.Distance(inside[0], outside[0]) > Vector3.Distance(inside[0], outside[^1]);
+
+                var (uvY1, uvY2) = outsideReverse ? (1, 0) : (0, 1);
+                
+                // 歩道部を生成
+                var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
+                calc.AddLine(outside, new Vector2(1, uvY1), new Vector2(1, uvY2));
+                calc.AddLine(curbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                var contour = calc.Calculate();
+
                 // 歩道の段差を作成
                 var modifier =
-                    new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), PileUpHeight);
+                    new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), PileUpHeightSideWalk);
                 contour.AddModifier(modifier);
                 
                 contours.Add(contour);
+                
+                
+                // 縁石部を生成
+                var calc2 = new RnmContourCalculator(RnmMaterialType.MedianLane);
+                calc2.AddLine(curbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                calc2.AddLine(inside , new Vector2(0, 0), new Vector2(0, 1));
+                var contour2 = calc2.Calculate();
+                // 段差
+                var modifier2 =
+                    new RnmTessModifierPileUp(contour2.Vertices.Select(v => v.Position).ToArray(), PileUpHeightCurb);
+                contour2.AddModifier(modifier2);
+                contours.Add(contour2);
             }
             
             

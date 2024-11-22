@@ -73,13 +73,14 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 verts[i * 2 + 1] = extentLine[i];
             }
 
-            var triangles = new int[(baseCount - 1) * 6];
-            for (int i = 0; i < baseCount - 1; i++)
+            var vertsCount = verts.Length;
+            var triangles = new int[baseCount * 6];
+            for (int i = 0; i < baseCount; i++)
             {
-                int v0 = i * 2;
-                int v1 = i * 2 + 1;
-                int v2 = i * 2 + 2;
-                int v3 = i * 2 + 3;
+                int v0 = (i * 2) % vertsCount;
+                int v1 = (i * 2 + 1) % vertsCount;
+                int v2 = (i * 2 + 2) % vertsCount;
+                int v3 = (i * 2 + 3) % vertsCount;
                 int tID = i * 6;
                 triangles[tID] = v0;
                 triangles[tID + 1] = v2;

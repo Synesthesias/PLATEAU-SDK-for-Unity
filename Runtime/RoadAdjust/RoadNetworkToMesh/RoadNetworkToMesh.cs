@@ -1,6 +1,5 @@
 using PLATEAU.CityInfo;
 using PLATEAU.RoadAdjust.RoadMarking;
-using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
@@ -35,12 +34,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
             using var progressDisplay = new ProgressDisplayDialogue();
             
-            progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中...", 0f, "");
-            
-            // 調整します。
+            progressDisplay.SetProgress("道路ネットワークを調整中", 10f, "");
             var model = new RnmModelAdjuster().Adjust(srcModel);
+            
+            progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
             new RoadNetworkLineSmoother().Smooth(model);
             
+            progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中", 30f, "");
             // 生成すべき輪郭線を定義します。
             IRnmContourGenerator[] contourGenerators;
             switch (lineSeparateType)
@@ -70,7 +70,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
-                progressDisplay.SetProgress("", (float)i / contourMeshList.Count, "");
+                progressDisplay.SetProgress("", (float)i * 100f / contourMeshList.Count, "");
                 var contourMesh = contourMeshList[i];
                 var srcObjs = contourMesh.SourceObjects;
                 
