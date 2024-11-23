@@ -692,8 +692,8 @@ namespace PLATEAU.RoadNetwork.Structure
                                 Vector3 d1 = pos - (Vector3)knots[^1].Position;
                                 Vector3 d2 = knots[^1].Position - knots[^2].Position;
 
-                                //  if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
-                                //      return;
+                                if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
+                                    return;
                             }
 
                             var tanIn = 0.5f * (knots[^1].Position - (float3)pos);
