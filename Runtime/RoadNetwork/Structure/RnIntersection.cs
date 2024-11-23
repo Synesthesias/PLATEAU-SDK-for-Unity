@@ -210,10 +210,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (Road is RnRoad road)
             {
-                // #NOTE : 車線一つしかない場合は、出ていくレーンも対象とする
-                if (road.MainLanes.Count == 1)
-                    return RnFlowTypeMask.Both;
-
                 var ret = RnFlowTypeMask.Empty;
                 if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Inbound;
@@ -696,8 +692,8 @@ namespace PLATEAU.RoadNetwork.Structure
                                 Vector3 d1 = pos - (Vector3)knots[^1].Position;
                                 Vector3 d2 = knots[^1].Position - knots[^2].Position;
 
-                                if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
-                                    return;
+                                //  if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
+                                //      return;
                             }
 
                             var tanIn = 0.5f * (knots[^1].Position - (float3)pos);
