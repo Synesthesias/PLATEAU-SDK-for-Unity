@@ -65,6 +65,14 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool UseContourMesh { get; set; } = true;
 
+        // 連続した道路を統合するかどうか
+        [field: SerializeField]
+        public bool MergeRoadGroup { get; set; } = true;
+
+        // 交差点との境界線がなるべく垂直になるようにし, かつ道路側に少し移動させる
+        [field: SerializeField]
+        public bool AdjustIntersectionStopLine { get; set; } = true;
+
         // --------------------
         // end:フィールド
         // --------------------
@@ -740,9 +748,12 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 連続した道路を一つにまとめる
-                ret.MergeRoadGroup();
+                if (MergeRoadGroup)
+                    ret.MergeRoadGroup();
                 // 交差点との境界線が垂直になるようにする
-                ret.AdjustRoadGroupBorder();
+                if (AdjustIntersectionStopLine)
+                    ret.AdjustRoadGroupBorder();
+
                 // 道路を分割する
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
