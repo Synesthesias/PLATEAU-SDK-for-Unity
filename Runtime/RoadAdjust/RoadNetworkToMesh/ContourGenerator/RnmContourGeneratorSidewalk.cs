@@ -1,4 +1,3 @@
-using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return contours;
         }
 
+        /// <summary> 各歩道の輪郭線を生成します。 </summary>
         public IEnumerable<RnmContour> GenerateSidewalks(RnRoad road)
         {
             var contours = new List<RnmContour>();
@@ -33,13 +33,24 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var sideWalk in road.SideWalks)
             {
                 var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
-                var lines = new List<IEnumerable<Vector3>>
+
+                var inside = sideWalk.InsideWay;
+                if (inside != null)
                 {
-                    sideWalk.InsideWay,
-                    sideWalk.OutsideWay
-                };
-                lines.AddRange(sideWalk.EdgeWays);
-                calc.AddRangeLine(lines.Where(l => l != null));
+                    calc.AddLine(inside, new Vector2(1, 0), new Vector2(1, 1));
+                }
+
+                var outside = sideWalk.OutsideWay;
+                if (outside != null)
+                {
+                    bool outsideReverse =
+                        inside != null &&
+                        Vector3.Distance(inside[0], outside[0]) > Vector3.Distance(inside[0], outside[^1]);
+                    
+                    var (uvY1, uvY2) = outsideReverse ? (1, 0) : (0, 1);
+                    calc.AddLine(outside, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                }
+
                 contours.Add(calc.Calculate());
             }
             

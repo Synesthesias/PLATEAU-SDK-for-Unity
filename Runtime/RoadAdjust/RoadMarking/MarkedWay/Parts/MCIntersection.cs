@@ -20,7 +20,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 {
                     var border = edge.Border;
                     if (border.CalcLength() > IntersectionLineIgnoreLength) continue; // 経験上、大きすぎる交差点は誤判定の可能性が高いので除外します
-                    found.Add(new MarkedWay(border, MarkedWayType.ShoulderLine, true /*方向は関係ない*/));
+                    found.Add(new MarkedWay(new MWLine(border), MarkedWayType.ShoulderLine, true /*方向は関係ない*/));
                 }
             }
             return new MarkedWayList(found);

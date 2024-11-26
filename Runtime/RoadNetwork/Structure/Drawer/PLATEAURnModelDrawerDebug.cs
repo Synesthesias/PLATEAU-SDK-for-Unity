@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
-using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug.SideWalkOption;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {

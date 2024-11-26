@@ -7,7 +7,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     public class MarkedWayListComposer : IMarkedWayListComposer
     {
-        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWay"/>を収集します。 </summary>
+        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWayList"/>を収集します。 </summary>
         public MarkedWayList ComposeFrom(RnModel model)
         {
             // ここに、どの線を追加したいか記述します。
