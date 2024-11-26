@@ -141,7 +141,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static string GetTargetTransName(this RnRoadBase self)
         {
-            if (self == null || self.TargetTran == null)
+            if (self == null || self.TargetTrans == null)
                 return "null";
 
             return string.Join(",", self.TargetTrans.Select(t => !t ? "null" : t.name));
