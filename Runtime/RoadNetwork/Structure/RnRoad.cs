@@ -891,5 +891,145 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             return false;
         }
+
+        /// <summary>
+        /// borderTypeで指定した隣の道路(交差点)を取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static RnRoadBase GetNeighborRoad(this RnRoad self, RnLaneBorderType borderType)
+        {
+            return borderType switch
+            {
+                RnLaneBorderType.Prev => self.Prev,
+                RnLaneBorderType.Next => self.Next,
+                _ => throw new ArgumentOutOfRangeException(nameof(borderType), borderType, null),
+            };
+        }
+
+        /// <summary>
+        /// 道路を隣の交差点にマージする
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderType"></param>
+        /// <returns></returns>
+        public static bool TryMerge2NeighborIntersection(this RnRoad self, RnLaneBorderType borderType)
+        {
+            var neighbor = self.GetNeighborRoad(borderType);
+            if (neighbor is RnIntersection intersection == false)
+            {
+                DebugEx.LogWarning($"TryMerge2NeighborIntersection. neighbor is not intersection. {neighbor.DebugMyId}");
+                return false;
+            }
+
+            self.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
+            var edgeGroup = intersection.CreateEdgeGroup().FirstOrDefault(e => e.Key == self);
+            if (edgeGroup == null)
+                return false;
+
+            var visited = new HashSet<RnLineString>();
+
+            void Merge(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
+            {
+                if (dst == null || src == null)
+                    return;
+                if (visited.Contains(dst.LineString))
+                    return;
+                visited.Add(dst.LineString);
+                merger(dst, src);
+            }
+
+            var oppositeBorders = self.GetBorderWays(borderType.GetOpposite()).ToList();
+            var oppositeRoadBase = self.GetNeighborRoad(borderType.GetOpposite());
+            if (borderType == RnLaneBorderType.Prev)
+            {
+                // 前方の交差点を取得
+                var rightEdge = edgeGroup.LeftSide.Edges[0];
+                var leftEdge = edgeGroup.RightSide.Edges[^1];
+                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendFront2LineString);
+                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendBack2LineString);
+
+                // 隣接情報を置き換える
+                self.Next.ReplaceNeighbor(self, intersection);
+            }
+            else if (borderType == RnLaneBorderType.Next)
+            {
+                // 後方の交差点を取得
+                var rightEdge = edgeGroup.RightSide.Edges[^1];
+                var leftEdge = edgeGroup.LeftSide.Edges[0];
+                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendBack2LineString);
+                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendFront2LineString);
+
+            }
+
+            intersection.ReplaceEdges(self, oppositeBorders, false);
+            // 隣接情報を置き換える
+            intersection.ReplaceNeighbor(self, oppositeRoadBase);
+            oppositeRoadBase?.ReplaceNeighbor(self, intersection);
+
+            // トラックを生成しなおす
+            intersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
+
+            var dstSideWalks = intersection.SideWalks.ToList();
+            var srcSideWalks = self.SideWalks.ToList();
+            foreach (var srcSw in srcSideWalks)
+            {
+                var found = false;
+                foreach (var dstSw in dstSideWalks)
+                {
+                    void MergeSideWalk(bool reverse, Action<RnWay, RnWay> merger)
+                    {
+                        var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
+                        var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
+                        Merge(dstSw.InsideWay, insideWay, merger);
+                        Merge(dstSw.OutsideWay, outsideWay, merger);
+                        // もともとnullだった場合は置き換える
+                        dstSw.SetSideWays(dstSw.InsideWay ?? insideWay, dstSw.OutsideWay ?? outsideWay);
+
+                        found = true;
+                    }
+
+                    // start - startで重なっている場合
+                    if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                    {
+                        MergeSideWalk(true, RnWayEx.AppendFront2LineString);
+                        dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
+                    }
+                    // start - endで重なっている場合
+                    else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                    {
+                        MergeSideWalk(false, RnWayEx.AppendFront2LineString);
+                        dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
+                    }
+                    // end - endで重なっている場合
+                    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                    {
+                        MergeSideWalk(true, RnWayEx.AppendBack2LineString);
+                        dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
+                    }
+                    // end - startで重なっている場合
+                    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                    {
+                        MergeSideWalk(false, RnWayEx.AppendBack2LineString);
+                        dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
+                    }
+
+                    if (found)
+                        break;
+                }
+
+                // マージできなかった歩道は直接追加
+                if (found == false)
+                {
+                    intersection.AddSideWalk(srcSw);
+                    dstSideWalks.Add(srcSw);
+                }
+            }
+            intersection.AddTargetTrans(self.TargetTrans);
+            self.DisConnect(true);
+            return true;
+        }
     }
 }

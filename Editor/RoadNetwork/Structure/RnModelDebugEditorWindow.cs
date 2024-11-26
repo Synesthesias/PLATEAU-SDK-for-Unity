@@ -329,6 +329,14 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
                 }
 
+                if (road.Next is RnIntersection && GUILayout.Button("Merge2NextIntersection"))
+                {
+                    work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Next));
+                }
+                if (road.Prev is RnIntersection && GUILayout.Button("Merge2PrevIntersection"))
+                {
+                    work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Prev));
+                }
             }
         }
         private class IntersectionEdit

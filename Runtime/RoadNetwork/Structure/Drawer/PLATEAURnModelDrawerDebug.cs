@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
+using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug;
+using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -216,6 +218,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
 
             public bool visible = true;
+            public VisibleType visibleType = VisibleType.All;
             public DrawOption showOutsideWay = new DrawOption(true, Color.red);
             public DrawOption showInsideWay = new DrawOption(true, Color.blue);
             public DrawOption showStartEdgeWay = new DrawOption(true, Color.green);
@@ -386,9 +389,18 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
-        public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p)
+        public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p, VisibleType visibleType)
         {
             if (sideWalk == null)
+                return;
+
+            if (sideWalk.ParentRoad?.TargetTrans.Any(RnEx.IsEditorSceneSelected) ?? false)
+                visibleType |= VisibleType.SceneSelected;
+
+            if ((visibleType & p.visibleType) == 0)
+                return;
+
+            if (work.IsVisited(sideWalk) == false)
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.SideWalk))
@@ -874,7 +886,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             foreach (var sw in roadNetwork.SideWalks)
             {
-                DrawSideWalk(sw, sideWalkRoadOp);
+                DrawSideWalk(sw, sideWalkRoadOp, VisibleType.NonSelected);
             }
         }
 
@@ -906,7 +918,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 }
                 else if (x is RnSideWalk sw)
                 {
-                    DrawSideWalk(sw, sideWalkRoadOp);
+                    DrawSideWalk(sw, sideWalkRoadOp, VisibleType.GuiSelected);
                 }
                 else if (x is RnLineString ls)
                 {
