@@ -10,14 +10,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// RnmはRoadNetworkToMeshの略です。
     /// </summary>
     [Serializable]
-    public class RnmContour : IEnumerable<RnmVertex>
+    internal class RnmContour : IEnumerable<RnmVertex>
     {
-        private List<RnmVertex> vertices = new ();
+        public List<RnmVertex> Vertices { get; private set; }= new ();
         public RnmMaterialType MaterialType { get; set; }
+        public List<IRnmTessModifier> TessModifiers { get; private set; } = new ();
         
         public RnmContour(IEnumerable<RnmVertex> vertices, RnmMaterialType material) : this(material)
         {
-            this.vertices = vertices.ToList();
+            this.Vertices = vertices.ToList();
         }
 
         public RnmContour(RnmMaterialType material)
@@ -25,22 +26,28 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             this.MaterialType = material;
         }
 
+        public RnmContour CopyWithoutModifier()
+        {
+            return new RnmContour(Vertices, MaterialType);
+        }
 
-        public int Count => vertices.Count;
+        public int Count => Vertices.Count;
 
         public RnmVertex this[int index]
         {
             get
             {
-                return vertices[index];
+                return Vertices[index];
             }
 
             set
             {
-                vertices[index] = value;
+                Vertices[index] = value;
             }
         }
-        public void AddVertices(IEnumerable<RnmVertex> v) => vertices.AddRange(v);
+        public void AddVertices(IEnumerable<RnmVertex> v) => Vertices.AddRange(v);
+        
+        public void AddModifier(IRnmTessModifier modifier) => TessModifiers.Add(modifier);
 
         /// <summary>時計回りならtrue、反時計回りならfalseを返します。 </summary>
         public bool IsClockwise()
@@ -49,24 +56,26 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             float sum = 0;
             for (int i = 0; i < Count; i++)
             {
-                var v1 = vertices[i];
-                var v2 = vertices[(i + 1) % Count];
+                var v1 = Vertices[i];
+                var v2 = Vertices[(i + 1) % Count];
                 sum += (v2.Position.x - v1.Position.x) * (v2.Position.z + v1.Position.z);
             }
 
             return sum > 0;
         }
 
-        public void Reverse() => vertices.Reverse();
+        public void Reverse() => Vertices.Reverse();
         
         public IEnumerator<RnmVertex> GetEnumerator()
         {
-            return vertices.GetEnumerator();
+            return Vertices.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+        
+        public enum NormalAxis{Y}
     }
 }

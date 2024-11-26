@@ -124,6 +124,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 for (var i = 0; i < Count; i++)
                     yield return GetPoint(i);
             }
+
+            set
+            {
+                var points = value.ToArray();
+                LineString = RnLineString.Create(value, false);
+            }
         }
 
         /// <summary>
@@ -239,6 +245,10 @@ namespace PLATEAU.RoadNetwork.Structure
             get
             {
                 return LineString[ToRawIndex(index)];
+            }
+            set
+            {
+                LineString[ToRawIndex(index)] = value;
             }
         }
 

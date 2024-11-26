@@ -9,7 +9,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 車道の輪郭線を生成します。レーンは分割します。
     /// </summary>
-    internal class RnmContourMeshGeneratorCarLane : IRnmContourMeshGenerator
+    internal class RnmContourGeneratorCarLane : IRnmContourGenerator
     {
         public RnmContourMeshList Generate(RnModel model)
         {
@@ -17,10 +17,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var road in model.Roads)
             {
                 var contours = GenerateCarLane(road);
-                var targetObj = road.TargetTrans == null ? null : road.TargetTran.gameObject;
+                var targetObjs = road.TargetTrans.Select(cog => cog.gameObject);
                 var contourMeshes = new RnmContourMeshList
                 (
-                    contours.Select(c => new RnmContourMesh(targetObj, c))
+                    contours.Select(c => new RnmContourMesh(targetObjs, c))
                 );
                 contourMeshList.AddRange(contourMeshes);
             }
@@ -31,50 +31,44 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public IEnumerable<RnmContour> GenerateCarLane(RnRoad road)
         {
             // 車道
-            int carLaneCount = road.MainLanes.Count;
-            for (int i = 0; i < carLaneCount; i++)
+            var allLanesWithMedian = road.AllLanesWithMedian.ToArray();
+            var allLanesCount = allLanesWithMedian.Length;
+            for (int i = 0; i < allLanesCount; i++)
             {
-                var lane = road.MainLanes[i];
-                var calc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
-                bool reverse = lane.IsReverse;
-                float laneUvLeft = ((float)i) / carLaneCount;
-                float laneUvRight = (((float)i) + 1) / carLaneCount;
-                float nextUvY = reverse ? 0 : 1;
-                float prevUvY = reverse ? 1 : 0;
+                var lane = allLanesWithMedian[i];
+                if (lane == road.MedianLane) continue; // MedianLaneは別で処理します
+                var contourCalc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
+                var nextBorder = lane.GetBorder(RnLaneBorderType.Next);
+                var prevBorder = lane.GetBorder(RnLaneBorderType.Prev);
+                var uv1Calc = new RnmLaneUV1Calc(lane, allLanesCount, i, nextBorder, prevBorder);
                 
                 // Next側の境界を追加します。
-                var nextBorder = lane.GetBorder(RnLaneBorderType.Next);
                 if (nextBorder != null)
                 {
-                    var (uvX1, uvX2) = nextBorder.IsReversed ? (laneUvRight, laneUvLeft):(laneUvLeft, laneUvRight);
-                    calc.AddLine(nextBorder, new Vector2(uvX1, nextUvY), new Vector2(uvX2,nextUvY));
+                    contourCalc.AddLine(nextBorder, uv1Calc.NextBorderStart(), uv1Calc.NextBorderEnd());
                 }
                 
                 // Prev側の境界を追加します。
-                var prevBorder = lane.GetBorder(RnLaneBorderType.Prev);
                 if (prevBorder != null)
                 {
-                    var (uvX1, uvX2) = prevBorder.IsReversed ? (laneUvRight, laneUvLeft):(laneUvLeft, laneUvRight);
-                    calc.AddLine(prevBorder, new Vector2(uvX1, prevUvY), new Vector2(uvX2, prevUvY));
+                    contourCalc.AddLine(prevBorder, uv1Calc.PrevBorderStart(), uv1Calc.PrevBorderEnd());
                 }
                 
                 // 右側の境界を追加します。
                 var rightWay = lane.RightWay;
                 if (rightWay != null)
                 {
-                    var uvX = lane.IsReverse ? laneUvLeft : laneUvRight;
-                    calc.AddLine(rightWay, new Vector2(uvX, prevUvY), new Vector2(uvX, nextUvY));
+                    contourCalc.AddLine(rightWay, uv1Calc.RightWayStart(), uv1Calc.RightWayEnd());
                 }
                 
                 // 左側の境界を追加します。
                 var leftWay = lane.LeftWay;
                 if (leftWay != null)
                 {
-                    var uvX = lane.IsReverse ? laneUvRight : laneUvLeft;
-                    calc.AddLine(leftWay, new Vector2(uvX, prevUvY), new Vector2(uvX, nextUvY));
+                    contourCalc.AddLine(leftWay, uv1Calc.LeftWayStart(), uv1Calc.LeftWayEnd());
                 }
 
-                yield return calc.Calculate();
+                yield return contourCalc.Calculate();
             }
 
             // MainLanesの外にあるが、歩道に隣接していない部分

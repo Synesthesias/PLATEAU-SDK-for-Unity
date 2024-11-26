@@ -167,5 +167,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 Add(way);
             }
         }
+
+        public int Count => ways.Count;
     }
 }
