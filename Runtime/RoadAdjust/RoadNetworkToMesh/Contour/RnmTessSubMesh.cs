@@ -1,4 +1,5 @@
 using LibTessDotNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,26 +13,29 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmTessSubMesh
     {
-        private readonly Vector3[] vertices;
+        public Vector3[] Vertices { get; }
         private readonly Vector2[] uv1;
         private readonly int[] triangles;
         public RnmMaterialType MatType { get; private set; }
-        public int VertexCount => vertices.Length;
+        public int VertexCount => Vertices.Length;
+        public RnmContour Contour { get; private set; }
         
-        public static RnmTessSubMesh Generate(Tess tess, RnmMaterialType matType)
+        public static RnmTessSubMesh Generate(Tess tess, RnmMaterialType matType, RnmContour contour)
         {
-            return TessToTessMesh(tess, matType);
+            var subMesh = TessToTessMesh(tess, matType, contour);
+            return subMesh;
         }
 
-        private RnmTessSubMesh(Vector3[] vertices, int[] triangles, Vector2[] uv1, RnmMaterialType matType)
+        public RnmTessSubMesh(Vector3[] vertices, int[] triangles, Vector2[] uv1, RnmMaterialType matType, RnmContour contour)
         {
-            this.vertices = vertices;
+            this.Vertices = vertices;
             this.triangles = triangles;
             this.uv1 = uv1;
             this.MatType = matType;
+            this.Contour = contour;
         }
 
-        private static RnmTessSubMesh TessToTessMesh(Tess tess, RnmMaterialType matType)
+        private static RnmTessSubMesh TessToTessMesh(Tess tess, RnmMaterialType matType, RnmContour contour)
         {
             int numTriangle = tess.ElementCount;
             int numVertex = tess.VertexCount;
@@ -56,7 +60,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 uv1[i] = (Vector2)tess.Vertices[i].Data;
             }
 
-            return new RnmTessSubMesh(vertices, triangles, uv1, matType);
+            return new RnmTessSubMesh(vertices, triangles, uv1, matType, contour);
         }
 
         public CombineInstance ToCombineInstance()
@@ -65,9 +69,17 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return combine;
         }
 
+        public void ApplyModifiers(RnmTessMesh tessMesh)
+        {
+            foreach (var modifier in Contour.TessModifiers)
+            {
+                modifier.Apply(tessMesh, Contour);
+            }
+        }
+
         private Mesh ToUnityMesh()
         {
-            var mesh = new Mesh { vertices = vertices, triangles = triangles, uv = uv1 };
+            var mesh = new Mesh { vertices = Vertices, triangles = triangles, uv = uv1 };
             return mesh;
         }
     }
@@ -78,7 +90,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmTessMesh
     {
-        private List<RnmTessSubMesh> subMeshes = new ();
+        public List<RnmTessSubMesh> SubMeshes { get; }= new ();
 
         public void Add(RnmTessSubMesh subMesh)
         {
@@ -87,7 +99,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 Debug.LogWarning("subMesh is null.");
                 return;
             }
-            subMeshes.Add(subMesh);
+            SubMeshes.Add(subMesh);
         }
 
         public Mesh ToUnityMesh(out Dictionary<int, RnmMaterialType> subMeshIDToMatType)
@@ -96,12 +108,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
             
             // まず同一マテリアルごとに結合します。
-            var mats = subMeshes.Select(s => s.MatType).Distinct();
+            var mats = SubMeshes.Select(s => s.MatType).Distinct();
             var matMeshes = new List<Mesh>();
             int matID = 0;
             foreach (var mat in mats)
             {
-                var matSubs = subMeshes.Where(s => s.MatType == mat).ToArray();
+                var matSubs = SubMeshes.Where(s => s.MatType == mat).ToArray();
                 if (matSubs.Length == 0)
                 {
                     Debug.LogWarning("Invalid matSubs length.");

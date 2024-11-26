@@ -12,23 +12,38 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private const float DistanceMinDiff = 0.01f;
 
-        public void Copy(GameObject src, GameObject dst)
+        public void Copy(IEnumerable<GameObject> srcObjsArg, GameObject dst)
         {
-            if (src == null || dst == null) return;
-            var srcMeshFilter = src.GetComponent<MeshFilter>();
+            // 必要なコンポーネントがなければ何もせず終了します。
+            var srcObjs = srcObjsArg.ToArray();
+            if (srcObjs.Length == 0 || dst == null) return;
             var dstMeshFilter = dst.GetComponent<MeshFilter>();
-            if (srcMeshFilter == null || dstMeshFilter == null) return;
-            var srcMesh = srcMeshFilter.sharedMesh;
+            if (dstMeshFilter == null) return;
             var dstMesh = dstMeshFilter.sharedMesh;
-            if (srcMesh == null || dstMesh == null) return;
-            if (srcMesh.vertexCount == 0 || dstMesh.vertexCount == 0) return;
-
-            if (srcMesh.uv4 == null) return;
-            var srcUV4 = new SrcUV4List(srcMesh.uv4);
+            if (dstMesh == null || dstMesh.vertexCount == 0) return;
             var dstVerts = dstMesh.vertices;
-            var srcVerts = srcMesh.vertices;
-            var srcTriangles = srcMesh.triangles;
             var dstTriangles = dstMesh.triangles;
+            
+            // srcObjsが複数あるケースに対応するため、srcObjsを結合して1つのsrcとします。
+            var srcVerts = new List<Vector3>();
+            var srcTriangles = new List<int>();
+            var srcUV4 = new SrcUV4List();
+            foreach (var srcObj in srcObjs)
+            {
+                var srcMeshFilter = srcObj.GetComponent<MeshFilter>();
+                if (srcMeshFilter == null) continue;
+                var srcMesh = srcMeshFilter.sharedMesh;
+                if (srcMesh == null) continue;
+                if (srcMesh.vertexCount == 0) continue;
+                if (srcMesh.uv4 == null) continue;
+                int vertIDOffset = srcVerts.Count;
+                srcVerts.AddRange(srcMesh.vertices);
+                srcUV4.AddRange(srcMesh.uv4);
+                srcTriangles.AddRange(srcMesh.triangles.Select(id => id + vertIDOffset));
+            }
+            
+
+            
 
             // UV4コピーの方針:
             // 処理1 : dstの各頂点について、(X,Z)座標が近いsrcの頂点のUV4をコピーします。
@@ -134,7 +149,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 // 未確定の頂点のみで構成される三角形について
                 var dstCenter = (dstV1 + dstV2 + dstV3) / 3;
                 bool srcTriFound = false;
-                for (int srcTriID = 0; srcTriID < srcTriangles.Length / 3; srcTriID++)
+                for (int srcTriID = 0; srcTriID < srcTriangles.Count / 3; srcTriID++)
                 {
                     var srcV1 = srcVerts[srcTriangles[srcTriID * 3]];
                     var srcV2 = srcVerts[srcTriangles[srcTriID * 3 + 1]];
@@ -175,7 +190,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// <paramref name="srcVertices"/>のうち、<paramref name="v"/>に一番近い点のインデックスを返します。
         /// ただし、一番近い点と距離が近しい点が複数あってUV4が異なる場合は、同定できないとして-1を返します。
         /// </summary>
-        private int UniqueNearestVertexID(Vector3 v, Vector3[] srcVertices, SrcUV4List srcUV4)
+        private int UniqueNearestVertexID(Vector3 v, List<Vector3> srcVertices, SrcUV4List srcUV4)
         {
             // 一番近い点を探します。
             var (nearestID, nearestDist) = NearestVertex(v, srcVertices);
@@ -183,7 +198,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 一番近い点と距離が近しい点を数えます。
             int matchCount = 0;
             var firstMatchUV4 = new UV4Int(-9996, -9996);
-            for (int i = 0; i < srcVertices.Length; i++)
+            for (int i = 0; i < srcVertices.Count; i++)
             {
                 var dist = Vector2.Distance(v.Xz(), srcVertices[i].Xz());
                 if (dist - nearestDist < DistanceMinDiff)
@@ -206,11 +221,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return nearestID;
         }
 
-        private IEnumerable<int> CandidateSrcVerticesID(Vector3 dstV, Vector3[] srcVertices)
+        private IEnumerable<int> CandidateSrcVerticesID(Vector3 dstV, List<Vector3> srcVertices)
         {
             var (_, nearestDist) = NearestVertex(dstV, srcVertices);
             var candidates = new List<int>();
-            for (int i = 0; i < srcVertices.Length; i++)
+            for (int i = 0; i < srcVertices.Count; i++)
             {
                 var dist = Vector2.Distance(dstV.Xz(), srcVertices[i].Xz());
                 if (dist - nearestDist < DistanceMinDiff)
@@ -228,11 +243,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
         
 
-        private (int nearestID, float nearestDist) NearestVertex(Vector3 v, Vector3[] vertices)
+        private (int nearestID, float nearestDist) NearestVertex(Vector3 v, List<Vector3> vertices)
         {
             float nearestDist = float.MaxValue;
             int nearestID = -1;
-            for (int i = 0; i < vertices.Length; i++)
+            for (int i = 0; i < vertices.Count; i++)
             {
                 var dist = Vector2.Distance(v.Xz(), vertices[i].Xz());
                 if (dist < nearestDist)
@@ -245,6 +260,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return (nearestID, nearestDist);
         }
 
+        /// <summary> UV4で重要なのは整数部分なので、整数だけでUV4を保存・比較する構造体を定義します。 </summary>
         private struct UV4Int
         {
             private int X { get; }
@@ -345,14 +361,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         private class SrcUV4List
         {
-            private SrcUV4[] uv4List;
+            private readonly List<SrcUV4> uv4List = new ();
 
-            public SrcUV4List(Vector2[] uv4List)
+            public void Add(Vector2 uv4FloatElement)
             {
-                this.uv4List = new SrcUV4[uv4List.Length];
-                for (int i = 0; i < uv4List.Length; i++)
+                uv4List.Add(new SrcUV4(uv4FloatElement));
+            }
+
+            public void AddRange(Vector2[] uv4Float)
+            {
+                foreach (var uv4Elem in uv4Float)
                 {
-                    this.uv4List[i] = new SrcUV4(uv4List[i]);
+                    Add(uv4Elem);
                 }
             }
             
@@ -362,7 +382,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 return uv4List[srcVertID].UV4;
             }
 
-            public int Count => uv4List.Length;
+            public int Count => uv4List.Count;
 
         }
 

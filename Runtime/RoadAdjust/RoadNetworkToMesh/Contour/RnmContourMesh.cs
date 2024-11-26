@@ -13,20 +13,20 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourMesh : IEnumerable<RnmContour>
     {
         [SerializeField] private List<RnmContour> contours = new();
-        [SerializeField] private GameObject sourceObject;
+        [SerializeField] private GameObject[] sourceObjects;
 
-        public GameObject SourceObject => sourceObject;
+        public GameObject[] SourceObjects => sourceObjects;
 
-        public RnmContourMesh(GameObject sourceObject) { this.sourceObject = sourceObject; }
+        public RnmContourMesh(IEnumerable<GameObject> sourceObjects) { this.sourceObjects = sourceObjects.ToArray(); }
 
-        public RnmContourMesh(GameObject sourceObject, IEnumerable<RnmContour> contours)
-            : this(sourceObject)
+        public RnmContourMesh(IEnumerable<GameObject> sourceObjects, IEnumerable<RnmContour> contours)
+            : this(sourceObjects)
         {
             this.contours = contours.ToList();
         }
 
-        public RnmContourMesh(GameObject sourceObject, RnmContour contour)
-            : this(sourceObject)
+        public RnmContourMesh(IEnumerable<GameObject> sourceObjects, RnmContour contour)
+            : this(sourceObjects)
         {
             this.contours = new List<RnmContour> { contour };
         }
