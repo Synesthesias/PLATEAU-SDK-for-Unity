@@ -1,3 +1,4 @@
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
 using UnityEngine;
@@ -17,7 +18,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         
         public RoadMarkingGenerator(RnModel targetNetwork)
         {
-            this.targetNetwork = targetNetwork;
+            var serializer = new RoadNetworkSerializer();
+            // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
+            if (targetNetwork != null)
+            {
+                this.targetNetwork = serializer.Deserialize(serializer.Serialize(targetNetwork));
+            }
+            else
+            {
+                Debug.LogError("target road network is null.");
+            }
+            
         }
 
         /// <summary> 路面標示をメッシュとして生成します。 </summary>
@@ -28,6 +39,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 Debug.LogError("道路ネットワークが見つかりませんでした。");
                 return;
             }
+            new RoadNetworkLineSmoother().Smooth(targetNetwork);
             
             // 道路の線を取得します。
             var ways = new MarkedWayListComposer().ComposeFrom(targetNetwork);
@@ -38,7 +50,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 // 道路の線をメッシュに変換します。
                 var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
-                new MWLineSmoother().Smooth(way.Line);
+                // way.Line.Points = new LineSmoother().Smooth(way.Line.Points.ToArray());
                 var points = way.Line.Points;
                 var instance = gen.GenerateMesh(points.ToArray());
                 

@@ -4,7 +4,7 @@ using System.Linq;
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary> 道路の輪郭線を生成します。道路レーンはまとめます。 </summary>
-    internal class RnmContourMeshGeneratorRoadCombine : IRnmContourMeshGenerator
+    internal class RnmContourGeneratorRoadCombine : IRnmContourGenerator
     {
 
         public RnmContourMeshList Generate(RnModel model)
@@ -13,11 +13,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 道路ごとに輪郭を追加します。
             foreach (var road in model.Roads)
             {
-                var targetObj = road.TargetTran == null ? null : road.TargetTran.gameObject;
+                var targetObjs = road.TargetTrans.Select(t => t.gameObject);
 
-                var carLanes = new RnmContourMeshGeneratorCarLane().GenerateCarLane(road);
-                var sideWalks = new RnmContourMeshGeneratorSidewalk().GenerateSidewalks(road);
-                var cMesh = new RnmContourMesh(targetObj, carLanes.Concat(sideWalks));
+                var carLanes = new RnmContourGeneratorCarLane().GenerateCarLane(road);
+                var sideWalks = new RnmContourGeneratorSidewalk().GenerateSidewalks(road);
+                var medianLanes = new RnmContourGeneratorMedianLane().GenerateMedianLane(road);
+                var cMesh = new RnmContourMesh(targetObjs, carLanes.Concat(sideWalks).Concat(medianLanes));
                 cMeshes.Add(cMesh);
             }
 
