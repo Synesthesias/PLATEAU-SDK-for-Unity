@@ -128,11 +128,7 @@ namespace PLATEAU.RoadNetwork.Structure
             set
             {
                 var points = value.ToArray();
-                LineString = new RnLineString(points.Length);
-                for (int i = 0; i < points.Length; i++)
-                {
-                    SetPoint(i, points[i]);
-                }
+                LineString = RnLineString.Create(value, false);
             }
         }
 
