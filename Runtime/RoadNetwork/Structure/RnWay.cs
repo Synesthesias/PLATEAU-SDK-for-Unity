@@ -552,8 +552,6 @@ namespace PLATEAU.RoadNetwork.Structure
         public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            var minLen = float.MaxValue;
-
             self.LineString.GetNearestPoint(pos, out nearest, out pointIndex, out distance);
             pointIndex = self.SwitchIndex(pointIndex);
         }

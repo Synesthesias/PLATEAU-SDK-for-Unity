@@ -94,6 +94,8 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public static string GetDebugIdLabelOrDefault(this RnWay self)
         {
+            if (self == null)
+                return "null";
             return self.LineString.GetDebugLabelOrDefault();
         }
     }

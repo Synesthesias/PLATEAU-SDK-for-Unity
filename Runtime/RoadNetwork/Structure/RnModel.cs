@@ -730,7 +730,7 @@ namespace PLATEAU.RoadNetwork.Structure
             , RnRoadBase newNextRoad
             , Func<RnLineString, bool> isPrevSide)
         {
-            foreach (var sideWalk in sideWalks)
+            foreach (var sideWalk in sideWalks.ToList())
             {
                 // 曲がり角だと歩道が3個所入っていたりすることがある.
                 // その場合歩道に関しては交わらない場合もあり得るので
