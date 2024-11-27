@@ -8,6 +8,10 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary>
@@ -64,9 +68,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     throw new ArgumentException($"Unknown {nameof(RnmLineSeparateType)}");
             }
             var contourMeshList = new RnmContourGenerator(contourGenerators).Generate(model);
+            if (contourMeshList.Count == 0)
+            {
+                Dialogue.Display("生成対象がありませんでした。", "OK");
+                return;
+            }
             
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
+
+            var dstParent = GenerateDstParent(model);
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
@@ -76,9 +87,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
                 if (mesh.vertexCount == 0) continue;
+
+                // Transformの整理：生成物の親を動かしつつ、srcは非表示に
+                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : $"{srcObjs[0].name}";
+                var dstObj = new GameObject(dstObjName) { transform = { parent = dstParent } };
                 
-                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : srcObjs[0].name;
-                var dstObj = new GameObject(dstObjName);
+                foreach (var src in srcObjs)
+                {
+                    src.SetActive(false);
+                }
 
                 if (DebugMode)
                 {
@@ -135,6 +152,41 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
             }
             
+#if UNITY_EDITOR
+            Selection.objects = new[]{dstParent.gameObject};
+#endif
+
+        }
+
+        private Transform GenerateDstParent(RnModel model)
+        {
+            var srcTransList = GetSrcTransformList(model);
+            srcTransList.ParentalShift();
+            var srcParent = srcTransList.CalcCommonParent();
+            if (srcParent.name.StartsWith("LOD"))
+            {
+                // "LODn"以下に生成されると見つけにくいのでその親にします
+                srcParent = srcParent.parent;
+            }
+            var dstParent = new GameObject("GeneratedRoad").transform;
+            dstParent.parent = srcParent;
+            return dstParent;
+        }
+
+        private UniqueParentTransformList GetSrcTransformList(RnModel model)
+        {
+            var ret = new UniqueParentTransformList();
+            foreach (var road in model.Roads)
+            {
+                ret.AddRange(road.TargetTrans.Select(cog => cog.transform));
+            }
+
+            foreach (var intersection in model.Intersections)
+            {
+                ret.AddRange(intersection.TargetTrans.Select(cog => cog.transform));
+            }
+
+            return ret;
         }
         
     }
