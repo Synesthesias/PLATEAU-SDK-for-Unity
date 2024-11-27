@@ -163,6 +163,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             GetF("SideWalkSize").value = factory.Lod1SideWalkSize;
             GetT("Add_Lod_Side_Walk").value = factory.AddSideWalk;
             GetT("Check_Median").value = factory.CheckMedian;
+            GetT("Add_TrafficSignalLight").value = factory.AddTrafficSignalLights;
 
             GetF("Merge_Cell_Size").value = factory.GraphFactory.mergeCellSize;
             GetI("Merge_Cell_Length").value = factory.GraphFactory.mergeCellLength;
@@ -178,6 +179,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var sideWalklSize = GetF("SideWalkSize").value;
                 var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
                 var checkMedian = GetT("Check_Median").value;
+                var addTrafficSignalLights = GetT("Add_TrafficSignalLight").value;
 
                 var cellSize = GetF("Merge_Cell_Size").value;
                 var cellLen = GetI("Merge_Cell_Length").value;
@@ -190,6 +192,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 factory.Lod1SideWalkSize = sideWalklSize;
                 factory.AddSideWalk = lodSideWalk;
                 factory.CheckMedian = checkMedian;
+                factory.AddTrafficSignalLights = addTrafficSignalLights;
 
                 factory.GraphFactory.mergeCellSize = cellSize;
                 factory.GraphFactory.mergeCellLength = cellLen;
