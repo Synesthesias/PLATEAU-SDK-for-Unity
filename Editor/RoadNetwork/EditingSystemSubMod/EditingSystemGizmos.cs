@@ -8,7 +8,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
@@ -139,8 +138,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         if (allLanes.MoveNext())
                         {
                             var lane = allLanes.Current;
-                            var prevpoints = lane.PrevBorder.Points;
-                            var nextpoints = lane.NextBorder.Points;
+                            var prevpoints = lane.PrevBorder?.Points;
+                            var nextpoints = lane.NextBorder?.Points;
+
+                            if (prevpoints == null || nextpoints == null)   // 独立している道路がある場合
+                            {
+                                continue;
+                            }
+
                             if (CalcCenterPos(prevpoints, out prevBorderPos) &&
                                 CalcCenterPos(nextpoints, out nextBorderPos))
                             {
