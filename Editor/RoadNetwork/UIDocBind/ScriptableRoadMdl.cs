@@ -19,6 +19,10 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public List<RnLane> lanes { get; }
     }
 
+    public interface IAddPanelMdl
+    {
+    }
+
     /// <summary>
     /// 道路を編集する際に利用するデータモデルのインターフェイス
     /// クラス内でのLink、LaneはNode間を繋ぐLinkリスト、Laneリストを指す

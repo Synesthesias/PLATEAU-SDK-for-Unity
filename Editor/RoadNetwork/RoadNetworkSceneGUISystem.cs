@@ -248,6 +248,12 @@ namespace PLATEAU.Editor.RoadNetwork
                 return;
             }
 
+            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.AddRoadStructure)
+            {
+                OnSceneGUIAddRoadStructure(network);
+                return;
+            }
+
 
             // ステイトの初期化
             SceneGUIState state;
@@ -291,6 +297,125 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             systemState.Apply(state);
+        }
+
+        private void OnSceneGUIAddRoadStructure(RnModel rnModel)
+        {
+            var nodeIconPosOffset = Vector3.up * 0;
+            var roadIconPosOffset = Vector3.up * 0;
+
+            IReadOnlyCollection<RoadGroupEditorData> cns = connections.Select(c => c.GetSubData<RoadGroupEditorData>()).ToList();
+
+            var camera = SceneView.currentDrawingSceneView.camera;
+
+            foreach (var item in connections)
+            {
+                // 選択済みのオブジェクト
+                if (item == editorSystem.SelectedRoadNetworkElement)
+                    continue;
+
+                var subData = item.ReqSubData<RoadGroupEditorData>();
+
+                var btnP = subData.GetCenter();
+
+                Vector3 pos2d_dis = Vector3.zero;
+                pos2d_dis = camera.WorldToScreenPoint(btnP + roadIconPosOffset);
+                var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+                if (isEditable)
+                {
+                    // レーンの選択ボタンの表示
+                    var laneSelectBtnSize = HandleUtility.GetHandleSize(btnP) * laneHndScaleFactor;
+                    var isClicked = Button2DOn3D(camera, pos2d_dis, laneTex);
+                    if (isClicked)
+                    {
+                        var currentEvent = Event.current;
+                        if (currentEvent.shift && currentEvent.control)
+                        {
+                            // 関係する交差点から削除(Todo 走査の最適化)
+                            // ここの処理はRnModelに移植する？
+                            RnIntersection intersection = null;
+                            intersection = item.Ref.PrevIntersection;
+
+                            UnLinkFromIntersection(item, intersection);
+
+                            foreach (var road in item.Ref.Roads)
+                            {
+                                rnModel.RemoveRoad(road);
+                            }
+
+                            return;
+                        }
+
+                        //Debug.Log(subData.A.ToString() + "-" + subData.B.ToString()); // デバッグ用
+                        editorSystem.SelectedRoadNetworkElement = item;
+                        return;
+                    }
+                }
+            }
+
+
+            // ノード
+            foreach (var intersection in intersections)
+            {
+                // 選択済みのオブジェクト
+                if (intersection == editorSystem.SelectedRoadNetworkElement)
+                    continue;
+
+                Color pre = GUI.color;
+                var p1 = intersection.Ref.GetCenterPoint();
+
+                Vector3 pos2d_dis = Vector3.zero;
+                pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
+                var isEditable = IsVisibleToCamera(camera, pos2d_dis);
+                if (isEditable)
+                {
+                    // レーンの選択ボタンの表示
+                    var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
+                    var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
+                    if (isClicked)
+                    {
+                        editorSystem.SelectedRoadNetworkElement = intersection;
+                        return;
+                    }
+                }
+            }
+
+
+            // 選択している道路がある場合
+            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+            if (selectedConnection != null)
+            {
+                var roadGroupEditorData = selectedConnection;
+
+            }
+
+            var intersectionEditorData = editorSystem.SelectedRoadNetworkElement as EditorData<RnIntersection>;
+            if (intersectionEditorData != null)
+            {
+            }
+
+            static void UnLinkFromIntersection(EditorData<RnRoadGroup> item, RnIntersection intersection)
+            {
+                if (intersection == null)
+                    return;
+
+                var neighbors = intersection.Neighbors;
+
+                if (neighbors == null)
+                    return;
+
+                foreach (var neighbor in neighbors)
+                {
+                    if (neighbor.Road == null)
+                        continue;
+
+                    foreach (var road in item.Ref.Roads)
+                    {
+                        if (neighbor.Road == road)
+                            neighbor.Road = null;
+                    }
+                }
+            }
         }
 
         private bool LoadTexture()

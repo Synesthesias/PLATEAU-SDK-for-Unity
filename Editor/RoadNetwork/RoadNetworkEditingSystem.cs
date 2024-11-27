@@ -31,6 +31,7 @@ namespace PLATEAU.Editor.RoadNetwork
     {
         EditTrafficRegulation,// 交通規制編集
         EditRoadStructure,    // 道路構造編集
+        AddRoadStructure,    // 道路構造の追加削除編集
     }
 
     /// <summary>
