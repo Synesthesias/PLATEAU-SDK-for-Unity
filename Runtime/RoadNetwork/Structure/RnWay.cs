@@ -176,6 +176,13 @@ namespace PLATEAU.RoadNetwork.Structure
             IsReverseNormal = isReverseNormal;
         }
 
+        public RnWay(RnWay src)
+        {
+            LineString = src.LineString.Clone();
+            IsReversed = src.IsReversed;
+            IsReverseNormal = src.IsReverseNormal;
+        }
+
         // デシリアライズのために必要
         public RnWay() { }
 
