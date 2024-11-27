@@ -585,8 +585,10 @@ namespace PLATEAU.Editor.RoadNetwork
                 foreach (var lane in road.AllLanes)
                 {
                     var ways = NewOrGetWays(laneWays, lane);
-                    ways.Add(lane.LeftWay);
-                    ways.Add(lane.RightWay);
+                    if (lane.LeftWay != null)
+                        ways.Add(lane.LeftWay);
+                    if (lane.RightWay != null)
+                        ways.Add(lane.RightWay);
                 }
             }
 
@@ -597,7 +599,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 foreach (var sideWalk in road.SideWalks)
                 {
                     var ways = NewOrGetWays(sideWalkWays, road);
-                    ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
+                    if (sideWalk.OutsideWay != null)
+                        ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
                 }
             }
 
@@ -609,11 +612,13 @@ namespace PLATEAU.Editor.RoadNetwork
                 roadGroupEditorData.Ref.GetMedians(out var leftWays, out var rightWays);
                 foreach (var way in leftWays)
                 {
-                    ways.Add(way);
+                    if (way != null)
+                        ways.Add(way);
                 }
                 foreach (var way in rightWays)
                 {
-                    ways.Add(way);
+                    if (way != null)
+                        ways.Add(way);
                 }
             }
 
@@ -650,7 +655,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             static HashSet<RnWay> NewOrGetWays<_RnRoadNetworkClass>(Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, _RnRoadNetworkClass parent)
             {
-                HashSet<RnWay> ways = new HashSet<RnWay>();
+                HashSet<RnWay> ways = null;
                 if (wayCollection.TryGetValue(parent, out ways) == false)
                 {
                     wayCollection.Add(parent, ways = new HashSet<RnWay>());
