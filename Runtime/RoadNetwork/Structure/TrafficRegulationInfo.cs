@@ -21,6 +21,151 @@ namespace PLATEAU.RoadNetwork.Structure
     [Serializable]
     public class TrafficSignalLightController : ARnParts<TrafficSignalLightController>
     {
+
+        public static bool CreateDefault(RnIntersection intersection)
+        {
+            Assert.IsNotNull(intersection);
+            // 信号制御器の作成、信号機の作成
+            var trafficController = 
+                new TrafficSignalLightController("SignalController" + intersection.DebugMyId, intersection, intersection.GetCenterPoint());
+
+            // 信号制御器の登録
+            intersection.SignalController = trafficController;
+
+            var lights = TrafficSignalLight.CreateTrafficLights(intersection);
+            trafficController.TrafficLights.AddRange(lights);
+
+            // 3つ以上道路が交差している時のみ信号制御器を配置する
+            var nLights = lights.Count;
+            if (nLights <= 2)
+            {
+                intersection.SignalController = null;
+                return true;
+            }
+
+            // 各道路の広さを計算
+            var widthList = new List<(TrafficSignalLight, float)>(nLights);
+            var e = lights.GetEnumerator();
+            e.MoveNext();
+            for (int i = 0; i < nLights; i++)
+            {
+                var p0 = e.Current.Neighbor.First().First();
+                var p1 = e.Current.Neighbor.Last().Last();
+                widthList.Add((e.Current, Vector3.Distance(p0, p1)));
+                e.MoveNext();
+            }
+
+            // 主道路、従道路の決定(3つ以上道路が交差している時、道路幅がもっとも広い二つを主道路とする。)
+            widthList.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+            widthList.GetEnumerator().MoveNext();
+            var subLights = new List<TrafficSignalLight>(nLights - 2);
+            for (int i = 0; i < nLights - 2; i++)
+                subLights.Add(widthList[i].Item1);
+            var mainLights = new List<TrafficSignalLight>(2);
+            for (int i = nLights - 2; i < nLights; i++)
+                mainLights.Add(widthList[i].Item1);
+
+            // デフォ値の設定
+            var pattern = new TrafficSignalControllerPattern
+            {
+                Parent = trafficController,
+                ControlPatternId = "Default",
+                OffsetSeconds = 0,
+                OffsetTrafficLight = null,
+                OffsetType = OffsetRelationType.Absolute,
+                StartOffsets = DateTime.MinValue,
+            };
+
+            var cnt = 0;
+            foreach (var def in DefaultVal.Default)
+            {
+                var phase = new TrafficSignalControllerPhase(cnt.ToString());
+                phase.Parent = pattern;
+                phase.Order = cnt++;
+                phase.Split = def.split;
+                phase.EnterableVehicleTypeMask = (int)(VehicleType.Smarll | VehicleType.Large);
+
+                foreach (var main in mainLights)
+                {
+                    // ToDo: phase.BlueRoadPairsのデータ構造的に表現出来ない　構造に問題がある
+                    if (def.main == DefaultVal.Color.Blue)
+                    {
+
+                    }
+                    else if (def.main == DefaultVal.Color.Yellow)
+                    {
+
+                    }
+                    else if (def.main == DefaultVal.Color.Red)
+                    {
+
+                    }
+                    if (def.sub == DefaultVal.Color.Blue)
+                    {
+
+                    }
+                    else if (def.sub == DefaultVal.Color.Yellow)
+                    {
+
+                    }
+                    else if (def.sub == DefaultVal.Color.Red)
+                    {
+
+                    }
+                }
+                pattern.Phases.Add(phase);
+            }
+            trafficController.SignalPatterns.Add(pattern);
+
+            return false;
+        }
+
+        public struct DefaultVal
+        {
+
+            /*
+             * サイクル100秒、フェーズ数6
+             * P1　44秒　主：青　従：赤
+             * P2　3秒　主：黄　従：赤
+             * P3　3秒　主：赤　従：赤
+             * P4　44秒　主：赤　従：青
+             * P5　3秒　主：赤　従：黄
+             * P6　3秒　主：赤　従：赤
+             */
+
+            public enum Color
+            {
+                Blue,
+                Yellow,
+                Red
+            }
+
+            public struct DataSet
+            {
+                public DataSet(float split, Color main, Color sub)
+                {
+                    this.split = split;
+                    this.main = main;
+                    this.sub = sub;
+                }
+                public readonly float split;
+                public readonly Color main; // 主
+                public readonly Color sub;  // 従
+            }
+
+            public static readonly DataSet[] Default = new DataSet[]
+            {
+                new DataSet(44, Color.Blue, Color.Red),
+                new DataSet(3, Color.Yellow, Color.Red),
+                new DataSet(3, Color.Red, Color.Red),
+                new DataSet(44, Color.Red, Color.Blue),
+                new DataSet(3, Color.Red, Color.Yellow),
+                new DataSet(3, Color.Red, Color.Red),
+            };
+        }
+
+
+
         /// <summary>
         /// デシリアライズ用
         /// </summary>
@@ -170,15 +315,14 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public TrafficSignalControllerPattern() { }
 
-
-        public TrafficSignalLightController Parent { get; private set; }
+        public TrafficSignalLightController Parent { get; set; }
         public List<TrafficSignalControllerPhase> Phases { get; private set; } = new List<TrafficSignalControllerPhase>();
-        public float OffsetSeconds { get; private set; } = 0;
-        public TrafficSignalLight OffsetTrafficLight { get; private set; } = null;
-        public OffsetRelationType OffsetType { get; private set; } = OffsetRelationType.Absolute;
-        public DateTime StartOffsets { get; private set; } = DateTime.MinValue;
+        public float OffsetSeconds { get; set; } = 0;
+        public TrafficSignalLight OffsetTrafficLight { get; set; } = null;
+        public OffsetRelationType OffsetType { get; set; } = OffsetRelationType.Absolute;
+        public DateTime StartOffsets { get; set; } = DateTime.MinValue;
 
-        public string ControlPatternId { get; private set; } = "_undefind";
+        public string ControlPatternId { get; set; } = "_undefind";
 
     }
 
@@ -197,8 +341,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.Name = id;
         }
-        public TrafficSignalControllerPattern Parent { get; private set; }
-        public int Order { get; private set; }
+        public TrafficSignalControllerPattern Parent { get; set; }
+        public int Order { get; set; }
         public float Split { get; set; }
         public int EnterableVehicleTypeMask { get; set; }
 
