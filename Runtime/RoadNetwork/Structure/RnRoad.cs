@@ -410,8 +410,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// Next,Prevを逆転する.
         /// その結果, レーンのIsReverseも逆転/mainLanesの配列順も逆転する
+        /// keepOneLaneIsLeftがtrueの場合, 1車線しか無い道路だとその1車線がRoadのPrev/Nextを同じ方向になるように(左車線扱い)する
         /// </summary>
-        public void Reverse()
+        /// <param name="keepOneLaneIsLeft"></param>
+        public void Reverse(bool keepOneLaneIsLeft = true)
         {
             (Next, Prev) = (Prev, Next);
 
@@ -422,9 +424,23 @@ namespace PLATEAU.RoadNetwork.Structure
                 lane.IsReverse = !lane.IsReverse;
             mainLanes.Reverse();
 
+            // 歩道の設定も逆にする(左車線/右車線の関係が変わるので)
             foreach (var sw in SideWalks)
             {
                 sw.ReverseLaneType();
+            }
+
+            // １車線道路でかつその道路が右車線扱いになったら, 左車線になるようにレーンを反転させる
+            if (keepOneLaneIsLeft)
+            {
+                if (AllLanesWithMedian.Count() == 1 && GetLeftLaneCount() == 0)
+                {
+                    foreach (var lane in AllLanesWithMedian)
+                        lane.Reverse();
+
+                    foreach (var sw in SideWalks)
+                        sw.ReverseLaneType();
+                }
             }
         }
 

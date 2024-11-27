@@ -900,12 +900,71 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 複数道路がきれいに整列されているかどうか
+        /// 道路の方向が一致, かつレーンの方向も含めて向きが一致している
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDeepAligned()
+        {
+            if (IsAligned == false)
+                return false;
+
+            // 道路の数が1以下の場合はOK
+            if (Roads.Count <= 1)
+                return true;
+
+            // 次にLaneのPrev/Nextの向きをそろえる
+            // 0番目を基準にして, 1番目以降の道路をひとつ前の道路に合わせていく
+            for (var i = 1; i < Roads.Count; ++i)
+            {
+                var prevRoad = Roads[i - 1];
+                var nowRoad = Roads[i];
+                var nowLanes = nowRoad.AllLanesWithMedian.ToList();
+                var prevLanes = prevRoad.AllLanesWithMedian.ToList();
+
+                // レーン数が異なる場合はエラー
+                if (nowLanes.Count != prevLanes.Count)
+                {
+                    DebugEx.LogError("Lane counts is mismatch");
+                    return false;
+                }
+
+                for (var j = 0; j < Mathf.Min(nowLanes.Count, prevLanes.Count); ++j)
+                {
+                    var nowLane = nowLanes[j];
+                    var prevLane = prevLanes[j];
+                    // 親の方向と一致している場合はprevLane -> nextLaneの方向になっているかチェックする
+                    if (prevLane.IsReverse == false)
+                    {
+                        if (nowLane.PrevBorder.IsSameLine(prevLane.NextBorder) == false)
+                        {
+                            DebugEx.LogError($"invalid Direction Lane[{j}] ${prevRoad.GetTargetTransName()} -> ${nowRoad.GetTargetTransName()}");
+                            return false;
+                        }
+                    }
+                    // 親の方向と逆の場合はnextLane -> prevLaneの方向になっているかチェックする
+                    else
+                    {
+                        if (prevLane.PrevBorder.IsSameLine(nowLane.NextBorder) == false)
+                        {
+                            DebugEx.LogError($"invalid Direction Lane[{j}] ${prevRoad.GetTargetTransName()} -> ${nowRoad.GetTargetTransName()}");
+                            return false;
+                        }
+                    }
+
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// LaneのPrev/Nextの向きをそろえる
         /// </summary>
-        public void Align()
+        public bool Align()
         {
             if (IsAligned)
-                return;
+                return true;
 
             // まずはRoadsのPrev/Nextの向きをそろえる
             // Roads.Count <= 1の場合はIsAligned=trueなのでここでは
@@ -913,6 +972,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 0番目が逆かどうかチェック
             if (Roads[0].Next != Roads[1])
                 Roads[0].Reverse();
+
             // 1番目以降が逆かどうかチェック
             for (var i = 1; i < Roads.Count; ++i)
             {
@@ -921,45 +981,26 @@ namespace PLATEAU.RoadNetwork.Structure
                     Roads[i].Reverse();
             }
 
-            // 次にLaneのPrev/Nextの向きをそろえる
-            // 0番目を基準にして, 1番目以降の道路をひとつ前の道路に合わせていく
-
-            // １車線しかない道路の場合それが左車線になるようにそろえるようにする
-            if (Roads[0].MainLanes.Count == 0 && Roads[0].GetLeftLaneCount() == 0)
-            {
-                foreach (var lane in Roads[0].AllLanesWithMedian)
-                    lane.Reverse();
-            }
-            for (var i = 1; i < Roads.Count; ++i)
-            {
-                var nowLanes = Roads[i].AllLanesWithMedian.ToList();
-                var prevLanes = Roads[i - 1].AllLanesWithMedian.ToList();
-                for (var j = 0; j < Mathf.Min(nowLanes.Count, prevLanes.Count); ++j)
-                {
-                    if (nowLanes[j].PrevBorder.IsSameLine(prevLanes[j].NextBorder) == false)
-                    {
-                        // #TODO : この結果RoadsのMainLanesの中身が左->右の規則が崩れないかのチェックが必要
-                        nowLanes[j].Reverse();
-                    }
-                }
-            }
             // 境界線の向きもそろえる
             foreach (var l in Roads)
                 l.AlignLaneBorder();
 
             if (Roads[0].Prev != PrevIntersection)
                 (PrevIntersection, NextIntersection) = (NextIntersection, PrevIntersection);
+
+            return IsDeepAligned();
         }
 
         /// <summary>
         /// 複数のRoadsを1つのRoadにまとめる
         /// </summary>
-        public void MergeRoads()
+        public bool MergeRoads()
         {
-            Align();
+            if (Align() == false)
+                return false;
 
             if (Roads.Count <= 1)
-                return;
+                return true;
 
             // マージ先の道路
             var dstRoad = Roads[0];
@@ -977,13 +1018,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 for (var j = 0; j < srcLanes.Count; ++j)
                 {
                     var srcLane = srcLanes[j];
+                    var dstLane = dstLanes[j];
 
                     // 順方向(左車線)
                     if (srcRoad.IsLeftLane(srcLane))
                     {
-                        var dstLane = dstLanes.FirstOrDefault(l => l.NextBorder.IsSameLine(srcLane.PrevBorder));
-                        if (dstLane == null)
-                            throw new NullReferenceException($"l");
                         dstLane.LeftWay?.AppendBack2LineString(srcLane.LeftWay);
                         visited.Add(dstLane.LeftWay?.LineString);
                         if (j == srcLanes.Count - 1)
@@ -997,9 +1036,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 逆方向(右車線)
                     else
                     {
-                        var dstLane = dstLanes.FirstOrDefault(l => l.PrevBorder.IsSameLine(srcLane.NextBorder));
-                        if (dstLane == null)
-                            throw new NullReferenceException($"l");
                         dstLane.RightWay?.AppendFront2LineString(srcLane.RightWay);
                         visited.Add(dstLane.RightWay?.LineString);
                         if (j == srcLanes.Count - 1)
@@ -1100,6 +1136,7 @@ namespace PLATEAU.RoadNetwork.Structure
             dstRoad.SetPrevNext(PrevIntersection, NextIntersection);
 
             roads = new[] { dstRoad }.ToList();
+            return true;
         }
 
 

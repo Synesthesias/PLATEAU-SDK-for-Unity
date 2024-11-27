@@ -31,6 +31,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
 
         }
+        
 
         public RnLineString(int initialSize)
         {

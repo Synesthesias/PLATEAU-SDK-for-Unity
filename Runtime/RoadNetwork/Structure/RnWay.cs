@@ -128,11 +128,7 @@ namespace PLATEAU.RoadNetwork.Structure
             set
             {
                 var points = value.ToArray();
-                LineString = new RnLineString(points.Length);
-                for (int i = 0; i < points.Length; i++)
-                {
-                    SetPoint(i, points[i]);
-                }
+                LineString = RnLineString.Create(value, false);
             }
         }
 
@@ -178,13 +174,6 @@ namespace PLATEAU.RoadNetwork.Structure
             LineString = lineString;
             IsReversed = isReversed;
             IsReverseNormal = isReverseNormal;
-        }
-        
-        public RnWay(RnWay other)
-        {
-            LineString = other.LineString.Clone(true);
-            IsReversed = other.IsReversed;
-            IsReverseNormal = other.IsReverseNormal;
         }
 
         // デシリアライズのために必要
@@ -563,8 +552,6 @@ namespace PLATEAU.RoadNetwork.Structure
         public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            var minLen = float.MaxValue;
-
             self.LineString.GetNearestPoint(pos, out nearest, out pointIndex, out distance);
             pointIndex = self.SwitchIndex(pointIndex);
         }

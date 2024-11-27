@@ -32,7 +32,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             
             // モディファイアを適用します。
-            // ループ途中で要素数が増えることがあるので、forからforeachへの変更は不可です。
+            // ループ途中で末尾に要素が増えることがあるので、forからforeachへの変更は不可です。
             for (var i = 0; i < tessMesh.SubMeshes.Count; i++)
             {
                 var subMesh = tessMesh.SubMeshes[i];

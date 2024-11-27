@@ -132,5 +132,19 @@ namespace PLATEAU.RoadNetwork.Structure
             self?.UnLink(other);
             other?.UnLink(self);
         }
+
+        /// <summary>
+        /// デバッグ表示用. TargetTransの名前を取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static string GetTargetTransName(this RnRoadBase self)
+        {
+            if (self == null || self.TargetTrans == null)
+                return "null";
+
+            return string.Join(",", self.TargetTrans.Select(t => !t ? "null" : t.name));
+
+        }
     }
 }
