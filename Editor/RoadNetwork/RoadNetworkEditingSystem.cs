@@ -4,16 +4,12 @@ using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using UnityEditor;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -26,7 +22,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public IRoadNetworkEditOperation NetworkOperator { get; }
         public RoadNetworkSceneGUISystem SceneGUISystem { get; }
     }
-    
+
 
     /// <summary>
     /// 道路ネットワークの編集モード
@@ -1455,54 +1451,44 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 List<RoadGroupEditorData> roadGroups = new List<RoadGroupEditorData>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
                 HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1));  // 計算済みのNeighborを保持する
-                foreach (var intersection in roadNetwork.Intersections)
+                foreach (var road in roadNetwork.Roads)
                 {
-                    foreach (var neighbor in intersection.Neighbors)
+                    var link = road;
+                    if (link == null)
                     {
-                        // この接続元は計算済み
-                        if (calcedNeighbor.Contains(neighbor))
-                        {
-                            continue;
-                        }
-                        var link = neighbor.Road as RnRoad;
-                        if (link == null)
-                        {
-                            continue;
-                        }
-                        var linkGroup = link.CreateRoadGroup();
-                        if (linkGroup == null)
-                        {
-                            continue;
-                        }
-
-                        // 同じものを格納済みかチェック
-                        var prevIntersection = linkGroup.PrevIntersection;
-                        var nextIntersection = linkGroup.NextIntersection;
-                        var isContain = false;
-                        foreach (var group in roadGroups)
-                        {
-                            isContain = RnRoadGroup.IsSameRoadGroup(group.RoadGroup.Ref, linkGroup);
-                            if (isContain == true)
-                            {
-                                break;
-                            }
-                        }
-                        if (isContain)
-                            continue;
-
-                        // 編集用データを追加
-                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
-                        var rgEditorData = editorData.Add<RoadGroupEditorData>();
-                        if (prevIntersection != null)
-                            nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
-                        if (nextIntersection != null)
-                            nodeEditorData[nextIntersection].Connections.Add(rgEditorData);
-                        roadGroups.Add(rgEditorData);
-                        roadGroupEditorData.Add(editorData);
-
-                        // 計算済みとして追加
-                        calcedNeighbor.Add(neighbor);
+                        continue;
                     }
+                    var linkGroup = link.CreateRoadGroup();
+                    if (linkGroup == null)
+                    {
+                        continue;
+                    }
+
+                    // 同じものを格納済みかチェック
+                    var prevIntersection = linkGroup.PrevIntersection;
+                    var nextIntersection = linkGroup.NextIntersection;
+                    var isContain = false;
+                    foreach (var group in roadGroups)
+                    {
+                        isContain = RnRoadGroup.IsSameRoadGroup(group.RoadGroup.Ref, linkGroup);
+                        if (isContain == true)
+                        {
+                            break;
+                        }
+                    }
+                    if (isContain)
+                        continue;
+
+                    // 編集用データを追加
+                    var editorData = new EditorData<RnRoadGroup>(linkGroup);
+                    var rgEditorData = editorData.Add<RoadGroupEditorData>();
+                    if (prevIntersection != null)
+                        nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
+                    if (nextIntersection != null)
+                        nodeEditorData[nextIntersection].Connections.Add(rgEditorData);
+                    roadGroups.Add(rgEditorData);
+                    roadGroupEditorData.Add(editorData);
+
                 }
 
                 // 仮 編集可能なデータに勝手に修正
@@ -1999,7 +1985,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     selectEntablePoint = neighbor;
                 }
-                
+
                 public void SetExitablePoint(RnNeighbor neighbor)
                 {
                     Assert.IsNotNull(neighbor);
