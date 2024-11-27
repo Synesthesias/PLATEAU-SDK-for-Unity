@@ -70,7 +70,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
-                progressDisplay.SetProgress("", (float)i * 100f / contourMeshList.Count, "");
+                progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中", (float)i * 100f / contourMeshList.Count, $"{i} / {contourMeshList.Count}");
                 var contourMesh = contourMeshList[i];
                 var srcObjs = contourMesh.SourceObjects;
                 
