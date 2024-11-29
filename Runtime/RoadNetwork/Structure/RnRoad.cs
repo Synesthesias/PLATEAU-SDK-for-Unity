@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEditor.UI;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
@@ -1031,5 +1033,99 @@ namespace PLATEAU.RoadNetwork.Structure
             self.DisConnect(true);
             return true;
         }
+
+        /// <summary>
+        /// selfのborderSide側からborderOffsetMeterだけ離れた位置に道路を垂直に分割する線分を計算する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderSide"></param>
+        /// <param name="borderOffsetMeter"></param>
+        /// <param name="segment"></param>
+        /// <returns></returns>
+        public static bool TryGetVerticalSliceSegment(this RnRoad self, RnLaneBorderType borderSide,
+            float borderOffsetMeter, out LineSegment3D segment)
+        {
+            segment = new LineSegment3D();
+            if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
+                return false;
+
+            var prevBorder = self.GetMergedBorder(RnLaneBorderType.Prev);
+            var nextBorder = self.GetMergedBorder(RnLaneBorderType.Next);
+            var st = prevBorder.GetLerpPoint(0.5f);
+            var en = nextBorder.GetLerpPoint(0.5f);
+            var vertices = RnEx.CreateInnerLerpLineString(
+                leftWay.Vertices.ToList()
+                , rightWay.Vertices.ToList()
+                , new RnPoint(st)
+                , new RnPoint(en)
+                , prevBorder
+                , nextBorder
+                , 0.5f);
+
+            var centerWay = new RnWay(RnLineString.Create(vertices));
+            var startIndex = 0;
+            var endIndex = 0;
+            var v = Vector3.zero;
+
+            var border = borderSide == RnLaneBorderType.Prev ? prevBorder : nextBorder;
+
+            // 道路の両隣
+            // 境界線の斜めがきつい時のため
+            // 垂直線と境界線が交わらないように多めにborderOffsetMeterを取る
+            List<Vector3> checkBorderPoints = new() { border[0], border[^1] };
+            var neighborRoad = self.GetNeighborRoad(borderSide);
+            if (neighborRoad != null)
+            {
+                foreach (var sw in self.SideWalks)
+                {
+                    foreach (var w in sw.AllWays)
+                    {
+                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLine(w))))
+                        {
+                            checkBorderPoints.Add(w[0]);
+                            checkBorderPoints.Add(w[^1]);
+                        }
+                    }
+                }
+            }
+
+            foreach (var p in checkBorderPoints)
+            {
+                centerWay.GetNearestPoint(p, out var nearest0, out float index, out float _);
+
+                var len = borderSide == RnLaneBorderType.Prev
+                    ? centerWay.CalcLength(0, index)
+                    : centerWay.CalcLength(index, centerWay.Count - 1);
+
+                // 0.5mは余白分として入れる
+                borderOffsetMeter = Mathf.Max(borderOffsetMeter, len + 2.5f);
+            }
+
+            if (borderSide == RnLaneBorderType.Next)
+            {
+                v = centerWay.GetAdvancedPointFromBack(borderOffsetMeter, out startIndex, out endIndex);
+            }
+            else if (borderSide == RnLaneBorderType.Prev)
+            {
+                v = centerWay.GetAdvancedPointFromFront(borderOffsetMeter, out startIndex, out endIndex);
+            }
+            else
+            {
+                return false;
+            }
+            var dir = (centerWay[endIndex] - centerWay[startIndex]).normalized;
+            dir = Quaternion.AngleAxis(90, Vector3.up) * dir;
+            var ray = new Ray(v, dir);
+
+            if (leftWay.LineString.TryGetNearestIntersectionBy2D(ray, out var leftRes) == false)
+                return false;
+            if (rightWay.LineString.TryGetNearestIntersectionBy2D(ray, out var rightRes) == false)
+                return false;
+
+            var d = (leftRes.v - ray.origin).normalized;
+            segment = new LineSegment3D(leftRes.v + d * 20, rightRes.v - d * 20);
+            return true;
+        }
     }
+
 }

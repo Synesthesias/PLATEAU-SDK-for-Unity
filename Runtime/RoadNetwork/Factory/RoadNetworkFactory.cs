@@ -68,10 +68,11 @@ namespace PLATEAU.RoadNetwork.Factory
         // 連続した道路を統合するかどうか
         [field: SerializeField]
         public bool MergeRoadGroup { get; set; } = true;
-
-        // 交差点との境界線がなるべく垂直になるようにし, かつ道路側に少し移動させる
         [field: SerializeField]
-        public bool AdjustIntersectionStopLine { get; set; } = true;
+        public bool CalibrateIntersection { get; set; } = true;
+
+        [field: SerializeField]
+        public RnModelEx.CalibrateIntersectionBorderOption CalibrateIntersectionOption { get; set; } = new();
 
         // --------------------
         // end:フィールド
@@ -750,9 +751,13 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 連続した道路を一つにまとめる
                 if (MergeRoadGroup)
                     ret.MergeRoadGroup();
+
+
                 // 交差点との境界線が垂直になるようにする
-                if (AdjustIntersectionStopLine)
-                    ret.AdjustRoadGroupBorder();
+                if (CalibrateIntersection && CalibrateIntersectionOption != null)
+                {
+                    ret.CalibrateIntersectionBorderForAllRoad(CalibrateIntersectionOption);
+                }
 
                 // 道路を分割する
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);

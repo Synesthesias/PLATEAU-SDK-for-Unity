@@ -142,6 +142,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public bool showAdjustBorder = false;
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
             public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
+
+            public float verticalNext = 5f;
         }
 
         [SerializeField]
@@ -645,6 +647,16 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
 
             DrawLane(road.MedianLane, medianLaneOp, visibleType);
+
+            if (op.verticalNext > 0f)
+            {
+                if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Next, op.verticalNext, out var next))
+                {
+                    DrawArrow(next.Start, next.End, bodyColor: Color.red);
+
+                }
+
+            }
         }
 
         /// <summary>

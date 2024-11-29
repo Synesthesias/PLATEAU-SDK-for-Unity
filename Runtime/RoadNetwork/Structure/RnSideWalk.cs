@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -103,7 +104,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 全てのWay
+        /// 全てのWay(nullは含まない)
         /// </summary>
         public IEnumerable<RnWay> AllWays => SideWays.Concat(EdgeWays);
 
@@ -242,5 +243,74 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Aggregate(Vector3.zero, (sum, way) => sum + way);
             return sum / num;
         }
+
+        /// <summary>
+        /// selfとotherが隣接しているかどうか(境界線が重なっているかどうか)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static bool IsNeighboring(this RnSideWalk self, RnSideWalk other)
+        {
+            return self.AllWays.Any(x => other.AllWays.Any(b => x.IsSameLine(b)));
+        }
+
+        //public static void MergeSideWalk(RnSideWalk srcSw, RnSideWalk dstSw)
+        //{
+        //    void Merge(bool reverse, Action<RnWay, RnWay> merger)
+        //    {
+        //        var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
+        //        var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
+        //        if (dstSw.InsideWay != null)
+        //        {
+        //            if (visited.Contains(dstSw.InsideWay.LineString) == false)
+        //            {
+        //                merger(dstSw.InsideWay, insideWay);
+        //                visited.Add(dstSw.InsideWay.LineString);
+        //            }
+
+        //            insideWay = dstSw.InsideWay;
+        //        }
+
+        //        if (dstSw.OutsideWay != null)
+        //        {
+        //            if (visited.Contains(dstSw.OutsideWay.LineString) == false)
+        //            {
+        //                merger(dstSw.OutsideWay, outsideWay);
+        //                visited.Add(dstSw.OutsideWay.LineString);
+        //            }
+
+        //            outsideWay = dstSw.OutsideWay;
+        //        }
+
+        //        dstSw.SetSideWays(outsideWay, insideWay);
+        //        found = true;
+        //    }
+
+        //    // start - startで重なっている場合
+        //    if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+        //    {
+        //        Merge(true, RnWayEx.AppendFront2LineString);
+        //        dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
+        //    }
+        //    // start - endで重なっている場合
+        //    else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+        //    {
+        //        Merge(false, RnWayEx.AppendFront2LineString);
+        //        dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
+        //    }
+        //    // end - endで重なっている場合
+        //    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+        //    {
+        //        Merge(true, RnWayEx.AppendBack2LineString);
+        //        dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
+        //    }
+        //    // end - startで重なっている場合
+        //    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+        //    {
+        //        Merge(false, RnWayEx.AppendBack2LineString);
+        //        dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
+        //    }
+        //}
     }
 }

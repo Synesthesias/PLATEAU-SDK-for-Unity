@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PlasticGui.Diff;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -202,6 +203,22 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
         }
 
+        private void EditRoadBase(RnRoadBase roadBase, Work work)
+        {
+            if (roadBase == null)
+                return;
+            ShowBase(roadBase);
+            if (RnEditorUtil.Foldout("TargetTrans", FoldOuts, roadBase))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var tran in roadBase.TargetTrans)
+                {
+                    EditorGUILayout.ObjectField(tran, typeof(Transform), true);
+                }
+            }
+
+        }
+
         /// <summary>
         /// 道路の編集
         /// </summary>
@@ -213,7 +230,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (road == null)
                 return;
 
-            ShowBase(road);
+            EditRoadBase(road, work);
             using (new EditorGUI.DisabledScope(false))
             {
                 using var _ = (new EditorGUILayout.HorizontalScope());
@@ -337,6 +354,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Prev));
                 }
+
+                if (GUILayout.Button("Offset From Intersection"))
+                {
+                    work.DelayExec.Add(() => road.ParentModel.CalibrateIntersectionBorder(road, new RnModelEx.CalibrateIntersectionBorderOption()));
+                }
             }
         }
         private class IntersectionEdit
@@ -356,7 +378,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 return;
             var p = intersectionEdit;
 
-            ShowBase(intersection);
+            EditRoadBase(intersection, work);
             using (new EditorGUI.DisabledScope(false))
             {
                 if (RnEditorUtil.Foldout("Borders", p.Foldouts, ("Borders", intersection)))
@@ -445,11 +467,17 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
+            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
                 EditorGUILayout.EnumPopup("LaneType", sideWalk.LaneType);
             }
+
+            EditorGUILayout.LabelField($"Outside Way {sideWalk.OutsideWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"Inside Way {sideWalk.InsideWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"StartEdge Way {sideWalk.StartEdgeWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"EndEdge Way {sideWalk.EndEdgeWay.GetDebugIdLabelOrDefault()}");
         }
 
         /// <summary>

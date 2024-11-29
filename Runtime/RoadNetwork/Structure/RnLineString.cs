@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
 
         }
-        
+
 
         public RnLineString(IEnumerable<RnPoint> points)
         {
@@ -270,6 +271,37 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// startPointIndex -> endPointIndexまでの長さを計算する
+        /// </summary>
+        /// <param name="startPointIndex"></param>
+        /// <param name="endPointIndex"></param>
+        /// <returns></returns>
+        public float CalcLength(float startPointIndex, float endPointIndex)
+        {
+            var stI = Mathf.FloorToInt(startPointIndex);
+            var enI = Mathf.Min(Count - 1, Mathf.FloorToInt(endPointIndex));
+            if (stI >= Count - 1)
+                return 0f;
+
+            var t = startPointIndex - stI;
+            var last = Vector3.Lerp(this[stI], this[stI + 1], t);
+            var ret = 0f;
+            for (var i = stI + 1; i <= enI; ++i)
+            {
+                ret += (this[i] - last).magnitude;
+                last = this[i];
+            }
+
+            if (enI < Count - 1)
+            {
+                var t2 = endPointIndex - enI;
+                ret += (Vector3.Lerp(this[enI], this[enI + 1], t2) - last).magnitude;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
         /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
         /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
@@ -416,7 +448,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfをlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
+        /// selfとlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
         /// 実際に返る交点はself上の点とその時のインデックス(float)
         /// </summary>
         /// <param name="self"></param>
@@ -430,9 +462,49 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (item.edge.TrySegmentIntersectionBy2D(line, axis, -1f, out var p, out var t1, out var t2))
                 {
                     var v = item.edge.Lerp(t1);
-                    yield return (v, item.i + t1);
+                    yield return (p, item.i + t1);
                 }
             }
+        }
+
+        /// <summary>
+        /// selfと直線の交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
+        /// 実際に返る交点はself上の点とその時のインデックス(float)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ray"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, Ray ray,
+            AxisPlane axis = AxisPlane.Xz)
+        {
+            foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
+            {
+                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var t1, out var t2))
+                {
+                    yield return (p, item.i + t1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// selfと直線rayの最も近い交点を返す. axisで指定した平面に射影した結果で交点を考える
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ray"></param>
+        /// <param name="res"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static bool TryGetNearestIntersectionBy2D(this RnLineString self, Ray ray, out (Vector3 v, float index) res, AxisPlane axis = AxisPlane.Xz)
+        {
+            var ret = self.GetIntersectionBy2D(ray, axis).ToList();
+            if (ret.Any() == false)
+            {
+                res = new();
+                return false;
+            }
+
+            return ret.TryFindMin(x => (x.v - ray.origin).sqrMagnitude, out res);
         }
 
         /// <summary>
@@ -547,6 +619,58 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// selfの先頭から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は最後の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromFront(this RnLineString self, float offset, out int startIndex, out int endIndex)
+        {
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var p0 = self[i];
+                var p1 = self[i + 1];
+                var len = (p0 - p1).magnitude;
+                if (len >= offset)
+                {
+                    startIndex = i;
+                    endIndex = i + 1;
+                    return p0 + (p1 - p0).normalized * offset;
+                }
+                offset -= len;
+            }
+            startIndex = endIndex = self.Count - 1;
+            return self[^1];
+        }
+
+        /// <summary>
+        /// selfの最後から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromBack(this RnLineString self, float offset, out int startIndex, out int endIndex)
+        {
+            for (var i = self.Count - 1; i >= 1; --i)
+            {
+                var p0 = self[i];
+                var p1 = self[i - 1];
+                var len = (p0 - p1).magnitude;
+                if (len >= offset)
+                {
+                    startIndex = i;
+                    endIndex = i - 1;
+                    return p0 + (p1 - p0).normalized * offset;
+                }
+            }
+
+            startIndex = endIndex = 0;
+            return self[0];
         }
     }
 }

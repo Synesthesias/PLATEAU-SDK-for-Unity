@@ -482,6 +482,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+
         public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();
@@ -695,7 +696,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 // ただし、inside/outsideがどっちも交わるかどっちも交わらないかしか許さない
                 var slicedCount = sw.SideWays.Count(IsSliced);
                 if (!(slicedCount == 0 || slicedCount == 2))
+                {
+                    DebugEx.DrawArrows(sw.OutsideWay.Vertices, color: Color.cyan, duration: 5);
+                    DebugEx.DrawArrows(sw.InsideWay.Vertices, color: Color.magenta, duration: 5);
+                    foreach (var x in sw.SideWays)
+                    {
+                        var l = targetLines.FirstOrDefault(a => a.LineString == x.LineString);
+                        if (l == null)
+                            continue;
+                        foreach (var a in l.Intersections)
+                            DebugEx.DrawSphere(a.v, 3f, Color.green, duration: 5);
+                    }
                     return RoadCutResult.PartiallySlicedSideWalkExist;
+                }
             }
 
             // LineStringの端点と交わってはいけない
@@ -1134,6 +1147,111 @@ namespace PLATEAU.RoadNetwork.Structure
             SliceSideWalks(self, inters.SlicedSideWalks, lineSegment2D, lineTable, newNextRoad, IsPrevSide);
 
             return new SliceIntersectionResult { Result = RoadCutResult.Success, PrevRoad = newNextRoad, NextIntersection = inter, };
+        }
+
+        [Serializable]
+        public class CalibrateIntersectionBorderOption
+        {
+            // 交差点の停止線を道路側に移動させる量
+            [field: SerializeField]
+            public float MaxOffsetMeter { get; set; } = 5;
+
+            // 道路の長さがこれ以下にならないように交差点の移動量を減らす
+            [field: SerializeField]
+            public float NeedRoadLengthMeter { get; set; } = 23;
+        }
+
+        /// <summary>
+        /// 道路グループの交差点との境界線の角度を調整する(垂直になるようにする)
+        /// </summary>
+        public static void CalibrateIntersectionBorderForAllRoad(this RnModel self, CalibrateIntersectionBorderOption option)
+        {
+            foreach (var road in self.Roads.ToList())
+            {
+                self.CalibrateIntersectionBorder(road, option);
+            }
+        }
+
+        /// <summary>
+        /// roadが交差点と隣接するとき, 交差点からmeterだけ離れた位置で道路を分割する.
+        /// 戻り値には分割された交差点に違い側の道路が返る. Prev/Next両方で隣接しているときはどっちも返る
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public static void CalibrateIntersectionBorder(this RnModel self, RnRoad road, CalibrateIntersectionBorderOption option)
+        {
+            bool IsNeighbor(RnRoad r, RnIntersection neighbor)
+            {
+                return r.Next == neighbor || r.Prev == neighbor;
+            }
+
+            RnRoad Check(RnModelEx.SliceRoadHorizontalResult res, RnIntersection neighbor)
+            {
+                // origRoad交差点から遠い方の道路
+                var (nearRoad, farRoad) = (res.NextRoad, res.PrevRoad);
+                if (IsNeighbor(res.PrevRoad, neighbor))
+                {
+                    (nearRoad, farRoad) = (farRoad, nearRoad);
+                }
+                if (nearRoad.Next is RnIntersection)
+                {
+                    nearRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
+                }
+                else if (nearRoad.Prev is RnIntersection)
+                {
+                    nearRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+                }
+
+                return farRoad;
+            }
+
+            // 不正な道路は対象外
+            if (road.IsValid == false)
+                return;
+
+            road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
+
+            var minLength = Mathf.Min(leftWay.CalcLength(), rightWay.CalcLength());
+            // MaxOffsetMeter以下の長さの道路は何もしない
+            if (minLength < option.MaxOffsetMeter)
+                return;
+
+
+            var neighbors = EnumEx.GetValues<RnLaneBorderType>()
+                .Select(x => new { n = road.GetNeighborRoad(x) as RnIntersection, t = x })
+                .Where(x => x.n != null)
+                .ToList();
+
+            if (neighbors.Count == 0)
+                return;
+
+
+            var offsetLength = Mathf.Max(1f,
+                Mathf.Min(option.MaxOffsetMeter, (minLength - option.NeedRoadLengthMeter) / neighbors.Count));
+
+            if (road.Next is RnIntersection nextIntersection)
+            {
+                if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Next, offsetLength, out var seg))
+                {
+                    var res = self.SliceRoadHorizontal(road, seg);
+                    if (res.Result == RnModelEx.RoadCutResult.Success)
+                    {
+                        road = Check(res, nextIntersection);
+                    }
+                }
+            }
+            if (road.Prev is RnIntersection prevIntersection)
+            {
+                if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Prev, offsetLength, out var seg))
+                {
+                    var res = self.SliceRoadHorizontal(road, seg);
+                    if (res.Result == RnModelEx.RoadCutResult.Success)
+                    {
+                        road = Check(res, prevIntersection);
+                    }
+                }
+            }
         }
 
     }

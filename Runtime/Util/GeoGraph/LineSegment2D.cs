@@ -146,7 +146,7 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// 
+        /// 直線(origin,dir)との交点を返す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="origin"></param>
