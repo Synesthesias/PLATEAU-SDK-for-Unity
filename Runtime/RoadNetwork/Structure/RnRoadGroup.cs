@@ -1014,6 +1014,15 @@ namespace PLATEAU.RoadNetwork.Structure
                 var srcRoad = Roads[i];
                 var srcLanes = srcRoad.AllLanesWithMedian.ToList();
 
+                // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
+                // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので
+                // 元のLineStringをコピーして持っておく
+                var originalDstSideWalks = dstSideWalks.ToList();
+                var original = dstSideWalks
+                    .SelectMany(sw => sw.SideWays)
+                    .ToHashSet()
+                    .ToDictionary(x => x, x => x.Clone());
+
                 // SideWalksと共通のLineStringもあるので2回追加しないように記録しておく
                 HashSet<RnLineString> visited = new();
                 for (var j = 0; j < srcLanes.Count; ++j)
@@ -1050,6 +1059,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
 
                 var srcSideWalks = srcRoad.SideWalks.ToList();
+                HashSet<RnSideWalk> mergedDstSideWalks = new();
                 foreach (var srcSw in srcSideWalks)
                 {
                     var found = false;
@@ -1082,6 +1092,7 @@ namespace PLATEAU.RoadNetwork.Structure
                             }
 
                             dstSw.SetSideWays(outsideWay, insideWay);
+                            mergedDstSideWalks.Add(dstSw);
                             found = true;
                         }
 
@@ -1117,10 +1128,22 @@ namespace PLATEAU.RoadNetwork.Structure
                     // マージできなかった歩道は直接追加
                     if (found == false)
                     {
+                        srcSw.SetSideWays(srcSw.OutsideWay, srcSw.InsideWay);
                         dstRoad.AddSideWalk(srcSw);
                         dstSideWalks.Add(srcSw);
                     }
                 }
+
+                // dstSideWalksの中でマージされなかった(元の形状から変更されない)ものは
+                // レーンと共通のLineStringを持っている場合に勝手に形状変わっているかもしれないので明示的に元に戻す
+                foreach (var sw in originalDstSideWalks
+                             .Where(d => mergedDstSideWalks.Contains(d) == false))
+                {
+                    sw.SetSideWays(
+                        sw.OutsideWay == null ? null : original[sw.OutsideWay]
+                        , sw.InsideWay == null ? null : original[sw.InsideWay]);
+                }
+
                 dstRoad.AddTargetTrans(srcRoad.TargetTrans);
                 srcRoad.DisConnect(true);
             }
