@@ -1021,7 +1021,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var original = dstSideWalks
                     .SelectMany(sw => sw.SideWays)
                     .ToHashSet()
-                    .ToDictionary(x => x, x => x.Clone());
+                    .ToDictionary(x => x, x => x.Clone(false));
 
                 // SideWalksと共通のLineStringもあるので2回追加しないように記録しておく
                 HashSet<RnLineString> visited = new();

@@ -261,8 +261,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public void DisConnectBorder()
         {
-            PrevBorder = PrevBorder?.Clone();
-            NextBorder = NextBorder?.Clone();
+            PrevBorder = PrevBorder?.Clone(true);
+            NextBorder = NextBorder?.Clone(true);
         }
 
         /// <summary>

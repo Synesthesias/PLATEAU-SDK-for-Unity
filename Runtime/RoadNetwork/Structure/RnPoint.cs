@@ -58,4 +58,19 @@ namespace PLATEAU.RoadNetwork.Structure
             return (x.Vertex - y.Vertex).sqrMagnitude <= sqrMagnitudeTolerance;
         }
     }
+
+    public static class RnPointEx
+    {
+        /// <summary>
+        /// self/otherが同じかどうか(参照一致だけでなく値一致でもtrue
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="sqrMagnitudeTolerance">２点間の一致判定となる２乗距離</param>
+        /// <returns></returns>
+        public static bool IsSamePoint(this RnPoint self, RnPoint other, float sqrMagnitudeTolerance = 0f)
+        {
+            return RnPoint.Equals(self, other, sqrMagnitudeTolerance);
+        }
+    }
 }

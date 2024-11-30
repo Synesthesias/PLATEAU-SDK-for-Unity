@@ -988,20 +988,68 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var dstSideWalks = intersection.SideWalks.ToList();
             var srcSideWalks = self.SideWalks.ToList();
+
+
+            // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
+            // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので
+            // 元のLineStringをコピーして持っておく
+            var originalDstSideWalks = dstSideWalks.ToList();
+            var original = dstSideWalks
+                .SelectMany(sw => sw.SideWays)
+                .ToHashSet()
+                .ToDictionary(x => x, x => x.Clone(false));
+
+            HashSet<RnSideWalk> mergedDstSideWalks = new();
             foreach (var srcSw in srcSideWalks)
             {
                 var found = false;
                 foreach (var dstSw in dstSideWalks)
                 {
+                    void Merge2(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
+                    {
+                        if (dst == null || src == null)
+                            return;
+                        if (visited.Contains(dst.LineString))
+                            return;
+                        visited.Add(dst.LineString);
+
+                        var tolerance = 1e-2f;
+                        if (dst.GetPoint(0).IsSamePoint(src.GetPoint(0), tolerance))
+                        {
+                            dst.AppendFront2LineString(src.ReversedWay());
+                        }
+                        else if (dst.GetPoint(0).IsSamePoint(src.GetPoint(-1), tolerance))
+                        {
+                            dst.AppendFront2LineString(src);
+                        }
+                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(0), tolerance))
+                        {
+                            dst.AppendBack2LineString(src);
+                        }
+                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(-1), tolerance))
+                        {
+                            dst.AppendBack2LineString(src.ReversedWay());
+                        }
+                        else
+                        {
+                            // #NOTE : もともとの歩道がきれいにつながっていない場合は仮で直接つなぐようにする
+                            DebugEx.LogWarning($"共通頂点を持たないWayをマージしようとしました. {dst.GetDebugIdLabelOrDefault()} {src.GetDebugIdLabelOrDefault()}");
+                            //DebugEx.DrawArrows(dst, false, color: Color.red, duration: 100);
+                            //DebugEx.DrawArrows(src, false, color: Color.blue, duration: 100);
+                            merger(dst, src);
+                        }
+                    }
+
                     void MergeSideWalk(bool reverse, Action<RnWay, RnWay> merger)
                     {
                         var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
                         var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
-                        Merge(dstSw.InsideWay, insideWay, merger);
-                        Merge(dstSw.OutsideWay, outsideWay, merger);
-                        // もともとnullだった場合は置き換える
-                        dstSw.SetSideWays(dstSw.InsideWay ?? insideWay, dstSw.OutsideWay ?? outsideWay);
 
+                        Merge2(dstSw.InsideWay, insideWay, merger);
+                        Merge2(dstSw.OutsideWay, outsideWay, merger);
+                        // もともとnullだった場合は置き換える
+                        dstSw.SetSideWays(dstSw.OutsideWay ?? outsideWay, dstSw.InsideWay ?? insideWay);
+                        mergedDstSideWalks.Add(dstSw);
                         found = true;
                     }
 
@@ -1041,6 +1089,17 @@ namespace PLATEAU.RoadNetwork.Structure
                     dstSideWalks.Add(srcSw);
                 }
             }
+
+            // dstSideWalksの中でマージされなかった(元の形状から変更されない)ものは
+            // レーンと共通のLineStringを持っている場合に勝手に形状変わっているかもしれないので明示的に元に戻す
+            foreach (var sw in originalDstSideWalks
+                         .Where(d => mergedDstSideWalks.Contains(d) == false))
+            {
+                sw.SetSideWays(
+                    sw.OutsideWay == null ? null : original[sw.OutsideWay]
+                    , sw.InsideWay == null ? null : original[sw.InsideWay]);
+            }
+
             intersection.AddTargetTrans(self.TargetTrans);
             self.DisConnect(true);
             return true;

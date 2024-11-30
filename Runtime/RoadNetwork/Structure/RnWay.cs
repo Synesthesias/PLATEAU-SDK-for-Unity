@@ -478,7 +478,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// cloneVertexがtrueの時は頂点もクローンする
         /// </summary>
         /// <returns></returns>
-        public RnWay Clone(bool cloneVertex = true)
+        public RnWay Clone(bool cloneVertex)
         {
             return new RnWay(LineString.Clone(cloneVertex), IsReversed, IsReverseNormal);
         }

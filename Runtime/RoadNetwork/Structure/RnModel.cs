@@ -148,7 +148,7 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var lane in road.AllLanesWithMedian)
             {
                 lane.AlignBorder();
-                var border = lane.NextBorder.Clone();
+                var border = lane.NextBorder.Clone(false);
                 intersection.AddEdge(lane.GetNextRoad(), border);
             }
 
@@ -748,7 +748,7 @@ namespace PLATEAU.RoadNetwork.Structure
             this RnModel self
             , IEnumerable<RnSideWalk> sideWalks
             , LineSegment2D lineSegment2D
-            , Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable
+            , Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint)> lineTable
             , RnRoadBase newNextRoad
             , Func<RnSideWalk, bool> isPrevSide)
         {
@@ -822,7 +822,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lineSegment"></param>
         public static SliceRoadHorizontalResult SliceRoadHorizontal(this RnModel self, RnRoad road, LineSegment3D lineSegment)
         {
-            var check = self.CanSliceRoadHorizontal(road, lineSegment, out var inters);
+            var check = self.CanSliceRoadHorizontal(road, lineSegment, out var crossPointResult);
             if (check != RoadCutResult.Success)
                 return new SliceRoadHorizontalResult { Result = check };
 
@@ -830,31 +830,93 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // key   : 元のLineString
             // value : 分割後のselfのprev/next側のLineString
-            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable = new();
+            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint)> lineTable = new();
 
             // 分割後LineStringがprev/nextどっち側かの判定用
             // PrevBorder上にある全ポイントを持っておく
             var prevBorderPoints = road.GetBorderWays(RnLaneBorderType.Prev)
                 .SelectMany(x => x.Points)
                 .ToHashSet();
-            bool IsPrevSide(RnLineString ls)
+            var nextBorderPoints = road.GetBorderWays(RnLaneBorderType.Next)
+                .SelectMany(x => x.Points)
+                .ToHashSet();
+
+            // 未決定のもの
+            HashSet<LineCrossPointResult.Intersection> undesideds = new();
+
+            // 片方のLineStringが別のLineStringの部分集合だったりすると
+            // 交点が同じでも別のRnPointになる. それを防ぐために共通テーブルを用意する
+            Dictionary<Vector3, RnPoint> sharePoints = new();
+
+            void SplitByIndex(RnLineString ls, float index, out RnLineString front, out RnLineString back)
             {
-                // LineStringのfront側がlineSegmentのどっち側にあるか
-                return prevBorderPoints.Contains(ls.Points[0]);
+                ls.SplitByIndex(index, out front, out back, v =>
+                {
+                    if (sharePoints.TryGetValue(v, out var p) == false)
+                    {
+                        p = new RnPoint(v);
+                        sharePoints[v] = p;
+                    }
+                    return p;
+                });
             }
 
-            foreach (var inter in inters.TargetLines)
+            void AddTable(LineCrossPointResult.Intersection inter, bool isFrontPrev)
+            {
+                var item = inter.Intersections.First();
+                SplitByIndex(inter.LineString, item.index, out var front, out var back);
+                if (isFrontPrev)
+                {
+                    lineTable[inter.LineString] = (front, back, back.Points[0]);
+                }
+                else
+                {
+                    lineTable[inter.LineString] = (back, front, back.Points[0]);
+                }
+            }
+            foreach (var inter in crossPointResult.TargetLines)
             {
                 if (inter.Intersections.Any() == false)
                     continue;
-                var item = inter.Intersections.First();
-                inter.LineString.SplitByIndex(item.index, out var front, out var back);
-                var (prev, next) = (front, back);
-                var isReversed = IsPrevSide(front) == false;
-                if (isReversed)
-                    (next, prev) = (prev, next);
 
-                lineTable[inter.LineString] = (prev, next, back.Points[0], isReversed);
+                if (prevBorderPoints.Contains(inter.LineString.Points[0]))
+                {
+                    AddTable(inter, true);
+
+                }
+                else if (nextBorderPoints.Contains(inter.LineString.Points[0]))
+                {
+                    AddTable(inter, false);
+                }
+                else
+                {
+                    undesideds.Add(inter);
+                }
+            }
+
+            foreach (var inter in undesideds)
+            {
+                var item = inter.Intersections.First();
+                SplitByIndex(inter.LineString, item.index, out var front, out var back);
+                var prevScore = lineTable
+                    .Select(l => front.CalcProximityScore(l.Value.prev))
+                    .Where(score => score != null)
+                    .Select(s => s.Value)
+                    .FindMinOr(a => a, float.MaxValue);
+
+                var nextScore = lineTable
+                    .Select(l => front.CalcProximityScore(l.Value.next))
+                    .Where(score => score != null)
+                    .Select(s => s.Value)
+                    .FindMinOr(a => a, float.MaxValue);
+                if (prevScore < nextScore)
+                {
+                    lineTable[inter.LineString] = (front, back, back.Points[0]);
+                }
+                else
+                {
+                    lineTable[inter.LineString] = (back, front, back.Points[0]);
+                }
             }
 
             // 新しく生成されるRoad
@@ -909,12 +971,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 歩道周りを処理する
 
-            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad, sw =>
-            {
-                var prevDistance = road.GetMergedSideWays().Select(w => w.GetDistance2D(sw.InsideWay)).Min();
-                var nextDistance = newNextRoad.GetMergedSideWays().Select(w => w.GetDistance2D(sw.InsideWay)).Min();
-                return prevDistance < nextDistance;
-            });
+            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad, sw => sw.CalcRoadProximityScore(road) < sw.CalcRoadProximityScore(newNextRoad));
 
             return new SliceRoadHorizontalResult { Result = RoadCutResult.Success, PrevRoad = road, NextRoad = newNextRoad, };
         }
@@ -1049,7 +1106,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // key   : 元のLineString
             // value : 分割後のselfのprev/next側のLineString
-            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint, bool isReversed)> lineTable = new();
+            Dictionary<RnLineString, (RnLineString prev, RnLineString next, RnPoint midPoint)> lineTable = new();
 
             // 分割後LineStringがprev/nextどっち側かの判定用
             var prevBorder = inters.TargetEdgeGroup.Edges[0].Border;
@@ -1074,7 +1131,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (isReversed)
                     (next, prev) = (prev, next);
 
-                lineTable[cross.LineString] = (prev, next, back.Points[0], isReversed);
+                lineTable[cross.LineString] = (prev, next, back.Points[0]);
             }
 
             // 新しく生成されるRoad
@@ -1159,12 +1216,11 @@ namespace PLATEAU.RoadNetwork.Structure
             inters.TargetEdgeGroup.Key?.ReplaceNeighbor(inter, newNextRoad);
 
             self.AddRoad(newNextRoad);
-            SliceSideWalks(self, inters.SlicedSideWalks, lineSegment2D, lineTable, newNextRoad, sw =>
-            {
-                var prevDistance = inter.Edges.Where(x => x.IsBorder == false).Select(w => w.Border.GetDistance2D(sw.InsideWay)).Min();
-                var nextDistance = newNextRoad.GetMergedSideWays().Select(w => w.GetDistance2D(sw.InsideWay)).Min();
-                return prevDistance < nextDistance;
-            });
+            SliceSideWalks(self, inters.SlicedSideWalks
+                , lineSegment2D
+                , lineTable
+                , newNextRoad
+                , sw => sw.CalcRoadProximityScore(inter) < sw.CalcRoadProximityScore(newNextRoad));
 
             return new SliceIntersectionResult { Result = RoadCutResult.Success, PrevRoad = newNextRoad, NextIntersection = inter, };
         }
@@ -1186,20 +1242,37 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public static void CalibrateIntersectionBorderForAllRoad(this RnModel self, CalibrateIntersectionBorderOption option)
         {
+            HashSet<RnRoad> prevs = new();
+            HashSet<RnRoad> nexts = new();
             foreach (var road in self.Roads.ToList())
             {
-                self.CalibrateIntersectionBorder(road, option);
+                //self.CalibrateIntersectionBorder(road, option);
+                self.TrySliceRoadHorizontalNearByBorder(road, option, out var prev, out var center, out var next);
+                if (prev != null)
+                    prevs.Add(prev);
+                if (next != null)
+                    nexts.Add(next);
             }
+
+            foreach (var p in prevs)
+                p.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+            foreach (var p in nexts)
+                p.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
         }
 
         /// <summary>
         /// roadが交差点と隣接するとき, 交差点からmeterだけ離れた位置で道路を分割する.
-        /// 戻り値には分割された交差点に違い側の道路が返る. Prev/Next両方で隣接しているときはどっちも返る
+        /// prevSideRoad, centerSideRoad, nextSideRoadの3つの道路が返る
+        /// ただし、片方としか分割されなかった場合などはその場所にはnullが入る
         /// </summary>
+        /// <param name="self"></param>
         /// <param name="road"></param>
         /// <param name="option"></param>
+        /// <param name="prevSideRoad"></param>
+        /// <param name="centerSideRoad"></param>
+        /// <param name="nextSideRoad"></param>
         /// <returns></returns>
-        public static bool TrySliceRoadHorizontalWithStopLine(
+        public static bool TrySliceRoadHorizontalNearByBorder(
             this RnModel self,
             RnRoad road
             , CalibrateIntersectionBorderOption option
@@ -1208,7 +1281,8 @@ namespace PLATEAU.RoadNetwork.Structure
             , out RnRoad nextSideRoad
             )
         {
-            prevSideRoad = centerSideRoad = nextSideRoad = null;
+            prevSideRoad = nextSideRoad = null;
+            centerSideRoad = road;
             bool IsNeighbor(RnRoad r, RnIntersection neighbor)
             {
                 return r.Next == neighbor || r.Prev == neighbor;
@@ -1227,7 +1301,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 return (farRoad, nearRoad);
             }
 
-            var ret = new Dictionary<RnLaneBorderType, RnRoad>();
             // 不正な道路は対象外
             if (road.IsValid == false)
                 return false;
@@ -1248,11 +1321,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (neighbors.Count == 0)
                 return false;
 
-
             var offsetLength = Mathf.Max(1f,
                 Mathf.Min(option.MaxOffsetMeter, (minLength - option.NeedRoadLengthMeter) / neighbors.Count));
 
-            centerSideRoad = road;
             if (road.Next is RnIntersection nextIntersection)
             {
                 if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Next, offsetLength, out var seg))
@@ -1289,84 +1360,20 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// roadが交差点と隣接するとき, 交差点からmeterだけ離れた位置で道路を分割する.
-        /// 戻り値には分割された交差点に違い側の道路が返る. Prev/Next両方で隣接しているときはどっちも返る
         /// </summary>
         /// <param name="road"></param>
         /// <param name="option"></param>
         /// <returns></returns>
         public static void CalibrateIntersectionBorder(this RnModel self, RnRoad road, CalibrateIntersectionBorderOption option)
         {
-            bool IsNeighbor(RnRoad r, RnIntersection neighbor)
-            {
-                return r.Next == neighbor || r.Prev == neighbor;
-            }
-
-            RnRoad Check(RnModelEx.SliceRoadHorizontalResult res, RnIntersection neighbor)
-            {
-                // origRoad交差点から遠い方の道路
-                var (nearRoad, farRoad) = (res.NextRoad, res.PrevRoad);
-                if (IsNeighbor(res.PrevRoad, neighbor))
-                {
-                    (nearRoad, farRoad) = (farRoad, nearRoad);
-                }
-                if (nearRoad.Next is RnIntersection)
-                {
-                    nearRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
-                }
-                else if (nearRoad.Prev is RnIntersection)
-                {
-                    nearRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
-                }
-
-                return farRoad;
-            }
-
-            // 不正な道路は対象外
-            if (road.IsValid == false)
+            if (self.TrySliceRoadHorizontalNearByBorder(road, option, out var prevSideRoad, out var centerSideRoad,
+                    out var nextSideRoad) == false)
                 return;
 
-            road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
-
-            var minLength = Mathf.Min(leftWay.CalcLength(), rightWay.CalcLength());
-            // MaxOffsetMeter以下の長さの道路は何もしない
-            if (minLength < option.MaxOffsetMeter)
-                return;
-
-
-            var neighbors = EnumEx.GetValues<RnLaneBorderType>()
-                .Select(x => new { n = road.GetNeighborRoad(x) as RnIntersection, t = x })
-                .Where(x => x.n != null)
-                .ToList();
-
-            if (neighbors.Count == 0)
-                return;
-
-
-            var offsetLength = Mathf.Max(1f,
-                Mathf.Min(option.MaxOffsetMeter, (minLength - option.NeedRoadLengthMeter) / neighbors.Count));
-
-            if (road.Next is RnIntersection nextIntersection)
-            {
-                if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Next, offsetLength, out var seg))
-                {
-                    var res = self.SliceRoadHorizontal(road, seg);
-                    if (res.Result == RnModelEx.RoadCutResult.Success)
-                    {
-                        road = Check(res, nextIntersection);
-                    }
-                }
-            }
-            if (road.Prev is RnIntersection prevIntersection)
-            {
-                if (road.TryGetVerticalSliceSegment(RnLaneBorderType.Prev, offsetLength, out var seg))
-                {
-                    var res = self.SliceRoadHorizontal(road, seg);
-                    if (res.Result == RnModelEx.RoadCutResult.Success)
-                    {
-                        road = Check(res, prevIntersection);
-                    }
-                }
-            }
+            if (nextSideRoad?.Next is RnIntersection)
+                nextSideRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
+            if (prevSideRoad?.Prev is RnIntersection)
+                prevSideRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
         }
 
     }

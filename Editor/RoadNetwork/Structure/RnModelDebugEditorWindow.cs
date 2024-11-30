@@ -272,7 +272,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
 
             var roadGroup = road.CreateRoadGroupOrDefault();
-            if (RnEditorUtil.Foldout($"RoadGroupOption [{roadGroup.Roads.Count}]", p.Foldouts, ("RoadGroupOption", road)))
+            if (RnEditorUtil.Foldout($"RoadGroupOption [{roadGroup.Roads.Count}] ({roadGroup.Roads.Select(x => x.GetDebugLabelOrDefault()).Join2String()})", p.Foldouts, ("RoadGroupOption", road)))
             {
                 if (GUILayout.Button("Align"))
                 {
@@ -355,16 +355,16 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Prev));
                 }
 
-                if (GUILayout.Button("Offset From Intersection"))
+                if (GUILayout.Button("TrySliceRoadHorizontalNearByBorder"))
                 {
-                    work.DelayExec.Add(() => road.ParentModel.TrySliceRoadHorizontalWithStopLine(
+                    work.DelayExec.Add(() => road.ParentModel.TrySliceRoadHorizontalNearByBorder(
                         road, new RnModelEx.CalibrateIntersectionBorderOption()
                         , out var prev
                         , out var center
                         , out var next
                         ));
                 }
-                if (GUILayout.Button("Offset From Intersection"))
+                if (GUILayout.Button("CalibrateIntersectionBorder"))
                 {
                     work.DelayExec.Add(() => road.ParentModel.CalibrateIntersectionBorder(road, new RnModelEx.CalibrateIntersectionBorderOption()));
                 }

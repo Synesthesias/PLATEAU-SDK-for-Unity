@@ -124,6 +124,7 @@ namespace PLATEAU.RoadNetwork.Structure
             this.startEdgeWay = startEdgeWay;
             this.endEdgeWay = endEdgeWay;
             this.laneType = laneType;
+            TryAlign();
         }
 
         public RnSideWalkWayTypeMask GetValidWayTypeMask()
@@ -167,6 +168,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.outsideWay = outsideWay;
             this.insideWay = insideWay;
+            TryAlign();
         }
 
         /// <summary>
@@ -178,6 +180,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.startEdgeWay = startWay;
             this.endEdgeWay = endWay;
+            TryAlign();
         }
 
         /// <summary>
@@ -208,6 +211,56 @@ namespace PLATEAU.RoadNetwork.Structure
                 LaneType = RnSideWalkLaneType.RightLane;
             else if (LaneType == RnSideWalkLaneType.RightLane)
                 LaneType = RnSideWalkLaneType.LeftLane;
+        }
+
+        /// <summary>
+        /// InSideWay/OutSideWayの方向を, StartEdgeWay/EndEdgeWayを見て合わせる.
+        /// これらのWayがない場合は何もしない
+        /// </summary>
+        /// <returns></returns>
+        public void TryAlign()
+        {
+            void Impl(RnWay way)
+            {
+                if (way.IsValidOrDefault() == false)
+                    return;
+
+                if (StartEdgeWay.IsValidOrDefault())
+                {
+                    // StartEdgeWay上にway[0]がある場合は整列されているので何もしない
+                    var st = way.GetPoint(0);
+                    if (StartEdgeWay.Points.Any(p => p.IsSamePoint(st)))
+                        return;
+
+                    // StartEdgeWay上にway[^1]がある場合は逆向きなので反転する
+                    var en = way.GetPoint(-1);
+                    if (StartEdgeWay.Points.Any(p => p.IsSamePoint(en)))
+                    {
+                        way.Reverse(true);
+                        return;
+                    }
+                }
+
+                if (EndEdgeWay.IsValidOrDefault())
+                {
+
+                    // EndEdgeWay上にway[^1]がある場合は整列されているので何もしない
+                    var en = way.GetPoint(-1);
+                    if (EndEdgeWay.Points.Any(p => p.IsSamePoint(en)))
+                        return;
+
+                    // EndEdgeWay上にway[0]がある場合は逆向きなので反転する
+                    var st = way.GetPoint(0);
+                    if (EndEdgeWay.Points.Any(p => p.IsSamePoint(st)))
+                    {
+                        way.Reverse(true);
+                        return;
+                    }
+
+                }
+            }
+            Impl(InsideWay);
+            Impl(OutsideWay);
         }
 
         /// <summary>

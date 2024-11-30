@@ -533,7 +533,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public class Option
             {
                 // 頂点の法線を表示する
-                public bool showVertexNormal = true;
+                public bool showVertexNormal = false;
 
                 // 線の法線を表示する
                 public bool showEdgeNormal = false;

@@ -50,8 +50,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (Points.Count <= 1)
                 return new List<RnLineString>();
 
+            // 1つの時は自分自身を返す(頂点のコピーはしない)
             if (num <= 1)
-                return new List<RnLineString> { Clone() };
+                return new List<RnLineString> { Clone(false) };
 
             if (rateSelector == null)
                 rateSelector = i => 1f / num;
@@ -338,7 +339,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// clonePoint : 頂点もコピーするかどうか
         /// </summary>
         /// <returns></returns>
-        public RnLineString Clone(bool cloneVertex = true)
+        public RnLineString Clone(bool cloneVertex)
         {
             if (cloneVertex)
                 return Create(Points.Select(p => p.Clone()), false);
