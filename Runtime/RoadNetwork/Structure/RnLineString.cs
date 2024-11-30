@@ -135,8 +135,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="index"></param>
         /// <param name="front"></param>
         /// <param name="back"></param>
+        /// <param name="createPoint"></param>
         /// <returns></returns>
-        public bool SplitByIndex(float index, out RnLineString front, out RnLineString back)
+        public bool SplitByIndex(float index, out RnLineString front, out RnLineString back, Func<Vector3, RnPoint> createPoint = null)
         {
             // indexが整数の時で処理を変える
             var isInt = Mathf.Abs(index - Mathf.RoundToInt(index)) < 1e-5f;
@@ -163,7 +164,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 // 少数の時は中間点をfontの最後とbackの最初に追加
                 var v = Vector3.Lerp(Points[i].Vertex, Points[i + 1].Vertex, index - i);
-                var mid = new RnPoint(v);
+                var mid = createPoint?.Invoke(v) ?? new RnPoint(v);
                 frontPoints.Add(mid);
                 backPoints.Insert(0, mid);
             }
@@ -691,6 +692,24 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// selfのotherに対する距離スコアを返す(線分同士の距離ではない).低いほど近い
+        /// selfの各点に対して, otherとの距離を出して, その平均をスコアとする
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static float? CalcProximityScore(this RnLineString self, RnLineString other)
+        {
+            if (false == ((self?.IsValid ?? false) && (other?.IsValid ?? false)))
+                return null;
+            return self.Select(v =>
+            {
+                other.GetNearestPoint(v, out var _, out var _, out var distance);
+                return distance;
+            }).Average();
         }
     }
 }

@@ -256,63 +256,45 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
+        /// <summary>
+        /// 歩道swとotherの距離スコアを計算する(近いほど低い)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static float? CalcRoadProximityScore(this RnSideWalk self, RnRoadBase other)
+        {
+            if (other == null || self == null)
+                return null;
 
-        //public static void MergeSideWalk(RnSideWalk srcSw, RnSideWalk dstSw)
-        //{
-        //    void Merge(bool reverse, Action<RnWay, RnWay> merger)
-        //    {
-        //        var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
-        //        var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
-        //        if (dstSw.InsideWay != null)
-        //        {
-        //            if (visited.Contains(dstSw.InsideWay.LineString) == false)
-        //            {
-        //                merger(dstSw.InsideWay, insideWay);
-        //                visited.Add(dstSw.InsideWay.LineString);
-        //            }
+            // otherを構成するWayのうち比較対象のもののみを取得
+            var targetWays = new List<RnWay>();
+            if (other is RnRoad road)
+            {
+                targetWays = road.GetMergedSideWays().ToList();
+            }
+            else if (other is RnIntersection intersection)
+            {
+                targetWays = intersection.Edges.Select(e => e.Border).ToList();
+            }
 
-        //            insideWay = dstSw.InsideWay;
-        //        }
+            if (targetWays.Count == 0)
+                return null;
 
-        //        if (dstSw.OutsideWay != null)
-        //        {
-        //            if (visited.Contains(dstSw.OutsideWay.LineString) == false)
-        //            {
-        //                merger(dstSw.OutsideWay, outsideWay);
-        //                visited.Add(dstSw.OutsideWay.LineString);
-        //            }
+            // swのInsideWayの各点に対して, targetWaysとの最近傍点を計算し, その平均をスコアとする
+            // 最も小さい距離だと道路同士の境界部分に繋がっている歩道がどっちの評価も0になるため全体平均で見る
+            float GetNearestDistance(Vector3 v)
+            {
+                return targetWays.Select(w =>
+                {
+                    w.GetNearestPoint(v, out var nearest, out float pointIndex, out float distance);
+                    return distance;
+                }).Min();
+            }
 
-        //            outsideWay = dstSw.OutsideWay;
-        //        }
-
-        //        dstSw.SetSideWays(outsideWay, insideWay);
-        //        found = true;
-        //    }
-
-        //    // start - startで重なっている場合
-        //    if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
-        //    {
-        //        Merge(true, RnWayEx.AppendFront2LineString);
-        //        dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
-        //    }
-        //    // start - endで重なっている場合
-        //    else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
-        //    {
-        //        Merge(false, RnWayEx.AppendFront2LineString);
-        //        dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
-        //    }
-        //    // end - endで重なっている場合
-        //    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
-        //    {
-        //        Merge(true, RnWayEx.AppendBack2LineString);
-        //        dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
-        //    }
-        //    // end - startで重なっている場合
-        //    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
-        //    {
-        //        Merge(false, RnWayEx.AppendBack2LineString);
-        //        dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
-        //    }
-        //}
+            return self.InsideWay
+                .Select(GetNearestDistance)
+                .Average();
+        }
     }
 }
