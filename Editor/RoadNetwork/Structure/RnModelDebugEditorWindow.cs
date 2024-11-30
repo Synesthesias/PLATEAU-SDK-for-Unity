@@ -357,6 +357,15 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                 if (GUILayout.Button("Offset From Intersection"))
                 {
+                    work.DelayExec.Add(() => road.ParentModel.TrySliceRoadHorizontalWithStopLine(
+                        road, new RnModelEx.CalibrateIntersectionBorderOption()
+                        , out var prev
+                        , out var center
+                        , out var next
+                        ));
+                }
+                if (GUILayout.Button("Offset From Intersection"))
+                {
                     work.DelayExec.Add(() => road.ParentModel.CalibrateIntersectionBorder(road, new RnModelEx.CalibrateIntersectionBorderOption()));
                 }
             }

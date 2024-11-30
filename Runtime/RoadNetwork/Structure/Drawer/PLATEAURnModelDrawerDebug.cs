@@ -183,6 +183,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption showPrevBorder = new DrawOption(true, Color.green);
             public DrawOption showNextBorder = new DrawOption(true, Color.green);
             public DrawOption showCenterWay = new DrawOption(true, Color.green * 0.5f);
+            public bool showNextRoad = false;
+            public bool showPrevRoad = false;
             /// <summary>
             /// レーン描画するときのアルファを返す
             /// </summary>
@@ -228,6 +230,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // Noneの時はすべて表示. それ以外はRnSideWalk.GetValidWayTypeMaskが一致したものだけ表示する(不正なSideWalk検出用)
             public RnSideWalkWayTypeMask showWayFilter = RnSideWalkWayTypeMask.None;
             public SideWalkLaneTypeMask showLaneTypeFilter = SideWalkLaneTypeMask.All;
+            // 親道路との接続を表示する
+            public bool showParentConnection = false;
 
         }
         [SerializeField] public SideWalkOption sideWalkRoadOp = new SideWalkOption();
@@ -406,7 +410,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.SideWalk))
-                DebugEx.DrawString($"S[{sideWalk.DebugMyId}]", sideWalk.GetCenter());
+                DebugEx.DrawString($"S[{sideWalk.DebugMyId}]", sideWalk.GetCentralVertex());
 
             // 一致判定
             if (p.showWayFilter != RnSideWalkWayTypeMask.None && sideWalk.GetValidWayTypeMask() != p.showWayFilter)
@@ -430,6 +434,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             DrawSideWalkWay(sideWalk.InsideWay, p.showInsideWay);
             DrawSideWalkWay(sideWalk.StartEdgeWay, p.showStartEdgeWay);
             DrawSideWalkWay(sideWalk.EndEdgeWay, p.showEndEdgeWay);
+
+            if (p.showParentConnection)
+            {
+                if (sideWalk.ParentRoad != null)
+                {
+                    DrawArrow(sideWalk.GetCentralVertex(), sideWalk.ParentRoad.GetCentralVertex(), bodyColor: Color.green);
+                }
+            }
         }
 
         /// <summary>
@@ -513,6 +525,34 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 var vers = lane.GetInnerLerpSegments(splitLaneRate);
                 DrawArrows(vers, false, color: Color.red, arrowSize: 0.1f);
             }
+
+            if (op.showNextRoad)
+            {
+                foreach (var r in lane.GetNextRoads())
+                {
+                    var c = r.GetCentralVertex();
+                    var p = Vector3.zero;
+                    var c1 = lane.NextBorder?.GetLerpPoint(0.5f, out p);
+                    if (c1 != null)
+                    {
+                        DebugEx.DrawArrow(p, c, bodyColor: Color.red);
+                    }
+                }
+            }
+
+            if (op.showPrevRoad)
+            {
+                foreach (var r in lane.GetPrevRoads())
+                {
+                    var c = r.GetCentralVertex();
+                    var p = Vector3.zero;
+                    var c1 = lane.PrevBorder?.GetLerpPoint(0.5f, out p);
+                    if (c1 != null)
+                    {
+                        DebugEx.DrawArrow(p, c, bodyColor: Color.blue);
+                    }
+                }
+            }
         }
 
         private void DrawRoad(RnRoad road, VisibleType visibleType)
@@ -592,7 +632,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Road) || (op.showEmptyRoadLabel && road.IsEmptyRoad))
-                DebugEx.DrawString($"R[{road.DebugMyId}]", road.GetCenter());
+                DebugEx.DrawString($"R[{road.DebugMyId}]", road.GetCentralVertex());
 
             void DrawRoadConnection(DrawOption op, RnRoadBase target)
             {
@@ -600,8 +640,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     return;
                 if (target == null)
                     return;
-                var from = road.GetCenter();
-                var to = target.GetCenter();
+                var from = road.GetCentralVertex();
+                var to = target.GetCentralVertex();
                 DrawArrow(from, to, bodyColor: op.color);
             }
 
@@ -697,7 +737,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
 
             if (showPartsType.HasFlag(RnPartsTypeMask.Intersection))
-                DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCenter());
+                DebugEx.DrawString($"N[{intersection.DebugMyId}]", intersection.GetCentralVertex());
 
             if (op.showEdgeGroup)
             {

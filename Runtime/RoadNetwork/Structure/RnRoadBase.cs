@@ -108,12 +108,11 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>
-        public virtual Vector3 GetCenter()
+        public virtual Vector3 GetCentralVertex()
         {
             return Vector3.zero;
         }

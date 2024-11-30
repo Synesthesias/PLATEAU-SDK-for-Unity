@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -229,19 +230,18 @@ namespace PLATEAU.RoadNetwork.Structure
 
     public static class RnSideWalkEx
     {
-        public static Vector3 GetCenter(this RnSideWalk self)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector3 GetCentralVertex(this RnSideWalk self)
         {
             if (self == null)
                 return Vector3.zero;
-            var num = (self.OutsideWay?.Count ?? 0) + (self.InsideWay?.Count ?? 0);
-            if (num == 0)
-                return Vector3.zero;
-            var sum = Enumerable.Repeat(self.OutsideWay, 1)
-                .Concat(Enumerable.Repeat(self.InsideWay, 1))
-                .Where(w => w != null)
-                .SelectMany(w => w)
-                .Aggregate(Vector3.zero, (sum, way) => sum + way);
-            return sum / num;
+            return Vector3Ex.Centroid(self
+                .SideWays
+                .Select(w => w.GetLerpPoint(0.5f)));
         }
 
         /// <summary>
@@ -254,6 +254,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return self.AllWays.Any(x => other.AllWays.Any(b => x.IsSameLine(b)));
         }
+
+
 
         //public static void MergeSideWalk(RnSideWalk srcSw, RnSideWalk dstSw)
         //{

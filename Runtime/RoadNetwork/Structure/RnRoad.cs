@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using UnityEditor.UI;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
@@ -640,19 +638,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>
-        public override Vector3 GetCenter()
+        public override Vector3 GetCentralVertex()
         {
-            var a = MainLanes
-                .Select(l => l.GetCenter())
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            return Vector3Ex.Centroid(this.GetMergedSideWays()
+                .Select(w => w.GetLerpPoint(0.5f))
+                );
         }
-
         // ---------------
         // Static Methods
         // ---------------
@@ -751,6 +745,24 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 道路の両端のWayを取得する. dirが指定されている場合はその方向の車線だけで絞って返す.
+        /// dir = null道路全体の両端のWayを返す
+        /// dir = Left(Right). 左(右)車線だけみた両端のwayを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public static IEnumerable<RnWay> GetMergedSideWays(this RnRoad self, RnDir? dir = null)
+        {
+            if (self.TryGetMergedSideWay(dir, out var leftWay, out var rightWay))
+            {
+                if (leftWay != null)
+                    yield return leftWay;
+                if (rightWay != null)
+                    yield return rightWay;
+            }
+        }
 
         /// <summary>
         /// この境界とつながっているレーンリスト
@@ -825,7 +837,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rightWidth = float.MaxValue;
             foreach (var i in indices)
             {
-                var v = line.GetLerpPoint(i);
+                var v = line.GetPoint(i);
                 leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
                 leftWidth = Mathf.Min(leftWidth, wl);
                 rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);

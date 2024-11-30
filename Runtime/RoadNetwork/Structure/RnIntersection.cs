@@ -861,18 +861,16 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>
-        public override Vector3 GetCenter()
+        public override Vector3 GetCentralVertex()
         {
-            var a = Neighbors
-                .Where(n => n.Border != null)
-                .SelectMany(n => n.Border.Vertices)
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            // 全エッジの中心点の重心を返す
+            return Vector3Ex.Centroid(Neighbors
+                .Select(n => n.Border)
+                .Where(b => b != null)
+                .Select(b => b.GetLerpPoint(0.5f)));
         }
 #if false
         /// <summary>

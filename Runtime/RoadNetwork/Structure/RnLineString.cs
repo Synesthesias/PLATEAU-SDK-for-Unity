@@ -30,9 +30,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnLineString()
         {
-
         }
-
 
         public RnLineString(IEnumerable<RnPoint> points)
         {
@@ -542,7 +540,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static Vector3 GetLerpPoint(this RnLineString self, float index)
+        public static Vector3 GetPoint(this RnLineString self, float index)
         {
             var i1 = (int)index;
             var i2 = i1 + 1;
@@ -671,6 +669,28 @@ namespace PLATEAU.RoadNetwork.Structure
 
             startIndex = endIndex = 0;
             return self[0];
+        }
+
+        /// <summary>
+        /// 2D平面におけるLineString同士の距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static float GetDistance2D(this RnLineString self, RnLineString other, AxisPlane plane = AxisPlane.Xz)
+        {
+            var ret = float.MaxValue;
+            foreach (var e1 in self.GetEdges2D())
+            {
+                foreach (var e2 in other.GetEdges2D())
+                {
+                    var d = e1.GetDistance(e2);
+                    ret = Mathf.Min(ret, d);
+                }
+            }
+
+            return ret;
         }
     }
 }

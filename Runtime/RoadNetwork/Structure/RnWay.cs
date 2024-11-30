@@ -376,13 +376,12 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 境界線の中央の点を返す
         /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
         /// </summary>
         /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public int GetLerpPoint(float p, out Vector3 midPoint)
+        public float GetLerpPoint(float p, out Vector3 midPoint)
         {
             return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
@@ -812,6 +811,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 endIndex = self.SwitchIndex(endIndex);
                 return ret;
             }
+        }
+
+
+        /// <summary>
+        /// 2D平面におけるRnway同士の距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = AxisPlane.Xz)
+        {
+            return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
         }
     }
 }
