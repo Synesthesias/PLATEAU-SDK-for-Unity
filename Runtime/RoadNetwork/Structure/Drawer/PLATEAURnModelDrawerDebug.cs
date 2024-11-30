@@ -143,7 +143,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawOption showNextConnection = new DrawOption(false, Color.red);
             public DrawOption showPrevConnection = new DrawOption(false, Color.blue);
 
-            public float verticalNext = 5f;
+            public float verticalNext = -1f;
         }
 
         [SerializeField]
