@@ -84,20 +84,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 子Drawer
             protected virtual IEnumerable<Drawer<T>> GetChildDrawers() => Enumerable.Empty<Drawer<T>>();
 
-            public bool IsDrawable(T self, VisibleType visibleType)
-            {
-                if (visible == false)
-                    return false;
-
-                if (self == null)
-                    return false;
-
-                if ((visibleType & showVisibleType) == 0)
-                    return false;
-
-                return true;
-            }
-
             public bool Draw(DrawWork work, T self, VisibleType visibleType)
             {
                 if (visible == false)
@@ -109,7 +95,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 var lastVisibleType = visibleType;
                 try
                 {
-                    if (GetTargetGameObjects(self).Any(RnEx.IsEditorSceneSelected))
+                    if (GetTargetGameObjects(self)?.Any(RnEx.IsEditorSceneSelected) ?? false)
                     {
                         visibleType |= VisibleType.SceneSelected;
                         visibleType &= ~VisibleType.NonSelected;
@@ -118,7 +104,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     if (work.IsVisited(self) == false)
                         return false;
 
-                    if (work.Self.targetTran && GetTargetGameObjects(self).Contains(work.Self.targetTran) == false)
+                    if (GetTargetGameObjects(self) != null && work.Self.targetTran && GetTargetGameObjects(self).Contains(work.Self.targetTran) == false)
                         return false;
 
                     // 非表示設定されている
@@ -152,7 +138,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 }
             }
 
-            public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => Enumerable.Empty<PLATEAUCityObjectGroup>();
+            public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
         }
 
         [Serializable]
