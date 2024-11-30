@@ -1206,7 +1206,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static Vector3 CalcLanePos(RnLane centerLane)
         {
-            return centerLane.GetCenter();
+            return centerLane.GetCentralVertex();
         }
 
 
