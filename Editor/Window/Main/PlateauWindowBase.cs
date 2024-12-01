@@ -1,5 +1,8 @@
-using PLATEAU.Editor.Window.Common;
+﻿using PLATEAU.Editor.Window.Common;
+using System;
 using UnityEditor;
+using UnityEngine.UIElements;
+using ScrollView = UnityEngine.UIElements.ScrollView;
 
 namespace PLATEAU.Editor.Window.Main
 {
@@ -10,28 +13,56 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal abstract class PlateauWindowBase : EditorWindow
     {
-        private readonly ScrollView scrollView = new();
-        private IEditorDrawable gui;
-        private IEditorDrawable footerGui;
+        private VisualElementDisposable gui;
         
         /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
-        protected abstract IEditorDrawable InitGui();
-        protected virtual IEditorDrawable InitFooterGui() => null;
+        protected abstract VisualElementDisposable CreateGui();
 
-        private void OnGUI()
+        private void CreateGUI()
         {
-            gui ??= InitGui();
+            var scrollView = new ScrollView
+            {
+                viewDataKey = "plateau-window-scroll-view",
+                horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+                verticalScrollerVisibility = ScrollerVisibility.Auto,  // 垂直スクロールを表示
+                style =
+                {
+                    flexGrow = 1 // 利用可能な空間いっぱいに広がる
+                }
+            };
+            
+            scrollView.Add(new IMGUIContainer(DrawImgui));
+            gui = CreateGui();
+            scrollView.Add(gui.VisualElement);
+            rootVisualElement.Add(scrollView);
+            rootVisualElement.Add(new PlateauWindowFooterGui().CreateGui());
+        }
+
+        private void DrawImgui()
+        {
             PlateauEditorStyle.SetCurrentWindow(this);
-            scrollView.Draw(
-                gui.Draw
-            );
-            footerGui ??= InitFooterGui();
-            footerGui?.Draw();
         }
 
         private void OnDestroy()
         {
             gui.Dispose();
+        }
+    }
+
+    internal class VisualElementDisposable
+    {
+        public VisualElement VisualElement { get; private set; }
+        private readonly Action onDispose;
+        
+        public VisualElementDisposable(VisualElement visualElement, Action onDispose)
+        {
+            VisualElement = visualElement;
+            this.onDispose = onDispose;
+        }
+
+        public void Dispose()
+        {
+            onDispose();
         }
     }
 }

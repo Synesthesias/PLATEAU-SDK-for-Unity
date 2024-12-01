@@ -107,7 +107,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                     
                     if (PlateauEditorStyle.MiniButton("パッケージ種から選択", 150))
                     {
-                        PackageSelectWindow.Open(this);
+                        var window = PackageSelectWindow.Open();
+                        window.Init(this);
                     }
                 });
             }
