@@ -10,6 +10,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
@@ -77,20 +78,21 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
 
-            var dstParent = GenerateDstParent(model);
-
+            var srcToDstTrans = new Dictionary<Transform, Transform>();
             for (int i = 0; i < contourMeshList.Count; i++)
             {
                 progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中", (float)i * 100f / contourMeshList.Count, $"{i} / {contourMeshList.Count}");
                 var contourMesh = contourMeshList[i];
                 var srcObjs = contourMesh.SourceObjects;
+                if (srcObjs.Length == 0) continue;
                 
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
                 if (mesh.vertexCount == 0) continue;
 
-                // Transformの整理：生成物の親を動かしつつ、srcは非表示に
+                // オブジェクトの生成
                 string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : $"{srcObjs[0].name}";
-                var dstObj = new GameObject(dstObjName) { transform = { parent = dstParent } };
+                var dstObj = new GameObject(dstObjName);
+                srcToDstTrans[srcObjs[0].transform] = dstObj.transform;
                 
                 foreach (var src in srcObjs)
                 {
@@ -152,41 +154,71 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
             }
             
+            ReplaceSrcToDst(srcToDstTrans, srcModel);
+            
 #if UNITY_EDITOR
-            Selection.objects = new[]{dstParent.gameObject};
+            // 生成物を選択状態に
+            Selection.objects = srcToDstTrans.Values.Select(t => t.gameObject).ToArray();
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
 #endif
 
         }
 
-        private Transform GenerateDstParent(RnModel model)
+
+        /// <summary>
+        /// 元の道路ゲームオブジェクトを生成したゲームオブジェクトに置き換えます。
+        /// それに合わせて元の道路ネットワークも修正します。
+        /// 引数に渡す<see cref="RnModel"/>はコピー前のオリジナルである必要があります。
+        /// </summary>
+        private void ReplaceSrcToDst(Dictionary<Transform, Transform> srcToDstTrans,RnModel model)
         {
-            var srcTransList = GetSrcTransformList(model);
-            srcTransList.ParentalShift();
-            var srcParent = srcTransList.CalcCommonParent();
-            if (srcParent.name.StartsWith("LOD"))
+            // 道路ネットワークの書き換え
+            var modelRoads = model.Roads.Select(r => (RnRoadBase)r)
+                .Concat(model.Intersections.Select(i => (RnRoadBase)i));
+            foreach (var modelRoad in modelRoads)
             {
-                // "LODn"以下に生成されると見つけにくいのでその親にします
-                srcParent = srcParent.parent;
+                var srcs = modelRoad.TargetTrans;
+                var dsts = new List<PLATEAUCityObjectGroup>();
+                foreach (var src in srcs.Select(cog => cog.transform))
+                {
+                    if (srcToDstTrans.TryGetValue(src, out var dst))
+                    {
+                        var dstCog = dst.GetComponent<PLATEAUCityObjectGroup>();
+                        if (dstCog != null)
+                        {
+                            dsts.Add(dstCog);
+                        }
+                    }
+                }
+                modelRoad.TargetTrans = dsts;
             }
-            var dstParent = new GameObject("GeneratedRoad").transform;
-            dstParent.parent = srcParent;
-            return dstParent;
-        }
-
-        private UniqueParentTransformList GetSrcTransformList(RnModel model)
-        {
-            var ret = new UniqueParentTransformList();
-            foreach (var road in model.Roads)
+            
+            // ゲームオブジェクトの置き換え
+            foreach (var (src, dst) in srcToDstTrans)
             {
-                ret.AddRange(road.TargetTrans.Select(cog => cog.transform));
+                dst.parent = src.parent;
+                dst.gameObject.SetActive(true);
+                UnityEngine.Object.DestroyImmediate(src.gameObject);
             }
-
-            foreach (var intersection in model.Intersections)
+            
+            // 道路ネットワークのシリアライズ
+            var structures = UnityEngine.Object.FindObjectsByType<PLATEAURnStructureModel>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            bool isSerialized = false;
+            foreach (var structure in structures)
             {
-                ret.AddRange(intersection.TargetTrans.Select(cog => cog.transform));
+                if (structure.RoadNetwork == model)
+                {
+                    structure.Serialize();
+                    isSerialized = true;
+                    break;
+                }
+                
             }
 
-            return ret;
+            if (!isSerialized)
+            {
+                Debug.LogWarning("Modified road network is not serialized.");
+            }
         }
         
     }
