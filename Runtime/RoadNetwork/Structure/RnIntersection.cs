@@ -861,6 +861,57 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
+        /// </summary>
+        public void SeparateContinuousBorder()
+        {
+            Align();
+            for (var i = 0; i < edges.Count; ++i)
+            {
+                var e0 = edges[i];
+                var e1 = edges[(i + 1) % edges.Count];
+
+                if (e0.IsBorder && e1.IsBorder && e0.Road != e1.Road)
+                {
+                    var p0 = e0.Border.GetPoint(-1);
+                    var p1 = e1.Border.GetPoint(0);
+
+                    // 1cmずらす
+                    var offset = 0.01f;
+                    if (e0.Border.Count < 2 || e1.Border.Count < 2)
+                    {
+                        DebugEx.LogError("境界線の頂点数が2未満です");
+                        continue;
+                    }
+                    var newP0 = new RnPoint(e0.Border.GetAdvancedPoint(offset, true));
+                    var newP1 = new RnPoint(e1.Border.GetAdvancedPoint(offset, false));
+                    var ls = new RnLineString(new[] { newP0, p0, newP1 });
+
+                    static void AdjustPoint(RnNeighbor e, RnPoint oldPoint, RnPoint newPoint)
+                    {
+                        e.Border.LineString.ReplacePoint(oldPoint, newPoint);
+                        foreach (var ls in e.Road?.GetAllLineStringsDistinct() ?? new HashSet<RnLineString>())
+                            ls.ReplacePoint(oldPoint, newPoint);
+                    }
+                    AdjustPoint(e0, p0, newP0);
+                    AdjustPoint(e1, p1, newP1);
+
+
+                    var way = new RnWay(ls, false, true);
+                    edges.Insert(i + 1, new RnNeighbor { Road = null, Border = way });
+                    i++;
+                }
+            }
+        }
+        /// <summary>
+        /// 所属するすべてのWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<RnWay> AllWays()
+        {
+            return base.AllWays().Concat(edges.Select(e => e.Border));
+        }
+        /// <summary>
         /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>

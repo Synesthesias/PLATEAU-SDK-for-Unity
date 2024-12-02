@@ -340,7 +340,10 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     work.DelayExec.Add(() => road.DisConnect(false));
                 }
-
+                if (GUILayout.Button("SeparateContinuousBorder"))
+                {
+                    work.DelayExec.Add(() => road.SeparateContinuousBorder());
+                }
                 if (GUILayout.Button("Convert2Intersection"))
                 {
                     work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
@@ -466,6 +469,10 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     work.DelayExec.Add(() => intersection.DisConnect(false));
                 }
 
+                if (GUILayout.Button("SeparateContinuousBorder"))
+                {
+                    work.DelayExec.Add(() => intersection.SeparateContinuousBorder());
+                }
             }
 
         }

@@ -68,11 +68,16 @@ namespace PLATEAU.RoadNetwork.Factory
         // 連続した道路を統合するかどうか
         [field: SerializeField]
         public bool MergeRoadGroup { get; set; } = true;
+
         [field: SerializeField]
         public bool CalibrateIntersection { get; set; } = true;
 
         [field: SerializeField]
         public RnModelEx.CalibrateIntersectionBorderOption CalibrateIntersectionOption { get; set; } = new();
+
+        // 道路や交差点で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
+        [field: SerializeField]
+        public bool SeparateContinuousBorder { get; set; } = true;
 
         // --------------------
         // end:フィールド
@@ -717,6 +722,11 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+                // 交差点の
+                if (SeparateContinuousBorder)
+                    ret.SeparateContinuousBorder();
+
+                // 中央分離帯の幅で道路を分割する
                 {
                     var visited = new HashSet<RnRoad>();
                     foreach (var n in work.TranMap.Values)

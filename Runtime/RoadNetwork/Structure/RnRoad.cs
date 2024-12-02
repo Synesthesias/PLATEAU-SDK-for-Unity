@@ -590,6 +590,62 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
+        /// </summary>
+        public void SeparateContinuousBorder()
+        {
+            // aとbが接続しているかどうか
+            static bool IsConnected(RnWay a, RnWay b, out RnPoint newA, out RnPoint jointPoint, out RnPoint newB)
+            {
+                newA = newB = jointPoint = null;
+                var d = new[] { 0, -1 };
+                foreach (var d1 in d)
+                {
+                    foreach (var d2 in d)
+                    {
+                        // 端点が繋がっているかどうかチェックする
+                        if (a.GetPoint(d1) == b.GetPoint(d2))
+                        {
+                            var offset = 0.01f;
+                            newA = new RnPoint(a.GetAdvancedPoint(offset, d1 == -1));
+                            newB = new RnPoint(b.GetAdvancedPoint(offset, d2 == -1));
+                            jointPoint = a.GetPoint(d1);
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            static void Check(RnLane lane)
+            {
+                // 境界線がない場合は何もしない
+                if (lane.PrevBorder == null || lane.NextBorder == null)
+                    return;
+
+                if (IsConnected(lane.PrevBorder, lane.NextBorder, out var newA, out var jointPoint, out var newB) == false)
+                    return;
+
+                var newLs = new RnLineString(new[] { newA, jointPoint, newB });
+                var prevRoad = lane.GetPrevRoad();
+                var nextRoad = lane.GetNextRoad();
+                lane.PrevBorder.LineString.ReplacePoint(jointPoint, newA);
+                lane.NextBorder.LineString.ReplacePoint(jointPoint, newB);
+                foreach (var ls in prevRoad.GetAllLineStringsDistinct())
+                    ls.ReplacePoint(jointPoint, newA);
+                foreach (var ls in nextRoad.GetAllLineStringsDistinct())
+                    ls.ReplacePoint(jointPoint, newB);
+
+                if (lane.LeftWay == null)
+                    lane.SetSideWay(RnDir.Left, new RnWay(newLs, false, false));
+                else if (lane.RightWay == null)
+                    lane.SetSideWay(RnDir.Right, new RnWay(newLs, false, true));
+            }
+
+            foreach (var lane in AllLanesWithMedian)
+                Check(lane);
+        }
+        /// <summary>
         /// 接続を解除する
         /// </summary>
         public override void DisConnect(bool removeFromModel)
@@ -647,6 +703,28 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Select(w => w.GetLerpPoint(0.5f))
                 );
         }
+
+
+        /// <summary>
+        /// 所属するすべてのWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<RnWay> AllWays()
+        {
+            foreach (var s in AllLanesWithMedian)
+            {
+                foreach (var w in s.AllWays)
+                {
+                    yield return w;
+                }
+            }
+
+            foreach (var w in base.AllWays())
+            {
+                yield return w;
+            }
+        }
+
         // ---------------
         // Static Methods
         // ---------------
@@ -1013,7 +1091,7 @@ namespace PLATEAU.RoadNetwork.Structure
                             return;
                         visited.Add(dst.LineString);
 
-                        var tolerance = 1e-2f;
+                        var tolerance = 0f;
                         if (dst.GetPoint(0).IsSamePoint(src.GetPoint(0), tolerance))
                         {
                             dst.AppendFront2LineString(src.ReversedWay());

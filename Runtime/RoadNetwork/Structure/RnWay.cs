@@ -794,6 +794,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="self"></param>
         /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
         /// <returns></returns>
         public static Vector3 GetAdvancedPointFromBack(this RnWay self, float offset, out int startIndex, out int endIndex)
         {
@@ -813,6 +815,38 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse, out int startIndex, out int endIndex)
+        {
+            if (reverse)
+                return self.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
+            else
+                return self.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse)
+        {
+            return GetAdvancedPoint(self, offset, reverse, out _, out _);
+        }
 
         /// <summary>
         /// 2D平面におけるRnway同士の距離を返す

@@ -465,6 +465,23 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 交差点の形状調整
+        /// </summary>
+        public void SeparateContinuousBorder()
+        {
+            foreach (var inter in intersections)
+            {
+                // 連続した境界線を分離する
+                inter.SeparateContinuousBorder();
+            }
+
+            foreach (var road in roads)
+            {
+                road.SeparateContinuousBorder();
+            }
+        }
+
+        /// <summary>
         /// 道路グループの交差点との境界線の角度を調整する(垂直になるようにする)
         /// </summary>
         public void AdjustRoadGroupBorder()
