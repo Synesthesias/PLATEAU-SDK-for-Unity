@@ -103,10 +103,44 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             void SyncTabStatus(IReadOnlyDictionary<string, RadioButton> radioButtons, VisualElement root)
             {
+                // 終了処理
                 foreach (var item in radioButtons)
                 {
                     var key = item.Key;
                     var val = item.Value;
+                    if (val.value == true)
+                        continue;
+                    SyncTabStatus(root, key, val);
+                }
+
+                // 初期化処理
+                foreach (var item in radioButtons)
+                {
+                    var key = item.Key;
+                    var val = item.Value;
+                    if (val.value == false)
+                        continue;
+                    SyncTabStatus(root, key, val);
+                }
+
+                static void SyncTabInstance<_Type>(VisualElement root, RadioButton val)
+                    where _Type : RoadGuiParts.RoadAdjustGuiPartBase, new()
+                {
+                    var gui = val.userData as RoadGuiParts.RoadAdjustGuiPartBase;
+                    if (gui == null)
+                    {
+                        gui = new _Type();
+                        gui.InitUXMLState(root);
+                        val.userData = gui;
+                    }
+                    if (val.value)
+                        gui.Init0(root);
+                    else
+                        gui.Terminate0(root);
+                }
+
+                static void SyncTabStatus(VisualElement root, string key, RadioButton val)
+                {
                     switch (key)
                     {
                         case "MenuGenerate":
@@ -128,22 +162,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         default:
                             break;
                     }
-                }
-
-                static void SyncTabInstance<_Type>(VisualElement root, RadioButton val)
-                    where _Type : RoadGuiParts.RoadAdjustGuiPartBase, new()
-                {
-                    var gui = val.userData as RoadGuiParts.RoadAdjustGuiPartBase;
-                    if (gui == null)
-                    {
-                        gui = new _Type();
-                        gui.InitUXMLState(root);
-                        val.userData = gui;
-                    }
-                    if (val.value)
-                        gui.Init0(root);
-                    else
-                        gui.Terminate0(root);
                 }
             }
             return true;
