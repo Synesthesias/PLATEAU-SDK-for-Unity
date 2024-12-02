@@ -957,7 +957,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var outsideIndex = ways.FindIndex(w => w.type == 0);
             if (outsideIndex < 0)
             {
-                Debug.LogWarning("outside edge not found");
+                Debug.LogWarning($"outside edge not found {(self.CityObjectGroup ? self.CityObjectGroup.name : "null")}");
                 return false;
             }
 
