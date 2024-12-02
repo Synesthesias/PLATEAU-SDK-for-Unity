@@ -93,11 +93,6 @@
 
 #InputGroup {
     padding: 3px 10px;
-    color: rgb(255, 255, 255);
-}
-
-#InputGroup .unity-label:enabled {
-    color: rgb(255, 255, 255);
 }
 
 #InputGroup .unity-integer-field__label {
@@ -129,7 +124,6 @@
 }
 
 #InputGroup .unity-toggle__label {
-    color: rgb(255, 255, 255);
     font-size: 12px;
     width: 50%;
 }
@@ -452,9 +446,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-#LeftToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
-}
 
 #LeftToggle .unity-toggle__checkmark {
     width: 60px;
@@ -489,9 +480,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-#StraightToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
-}
 
 #StraightToggle .unity-toggle__checkmark {
     width: 60px;
@@ -526,9 +514,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-#RightToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
-}
 
 #RightToggle .unity-toggle__checkmark {
     width: 60px;
