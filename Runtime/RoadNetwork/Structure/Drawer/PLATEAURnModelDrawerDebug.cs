@@ -164,7 +164,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnSideWalk self)
             {
-                return self?.ParentRoad.TargetTrans ?? Enumerable.Empty<PLATEAUCityObjectGroup>();
+                return self?.ParentRoad?.TargetTrans ?? Enumerable.Empty<PLATEAUCityObjectGroup>();
             }
         }
 
