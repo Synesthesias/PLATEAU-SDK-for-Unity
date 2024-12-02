@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using PLATEAU.Editor.RoadNetwork;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -739,35 +738,6 @@ namespace PLATEAU.Editor.RoadNetwork
         public bool IsSelectable { get; set; } = true;
 
         public WayType Type { get; set; } = WayEditorData.WayType.Undefind;
-    }
-
-    /// <summary>
-    /// 変更前の結果保持用
-    /// </summary>
-    public abstract class CacheSideWalkGroupEditorData : EditorSubData<RnRoadGroup>
-    {
-        public IReadOnlyCollection<RnRoadGroup.RnSideWalkGroup> Group { get; protected set; }
-        public bool HasSideWalk { get => Group?.Count > 0; }
-
-    }
-
-    public class CacheLeftSideWalkGroupEditorData : CacheSideWalkGroupEditorData
-    {
-        protected override bool Construct()
-        {
-            Parent.Ref.GetSideWalkGroups(out var left, out var right);  // 最適化でrightを取得しないようにする
-            Group = left;
-            return true;
-        }
-    }
-    public class CacheRightSideWalkGroupEditorData : CacheSideWalkGroupEditorData
-    {
-        protected override bool Construct()
-        {
-            Parent.Ref.GetSideWalkGroups(out var left, out var right);  // 最適化でrightを取得しないようにする
-            Group = right;
-            return true;
-        }
     }
 
 }
