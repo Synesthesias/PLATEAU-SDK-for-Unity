@@ -13,12 +13,10 @@
     background-color: rgba(255, 255, 128, 0);
     border-width: 1px;
     border-color: rgb(136, 147, 146);
-    color: rgb(190, 200, 200);
     font-weight: bold;
 }
 
 .unity-radio-button__label:enabled {
-    color: rgb(190, 200, 200);
     font-weight: bold;
 }
 
@@ -33,6 +31,11 @@
 #MenuGroup .unity-radio-button:checked {
     background-color: rgb(0, 88, 88);
     border-color: rgb(136, 147, 146);
+    color: rgb(255, 255, 255);
+}
+
+#MenuGroup .unity-radio-button:checked .unity-radio-button__label {
+    color: rgb(255, 255, 255);
 }
 
 .unity-radio-button__checkmark-background {
@@ -446,7 +449,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-
 #LeftToggle .unity-toggle__checkmark {
     width: 60px;
     height: 60px;
@@ -479,7 +481,6 @@ Scroller #unity-drag-container {
     width: 80%;
     padding-top: 10px;
 }
-
 
 #StraightToggle .unity-toggle__checkmark {
     width: 60px;
@@ -514,7 +515,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-
 #RightToggle .unity-toggle__checkmark {
     width: 60px;
     height: 60px;
@@ -529,3 +529,4 @@ Scroller #unity-drag-container {
     background-image: resource('Icon/Icon_Right_ON');
     transition: 0.2s;
 }
+
