@@ -1,8 +1,6 @@
-﻿using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -19,28 +17,54 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public List<RnLane> lanes { get; }
     }
 
+    //public class ObservableData<_Type> : IObservable<_Type>
+    //{
+
+    //    public ObservableData(in _Type data)
+    //    {
+    //        this.data = data;
+    //    }
+
+    //    private _Type data;
+    //    private Action<IObserver<_Type>> subScribe;
+
+    //    public IDisposable Subscribe(IObserver<_Type> observer)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
     /// <summary>
     /// 道路を編集する際に利用するデータモデルのインターフェイス
     /// クラス内でのLink、LaneはNode間を繋ぐLinkリスト、Laneリストを指す
     /// </summary>
     public interface IScriptableRoadMdl
     {
+        //public bool SetEditingTarget(INodeConnectionLink target);
+
+        //public INodeConnectionLink EditingTarget{ get; set; }
         public void Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
+        // 値の設定後に確認するようにする
         public bool IsSuccess { get; }
         public bool IsEditingDetailMode { get; set; }
         public int NumLeftLane { get; set; }
         public int NumRightLane { get; set; }
         public bool EnableMedianLane { get; set; }
+        public float LeftSideWalkWidth { get; set; }
+        public float RightSideWalkWidth { get; set; }
+        public float RoadWidth { get; set; }
 
         //public bool ChangeLeftLaneCount(int count);
         //public bool ChangeRightLaneCount(int count);
         //public bool SetEnableSideWalk(bool isEnable);
 
-        public bool EnableLeftSideWalk { get; set; }
-        public bool EnableRightSideWalk { get; set; }
+        //public bool ChangeRoadWidth(float width);
+        //public bool ChangeLeftSideWalkWidth(float width);
+        //public bool ChangeRightSideWalkWidth(float width);
 
+        //public bool ChangeLaneWidth(float width);
     }
 
     public struct ScriptableRoadMdlData
@@ -49,8 +73,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public int numLeftLane;
         public int numRightLane;
         public bool enableMedianLane;
-        public bool enableLeftSideWalk;
-        public bool enableRightSideWalk;
+        public float leftSideWalkWidth;
+        public float rightSideWalkWidth;
+        public float roadWidth;
 
         public void Reset(IScriptableRoadMdl mdl)
         {
@@ -58,8 +83,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             numLeftLane = mdl.NumLeftLane;
             numRightLane = mdl.NumRightLane;
             enableMedianLane = mdl.EnableMedianLane;
-            enableLeftSideWalk = mdl.EnableLeftSideWalk;
-            enableRightSideWalk = mdl.EnableRightSideWalk;
+            leftSideWalkWidth = mdl.LeftSideWalkWidth;
+            rightSideWalkWidth = mdl.RightSideWalkWidth;
+            roadWidth = mdl.RoadWidth;
 
         }
 
@@ -80,9 +106,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             numLeftLane = this.road.GetLeftLaneCount();
             numRightLane = this.road.GetRightLaneCount();
             enableMedianLane = this.road.HasMedians();
-            this.road.GetSideWalkGroups(out var leftSideWalkGroup, out var rightSideWalkGroup);
-            enableLeftSideWalk = leftSideWalkGroup.Count > 0;
-            enableRightSideWalk = rightSideWalkGroup.Count > 0;
             ResetCache();
         }
 
@@ -92,8 +115,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public int numLeftLane = 3;
         public int numRightLane = 3;
         public bool enableMedianLane = true;
-        public bool enableLeftSideWalk = false;
-        public bool enableRightSideWalk = false;
+        public float leftSideWalkWidth = 0.0f;
+        public float rightSideWalkWidth = 0.0f;
+        public float roadWidth = 0.0f;
 
         ScriptableRoadMdlData cache;
 
@@ -126,16 +150,21 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             set => SetPropety(value, ref numRightLane, nameof(NumRightLane));
         }
 
-        public bool EnableLeftSideWalk
+        public float LeftSideWalkWidth
         {
-            get => enableLeftSideWalk;
-            set => SetPropety(value, ref enableLeftSideWalk, nameof(EnableLeftSideWalk));
+            get => leftSideWalkWidth;
+            set => SetPropety(value, ref leftSideWalkWidth, nameof(leftSideWalkWidth));
+        }
+        public float RightSideWalkWidth
+        {
+            get => rightSideWalkWidth;
+            set => SetPropety(value, ref rightSideWalkWidth, nameof(rightSideWalkWidth));
         }
 
-        public bool EnableRightSideWalk
+        public float RoadWidth
         {
-            get => enableRightSideWalk;
-            set => SetPropety(value, ref enableRightSideWalk, nameof(EnableRightSideWalk));
+            get => roadWidth;
+            set => SetPropety(value, ref roadWidth, nameof(roadWidth));
         }
         public bool EnableMedianLane
         { 
@@ -189,10 +218,10 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             isEditingDetailMode = FindProperty("isEditingDetailMode");
             numLeftLane = FindProperty("numLeftLane");
             numRightLane = FindProperty("numRightLane");
-
             enableMedianLane = FindProperty("enableMedianLane");
-            enableLeftSideWalk = FindProperty("enableLeftSideWalk");
-            enableRightSideWalk = FindProperty("enableRightSideWalk");
+            leftSideWalkWidth = FindProperty("leftSideWalkWidth");
+            rightSideWalkWidth = FindProperty("rightSideWalkWidth");
+            roadWidth = FindProperty("roadWidth");
 
             isApply = FindProperty("_isApply");
             //_numLeftLane = serializedObject.FindProperty("_numLeftLane");
@@ -212,8 +241,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public SerializedProperty numLeftLane;
         public SerializedProperty numRightLane;
         public SerializedProperty enableMedianLane;
-        public SerializedProperty enableLeftSideWalk;
-        public SerializedProperty enableRightSideWalk;
+        public SerializedProperty leftSideWalkWidth;
+        public SerializedProperty rightSideWalkWidth;
+        public SerializedProperty roadWidth;
 
         public SerializedProperty isApply;
         //public UIDocBindHelper.IAccessor<int> _numLeftLane;
@@ -229,9 +259,9 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public int NumLeftLane { get => numLeftLane.intValue; set => numLeftLane.intValue = value; }
         public int NumRightLane { get => numRightLane.intValue; set => numRightLane.intValue = value; }
         public bool EnableMedianLane { get => enableMedianLane.boolValue; set => enableMedianLane.boolValue = value; }
-        public bool EnableLeftSideWalk { get => enableLeftSideWalk.boolValue; set => enableLeftSideWalk.boolValue = value; }
-        public bool EnableRightSideWalk { get => enableRightSideWalk.boolValue; set => enableRightSideWalk.boolValue = value; }
-
+        public float LeftSideWalkWidth { get => leftSideWalkWidth.floatValue; set => leftSideWalkWidth.floatValue = value; }
+        public float RightSideWalkWidth { get => rightSideWalkWidth.floatValue; set => rightSideWalkWidth.floatValue = value; }
+        public float RoadWidth { get => roadWidth.floatValue; set => roadWidth.floatValue = value; }
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
 
         public bool ChangeLaneWidth(float width)
@@ -313,77 +343,27 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     //...
                 }
             }
-            road.GetSideWalkGroups(out var leftSideWalks, out var rightSideWalks);
 
-            bool isChangedLeftSideWalk = cache.enableLeftSideWalk != EnableLeftSideWalk;
-            bool isChangedRightSideWalk = cache.enableRightSideWalk != EnableRightSideWalk;
-            bool isChangedSideWalk = isChangedLeftSideWalk || isChangedRightSideWalk;
-            if (isChangedLeftSideWalk)
+            if (cache.roadWidth != RoadWidth)
             {
-                Notify(EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
-                cache.enableLeftSideWalk = EnableLeftSideWalk;
-                UpdateSideWalk<CacheLeftSideWalkGroupEditorData>(EnableLeftSideWalk, road, editorData);
+                Notify(RoadWidth, cache.roadWidth, nameof(RoadWidth));
+                cache.roadWidth = RoadWidth;
+            }
+            if (cache.leftSideWalkWidth != LeftSideWalkWidth)
+            {
+                Notify(LeftSideWalkWidth, cache.leftSideWalkWidth, nameof(LeftSideWalkWidth));
+                cache.leftSideWalkWidth = LeftSideWalkWidth;
+            }
+            if (cache.rightSideWalkWidth != RightSideWalkWidth)
+            {
+                Notify(RightSideWalkWidth, cache.rightSideWalkWidth, nameof(RightSideWalkWidth));
+                cache.rightSideWalkWidth = RightSideWalkWidth;
+            }
 
-            }
-            if (isChangedRightSideWalk)
-            {
-                Notify(EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
-                cache.enableRightSideWalk = EnableRightSideWalk;
-                UpdateSideWalk<CacheRightSideWalkGroupEditorData>(EnableRightSideWalk, road, editorData);
-            }
-            if (isChangedSideWalk)
-            {
-                // 編集用のWayデータの更新も必要なため
-               editorData.ClearSubData<WayEditorDataList>();
-            }
 
             if (isChanged)
             {
 
-            }
-
-            static void UpdateSideWalk<_CacheSideWalkData>(bool enable, RnRoadGroup road, EditorData<RnRoadGroup> editorData)
-                where _CacheSideWalkData : CacheSideWalkGroupEditorData, new()
-            {
-                if (enable)
-                {
-                    var data = editorData.GetSubData<_CacheSideWalkData>();
-                    var group = data?.Group;
-
-                    // 前のデータあれば追加する
-                    if (group != null)
-                    {
-                        road.AddSideWalks(group);
-
-                        // 追加したので古いデータは削除
-                        editorData.ClearSubData<_CacheSideWalkData>();
-                    }
-                    else
-                    {
-                        // 仮　無い場合は作成しない
-
-                        //// 無ければ車線から複製する
-                        //var ways = road.GetEdgeWays(RnDir.Left);
-
-                        //// 車線をスライドして複製
-
-                        //// 複製した車線を元に歩道を作成
-                        //var sideWalks = new List<RnSideWalk>();
-                        //road.AddSideWalks(
-                        //    new List<RnRoadGroup.RnSideWalkGroup> { new RnRoadGroup.RnSideWalkGroup(sideWalks) });
-                    }
-
-                }
-                else
-                {
-                    // 削除前のデータはeditorDataで保持 (システム的にあり得ないが既にある場合はそのデータを再利用)
-                    var data = editorData.ReqSubData<_CacheSideWalkData>();
-                    Assert.IsNotNull(data);
-                    var group = data.Group;
-
-                    // そのまま削除 
-                    road.RemoveSideWalks(group);
-                }
             }
         }
 
