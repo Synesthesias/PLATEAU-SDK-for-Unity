@@ -137,6 +137,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     if (gui == null)
                     {
                         gui = new _Type();
+                        gui.InitUXMLState(root);
                         val.userData = gui;
                     }
                     if (val.value)

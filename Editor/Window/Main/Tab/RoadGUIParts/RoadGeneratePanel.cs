@@ -13,8 +13,6 @@ using System.Collections.Generic;
 
 using static PLATEAU.RoadNetwork.Tester.PLATEAURoadNetworkTester;   // Testerを使わず生成するようにする
 using PLATEAU.RoadNetwork.Tester;             // Todo 削除予定
-using PLATEAU.RoadNetwork.Structure.Drawer;   // Todo 削除予定
-
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -44,7 +42,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             self = GetRoot(root);
             self.style.display = DisplayStyle.Flex;
 
-            Init(root);
+            Init(self);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="root"></param>
+        public void InitUXMLState(VisualElement root)
+        {
+            var s = GetRoot(root);
+            if (s == null)
+                return;
+            s.style.display = DisplayStyle.None;
         }
 
         /// <summary>
@@ -61,14 +71,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// 初期化されていない状態での呼び出しも考慮する
         /// </summary>
         /// <param name="root"></param>
-        public virtual void Terminate0(VisualElement root)
+        public void Terminate0(VisualElement root)
         {
             if (root.Contains(self) == false)
                 return;
 
             self.style.display = DisplayStyle.None;
 
-            Terminate(root);
+            Terminate(self);
+            self = null;
         }
         public virtual void Terminate(VisualElement root)
         {
