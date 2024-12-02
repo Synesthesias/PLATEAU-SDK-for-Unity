@@ -70,9 +70,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 }
                 else
                 {
-                    var system = RoadNetworkEditingSystem.SingletonInstance.system;
-                    system.EnableLimitSceneViewDefaultControl = false;
-                    TerminateSystem_(root, system);
+                    var system = RoadNetworkEditingSystem.SingletonInstance?.system;
+                    if (system != null)
+                    {
+                        system.EnableLimitSceneViewDefaultControl = false;
+                        TerminateSystem_(root, system);
+                    }
                 }
             });
 
