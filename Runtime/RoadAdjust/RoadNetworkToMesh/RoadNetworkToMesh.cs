@@ -1,4 +1,6 @@
 using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadMarking;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
@@ -14,7 +16,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RoadNetworkToMesh
     {
-        private readonly RnModel model;
+        private readonly RnModel srcModel;
         private readonly RnmLineSeparateType lineSeparateType;
         private static readonly bool DebugMode = false;
         
@@ -24,38 +26,44 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 Debug.LogError("道路ネットワークがありません。");
             }
-            this.model = model;
+            this.srcModel = model;
             this.lineSeparateType = lineSeparateType;
         }
 
         public void Generate()
         {
+            
             using var progressDisplay = new ProgressDisplayDialogue();
             
             progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中...", 0f, "");
             
-            IRnmContourMeshGenerator[] contourGenerators;
+            // 調整します。
+            var model = new RnmModelAdjuster().Adjust(srcModel);
+            new RoadNetworkLineSmoother().Smooth(model);
+            
+            // 生成すべき輪郭線を定義します。
+            IRnmContourGenerator[] contourGenerators;
             switch (lineSeparateType)
             {
                 case RnmLineSeparateType.Combine:
-                    contourGenerators = new IRnmContourMeshGenerator[]
+                    contourGenerators = new IRnmContourGenerator[]
                     {
-                        new RnmContourMeshGeneratorRoadCombine(), // 道路
-                        new RnmContourMeshGeneratorIntersectionCombine() // 交差点(結合)
+                        new RnmContourGeneratorRoadCombine(), // 道路
+                        new RnmContourGeneratorIntersectionCombine() // 交差点(結合)
                     };
                     break;
                 case RnmLineSeparateType.Separate:
-                    contourGenerators = new IRnmContourMeshGenerator[]
+                    contourGenerators = new IRnmContourGenerator[]
                     {
-                        new RnmContourMeshGeneratorCarLane(), // 車道
-                        new RnmContourMeshGeneratorSidewalk(), // 歩道
-                        new RnmContourMeshGeneratorIntersectionSeparate() // 交差点(分割)
+                        new RnmContourGeneratorCarLane(), // 車道
+                        new RnmContourGeneratorSidewalk(), // 歩道
+                        new RnmContourGeneratorIntersectionSeparate() // 交差点(分割)
                     };
                     break;
                 default:
                     throw new ArgumentException($"Unknown {nameof(RnmLineSeparateType)}");
             }
-            var contourMeshList = new RnmContourMeshGenerator(contourGenerators).Generate(model);
+            var contourMeshList = new RnmContourGenerator(contourGenerators).Generate(model);
             
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
@@ -64,12 +72,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 progressDisplay.SetProgress("", (float)i / contourMeshList.Count, "");
                 var contourMesh = contourMeshList[i];
-                var srcObj = contourMesh.SourceObject;
+                var srcObjs = contourMesh.SourceObjects;
                 
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
                 if (mesh.vertexCount == 0) continue;
                 
-                string dstObjName = srcObj == null ? "RoadUnknown" : srcObj.name;
+                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : srcObjs[0].name;
                 var dstObj = new GameObject(dstObjName);
 
                 if (DebugMode)
@@ -100,13 +108,14 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
                 renderer.sharedMaterials = dstMats;
                 
-                if (srcObj != null)
+                if (srcObjs.Length > 0)
                 {
                     // UV4をコピーします。
-                    new RnmUV4Copier().Copy(srcObj, dstObj);
+                    new RnmUV4Copier().Copy(srcObjs, dstObj);
 
                     // 属性情報をコピーします。
-                    var srcAttr = srcObj.GetComponent<PLATEAUCityObjectGroup>();
+                    // FIXME: srcObjsが複数のケースに未対応
+                    var srcAttr = srcObjs[0].GetComponent<PLATEAUCityObjectGroup>();
                     if (srcAttr != null)
                     {
                         var dstAttr = dstObj.AddComponent<PLATEAUCityObjectGroup>();
@@ -115,12 +124,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     }
                     
                     // 他のコンポーネントをコピーします。
+                    // FIXME: srcObjsが複数のケースに未対応
                     new ComponentCopier(
                         ignoreTypes: new[]
                         { // 上述で作るコンポーネントは除外します。
                             typeof(MeshFilter), typeof(MeshRenderer), typeof(PLATEAUCityObjectGroup), typeof(MeshCollider)
                         })
-                        .Copy(srcObj, dstObj);
+                        .Copy(srcObjs[0], dstObj);
                     
                 }
             }

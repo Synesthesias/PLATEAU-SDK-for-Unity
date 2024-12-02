@@ -211,10 +211,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (Road is RnRoad road)
             {
-                // #NOTE : 車線一つしかない場合は、出ていくレーンも対象とする
-                if (road.MainLanes.Count == 1)
-                    return RnFlowTypeMask.Both;
-
                 var ret = RnFlowTypeMask.Empty;
                 if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLine(Border)))
                     ret |= RnFlowTypeMask.Inbound;

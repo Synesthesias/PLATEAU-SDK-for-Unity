@@ -124,6 +124,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 for (var i = 0; i < Count; i++)
                     yield return GetPoint(i);
             }
+
+            set
+            {
+                var points = value.ToArray();
+                LineString = RnLineString.Create(value, false);
+            }
         }
 
         /// <summary>
@@ -239,6 +245,10 @@ namespace PLATEAU.RoadNetwork.Structure
             get
             {
                 return LineString[ToRawIndex(index)];
+            }
+            set
+            {
+                LineString[ToRawIndex(index)] = value;
             }
         }
 
@@ -542,8 +552,6 @@ namespace PLATEAU.RoadNetwork.Structure
         public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            var minLen = float.MaxValue;
-
             self.LineString.GetNearestPoint(pos, out nearest, out pointIndex, out distance);
             pointIndex = self.SwitchIndex(pointIndex);
         }

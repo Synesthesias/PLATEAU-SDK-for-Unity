@@ -37,11 +37,6 @@ namespace PLATEAU.RoadNetwork.Structure
         public IReadOnlyList<RnSideWalk> SideWalks => sideWalks;
 
         /// <summary>
-        /// 使っている個所があったので後方互換で残しておく
-        /// </summary>
-        public PLATEAUCityObjectGroup TargetTran => TargetTrans.FirstOrDefault();
-
-        /// <summary>
         /// 歩道sideWalkを追加する.
         /// sideWalkの親情報も書き換える
         /// </summary>
@@ -137,6 +132,20 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             self?.UnLink(other);
             other?.UnLink(self);
+        }
+
+        /// <summary>
+        /// デバッグ表示用. TargetTransの名前を取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static string GetTargetTransName(this RnRoadBase self)
+        {
+            if (self == null || self.TargetTrans == null)
+                return "null";
+
+            return string.Join(",", self.TargetTrans.Select(t => !t ? "null" : t.name));
+
         }
     }
 }
