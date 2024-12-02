@@ -480,9 +480,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     unionWay = ways.ToList();
 
                     Handles.BeginGUI();
-                    GUILayout.BeginArea(new Rect(100, 100, 200, 300));
-
-                    GUILayout.EndArea();
                     Handles.EndGUI();
 
                 }
@@ -672,6 +669,79 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
 
                     systemState.Apply(state);
+
+                }
+            }
+
+            var intersectionEditorData = editorSystem.SelectedRoadNetworkElement as EditorData<RnIntersection>;
+            if (intersectionEditorData != null)
+            {
+                // 簡易モードで表示
+                if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+                {
+                    SceneGUIState state = new SceneGUIState();
+                    systemState.Init(out state);
+
+                    var currentCamera = SceneView.currentDrawingSceneView.camera;
+                    state.currentCamera = currentCamera;
+
+                    
+                    var EditingIntersectionMod = editorSystem.RoadNetworkSimpleEditModule.EditingIntersectionMod;
+
+                    var buttonSize = 2.0f;
+
+                    bool isSelectdEntablePoint = EditingIntersectionMod.IsSelectdEntablePoint;
+                    if (isSelectdEntablePoint == false)
+                    {
+                        foreach (var item in EditingIntersectionMod.EnterablePoints)
+                        {
+
+                            // 流入点の位置にボタンを表示する
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkEntarablePointButtonHandleCap))
+                            {
+                                EditingIntersectionMod.SetEntablePoint(item);
+                                // 流入点が選択された
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in EditingIntersectionMod.ExitablePoints)
+                        {
+                            // 流出点の位置にボタンを表示する
+                            if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize, RoadNetworkExitablePointButtonHandleCap))
+                            {
+                                // 流出点が選択された
+                                EditingIntersectionMod.SetExitablePoint(item);
+                                break;
+                            }
+                        }
+                    }
+
+                    // Trackの生成、削除に必要な設定が済んで更新できるか？
+                    if (EditingIntersectionMod.CanTryUpdateTrack)
+                    {
+                        EditingIntersectionMod.UpdateTrack();
+                    }
+
+
+                    // 遅延実行 コレクションの要素数などを変化させる
+                    if (state.delayCommand != null)
+                        state.delayCommand.Invoke();
+
+                    // 変更を通知する
+                    if (state.isDirtyTarget)
+                    {
+                        editorSystem.NotifyChangedRoadNetworkObject2Editor();
+                    }
+
+                    systemState.Apply(state);
+
+
+                }
+                else // 詳細モードでのみ表示
+                {
 
                 }
             }
@@ -1310,6 +1380,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     break;
             }
         }
+
         private static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
         {
             switch (eventType)
@@ -1324,6 +1395,20 @@ namespace PLATEAU.Editor.RoadNetwork
                     Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
                     break;
             }
+        }
+
+        private static void RoadNetworkEntarablePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            if (eventType == EventType.Repaint)
+                Handles.color = Color.red;
+            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
+        }
+
+        private static void RoadNetworkExitablePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)
+        {
+            if (eventType == EventType.Repaint)
+                Handles.color = Color.blue;
+            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
         }
 
         private static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation, float size, EventType eventType)

@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using PLATEAU.Editor.RoadNetwork;
+using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -76,6 +77,11 @@ namespace PLATEAU.Editor.RoadNetwork
 
             d.data = this.Select(d.selecter);
             return true;
+        }
+
+        public void ClearCache()
+        {
+            cacheDataMap.Clear();
         }
 
         private class CacheData<_Val>
@@ -768,6 +774,71 @@ namespace PLATEAU.Editor.RoadNetwork
             Group = right;
             return true;
         }
+    }
+
+    public abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
+    {
+        public IReadOnlyCollection<RnNeighbor> Points { get => points; }
+
+        protected IReadOnlyCollection<RnNeighbor> points = null;
+
+    }
+
+
+    public class EnterablePointEditorData : NeighborPointEditarData
+    {
+        protected override bool Construct()
+        {
+            points = CollectEnterablePoints(Parent);
+            return true;
+        }
+
+        private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
+        {
+            var enterablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+            foreach (var neighbor in data.Ref.Neighbors)
+            {
+                if (CheckEnterablePoint(neighbor))
+                    enterablePoints.Add(neighbor);
+            }
+            return enterablePoints;
+        }
+
+        private static bool CheckEnterablePoint(RnNeighbor neighbor)
+        {
+            var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
+            return isInboud;
+        }
+
+
+    }
+
+    public class ExitablePointEditorData : NeighborPointEditarData
+    {
+        protected override bool Construct()
+        {
+            points = CollectExitablePoints(Parent);
+            return true;
+        }
+
+        private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(EditorData<RnIntersection> data)
+        {
+            var exitablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
+            foreach (var neighbor in data.Ref.Neighbors)
+            {
+                if (CheckExitablePoint(neighbor))
+                    exitablePoints.Add(neighbor);
+            }
+            return exitablePoints;
+        }
+
+        private static bool CheckExitablePoint(RnNeighbor neighbor)
+        {
+            var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
+            return isOutbound;
+        }
+
+
     }
 
 }

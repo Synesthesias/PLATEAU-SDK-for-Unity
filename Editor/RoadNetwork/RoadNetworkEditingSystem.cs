@@ -1300,6 +1300,9 @@ namespace PLATEAU.Editor.RoadNetwork
             private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
             _WayCalcData waySlideCalcCache = null;
 
+            public EditingIntersection EditingIntersectionMod { get => editingIntersection; }
+            private EditingIntersection editingIntersection = new();
+
             enum State
             {
                 Default,    // 通常の状態
@@ -1307,7 +1310,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             State currentState = State.Default;
 
-            //private HashSet<LinkGroupEditorData> linkGroupEditorData = new HashSet<LinkGroupEditorData>();
             /// <summary>
             /// 計算や処理に必要な要素を初期化する
             /// </summary>
@@ -1527,8 +1529,9 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 nodeEditorData.Clear();
                 roadGroupEditorData.Clear();
+                roadGroupEditorData.ClearCache();
                 ptEditorData.Clear();
-
+                intersectionEditorData.Clear();
             }
 
             class _WayCalcData
@@ -1868,6 +1871,139 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
                 }
             }
+
+            public void Setup(EditorData<RnIntersection> data)
+            {
+                editingIntersection.SetTarget(data);
+                editingIntersection.Activate(true);
+            }
+
+            public void Terminate()
+            {
+                editingIntersection.SetTarget(null);
+                editingIntersection.Activate(false);
+            }
+
+            public class EditingIntersection
+            {
+                public bool SetTarget(EditorData<RnIntersection> intersection)
+                {
+                    if (this.intersection == intersection)
+                        return false;
+
+                    if (intersection == null)
+                    {
+                        Activate(false);
+                        return true;
+                    }
+
+                    this.intersection = intersection;
+                    return true;
+                }
+
+                public void Activate(bool activate)
+                {
+                    this.activate = activate;
+                }
+
+                public IReadOnlyCollection<RnNeighbor> EnterablePoints
+                {
+                    get
+                    {
+                        var d = intersection.ReqSubData<EnterablePointEditorData>();
+                        return d.Points;
+                    }
+                }
+
+                public IReadOnlyCollection<RnNeighbor> ExitablePoints
+                {
+                    get
+                    {
+                        var d = intersection.ReqSubData<ExitablePointEditorData>();
+                        return d.Points;
+                    }
+                }
+
+                /// <summary>
+                /// 流入点と流出点を返す
+                /// </summary>
+                public (RnNeighbor, RnNeighbor) SelectedPoints
+                {
+                    get => (selectEntablePoint, selectExitablePoint);
+                }
+
+                public bool IsSelectdEntablePoint
+                {
+                    get => selectEntablePoint != null;
+                }
+
+                public bool CanTryUpdateTrack
+                {
+                    get => selectEntablePoint != null && selectExitablePoint != null;
+                }
+
+                public void SetEntablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(EnterablePoints.Contains(neighbor));
+
+                    selectEntablePoint = neighbor;
+                }
+                
+                public void SetExitablePoint(RnNeighbor neighbor)
+                {
+                    Assert.IsNotNull(neighbor);
+
+                    // 選択中の交差点に含まれているか
+                    Assert.IsTrue(ExitablePoints.Contains(neighbor));
+
+                    selectExitablePoint = neighbor;
+                }
+
+                /// <summary>
+                /// 選択状態やトラックの有無で処理を分岐する
+                /// </summary>
+                public void UpdateTrack()
+                {
+                    Assert.IsTrue(CanTryUpdateTrack);
+
+                    var track = intersection.Ref.FindTrack(selectEntablePoint, selectExitablePoint);
+                    if (track != null)
+                        intersection.Ref.RemoveTrack(track);
+                    else
+                        intersection.Ref.TryAddOrUpdateTrack(selectEntablePoint, selectExitablePoint);
+
+                    selectEntablePoint = null;
+                    selectExitablePoint = null;
+                }
+
+                public void RemoveTarck()
+                {
+                    selectEntablePoint = null;
+                    selectExitablePoint = null;
+                }
+
+                //public void CreateSubData()
+                //{
+                //    intersection.ClearSubData();
+
+                //    var enterablePointEditorData = EnterablePointEditorData.Create(intersection); 
+                //    intersection.TryAdd(enterablePointEditorData);
+                //}
+
+
+
+                private EditorData<RnIntersection> intersection;
+                private bool activate = false;
+
+                private RnNeighbor selectEntablePoint = null;
+                private RnNeighbor selectExitablePoint = null;
+
+                private bool isShapeEditingMode = false;
+            }
+
         }
     }
 
