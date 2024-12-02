@@ -132,7 +132,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
             
             // 処理3
-            
             for(int dstTriID=0 ; dstTriID < dstTriangles.Length / 3; dstTriID++)
             {
                 int[] triDstVertIDs = new int[]
@@ -149,6 +148,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 // 未確定の頂点のみで構成される三角形について
                 var dstCenter = (dstV1 + dstV2 + dstV3) / 3;
                 bool srcTriFound = false;
+                var nearestUV1Tri = new UV4Int[3];
+                float nearestSrcCenterDist = float.MaxValue;
                 for (int srcTriID = 0; srcTriID < srcTriangles.Count / 3; srcTriID++)
                 {
                     var srcV1 = srcVerts[srcTriangles[srcTriID * 3]];
@@ -156,6 +157,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     var srcV3 = srcVerts[srcTriangles[srcTriID * 3 + 2]];
                     if (!IsInsideTriangle(dstCenter, srcV1, srcV2, srcV3))
                     {
+                        var srcCenter = (srcV1 + srcV2 + srcV3) / 3f;
+                        var dist = Vector2.SqrMagnitude(dstCenter.Xz() - srcCenter.Xz());
+                        if(dist < nearestSrcCenterDist)
+                        {
+                            nearestSrcCenterDist = dist;
+                            for (int i = 0; i < 3; i++)
+                            {
+                                nearestUV1Tri[i] = srcUV4.Get(srcTriangles[srcTriID * 3 + i]);
+                            }
+                        }
                         continue;
                     }
 
@@ -175,10 +186,15 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                     break;
                 }
-
+                
+                // それでも見つからなかったら、重心がもっとも近いものを採用（あまり嬉しくないケース）
                 if (!srcTriFound)
                 {
-                    Debug.LogWarning("could not found srcTriangle");
+                    for(int i=0; i<3; i++)
+                    {
+                        if (dstUV4.IsDetermined(triDstVertIDs[i])) continue;
+                        dstUV4.Determine(triDstVertIDs[i], nearestUV1Tri[i]);
+                    }
                 }
             }
 

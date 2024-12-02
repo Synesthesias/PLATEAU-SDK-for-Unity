@@ -75,7 +75,7 @@ namespace PLATEAU.GranularityConvert
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(isTextureCombined, true);
 
                 // Modelをゲームオブジェクトに変換して配置します。
-                var commonParent = CalcCommonParent(conf.SrcTransforms.Get.ToArray());
+                var commonParent = new UniqueParentTransformList(conf.SrcTransforms.Get).CalcCommonParent();
 
                 var materialConverterToUnity =
                     new RecoverFromGameMaterialID(unityMeshToDllSubMeshConverter);
@@ -132,62 +132,6 @@ namespace PLATEAU.GranularityConvert
         {
             using var progressBar = new ProgressBar("");
             return await ConvertAsync(conf, progressBar);
-        }
-
-        /// <summary>
-        /// 引数の共通の親を探し、親のうちもっとも階層上の子であるものを返します。
-        /// 共通の親がない場合、nullを返します。
-        /// </summary>
-        private static Transform CalcCommonParent(IReadOnlyList<Transform> srcList)
-        {
-            // 各親が、srcListのうちいくつの親であるかを数えます。
-            Dictionary<Transform, int> descendantCountDict = new();
-            foreach (var src in srcList)
-            {
-                var parent = src.parent;
-                // 親をたどりながら子孫カウントをインクリメントします。
-                while (parent != null)
-                {
-                    if (descendantCountDict.ContainsKey(parent))
-                    {
-                        descendantCountDict[parent]++;
-                    }
-                    else
-                    {
-                        descendantCountDict.Add(parent, 1);
-                    }
-
-                    parent = parent.parent;
-                }
-            }
-
-            if (descendantCountDict.Count == 0) return null;
-
-            var commonParents = descendantCountDict
-                .Where(pair => pair.Value == srcList.Count)
-                .Select(pair => pair.Key)
-                .ToArray();
-            if (commonParents.Length == 0) return null;
-
-            // 共通の親のうち、もっとも子であるものを探します。
-            for (int i = 0; i < commonParents.Length; i++)
-            {
-                var trans1 = commonParents[i];
-                bool isTrans1Parented = false;
-                for (int j = i + 1; j < commonParents.Length; j++)
-                {
-                    var trans2 = commonParents[j];
-                    if (trans2.IsChildOf(trans1))
-                    {
-                        isTrans1Parented = true;
-                        break;
-                    }
-                }
-
-                if (!isTrans1Parented) return trans1;
-            }
-
-            throw new Exception("Failed to search common parent.");
         }
 
         private PLATEAUCityObjectGroup SearchFirstCityObjGroup(UniqueParentTransformList transforms)
