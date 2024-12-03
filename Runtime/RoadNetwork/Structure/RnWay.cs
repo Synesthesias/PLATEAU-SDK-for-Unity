@@ -178,7 +178,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnWay(RnWay src, bool cloneVertex = true)
         {
-            LineString = src.LineString.Clone(true);
+            LineString = src.LineString.Clone(cloneVertex);
             IsReversed = src.IsReversed;
             IsReverseNormal = src.IsReverseNormal;
         }
