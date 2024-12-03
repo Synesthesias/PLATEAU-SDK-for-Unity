@@ -901,15 +901,22 @@ namespace PLATEAU.RoadNetwork.Graph
             // 0 : 外側の辺, 1:内側の辺, 2:境界線
             static int Edge2WayType(REdge e)
             {
-                // 歩道にしか所属しない場合は外側の辺
+                // 自身の歩道にしか所属しない場合は外側の辺
                 if (e.Faces.Count == 1)
                     return 0;
 
+                // 以下複数のFaceと所属する場合
+
                 var t = e.GetAllFaceTypeMaskOrDefault();
-                // 複数の歩道に所属している場合は境界線
+                // 複数の歩道に所属している場合は歩道との境界線
                 if (t.HasAnyFlag(RRoadTypeMask.SideWalk))
                     return 2;
-                // 歩道以外に所属している場合は内側の辺
+
+                // 歩道との境界線ではない and 他のtranメッシュとの境界線は外側の辺
+                if (e.Faces.GroupBy(f => f.CityObjectGroup).Count() > 1)
+                    return 0;
+
+                // 自身のtranメッシュの歩道以外に所属している場合は内側の辺
                 return 1;
             }
             var vertices = self.ComputeOutlineVertices();
@@ -950,7 +957,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var outsideIndex = ways.FindIndex(w => w.type == 0);
             if (outsideIndex < 0)
             {
-                Debug.LogWarning("outside edge not found");
+                Debug.LogWarning($"outside edge not found {(self.CityObjectGroup ? self.CityObjectGroup.name : "null")}");
                 return false;
             }
 
