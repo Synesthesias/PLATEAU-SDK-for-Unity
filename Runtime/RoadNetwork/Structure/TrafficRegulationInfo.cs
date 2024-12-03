@@ -1,9 +1,9 @@
 ﻿using PLATEAU.RoadNetwork.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.Linq;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
@@ -34,7 +34,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // デバッグ用
-        public string DebugId { get=> "t_" + Parent.DebugMyId; }
+        public string DebugId { get => "t_" + Parent.DebugMyId; }
 
         // RnIntersection
         public RnRoadBase Parent { get; private set; } = null;
@@ -46,7 +46,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public List<TrafficSignalLight> TrafficLights { get; private set; } = new List<TrafficSignalLight>();
         public List<TrafficSignalControllerPattern> SignalPatterns { get; private set; } = new List<TrafficSignalControllerPattern>();
 
-        public Vector3 Position { get => Parent.GetCenter(); }
+        public Vector3 Position { get => Parent.GetCentralVertex(); }
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ namespace PLATEAU.RoadNetwork.Structure
         ///// </summary>
         //public StopLine stopLine;
 
-        public Vector3 Position 
+        public Vector3 Position
         {
             get
             {
@@ -233,7 +233,7 @@ namespace PLATEAU.RoadNetwork.Structure
     //    public TrafficSignalLight ReferenceSignalLight { get; set; }
     //    public float Seconds { get; set; }
     //}
-    
+
     /// <summary>
     /// 交通規制情報
     /// </summary>
@@ -281,16 +281,16 @@ namespace PLATEAU.RoadNetwork.Structure
             Undefind = 0,
 
             // 0x0000000X
-            Stop            = 0x0001,
-            Attention       = 0x00000002,
-            Go              = 0x0003,
+            Stop = 0x0001,
+            Attention = 0x00000002,
+            Go = 0x0003,
 
             // 0x000000X0
-            Flashing        = 0x00000010,
+            Flashing = 0x00000010,
 
             // 0x00000X00
-            BlueArrow       = 0x000000100,
-            YellowArrow     = 0x000000200,
+            BlueArrow = 0x000000100,
+            YellowArrow = 0x000000200,
 
             //...
 

@@ -65,6 +65,20 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool UseContourMesh { get; set; } = true;
 
+        // 連続した道路を統合するかどうか
+        [field: SerializeField]
+        public bool MergeRoadGroup { get; set; } = true;
+
+        [field: SerializeField]
+        public bool CalibrateIntersection { get; set; } = true;
+
+        [field: SerializeField]
+        public RnModelEx.CalibrateIntersectionBorderOption CalibrateIntersectionOption { get; set; } = new();
+
+        // 道路や交差点で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
+        [field: SerializeField]
+        public bool SeparateContinuousBorder { get; set; } = true;
+
         // --------------------
         // end:フィールド
         // --------------------
@@ -312,11 +326,14 @@ namespace PLATEAU.RoadNetwork.Factory
             public List<Line> Lines { get; } = new List<Line>();
 
             // 隣接オブジェクトの数
-            public int NeighborCount => Lines.Where(l => l.IsBorder).Count();
+            public int NeighborCount => Lines.Count(l => l.IsBorder);
 
             // LodLevel
             public int LodLevel => Faces.Any() ? Faces.Max(f => f.LodLevel) : 0;
 
+            /// <summary>
+            /// 道路形状タイプ(道路/交差点/行き止まり/孤島)
+            /// </summary>
             public RoadType RoadType
             {
                 get
@@ -396,6 +413,14 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 孤立
                 if (RoadType == RoadType.Isolated)
                 {
+                    // 孤立した中央分離帯は道路構造の生成対象から外す
+                    // (道路に完全内包する中央分離帯だったりと無意味なので)
+                    if (FaceGroup.RoadTypes.IsMedian())
+                    {
+                        DebugEx.LogWarning($"skip : {cityObjectGroup} is isolated median ");
+                        return null;
+                    }
+
                     var way = Work.CreateWay(Vertices);
                     var road = RnRoad.CreateIsolatedRoad(cityObjectGroup, way);
                     return road;
@@ -697,6 +722,11 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
+                // 交差点の
+                if (SeparateContinuousBorder)
+                    ret.SeparateContinuousBorder();
+
+                // 中央分離帯の幅で道路を分割する
                 {
                     var visited = new HashSet<RnRoad>();
                     foreach (var n in work.TranMap.Values)
@@ -721,7 +751,7 @@ namespace PLATEAU.RoadNetwork.Factory
                                     linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
                                 }
                             }
-                            
+
                             foreach (var r in linkGroup.Roads)
                                 visited.Add(r);
                         }
@@ -729,7 +759,17 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 連続した道路を一つにまとめる
-                ret.MergeRoadGroup();
+                if (MergeRoadGroup)
+                    ret.MergeRoadGroup();
+
+
+                // 交差点との境界線が垂直になるようにする
+                if (CalibrateIntersection && CalibrateIntersectionOption != null)
+                {
+                    ret.CalibrateIntersectionBorderForAllRoad(CalibrateIntersectionOption);
+                }
+
+                // 道路を分割する
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
                 return Task.FromResult(ret);

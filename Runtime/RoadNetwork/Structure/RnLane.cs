@@ -125,20 +125,29 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
-        // 左右両方のWayを返す
+        // 左右両方のWayを返す(nullの物は含まない)
         public IEnumerable<RnWay> BothWays
         {
             get
             {
-                return Enumerable.Repeat(LeftWay, 1).Concat(Enumerable.Repeat(RightWay, 1)).Where(w => w != null);
+                if (LeftWay != null)
+                    yield return LeftWay;
+                if (RightWay != null)
+                    yield return RightWay;
             }
         }
 
+        /// <summary>
+        /// Prev/Nextの境界線を返す(nullの物は含まない)
+        /// </summary>
         public IEnumerable<RnWay> AllBorders
         {
             get
             {
-                return Enumerable.Repeat(PrevBorder, 1).Concat(Enumerable.Repeat(NextBorder, 1)).Where(w => w != null);
+                if (PrevBorder != null)
+                    yield return PrevBorder;
+                if (NextBorder != null)
+                    yield return NextBorder;
             }
         }
 
@@ -252,8 +261,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public void DisConnectBorder()
         {
-            PrevBorder = PrevBorder?.Clone();
-            NextBorder = NextBorder?.Clone();
+            PrevBorder = PrevBorder?.Clone(true);
+            NextBorder = NextBorder?.Clone(true);
         }
 
         /// <summary>
@@ -866,18 +875,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// レーンの中心線っぽい点を返す. 基本はデバッグ用
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static Vector3 GetCenter(this RnLane self)
+        public static Vector3 GetCentralVertex(this RnLane self)
         {
-            var a = self
-                .GetVertices()
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            return Vector3Ex.Centroid(self
+                .BothWays
+                .Select(w => w.GetLerpPoint(0.5f)));
         }
 
         public static RnLaneBorderType? GetBorderType(this RnLane self, RnWay border)

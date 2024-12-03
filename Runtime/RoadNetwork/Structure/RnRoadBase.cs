@@ -90,6 +90,19 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 所属するすべてのWayを取得(重複の可能性あり)
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<RnWay> AllWays()
+        {
+            foreach (var sw in sideWalks)
+            {
+                foreach (var way in sw.AllWays)
+                    yield return way;
+            }
+        }
+
+        /// <summary>
         /// otherをつながりから削除する. other側の接続は消えない
         /// </summary>
         /// <param name="other"></param>
@@ -108,12 +121,11 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>
-        public virtual Vector3 GetCenter()
+        public virtual Vector3 GetCentralVertex()
         {
             return Vector3.zero;
         }
@@ -146,6 +158,18 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return string.Join(",", self.TargetTrans.Select(t => !t ? "null" : t.name));
 
+        }
+
+        /// <summary>
+        /// selfのすべてのLineStringを取得
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static HashSet<RnLineString> GetAllLineStringsDistinct(this RnRoadBase self)
+        {
+            if (self == null)
+                return new HashSet<RnLineString>();
+            return self.AllWays().Select(w => w.LineString).Where(ls => ls != null).ToHashSet();
         }
     }
 }

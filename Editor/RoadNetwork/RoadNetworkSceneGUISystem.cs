@@ -357,8 +357,8 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 var subData = item.ReqSubData<RoadGroupEditorData>();
 
-                var p1 = subData.A.GetCenter();
-                var p2 = subData.B.GetCenter();
+                var p1 = subData.A.GetCentralVertex();
+                var p2 = subData.B.GetCentralVertex();
                 var btnP = (p1 + p2) / 2.0f;
 
 
@@ -1276,7 +1276,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static Vector3 CalcLanePos(RnLane centerLane)
         {
-            return centerLane.GetCenter();
+            return centerLane.GetCentralVertex();
         }
 
 

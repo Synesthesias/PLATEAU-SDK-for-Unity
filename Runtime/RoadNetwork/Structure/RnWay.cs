@@ -383,13 +383,12 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 境界線の中央の点を返す
         /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
         /// </summary>
         /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public int GetLerpPoint(float p, out Vector3 midPoint)
+        public float GetLerpPoint(float p, out Vector3 midPoint)
         {
             return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
@@ -486,7 +485,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// cloneVertexがtrueの時は頂点もクローンする
         /// </summary>
         /// <returns></returns>
-        public RnWay Clone(bool cloneVertex = true)
+        public RnWay Clone(bool cloneVertex)
         {
             return new RnWay(LineString.Clone(cloneVertex), IsReversed, IsReverseNormal);
         }
@@ -563,6 +562,7 @@ namespace PLATEAU.RoadNetwork.Structure
             pointIndex = self.SwitchIndex(pointIndex);
         }
 
+
         /// <summary>
         /// nullチェック込みのIsValid
         /// </summary>
@@ -581,6 +581,18 @@ namespace PLATEAU.RoadNetwork.Structure
         public static float CalcLength(this RnWay self)
         {
             return self.LineString.CalcLength();
+        }
+
+        public static float CalcLength(this RnWay self, float startIndex, float endIndex)
+        {
+            if (self.IsReversed)
+            {
+                return self.LineString.CalcLength(self.SwitchIndex(endIndex), self.SwitchIndex(startIndex));
+            }
+            else
+            {
+                return self.LineString.CalcLength(startIndex, endIndex);
+            }
         }
 
         /// <summary>
@@ -759,5 +771,100 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// selfの先頭から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は最後の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromFront(this RnWay self, float offset, out int startIndex, out int endIndex)
+        {
+            if (self.IsReversed)
+            {
+                var ret = self.LineString.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
+                startIndex = self.SwitchIndex(startIndex);
+                endIndex = self.SwitchIndex(endIndex);
+                return ret;
+            }
+            else
+            {
+                var ret = self.LineString.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
+                startIndex = self.SwitchIndex(startIndex);
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// selfの最後から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromBack(this RnWay self, float offset, out int startIndex, out int endIndex)
+        {
+            if (self.IsReversed)
+            {
+                var ret = self.LineString.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
+                startIndex = self.SwitchIndex(startIndex);
+                endIndex = self.SwitchIndex(endIndex);
+                return ret;
+            }
+            else
+            {
+                var ret = self.LineString.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
+                startIndex = self.SwitchIndex(startIndex);
+                endIndex = self.SwitchIndex(endIndex);
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse, out int startIndex, out int endIndex)
+        {
+            if (reverse)
+                return self.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
+            else
+                return self.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse)
+        {
+            return GetAdvancedPoint(self, offset, reverse, out _, out _);
+        }
+
+        /// <summary>
+        /// 2D平面におけるRnway同士の距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = AxisPlane.Xz)
+        {
+            return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
+        }
     }
 }

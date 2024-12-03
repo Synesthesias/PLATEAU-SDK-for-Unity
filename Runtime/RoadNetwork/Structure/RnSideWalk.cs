@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.Util;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -103,7 +105,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 全てのWay
+        /// 全てのWay(nullは含まない)
         /// </summary>
         public IEnumerable<RnWay> AllWays => SideWays.Concat(EdgeWays);
 
@@ -122,6 +124,7 @@ namespace PLATEAU.RoadNetwork.Structure
             this.startEdgeWay = startEdgeWay;
             this.endEdgeWay = endEdgeWay;
             this.laneType = laneType;
+            TryAlign();
         }
 
         public RnSideWalkWayTypeMask GetValidWayTypeMask()
@@ -165,6 +168,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.outsideWay = outsideWay;
             this.insideWay = insideWay;
+            TryAlign();
         }
 
         /// <summary>
@@ -176,6 +180,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.startEdgeWay = startWay;
             this.endEdgeWay = endWay;
+            TryAlign();
         }
 
         /// <summary>
@@ -209,6 +214,56 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// InSideWay/OutSideWayの方向を, StartEdgeWay/EndEdgeWayを見て合わせる.
+        /// これらのWayがない場合は何もしない
+        /// </summary>
+        /// <returns></returns>
+        public void TryAlign()
+        {
+            void Impl(RnWay way)
+            {
+                if (way.IsValidOrDefault() == false)
+                    return;
+
+                if (StartEdgeWay.IsValidOrDefault())
+                {
+                    // StartEdgeWay上にway[0]がある場合は整列されているので何もしない
+                    var st = way.GetPoint(0);
+                    if (StartEdgeWay.Points.Any(p => p.IsSamePoint(st)))
+                        return;
+
+                    // StartEdgeWay上にway[^1]がある場合は逆向きなので反転する
+                    var en = way.GetPoint(-1);
+                    if (StartEdgeWay.Points.Any(p => p.IsSamePoint(en)))
+                    {
+                        way.Reverse(true);
+                        return;
+                    }
+                }
+
+                if (EndEdgeWay.IsValidOrDefault())
+                {
+
+                    // EndEdgeWay上にway[^1]がある場合は整列されているので何もしない
+                    var en = way.GetPoint(-1);
+                    if (EndEdgeWay.Points.Any(p => p.IsSamePoint(en)))
+                        return;
+
+                    // EndEdgeWay上にway[0]がある場合は逆向きなので反転する
+                    var st = way.GetPoint(0);
+                    if (EndEdgeWay.Points.Any(p => p.IsSamePoint(st)))
+                    {
+                        way.Reverse(true);
+                        return;
+                    }
+
+                }
+            }
+            Impl(InsideWay);
+            Impl(OutsideWay);
+        }
+
+        /// <summary>
         /// 歩道作成
         /// </summary>
         /// <param name="parent"></param>
@@ -228,19 +283,71 @@ namespace PLATEAU.RoadNetwork.Structure
 
     public static class RnSideWalkEx
     {
-        public static Vector3 GetCenter(this RnSideWalk self)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector3 GetCentralVertex(this RnSideWalk self)
         {
             if (self == null)
                 return Vector3.zero;
-            var num = (self.OutsideWay?.Count ?? 0) + (self.InsideWay?.Count ?? 0);
-            if (num == 0)
-                return Vector3.zero;
-            var sum = Enumerable.Repeat(self.OutsideWay, 1)
-                .Concat(Enumerable.Repeat(self.InsideWay, 1))
-                .Where(w => w != null)
-                .SelectMany(w => w)
-                .Aggregate(Vector3.zero, (sum, way) => sum + way);
-            return sum / num;
+            return Vector3Ex.Centroid(self
+                .SideWays
+                .Select(w => w.GetLerpPoint(0.5f)));
+        }
+
+        /// <summary>
+        /// selfとotherが隣接しているかどうか(境界線が重なっているかどうか)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static bool IsNeighboring(this RnSideWalk self, RnSideWalk other)
+        {
+            return self.AllWays.Any(x => other.AllWays.Any(b => x.IsSameLine(b)));
+        }
+
+
+        /// <summary>
+        /// 歩道swとotherの距離スコアを計算する(近いほど低い)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static float? CalcRoadProximityScore(this RnSideWalk self, RnRoadBase other)
+        {
+            if (other == null || self == null)
+                return null;
+
+            // otherを構成するWayのうち比較対象のもののみを取得
+            var targetWays = new List<RnWay>();
+            if (other is RnRoad road)
+            {
+                targetWays = road.GetMergedSideWays().ToList();
+            }
+            else if (other is RnIntersection intersection)
+            {
+                targetWays = intersection.Edges.Select(e => e.Border).ToList();
+            }
+
+            if (targetWays.Count == 0)
+                return null;
+
+            // swのInsideWayの各点に対して, targetWaysとの最近傍点を計算し, その平均をスコアとする
+            // 最も小さい距離だと道路同士の境界部分に繋がっている歩道がどっちの評価も0になるため全体平均で見る
+            float GetNearestDistance(Vector3 v)
+            {
+                return targetWays.Select(w =>
+                {
+                    w.GetNearestPoint(v, out var nearest, out float pointIndex, out float distance);
+                    return distance;
+                }).Min();
+            }
+
+            return self.InsideWay
+                .Select(GetNearestDistance)
+                .Average();
         }
     }
 }
