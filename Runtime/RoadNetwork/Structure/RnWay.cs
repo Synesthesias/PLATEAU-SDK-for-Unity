@@ -176,9 +176,9 @@ namespace PLATEAU.RoadNetwork.Structure
             IsReverseNormal = isReverseNormal;
         }
 
-        public RnWay(RnWay src)
+        public RnWay(RnWay src, bool cloneVertex = true)
         {
-            LineString = src.LineString.Clone();
+            LineString = src.LineString.Clone(true);
             IsReversed = src.IsReversed;
             IsReverseNormal = src.IsReverseNormal;
         }
