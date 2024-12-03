@@ -193,9 +193,6 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
 
-        // 道路ネットワークを所持したオブジェクトのデフォルト名
-        private readonly string defaultRoadNetworkObjectName = "RoadNetworkTester";
-
         private readonly ISystemInstance systemInstance;
         private readonly VisualElement rootVisualElement;
 
@@ -324,14 +321,20 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // 道路ネットワークの取得を試みる　
-            var roadNetworkObj = GameObject.Find(defaultRoadNetworkObjectName);
-            var r = roadNetworkObj.GetComponent<PLATEAURnStructureModel>();
+            var r = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (r == null)
+            {
+                Debug.Log("Can't find PLATEAURnStructureModel");
+                return false;
+            }
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {
                 Debug.Log("RoadNetwork is null.");
                 return false;
             }
+
+            var roadNetworkObj = r.gameObject;
 
             // その他 初期化
             if (roadNetwork != null)
