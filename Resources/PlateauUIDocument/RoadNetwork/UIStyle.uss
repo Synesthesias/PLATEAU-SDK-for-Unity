@@ -103,7 +103,6 @@
 }
 
 #InputGroup .unity-integer-field__input {
-    background-color: rgb(42, 42, 42);
     border-radius: 2px;
     height: 30px;
     padding: 0 10px;
@@ -115,7 +114,6 @@
 }
 
 #InputGroup .unity-float-field__input {
-    background-color: rgb(42, 42, 42);
     border-radius: 2px;
     height: 30px;
     padding: 0 10px;
@@ -304,7 +302,6 @@
 }
 
 .unity-popup-field .unity-base-field__input {
-    background-color: rgb(42, 42, 42);
     border-color: rgb(100, 100, 100);
     height: auto;
     border-radius: 2px;
