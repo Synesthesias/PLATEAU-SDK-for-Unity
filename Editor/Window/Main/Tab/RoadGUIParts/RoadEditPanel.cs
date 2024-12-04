@@ -23,7 +23,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         static readonly string name = "RoadNetwork_EditPanel";
         GameObject selfGameObject = null;
         public RoadNetworkEditingSystem EditorInterface { get; private set; }
-        EventHandler SetupMethod = null;
+        EventCallback<ChangeEvent<bool>> activateEditSystemMethod;
+        EventHandler setupMethod = null;
 
         public bool IsSuccess => throw new NotImplementedException();
 
@@ -61,23 +62,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
             editModeToggle.value = RoadNetworkEditingSystem.SingletonInstance?.system != null;
-            editModeToggle.RegisterCallback<ChangeEvent<bool>>((evt) =>
-            {
-                if (evt.newValue)
-                {
-                    var system = InitSystem_(root);
-                    system.EnableLimitSceneViewDefaultControl = true;
-                }
-                else
-                {
-                    var system = RoadNetworkEditingSystem.SingletonInstance?.system;
-                    if (system != null)
-                    {
-                        system.EnableLimitSceneViewDefaultControl = false;
-                        TerminateSystem_(root, system);
-                    }
-                }
-            });
+            activateEditSystemMethod = CreateActivateEditSystemMethod(root);
+            editModeToggle.RegisterCallback<ChangeEvent<bool>>(activateEditSystemMethod);
 
             IRoadNetworkEditingSystem InitSystem_(VisualElement root)
             {
@@ -101,11 +87,31 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
                 system.RoadNetworkSimpleEditModule?.Init();
 
-                SetupMethod = CreateSetup(this, system, root);
-                system.OnChangedSelectRoadNetworkElement += SetupMethod;
+                setupMethod = CreateSetup(this, system, root);
+                system.OnChangedSelectRoadNetworkElement += setupMethod;
                 return system;
             }
 
+            EventCallback<ChangeEvent<bool>> CreateActivateEditSystemMethod(VisualElement root)
+            {
+                return (evt) =>
+                {
+                    if (evt.newValue)
+                    {
+                        var system = InitSystem_(root);
+                        system.EnableLimitSceneViewDefaultControl = true;
+                    }
+                    else
+                    {
+                        var system = RoadNetworkEditingSystem.SingletonInstance?.system;
+                        if (system != null)
+                        {
+                            system.EnableLimitSceneViewDefaultControl = false;
+                            TerminateSystem_(root, system);
+                        }
+                    }
+                };
+            }
 
             //// 適用ボタンの処理
             //var applyRoadButton = root.Q<Button>("ApplyRoadButton");
@@ -124,6 +130,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         public override void Terminate(VisualElement root)
         {
+            var editModeToggle = self.Q<Toggle>("EditModeButton");
+            if (editModeToggle != null)
+            {
+                editModeToggle.UnregisterCallback<ChangeEvent<bool>>(activateEditSystemMethod);
+                activateEditSystemMethod = null;
+            }
+
             var sys = RoadNetworkEditingSystem.SingletonInstance?.system;
             if (sys != null)
                 TerminateSystem_(root, sys);
@@ -133,7 +146,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         void TerminateSystem_(VisualElement root, IRoadNetworkEditingSystem system)
         {
             root.Unbind();
-            system.OnChangedSelectRoadNetworkElement -= SetupMethod;
+            system.OnChangedSelectRoadNetworkElement -= setupMethod;
+            setupMethod = null;
             RoadNetworkEditingSystem.TryTerminate(EditorInterface, root);
         }
 
