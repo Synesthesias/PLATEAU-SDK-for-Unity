@@ -186,7 +186,7 @@
 }
 
 .ActionButton > Label {
-    color: rgb(0, 55, 55);
+    color: rgb(255, 255, 255);
 }
 
 .ActionButton:hover {
