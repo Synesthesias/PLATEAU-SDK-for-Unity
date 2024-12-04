@@ -432,8 +432,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <returns></returns>
         public Vector3 GetCenter()
         {
-            var p1 = RoadGroup.Ref.Roads.First().GetCenter();
-            var p2 = RoadGroup.Ref.Roads.Last().GetCenter();
+            var p1 = RoadGroup.Ref.Roads.First().GetCentralVertex();
+            var p2 = RoadGroup.Ref.Roads.Last().GetCentralVertex();
             return (p1 + p2) * 0.5f;
         }
 
