@@ -1,3 +1,7 @@
+.unity-text-element {
+    -unity-font-definition: url("project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/Fonts/MPLUSRounded1c-Regular.ttf");
+}
+
 .unity-label {
     margin: 0;
     padding: 0;
@@ -13,12 +17,10 @@
     background-color: rgba(255, 255, 128, 0);
     border-width: 1px;
     border-color: rgb(136, 147, 146);
-    color: rgb(190, 200, 200);
     font-weight: bold;
 }
 
 .unity-radio-button__label:enabled {
-    color: rgb(190, 200, 200);
     font-weight: bold;
 }
 
@@ -33,6 +35,11 @@
 #MenuGroup .unity-radio-button:checked {
     background-color: rgb(0, 88, 88);
     border-color: rgb(136, 147, 146);
+    color: rgb(255, 255, 255);
+}
+
+#MenuGroup .unity-radio-button:checked .unity-radio-button__label {
+    color: rgb(255, 255, 255);
 }
 
 .unity-radio-button__checkmark-background {
@@ -93,69 +100,21 @@
 
 #InputGroup {
     padding: 3px 10px;
-    color: rgb(255, 255, 255);
-}
-
-#InputGroup .unity-label:enabled {
-    color: rgb(255, 255, 255);
 }
 
 #InputGroup .unity-integer-field__label {
     width: 50%;
 }
 
-#InputGroup .unity-integer-field__input {
-    background-color: rgb(42, 42, 42);
-    border-radius: 2px;
-    height: 30px;
-    padding: 0 10px;
-    font-size: 14px;
-}
 
 #InputGroup .unity-float-field__label {
     width: 50%;
 }
 
-#InputGroup .unity-float-field__input {
-    background-color: rgb(42, 42, 42);
-    border-radius: 2px;
-    height: 30px;
-    padding: 0 10px;
-    font-size: 14px;
-}
 
-#InputGroup .unity-base-text-field:focus:enabled > .unity-base-text-field__input {
-    border-color: rgb(0, 88, 88);
-}
 
-#InputGroup .unity-toggle__label {
-    color: rgb(255, 255, 255);
-    font-size: 12px;
-    width: 50%;
-}
-
-#InputGroup .unity-toggle__checkmark {
-    background-color: rgb(42, 42, 42);
-    border-radius: 2px;
-    height: 20px;
-    width: 20px;
-    padding: 0 10px;
-    font-size: 10px;
-    color: rgb(255, 255, 255);
-}
-
-#InputGroup .unity-toggle__input:focus > .unity-toggle__checkmark {
-    border-color: rgb(0, 88, 88);
-}
-
-#InputGroup .unity-toggle__input:checked > .unity-toggle__checkmark {
-    background-image: resource('Icon/Icon_check');
-    -unity-background-image-tint-color: rgb(255, 255, 255);
-}
 
 #CategoryTitle {
-    background-color: rgb(62, 62, 62);
-    color: rgb(255, 255, 255);
     margin: 0;
     padding: 5px 10px;
     height: 30px;
@@ -163,7 +122,7 @@
 }
 
 #CategoryTitle .unity-label {
-    font-size: 12px;
+    font-size: 14px;
     -unity-font-style: bold;
 }
 
@@ -227,7 +186,7 @@
 }
 
 .ActionButton > Label {
-    color: rgb(0, 55, 55);
+    color: rgb(255, 255, 255);
 }
 
 .ActionButton:hover {
@@ -280,9 +239,6 @@
     border-radius: 20px;
     border-width: 1px;
     border-color: rgb(136, 147, 146);
-    background-color: rgba(136, 147, 146, 0);
-    color: rgb(128, 213, 212);
-    font-size: 10px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
@@ -307,7 +263,6 @@
 }
 
 .unity-popup-field .unity-base-field__input {
-    background-color: rgb(42, 42, 42);
     border-color: rgb(100, 100, 100);
     height: auto;
     border-radius: 2px;
@@ -452,10 +407,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-#LeftToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
-}
-
 #LeftToggle .unity-toggle__checkmark {
     width: 60px;
     height: 60px;
@@ -487,10 +438,6 @@ Scroller #unity-drag-container {
     min-width: 0;
     width: 80%;
     padding-top: 10px;
-}
-
-#StraightToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
 }
 
 #StraightToggle .unity-toggle__checkmark {
@@ -526,10 +473,6 @@ Scroller #unity-drag-container {
     padding-top: 10px;
 }
 
-#RightToggle .unity-base-field__label:enabled {
-    color: rgb(255, 255, 255);
-}
-
 #RightToggle .unity-toggle__checkmark {
     width: 60px;
     height: 60px;
@@ -544,3 +487,4 @@ Scroller #unity-drag-container {
     background-image: resource('Icon/Icon_Right_ON');
     transition: 0.2s;
 }
+
