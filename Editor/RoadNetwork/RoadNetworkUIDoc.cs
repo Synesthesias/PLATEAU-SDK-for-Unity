@@ -249,7 +249,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     {
 
                         // 無ければ生成する あれば流用する
-                        var mdl = doc.CreateOrGetLinkGroupData(linkGroupEditorData);
+                        var mdl = doc.CreateOrGetRoadGroupData(linkGroupEditorData);
 
                         // 既存のモデルオブジェクトを解除
                         element.Unbind();
@@ -274,7 +274,7 @@ namespace PLATEAU.Editor.RoadNetwork
                             //obj.Apply();
                         });
                         element.Bind(mdl);
-                        if (element.Q<Button>("ApplyButton") is var btn)
+                        if (element.Q<Button>("ApplyRoadButton") is var btn)
                         {
                             btn.clicked += () =>
                             {
@@ -297,7 +297,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        private SerializedScriptableRoadMdl CreateOrGetLinkGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
+        private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.ReqSubData<ScriptableObjectFolder>();
@@ -513,7 +513,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             refreshButton.RegisterCallback<MouseUpEvent>((evt) =>
             {
-                system.EditorInstance.RequestReinitialize();
+                system.Instance.RequestReinitialize();
             });
 
             system.OnChangedRoadNetworkObject += SelectRoadNetwrokObject;

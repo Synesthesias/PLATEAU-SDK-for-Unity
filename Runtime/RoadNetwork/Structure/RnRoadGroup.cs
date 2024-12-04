@@ -1396,6 +1396,42 @@ namespace PLATEAU.RoadNetwork.Structure
             return null;
         }
 
+        /// <summary>
+        /// 2つのRoadGroupが同じかどうかを識別する
+        /// 両方nullである場合はfalseを返す
+        /// 
+        /// 判定は同じ交差点、同じ道路を含むかで行う。
+        /// この時、各要素の順序は問わない
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsSameRoadGroup(RnRoadGroup a, RnRoadGroup b)
+        {
+            if (a == null && b == null)
+                return false;
+
+            // 同じ交差点を含むか（Next,Prevは問わない）
+            var isSameIntersection = 
+                (a.PrevIntersection == b.PrevIntersection && a.NextIntersection == b.NextIntersection) ||
+                (a.PrevIntersection == b.NextIntersection && a.NextIntersection == b.PrevIntersection);
+
+            // 同じ道路を含むか
+            var isContainSameRoads = true;
+            foreach (var road in a.roads)
+            {
+                if (b.roads.Contains(road))
+                {
+                    continue;
+                }
+
+                isContainSameRoads = false;
+                break;
+            }
+
+            return isSameIntersection && isContainSameRoads;
+        }
+
         public class RnSideWalkGroup
         {
             public RnSideWalkGroup(List<RnSideWalk> sideWalks)

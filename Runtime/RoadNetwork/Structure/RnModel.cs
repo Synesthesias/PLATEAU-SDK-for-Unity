@@ -418,6 +418,14 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        public void AddDefaultTrafficSignalLights()
+        {
+            foreach (var intersection in intersections)
+            {
+                TrafficSignalLightController.CreateDefault(intersection);
+            }
+        }
+
         public void Clear()
         {
             sideWalks.Clear();

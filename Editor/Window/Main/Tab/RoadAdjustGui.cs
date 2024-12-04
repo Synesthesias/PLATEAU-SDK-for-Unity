@@ -70,28 +70,28 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             // radioButtonの初期化
-            radioButtons["MenuGenerate"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuGenerate"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container); // Todo 処理負荷が掛かるようなら部分更新に修正する(trueになったら生成、falseになったら破棄)
             });
 
-            radioButtons["MenuEdit"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuEdit"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container);
             });
 
-            radioButtons["MenuAdd"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuAdd"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container);
             });
 
-            radioButtons["MenuTrafficRule"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuTrafficRule"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
@@ -103,10 +103,44 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             void SyncTabStatus(IReadOnlyDictionary<string, RadioButton> radioButtons, VisualElement root)
             {
+                // 終了処理
                 foreach (var item in radioButtons)
                 {
                     var key = item.Key;
                     var val = item.Value;
+                    if (val.value == true)
+                        continue;
+                    SyncTabStatus(root, key, val);
+                }
+
+                // 初期化処理
+                foreach (var item in radioButtons)
+                {
+                    var key = item.Key;
+                    var val = item.Value;
+                    if (val.value == false)
+                        continue;
+                    SyncTabStatus(root, key, val);
+                }
+
+                static void SyncTabInstance<_Type>(VisualElement root, RadioButton val)
+                    where _Type : RoadGuiParts.RoadAdjustGuiPartBase, new()
+                {
+                    var gui = val.userData as RoadGuiParts.RoadAdjustGuiPartBase;
+                    if (gui == null)
+                    {
+                        gui = new _Type();
+                        gui.InitUXMLState(root);
+                        val.userData = gui;
+                    }
+                    if (val.value)
+                        gui.Init0(root);
+                    else
+                        gui.Terminate0(root);
+                }
+
+                static void SyncTabStatus(VisualElement root, string key, RadioButton val)
+                {
                     switch (key)
                     {
                         case "MenuGenerate":
@@ -128,21 +162,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         default:
                             break;
                     }
-                }
-
-                static void SyncTabInstance<_Type>(VisualElement root, RadioButton val)
-                    where _Type : RoadGuiParts.RoadAdjustGuiPartBase, new()
-                {
-                    var gui = val.userData as RoadGuiParts.RoadAdjustGuiPartBase;
-                    if (gui == null)
-                    {
-                        gui = new _Type();
-                        val.userData = gui;
-                    }
-                    if (val.value)
-                        gui.Init(root);
-                    else
-                        gui.Terminate(root);
                 }
             }
             return true;
