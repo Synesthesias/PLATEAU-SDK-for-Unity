@@ -70,28 +70,28 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             // radioButtonの初期化
-            radioButtons["MenuGenerate"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuGenerate"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container); // Todo 処理負荷が掛かるようなら部分更新に修正する(trueになったら生成、falseになったら破棄)
             });
 
-            radioButtons["MenuEdit"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuEdit"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container);
             });
 
-            radioButtons["MenuAdd"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuAdd"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;
                 SyncTabStatus(radioButtons, container);
             });
 
-            radioButtons["MenuTrafficRule"].RegisterCallback<ChangeEvent<bool>>(e =>
+            radioButtons["MenuTrafficRule"]?.RegisterCallback<ChangeEvent<bool>>(e =>
             {
                 if (e.newValue == false)
                     return;

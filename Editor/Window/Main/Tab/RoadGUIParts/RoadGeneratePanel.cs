@@ -41,6 +41,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
 
             self = GetRoot(root);
+            if (self == null)
+                return;
             self.style.display = DisplayStyle.Flex;
 
             Init(self);
