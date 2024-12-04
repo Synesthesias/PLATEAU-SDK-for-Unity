@@ -179,7 +179,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 var srcs = modelRoad.TargetTrans;
                 var dsts = new List<PLATEAUCityObjectGroup>();
-                foreach (var src in srcs.Select(cog => cog.transform))
+                foreach (var src in srcs.Where(cog => cog != null).Select(cog => cog.transform))
                 {
                     if (srcToDstTrans.TryGetValue(src, out var dst))
                     {

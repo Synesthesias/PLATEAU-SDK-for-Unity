@@ -6,7 +6,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 3px;">
             <ui:DropdownField label="車線分割" name="Split_Pedestrian" choices="車線をまとめる,車線ごとに分ける" index="0" style="-unity-text-align: middle-left;" />
-            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" tabindex="0" index="0" style="-unity-text-align: middle-left;" />
+            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" tabindex="0" index="0" style="-unity-text-align: middle-left; display: none;" />
         </ui:VisualElement>
         <ui:VisualElement style="flex-grow: 0; padding-top: 16px; padding-bottom: 16px; align-items: center; justify-content: center;">
             <ui:Button text="道路を再生成" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />

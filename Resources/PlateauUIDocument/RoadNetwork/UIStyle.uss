@@ -1,5 +1,6 @@
 .unity-text-element {
-    -unity-font-definition: url("project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/Fonts/MPLUSRounded1c-Regular.ttf");
+    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Regular");
+    /*-unity-font: resource("Fonts/MPLUSRounded1c-Regular");*/
 }
 
 .unity-label {
@@ -17,12 +18,8 @@
     background-color: rgba(255, 255, 128, 0);
     border-width: 1px;
     border-color: rgb(136, 147, 146);
-    font-weight: bold;
 }
 
-.unity-radio-button__label:enabled {
-    font-weight: bold;
-}
 
 #MenuGroup .unity-radio-button > VisualElement {
     display: none;
@@ -139,7 +136,6 @@
     border-radius: 25px;
     border-color: rgb(136, 147, 146);
     color: rgb(0, 55, 55);
-    font-weight: bold;
 }
 
 #EditModeButton .unity-base-field__label {
@@ -398,7 +394,6 @@ Scroller #unity-drag-container {
     background-color: rgba(103, 103, 103, 0);
     border-width: 0;
     color: rgb(0, 55, 55);
-    font-weight: bold;
 }
 
 #LeftToggle .unity-base-field__label {
@@ -464,7 +459,6 @@ Scroller #unity-drag-container {
     background-color: rgba(103, 103, 103, 0);
     border-width: 0;
     color: rgb(0, 55, 55);
-    font-weight: bold;
 }
 
 #RightToggle .unity-base-field__label {

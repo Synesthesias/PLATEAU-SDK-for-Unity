@@ -2038,7 +2038,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 private RnNeighbor selectEntablePoint = null;
                 private RnNeighbor selectExitablePoint = null;
 
-                private bool isShapeEditingMode = false;
+                // private bool isShapeEditingMode = false;
             }
 
         }

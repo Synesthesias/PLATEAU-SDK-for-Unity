@@ -12,7 +12,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var cMeshes = new RnmContourMeshList();
             foreach (var inter in model.Intersections)
             {
-                var targetObjs =  inter.TargetTrans.Select(t => t.gameObject);
+                var targetObjs =  inter.TargetTrans.Where(t => t!=null).Select(t => t.gameObject);
                 var contours = new RnmContourGeneratorIntersectionSeparate().GenerateContours(inter);
                 var cMesh = new RnmContourMesh(targetObjs, contours);
                 cMeshes.Add(cMesh);

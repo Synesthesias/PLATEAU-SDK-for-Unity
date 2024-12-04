@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.Window.Common
     /// EditorWindow に描画するインターフェイスです。
     /// <see cref="Draw"/> で描画します。 
     /// </summary>
-    [Obsolete("UIToolkitに移行中なので、IGuiCreatableを利用して下さい。")]
+    [Obsolete("UIToolkitに移行中なので、IGuiCreatableを利用して下さい。", false)]
     internal interface IEditorDrawable : IDisposable
     {
         /// <summary>

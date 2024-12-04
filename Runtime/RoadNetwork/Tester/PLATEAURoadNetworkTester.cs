@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -66,12 +67,13 @@ namespace PLATEAU.RoadNetwork.Tester
         /// 道路ネットワークを作成する
         /// </summary>
         /// <returns></returns>
-        public async Task CreateNetwork()
+        public async Task<RnModel> CreateNetwork()
         {
             var go = gameObject;
             var targets = GetTargetCityObjects();
             var req = Factory.CreateRequest(targets, go);
-            await Factory.CreateRnModelAsync(req);
+            var model = await Factory.CreateRnModelAsync(req);
+            return model;
         }
 
         /// <summary>
