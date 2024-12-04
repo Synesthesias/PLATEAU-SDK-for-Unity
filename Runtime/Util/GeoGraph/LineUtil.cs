@@ -521,13 +521,15 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
+        /// verticesを頂点とした連続した線分に対して, 
+        /// 前半と後半の長さがp : (1-p)でとなるをmidPointに入れて返す.
+        /// 戻り値は midPointを含む線分のインデックスがfloatで返る. 空頂点だと-1が返る
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public static int GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
+        public static float GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
         {
             // 0 ~ 1の間でClampする
             p = Mathf.Clamp(p, 0, 1);
@@ -544,7 +546,7 @@ namespace PLATEAU.Util.GeoGraph
                 {
                     var f = 1f - ((len - length) / l);
                     midPoint = Vector3.Lerp(p0, p1, f);
-                    return i;
+                    return i + f;
                 }
             }
 
@@ -560,7 +562,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public static int GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        public static float GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
         {
             return GetLineSegmentLerpPoint(vertices, 0.5f, out midPoint);
         }

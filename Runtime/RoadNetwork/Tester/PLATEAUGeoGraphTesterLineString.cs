@@ -140,7 +140,8 @@ namespace PLATEAU.RoadNetwork.Tester
 
                     if (exec && isCrossed)
                     {
-                        plateauRnStructureModel.RoadNetwork.SliceRoadHorizontal(road, segment);
+                        var sliceRes = plateauRnStructureModel.RoadNetwork.SliceRoadHorizontal(road, segment);
+                        DebugEx.Log(sliceRes.Result);
                     }
                 }
 

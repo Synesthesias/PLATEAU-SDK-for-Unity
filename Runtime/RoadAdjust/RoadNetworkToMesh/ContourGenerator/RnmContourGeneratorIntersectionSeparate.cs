@@ -10,14 +10,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmContourGeneratorIntersectionSeparate: IRnmContourGenerator
     {
-        private const float PileUpHeight = 0.15f;
         
         public RnmContourMeshList Generate(RnModel model)
         {
             var cMeshes = new RnmContourMeshList();
             foreach (var inter in model.Intersections)
             {
-                var targetObjs = inter.TargetTrans.Select(t => t.gameObject);
+                var targetObjs = inter.TargetTrans.Select(t => t.gameObject).ToArray();
                 foreach (var c in GenerateContours(inter))
                 {
                     cMeshes.Add(new RnmContourMesh(targetObjs, c));
@@ -31,7 +30,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             yield return CarContour(inter);
             foreach (var sideWalk in inter.SideWalks)
             {
-                yield return SidewalkContour(sideWalk);
+                foreach (var contour in SidewalkContour(sideWalk))
+                {
+                    yield return contour;
+                }
             }
 
             foreach (var outer in NonSidewalkOuters(inter))
@@ -53,21 +55,42 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
 
         /// <summary> 歩道 </summary>
-        private RnmContour SidewalkContour(RnSideWalk sideWalk)
+        private IEnumerable<RnmContour> SidewalkContour(RnSideWalk sideWalk)
         {
+            // 歩道部
             var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
-            var lines = new List<IEnumerable<Vector3>> { sideWalk.InsideWay, sideWalk.OutsideWay};
-            lines.AddRange(sideWalk.EdgeWays);
-            foreach (var line in lines.Where(l => l != null))
+            var inside = sideWalk.InsideWay;
+            var outside = sideWalk.OutsideWay;
+            if (inside == null || outside == null) yield break;
+            
+            var curbBoundary = new RnWay(sideWalk.InsideWay);
+            new RnmModelAdjuster().MoveToward(curbBoundary, sideWalk.OutsideWay, RnmContourGeneratorSidewalk.CurbWidth, 0, 0);
+            
+            calc.AddLine(inside, Vector2.zero, Vector2.zero);
+            calc.AddLine(outside, Vector2.zero, Vector2.zero);
+            var edges = sideWalk.EdgeWays;
+            foreach (var line in edges.Where(l => l != null))
             {
                 calc.AddLine(line, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
             }
 
             var contour = calc.Calculate();
-            var modifier = new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), PileUpHeight);
+            var modifier = new RnmTessModifierPileUp(contour.Vertices.Select(v => v.Position).ToArray(), RnmContourGeneratorSidewalk.PileUpHeightSideWalk);
             contour.AddModifier(modifier);
+            yield return contour;
             
-            return contour;
+            // 縁石部
+            // 縁石部を生成
+            var calc2 = new RnmContourCalculator(RnmMaterialType.MedianLane);
+            calc2.AddLine(curbBoundary, Vector2.zero, Vector2.zero); // FIXME UV1は未実装
+            calc2.AddLine(sideWalk.InsideWay , Vector2.zero, Vector2.zero);
+            var contour2 = calc2.Calculate();
+            // 段差
+            var modifier2 =
+                new RnmTessModifierPileUp(contour2.Vertices.Select(v => v.Position).ToArray(), RnmContourGeneratorSidewalk.PileUpHeightCurb);
+            contour2.AddModifier(modifier2);
+
+            yield return contour2;
         }
 
         /// <summary> ネットワーク上では歩道判定でないが車道の外側の部分 </summary>

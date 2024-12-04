@@ -131,6 +131,40 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// selfと直線(origin, dir)が交差するかチェック.
+        /// ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalTolerance以下の場合のみ交差と判定.
+        /// normalToleranceが負数の時は無限大扱い
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="origin"></param>
+        /// <param name="dir"></param>
+        /// <param name="plane"></param>
+        /// <param name="normalTolerance"></param>
+        /// <param name="intersection"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static bool TryLineIntersectionBy2D(this LineSegment3D self, Vector3 origin, Vector3 dir, AxisPlane plane,
+            float normalTolerance, out Vector3 intersection, out float t1, out float t2)
+        {
+            dir = dir.normalized;
+            intersection = Vector3.zero;
+            var self2 = self.To2D(v => v.GetTangent(plane));
+            // 2Dに射影した状態で交差するかチェック
+            if (self2.TryLineIntersection(origin.GetTangent(plane), dir.GetTangent(plane), out var inter2, out t1, out t2) == false)
+                return false;
+
+            // 法線方向の差分が指定値より大きい時はねじれの位置で交点無し
+            var y1 = Mathf.Lerp(self.Start.GetNormal(plane), self.End.GetNormal(plane), t1);
+            var y2 = origin.GetNormal(plane) + dir.GetNormal(plane) * t2;
+            if (Mathf.Abs(y2 - y1) > normalTolerance && normalTolerance >= 0f)
+                return false;
+
+            intersection = inter2.ToVector3(plane, (y1 + y2) * 0.5f);
+            return true;
+        }
+
+        /// <summary>
         /// selfと半直線(origin, dir)が交差するかチェック.
         /// ただし、planeで指定された平面に射影した状態での交差判定かつ、そのうえで平面の法線方向の差分がnormalTolerance以下の場合のみ交差と判定.
         /// normalToleranceが負数の時は無限大扱い
@@ -151,16 +185,16 @@ namespace PLATEAU.Util.GeoGraph
             intersection = Vector3.zero;
             var self2 = self.To2D(v => v.GetTangent(plane));
             // 2Dに射影した状態で交差するかチェック
-            if (self2.TryHalfLineIntersection(origin.GetTangent(plane), dir.GetTangent(plane), out var _, out t1, out t2) == false)
+            if (self2.TryHalfLineIntersection(origin.GetTangent(plane), dir.GetTangent(plane), out var inter2, out t1, out t2) == false)
                 return false;
 
             // 法線方向の差分が指定値より大きい時はねじれの位置で交点無し
-            var v1 = self.Lerp(t1);
-            var v2 = origin + dir * t2;
-            if (Mathf.Abs((v2 - v1).GetNormal(plane)) > normalTolerance && normalTolerance >= 0f)
+            var y1 = Mathf.Lerp(self.Start.GetNormal(plane), self.End.GetNormal(plane), t1);
+            var y2 = origin.GetNormal(plane) + dir.GetNormal(plane) * t2;
+            if (Mathf.Abs(y2 - y1) > normalTolerance && normalTolerance >= 0f)
                 return false;
 
-            intersection = (v1 + v2) * 0.5f;
+            intersection = inter2.ToVector3(plane, (y1 + y2) * 0.5f);
             return true;
         }
 
@@ -189,12 +223,13 @@ namespace PLATEAU.Util.GeoGraph
                 return false;
 
             // 法線方向の差分が指定値より大きい時はねじれの位置で交点無し
-            var v1 = self.Lerp(t1);
-            var v2 = other.Lerp(t2);
-            if (Mathf.Abs((v2 - v1).GetNormal(plane)) > normalTolerance && normalTolerance >= 0f)
+            var y1 = Mathf.Lerp(self.Start.GetNormal(plane), self.End.GetNormal(plane), t1);
+            var y2 = Mathf.Lerp(other.Start.GetNormal(plane), other.End.GetNormal(plane), t1);
+            if (Mathf.Abs(y2 - y1) > normalTolerance && normalTolerance >= 0f)
                 return false;
 
-            intersection = (v1 + v2) * 0.5f;
+
+            intersection = inter2.ToVector3(plane, (y1 + y2) * 0.5f);
             return true;
         }
 

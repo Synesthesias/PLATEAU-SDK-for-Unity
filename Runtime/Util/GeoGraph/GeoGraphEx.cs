@@ -163,24 +163,26 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="isLoop"></param>
         /// <returns></returns>
-        public static IEnumerable<Tuple<T, T>> GetEdges<T>(IEnumerable<T> vertices, bool isLoop) where T : struct
+        public static IEnumerable<Tuple<T, T>> GetEdges<T>(IEnumerable<T> vertices, bool isLoop)
         {
-            T? first = null;
-            T? current = null;
+            bool hasValue = false;
+            T first = default(T);
+            T current = default(T);
             foreach (var v in vertices)
             {
-                if (current == null)
+                if (hasValue == false)
                 {
                     first = current = v;
+                    hasValue = true;
                     continue;
                 }
 
-                yield return new Tuple<T, T>(current.Value, v);
+                yield return new Tuple<T, T>(current, v);
                 current = v;
             }
 
-            if (isLoop && first.HasValue)
-                yield return new Tuple<T, T>(current.Value, first.Value);
+            if (isLoop && hasValue)
+                yield return new Tuple<T, T>(current, first);
         }
 
         /// <summary>

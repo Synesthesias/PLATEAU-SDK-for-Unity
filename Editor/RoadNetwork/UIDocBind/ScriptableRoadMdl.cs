@@ -274,7 +274,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 cache.numLeftLane = NumLeftLane;
                 isChanged = true;
                 isChangedLane = true;
-                editorData.ClearSubData();
+                editorData.ClearSubData<WayEditorDataList>();
             }
             if (cache.numRightLane != NumRightLane)
             {
@@ -282,7 +282,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 cache.numRightLane = NumRightLane;
                 isChanged = true;
                 isChangedLane = true;
-                editorData.ClearSubData();
+                editorData.ClearSubData<WayEditorDataList>();
             }
             if (isChangedLane)
             {
@@ -298,7 +298,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 if (EnableMedianLane == false)
                 {
                     road.RemoveMedian();
-                    editorData.ClearSubData();
+                    editorData.ClearSubData<WayEditorDataList>();
                 }
                 else
                 {
@@ -307,7 +307,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     {
                         Debug.Log("CreateMedianOrSkip() : 作成に失敗");
                     }
-                    editorData.ClearSubData();
+                    editorData.ClearSubData<WayEditorDataList>();
 
                     // ToDo ここで作成したMedianに対してeditorDataで所持している値を適用する
                     //...

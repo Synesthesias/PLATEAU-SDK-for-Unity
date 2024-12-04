@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public IRoadNetworkEditOperation NetworkOperator { get; }
         public RoadNetworkSceneGUISystem SceneGUISystem { get; }
     }
-    
+
 
     /// <summary>
     /// 道路ネットワークの編集モード
@@ -115,6 +115,50 @@ namespace PLATEAU.Editor.RoadNetwork
         public interface ISystemInstance
         {
             void RequestReinitialize();
+            void ReInitialize();
+        }
+
+        public static RoadNetworkEditingSystem TryInitalize(
+            RoadNetworkEditingSystem oldSystem, VisualElement root, ISystemInstance instance)
+        {
+            if (root == null)
+            {
+                Debug.LogError("Root is null.");
+                return oldSystem;
+            }
+
+            var newSystem = oldSystem;
+            if (newSystem != null)
+            {
+                newSystem.system.Instance.ReInitialize();
+                newSystem.Terminate();
+            }
+
+            newSystem =
+                new RoadNetworkEditingSystem(instance, root);
+
+            oldSystem = newSystem;
+            return newSystem;
+        }
+
+        public static void TryTerminate(
+            RoadNetworkEditingSystem oldSystem, VisualElement root)
+        {
+            if (root == null)
+            {
+                Debug.LogError("Root is null.");
+                return;
+            }
+
+            if (oldSystem != null)
+            {
+                oldSystem.system.Instance.ReInitialize();
+                oldSystem.Terminate();
+            }
+
+            // 仮
+            RoadNetworkEditingSystem.SingletonInstance = null;
+            return;
         }
 
         /// <summary>
@@ -124,16 +168,18 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="rootVisualElement"></param>
         public RoadNetworkEditingSystem(ISystemInstance editorInstance, VisualElement rootVisualElement)
         {
-            UnityEngine.Assertions.Assert.IsNotNull(editorInstance);
-            this.systemInstance = new EditorInstance(this, editorInstance);
+            Assert.IsNotNull(editorInstance);
+            this.systemInstance = editorInstance;
 
             Assert.IsNotNull(rootVisualElement);
             this.rootVisualElement = rootVisualElement;
             system = new EditingSystem(this);
             TryInitialize(rootVisualElement);
 
-            return;
+            SingletonInstance = this;
         }
+
+        public static RoadNetworkEditingSystem SingletonInstance;
 
         /// <summary>
         /// 編集機能を提供するインターフェイス
@@ -146,9 +192,6 @@ namespace PLATEAU.Editor.RoadNetwork
         /// 呼び出す箇所は一か所にする
         /// </summary>
         public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
-
-        // 道路ネットワークを所持したオブジェクトのデフォルト名
-        private readonly string defaultRoadNetworkObjectName = "RoadNetworkTester";
 
         private readonly ISystemInstance systemInstance;
         private readonly VisualElement rootVisualElement;
@@ -169,7 +212,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private TrafficSignalControllerPhase selectedSignalPhase;
 
         // 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        private readonly IRoadNetworkEditingSystem system;
+        public readonly IRoadNetworkEditingSystem system;
 
         private IRoadNetworkEditOperation editOperation;
         private RoadNetworkUIDoc uiDocEditor;
@@ -194,6 +237,17 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
 
+        private void Terminate()
+        {
+            simpleEditSysModule?.Terminate();
+
+            //var children = rootVisualElement.Children().ToArray();
+            //foreach (var item in children)
+            //{
+            //    item.RemoveFromHierarchy();
+            //}
+        }
+
         /// <summary>
         /// 初期化を試みる
         /// 多重初期化はしないので複数回呼び出しても問題ない
@@ -214,19 +268,19 @@ namespace PLATEAU.Editor.RoadNetwork
                 editOperation = new RoadNetworkEditorOperation();
             }
 
-            if (needInitEditor)
-            {
-                assets = new RoadNetworkEditorAssets();
+            //if (needInitEditor)
+            //{
+            //    assets = new RoadNetworkEditorAssets();
 
-                var visualTree = assets.GetAsset(RoadNetworkEditorAssets.EditorAssetName);
-                var inst = visualTree.Instantiate();
-                rootVisualElement.Add(inst);
-                //visualTree.CloneTree(rootVisualElement);
+            //    var visualTree = assets.GetAsset(RoadNetworkEditorAssets.EditorAssetName);
+            //    var inst = visualTree.Instantiate();
+            //    rootVisualElement.Add(inst);
+            //    //visualTree.CloneTree(rootVisualElement);
 
-                uiDocEditor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
-                uiDocEditor.Initialize();
+            //    uiDocEditor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
+            //    uiDocEditor.Initialize();
 
-            }
+            //}
 
             if (needInitGUISystem)
             {
@@ -234,10 +288,10 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // 他のシステム連携が必要な初期化 PostInitliaze()
-            if (needInitEditor)
-            {
-                uiDocEditor.PostInitialize();
-            }
+            //if (needInitEditor)
+            //{
+            //    uiDocEditor.PostInitialize();
+            //}
 
             if (needInitGameObj)
             {
@@ -267,14 +321,20 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             // 道路ネットワークの取得を試みる　
-            var roadNetworkObj = GameObject.Find(defaultRoadNetworkObjectName);
-            var r = roadNetworkObj.GetComponent<PLATEAURnStructureModel>();
+            var r = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (r == null)
+            {
+                Debug.Log("Can't find PLATEAURnStructureModel");
+                return false;
+            }
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {
                 Debug.Log("RoadNetwork is null.");
                 return false;
             }
+
+            var roadNetworkObj = r.gameObject;
 
             // その他 初期化
             if (roadNetwork != null)
@@ -369,7 +429,7 @@ namespace PLATEAU.Editor.RoadNetwork
             /// <summary>
             /// 編集機能のインスタンス
             /// </summary>
-            ISystemInstance EditorInstance { get; }
+            ISystemInstance Instance { get; }
 
             bool EnableLimitSceneViewDefaultControl { get; set; }
 
@@ -507,7 +567,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            public ISystemInstance EditorInstance => system.systemInstance;
+            public ISystemInstance Instance => system.systemInstance;
 
             public TrafficSignalControllerPattern SelectedSignalControllerPattern
             {
@@ -705,31 +765,28 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <summary>
         /// 編集機能のインスタンスを管理する機能を行っているクラス
         /// </summary>
-        public class EditorInstance : ISystemInstance
-        {
-            public EditorInstance(RoadNetworkEditingSystem system, ISystemInstance editorInstance)
-            {
-                this.system = system;
-                this.editorInstance = editorInstance;
-            }
+        //public class EditorInstance : ISystemInstance
+        //{
+        //    public EditorInstance(RoadNetworkEditingSystem system, ISystemInstance editorInstance)
+        //    {
+        //        this.system = system;
+        //        this.editorInstance = editorInstance;
+        //    }
 
-            private RoadNetworkEditingSystem system;
-            private ISystemInstance editorInstance;
+        //    private RoadNetworkEditingSystem system;
+        //    private ISystemInstance editorInstance;
 
-            public void RequestReinitialize()
-            {
-                //system.rootVisualElement.RemoveFromHierarchy();
-                //editorInstance.RequestReinitialize();
-                //return;
-                var children = system.rootVisualElement.Children().ToArray();
-                foreach (var item in children)
-                {
-                    item.RemoveFromHierarchy();
-                }
-                editorInstance.RequestReinitialize();
+        //    public void RequestReinitialize()
+        //    {
+        //        editorInstance.RequestReinitialize();
+        //    }
 
-            }
-        }
+        //    public void ReInitialize()
+        //    {
+        //        system.Terminate();
+        //        system.TryInitialize(system.rootVisualElement);
+        //    }
+        //}
 
         /// <summary>
         /// 単純なレーン生成機能を提供するクラス
@@ -1397,75 +1454,44 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 List<RoadGroupEditorData> roadGroups = new List<RoadGroupEditorData>(numNode * (numNode - 1));  // node同士の繋がりを表現するコレクション prev+next名で表現する
                 HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1));  // 計算済みのNeighborを保持する
-                foreach (var intersection in roadNetwork.Intersections)
+                foreach (var road in roadNetwork.Roads)
                 {
-                    foreach (var neighbor in intersection.Neighbors)
+                    var link = road;
+                    if (link == null)
                     {
-                        // この接続元は計算済み
-                        if (calcedNeighbor.Contains(neighbor))
-                        {
-                            continue;
-                        }
-                        var link = neighbor.Road as RnRoad;
-                        if (link == null)
-                        {
-                            continue;
-                        }
-                        var linkGroup = link.CreateRoadGroup();
-                        if (linkGroup == null)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
+                    var linkGroup = link.CreateRoadGroup();
+                    if (linkGroup == null)
+                    {
+                        continue;
+                    }
 
-                        // 接続先にNodeが無い場合はスキップ　仮
-                        if (linkGroup.PrevIntersection == null || linkGroup.NextIntersection == null)
+                    // 同じものを格納済みかチェック
+                    var prevIntersection = linkGroup.PrevIntersection;
+                    var nextIntersection = linkGroup.NextIntersection;
+                    var isContain = false;
+                    foreach (var group in roadGroups)
+                    {
+                        isContain = RnRoadGroup.IsSameRoadGroup(group.RoadGroup.Ref, linkGroup);
+                        if (isContain == true)
                         {
-                            continue;
-                        }
-
-                        var node0 = linkGroup.PrevIntersection;
-                        var node1 = linkGroup.NextIntersection;
-                        var editorData = new EditorData<RnRoadGroup>(linkGroup);
-                        // 同じものを格納済みかチェック
-                        var isContain = false;
-                        foreach (var group in roadGroups)
-                        {
-                            var prev = group.RoadGroup.Ref.PrevIntersection;
-                            var next = group.RoadGroup.Ref.NextIntersection;
-
-                            bool isSamePrev, isSameNext;
-
-                            isSamePrev = prev == linkGroup.PrevIntersection;
-                            isSameNext = next == linkGroup.NextIntersection;
-                            isContain = isSamePrev && isSameNext;
-
-                            if (isContain == false)
-                            {
-                                isSamePrev = next == linkGroup.PrevIntersection;
-                                isSameNext = prev == linkGroup.NextIntersection;
-                                isContain = isSamePrev && isSameNext;
-                            }
-                        }
-                        if (isContain == false)
-                        {
-                            var cn = editorData.Add<RoadGroupEditorData>();
-                            nodeEditorData[node0].Connections.Add(cn);
-                            nodeEditorData[node1].Connections.Add(cn);
-                            roadGroups.Add(cn);
-                            roadGroupEditorData.Add(editorData);
-                        }
-
-                        calcedNeighbor.Add(neighbor);
-                        var otherNode = intersection == node0 ? node1 : node0;
-                        var otherLink = link == linkGroup.Roads.First() ? linkGroup.Roads.Last() : linkGroup.Roads.First();
-                        foreach (var otherNeighbor in otherNode.Neighbors)
-                        {
-                            if (otherLink == otherNeighbor.Road)
-                            {
-                                calcedNeighbor.Add(otherNeighbor);
-                            }
+                            break;
                         }
                     }
+                    if (isContain)
+                        continue;
+
+                    // 編集用データを追加
+                    var editorData = new EditorData<RnRoadGroup>(linkGroup);
+                    var rgEditorData = editorData.Add<RoadGroupEditorData>();
+                    if (prevIntersection != null)
+                        nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
+                    if (nextIntersection != null)
+                        nodeEditorData[nextIntersection].Connections.Add(rgEditorData);
+                    roadGroups.Add(rgEditorData);
+                    roadGroupEditorData.Add(editorData);
+
                 }
 
                 // 仮 編集可能なデータに勝手に修正
@@ -1882,6 +1908,17 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 editingIntersection.SetTarget(null);
                 editingIntersection.Activate(false);
+                gizmosSys.Clear();
+
+                var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();
+                if (gizmosDrawer != null)
+                {
+                    gizmosDrawer.Clear();
+                }
+
+                EditorApplication.update -= Update;
+                ClearCache();
+
             }
 
             public class EditingIntersection
@@ -1951,7 +1988,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                     selectEntablePoint = neighbor;
                 }
-                
+
                 public void SetExitablePoint(RnNeighbor neighbor)
                 {
                     Assert.IsNotNull(neighbor);

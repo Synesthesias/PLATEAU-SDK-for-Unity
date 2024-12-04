@@ -13,18 +13,17 @@
             <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
                 <ui:Label tabindex="-1" text="車線数" parse-escape-sequences="true" display-tooltip-when-elided="true" style="padding-top: 8px; padding-bottom: 8px;" />
                 <ui:IntegerField label="左側" value="3" name="LeftSide" style="align-items: center; font-size: 12px; padding-left: 16px;" />
-                <ui:IntegerField label="右側" value="2" name="SideWalkSize" style="align-items: center; font-size: 12px; padding-left: 16px;" />
+                <ui:IntegerField label="右側" value="2" name="RightSide" style="align-items: center; font-size: 12px; padding-left: 16px;" />
             </ui:VisualElement>
             <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px;">
                 <ui:VisualElement style="flex-grow: 1; padding-left: 0;">
-                    <ui:IntegerField label="道路の幅" value="3" name="RoadWidth" style="align-items: center; font-size: 12px;" />
-                    <ui:IntegerField label="中央分離帯の幅" value="3" name="MedianWidth" style="align-items: center; font-size: 12px;" />
-                    <ui:IntegerField label="左側歩道の幅" value="3" name="WidthOfLeftSidewalk" style="align-items: center; font-size: 12px;" />
-                    <ui:IntegerField label="右側歩道の幅" value="3" name="WidthOfRightSidewalk" style="align-items: center; font-size: 12px;" />
+                    <ui:Toggle label="中央分離帯の有無" name="EnableMedianLane" style="font-size: 12px;" />
+                    <ui:Toggle label="左側歩道の有無" name="EnableLeftSideWalk" style="font-size: 12px;" />
+                    <ui:Toggle label="右側歩道の有無" name="EnableRightSideWalk" style="font-size: 12px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; padding-top: 8px; padding-bottom: 8px; align-items: center;">
-                <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
+                <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ApplyRoadButton" class="ActionButton" style="width: 200px;" />
             </ui:VisualElement>
             <ui:VisualElement name="Divider" style="flex-grow: 1;" />
             <ui:VisualElement style="flex-grow: 1; margin-bottom: 16px; margin-top: 8px; flex-direction: row; align-items: center;">
@@ -48,5 +47,6 @@
                 <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStopButton" class="LightActionButton" />
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Toggle label="詳細編集モード" name="DetailEditMode" style="font-size: 12px;" />
     </ui:VisualElement>
 </ui:UXML>

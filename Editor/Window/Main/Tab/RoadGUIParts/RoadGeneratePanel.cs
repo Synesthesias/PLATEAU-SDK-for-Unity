@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using static PLATEAU.RoadNetwork.Tester.PLATEAURoadNetworkTester;   // Testerを使わず生成するようにする
-using PLATEAU.RoadNetwork.Tester;             // Todo 削除予定
-using PLATEAU.RoadNetwork.Structure.Drawer;   // Todo 削除予定
-
+using PLATEAU.RoadNetwork.Tester;
+using System;             // Todo 削除予定
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -33,21 +32,41 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             rootKey = name;
         }
 
-        /// <summary>
-        /// 初期化
-        /// 終了処理がされていない状態での呼び出しも考慮する
-        /// Todo 継承先では引数のrootを渡さないようにしたい(別ブランチで対応済みなはず この関数がInit0という名前になっている)
-        /// </summary>
-        /// <param name="root"></param>
-        public virtual void Init(VisualElement root)
+        public void Init0(VisualElement root)
         {
             if (root.Contains(self))
             {
                 Terminate(self);
             }
-            
+
+
             self = GetRoot(root);
+            if (self == null)
+                return;
             self.style.display = DisplayStyle.Flex;
+
+            Init(self);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="root"></param>
+        public void InitUXMLState(VisualElement root)
+        {
+            var s = GetRoot(root);
+            if (s == null)
+                return;
+            s.style.display = DisplayStyle.None;
+        }
+
+        /// <summary>
+        /// 初期化
+        /// 終了処理がされていない状態での呼び出しも考慮する
+        /// </summary>
+        /// <param name="root"></param>
+        public virtual void Init(VisualElement root)
+        {
         }
 
         /// <summary>
@@ -55,12 +74,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// 初期化されていない状態での呼び出しも考慮する
         /// </summary>
         /// <param name="root"></param>
-        public virtual void Terminate(VisualElement root)
+        public void Terminate0(VisualElement root)
         {
             if (root.Contains(self) == false)
                 return;
 
             self.style.display = DisplayStyle.None;
+
+            Terminate(self);
+            self = null;
+        }
+        public virtual void Terminate(VisualElement root)
+        {
         }
 
         /// <summary>
@@ -115,6 +140,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         static readonly string name = "RoadNetwork_GeneratePanel";
 
         GameObject selfGameObject = null;
+        private Action setupMethod;
 
         public RoadGenerate() : base(name)
         {
@@ -137,7 +163,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 GameObject obj = new GameObject("RoadNetworkTester");
                 obj.AddComponent<PLATEAURoadNetworkTester>();   // Todo 現状Testerが必要？
                 obj.AddComponent<PLATEAURnStructureModel>();
-                obj.AddComponent<PLATEAURnModelDrawerDebug>();
+                //obj.AddComponent<PLATEAURnModelDrawerDebug>();    // Testerで生成されるため
                 rnMdl = obj.GetComponent<PLATEAURnStructureModel>();
             }
 
@@ -152,6 +178,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             GetF("SideWalkSize").value = factory.Lod1SideWalkSize;
             GetT("Add_Lod_Side_Walk").value = factory.AddSideWalk;
             GetT("Check_Median").value = factory.CheckMedian;
+            GetT("Add_TrafficSignalLight").value = factory.AddTrafficSignalLights;
 
             GetF("Merge_Cell_Size").value = factory.GraphFactory.mergeCellSize;
             GetI("Merge_Cell_Length").value = factory.GraphFactory.mergeCellLength;
@@ -161,38 +188,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
 
             // 生成ボタンを押した時の挙動
-            generateButton.clicked += () =>
-            {
-                var roadSize = GetF("RoadSizeField").value;
-                var sideWalklSize = GetF("SideWalkSize").value;
-                var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
-                var checkMedian = GetT("Check_Median").value;
-
-                var cellSize = GetF("Merge_Cell_Size").value;
-                var cellLen = GetI("Merge_Cell_Length").value;
-                var midPointTolerrance = GetF("Remove_Mid_Point_Tolerance").value;
-                var allowEdgeAngle = GetF("Terminate_Allow_Edge_Angle").value;
-                var ignoreHighway = GetT("Ignore_Highwaay").value;
-
-                selfGameObject = rnMdl.gameObject;
-                factory.RoadSize = roadSize;
-                factory.Lod1SideWalkSize = sideWalklSize;
-                factory.AddSideWalk = lodSideWalk;
-                factory.CheckMedian = checkMedian;
-
-                factory.GraphFactory.mergeCellSize = cellSize;
-                factory.GraphFactory.mergeCellLength = cellLen;
-                factory.GraphFactory.removeMidPointTolerance = midPointTolerrance;
-                factory.TerminateAllowEdgeAngle = allowEdgeAngle;
-                factory.IgnoreHighway = ignoreHighway;
-
-                //CreateNetwork().ContinueWithErrorCatch();
-                selfGameObject.GetComponent<PLATEAURoadNetworkTester>().CreateNetwork().ContinueWithErrorCatch();
-
-
-                Debug.Log("GenerateButton clicked");
-
-            };
+            setupMethod = CreateSetupMethod(rnMdl, factory);
+            generateButton.clicked += setupMethod;
 
             /// <summary>
             /// 道路ネットワークを作成する
@@ -229,8 +226,54 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         }
 
+        private Action CreateSetupMethod(PLATEAURnStructureModel rnMdl, RoadNetworkFactory factory)
+        {
+            return () =>
+            {
+                var roadSize = GetF("RoadSizeField").value;
+                var sideWalklSize = GetF("SideWalkSize").value;
+                var lodSideWalk = GetT("Add_Lod_Side_Walk").value;
+                var checkMedian = GetT("Check_Median").value;
+                var addTrafficSignalLights = GetT("Add_TrafficSignalLight").value;
+
+                var cellSize = GetF("Merge_Cell_Size").value;
+                var cellLen = GetI("Merge_Cell_Length").value;
+                var midPointTolerrance = GetF("Remove_Mid_Point_Tolerance").value;
+                var allowEdgeAngle = GetF("Terminate_Allow_Edge_Angle").value;
+                var ignoreHighway = GetT("Ignore_Highwaay").value;
+
+                selfGameObject = rnMdl.gameObject;
+                factory.RoadSize = roadSize;
+                factory.Lod1SideWalkSize = sideWalklSize;
+                factory.AddSideWalk = lodSideWalk;
+                factory.CheckMedian = checkMedian;
+                factory.AddTrafficSignalLights = addTrafficSignalLights;
+
+                factory.GraphFactory.mergeCellSize = cellSize;
+                factory.GraphFactory.mergeCellLength = cellLen;
+                factory.GraphFactory.removeMidPointTolerance = midPointTolerrance;
+                factory.TerminateAllowEdgeAngle = allowEdgeAngle;
+                factory.IgnoreHighway = ignoreHighway;
+
+                //CreateNetwork().ContinueWithErrorCatch();
+                selfGameObject.GetComponent<PLATEAURoadNetworkTester>().CreateNetwork().ContinueWithErrorCatch();
+
+
+                Debug.Log("GenerateButton clicked");
+
+            };
+        }
+
         public override void Terminate(VisualElement root)
         {
+            var generateButton = self.Q<Button>("GenerateButton");
+            if (generateButton != null)
+            {
+                generateButton.clicked -= setupMethod;
+                setupMethod = null;
+            }
+        
+
             base.Terminate(root);
         }
 

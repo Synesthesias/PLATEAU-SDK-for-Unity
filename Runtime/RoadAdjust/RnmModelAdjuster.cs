@@ -16,6 +16,7 @@ namespace PLATEAU.RoadAdjust
             // 変更対象はディープコピーです。
             var serializer = new RoadNetworkSerializer();
             var model = serializer.Deserialize(serializer.Serialize(srcModel));
+
             
             foreach (var road in model.Roads)
             {
@@ -57,7 +58,7 @@ namespace PLATEAU.RoadAdjust
         /// <param name="skipFirst"><paramref name="srcWay"/>の最初からこの数をスキップします。</param>
         /// <param name="skipLast"><paramref name="srcWay"/>の最後からこの数をスキップします。</param>
         /// </summary>
-        private void MoveToward(RnWay srcWay, RnWay targetWay, float dist, int skipFirst, int skipLast)
+        public void MoveToward(RnWay srcWay, RnWay targetWay, float dist, int skipFirst, int skipLast)
         {
             if (targetWay == null || targetWay.Count == 0) return;
             if (srcWay == null || srcWay.Count == 0) return;

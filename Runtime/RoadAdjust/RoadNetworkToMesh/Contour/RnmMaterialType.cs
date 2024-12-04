@@ -24,7 +24,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 RnmMaterialType.RoadCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUV"),
                 RnmMaterialType.IntersectionCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoad"),
                 RnmMaterialType.SideWalk => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUVTile"),
-                RnmMaterialType.MedianLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadStoneAsphalt"),
+                RnmMaterialType.MedianLane => FallbackMaterial.LoadByMaterialFileName("PlateauRoadStone"),
                 _ => throw new ArgumentOutOfRangeException()
             };
             return mat;

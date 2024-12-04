@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -233,6 +234,62 @@ namespace PLATEAU.Util
                 }
             } while (isShifted); // ParentalShiftできなくなるまで繰り返し
 
+        }
+        
+        /// <summary>
+        /// 引数の共通の親を探し、親のうちもっとも階層上の子であるものを返します。
+        /// 共通の親がない場合、nullを返します。
+        /// </summary>
+        public Transform CalcCommonParent()
+        {
+            // 各親が、srcListのうちいくつの親であるかを数えます。
+            Dictionary<Transform, int> descendantCountDict = new();
+            foreach (var trans in data)
+            {
+                var parent = trans.parent;
+                // 親をたどりながら子孫カウントをインクリメントします。
+                while (parent != null)
+                {
+                    if (descendantCountDict.ContainsKey(parent))
+                    {
+                        descendantCountDict[parent]++;
+                    }
+                    else
+                    {
+                        descendantCountDict.Add(parent, 1);
+                    }
+
+                    parent = parent.parent;
+                }
+            }
+
+            if (descendantCountDict.Count == 0) return null;
+
+            var commonParents = descendantCountDict
+                .Where(pair => pair.Value == data.Count)
+                .Select(pair => pair.Key)
+                .ToArray();
+            if (commonParents.Length == 0) return null;
+
+            // 共通の親のうち、もっとも子であるものを探します。
+            for (int i = 0; i < commonParents.Length; i++)
+            {
+                var trans1 = commonParents[i];
+                bool isTrans1Parented = false;
+                for (int j = i + 1; j < commonParents.Length; j++)
+                {
+                    var trans2 = commonParents[j];
+                    if (trans2.IsChildOf(trans1))
+                    {
+                        isTrans1Parented = true;
+                        break;
+                    }
+                }
+
+                if (!isTrans1Parented) return trans1;
+            }
+
+            throw new Exception("Failed to search common parent.");
         }
     }
 

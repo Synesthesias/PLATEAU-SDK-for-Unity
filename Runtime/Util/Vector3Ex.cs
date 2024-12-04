@@ -241,7 +241,7 @@ namespace PLATEAU.Util
 
 
         /// <summary>
-        /// 幾何中心を求める
+        /// 幾何中心を求める. 頂点の平均
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>

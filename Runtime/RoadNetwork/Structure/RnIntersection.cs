@@ -922,18 +922,67 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
+        /// </summary>
+        public void SeparateContinuousBorder()
+        {
+            Align();
+            for (var i = 0; i < edges.Count; ++i)
+            {
+                var e0 = edges[i];
+                var e1 = edges[(i + 1) % edges.Count];
+
+                if (e0.IsBorder && e1.IsBorder && e0.Road != e1.Road)
+                {
+                    var p0 = e0.Border.GetPoint(-1);
+                    var p1 = e1.Border.GetPoint(0);
+
+                    // 1cmずらす
+                    var offset = 0.01f;
+                    if (e0.Border.Count < 2 || e1.Border.Count < 2)
+                    {
+                        DebugEx.LogError("境界線の頂点数が2未満です");
+                        continue;
+                    }
+                    var newP0 = new RnPoint(e0.Border.GetAdvancedPoint(offset, true));
+                    var newP1 = new RnPoint(e1.Border.GetAdvancedPoint(offset, false));
+                    var ls = new RnLineString(new[] { newP0, p0, newP1 });
+
+                    static void AdjustPoint(RnNeighbor e, RnPoint oldPoint, RnPoint newPoint)
+                    {
+                        e.Border.LineString.ReplacePoint(oldPoint, newPoint);
+                        foreach (var ls in e.Road?.GetAllLineStringsDistinct() ?? new HashSet<RnLineString>())
+                            ls.ReplacePoint(oldPoint, newPoint);
+                    }
+                    AdjustPoint(e0, p0, newP0);
+                    AdjustPoint(e1, p1, newP1);
+
+
+                    var way = new RnWay(ls, false, true);
+                    edges.Insert(i + 1, new RnNeighbor { Road = null, Border = way });
+                    i++;
+                }
+            }
+        }
+        /// <summary>
+        /// 所属するすべてのWayを取得
         /// </summary>
         /// <returns></returns>
-        public override Vector3 GetCenter()
+        public override IEnumerable<RnWay> AllWays()
         {
-            var a = Neighbors
-                .Where(n => n.Border != null)
-                .SelectMany(n => n.Border.Vertices)
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            return base.AllWays().Concat(edges.Select(e => e.Border));
+        }
+        /// <summary>
+        /// デバッグ用) その道路の中心を表す代表頂点を返す
+        /// </summary>
+        /// <returns></returns>
+        public override Vector3 GetCentralVertex()
+        {
+            // 全エッジの中心点の重心を返す
+            return Vector3Ex.Centroid(Neighbors
+                .Select(n => n.Border)
+                .Where(b => b != null)
+                .Select(b => b.GetLerpPoint(0.5f)));
         }
 #if false
         /// <summary>
@@ -1136,6 +1185,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 public RnPoint Point { get; set; }
             }
 
+            /// <summary>
+            /// グラフを構成する点
+            /// </summary>
             public class SiteNode
             {
                 // 位置
@@ -1172,6 +1224,10 @@ namespace PLATEAU.RoadNetwork.Structure
             /// </summary>
             public List<SiteNode> Nodes { get; } = new();
 
+            /// <summary>
+            /// Key   : 起点となるRnRoadBase(交差点に接続している道路)
+            /// Value : (Key : 終点となるRnRoadBase(交差点に接続している道路), Value : 経路)
+            /// </summary>
             public Dictionary<RnRoadBase, Dictionary<RnRoadBase, RnWay>> CenterLines { get; } = new();
         }
 
@@ -1238,8 +1294,6 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (eg.Key == null)
                     continue;
-                var centroid = Vector2Ex.Centroid(eg.Edges.Select(e => e.Border.GetLerpPoint(0.5f).Xz()));
-
 
                 var minDistance = float.MaxValue;
                 CenterLineGraph.SiteNode minSiteNode = null;
@@ -1319,6 +1373,31 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
+        /// <summary>
+        /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<RnLane> GetConnectedLanes(this RnIntersection self, RnWay borderWay)
+        {
+            return self.FindEdges(borderWay).SelectMany(n => n.GetConnectedLanes());
+        }
+
+
+        /// <summary>
+        /// selfの全LinestringとlineSegmentの交点を取得する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="lineSegment"></param>
+        /// <returns></returns>
+        public static LineCrossPointResult GetEdgeCrossPoints(this RnIntersection self, LineSegment3D lineSegment)
+        {
+            var targetLines = self.Edges
+                .Select(l => l.Border)
+                .Concat(self.SideWalks.SelectMany(s => s.SideWays));
+            return RnEx.GetLineIntersections(lineSegment, targetLines);
+        }
+
+#if false
         public class RecLine
         {
             public class PartialWay
@@ -1631,30 +1710,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
-        /// <summary>
-        /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<RnLane> GetConnectedLanes(this RnIntersection self, RnWay borderWay)
-        {
-            return self.FindEdges(borderWay).SelectMany(n => n.GetConnectedLanes());
-        }
 
-
-        /// <summary>
-        /// selfの全LinestringとlineSegmentの交点を取得する
-        /// </summary>
-        /// <param name="self"></param>
-        /// <param name="lineSegment"></param>
-        /// <returns></returns>
-        public static LineCrossPointResult GetEdgeCrossPoints(this RnIntersection self, LineSegment3D lineSegment)
-        {
-            var targetLines = self.Edges
-                .Select(l => l.Border)
-                .Concat(self.SideWalks.SelectMany(s => s.SideWays));
-            return RnEx.GetLineIntersections(lineSegment, targetLines);
-        }
-#if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
         /// </summary>
