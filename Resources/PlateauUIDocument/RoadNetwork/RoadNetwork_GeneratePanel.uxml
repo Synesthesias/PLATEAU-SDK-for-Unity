@@ -25,8 +25,8 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px;">
-            <ui:DropdownField label="車線分割" name="Split_Pedestrian" choices="車線をまとめる,車線ごとに分ける" index="0" style="-unity-text-align: middle-left;" />
-            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" index="0" style="-unity-text-align: middle-left;" />
+            <ui:DropdownField label="車線分割" name="Split_Pedestrian" choices="車線をまとめる,車線ごとに分ける" index="0" style="-unity-text-align: middle-left; display: none;" />
+            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" index="0" style="-unity-text-align: middle-left; display: none;" />
         </ui:VisualElement>
         <ui:VisualElement name="Divider" style="flex-grow: 1;" />
         <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">

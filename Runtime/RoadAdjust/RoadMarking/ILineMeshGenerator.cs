@@ -33,7 +33,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             
             if (points.Count < 2)
             {
-                Debug.LogWarning("Not enough points to generate mesh.");
+                Debug.Log("Skipping mesh generation because not enough points.");
                 return null;
             }
 
