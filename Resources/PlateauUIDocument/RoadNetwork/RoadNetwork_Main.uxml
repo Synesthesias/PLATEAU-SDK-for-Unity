@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="RoadNetwork_GeneratePanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_GeneratePanel" />
-    <ui:Template name="RoadNetwork_EditPanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_EditPanel" />
-    <ui:Template name="RoadNetwork_AddPanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_AddPanel" />
-    <ui:Template name="RoadNetwork_TrafficRulePanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_TrafficRulePanel" />
-    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:Template name="RoadNetwork_GeneratePanel" src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_GeneratePanel.uxml" />
+    <ui:Template name="RoadNetwork_EditPanel" src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_EditPanel.uxml" />
+    <ui:Template name="RoadNetwork_AddPanel" src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_AddPanel.uxml" />
+    <ui:Template name="RoadNetwork_TrafficRulePanel" src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_TrafficRulePanel.uxml" />
+    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
     <ui:VisualElement name="RoadNetwork_Main" style="flex-grow: 1; padding-top: 16px; padding-right: 16px; padding-bottom: 16px; padding-left: 16px;">
         <ui:GroupBox name="MenuGroup" style="flex-direction: row; flex-shrink: 1; flex-grow: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;">
             <ui:RadioButton label="生成" name="MenuGenerate" value="true" class="MenuFirst" style="flex-shrink: 1;" />
