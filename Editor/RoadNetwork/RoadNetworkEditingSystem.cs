@@ -49,17 +49,6 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <returns></returns>
         RoadNetworkEditingResult AddPoint(RnWay parent, int idx, RnPoint point);
         RoadNetworkEditingResult RemovePoint(RnWay parent, RnPoint point);
-        RoadNetworkEditingResult MovePoint(RnPoint point, in Vector3 newPos);
-
-        /// <summary>
-        /// 幅員のスケーリング
-        /// </summary>
-        /// <param name="lane"></param>
-        /// <param name="factor"></param>
-        /// <returns></returns>
-        RoadNetworkEditingResult ScaleRoadWidth(RnLane lane, float factor);
-        RoadNetworkEditingResult ScaleRoadWidth(RnRoad link, float factor);
-
         /// <summary>
         /// 車線を増やす、減らす
         /// </summary>
@@ -68,37 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="newLane"></param>
         /// <returns></returns>
         RoadNetworkEditingResult AddMainLane(RnRoad parent, RnLane newLane);
-        RoadNetworkEditingResult RemoveMainLane(RnRoad parent, RnLane lane);
 
-        /// <summary>
-        /// リンクを追加する削除する
-        /// </summary>
-        /// <param name="parentNode"></param>
-        /// <param name="idx"></param>
-        /// <param name="newLink"></param>
-        /// <returns></returns>
-        RoadNetworkEditingResult AddLink(RnModel parent, RnRoad newLink);
-        RoadNetworkEditingResult RemoveLink(RnModel parent, RnRoad link);
-
-        // ノードを追加する削除する
-        RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnIntersection newNode);
-        RoadNetworkEditingResult RemoveNode(RnModel parent, RnIntersection node);
-
-        //RoadNetworkEditingResult AddBlock(RoadNetworkLane parentLane, int idx, RoadNetworkBlock newBlock);
-        //RoadNetworkEditingResult RemoveBlock(RoadNetworkLane parentLane, RoadNetworkBlock block);
-
-        //RoadNetworkEditingResult AddTrack(RoadNetworkNode parentNode, int idx, RoadNetworkTrack newTrack);
-        //RoadNetworkEditingResult RemoveTrack(RoadNetworkNode parentNode, RoadNetworkTrack track);
-
-        /// <summary>
-        /// 交通規制情報の登録
-        /// </summary>
-        /// <param name="link"></param>
-        /// <param name="newRegulation"></param>
-        /// <returns></returns>
-        RoadNetworkEditingResult RegisterRegulation(RnRoad link, RoadNetworkRegulationElemet newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RnLane lane, RoadNetworkRegulationElemet newRegulation);
-        RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation);
     }
 
 
@@ -215,7 +174,6 @@ namespace PLATEAU.Editor.RoadNetwork
         public readonly IRoadNetworkEditingSystem system;
 
         private IRoadNetworkEditOperation editOperation;
-        private RoadNetworkUIDoc uiDocEditor;
         private RoadNetworkSceneGUISystem sceneGUISystem;
 
         // Laneの生成機能を提供するモジュール
@@ -258,7 +216,6 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             // 初期化の必要性チェック
             bool needIniteditOperation = editOperation == null;
-            bool needInitEditor = uiDocEditor == null;
             bool needInitGUISystem = sceneGUISystem == null;
             bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
 
@@ -268,30 +225,10 @@ namespace PLATEAU.Editor.RoadNetwork
                 editOperation = new RoadNetworkEditorOperation();
             }
 
-            //if (needInitEditor)
-            //{
-            //    assets = new RoadNetworkEditorAssets();
-
-            //    var visualTree = assets.GetAsset(RoadNetworkEditorAssets.EditorAssetName);
-            //    var inst = visualTree.Instantiate();
-            //    rootVisualElement.Add(inst);
-            //    //visualTree.CloneTree(rootVisualElement);
-
-            //    uiDocEditor = new RoadNetworkUIDoc(system, rootVisualElement, assets);
-            //    uiDocEditor.Initialize();
-
-            //}
-
             if (needInitGUISystem)
             {
                 sceneGUISystem = new RoadNetworkSceneGUISystem(system);
             }
-
-            // 他のシステム連携が必要な初期化 PostInitliaze()
-            //if (needInitEditor)
-            //{
-            //    uiDocEditor.PostInitialize();
-            //}
 
             if (needInitGameObj)
             {
@@ -688,25 +625,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            public RoadNetworkEditingResult MovePoint(RnPoint point, in Vector3 newPos)
-            {
-                if (point.Vertex == newPos)
-                    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-
-                point.Vertex = newPos;
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
-            public RoadNetworkEditingResult ScaleRoadWidth(RnLane lane, float factor)
-            {
-                throw new NotImplementedException();
-            }
-
-            public RoadNetworkEditingResult ScaleRoadWidth(RnRoad link, float factor)
-            {
-                throw new NotImplementedException();
-            }
-
             public RoadNetworkEditingResult AddMainLane(RnRoad link, RnLane newLane)
             {
                 //var v = new RoadNetworkLane(leftWay:, rightWay:, startBorder:, endBorder:);
@@ -714,79 +632,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
             }
 
-            public RoadNetworkEditingResult AddLink(RnModel parent, RnRoad newLink)
-            {
-                //var v = new RoadNetworkLink(targetTran:);
-                parent.AddRoad(newLink);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
-            public RoadNetworkEditingResult RemoveLink(RnModel parent, RnRoad link)
-            {
-                parent.RemoveRoad(link);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
-            public RoadNetworkEditingResult AddNode(RnModel parent, int idx, RnIntersection newNode)
-            {
-                //var v = new RoadNetworkNode(targetTran:);
-                parent.AddIntersection(newNode);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
-            public RoadNetworkEditingResult RemoveMainLane(RnRoad link, RnLane lane)
-            {
-                link.RemoveLane(lane);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
-            public RoadNetworkEditingResult RegisterRegulation(RnRoad link, RoadNetworkRegulationElemet newRegulation)
-            {
-                throw new NotImplementedException();
-            }
-
-            public RoadNetworkEditingResult RegisterRegulation(RnLane lane, RoadNetworkRegulationElemet newRegulation)
-            {
-                throw new NotImplementedException();
-            }
-
-            public RoadNetworkEditingResult RegisterRegulation(RnBlock block, RoadNetworkRegulationElemet newRegulation)
-            {
-                throw new NotImplementedException();
-            }
-
-            public RoadNetworkEditingResult RemoveNode(RnModel parent, RnIntersection node)
-            {
-                parent.RemoveIntersection(node);
-                throw new NotImplementedException();
-            }
         }
-
-        /// <summary>
-        /// 編集機能のインスタンスを管理する機能を行っているクラス
-        /// </summary>
-        //public class EditorInstance : ISystemInstance
-        //{
-        //    public EditorInstance(RoadNetworkEditingSystem system, ISystemInstance editorInstance)
-        //    {
-        //        this.system = system;
-        //        this.editorInstance = editorInstance;
-        //    }
-
-        //    private RoadNetworkEditingSystem system;
-        //    private ISystemInstance editorInstance;
-
-        //    public void RequestReinitialize()
-        //    {
-        //        editorInstance.RequestReinitialize();
-        //    }
-
-        //    public void ReInitialize()
-        //    {
-        //        system.Terminate();
-        //        system.TryInitialize(system.rootVisualElement);
-        //    }
-        //}
 
         /// <summary>
         /// 単純なレーン生成機能を提供するクラス
@@ -821,33 +667,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 Debug.Log("設定をリセット");
                 Init();
             }
-
-            ///// <summary>
-            ///// ポイントを追加する
-            ///// ただし前に追加したポイントが以下の条件時は失敗する
-            ///// 　追加済みポイント１，２と追加するポイントを結ぶ直線が直角以下であるとき　（綺麗にレーンを構成するwayが重なってしまう可能性があるため）
-            ///// （追加済みのポイントが存在しない時はborderが利用される）
-            ///// </summary>
-            ///// <param name="point"></param>
-            ///// <returns></returns>
-            //public bool AddPoint(Vector3 point)
-            //{
-            //    if (laneCenterPoints.Count >= 2)
-            //    {
-
-            //        //var p1 = laneCenterPoints[laneCenterPoints.Count - 2];
-            //        //var p2 = laneCenterPoints[laneCenterPoints.Count - 1];
-            //        //var p3 = point;
-            //        //// p1,p2,p3を結ぶ直線が直角以下であるとき
-            //        //if (Vector3.Dot(p2 - p1, p3 - p2) < 0)
-            //        //{
-            //        //    return false;
-            //        //}
-            //    }
-
-            //    laneCenterPoints.Add(point);
-            //    return true;
-            //}
 
             /// <summary>
             /// 時計回りに選択して追加する
@@ -968,19 +787,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 baseWay = way;
                 return true;
             }
-
-            ///// <summary>
-            ///// 
-            ///// </summary>
-            ///// <param name="way"></param>
-            ///// <returns></returns>
-            //public bool SetEndWay(RoadNetworkWay way)
-            //{
-            //    if (way == null)
-            //        return false;
-            //    endWay = way;
-            //    return true;
-            //}
 
             public bool CanBuild()
             {
