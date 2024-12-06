@@ -169,8 +169,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private RoadNetworkSceneGUISystem sceneGUISystem;
 
         // Laneの生成機能を提供するモジュール
-        private RoadNetworkSimpleLaneGenerateModule simpleLaneGenerateModule;
-
         private RoadNetworkSimpleEditSysModule simpleEditSysModule;
 
         // 道路ネットワーク関係のアセットを管理するクラス
@@ -277,7 +275,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 simpleEditSysModule = new RoadNetworkSimpleEditSysModule(roadNetworkEditingSystemObjRoot, roadNetwork, system);
                 //simpleEditSysModule.Init();
 
-                simpleLaneGenerateModule = new RoadNetworkSimpleLaneGenerateModule();
             }
 
             return true;
@@ -399,12 +396,8 @@ namespace PLATEAU.Editor.RoadNetwork
             string OperationMode { get; set; }
             event EventHandler OnChangedOperationMode;
 
-            RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule { get; }
             RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
-            RnLane GetBase(RnLane keyLane);
-            float GetScale(RnLane keyLane);
-            void RegisterBase(RnLane keyLane, RnLane baseLane, float scale, RnLane oldKeyLane);
         }
 
         /// <summary>
@@ -523,8 +516,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            public RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule => system.simpleLaneGenerateModule;
-
             public List<EditorData<RnRoadGroup>> Connections => system.simpleEditSysModule?.Connections;
 
             public RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule => system.simpleEditSysModule;
@@ -545,33 +536,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
             }
 
-            public RnLane GetBase(RnLane keyLane)
-            {
-                var isSuc = system.keyValuePairs.TryGetValue(keyLane, out var editCache);
-                if (isSuc)
-                    return editCache.BaseLane;
-                return null;
-            }
-            public float GetScale(RnLane keyLane)
-            {
-                var isSuc = system.keyValuePairs.TryGetValue(keyLane, out var editCache);
-                if (isSuc)
-                    return editCache.Scale;
-                return 1.0f;
-            }
-            public void RegisterBase(RnLane keyLane, RnLane baseLane, float scale, RnLane oldKeyLane)
-            {
-                var cache = new LaneEditCache() { BaseLane = baseLane, Scale = scale };
-                bool isAdded = system.keyValuePairs.TryAdd(keyLane, cache);
-                if (isAdded)
-                {
-                    system.keyValuePairs[keyLane] = cache;
-                }
-                if (oldKeyLane != null)
-                {
-                    system.keyValuePairs.Remove(oldKeyLane);
-                }
-            }
         }
 
         /// <summary>
@@ -834,67 +798,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 var way = new RnWay(RnLineString.Create(wayPoints));
                 return way;
             }
-        }
-
-        public class RoadNetworkLaneWidthEditModule
-        {
-            public RoadNetworkLaneWidthEditModule()
-            {
-            }
-
-            private RnLane lane;
-            private float currentScale;
-
-
-
-            public void Init()
-            {
-                //handleBasePos = Vector3.zero;
-                lane = null;
-            }
-
-            public void Reset()
-            {
-                Debug.Log("再設定が必要");
-                Init();
-            }
-
-            public bool SetLane(RnLane lane, float scale)
-            {
-                this.lane = lane;
-                return true;
-            }
-
-            public bool CanEdit()
-            {
-                if (lane == null)
-                    return false;
-                return true;
-            }
-
-            public RnRoad Edit()
-            {
-                if (this.lane == null)
-                {
-                    Debug.Log("親が設定されていない");
-                    return null;
-                }
-
-                //foreach (var way in lane.BothWays)
-                //{
-                //    int i = 0;
-                //    foreach (var point in way.Points)
-                //    {
-                //        var vertNorm = way.GetVertexNormal(i++);
-                //        point.Vertex = point + (scale - 1) * 0.1f * vertNorm;
-                //        state.isDirtyTarget = true;
-                //    }
-                //}
-
-
-                return null;
-            }
-
         }
 
         public class RoadNetworkSimpleEditSysModule
