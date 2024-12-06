@@ -97,11 +97,7 @@ namespace PLATEAU.Editor.RoadNetwork
             DisplayHndMaskSet.NodeSelect);
 
         private int displayHandleMask = 0;
-        private Vector3 handleLockPos;
-        // private RnLane bIsHandleLock = null;
 
-
-        //string nodeTexPath = "Assets/PlateauUnitySDK/Editor/RoadNetwork/Textures/Node.png";
         string laneTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_lane.png";
         string nodeTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_node.png";
         string trafficLightControllerPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_trafficLightController.png";
@@ -130,9 +126,6 @@ namespace PLATEAU.Editor.RoadNetwork
                         break;
                     case nameof(IRoadNetworkEditOperation.RemovePoint):
                         SetDisplayHandleMask(DisplayHndMaskSet.PointRemove, DisplayHndMaskSet.PointZeroMask);
-                        break;
-                    case nameof(IRoadNetworkEditOperation.AddMainLane):
-                        SetDisplayHandleMask(DisplayHndMaskSet.LaneAdd, DisplayHndMaskSet.LaneZeroMask);
                         break;
                     default:
                         displayHandleMask = defaultDisplayHandleMask;
@@ -233,27 +226,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 return;
             }
 
-            // ステイトの初期化
-            SceneGUIState state;
-            systemState.Init(out state);
-
-            var currentCamera = SceneView.currentDrawingSceneView.camera;
-            state.currentCamera = currentCamera;
-
-            // ハンドルの配置、要素数を変化させない値変更、遅延実行用のコマンド生成を行う
-            // 遅延実行用のコマンドは1フレームにつき一つまで実行できるとする(要素削除順の管理などが面倒なため)
-
-            // 遅延実行 コレクションの要素数などを変化させる
-            if (state.delayCommand != null)
-                state.delayCommand.Invoke();
-
-            // 変更を通知する
-            if (state.isDirtyTarget)
-            {
-                editorSystem.NotifyChangedRoadNetworkObject2Editor();
-            }
-
-            systemState.Apply(state);
         }
 
         private bool LoadTexture()
@@ -342,38 +314,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // ノード
             var nodeEitorData = intersections;
-
-            //foreach (var item in nodeEitorData)
-            //{
-            //    // 選択済みのオブジェクト
-            //    if (item == editorSystem.SelectedRoadNetworkElement)
-            //        continue;
-
-            //    Color pre = GUI.color;
-            //    var p1 = item.RefGameObject.transform.position;
-
-            //    Vector3 pos2d_dis = Vector3.zero;
-            //    pos2d_dis = camera.WorldToScreenPoint(p1 + nodeIconPosOffset);
-            //    var isEditable = IsVisibleToCamera(camera, pos2d_dis);
-            //    if (isEditable)
-            //    {
-            //        // レーンの選択ボタンの表示
-            //        var laneSelectBtnSize = HandleUtility.GetHandleSize(p1) * laneHndScaleFactor;
-            //        var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
-            //        if (isClicked)
-            //        {
-            //            Debug.Log(item.RefGameObject.name);
-            //            editorSystem.SelectedRoadNetworkElement = item;
-            //            return;
-            //        }
-            //    }
-
-            //    GUI.color = Color.red;
-            //    var offset = Vector3.up * intersectionRadius * 1.1f;
-            //    Handles.Label(p1 + offset, item.RefGameObject.name);
-            //    GUI.color = pre;
-            //}
-
 
             foreach (var intersection in intersections)
             {
@@ -484,7 +424,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                                 if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
                                 {
-                                    DeployPointMoveHandle(point, state, networkOperator, size);
+                                    DeployPointMoveHandle(point, state, size);
                                     continue;
                                 }
 
@@ -567,7 +507,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                     {
                                         if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
                                         {
-                                            DeployPointMoveHandle(point, state, networkOperator, size);
+                                            DeployPointMoveHandle(point, state, size);
                                             continue;
                                         }
                                     }
@@ -708,7 +648,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         }
 
-        private static void DeployPointMoveHandle(RnPoint point, SceneGUIState state, IRoadNetworkEditOperation networkOperator, float size)
+        private static void DeployPointMoveHandle(RnPoint point, SceneGUIState state, float size)
         {
             EditorGUI.BeginChangeCheck();
             var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);

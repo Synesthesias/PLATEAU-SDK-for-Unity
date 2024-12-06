@@ -49,14 +49,6 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <returns></returns>
         RoadNetworkEditingResult AddPoint(RnWay parent, int idx, RnPoint point);
         RoadNetworkEditingResult RemovePoint(RnWay parent, RnPoint point);
-        /// <summary>
-        /// 車線を増やす、減らす
-        /// </summary>
-        /// <param name="link"></param>
-        /// <param name="idx"></param>
-        /// <param name="newLane"></param>
-        /// <returns></returns>
-        RoadNetworkEditingResult AddMainLane(RnRoad parent, RnLane newLane);
 
     }
 
@@ -180,7 +172,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private RoadNetworkSimpleLaneGenerateModule simpleLaneGenerateModule;
         private RoadNetworkSimpleLinkGenerateModule simpleLinkGenerateModule;
         private RoadNetworkSimpleNodeGenerateModule simpleNodeGenerateModule;
-        private RoadNetworkMedianStripGenerateModule medianStripGenerateModule;
 
         private RoadNetworkSimpleEditSysModule simpleEditSysModule;
 
@@ -198,12 +189,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private void Terminate()
         {
             simpleEditSysModule?.Terminate();
-
-            //var children = rootVisualElement.Children().ToArray();
-            //foreach (var item in children)
-            //{
-            //    item.RemoveFromHierarchy();
-            //}
         }
 
         /// <summary>
@@ -625,13 +610,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
 
-            public RoadNetworkEditingResult AddMainLane(RnRoad link, RnLane newLane)
-            {
-                //var v = new RoadNetworkLane(leftWay:, rightWay:, startBorder:, endBorder:);
-                link.AddMainLane(newLane);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
-            }
-
         }
 
         /// <summary>
@@ -865,93 +843,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
                 var way = new RnWay(RnLineString.Create(wayPoints));
                 return way;
-            }
-        }
-
-        public class RoadNetworkMedianStripGenerateModule
-        {
-            public RoadNetworkMedianStripGenerateModule()
-            {
-            }
-
-            // 隣り合ったレーン　LineStringsを共有していることが条件
-            private List<RnLane> neighborLanes = new List<RnLane>(2);
-
-            public void Init()
-            {
-                neighborLanes.Clear();
-            }
-
-            public void Reset()
-            {
-                Debug.Log("再設定");
-                Init();
-            }
-
-            public bool CanBuild()
-            {
-                return neighborLanes.Count == 2;
-            }
-
-            public RnIntersection Build()
-            {
-                var ways = new List<RnWay>(4)
-                {
-                    neighborLanes[0].LeftWay,
-                    neighborLanes[0].RightWay,
-                    neighborLanes[1].LeftWay,
-                    neighborLanes[1].RightWay
-                };
-
-                // 共有するLineStringsを探す
-                RnLineString unionLineStrins = null;
-                int i = 0;
-                for (i = 0; i < ways.Count; i++)
-                {
-                    for (int j = 0; j < ways.Count; j++)
-                    {
-                        // 自信は除く
-                        // (RoadNetworkWayのインスタンス比較だと実装によっては共有しているかもしれないのでindexで判断)
-                        if (i == j)
-                            continue;
-                        if (ways[i].LineString == ways[j].LineString)
-                        {
-                            unionLineStrins = ways[i].LineString;
-                            break;
-                        }
-                    }
-                }
-
-                if (unionLineStrins == null)
-                {
-                    Debug.Log("共有しているLineStringsが見つからない");
-                    Reset();
-                    return null;
-                }
-
-                // LineStringsを複製する
-                //var
-                var newLineStrings = RnLineString.Create(unionLineStrins);
-                var lane = neighborLanes[i / 2];
-                RnLane newLane = null;
-                if (i % 2 == 0)
-                {
-                    newLane = new RnLane(new RnWay(newLineStrings), lane.RightWay, lane.PrevBorder, lane.NextBorder);
-                    //lane.LeftWay = new RoadNetworkWay(newLineStrings);
-                }
-                else
-                {
-                    newLane = new RnLane(lane.LeftWay, new RnWay(newLineStrings), lane.PrevBorder, lane.NextBorder);
-                    //lane.RightWay = new RoadNetworkWay(newLineStrings);
-                }
-                var parentLink = lane.Parent as RnRoad;
-                parentLink?.ReplaceLane(lane, newLane);
-                // 中央分離帯の形状にする 始点と終点だけ共有 （中央分離帯の途中で道が空いている場合は交差点を配置して中央分離帯を2回作成する）
-
-
-                // 共有するwayがleftWayにあるlane0
-                //var newLineStrings = RoadNetworkLineString.Create(newPoints);
-                return null;
             }
         }
 
