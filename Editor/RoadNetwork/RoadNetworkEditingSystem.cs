@@ -170,7 +170,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
         // Laneの生成機能を提供するモジュール
         private RoadNetworkSimpleLaneGenerateModule simpleLaneGenerateModule;
-        private RoadNetworkSimpleLinkGenerateModule simpleLinkGenerateModule;
         private RoadNetworkSimpleNodeGenerateModule simpleNodeGenerateModule;
 
         private RoadNetworkSimpleEditSysModule simpleEditSysModule;
@@ -280,7 +279,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 //simpleEditSysModule.Init();
 
                 simpleLaneGenerateModule = new RoadNetworkSimpleLaneGenerateModule();
-                simpleLinkGenerateModule = new RoadNetworkSimpleLinkGenerateModule();
                 simpleNodeGenerateModule = new RoadNetworkSimpleNodeGenerateModule();
             }
 
@@ -404,7 +402,6 @@ namespace PLATEAU.Editor.RoadNetwork
             event EventHandler OnChangedOperationMode;
 
             RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule { get; }
-            RoadNetworkSimpleLinkGenerateModule RoadNetworkSimpleLinkGenerateModule { get; }
             RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule { get; }
             RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
@@ -530,8 +527,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             public RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule => system.simpleLaneGenerateModule;
-
-            public RoadNetworkSimpleLinkGenerateModule RoadNetworkSimpleLinkGenerateModule => system.simpleLinkGenerateModule;
 
             public RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule => system.simpleNodeGenerateModule;
 
@@ -875,100 +870,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 var node = new RnIntersection(tranObj);
                 return null;
             }
-        }
-
-        public class RoadNetworkSimpleLinkGenerateModule
-        {
-            public RoadNetworkSimpleLinkGenerateModule()
-            {
-            }
-
-            private PLATEAU.CityInfo.PLATEAUCityObjectGroup tranObj;
-            private RnModel parent;
-            private List<RnPoint> points = new List<RnPoint>();
-
-            public void Init()
-            {
-                tranObj = null;
-                parent = null;
-                points.Clear();
-            }
-
-            public void Reset()
-            {
-                Debug.Log("再設定が必要");
-                Init();
-            }
-
-            public bool AddPoint(RnModel parent, RnPoint point)
-            {
-                if (this.parent == null)
-                {
-                    this.parent = parent;
-                }
-                else
-                {
-                    if (this.parent != parent)
-                    {
-                        Debug.Log("親が異なる");
-                        Reset();
-                        return false;
-                    }
-                }
-
-                if (points.Contains(point))
-                {
-                    Debug.Log("追加済みのポイントを選択した");
-                    return false;
-                }
-                points.Add(point);
-                Debug.Log("pointを追加した");
-                return true;
-            }
-
-            public void SetTranObj(PLATEAU.CityInfo.PLATEAUCityObjectGroup tranObj)
-            {
-                this.tranObj = tranObj;
-            }
-
-            public bool CanBuild()
-            {
-                if (parent == null)
-                {
-                    return false;
-                }
-
-                if (points.Count < 4)
-                {
-                    return false;
-                }
-                return true;
-            }
-
-            public RnRoad Build()
-            {
-                if (parent == null)
-                {
-                    Debug.Log("親が設定されていない");
-                    return null;
-                }
-
-                if (points.Count < 4)
-                {
-                    Debug.Log("Linkを作成するには4点以上必要");// startBorderから選択して右回り
-                    return null;
-                }
-
-                var startBorder = new RnWay(RnLineString.Create(points.GetRange(0, 2)));
-                var leftWay = new RnWay(RnLineString.Create(points.GetRange(1, 2)));
-                var endBorder = new RnWay(RnLineString.Create(points.GetRange(2, 2)));
-                var rightWay = new RnWay(RnLineString.Create(new RnPoint[] { points[3], points[0] }));
-                var lane = new RnLane(leftWay, rightWay, startBorder, endBorder);
-                var link = RnRoad.CreateOneLaneRoad(tranObj, lane);
-                parent.AddRoad(link);
-                return link;
-            }
-
         }
 
         public class RoadNetworkLaneWidthEditModule
