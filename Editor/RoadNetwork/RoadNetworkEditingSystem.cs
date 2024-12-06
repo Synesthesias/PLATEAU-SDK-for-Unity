@@ -175,8 +175,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private GameObject roadNetworkEditingSystemObjRoot;
         private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
 
-        private Dictionary<RnLane, LaneEditCache> keyValuePairs = new Dictionary<RnLane, LaneEditCache>();
-
         private void Terminate()
         {
             simpleEditSysModule?.Terminate();
