@@ -90,14 +90,6 @@ namespace PLATEAU.Editor.RoadNetwork
             ZeroMask = PointZeroMask & LaneZeroMask & LinkZeroMask & NodeZeroMask
         }
 
-        private readonly int defaultDisplayHandleMask = (int)(
-            DisplayHndMaskSet.PointMove |
-            DisplayHndMaskSet.LaneSelect |
-            DisplayHndMaskSet.LinkSelect |
-            DisplayHndMaskSet.NodeSelect);
-
-        private int displayHandleMask = 0;
-
         string laneTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_lane.png";
         string nodeTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_node.png";
         string trafficLightControllerPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_trafficLightController.png";
@@ -111,27 +103,6 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             Assert.IsNotNull(editorSystem);
             this.editorSystem = editorSystem;
-
-            displayHandleMask = defaultDisplayHandleMask;
-            editorSystem.OnChangedOperationMode += (object _, EventArgs _) =>
-            {
-                var mode = editorSystem.OperationMode;
-                switch (mode)
-                {
-                    case "no-op":
-                        SetDisplayHandleMask(defaultDisplayHandleMask, DisplayHndMaskSet.ZeroMask);
-                        break;
-                    case nameof(IRoadNetworkEditOperation.AddPoint):
-                        SetDisplayHandleMask(DisplayHndMaskSet.PointAdd, DisplayHndMaskSet.PointZeroMask);
-                        break;
-                    case nameof(IRoadNetworkEditOperation.RemovePoint):
-                        SetDisplayHandleMask(DisplayHndMaskSet.PointRemove, DisplayHndMaskSet.PointZeroMask);
-                        break;
-                    default:
-                        displayHandleMask = defaultDisplayHandleMask;
-                        break;
-                }
-            };
         }
 
         private const float pointHndScaleFactor = 0.15f;
@@ -190,15 +161,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         };
         private SceneGUISystemState systemState;
-
-        private void SetDisplayHandleMask(DisplayHndMaskSet mask, DisplayHndMaskSet clearMask)
-        {
-            SetDisplayHandleMask((int)mask, clearMask);
-        }
-        private void SetDisplayHandleMask(int mask, DisplayHndMaskSet clearMask)
-        {
-            displayHandleMask = (displayHandleMask & (int)clearMask) | (mask & ~(int)clearMask);
-        }
 
         public void OnSceneGUI(UnityEngine.Object target)
         {
@@ -409,56 +371,10 @@ namespace PLATEAU.Editor.RoadNetwork
                                 }
 
                                 var parent = sideWalk.OutsideWay;
-                                var isEditable = false;
-                                isEditable = true;
 
-                                // 表示しない（実在はする）
-                                if (IsContains(DisplayHndMaskSet.Point) == false)
-                                {
-                                    isEditable = false;
-                                }
-
-                                var networkOperator = editorSystem.EditOperation;
                                 var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
 
-
-                                if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
-                                {
-                                    DeployPointMoveHandle(point, state, size);
-                                    continue;
-                                }
-
-                                if (isEditable && IsSame(DisplayHndMaskSet.PointAdd))
-                                {
-                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                                    if (isClicked)
-                                    {
-                                        // parent.Pointsからpointを検索してインデックスを取得
-                                        var idx = parent.Points.ToList().IndexOf(point);
-                                        if (idx == -1)
-                                            continue;
-                                        state.delayCommand += () =>
-                                        {
-                                            parent.LineString.Points.Insert(idx, point);
-                                        };
-                                        state.isDirtyTarget = true;
-                                    }
-                                    continue;
-                                }
-
-                                if (isEditable && IsSame(DisplayHndMaskSet.PointRemove))
-                                {
-                                    var isClicked = Handles.Button(point, Quaternion.identity, size, size, RoadNetworkSplitLaneButtonHandleCap);
-                                    if (isClicked)
-                                    {
-                                        state.delayCommand += () =>
-                                        {
-                                            parent.LineString.Points.Remove(point);
-                                        };
-                                        state.isDirtyTarget = true;
-                                    }
-                                    continue;
-                                }
+                                DeployPointMoveHandle(point, state, size);
                             }
                         }
 
@@ -489,14 +405,6 @@ namespace PLATEAU.Editor.RoadNetwork
                                     }
 
                                     var parent = way;
-                                    var isEditable = false;
-                                    isEditable = true;
-
-                                    // 表示しない（実在はする）
-                                    if (IsContains(DisplayHndMaskSet.Point) == false)
-                                    {
-                                        isEditable = false;
-                                    }
 
                                     var networkOperator = editorSystem.EditOperation;
                                     var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
@@ -505,11 +413,8 @@ namespace PLATEAU.Editor.RoadNetwork
                                     // ctrlを押しているか
                                     if (Event.current.control == false)
                                     {
-                                        if (isEditable && IsSame(DisplayHndMaskSet.PointMove))
-                                        {
-                                            DeployPointMoveHandle(point, state, size);
-                                            continue;
-                                        }
+                                        DeployPointMoveHandle(point, state, size);
+                                        continue;
                                     }
                                     else
                                     {
@@ -671,16 +576,6 @@ namespace PLATEAU.Editor.RoadNetwork
         private RnModel GetRoadNetwork()
         {
             return editorSystem.RoadNetwork;
-        }
-
-        private bool IsContains(DisplayHndMaskSet mask)
-        {
-            return (displayHandleMask & (int)mask) != 0;
-        }
-
-        private bool IsSame(DisplayHndMaskSet mask)
-        {
-            return (displayHandleMask & (int)mask) == (int)mask;
         }
 
         private bool IsVisibleDistance(Camera camera, Vector3 pos, float distance)

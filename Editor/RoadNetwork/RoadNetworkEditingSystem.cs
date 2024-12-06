@@ -171,11 +171,6 @@ namespace PLATEAU.Editor.RoadNetwork
         // Laneの生成機能を提供するモジュール
         private RoadNetworkSimpleEditSysModule simpleEditSysModule;
 
-        // 道路ネットワーク関係のアセットを管理するクラス
-        private RoadNetworkEditorAssets assets;
-
-        private string debugOperationMode = "undef";
-
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
         private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
@@ -393,9 +388,6 @@ namespace PLATEAU.Editor.RoadNetwork
             /// </summary>
             void NotifyChangedRoadNetworkObject2Editor();
 
-            string OperationMode { get; set; }
-            event EventHandler OnChangedOperationMode;
-
             RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
         }
@@ -460,7 +452,6 @@ namespace PLATEAU.Editor.RoadNetwork
             public event EventHandler OnChangedSelectRoadNetworkElement;
             public event EventHandler OnChangedSignalControllerPattern;
             public event EventHandler OnChangedSignalControllerPhase;
-            public event EventHandler OnChangedOperationMode;
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
 
@@ -501,18 +492,6 @@ namespace PLATEAU.Editor.RoadNetwork
                         return;
                     system.selectedSignalPhase = value;
                     OnChangedSignalControllerPhase?.Invoke(this, EventArgs.Empty);
-                }
-            }
-
-            public string OperationMode
-            {
-                get => system.debugOperationMode;
-                set
-                {
-                    if (system.debugOperationMode == value)
-                        return;
-                    system.debugOperationMode = value;
-                    OnChangedOperationMode?.Invoke(this, EventArgs.Empty);
                 }
             }
 
