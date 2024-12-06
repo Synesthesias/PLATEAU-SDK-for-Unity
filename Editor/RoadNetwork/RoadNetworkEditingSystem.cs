@@ -170,7 +170,6 @@ namespace PLATEAU.Editor.RoadNetwork
 
         // Laneの生成機能を提供するモジュール
         private RoadNetworkSimpleLaneGenerateModule simpleLaneGenerateModule;
-        private RoadNetworkSimpleNodeGenerateModule simpleNodeGenerateModule;
 
         private RoadNetworkSimpleEditSysModule simpleEditSysModule;
 
@@ -279,7 +278,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 //simpleEditSysModule.Init();
 
                 simpleLaneGenerateModule = new RoadNetworkSimpleLaneGenerateModule();
-                simpleNodeGenerateModule = new RoadNetworkSimpleNodeGenerateModule();
             }
 
             return true;
@@ -402,7 +400,6 @@ namespace PLATEAU.Editor.RoadNetwork
             event EventHandler OnChangedOperationMode;
 
             RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule { get; }
-            RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule { get; }
             RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
             RnLane GetBase(RnLane keyLane);
@@ -527,8 +524,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             public RoadNetworkSimpleLaneGenerateModule RoadNetworkSimpleLaneGenerateModule => system.simpleLaneGenerateModule;
-
-            public RoadNetworkSimpleNodeGenerateModule RoadNetworkSimpleNodeGenerateModule => system.simpleNodeGenerateModule;
 
             public List<EditorData<RnRoadGroup>> Connections => system.simpleEditSysModule?.Connections;
 
@@ -838,37 +833,6 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
                 var way = new RnWay(RnLineString.Create(wayPoints));
                 return way;
-            }
-        }
-
-        public class RoadNetworkSimpleNodeGenerateModule
-        {
-            public RoadNetworkSimpleNodeGenerateModule()
-            {
-
-            }
-
-            private PLATEAU.CityInfo.PLATEAUCityObjectGroup tranObj;
-
-            public void Init()
-            {
-
-            }
-
-            public void Reset()
-            {
-
-            }
-
-            public bool CanBuild()
-            {
-                return false;
-            }
-
-            public RnIntersection Build()
-            {
-                var node = new RnIntersection(tranObj);
-                return null;
             }
         }
 
