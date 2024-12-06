@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// ギズモ描画を行う処理を生成する。
     /// 実際の描画はMonoBehaviourを継承したギズモ描画クラスを用意したのでそこで行う。
     /// </summary>
-    public class EditingSystemGizmos
+    internal class EditingSystemGizmos
     {
         /// <summary>
         /// 描画コマンド群

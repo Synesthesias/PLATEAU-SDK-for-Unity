@@ -1,24 +1,19 @@
-﻿using PLATEAU.RoadNetwork.Structure.Drawer;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.RoadNetwork.Tester;
+﻿using PLATEAU.RoadNetwork.Structure;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using PLATEAU.Editor.RoadNetwork;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
-using static PLATEAU.Editor.RoadNetwork.UIDocBind.SerializedScriptableRoadMdl;
-using PLATEAU.Editor.Window.Common;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
     /// <summary>
     /// RoadNetwork_EditPanel.uxmlのバインドや挙動の制御を行うクラス
     /// </summary>
-    public class RoadEditPanel : RoadAdjustGuiPartBase, IScriptableRoadMdl
+    internal class RoadEditPanel : RoadAdjustGuiPartBase, IScriptableRoadMdl
     {
         static readonly string name = "RoadNetwork_EditPanel";
         GameObject selfGameObject = null;

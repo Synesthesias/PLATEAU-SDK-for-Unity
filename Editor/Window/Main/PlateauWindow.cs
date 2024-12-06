@@ -2,7 +2,6 @@
 using PLATEAU.Editor.Window.Main.Tab;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI;
 using UnityEditor;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 using UnityEngine.UIElements;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// <summary>
     /// 信号制御器のパターンを編集するUIDocumentのバインドや挙動の定義を行うクラス
     /// </summary>
-    public class TrafficSignalLightPatternUIDoc
+    internal class TrafficSignalLightPatternUIDoc
     {
         /// <summary>
         /// TrafficSignalLightPatternUIをUIDocument向けに拡張したクラス
