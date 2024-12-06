@@ -1,12 +1,12 @@
-﻿using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -14,7 +14,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// SceneGUIまわりの機能を管理するクラス
     /// 記述先のファイルを変更するかも？
     /// </summary>
-    public class RoadNetworkSceneGUISystem
+    internal class RoadNetworkSceneGUISystem
     {
         /// <summary>
         /// 

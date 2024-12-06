@@ -1,12 +1,11 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
@@ -23,7 +22,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// 道路を編集する際に利用するデータモデルのインターフェイス
     /// クラス内でのLink、LaneはNode間を繋ぐLinkリスト、Laneリストを指す
     /// </summary>
-    public interface IScriptableRoadMdl
+    internal interface IScriptableRoadMdl
     {
         public void Apply(RoadNetworkSimpleEditSysModule mod);
 
@@ -43,7 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     }
 
-    public struct ScriptableRoadMdlData
+    internal struct ScriptableRoadMdlData
     {
         public bool isEditingDetailMode;
         public int numLeftLane;
@@ -66,7 +65,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     }
 
 
-    public class ScriptableRoadMdl : ScriptableObject, IScriptableRoadMdl
+    internal class ScriptableRoadMdl : ScriptableObject, IScriptableRoadMdl
     {
         public ScriptableRoadMdl()
         {
@@ -164,7 +163,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     }
 
-    public class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
+    internal class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
     {
         /// <summary>
         /// 

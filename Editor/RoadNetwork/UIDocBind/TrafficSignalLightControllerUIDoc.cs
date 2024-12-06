@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// 交通信号灯制御器関連のUIDocumentのバインドや挙動の定義を行うクラス
     /// RoadNetworkUIDoc.csのprivate static void CreateTrafficRegulationLayout(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)の処理を個々に移植する
     /// </summary>
-    public class TrafficSignalLightControllerUIDoc
+    internal class TrafficSignalLightControllerUIDoc
     {
         /// <summary>
         /// 

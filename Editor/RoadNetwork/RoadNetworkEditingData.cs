@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using PLATEAU.Editor.RoadNetwork;
-using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -97,7 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// 
     /// </summary>
     /// <typeparam name="_BaseData"></typeparam>
-    public class EditorData<_BaseData>
+    internal class EditorData<_BaseData>
         where _BaseData : class
     {
         public EditorData(_BaseData baseData)
@@ -228,7 +226,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public bool IsEditable { get; set; } = false;
     }
 
-    public class PointEditorData : EditorSubData<RnPoint>
+    internal class PointEditorData : EditorSubData<RnPoint>
     {
         public PointEditorData()
             : base()
@@ -278,7 +276,7 @@ namespace PLATEAU.Editor.RoadNetwork
         //private Vector3 cacheScale;
     }
 
-    public class NodeEditorData
+    internal class NodeEditorData
     {
         public NodeEditorData()
         {
@@ -328,7 +326,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
     }
 
-    public abstract class EditorSubData<_Parent>
+    internal abstract class EditorSubData<_Parent>
         where _Parent : class
     {
         public bool Construct(EditorData<_Parent> parent)
@@ -350,7 +348,7 @@ namespace PLATEAU.Editor.RoadNetwork
         protected EditorData<_Parent> Parent { get; private set; }
     }
 
-    public class RoadGroupEditorData : EditorSubData<RnRoadGroup>
+    internal class RoadGroupEditorData : EditorSubData<RnRoadGroup>
     {
         public RoadGroupEditorData()
             : base()
@@ -553,7 +551,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// <summary>
     /// WayEditorDataのリストをサブデータ化したクラス
     /// </summary>
-    public class WayEditorDataList : EditorSubData<RnRoadGroup>
+    internal class WayEditorDataList : EditorSubData<RnRoadGroup>
     {
         public WayEditorDataList()
         {
@@ -715,7 +713,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// ScriptableObjectを保持用
     /// 旧仕様との差分を吸収するためのクラス
     /// </summary>
-    public class ScriptableObjectFolder : EditorSubData<RnRoadGroup>
+    internal class ScriptableObjectFolder : EditorSubData<RnRoadGroup>
     {
         protected override bool Construct()
         {
@@ -785,14 +783,14 @@ namespace PLATEAU.Editor.RoadNetwork
     /// <summary>
     /// 変更前の結果保持用
     /// </summary>
-    public abstract class CacheSideWalkGroupEditorData : EditorSubData<RnRoadGroup>
+    internal abstract class CacheSideWalkGroupEditorData : EditorSubData<RnRoadGroup>
     {
         public IReadOnlyCollection<RnRoadGroup.RnSideWalkGroup> Group { get; protected set; }
         public bool HasSideWalk { get => Group?.Count > 0; }
 
     }
 
-    public class CacheLeftSideWalkGroupEditorData : CacheSideWalkGroupEditorData
+    internal class CacheLeftSideWalkGroupEditorData : CacheSideWalkGroupEditorData
     {
         protected override bool Construct()
         {
@@ -801,7 +799,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
     }
-    public class CacheRightSideWalkGroupEditorData : CacheSideWalkGroupEditorData
+    internal class CacheRightSideWalkGroupEditorData : CacheSideWalkGroupEditorData
     {
         protected override bool Construct()
         {
@@ -811,7 +809,7 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
-    public abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
+    internal abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
     {
         public IReadOnlyCollection<RnNeighbor> Points { get => points; }
 
@@ -820,7 +818,7 @@ namespace PLATEAU.Editor.RoadNetwork
     }
 
 
-    public class EnterablePointEditorData : NeighborPointEditarData
+    internal class EnterablePointEditorData : NeighborPointEditarData
     {
         protected override bool Construct()
         {
@@ -848,7 +846,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
     }
 
-    public class ExitablePointEditorData : NeighborPointEditarData
+    internal class ExitablePointEditorData : NeighborPointEditarData
     {
         protected override bool Construct()
         {
