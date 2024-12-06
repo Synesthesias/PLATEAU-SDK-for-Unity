@@ -47,8 +47,8 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <param name="idx"></param>
         /// <param name="point"></param>
         /// <returns></returns>
-        RoadNetworkEditingResult AddPoint(RnWay parent, int idx, RnPoint point);
-        RoadNetworkEditingResult RemovePoint(RnWay parent, RnPoint point);
+        bool AddPoint(RnWay parent, int idx, RnPoint point);
+        bool RemovePoint(RnWay parent, RnPoint point);
 
     }
 
@@ -544,23 +544,24 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         public class RoadNetworkEditorOperation : IRoadNetworkEditOperation
         {
-            public RoadNetworkEditingResult AddPoint(RnWay way, int idx, RnPoint point)
+            public bool AddPoint(RnWay way, int idx, RnPoint point)
             {
                 //var v = new RoadNetworkPoint(new Vector3());
                 way.LineString.Points.Insert(idx, point);
-                return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
+                return true;
             }
 
-            public RoadNetworkEditingResult RemovePoint(RnWay way, RnPoint point)
+            public bool RemovePoint(RnWay way, RnPoint point)
             {
                 var isSuc = way.LineString.Points.Remove(point);
                 if (isSuc)
                 {
-                    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.Success);
+                    return true;
                 }
                 else
                 {
-                    return new RoadNetworkEditingResult(RoadNetworkEditingResultType.InvalidArgs, "Can't found point.");
+                    Debug.Log("Can't remove point.");
+                    return false;
                 }
             }
 
