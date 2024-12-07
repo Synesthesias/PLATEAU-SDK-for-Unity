@@ -2,18 +2,20 @@
   href: ../index.md
 - name: SDKの使い方
   items:
-  - name: インストール
-    href: Installation.md
-  - name: 3D都市モデルのインポート
-    href: ImportCityModels.md
-  - name: 3D都市モデルのエクスポート
-    href: ExportCityModels.md
-  - name: 3D都市モデルの調整
-    href: ModelAdjust.md  
-  - name: 属性情報へのアクセス
-    href: AccessCityObject.md
-  - name: SDKのマテリアルについて
-    href: sdkMaterial.md
+    - name: インストール
+      href: Installation.md
+    - name: 3D都市モデルのインポート
+      href: ImportCityModels.md
+    - name: 3D都市モデルのエクスポート
+      href: ExportCityModels.md
+    - name: 3D都市モデルの調整
+      href: ModelAdjust.md
+    - name: 属性情報へのアクセス
+      href: AccessCityObject.md
+    - name: SDKのマテリアルについて
+      href: sdkMaterial.md
+    - name: 道路調整について
+      href: roadAjdust.md
 - name: チュートリアル
   items:
     - name: 属性情報によって色分けする
