@@ -153,10 +153,12 @@ namespace PLATEAU.RoadNetwork.Graph
             var table = new Dictionary<Vector2Int, HashSet<RVertex>>();
             foreach (var f in self.Faces)
             {
-                if (f.LodLevel == 1)
+                // LOD1/2には高さ情報が無いのでheightToleranceで吸着処理をかける
+                var maxLod = 2;
+                if (f.LodLevel <= maxLod)
                 {
                     // 2重実行対策. すでにLOD3の他の頂点にマージされている場合はスキップ
-                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() == 1));
+                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() <= maxLod));
                 }
                 else
                 {
