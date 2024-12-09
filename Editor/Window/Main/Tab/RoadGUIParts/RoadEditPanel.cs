@@ -147,7 +147,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             RoadNetworkEditingSystem.TryTerminate(EditorInterface, root);
         }
 
-        static EventHandler CreateSetup(RoadEditPanel panel, IRoadNetworkEditingSystem system, VisualElement element)
+        EventHandler CreateSetup(RoadEditPanel panel, IRoadNetworkEditingSystem system, VisualElement element)
         {
             return (s, e) =>
             {
@@ -190,7 +190,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     {
                         mdl.Apply(system.RoadNetworkSimpleEditModule);
                         var changedRoads = mdl.TargetScriptableRoadMdl.road.Roads;
-                        // RoadNetworkToMesh.CreateFromRoadBases(changedRoads).Generate();
+                        var network = selfGameObject.GetComponent<PLATEAURnStructureModel>().RoadNetwork;
+                        RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
                     };
 
                 }

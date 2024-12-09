@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -133,10 +134,12 @@ namespace PLATEAU.RoadNetwork.Data
             where TData : IPrimitiveData
         {
             private Dictionary<object, RnID<TData>> Table { get; }
+            private bool ignoreKeyNotFoundWarning;
 
-            public Object2RnIdConverter(Dictionary<object, RnID<TData>> table)
+            public Object2RnIdConverter(Dictionary<object, RnID<TData>> table, bool ignoreKeyNotFoundWarning)
             {
                 Table = table;
+                this.ignoreKeyNotFoundWarning = ignoreKeyNotFoundWarning;
             }
 
             public object Convert(object val)
@@ -147,7 +150,15 @@ namespace PLATEAU.RoadNetwork.Data
                 }
 
                 if (Table.ContainsKey(val) == false)
-                    throw new InvalidDataException($"Object {val.GetType().Name} is not found in table");
+                    if (ignoreKeyNotFoundWarning)
+                    {
+                        return RnID<TData>.Undefined;
+                    }
+                    else
+                    {
+                        throw new InvalidDataException($"Object {val.GetType().Name} is not found in table");
+                    }
+                    
                 return Table[val];
             }
         }
@@ -357,7 +368,7 @@ namespace PLATEAU.RoadNetwork.Data
             }
         }
 
-        private void CollectForSerialize<TData>(ReferenceTable refTable, RnModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage)
+        private void CollectForSerialize<TData>(ReferenceTable refTable, RnModel model, PrimitiveDataStorage.PrimitiveStorage<TData> storage, bool ignoreKeyNotFoundWarning)
             where TData : class, IPrimitiveData, new()
         {
             var memberReference = refTable.GetOrCreateMemberReference(typeof(TData));
@@ -383,7 +394,7 @@ namespace PLATEAU.RoadNetwork.Data
                 .ToDictionary(i => src[i], i => ids[i]);
 
             var valueConverter =
-                new Object2RnIdConverter<TData>(obj2Id);
+                new Object2RnIdConverter<TData>(obj2Id, ignoreKeyNotFoundWarning);
 
             var obj2Data = Enumerable.Range(0, src.Count)
                 .ToDictionary(i => src[i], i => dataList[i] as object);
@@ -411,21 +422,21 @@ namespace PLATEAU.RoadNetwork.Data
             return refTable;
         }
 
-        public RoadNetworkStorage Serialize(RnModel roadNetworkModel)
+        public RoadNetworkStorage Serialize(RnModel roadNetworkModel, bool ignoreKeyNotFoundWarning)
         {
             var ret = new RoadNetworkStorage { FactoryVersion = roadNetworkModel.FactoryVersion, };
             var refTable = CreateReferenceTable();
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLightControllers);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLights);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPatterns);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPhases);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.RoadBases);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.SideWalks);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLightControllers, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficLights, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPatterns, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.TrafficSignalPhases, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.RoadBases, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways, ignoreKeyNotFoundWarning);
+            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.SideWalks, ignoreKeyNotFoundWarning);
             refTable.ConvertAll();
             return ret;
         }

@@ -56,7 +56,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public IRnmTarget Copy()
         {
             var serializer = new RoadNetworkSerializer();
-            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model));
+            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model, false));
             return new RnmTargetModel(copiedNetwork);
         }
         
@@ -111,7 +111,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
 
             var serializer = new RoadNetworkSerializer();
-            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model));
+            // ignoreKeyNotFoundWarningをtrueとする理由: 道路ネットワークの一部をコピーする以上、隣接データがないのは織り込み済みのため 
+            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model, true));
             var copiedRoadBases = copiedNetwork.Roads.Cast<RnRoadBase>().Concat(copiedNetwork.Intersections);
             return new RnmTargetRoadBases(parentModel, copiedRoadBases);
 

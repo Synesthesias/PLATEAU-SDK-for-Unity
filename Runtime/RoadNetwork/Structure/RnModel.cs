@@ -247,7 +247,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             var serializer = new RoadNetworkSerializer();
-            var ret = serializer.Serialize(this);
+            var ret = serializer.Serialize(this, false);
 
             // 自分は元に戻す
             if (createEmptyCheck)
