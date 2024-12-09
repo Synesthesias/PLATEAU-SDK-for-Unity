@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Factory
@@ -578,7 +579,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 var startIndex = 0;
                 for (var i = 1; i < edges.Length; i++)
                 {
-                    var e = edges[i];
                     if (neighbors[i] != neighbors[0])
                     {
                         startIndex = i;
@@ -846,6 +846,9 @@ namespace PLATEAU.RoadNetwork.Factory
                 req.SubDividedCityObjectGroup.CityObjects = subDividedCityObjects;
 
             req.Model.RoadNetwork = model;
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(req.Model);
+#endif
             return model;
         }
     }
