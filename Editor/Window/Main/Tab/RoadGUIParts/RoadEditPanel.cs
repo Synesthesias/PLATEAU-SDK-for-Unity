@@ -7,6 +7,7 @@ using PLATEAU.Editor.RoadNetwork;
 using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -188,6 +189,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     applyRoadButton.clicked += () =>
                     {
                         mdl.Apply(system.RoadNetworkSimpleEditModule);
+                        var changedRoads = mdl.TargetScriptableRoadMdl.road.Roads;
+                        // RoadNetworkToMesh.CreateFromRoadBases(changedRoads).Generate();
                     };
 
                 }

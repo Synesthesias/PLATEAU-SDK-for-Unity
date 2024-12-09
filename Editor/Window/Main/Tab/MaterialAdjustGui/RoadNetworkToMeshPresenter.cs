@@ -49,7 +49,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 Debug.LogError("道路ネットワークがありません。");
                 return;
             }
-            new RoadNetworkToMesh(roadModel.RoadNetwork, lineSeparateType).Generate();
+            RoadNetworkToMesh.CreateFromNetwork(roadModel.RoadNetwork, lineSeparateType).Generate();
         }
         
 

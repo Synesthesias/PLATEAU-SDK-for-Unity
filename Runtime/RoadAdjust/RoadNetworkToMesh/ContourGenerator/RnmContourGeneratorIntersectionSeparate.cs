@@ -11,10 +11,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourGeneratorIntersectionSeparate: IRnmContourGenerator
     {
         
-        public RnmContourMeshList Generate(RnModel model)
+        public RnmContourMeshList Generate(IRnmTarget target)
         {
             var cMeshes = new RnmContourMeshList();
-            foreach (var inter in model.Intersections)
+            foreach (var inter in target.Intersections())
             {
                 var targetObjs = inter.TargetTrans.Select(t => t.gameObject).ToArray();
                 foreach (var c in GenerateContours(inter))

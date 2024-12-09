@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -11,18 +12,18 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     public class RoadMarkingGenerator
     {
-        private readonly RnModel targetNetwork;
+        private readonly IRnmTarget target;
         private const string MeshName = "RoadMarkingMesh";
         private const string GameObjName = "RoadMarking";
         
         
-        public RoadMarkingGenerator(RnModel targetNetwork)
+        public RoadMarkingGenerator(IRnmTarget target)
         {
             var serializer = new RoadNetworkSerializer();
             // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
-            if (targetNetwork != null)
+            if (target != null)
             {
-                this.targetNetwork = serializer.Deserialize(serializer.Serialize(targetNetwork));
+                this.target = target.Copy();
             }
             else
             {
@@ -34,16 +35,16 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 路面標示をメッシュとして生成します。 </summary>
         public void Generate()
         {
-            if (targetNetwork == null)
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークが見つかりませんでした。");
                 return;
             }
-            new RoadNetworkLineSmoother().Smooth(targetNetwork);
+            new RoadNetworkLineSmoother().Smooth(target);
             
             // 道路の線を取得します。
-            var ways = new MarkedWayListComposer().ComposeFrom(targetNetwork);
-            ways.AddRange(new StopLineComposer().ComposeFrom(targetNetwork));
+            var ways = new MarkedWayListComposer().ComposeFrom(target);
+            ways.AddRange(new StopLineComposer().ComposeFrom(target));
             
             var instances = new RoadMarkingCombiner(ways.MarkedWays.Count);
             foreach (var way in ways.MarkedWays)

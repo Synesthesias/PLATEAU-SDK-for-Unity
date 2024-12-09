@@ -267,15 +267,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 tester.Factory = factory;
                 
                 var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
-                
+                var target = new RnmTargetModel(model);
                 
 
                 
                 // 道路の白線、停止線などを生成します。
-                GenerateRoadMarking(model);
+                GenerateRoadMarking(target);
                 
                 // 道路ネットワークに沿った道路メッシュを作成します。
-                GenerateRoadMesh(model);
+                GenerateRoadMesh(target);
 
             };
         }
@@ -283,22 +283,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary>
         /// 道路の白線、停止線などを生成します。
         /// </summary>
-        private void GenerateRoadMarking(RnModel model)
+        private void GenerateRoadMarking(IRnmTarget target)
         {
-            if (model == null)
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがnullです。");
             }
-            var generator = new RoadMarkingGenerator(model);
+            var generator = new RoadMarkingGenerator(target);
             generator.Generate();
         }
 
         /// <summary>
         /// 道路ネットワークに沿った道路メッシュを作成します。
         /// </summary>
-        private void GenerateRoadMesh(RnModel roadModel)
+        private void GenerateRoadMesh(IRnmTarget target)
         {
-            if (roadModel == null)
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがありません。");
                 return;
@@ -314,7 +314,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             //     "車線ごとに分ける" => RnmLineSeparateType.Separate,
             //     _ => throw new ArgumentOutOfRangeException()
             // };
-            new RoadNetworkToMesh(roadModel, RnmLineSeparateType.Combine).Generate();
+            new RoadNetworkToMesh(target, RnmLineSeparateType.Combine).Generate();
         }
 
         public override void Terminate(VisualElement root)

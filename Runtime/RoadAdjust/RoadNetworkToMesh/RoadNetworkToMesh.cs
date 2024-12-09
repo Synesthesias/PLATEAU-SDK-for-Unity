@@ -20,17 +20,29 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RoadNetworkToMesh
     {
-        private readonly RnModel srcModel;
+        private readonly IRnmTarget srcTarget;
         private readonly RnmLineSeparateType lineSeparateType;
         private static readonly bool DebugMode = false;
-        
-        public RoadNetworkToMesh(RnModel model, RnmLineSeparateType lineSeparateType)
+
+        public static RoadNetworkToMesh CreateFromNetwork(RnModel network, RnmLineSeparateType lineSeparateType)
         {
-            if (model == null)
+            var target = new RnmTargetModel(network);
+            return new RoadNetworkToMesh(target, lineSeparateType);
+        }
+        
+        public static RoadNetworkToMesh CreateFromRoadBases(RnModel parentNetwork, IEnumerable<RnRoadBase> roadBases, RnmLineSeparateType lineSeparateType)
+        {
+            var target = new RnmTargetRoadBases(parentNetwork, roadBases);
+            return new RoadNetworkToMesh(target, lineSeparateType);
+        }
+        
+        public RoadNetworkToMesh(IRnmTarget target, RnmLineSeparateType lineSeparateType)
+        {
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがありません。");
             }
-            this.srcModel = model;
+            this.srcTarget = target;
             this.lineSeparateType = lineSeparateType;
         }
 
@@ -40,7 +52,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             using var progressDisplay = new ProgressDisplayDialogue();
             
             progressDisplay.SetProgress("道路ネットワークを調整中", 10f, "");
-            var model = new RnmModelAdjuster().Adjust(srcModel);
+            var model = new RnmModelAdjuster().Adjust(srcTarget);
             
             progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
             new RoadNetworkLineSmoother().Smooth(model);
@@ -154,7 +166,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
             }
             
-            ReplaceSrcToDst(srcToDstTrans, srcModel);
+            ReplaceSrcToDst(srcToDstTrans, srcTarget);
             
 #if UNITY_EDITOR
             // 生成物を選択状態に
@@ -170,11 +182,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// それに合わせて元の道路ネットワークも修正します。
         /// 引数に渡す<see cref="RnModel"/>はコピー前のオリジナルである必要があります。
         /// </summary>
-        private void ReplaceSrcToDst(Dictionary<Transform, Transform> srcToDstTrans,RnModel model)
+        private void ReplaceSrcToDst(Dictionary<Transform, Transform> srcToDstTrans,IRnmTarget target)
         {
             // 道路ネットワークの書き換え
-            var modelRoads = model.Roads.Select(r => (RnRoadBase)r)
-                .Concat(model.Intersections.Select(i => (RnRoadBase)i));
+            var modelRoads = target.Network().Roads.Select(r => (RnRoadBase)r)
+                .Concat(target.Network().Intersections.Select(i => (RnRoadBase)i));
             foreach (var modelRoad in modelRoads)
             {
                 var srcs = modelRoad.TargetTrans;
@@ -206,7 +218,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             bool isSerialized = false;
             foreach (var structure in structures)
             {
-                if (structure.RoadNetwork == model)
+                if (structure.RoadNetwork == target.Network())
                 {
                     structure.Serialize();
                     isSerialized = true;
