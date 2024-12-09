@@ -13,22 +13,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     /// <summary>
     /// RoadNetwork_EditPanel.uxmlのバインドや挙動の制御を行うクラス
     /// </summary>
-    internal class RoadEditPanel : RoadAdjustGuiPartBase, IScriptableRoadMdl
+    internal class RoadEditPanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_EditPanel";
         GameObject selfGameObject = null;
         public RoadNetworkEditingSystem EditorInterface { get; private set; }
         EventCallback<ChangeEvent<bool>> activateEditSystemMethod;
         EventHandler setupMethod = null;
-
-        public bool IsSuccess => throw new NotImplementedException();
-
-        public bool IsEditingDetailMode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int NumLeftLane { get => self.Q<IntegerField>("LeftSide").value; set => self.Q<IntegerField>("LeftSide").value = value; }
-        public int NumRightLane { get => self.Q<IntegerField>("RightSide").value; set => self.Q<IntegerField>("RightSide").value = value; }
-        public bool EnableMedianLane { get => self.Q<Toggle>("EnableMedianLane").value; set => self.Q<Toggle>("EnableMedianLane").value = value; }
-        public bool EnableLeftSideWalk { get => self.Q<Toggle>("EnableLeftSideWalk").value; set => self.Q<Toggle>("EnableLeftSideWalk").value = value; }
-        public bool EnableRightSideWalk { get => self.Q<Toggle>("EnableRightSideWalk").value; set => self.Q<Toggle>("EnableRightSideWalk").value = value; }
 
         public RoadEditPanel() : base(name)
         {
@@ -108,19 +99,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 };
             }
 
-            //// 適用ボタンの処理
-            //var applyRoadButton = root.Q<Button>("ApplyRoadButton");
-            //if (applyRoadButton == null)
-            //{
-            //    Debug.LogError("ApplyRoadButton is not found.");
-            //    return;
-            //}
-            //applyRoadButton.RegisterCallback<MouseUpEvent>((evt) => 
-            //{
-            //    Debug.Log("clicked apply12");
-            //});
-
-
         }
 
         public override void Terminate(VisualElement root)
@@ -154,7 +132,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 if (roadGroupEditorData != null)
                 {
                     // 無ければ生成する あれば流用する
-                    var mdl = panel.CreateOrGetRoadGroupData(panel, roadGroupEditorData);
+                    var mdl = panel.CreateOrGetRoadGroupData(roadGroupEditorData);
 
                     var roadGroup = roadGroupEditorData.Ref;
 
@@ -214,7 +192,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             };
         }
 
-        private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(IScriptableRoadMdl mdl1, EditorData<RnRoadGroup> linkGroupEditorData)
+        private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.ReqSubData<ScriptableObjectFolder>();
@@ -225,171 +203,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// このクラスは必要か？　責任の分担のために作った
-        /// </summary>
-//        private class RoadEditMdl
-//        {
-//            private EditorData<RnRoadGroup> editorData;
-//            private RnRoadGroup road { get => editorData.Ref; }
-//            private IScriptableRoadMdl mdl;
-
-
-//            public bool IsSuccess => throw new NotImplementedException();
-
-//            private ScriptableRoadMdlData cache;
-
-//            public RoadEditMdl(EditorData<RnRoadGroup> roadGroupEditorData, IScriptableRoadMdl mdl)
-//            {
-//                editorData = roadGroupEditorData;
-//                this.mdl = mdl;
-//            }
-
-//            /// <summary>
-//            /// ToDo　privateでよいが　古い仕様のインターフェイスでpublicで定義されているため public
-//            /// 古い仕様を整備した時に対応する
-//            /// </summary>
-//            public void Apply()
-//            {
-//                if (this.road == null)
-//                {
-//                    Debug.Log("編集対象のLinkGroupが設定されていない");
-//                    return;
-//                }
-
-//                bool isChanged = false;
-
-//                if (cache.numLeftLane != mdl.NumLeftLane)
-//                {
-//                    Notify(mdl.NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
-//                    cache.numLeftLane = mdl.NumLeftLane;
-//                    isChanged = true;
-//                    road.SetLeftLaneCount(mdl.NumLeftLane);
-//                    editorData.ClearSubData();
-//                }
-//                if (cache.numRightLane != mdl.NumRightLane)
-//                {
-//                    Notify(mdl.NumRightLane, cache.numRightLane, nameof(NumRightLane));
-//                    cache.numRightLane = mdl.NumRightLane;
-//                    isChanged = true;
-//                    road.SetRightLaneCount(mdl.NumRightLane);
-//                    editorData.ClearSubData();
-//                }
-//                if (cache.enableMedianLane != mdl.EnableMedianLane)
-//                {
-//                    Notify(mdl.EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
-//                    cache.enableMedianLane = mdl.EnableMedianLane;
-//                    isChanged = true;
-
-//                    if (mdl.EnableMedianLane == false)
-//                    {
-//                        road.RemoveMedian();
-//                        editorData.ClearSubData();
-//                    }
-//                    else
-//                    {
-
-//                        var isSuc = road.CreateMedianOrSkip();
-//                        if (isSuc == false)
-//                        {
-//                            Debug.Log("CreateMedianOrSkip() : 作成に失敗");
-//                        }
-//                        editorData.ClearSubData();
-
-//                        // ToDo ここで作成したMedianに対してeditorDataで所持している値を適用する
-//                        //...
-//                    }
-//                }
-//                road.GetSideWalkGroups(out var leftSideWalks, out var rightSideWalks);
-
-//                if (cache.enableLeftSideWalk != mdl.EnableLeftSideWalk)
-//                {
-//                    Notify(mdl.EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
-//                    cache.enableLeftSideWalk = mdl.EnableLeftSideWalk;
-
-//                    if (mdl.EnableLeftSideWalk)
-//                    {
-//                        var c = editorData.GetSubData<WayEditorDataLeft>().sideWalkGroup;
-//                        if (c != null)
-//                            road.AddSideWalks(c);
-//                    }
-//                    else
-//                    {
-//                        road.RemoveSideWalks(leftSideWalks);
-//                        //　削除前にデータ保持しておく
-//                        //editorData.;
-//                        editorData.ClearSubData();
-//                        editorData.TryAdd(new WayEditorDataLeft() { sideWalkGroup = leftSideWalks });
-//                    }
-//                }
-//                if (cache.enableRightSideWalk != mdl.EnableRightSideWalk)
-//                {
-//                    Notify(mdl.EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
-//                    cache.enableRightSideWalk = mdl.EnableRightSideWalk;
-
-//                    if (mdl.EnableRightSideWalk)
-//                    {
-//                        var c = editorData.GetSubData<WayEditorDataRight>().sideWalkGroup;
-//                        if (c != null)
-//                            road.AddSideWalks(c);
-//                    }
-//                    else
-//                    {
-//                        road.RemoveSideWalks(rightSideWalks);
-//                        //　削除前にデータ保持しておく
-//                        //editorData.;
-//                        editorData.ClearSubData();
-//                        editorData.TryAdd(new WayEditorDataRight() { sideWalkGroup = rightSideWalks });
-//                    }
-
-//                }
-
-
-//                if (isChanged)
-//                {
-
-//                }
-//            }
-
-//            public void ResetCache()
-//            {
-//                cache.Reset(mdl);
-//            }
-
-//            private static void Notify<_T>(in _T post, in _T pre, in string name)
-//where _T : IEquatable<_T>
-//            {
-//                var s = string.Format("Changed property : {0}, {1} to {2}.", name, pre, post);
-//                Debug.Log(s);
-//            }
-
-//            public struct ScriptableRoadMdlData
-//            {
-//                public bool isEditingDetailMode;
-//                public int numLeftLane;
-//                public int numRightLane;
-//                public bool enableMedianLane;
-//                public bool enableLeftSideWalk;
-//                public bool enableRightSideWalk;
-
-//                public void Reset(IScriptableRoadMdl mdl)
-//                {
-//                    isEditingDetailMode = mdl.IsEditingDetailMode;
-//                    numLeftLane = mdl.NumLeftLane;
-//                    numRightLane = mdl.NumRightLane;
-//                    enableMedianLane = mdl.EnableMedianLane;
-//                    enableLeftSideWalk = mdl.EnableLeftSideWalk;
-//                    enableRightSideWalk = mdl.EnableRightSideWalk;
-
-//                }
-
-//            }
-
-//        }
-
-
-
 
         private class EditorInstance : RoadNetworkEditingSystem.ISystemInstance
         {
