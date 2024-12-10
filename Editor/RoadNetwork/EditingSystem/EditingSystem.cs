@@ -15,7 +15,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             private readonly RoadNetworkEditingSystem system;
             public event EventHandler OnChangedEditMode;
-            public event EventHandler OnChangedSelectRoadNetworkElement;
+            public event Action OnChangedSelectRoadNetworkElement;
             public event EventHandler OnChangedSignalControllerPattern;
             public event EventHandler OnChangedSignalControllerPhase;
             
@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     if (system.selectedRoadNetworkElement == value)
                         return;
                     system.selectedRoadNetworkElement = value;
-                    OnChangedSelectRoadNetworkElement?.Invoke(this, EventArgs.Empty);
+                    OnChangedSelectRoadNetworkElement?.Invoke();
                 }
             }
 

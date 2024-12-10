@@ -27,6 +27,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         public bool EnableMedianLane { get => self.Q<Toggle>("EnableMedianLane").value; set => self.Q<Toggle>("EnableMedianLane").value = value; }
         public bool EnableLeftSideWalk { get => self.Q<Toggle>("EnableLeftSideWalk").value; set => self.Q<Toggle>("EnableLeftSideWalk").value = value; }
         public bool EnableRightSideWalk { get => self.Q<Toggle>("EnableRightSideWalk").value; set => self.Q<Toggle>("EnableRightSideWalk").value = value; }
+        private SerializedScriptableRoadMdl selectedRoad;
 
         public RoadEditPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
@@ -50,6 +51,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var d = self.Q<Toggle>("DetailEditMode");
             if (d != null)
                 d.bindingPath = "isEditingDetailMode";
+            
+            // 道路の適用ボタン
+            var applyRoadButton = rootVisualElement.Q<Button>("ApplyRoadButton");
+            if (applyRoadButton == null)
+            {
+                Debug.LogError("ApplyRoadButton is not found.");
+                return;
+            }
+            applyRoadButton.clicked += OnApplyRoadButtonClicked;
+
         }
 
         protected override void OnTabSelected(VisualElement root)
@@ -122,7 +133,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 if (roadGroupEditorData != null)
                 {
                     // 無ければ生成する あれば流用する
-                    var mdl = this.CreateOrGetRoadGroupData(this, roadGroupEditorData);
+                    selectedRoad = this.CreateOrGetRoadGroupData(this, roadGroupEditorData);
 
                     var roadGroup = roadGroupEditorData.Ref;
 
@@ -130,7 +141,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     rootVisualElement.Unbind();
 
                     // 仮 詳細編集モード
-                    rootVisualElement.TrackSerializedObjectValue(mdl, (se) =>
+                    rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
                     {
                         var mod = EditorInterface.system.RoadNetworkSimpleEditModule;
                         var obj = se as IScriptableRoadMdl;
@@ -144,36 +155,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     });
 
                     // モデルのバインド
-                    rootVisualElement.Bind(mdl);
-
-                    // 適用ボタンの処理
-                    var applyRoadButton = rootVisualElement.Q<Button>("ApplyRoadButton");
-                    if (applyRoadButton == null)
-                    {
-                        Debug.LogError("ApplyRoadButton is not found.");
-                        return;
-                    }
-                    applyRoadButton.clicked += () =>
-                    {
-                        bool isChanged = mdl.Apply(EditorInterface.system.RoadNetworkSimpleEditModule);
-                        if (!isChanged)
-                        {
-                            return;
-                        }
-
-                        var changedRoads = mdl.TargetScriptableRoadMdl.road.Roads;
-                        
-                        var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
-                        if (rnMdl == null)
-                        {
-                            Debug.LogError("RoadNetworkStructureModel is not found.");
-                            return;
-                        }
-                        var network = rnMdl.RoadNetwork;
-                        RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
-
-                    };
-
+                    rootVisualElement.Bind(selectedRoad);
+                    
                 }
 
                 var intersectionData = EditorInterface.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
@@ -195,6 +178,29 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
                 }
             
+        }
+
+        /// <summary>
+        /// 道路編集で、EditorWindowのボタン「編集内容を確定」が押された時の処理です。
+        /// </summary>
+        private void OnApplyRoadButtonClicked()
+        {
+            bool isChanged = selectedRoad.Apply(EditorInterface.system.RoadNetworkSimpleEditModule);
+            if (!isChanged)
+            {
+                return;
+            }
+
+            var changedRoads = selectedRoad.TargetScriptableRoadMdl.road.Roads;
+                        
+            var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (rnMdl == null)
+            {
+                Debug.LogError("RoadNetworkStructureModel is not found.");
+                return;
+            }
+            var network = rnMdl.RoadNetwork;
+            RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
         }
 
         private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(IScriptableRoadMdl mdl1, EditorData<RnRoadGroup> linkGroupEditorData)
