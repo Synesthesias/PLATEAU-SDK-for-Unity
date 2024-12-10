@@ -17,7 +17,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     internal class RoadEditPanel : RoadAdjustGuiPartBase, IScriptableRoadMdl
     {
         static readonly string name = "RoadNetwork_EditPanel";
-        GameObject selfGameObject = null;
         public RoadNetworkEditingSystem EditorInterface { get; private set; }
         EventCallback<ChangeEvent<bool>> activateEditSystemMethod;
         EventHandler setupMethod = null;
@@ -39,16 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             base.OnTabSelected(root);
 
-            var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
-            if (rnMdl == null)
-            {
-                Debug.LogError("RoadNetworkStructureModel is not found.");
-                return;
-            }
-            selfGameObject = rnMdl.gameObject;
-
-
-            // 初期値の設定
+            
 
             // ボタン類の設定
             var editModeToggle = self.Q<Toggle>("EditModeButton");
@@ -187,7 +177,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                         }
 
                         var changedRoads = mdl.TargetScriptableRoadMdl.road.Roads;
-                        var network = selfGameObject.GetComponent<PLATEAURnStructureModel>().RoadNetwork;
+                        
+                        var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+                        if (rnMdl == null)
+                        {
+                            Debug.LogError("RoadNetworkStructureModel is not found.");
+                            return;
+                        }
+                        var network = rnMdl.RoadNetwork;
                         RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
 
                     };
