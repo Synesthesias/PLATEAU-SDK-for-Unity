@@ -14,14 +14,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
         }
 
-        public override void Init(VisualElement root)
+        protected override void OnTabSelected(VisualElement root)
         {
-            base.Init(root);
+            base.OnTabSelected(root);
         }
 
-        public override void Terminate(VisualElement root)
+        protected override void OnTabUnselected(VisualElement root)
         {
-            base.Terminate(root);
+            base.OnTabUnselected(root);
         }
     }
 }

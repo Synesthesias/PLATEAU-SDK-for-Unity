@@ -35,9 +35,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
         }
 
-        public override void Init(VisualElement root)
+        protected override void OnTabSelected(VisualElement root)
         {
-            base.Init(root);
+            base.OnTabSelected(root);
 
             var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
             if (rnMdl == null)
@@ -58,73 +58,65 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
             editModeToggle.value = RoadNetworkEditingSystem.SingletonInstance?.system != null;
-            activateEditSystemMethod = CreateActivateEditSystemMethod(root);
+            activateEditSystemMethod = OnEditModeToggleClicked(root);
             editModeToggle.RegisterCallback<ChangeEvent<bool>>(activateEditSystemMethod);
-
-            IRoadNetworkEditingSystem InitSystem_(VisualElement root)
-            {
-                // バインドパスの設定
-                self.Q<IntegerField>("LeftSide").bindingPath = "numLeftLane";
-                self.Q<IntegerField>("RightSide").bindingPath = "numRightLane";
-                self.Q<Toggle>("EnableMedianLane").bindingPath = "enableMedianLane";
-                self.Q<Toggle>("EnableLeftSideWalk").bindingPath = "enableLeftSideWalk";
-                self.Q<Toggle>("EnableRightSideWalk").bindingPath = "enableRightSideWalk";
-                var d = self.Q<Toggle>("DetailEditMode");
-                if (d != null)
-                    d.bindingPath = "isEditingDetailMode";
-
-                // 編集システムの初期化
-                EditorInterface =
-                    RoadNetworkEditingSystem.TryInitalize(EditorInterface, root, new EditorInstance(root, this));
-
-                // システムの取得
-                var system = EditorInterface.system;
-                system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
-
-                system.RoadNetworkSimpleEditModule?.Init();
-
-                setupMethod = CreateSetup(this, system, root);
-                system.OnChangedSelectRoadNetworkElement += setupMethod;
-                return system;
-            }
-
-            EventCallback<ChangeEvent<bool>> CreateActivateEditSystemMethod(VisualElement root)
-            {
-                return (evt) =>
-                {
-                    if (evt.newValue)
-                    {
-                        var system = InitSystem_(root);
-                        system.EnableLimitSceneViewDefaultControl = true;
-                    }
-                    else
-                    {
-                        var system = RoadNetworkEditingSystem.SingletonInstance?.system;
-                        if (system != null)
-                        {
-                            system.EnableLimitSceneViewDefaultControl = false;
-                            TerminateSystem_(root, system);
-                        }
-                    }
-                };
-            }
-
-            //// 適用ボタンの処理
-            //var applyRoadButton = root.Q<Button>("ApplyRoadButton");
-            //if (applyRoadButton == null)
-            //{
-            //    Debug.LogError("ApplyRoadButton is not found.");
-            //    return;
-            //}
-            //applyRoadButton.RegisterCallback<MouseUpEvent>((evt) => 
-            //{
-            //    Debug.Log("clicked apply12");
-            //});
 
 
         }
+        
+        /// <summary>
+        /// 「編集モード」ボタンが押された時
+        /// </summary>
+        private EventCallback<ChangeEvent<bool>> OnEditModeToggleClicked(VisualElement root)
+        {
+            return (evt) =>
+            {
+                if (evt.newValue)
+                {
+                    var system = InitSystem_(root);
+                    system.EnableLimitSceneViewDefaultControl = true;
+                }
+                else
+                {
+                    var system = RoadNetworkEditingSystem.SingletonInstance?.system;
+                    if (system != null)
+                    {
+                        system.EnableLimitSceneViewDefaultControl = false;
+                        TerminateSystem_(root, system);
+                    }
+                }
+            };
+        }
+        
+        private IRoadNetworkEditingSystem InitSystem_(VisualElement root)
+        {
+            // バインドパスの設定
+            self.Q<IntegerField>("LeftSide").bindingPath = "numLeftLane";
+            self.Q<IntegerField>("RightSide").bindingPath = "numRightLane";
+            self.Q<Toggle>("EnableMedianLane").bindingPath = "enableMedianLane";
+            self.Q<Toggle>("EnableLeftSideWalk").bindingPath = "enableLeftSideWalk";
+            self.Q<Toggle>("EnableRightSideWalk").bindingPath = "enableRightSideWalk";
+            var d = self.Q<Toggle>("DetailEditMode");
+            if (d != null)
+                d.bindingPath = "isEditingDetailMode";
 
-        public override void Terminate(VisualElement root)
+            // 編集システムの初期化
+            EditorInterface =
+                RoadNetworkEditingSystem.TryInitalize(EditorInterface, root, new EditorInstance(root, this));
+
+            // システムの取得
+            var system = EditorInterface.system;
+            system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
+
+            system.RoadNetworkSimpleEditModule?.Init();
+
+            setupMethod = CreateSetup(this, system, root);
+            system.OnChangedSelectRoadNetworkElement += setupMethod;
+            return system;
+        }
+        
+
+        protected override void OnTabUnselected(VisualElement root)
         {
             var editModeToggle = self.Q<Toggle>("EditModeButton");
             if (editModeToggle != null)
@@ -136,7 +128,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var sys = RoadNetworkEditingSystem.SingletonInstance?.system;
             if (sys != null)
                 TerminateSystem_(root, sys);
-            base.Terminate(root);
+            base.OnTabUnselected(root);
         }
 
         void TerminateSystem_(VisualElement root, IRoadNetworkEditingSystem system)
@@ -188,10 +180,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     }
                     applyRoadButton.clicked += () =>
                     {
-                        mdl.Apply(system.RoadNetworkSimpleEditModule);
+                        bool isChanged = mdl.Apply(system.RoadNetworkSimpleEditModule);
+                        if (!isChanged)
+                        {
+                            return;
+                        }
+
                         var changedRoads = mdl.TargetScriptableRoadMdl.road.Roads;
                         var network = selfGameObject.GetComponent<PLATEAURnStructureModel>().RoadNetwork;
                         RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
+
                     };
 
                 }
@@ -225,7 +223,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             return mdl.Item;
         }
 
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
         }
@@ -407,7 +405,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             public void RequestReinitialize()
             {
-                editor.Init(root);
+                editor.OnTabSelected(root);
                 ReInitialize();
             }
 

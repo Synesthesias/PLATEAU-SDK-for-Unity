@@ -134,9 +134,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         val.userData = gui;
                     }
                     if (val.value)
-                        gui.Init0(root);
+                        gui.OnRoadChildTabSelected(root);
                     else
-                        gui.Terminate0(root);
+                        gui.OnRoadChildTabUnselected(root);
                 }
 
                 static void SyncTabStatus(VisualElement root, string key, RadioButton val)

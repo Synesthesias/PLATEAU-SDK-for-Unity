@@ -24,7 +24,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// </summary>
     internal interface IScriptableRoadMdl
     {
-        public void Apply(RoadNetworkSimpleEditSysModule mod);
+        /// <summary> 適用します。これにより変更点があったかどうかを返します。</summary>
+        public bool Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
         public bool IsSuccess { get; }
@@ -103,7 +104,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
         // cacheとの比較を行い、変更があれば変更を通知する
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
         }
@@ -254,12 +255,13 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
 
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             if (this.road == null)
             {
                 Debug.Log("編集対象のLinkGroupが設定されていない");
-                return;
+                return false;
             }
 
             bool isChanged = false;
@@ -345,6 +347,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                editorData.ClearSubData<WayEditorDataList>();
             }
 
+            isChanged |= isChangedSideWalk;
+
             if (isChanged)
             {
                 
@@ -393,6 +397,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     road.RemoveSideWalks(group);
                 }
             }
+
+            return isChanged;
         }
 
         private static void Log<_T>(in _T post, in _T pre, in string name)
