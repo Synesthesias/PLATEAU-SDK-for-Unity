@@ -24,7 +24,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// </summary>
     internal interface IScriptableRoadMdl
     {
-        public void Apply(RoadNetworkSimpleEditSysModule mod);
+        /// <summary> 適用します。これにより変更点があったかどうかを返します。</summary>
+        public bool Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
         public bool IsSuccess { get; }
@@ -103,7 +104,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
         // cacheとの比較を行い、変更があれば変更を通知する
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
         }
@@ -165,6 +166,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     internal class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
     {
+        private const bool EnableDebugLog = false;
+        
         /// <summary>
         /// 
         /// </summary>
@@ -233,6 +236,14 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
 
+        public ScriptableRoadMdl TargetScriptableRoadMdl
+        {
+            get
+            {
+                return targetObject as ScriptableRoadMdl;
+            }
+        }
+
         public bool ChangeLaneWidth(float width)
         {
             throw new NotImplementedException();
@@ -244,17 +255,17 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
 
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             if (this.road == null)
             {
                 Debug.Log("編集対象のLinkGroupが設定されていない");
-                return;
+                return false;
             }
 
             bool isChanged = false;
-            var roadObj = targetObject as ScriptableRoadMdl;
-            var road = roadObj.road;
+            var road = TargetScriptableRoadMdl.road;
             if (cache.isEditingDetailMode != IsEditingDetailMode)
             {
                 //if (mod.CanSetDtailMode())
@@ -269,17 +280,15 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             bool isChangedLane = false;
             if (cache.numLeftLane != NumLeftLane)
             {
-                Notify(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
+                Log(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
                 cache.numLeftLane = NumLeftLane;
-                isChanged = true;
                 isChangedLane = true;
                 editorData.ClearSubData<WayEditorDataList>();
             }
             if (cache.numRightLane != NumRightLane)
             {
-                Notify(NumRightLane, cache.numRightLane, nameof(NumRightLane));
+                Log(NumRightLane, cache.numRightLane, nameof(NumRightLane));
                 cache.numRightLane = NumRightLane;
-                isChanged = true;
                 isChangedLane = true;
                 editorData.ClearSubData<WayEditorDataList>();
             }
@@ -288,9 +297,11 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 road.SetLaneCount(NumLeftLane, NumRightLane);
             }
 
+            isChanged |= isChangedLane;
+
             if (cache.enableMedianLane != EnableMedianLane) 
             {
-                Notify(EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
+                Log(EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
                 cache.enableMedianLane = EnableMedianLane;
                 isChanged = true;
 
@@ -319,14 +330,14 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             bool isChangedSideWalk = isChangedLeftSideWalk || isChangedRightSideWalk;
             if (isChangedLeftSideWalk)
             {
-                Notify(EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
+                Log(EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
                 cache.enableLeftSideWalk = EnableLeftSideWalk;
                 UpdateSideWalk<CacheLeftSideWalkGroupEditorData>(EnableLeftSideWalk, road, editorData);
 
             }
             if (isChangedRightSideWalk)
             {
-                Notify(EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
+                Log(EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
                 cache.enableRightSideWalk = EnableRightSideWalk;
                 UpdateSideWalk<CacheRightSideWalkGroupEditorData>(EnableRightSideWalk, road, editorData);
             }
@@ -336,9 +347,11 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                editorData.ClearSubData<WayEditorDataList>();
             }
 
+            isChanged |= isChangedSideWalk;
+
             if (isChanged)
             {
-
+                
             }
 
             static void UpdateSideWalk<_CacheSideWalkData>(bool enable, RnRoadGroup road, EditorData<RnRoadGroup> editorData)
@@ -384,13 +397,15 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     road.RemoveSideWalks(group);
                 }
             }
+
+            return isChanged;
         }
 
-        private static void Notify<_T>(in _T post, in _T pre, in string name)
+        private static void Log<_T>(in _T post, in _T pre, in string name)
             where _T : IEquatable<_T>
         {
             var s = string.Format("Changed property : {0}, {1} to {2}.", name, pre, post);
-            //Debug.Log(s); // デバッグ用
+            if (EnableDebugLog) Debug.Log(s);
         }
 
     }

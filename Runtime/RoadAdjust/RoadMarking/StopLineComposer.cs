@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 
@@ -5,10 +6,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 {
     public class StopLineComposer
     {
-        public MarkedWayList ComposeFrom(RnModel network)
+        public MarkedWayList ComposeFrom(IRnmTarget target)
         {
             var wayList = new MarkedWayList();
-            foreach (var road in network.Roads)
+            foreach (var road in target.Roads())
             {
                 if (road.Next is RnIntersection)
                 {

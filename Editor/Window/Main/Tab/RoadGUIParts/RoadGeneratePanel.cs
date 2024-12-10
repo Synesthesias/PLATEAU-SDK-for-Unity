@@ -12,137 +12,24 @@ using Object = UnityEngine.Object; // Todo 削除予定
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
-    /// <summary>
-    /// <summary>RoadAdjustGuiの子要素としての基底クラス
-    /// 共有インターフェイス、共通処理はここに記載する
-    /// </summary>
-    public abstract class RoadAdjustGuiPartBase
-    {
-        // 対応するVisualElementのキー
-        private readonly string rootKey;
-        protected VisualElement self { get; private set; }
-
-        protected RoadAdjustGuiPartBase(string name)
-        {
-            rootKey = name;
-        }
-
-        public void Init0(VisualElement root)
-        {
-            if (root.Contains(self))
-            {
-                Terminate(self);
-            }
-
-
-            self = GetRoot(root);
-            if (self == null)
-                return;
-            self.style.display = DisplayStyle.Flex;
-
-            Init(self);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="root"></param>
-        public void InitUXMLState(VisualElement root)
-        {
-            var s = GetRoot(root);
-            if (s == null)
-                return;
-            s.style.display = DisplayStyle.None;
-        }
-
-        /// <summary>
-        /// 初期化
-        /// 終了処理がされていない状態での呼び出しも考慮する
-        /// </summary>
-        /// <param name="root"></param>
-        public virtual void Init(VisualElement root)
-        {
-        }
-
-        /// <summary>
-        /// 終了処理
-        /// 初期化されていない状態での呼び出しも考慮する
-        /// </summary>
-        /// <param name="root"></param>
-        public void Terminate0(VisualElement root)
-        {
-            if (root.Contains(self) == false)
-                return;
-
-            self.style.display = DisplayStyle.None;
-
-            Terminate(self);
-            self = null;
-        }
-        public virtual void Terminate(VisualElement root)
-        {
-        }
-
-        /// <summary>
-        /// 該当する
-        /// </summary>
-        /// <param name="root"></param>
-        /// <returns></returns>
-        private VisualElement GetRoot(VisualElement root)
-        {
-            return root.Q<VisualElement>(rootKey);
-        }
-
-        /// <summary>
-        /// 値を取得する
-        /// </summary>
-        /// <typeparam name="_Type"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected _Type Get<_Type>(string key)
-                    where _Type : VisualElement
-        {
-            var v = self.Q<_Type>(key);
-            if (v == null)
-            {
-                Debug.LogError($"Can't find {key}");
-            }
-            return v;
-        }
-
-        protected IntegerField GetI(string key)
-        {
-            return Get<IntegerField>(key);
-        }
-
-        protected FloatField GetF(string key)
-        {
-            return Get<FloatField>(key);
-        }
-
-        protected Toggle GetT(string key)
-        {
-            return Get<Toggle>(key);
-        }
-
-    }
+    
 
     /// <summary>
     /// RoadNetwork_GeneratePanel.uxmlのバインドや挙動の制御を行うクラス
     /// </summary>
-    public class RoadGenerate : RoadAdjustGuiPartBase
+    public class RoadGeneratePanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_GeneratePanel";
         
         private Action setupMethod;
 
-        public RoadGenerate() : base(name)
+        public RoadGeneratePanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
-        public override void Init(VisualElement root)
+        protected override void OnTabSelected(VisualElement root)
         {
-            base.Init(root);
+            base.OnTabSelected(root);
 
             var generateButton = self.Q<Button>("GenerateButton");
             if (generateButton == null)
@@ -266,16 +153,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 factory.IgnoreHighway = ignoreHighway;
                 tester.Factory = factory;
                 
-                var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
                 
+                var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
+                var target = new RnmTargetModel(model);
                 
 
                 
                 // 道路の白線、停止線などを生成します。
-                GenerateRoadMarking(model);
+                GenerateRoadMarking(target);
                 
                 // 道路ネットワークに沿った道路メッシュを作成します。
-                GenerateRoadMesh(model);
+                GenerateRoadMesh(target);
 
             };
         }
@@ -283,22 +171,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary>
         /// 道路の白線、停止線などを生成します。
         /// </summary>
-        private void GenerateRoadMarking(RnModel model)
+        private void GenerateRoadMarking(IRnmTarget target)
         {
-            if (model == null)
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがnullです。");
             }
-            var generator = new RoadMarkingGenerator(model);
+            var generator = new RoadMarkingGenerator(target);
             generator.Generate();
         }
 
         /// <summary>
         /// 道路ネットワークに沿った道路メッシュを作成します。
         /// </summary>
-        private void GenerateRoadMesh(RnModel roadModel)
+        private void GenerateRoadMesh(IRnmTarget target)
         {
-            if (roadModel == null)
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがありません。");
                 return;
@@ -314,10 +202,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             //     "車線ごとに分ける" => RnmLineSeparateType.Separate,
             //     _ => throw new ArgumentOutOfRangeException()
             // };
-            new RoadNetworkToMesh(roadModel, RnmLineSeparateType.Combine).Generate();
+            
+            new RoadNetworkToMesh(target, RnmLineSeparateType.Combine).Generate();
         }
 
-        public override void Terminate(VisualElement root)
+        protected override void OnTabUnselected()
         {
             var generateButton = self.Q<Button>("GenerateButton");
             if (generateButton != null)
@@ -327,7 +216,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
         
 
-            base.Terminate(root);
+            base.OnTabUnselected();
         }
 
 

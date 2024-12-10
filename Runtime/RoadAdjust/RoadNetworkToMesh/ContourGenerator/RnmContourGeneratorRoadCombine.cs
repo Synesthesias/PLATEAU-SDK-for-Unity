@@ -7,11 +7,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourGeneratorRoadCombine : IRnmContourGenerator
     {
 
-        public RnmContourMeshList Generate(RnModel model)
+        public RnmContourMeshList Generate(IRnmTarget target)
         {
             var cMeshes = new RnmContourMeshList();
             // 道路ごとに輪郭を追加します。
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var targetObjs = road.TargetTrans.Where(t => t != null).Select(t => t.gameObject);
 

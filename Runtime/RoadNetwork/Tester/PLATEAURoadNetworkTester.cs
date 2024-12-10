@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityGML;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
@@ -50,6 +51,8 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             var ret = TargetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                    .Where(cog => !IsChildOfGeneratedRoad(cog.transform)) // 自動生成メッシュは除外します
+                    .ToArray()
                 : TargetPresets
                     .FirstOrDefault(s => s.name == TargetPresetName)
                     ?.targets;
@@ -61,6 +64,21 @@ namespace PLATEAU.RoadNetwork.Tester
                 .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
                 .Distinct()
                 .ToList();
+        }
+
+        private bool IsChildOfGeneratedRoad(Transform tran)
+        {
+            var t = tran.parent;
+            while (t != null)
+            {
+                if (t.GetComponent<PLATEAUGeneratedRoad>() != null)
+                {
+                    return true;
+                }
+                t = t.parent;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -10,18 +10,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         static readonly string name = "RoadNetwork_AddPanel";
 
 
-        public RoadAddPanel() : base(name)
+        public RoadAddPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
-        public override void Init(VisualElement root)
+        protected override void OnTabSelected(VisualElement root)
         {
-            base.Init(root);
+            base.OnTabSelected(root);
         }
 
-        public override void Terminate(VisualElement root)
+        protected override void OnTabUnselected()
         {
-            base.Terminate(root);
+            base.OnTabUnselected();
         }
     }
 }

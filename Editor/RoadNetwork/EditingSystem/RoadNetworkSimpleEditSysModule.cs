@@ -15,14 +15,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public List<EditorData<RnRoadGroup>> Connections { get => roadGroupEditorData; }
 
         public RoadNetworkSimpleEditSysModule(GameObject root, RnModel rnModel,
-            RoadNetworkEditingSystem.IRoadNetworkEditingSystem system)
+            IRoadNetworkEditingSystem system)
         {
             ReConstruct(root, rnModel, system);
         }
 
         private GameObject roadNetworkEditingSystemObjRoot;
         private RnModel roadNetwork;
-        private RoadNetworkEditingSystem.IRoadNetworkEditingSystem system;
+        private IRoadNetworkEditingSystem system;
         private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
 
         private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <param name="rnModel"></param>
         /// <param name="system"></param>
         public void ReConstruct(GameObject root, RnModel rnModel,
-            RoadNetworkEditingSystem.IRoadNetworkEditingSystem system)
+            IRoadNetworkEditingSystem system)
         {
             Assert.IsNotNull(root);
             Assert.IsNotNull(rnModel);

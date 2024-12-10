@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
@@ -16,10 +17,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         private const float YellowIntersectionThreshold = 30f; // 交差点との距離が近いかどうかのしきい値
         private const float YellowRoadLengthThreshold = 100f; // この長さ以下の道路(交差点に挟まれた範囲)は、センターラインは白色
 
-        public MarkedWayList ComposeFrom(RnModel model)
+        public MarkedWayList ComposeFrom(IRnmTarget target)
         {
             var ret = new MarkedWayList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var carLanes = road.MainLanes;
                 var widthType = GetCenterLineTypeOfWidth(road);
