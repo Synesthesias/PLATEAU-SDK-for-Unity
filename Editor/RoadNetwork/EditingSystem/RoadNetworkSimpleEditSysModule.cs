@@ -1,3 +1,4 @@
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
@@ -46,6 +47,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public EditingIntersection EditingIntersectionMod { get => editingIntersection; }
         private EditingIntersection editingIntersection = new();
 
+
+        public RnSplineEditor SplineEditorMod { get => splineEditor; }
+        private RnSplineEditor splineEditor = new();
+
         private enum State
         {
             Default, // 通常の状態
@@ -81,6 +86,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public void Init()
         {
             ClearCache();
+
+            SplineEditorMod.Initialize();
 
             nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Intersections.Count);
             // ノードに紐づくオブジェクトを作成 editor用のデータを作成
@@ -309,7 +316,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
             }
 
-
             bool isChanged = false;
             //foreach (var data in nodeEditorData)
             //{
@@ -386,7 +392,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>();
 
-                bool isSelectable = !system.RoadNetworkSimpleEditModule.isEditingDetailMode;
+                bool isSelectable = !system.RoadNetworkSimpleEditModule.isEditingDetailMode && !system.RoadNetworkSimpleEditModule.SplineEditorMod.IsEnabled;
                 wayEditorDataList.SetSelectable(isSelectable);
 
                 var isMouseOnViewport = true;
@@ -605,6 +611,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             editingIntersection.SetTarget(null);
             editingIntersection.Activate(false);
+
             gizmosSys.Clear();
 
             var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();

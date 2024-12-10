@@ -30,6 +30,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         // 処理の成否を返す
         public bool IsSuccess { get; }
         public bool IsEditingDetailMode { get; set; }
+        public bool IsSplineEditMode { get; }
         public int NumLeftLane { get; set; }
         public int NumRightLane { get; set; }
         public bool EnableMedianLane { get; set; }
@@ -46,6 +47,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     internal struct ScriptableRoadMdlData
     {
         public bool isEditingDetailMode;
+        public bool isSplineEditMode;
         public int numLeftLane;
         public int numRightLane;
         public bool enableMedianLane;
@@ -55,6 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public void Reset(IScriptableRoadMdl mdl)
         {
             isEditingDetailMode = mdl.IsEditingDetailMode;
+            isSplineEditMode = mdl.IsSplineEditMode;
             numLeftLane = mdl.NumLeftLane;
             numRightLane = mdl.NumRightLane;
             enableMedianLane = mdl.EnableMedianLane;
@@ -89,6 +92,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public RnRoadGroup road;
 
         public bool isEditingDetailMode;
+        public bool isSplineEditMode;
         public int numLeftLane = 3;
         public int numRightLane = 3;
         public bool enableMedianLane = true;
@@ -114,6 +118,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         {
             get => isEditingDetailMode;
             set => SetPropety(value, ref isEditingDetailMode, nameof(isEditingDetailMode)); 
+        }
+
+        public bool IsSplineEditMode
+        {
+            get => isSplineEditMode;
+            set => SetPropety(value, ref isSplineEditMode, nameof(isSplineEditMode));
         }
         public int NumLeftLane
         {
@@ -189,6 +199,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             //public bool _isApply = false;
             road = FindProperty("road");
             isEditingDetailMode = FindProperty("isEditingDetailMode");
+            isSplineEditMode = FindProperty("isSplineEditMode");
             numLeftLane = FindProperty("numLeftLane");
             numRightLane = FindProperty("numRightLane");
 
@@ -211,6 +222,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public SerializedProperty road;
 
         public SerializedProperty isEditingDetailMode;
+        public SerializedProperty isSplineEditMode;
         public SerializedProperty numLeftLane;
         public SerializedProperty numRightLane;
         public SerializedProperty enableMedianLane;
@@ -235,6 +247,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public bool EnableRightSideWalk { get => enableRightSideWalk.boolValue; set => enableRightSideWalk.boolValue = value; }
 
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
+        public bool IsSplineEditMode { get => isSplineEditMode.boolValue; set => isSplineEditMode.boolValue = value; }
 
         public ScriptableRoadMdl TargetScriptableRoadMdl
         {
@@ -275,6 +288,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 //    mod.SetDetailMode(IsEditingDetailMode);
                 //    isChanged = true;
                 //}
+            }
+
+            if (cache.isSplineEditMode != IsSplineEditMode)
+            {
+                Log(IsSplineEditMode, cache.isSplineEditMode, nameof(IsSplineEditMode));
+                cache.isSplineEditMode = IsSplineEditMode;
             }
 
             bool isChangedLane = false;
@@ -399,6 +418,20 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             }
 
             return isChanged;
+        }
+
+        public void ApplySplineEditMode(RoadNetworkSimpleEditSysModule mod)
+        {
+            var target = new EditorData<RnRoadGroup>((targetObject as ScriptableRoadMdl)?.road);
+            if (IsSplineEditMode)
+            {
+                mod.SplineEditorMod.Enable(this, target);
+            }
+            else
+            {
+                mod.SplineEditorMod.Apply();
+                mod.SplineEditorMod.Disable();
+            }
         }
 
         private static void Log<_T>(in _T post, in _T pre, in string name)

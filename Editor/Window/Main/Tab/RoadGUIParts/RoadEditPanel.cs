@@ -54,7 +54,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
             applyRoadButton.clicked += OnApplyRoadButtonClicked;
-
         }
 
         protected override void OnTabSelected(VisualElement root)
@@ -148,9 +147,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                         }
                     });
 
+
+                    var roadSplineStartButton = rootVisualElement.Q<Button>("RoadSplineStartButton");
+                    var roadSplineStopButton = rootVisualElement.Q<Button>("RoadSplineStopButton");
+
+                    // 終了ボタンがuxml上で非可視状態になっているため、ここで有効化する
+                    {
+                        var displayStyle = roadSplineStopButton.style.display;
+                        displayStyle.value = DisplayStyle.Flex;
+                        roadSplineStopButton.style.display = displayStyle;
+                        roadSplineStopButton.SetEnabled(false);
+                    }
+
+                    roadSplineStartButton.clicked += () =>
+                    {
+                        roadSplineStartButton.SetEnabled(false);
+                        roadSplineStopButton.SetEnabled(true);
+                        selectedRoad.IsSplineEditMode = true;
+                        selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
+                    };
+                    roadSplineStopButton.clicked += () =>
+                    {
+                        roadSplineStartButton.SetEnabled(true);
+                        roadSplineStopButton.SetEnabled(false);
+                        selectedRoad.IsSplineEditMode = false;
+                        selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
+                    };
+
                     // モデルのバインド
                     rootVisualElement.Bind(selectedRoad);
-                    
                 }
 
                 var intersectionData = EditorInterface.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
