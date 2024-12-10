@@ -12,131 +12,18 @@ using Object = UnityEngine.Object; // Todo 削除予定
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
-    /// <summary>
-    /// <summary>RoadAdjustGuiの子要素としての基底クラス
-    /// 共有インターフェイス、共通処理はここに記載する
-    /// </summary>
-    public abstract class RoadAdjustGuiPartBase
-    {
-        // 対応するVisualElementのキー
-        private readonly string rootKey;
-        protected VisualElement self { get; private set; }
-
-        protected RoadAdjustGuiPartBase(string name)
-        {
-            rootKey = name;
-        }
-
-        /// <summary>
-        /// 「道路調整」タブ内の各子タブ「生成」「編集」「追加」が選択された時に呼ばれます
-        /// </summary>
-        public void OnRoadChildTabSelected(VisualElement root)
-        {
-            self = GetRoot(root);
-            if (self == null)
-                return;
-            self.style.display = DisplayStyle.Flex;
-
-            OnTabSelected(self);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="root"></param>
-        public void InitUXMLState(VisualElement root)
-        {
-            var s = GetRoot(root);
-            if (s == null)
-                return;
-            s.style.display = DisplayStyle.None;
-        }
-
-        /// <summary>
-        /// タブが選択された時の初期化処理をサブクラスで記述できるようにします。
-        /// 終了処理がされていない状態での呼び出しも考慮する
-        /// </summary>
-        protected virtual void OnTabSelected(VisualElement root)
-        {
-        }
-
-        /// <summary>
-        /// 道路調整タブの各子タブ「生成」「編集」「追加」の選択が解除された時に呼ばれます。
-        /// 終了処理を行います。
-        /// 初期化されていない状態での呼び出しも考慮します。
-        /// </summary>
-        public void OnRoadChildTabUnselected(VisualElement root)
-        {
-            if (root.Contains(self) == false)
-                return;
-
-            self.style.display = DisplayStyle.None;
-
-            OnTabUnselected(self);
-            self = null;
-        }
-        
-        /// <summary>
-        /// タブの選択が解除されたときの終了処理をサブクラスで記述できるようにします。
-        /// </summary>
-        protected virtual void OnTabUnselected(VisualElement root)
-        {
-        }
-
-        /// <summary>
-        /// 該当する
-        /// </summary>
-        /// <param name="root"></param>
-        /// <returns></returns>
-        private VisualElement GetRoot(VisualElement root)
-        {
-            return root.Q<VisualElement>(rootKey);
-        }
-
-        /// <summary>
-        /// 値を取得する
-        /// </summary>
-        /// <typeparam name="_Type"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected _Type Get<_Type>(string key)
-                    where _Type : VisualElement
-        {
-            var v = self.Q<_Type>(key);
-            if (v == null)
-            {
-                Debug.LogError($"Can't find {key}");
-            }
-            return v;
-        }
-
-        protected IntegerField GetI(string key)
-        {
-            return Get<IntegerField>(key);
-        }
-
-        protected FloatField GetF(string key)
-        {
-            return Get<FloatField>(key);
-        }
-
-        protected Toggle GetT(string key)
-        {
-            return Get<Toggle>(key);
-        }
-
-    }
+    
 
     /// <summary>
     /// RoadNetwork_GeneratePanel.uxmlのバインドや挙動の制御を行うクラス
     /// </summary>
-    public class RoadGenerate : RoadAdjustGuiPartBase
+    public class RoadGeneratePanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_GeneratePanel";
         
         private Action setupMethod;
 
-        public RoadGenerate() : base(name)
+        public RoadGeneratePanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
@@ -317,7 +204,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             new RoadNetworkToMesh(target, RnmLineSeparateType.Combine).Generate();
         }
 
-        protected override void OnTabUnselected(VisualElement root)
+        protected override void OnTabUnselected()
         {
             var generateButton = self.Q<Button>("GenerateButton");
             if (generateButton != null)
@@ -327,7 +214,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
         
 
-            base.OnTabUnselected(root);
+            base.OnTabUnselected();
         }
 
 

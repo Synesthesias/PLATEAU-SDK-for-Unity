@@ -11,16 +11,21 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <see cref="RoadNetworkEditingSystem"/>内部システムが利用するインスタンス
         /// 内部システム同士が連携する時や共通データにアクセスする際に利用する
         /// </summary>
-        internal class EditingSystem : RoadNetworkEditingSystem.IRoadNetworkEditingSystem
+        internal class EditingSystem : IRoadNetworkEditingSystem
         {
+            private readonly RoadNetworkEditingSystem system;
+            public event EventHandler OnChangedEditMode;
+            public event EventHandler OnChangedSelectRoadNetworkElement;
+            public event EventHandler OnChangedSignalControllerPattern;
+            public event EventHandler OnChangedSignalControllerPhase;
+            
+            
             public EditingSystem(RoadNetworkEditingSystem system)
             {
                 Assert.IsNotNull(system);
                 this.system = system;
             }
-
-
-            private readonly RoadNetworkEditingSystem system;
+            
 
 
             public UnityEngine.Object RoadNetworkObject
@@ -63,10 +68,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     OnChangedEditMode?.Invoke(this, EventArgs.Empty);
                 }
             }
-            public event EventHandler OnChangedEditMode;
-            public event EventHandler OnChangedSelectRoadNetworkElement;
-            public event EventHandler OnChangedSignalControllerPattern;
-            public event EventHandler OnChangedSignalControllerPhase;
+            
 
             public IRoadNetworkEditOperation EditOperation => system.editOperation;
 

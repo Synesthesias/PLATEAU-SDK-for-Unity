@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         static readonly string name = "RoadNetwork_TrafficRulePanel";
 
 
-        public RoadTrafficRulePanel() : base(name)
+        public RoadTrafficRulePanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
@@ -19,9 +19,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             base.OnTabSelected(root);
         }
 
-        protected override void OnTabUnselected(VisualElement root)
+        protected override void OnTabUnselected()
         {
-            base.OnTabUnselected(root);
+            base.OnTabUnselected();
         }
     }
 }

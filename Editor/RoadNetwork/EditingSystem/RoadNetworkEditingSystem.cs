@@ -19,6 +19,51 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class RoadNetworkEditingSystem : IRoadNetworkEditingSystemInterface
     {
+        
+        public static RoadNetworkEditingSystem SingletonInstance;
+
+        /// <summary>
+        /// 編集機能を提供するインターフェイス
+        /// </summary>
+        public IRoadNetworkEditOperation NetworkOperator => editOperation;
+
+        /// <summary>
+        /// シーンのGUIのシステムを提供する
+        /// UnityEditor.Editorを継承するクラスでのみ使用する
+        /// 呼び出す箇所は一か所にする
+        /// </summary>
+        public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
+
+        public readonly ISystemInstance systemInstance;
+
+        // 選択している道路ネットワークを所持したオブジェクト
+        public UnityEngine.Object roadNetworkObject;
+        // 選択している道路ネットワーク
+        public RnModel roadNetworkModel;
+        // 現在の編集モード
+        public RoadNetworkEditMode editingMode;
+
+        // 選択中の道路ネットワーク要素 Road,Lane,Block...etc
+        public System.Object selectedRoadNetworkElement;
+
+        // 選択中の信号制御器のパターン
+        public TrafficSignalControllerPattern selectedSignalPattern;
+        // 選択中の信号制御器のパターンのフェーズ
+        public TrafficSignalControllerPhase selectedSignalPhase;
+
+        // 内部システム同士が連携する時や共通データにアクセスする際に利用する
+        public readonly IRoadNetworkEditingSystem system;
+
+        public IRoadNetworkEditOperation editOperation;
+        public RoadNetworkSceneGUISystem sceneGUISystem;
+
+        // Laneの生成機能を提供するモジュール
+        public RoadNetworkSimpleEditSysModule simpleEditSysModule;
+
+        private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
+        private GameObject roadNetworkEditingSystemObjRoot;
+        private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
+        
         /// <summary>
         /// システムのインスタンスを管理する機能を提供するインターフェイス
         /// </summary>
@@ -82,57 +127,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             this.systemInstance = editorInstance;
 
             Assert.IsNotNull(rootVisualElement);
-            this.rootVisualElement = rootVisualElement;
             system = new EditingSystem(this);
             TryInitialize(rootVisualElement);
 
             SingletonInstance = this;
         }
 
-        public static RoadNetworkEditingSystem SingletonInstance;
-
-        /// <summary>
-        /// 編集機能を提供するインターフェイス
-        /// </summary>
-        public IRoadNetworkEditOperation NetworkOperator => editOperation;
-
-        /// <summary>
-        /// シーンのGUIのシステムを提供する
-        /// UnityEditor.Editorを継承するクラスでのみ使用する
-        /// 呼び出す箇所は一か所にする
-        /// </summary>
-        public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
-
-        public readonly ISystemInstance systemInstance;
-        private readonly VisualElement rootVisualElement;
-
-        // 選択している道路ネットワークを所持したオブジェクト
-        public UnityEngine.Object roadNetworkObject;
-        // 選択している道路ネットワーク
-        public RnModel roadNetworkModel;
-        // 現在の編集モード
-        public RoadNetworkEditMode editingMode;
-
-        // 選択中の道路ネットワーク要素 Road,Lane,Block...etc
-        public System.Object selectedRoadNetworkElement;
-
-        // 選択中の信号制御器のパターン
-        public TrafficSignalControllerPattern selectedSignalPattern;
-        // 選択中の信号制御器のパターンのフェーズ
-        public TrafficSignalControllerPhase selectedSignalPhase;
-
-        // 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        public readonly IRoadNetworkEditingSystem system;
-
-        public IRoadNetworkEditOperation editOperation;
-        public RoadNetworkSceneGUISystem sceneGUISystem;
-
-        // Laneの生成機能を提供するモジュール
-        public RoadNetworkSimpleEditSysModule simpleEditSysModule;
-
-        private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
-        private GameObject roadNetworkEditingSystemObjRoot;
-        private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
+        
 
         private void Terminate()
         {
@@ -279,73 +280,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 item.Vertex = targetPos + Vector3.up * SnapHeightOffset;
                 return;
             }
-
-        }
-
-
-        /// <summary>
-        /// 内部システムが利用するインターフェイス
-        /// 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        /// </summary>
-        public interface IRoadNetworkEditingSystem
-        {
-
-            // 仮
-            RoadNetworkSceneGUISystem SceneGUISystem { get; }
-
-            /// <summary>
-            /// 編集機能のインスタンス
-            /// </summary>
-            ISystemInstance Instance { get; }
-
-            bool EnableLimitSceneViewDefaultControl { get; set; }
-
-            /// <summary>
-            /// 道路ネットワークを所持したUnityオブジェクト
-            /// </summary>
-            UnityEngine.Object RoadNetworkObject { get; set; }
-            event EventHandler OnChangedRoadNetworkObject;
-
-            /// <summary>
-            /// 道路ネットワーク
-            /// </summary>
-            RnModel RoadNetwork { get; }
-
-            //HashSet<LinkGroupEditorData> Connections { get; }
-
-            /// <summary>
-            /// 現在の編集モード
-            /// </summary>
-            RoadNetworkEditMode CurrentEditMode { get; set; }
-            event EventHandler OnChangedEditMode;
-            /// <summary>
-            /// 編集機能を提供するインターフェイス
-            /// </summary>
-            IRoadNetworkEditOperation EditOperation { get; }
-
-            /// <summary>
-            /// 選択中の道路ネットワーク要素
-            /// </summary>
-            System.Object SelectedRoadNetworkElement { get; set; }
-            event EventHandler OnChangedSelectRoadNetworkElement;
-
-            /// <summary>
-            /// 選択中の信号制御器のパターン
-            /// </summary>
-            TrafficSignalControllerPattern SelectedSignalControllerPattern { get; set; }
-            event EventHandler OnChangedSignalControllerPattern;
-            /// <summary>
-            /// 選択中の信号制御器のパターンのフェーズ
-            /// </summary>
-            TrafficSignalControllerPhase SelectedSignalPhase { get; set; }
-            event EventHandler OnChangedSignalControllerPhase;
-
-            /// <summary>
-            /// 道路ネットワークを所持したオブジェクトに変更があったことをUnityEditorに伝える
-            /// </summary>
-            void NotifyChangedRoadNetworkObject2Editor();
-
-            RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
 
         }
         
