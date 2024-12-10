@@ -19,7 +19,6 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         
         public RoadMarkingGenerator(IRnmTarget target)
         {
-            var serializer = new RoadNetworkSerializer();
             // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
             if (target != null)
             {
@@ -51,13 +50,12 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 // 道路の線をメッシュに変換します。
                 var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
-                // way.Line.Points = new LineSmoother().Smooth(way.Line.Points.ToArray());
                 var points = way.Line.Points;
                 var instance = gen.GenerateMesh(points.ToArray());
                 
                 instances.Add(instance);
             }
-
+            
             var dstMesh = instances.Combine();
             GenerateGameObj(dstMesh, null);
         }

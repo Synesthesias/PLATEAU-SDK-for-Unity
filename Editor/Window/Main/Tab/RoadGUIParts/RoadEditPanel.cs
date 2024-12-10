@@ -190,7 +190,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             {
                 return;
             }
-
+            
             var changedRoads = selectedRoad.TargetScriptableRoadMdl.road.Roads;
                         
             var rnMdl = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
@@ -200,6 +200,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
             var network = rnMdl.RoadNetwork;
+            
             RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
         }
 

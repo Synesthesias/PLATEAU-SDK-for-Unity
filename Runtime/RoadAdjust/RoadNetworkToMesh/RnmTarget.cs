@@ -20,7 +20,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
 
     /// <summary>
-    /// RnmTargetで、1つの道路モデル全体を対象に取ります。
+    /// <see cref="IRnmTarget"/>で、1つの道路モデル全体を対象に取ります。
     /// </summary>
     public class RnmTargetModel : IRnmTarget
 
@@ -53,6 +53,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
         }
 
+        /// <summary>
+        /// 道路ネットワークをディープコピーします。
+        /// </summary>
         public IRnmTarget Copy()
         {
             var serializer = new RoadNetworkSerializer();
@@ -64,7 +67,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     }
 
     /// <summary>
-    /// RnmTargetで、特定の道路または交差点を対象に取ります。
+    /// <see cref="IRnmTarget"/>で、特定の道路または交差点を対象に取ります。
     /// </summary>
     public class RnmTargetRoadBases : IRnmTarget
     {
