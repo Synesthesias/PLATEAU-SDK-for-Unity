@@ -14,19 +14,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     /// <summary>
     /// RoadNetwork_EditPanel.uxmlのバインドや挙動の制御を行うクラス
     /// </summary>
-    internal class RoadEditPanel : RoadAdjustGuiPartBase, IScriptableRoadMdl
+    internal class RoadEditPanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_EditPanel";
         public RoadNetworkEditingSystem EditorInterface { get; private set; }
 
-        public bool IsSuccess => throw new NotImplementedException();
 
-        public bool IsEditingDetailMode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int NumLeftLane { get => self.Q<IntegerField>("LeftSide").value; set => self.Q<IntegerField>("LeftSide").value = value; }
-        public int NumRightLane { get => self.Q<IntegerField>("RightSide").value; set => self.Q<IntegerField>("RightSide").value = value; }
-        public bool EnableMedianLane { get => self.Q<Toggle>("EnableMedianLane").value; set => self.Q<Toggle>("EnableMedianLane").value = value; }
-        public bool EnableLeftSideWalk { get => self.Q<Toggle>("EnableLeftSideWalk").value; set => self.Q<Toggle>("EnableLeftSideWalk").value = value; }
-        public bool EnableRightSideWalk { get => self.Q<Toggle>("EnableRightSideWalk").value; set => self.Q<Toggle>("EnableRightSideWalk").value = value; }
         private SerializedScriptableRoadMdl selectedRoad;
 
         public RoadEditPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
@@ -133,7 +126,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 if (roadGroupEditorData != null)
                 {
                     // 無ければ生成する あれば流用する
-                    selectedRoad = this.CreateOrGetRoadGroupData(this, roadGroupEditorData);
+                    selectedRoad = this.CreateOrGetRoadGroupData(roadGroupEditorData);
 
                     var roadGroup = roadGroupEditorData.Ref;
 
@@ -204,7 +197,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
         }
 
-        private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(IScriptableRoadMdl mdl1, EditorData<RnRoadGroup> linkGroupEditorData)
+        private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(EditorData<RnRoadGroup> linkGroupEditorData)
         {
             // モデルオブジェクトを所持してるならそれを利用する
             var mdl = linkGroupEditorData.ReqSubData<ScriptableObjectFolder>();
