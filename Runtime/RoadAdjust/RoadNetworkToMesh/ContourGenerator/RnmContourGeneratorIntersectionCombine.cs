@@ -7,7 +7,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary> 交差点の輪郭線を生成します。レーンは結合します。 </summary>
     internal class RnmContourGeneratorIntersectionCombine : IRnmContourGenerator
     {
-        public RnmContourMeshList Generate(IRnmTarget target)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var cMeshes = new RnmContourMeshList();
             foreach (var inter in target.Intersections())

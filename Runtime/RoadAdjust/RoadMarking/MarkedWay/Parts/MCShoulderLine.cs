@@ -10,7 +10,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class MCShoulderLine : IMarkedWayListComposer
     {
-        public MarkedWayList ComposeFrom(IRnmTarget target)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var ret = new MarkedWayList();
             foreach (var road in target.Roads())

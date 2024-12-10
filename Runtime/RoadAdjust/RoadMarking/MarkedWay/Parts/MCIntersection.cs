@@ -11,7 +11,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 長すぎる交差点の線を無視するしきい値 </summary>
         private const float IntersectionLineIgnoreLength = 100f;
         
-        public MarkedWayList ComposeFrom(IRnmTarget target)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var found = new List<MarkedWay>();
             foreach (var inter in target.Intersections())

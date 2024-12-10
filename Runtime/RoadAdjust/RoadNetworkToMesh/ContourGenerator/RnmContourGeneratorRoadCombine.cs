@@ -7,7 +7,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourGeneratorRoadCombine : IRnmContourGenerator
     {
 
-        public RnmContourMeshList Generate(IRnmTarget target)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var cMeshes = new RnmContourMeshList();
             // 道路ごとに輪郭を追加します。

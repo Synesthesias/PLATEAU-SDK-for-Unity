@@ -13,7 +13,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class RoadNetworkLineSmoother
     {
-        public void Smooth(IRnmTarget target)
+        public void Smooth(IRrTarget target)
         {
             var smoother = new LineSmoother();
             foreach (var road in target.Roads())

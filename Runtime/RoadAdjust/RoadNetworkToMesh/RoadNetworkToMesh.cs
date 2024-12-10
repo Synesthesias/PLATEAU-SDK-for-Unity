@@ -22,23 +22,23 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RoadNetworkToMesh
     {
-        private readonly IRnmTarget srcTarget;
+        private readonly IRrTarget srcTarget;
         private readonly RnmLineSeparateType lineSeparateType;
         private static readonly bool DebugMode = false;
 
         public static RoadNetworkToMesh CreateFromNetwork(RnModel network, RnmLineSeparateType lineSeparateType)
         {
-            var target = new RnmTargetModel(network); // 処理中だけネットワークを調整したいので、時間はかかりますがディープコピーします。
+            var target = new RrTargetModel(network); // 処理中だけネットワークを調整したいので、時間はかかりますがディープコピーします。
             return new RoadNetworkToMesh(target, lineSeparateType);
         }
         
         public static RoadNetworkToMesh CreateFromRoadBases(RnModel parentNetwork, IEnumerable<RnRoadBase> roadBases, RnmLineSeparateType lineSeparateType)
         {
-            var target = new RnmTargetRoadBases(parentNetwork, roadBases);
+            var target = new RrTargetRoadBases(parentNetwork, roadBases);
             return new RoadNetworkToMesh(target, lineSeparateType);
         }
         
-        public RoadNetworkToMesh(IRnmTarget target, RnmLineSeparateType lineSeparateType)
+        public RoadNetworkToMesh(IRrTarget target, RnmLineSeparateType lineSeparateType)
         {
             if (target == null)
             {
@@ -93,7 +93,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
 
-            var dstParent = GenerateDstParent();
+            var dstParent = RoadReproducer.GenerateDstParent();
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
@@ -106,19 +106,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (mesh.vertexCount == 0) continue;
 
                 // オブジェクトの生成
-                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : $"{srcObjs[0].name}";
-                var dstObj = new GameObject(dstObjName);
-                dstObj.transform.SetParent(dstParent);
+                var dstObj = GenerateDstGameObj(dstParent, srcObjs);
+                
 
                 if (DebugMode)
                 {
-                    var comp = dstObj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
+                    var comp = dstObj.GetOrAddComponent<PLATEAURoadNetworkToMeshDebug>();
                     comp.Init(contourMesh);
                 }
                 
                 
-                var renderer = dstObj.AddComponent<MeshRenderer>();
-                var filter = dstObj.AddComponent<MeshFilter>();
+                var renderer = dstObj.GetOrAddComponent<MeshRenderer>();
+                var filter = dstObj.GetOrAddComponent<MeshFilter>();
                 filter.sharedMesh = mesh;
                 
                 // マテリアルを貼り付けます。
@@ -172,39 +171,27 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 #endif
 
         }
-        
-        private Transform GenerateDstParent()
+
+        private GameObject GenerateDstGameObj(Transform dstParent, GameObject[] srcObjs)
         {
-            PLATEAUGeneratedRoad component = null;
-            var comps = Object.FindObjectsByType<PLATEAUGeneratedRoad>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (var c in comps)
+            var srcObj = srcObjs.Length == 0 ? null : srcObjs[0];
+            string srcObjName = srcObj == null ? "RoadUnknown" : $"{srcObj.name}";
+            string dstObjName = $"Generated-{srcObjName}";
+
+            GameObject dstObj = null;
+            if (srcObj != null)
             {
-                if (c.sourceRoadNetwork.RoadNetwork == srcTarget.Network())
-                {
-                    component = c;
-                    break;
-                }
+                dstObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, srcObj.transform);
             }
 
-            if (component == null)
+            if (dstObj == null)
             {
-                var dstObj = new GameObject("GeneratedRoad");
-                component = dstObj.AddComponent<PLATEAUGeneratedRoad>();
-                var structures =
-                    Object.FindObjectsByType<PLATEAURnStructureModel>(FindObjectsInactive.Include,
-                        FindObjectsSortMode.None);
-                foreach (var structure in structures)
-                {
-                    if (structure.RoadNetwork == srcTarget.Network())
-                    {
-                        component.sourceRoadNetwork = structure;
-                        break;
-                    }
-                }
-                
+                dstObj = new GameObject(dstObjName);
             }
-
-            return component.transform;
+            dstObj.transform.SetParent(dstParent);
+            var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
+            comp.Init(ReproducedRoadType.RoadMesh, srcObj == null ? null : srcObj.transform);
+            return dstObj;
         }
         
     }

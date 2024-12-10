@@ -7,6 +7,7 @@ using PLATEAU.Editor.RoadNetwork;
 using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
+using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
@@ -194,7 +195,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
             var network = rnMdl.RoadNetwork;
             
-            RoadNetworkToMesh.CreateFromRoadBases(network, changedRoads, RnmLineSeparateType.Combine).Generate();
+            new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads));
         }
 
         private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(EditorData<RnRoadGroup> linkGroupEditorData)

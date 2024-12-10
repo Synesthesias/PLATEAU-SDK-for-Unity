@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.Async;
+﻿using PLATEAU.RoadAdjust;
+using PLATEAU.Util.Async;
 using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
@@ -153,58 +154,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 factory.IgnoreHighway = ignoreHighway;
                 tester.Factory = factory;
                 
-                
                 var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
-                var target = new RnmTargetModel(model);
                 
-
-                
-                // 道路の白線、停止線などを生成します。
-                GenerateRoadMarking(target);
-                
-                // 道路ネットワークに沿った道路メッシュを作成します。
-                GenerateRoadMesh(target);
+                // 道路の白線、停止線、道路メッシュを生成します。
+                new RoadReproducer().Generate(new RrTargetModel(model));
 
             };
         }
-
-        /// <summary>
-        /// 道路の白線、停止線などを生成します。
-        /// </summary>
-        private void GenerateRoadMarking(IRnmTarget target)
-        {
-            if (target == null)
-            {
-                Debug.LogError("道路ネットワークがnullです。");
-            }
-            var generator = new RoadMarkingGenerator(target);
-            generator.Generate();
-        }
-
-        /// <summary>
-        /// 道路ネットワークに沿った道路メッシュを作成します。
-        /// </summary>
-        private void GenerateRoadMesh(IRnmTarget target)
-        {
-            if (target == null)
-            {
-                Debug.LogError("道路ネットワークがありません。");
-                return;
-            }
-
-            // 「車線をまとめる」「車線ごとに分ける」の選択肢は、現状はまとめるのみ対応するとします。
-            // 分けたあとにまとめることが現状動かないためです。
-            
-            // var splitStr = Get<DropdownField>("Split_Pedestrian").value;
-            // var separateType = splitStr switch
-            // {
-            //     "車線をまとめる" => RnmLineSeparateType.Combine,
-            //     "車線ごとに分ける" => RnmLineSeparateType.Separate,
-            //     _ => throw new ArgumentOutOfRangeException()
-            // };
-            
-            new RoadNetworkToMesh(target, RnmLineSeparateType.Combine).Generate();
-        }
+        
 
         protected override void OnTabUnselected()
         {
