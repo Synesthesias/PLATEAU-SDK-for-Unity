@@ -167,7 +167,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
 #if UNITY_EDITOR
             // 生成物を選択状態に
-            Selection.objects = new []{dstParent.gameObject};
+            // Selection.objects = new []{dstParent.gameObject};
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
 
