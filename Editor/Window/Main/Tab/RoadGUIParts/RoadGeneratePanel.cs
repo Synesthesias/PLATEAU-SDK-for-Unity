@@ -153,6 +153,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 factory.IgnoreHighway = ignoreHighway;
                 tester.Factory = factory;
                 
+                
                 var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
                 var target = new RnmTargetModel(model);
                 
