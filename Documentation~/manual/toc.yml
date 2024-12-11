@@ -12,7 +12,7 @@
     href: ModelAdjust.md  
   - name: 属性情報へのアクセス
     href: AccessCityObject.md
-  - name: 道路ネットワーク機能の利用
+  - name: 道路ネットワークの利用
     href: RoadNetwork.md
   - name: SDKのマテリアルについて
     href: sdkMaterial.md
