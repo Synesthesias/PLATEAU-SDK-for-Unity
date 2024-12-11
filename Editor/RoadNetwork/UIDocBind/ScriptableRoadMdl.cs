@@ -247,7 +247,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public bool EnableRightSideWalk { get => enableRightSideWalk.boolValue; set => enableRightSideWalk.boolValue = value; }
 
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
-        public bool IsSplineEditMode { get => isSplineEditMode.boolValue; set => isSplineEditMode.boolValue = value; }
+
+        public bool IsSplineEditMode
+        {
+            get => isSplineEditMode.boolValue;
+            set => isSplineEditMode.boolValue = value;
+        }
 
         public ScriptableRoadMdl TargetScriptableRoadMdl
         {
@@ -432,6 +437,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 mod.SplineEditorMod.Apply();
                 mod.SplineEditorMod.Disable();
             }
+        }
+
+        public void DisableSplineEditMode(RoadNetworkSimpleEditSysModule mod)
+        {
+            IsSplineEditMode = false;
+            mod.SplineEditorMod.Disable();
         }
 
         private static void Log<_T>(in _T post, in _T pre, in string name)

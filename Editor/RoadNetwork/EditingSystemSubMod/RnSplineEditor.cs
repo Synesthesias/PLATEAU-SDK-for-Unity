@@ -105,7 +105,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             IsEnabled = false;
 
             spline.Clear();
-            EditorApplication.delayCall += ToolManager.SetActiveContext<GameObjectToolContext>;
         }
 
         /// <summary>
