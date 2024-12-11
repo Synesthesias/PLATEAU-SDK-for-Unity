@@ -725,6 +725,27 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+
+        /// <summary>
+        /// Lane内のWayの内、最も左のWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public RnWay GetLeftWayOfLanes()
+        {
+            var lane = MainLanes.First();
+            return IsLeftLane(lane) ? lane?.LeftWay : lane?.RightWay;
+        }
+
+        /// <summary>
+        /// Lane内のWayの内、最も右のWayを取得
+        /// </summary>
+        /// <returns></returns>
+        public RnWay GetRightWayOfLanes()
+        {
+            var lane = MainLanes.Last();
+            return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay;
+        }
+
         // ---------------
         // Static Methods
         // ---------------

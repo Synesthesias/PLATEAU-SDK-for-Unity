@@ -225,9 +225,13 @@ namespace PLATEAU.Editor.RoadNetwork
             var roadGroupEditorData = selectedConnection;
 
 
-            // 簡易モードで表示
-            if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+            if (editorSystem.RoadNetworkSimpleEditModule.SplineEditorMod.IsEnabled)
             {
+                // スプライン編集モード。何もしない
+            }
+            else if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+            {
+                // 簡易モードで表示
                 // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
 
                 var nLeftLane = roadGroupEditorData.Ref.GetLeftLaneCount();
