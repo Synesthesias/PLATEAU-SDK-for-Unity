@@ -5,19 +5,19 @@ using UnityEngine.Splines;
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
     /// <summary>
-    /// ƒXƒvƒ‰ƒCƒ“•ÒW‚ÌƒRƒAÀ‘•BƒGƒfƒBƒ^”ñˆË‘¶‚Ì•”•ª‚Ì‚İ•ª—£
+    /// ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³ç·¨é›†ã®ã‚³ã‚¢å®Ÿè£…ã€‚ã‚¨ãƒ‡ã‚£ã‚¿éä¾å­˜ã®éƒ¨åˆ†ã®ã¿åˆ†é›¢
     /// </summary>
     public class SplineEditorCore
     {
         private SplineContainer splineContainer;
         private Spline spline;
 
-        // n“_ƒmƒbƒg—p§–ñ
+        // å§‹ç‚¹ãƒãƒƒãƒˆç”¨åˆ¶ç´„
         private bool startConstrainToLineSegment = false;
         private Vector3 startLineStart;
         private Vector3 startLineEnd;
 
-        // I“_ƒmƒbƒg—p§–ñ
+        // çµ‚ç‚¹ãƒãƒƒãƒˆç”¨åˆ¶ç´„
         private bool endConstrainToLineSegment = false;
         private Vector3 endLineStart;
         private Vector3 endLineEnd;
@@ -29,8 +29,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         /// <summary>
-        /// n“_ƒmƒbƒg‚É‘Î‚·‚é§–ñ‚ğİ’è
-        /// enable=true‚Å(lineStart`lineEnd)ã‚É“Š‰e
+        /// å§‹ç‚¹ãƒãƒƒãƒˆã«å¯¾ã™ã‚‹åˆ¶ç´„ã‚’è¨­å®š
+        /// enable=trueã§(lineStartï½lineEnd)ä¸Šã«æŠ•å½±
         /// </summary>
         public void SetStartPointConstraint(bool enable, Vector3 lineStart, Vector3 lineEnd)
         {
@@ -41,8 +41,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         /// <summary>
-        /// I“_ƒmƒbƒg‚É‘Î‚·‚é§–ñ‚ğİ’è
-        /// enable=true‚Å(lineStart`lineEnd)ã‚É“Š‰e
+        /// çµ‚ç‚¹ãƒãƒƒãƒˆã«å¯¾ã™ã‚‹åˆ¶ç´„ã‚’è¨­å®š
+        /// enable=trueã§(lineStartï½lineEnd)ä¸Šã«æŠ•å½±
         /// </summary>
         public void SetEndPointConstraint(bool enable, Vector3 lineStart, Vector3 lineEnd)
         {
@@ -110,12 +110,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             int knotCount = spline.Count;
 
-            // n“_§–ñ
+            // å§‹ç‚¹åˆ¶ç´„
             if (index == 0 && startConstrainToLineSegment)
             {
                 newPosition = ProjectPointOnSegment(newPosition, startLineStart, startLineEnd);
             }
-            // I“_§–ñ
+            // çµ‚ç‚¹åˆ¶ç´„
             else if (index == knotCount - 1 && endConstrainToLineSegment)
             {
                 newPosition = ProjectPointOnSegment(newPosition, endLineStart, endLineEnd);
@@ -140,10 +140,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         /// <summary>
-        /// ƒ^ƒ“ƒWƒFƒ“ƒgƒ‚[ƒh‚ğXV‚·‚é
-        /// E’[“_ƒmƒbƒg‚É§–ñ‚ª—LŒø‚Èê‡A‚»‚Ìƒmƒbƒg‚ğü•ª‚É‚’¼‚Èƒ^ƒ“ƒWƒFƒ“ƒg
-        /// E’†ŠÔƒmƒbƒg‚ÍAutoSmooth
-        /// E§–ñ‚ª‚È‚¢’[“_‚Í‘S‚ÄAutoSmooth
+        /// ã‚¿ãƒ³ã‚¸ã‚§ãƒ³ãƒˆãƒ¢ãƒ¼ãƒ‰ã‚’æ›´æ–°ã™ã‚‹
+        /// ãƒ»ç«¯ç‚¹ãƒãƒƒãƒˆã«åˆ¶ç´„ãŒæœ‰åŠ¹ãªå ´åˆã€ãã®ãƒãƒƒãƒˆã‚’ç·šåˆ†ã«å‚ç›´ãªã‚¿ãƒ³ã‚¸ã‚§ãƒ³ãƒˆ
+        /// ãƒ»ä¸­é–“ãƒãƒƒãƒˆã¯AutoSmooth
+        /// ãƒ»åˆ¶ç´„ãŒãªã„ç«¯ç‚¹ã¯å…¨ã¦AutoSmooth
         /// </summary>
         private void UpdateTangentModes()
         {
@@ -152,20 +152,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             int count = spline.Count;
             if (count == 0) return;
 
-            // ‘S‚Ä‚ğAutoSmooth‚É‚µ‚Ä‚©‚ç•K—v‚Èƒmƒbƒg‚ğC³
+            // å…¨ã¦ã‚’AutoSmoothã«ã—ã¦ã‹ã‚‰å¿…è¦ãªãƒãƒƒãƒˆã‚’ä¿®æ­£
             for (int i = 0; i < count; i++)
             {
                 spline.SetTangentMode(i, TangentMode.AutoSmooth);
             }
 
-            // n“_ƒmƒbƒg
+            // å§‹ç‚¹ãƒãƒƒãƒˆ
             if (count > 0 && startConstrainToLineSegment)
             {
                 spline.SetTangentMode(0, TangentMode.Broken);
                 SetKnotPerpendicularTangents(0, startLineStart, startLineEnd);
             }
 
-            // I“_ƒmƒbƒg
+            // çµ‚ç‚¹ãƒãƒƒãƒˆ
             if (count > 1 && endConstrainToLineSegment)
             {
                 int lastIndex = count - 1;
@@ -177,7 +177,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         /// <summary>
-        /// w’èƒmƒbƒg‚Ìƒ^ƒ“ƒWƒFƒ“ƒg‚ğAw’èü•ª‚É‘Î‚µ‚Ä‚’¼‚È•ûŒü‚Éİ’è
+        /// æŒ‡å®šãƒãƒƒãƒˆã®ã‚¿ãƒ³ã‚¸ã‚§ãƒ³ãƒˆã‚’ã€æŒ‡å®šç·šåˆ†ã«å¯¾ã—ã¦å‚ç›´ãªæ–¹å‘ã«è¨­å®š
         /// </summary>
         private void SetKnotPerpendicularTangents(int index, Vector3 lineStart, Vector3 lineEnd)
         {
@@ -195,7 +195,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         }
 
         /// <summary>
-        /// dir‚Æ‚Ù‚Ú•½s‚Å‚È‚¢”CˆÓ‚ÌƒxƒNƒgƒ‹‚ğg‚¢A‚’¼ƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+        /// dirã¨ã»ã¼å¹³è¡Œã§ãªã„ä»»æ„ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’ä½¿ã„ã€å‚ç›´ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
         /// </summary>
         private Vector3 GetPerpendicular(Vector3 dir)
         {

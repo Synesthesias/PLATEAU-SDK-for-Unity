@@ -6,7 +6,7 @@ using UnityEngine.Splines;
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
     /// <summary>
-    /// ƒXƒvƒ‰ƒCƒ“•ÒW‚Ìƒnƒ“ƒhƒ‹•`‰æ•”•ª
+    /// ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³ç·¨é›†ã®ãƒãƒ³ãƒ‰ãƒ«æç”»éƒ¨åˆ†
     /// </summary>
     public static class SplineEditorHandles
     {
@@ -14,32 +14,32 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private static float hoverDistanceThreshold = 0.5f;
 
         /// <summary>
-        /// ƒnƒ“ƒhƒ‹‚Ì•`‰æ‚ğs‚¤BOnSceneGUI‚©‚çŒÄ‚Ño‚·‚±‚Æ
+        /// ãƒãƒ³ãƒ‰ãƒ«ã®æç”»ã‚’è¡Œã†ã€‚OnSceneGUIã‹ã‚‰å‘¼ã³å‡ºã™ã“ã¨
         /// </summary>
         /// <param name="core"></param>
         public static void HandleSceneGUI(SplineEditorCore core)
         {
             Event e = Event.current;
 
-            // 1. ƒzƒo[”»’è
+            // 1. ãƒ›ãƒãƒ¼åˆ¤å®š
             DetermineHoveredKnot(core);
 
-            // 2. Ctrl+ƒNƒŠƒbƒN‚Åíœ
+            // 2. Ctrl+ã‚¯ãƒªãƒƒã‚¯ã§å‰Šé™¤
             if (HandleDeletion(core))
             {
-                // íœ‚µ‚½‚ç‚±‚±‚ÅI—¹
+                // å‰Šé™¤ã—ãŸã‚‰ã“ã“ã§çµ‚äº†
                 return;
             }
 
-            // 3. ˆÚ“®‚Ü‚½‚Í’Ç‰Á
+            // 3. ç§»å‹•ã¾ãŸã¯è¿½åŠ 
             if (hoveredKnotIndex != -1)
             {
-                // ƒmƒbƒg‚ªƒzƒo[‚³‚ê‚Ä‚¢‚éF‚±‚Ìƒmƒbƒg‚Ì‚İˆÚ“®‰Â”\
+                // ãƒãƒƒãƒˆãŒãƒ›ãƒãƒ¼ã•ã‚Œã¦ã„ã‚‹ï¼šã“ã®ãƒãƒƒãƒˆã®ã¿ç§»å‹•å¯èƒ½
                 HandleMovement(core);
             }
             else
             {
-                // ƒmƒbƒgƒzƒo[‚È‚µFƒmƒbƒg‚ÍÃ“I•\¦AƒXƒvƒ‰ƒCƒ“ãƒNƒŠƒbƒN‚Å’Ç‰Á‰Â”\
+                // ãƒãƒƒãƒˆãƒ›ãƒãƒ¼ãªã—ï¼šãƒãƒƒãƒˆã¯é™çš„è¡¨ç¤ºã€ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³ä¸Šã‚¯ãƒªãƒƒã‚¯ã§è¿½åŠ å¯èƒ½
                 DrawAllKnotsStatic(core);
                 HandleAddition(core);
             }
@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 Vector3 pos = core.GetKnotPosition(i);
                 float size = HandleUtility.GetHandleSize(pos) * 0.1f;
                 float dist = HandleUtility.DistanceToCircle(pos, size);
-                if (dist < bestDist && dist < 20f) // “K“–‚Èè‡’l(20f‚Í—áA•K—v‚É‰‚¶‚Ä’²®)
+                if (dist < bestDist && dist < 20f) // é©å½“ãªé–¾å€¤(20fã¯ä¾‹ã€å¿…è¦ã«å¿œã˜ã¦èª¿æ•´)
                 {
                     bestDist = dist;
                     hoveredKnotIndex = i;
@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private static void HandleMovement(SplineEditorCore core)
         {
-            int i = hoveredKnotIndex; // ƒzƒo[’†ƒmƒbƒg‚Ì‚İˆÚ“®
+            int i = hoveredKnotIndex; // ãƒ›ãƒãƒ¼ä¸­ãƒãƒƒãƒˆã®ã¿ç§»å‹•
             Vector3 currentPos = core.GetKnotPosition(i);
             float baseSize = HandleUtility.GetHandleSize(currentPos) * 0.1f;
             int controlID = GUIUtility.GetControlID(FocusType.Passive);
@@ -95,7 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 baseSize,
                 (id, position, rotation, size, eventType) =>
                 {
-                    // ƒzƒo[’†‚È‚Ì‚Åí‚É”’•‘å‚«‚­
+                    // ãƒ›ãƒãƒ¼ä¸­ãªã®ã§å¸¸ã«ç™½ï¼†å¤§ãã
                     Handles.color = Color.white;
                     Handles.SphereHandleCap(id, position, rotation, baseSize * 2f, eventType);
                 },
@@ -142,7 +142,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     core.AddKnotAtT(nearestPoint, outT);
                     MarkDirty(core);
-                    // e.Use()‚µ‚È‚¢ ¨ Slider2D‚È‚¢‚Ì‚Å–â‘è‚È‚µ
+                    // e.Use()ã—ãªã„ â†’ Slider2Dãªã„ã®ã§å•é¡Œãªã—
                 }
             }
         }
