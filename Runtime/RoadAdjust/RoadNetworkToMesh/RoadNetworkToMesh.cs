@@ -52,6 +52,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
+            progressDisplay.SetProgress("道路ネットワークをコピー中", 5f, "");
             var target = srcTarget.Copy();
             
             progressDisplay.SetProgress("道路ネットワークを調整中", 10f, "");
