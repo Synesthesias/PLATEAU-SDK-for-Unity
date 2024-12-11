@@ -232,12 +232,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             while (isForward ? t < 1f : t > 0f)
             {
-                // 1m毎にスプライン上の点を取ってきて、30m以上離れているか10度以上角度が異なる場合に頂点として追加
+                // 1m毎にスプライン上の点を取ってきて、30m以上離れているか5度以上角度が異なる場合に頂点として追加
                 spline.GetPointAtLinearDistance(t, isForward ? 1f : -1f, out float newT);
                 var newPoint = spline.EvaluatePosition(newT);
                 var newTangent = spline.EvaluateTangent(newT);
 
-                if (Vector3.Distance(prevPoint, newPoint) > 30 || Vector3.Angle(prevTangent, newTangent) > 10)
+                if (Vector3.Distance(prevPoint, newPoint) > 30 || Vector3.Angle(prevTangent, newTangent) > 5)
                 {
                     destPoints.Add(new RnPoint(GetOffsetPointToNormalDirection(newPoint, newTangent, offset)));
                     prevPoint = newPoint;
