@@ -231,8 +231,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
 
                 var nLeftLane = roadGroupEditorData.Ref.GetLeftLaneCount();
-                var nRIghtLane = roadGroupEditorData.Ref.GetRightLaneCount();
-                var nLane = nLeftLane + nRIghtLane;
+                var nRightLane = roadGroupEditorData.Ref.GetRightLaneCount();
+                var nLane = nLeftLane + nRightLane;
                 HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
                 List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2); // 端の2つは覗く
                 var lanes = roadGroupEditorData.Ref.Roads[0].MainLanes;

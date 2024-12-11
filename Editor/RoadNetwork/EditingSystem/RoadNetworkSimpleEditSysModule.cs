@@ -1,3 +1,5 @@
+using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
@@ -44,7 +46,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public EditingIntersection EditingIntersectionMod { get => editingIntersection; }
         private EditingIntersection editingIntersection = new();
 
-        enum State
+        private enum State
         {
             Default, // 通常の状態
             SlidingWay, // Wayをスライド中
@@ -453,7 +455,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
             else
             {
-                //Debug.Log("mouse up");
                 if (currentState == State.SlidingWay)
                 {
                     Assert.IsNotNull(waySlideCalcCache);
@@ -491,6 +492,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                             current.Vertex = eRevDumWay.Current;
                         }
                     }
+
+                    OnRoadChanged(system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>);
 
                     waySlideCalcCache = null;
                     currentState = State.Default;
@@ -612,6 +615,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             EditorApplication.update -= Update;
             ClearCache();
+        }
+        
+        private void OnRoadChanged(EditorData<RnRoadGroup> roadGroupEditorData)
+        {
+            // 道路を生成
+            var roads = roadGroupEditorData.Ref.Roads;
+            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()));
         }
 
         public class EditingIntersection
