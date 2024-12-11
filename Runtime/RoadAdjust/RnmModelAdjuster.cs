@@ -12,7 +12,7 @@ namespace PLATEAU.RoadAdjust
     public class RnmModelAdjuster
     {
         private const float ShrinkDist = 0.3f;
-        public IRnmTarget Adjust(IRnmTarget srcTarget)
+        public IRrTarget Adjust(IRrTarget srcTarget)
         {
 
             

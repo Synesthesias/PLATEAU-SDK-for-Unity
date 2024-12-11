@@ -20,7 +20,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             this.generators = generators.ToArray();
         }
         
-        public RnmContourMeshList Generate(IRnmTarget target)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var ret = new RnmContourMeshList();
             foreach (var gen in generators)
@@ -38,7 +38,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal interface IRnmContourGenerator
     {
-        public RnmContourMeshList Generate(IRnmTarget target);
+        public RnmContourMeshList Generate(IRrTarget target);
     }
 
     /// <summary> 道路ネットワークから望みの<see cref="RnWay"/>を収集するインターフェイスです。 </summary>

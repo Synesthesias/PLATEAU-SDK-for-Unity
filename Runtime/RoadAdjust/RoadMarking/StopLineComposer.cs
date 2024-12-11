@@ -6,7 +6,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 {
     public class StopLineComposer
     {
-        public MarkedWayList ComposeFrom(IRnmTarget target)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var wayList = new MarkedWayList();
             foreach (var road in target.Roads())
