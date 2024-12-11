@@ -81,6 +81,10 @@ namespace PLATEAU.RoadNetwork.Tester
             var targets = GetTargetCityObjects();
             var req = Factory.CreateRequest(targets, go);
             var model = await Factory.CreateRnModelAsync(req);
+
+            var sm = go.GetOrAddComponent<PLATEAURnStructureModel>();
+            sm.Serialize();
+            
             return model;
         }
 

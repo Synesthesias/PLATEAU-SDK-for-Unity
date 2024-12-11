@@ -13,15 +13,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     public class RoadMarkingGenerator
     {
-        private readonly IRrTarget target;
+        private readonly IRrTarget targetBeforeCopy;
         
         
         public RoadMarkingGenerator(IRrTarget target)
         {
-            // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
+            
             if (target != null)
             {
-                this.target = target.Copy();
+                this.targetBeforeCopy = target;
             }
             else
             {
@@ -33,18 +33,28 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 路面標示をメッシュとして生成します。 </summary>
         public void Generate()
         {
-            if (target == null)
+            if (targetBeforeCopy == null)
             {
                 Debug.LogError("道路ネットワークが見つかりませんでした。");
                 return;
             }
+
+            using var progressDisplay = new ProgressDisplayDialogue();
+            progressDisplay.SetProgress("道路標示生成", 5f, "道路ネットワークをコピー中");
+            
+            var target = targetBeforeCopy.Copy(); // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
+            
+            progressDisplay.SetProgress("道路標示生成", 10f, "道路ネットワークをスムージング中");
             new RoadNetworkLineSmoother().Smooth(target);
 
             var dstParent = RoadReproducer.GenerateDstParent();
 
-            foreach (var rb in target.RoadBases()) // 道路オブジェクトごとに結合します。
+            var roadBases = target.RoadBases().ToArray();
+            for(int i=0; i<roadBases.Length; i++) // 道路オブジェクトごとに結合します。
             {
-                
+                var rb = roadBases[i];
+                string roadName = rb.TargetTrans == null || rb.TargetTrans.Count == 0 ? "UnknownRoad" : rb.TargetTrans.First().name;
+                progressDisplay.SetProgress("道路標示生成", (float)i / roadBases.Length, $"[{i+1} / {roadBases.Length}] {roadName}");
                 var innerTarget = new RrTargetRoadBases(target.Network(), new[] { rb });
                 
                 // 道路の線を取得します。

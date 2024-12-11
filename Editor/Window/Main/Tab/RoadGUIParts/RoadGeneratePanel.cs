@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 // Testerを使わず生成するようにする
 using PLATEAU.RoadNetwork.Tester;
+using PLATEAU.Util;
 using System;
 using Object = UnityEngine.Object; // Todo 削除予定
 
@@ -114,6 +115,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             return () =>
             {
+                using var progressDisplay = new ProgressDisplayDialogue();
+                progressDisplay.SetProgress("道路ネットワークを生成中", 5f, "");
                 // 道路ネットワークを生成します。
                 var roadSize = GetF("RoadSizeField").value;
                 var sideWalklSize = GetF("SideWalkSize").value;

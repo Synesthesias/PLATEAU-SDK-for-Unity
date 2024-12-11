@@ -1,3 +1,4 @@
+using PLATEAU.Util;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,7 @@ namespace PLATEAU.RoadAdjust
         {
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
             rnm.Generate();
+            
             var rm = new RoadMarking.RoadMarkingGenerator(target);
             rm.Generate();
         }

@@ -6,8 +6,10 @@ using UnityEditor;
 namespace PLATEAU.Util
 {
     /// <summary>
-    /// Editorの場合、ダイアログで進捗を表示します。Dispose時にダイアログを閉じます。
+    /// Editorの場合、ダイアログで進捗を表示します。
     /// Runtimeの場合、何もしません。
+    /// Dispose時にダイアログを閉じるので、閉じるために利用時に using var progressDisplay = new ProgressDisplayDialogue(); のように
+    /// usingを付けてください。付け忘れるとダイアログが閉じません。
     /// </summary>
     public class ProgressDisplayDialogue : IProgressDisplay, IDisposable
     {
