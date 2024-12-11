@@ -234,6 +234,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             roadSplineStopButton.SetEnabled(false);
             selectedRoad.IsSplineEditMode = false;
             selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
+            
+            // 道路に適用します
+            var network = EditorInterface.system.RoadNetwork;
+            var target = new RrTargetRoadBases(network, selectedRoad.TargetScriptableRoadMdl.road.Roads);
+            new RoadReproducer().Generate(target);
         }
 
         private void UpdateSplineButtonVisual(bool isSplineEditMode)
