@@ -4,6 +4,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -234,24 +235,35 @@ namespace PLATEAU.RoadNetwork.Structure
         public RoadNetworkStorage Serialize(bool createEmptyCheck = true)
         {
             // シリアライズ前に一度全レーンに対して中央線を作成する
-            foreach (var road in Roads)
-            {
-                foreach (var l in road.MainLanes)
-                    l.CreateCenterWay();
-            }
 
+
+            using (var _ = new DebugTimer("Create Center Way"))
+            {
+                foreach (var road in Roads)
+                {
+                    foreach (var l in road.MainLanes)
+                        l.CreateCenterWay();
+                }
+            }
             if (createEmptyCheck)
             {
+                using var _ = new DebugTimer("Create Empty Roads");
                 CreateEmptyRoadBetweenInteraction();
                 CreateEmptyIntersectionBetweenRoad();
             }
 
+
             var serializer = new RoadNetworkSerializer();
-            var ret = serializer.Serialize(this);
+            RoadNetworkStorage ret;
+            using (var _ = new DebugTimer("Serialize"))
+            {
+                ret = serializer.Serialize(this);
+            }
 
             // 自分は元に戻す
             if (createEmptyCheck)
             {
+                using var _ = new DebugTimer("Remove Empty Roads");
                 RemoveEmptyRoadBetweenIntersection();
                 RemoveEmptyIntersectionBetweenRoad();
             }
@@ -310,7 +322,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    DebugEx.LogException(e);
                 }
             }
         }
@@ -549,7 +561,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    DebugEx.LogException(e);
                     failedRoads.Add(link.DebugMyId);
                 }
             }
