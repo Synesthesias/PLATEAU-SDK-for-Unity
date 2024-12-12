@@ -879,7 +879,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 .ToHashSet();
 
             // 未決定のもの
-            HashSet<LineCrossPointResult.Intersection> undesideds = new();
+            HashSet<LineCrossPointResult.TargetLineInfo> undesideds = new();
 
             // 片方のLineStringが別のLineStringの部分集合だったりすると
             // 交点が同じでも別のRnPointになる. それを防ぐために共通テーブルを用意する
@@ -898,7 +898,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 });
             }
 
-            void AddTable(LineCrossPointResult.Intersection inter, bool isFrontPrev)
+            void AddTable(LineCrossPointResult.TargetLineInfo inter, bool isFrontPrev)
             {
                 var item = inter.Intersections.First();
                 SplitByIndex(inter.LineString, item.index, out var front, out var back);
@@ -1040,7 +1040,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// roadの水平切断可能かチェックする
+        /// intersectionの水平切断可能かチェックする
         /// </summary>
         /// <param name="self"></param>
         /// <param name="inter"></param>
