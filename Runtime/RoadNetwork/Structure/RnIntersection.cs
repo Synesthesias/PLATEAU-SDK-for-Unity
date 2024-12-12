@@ -75,6 +75,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return IsSameInOut(other.FromBorder, other.ToBorder);
         }
+
+        /// <summary>
+        /// FromBorderもしくはToBorderがwayと同じかどうか
+        /// </summary>
+        /// <param name="way"></param>
+        /// <returns></returns>
+        public bool ContainsBorder(RnWay way)
+        {
+            return FromBorder.IsSameLine(way) || ToBorder.IsSameLine(way);
+        }
     }
 
     // 交差点における曲がり具合
@@ -662,6 +672,28 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var fromEg in edgeGroups.Where(e => e.IsBorder))
             {
                 var inBounds = fromEg.InBoundEdges.ToList();
+
+                // fromEg -> toEgのTurnTypeとtoEgよりも左側に同じTurnTypeがいくつあるか
+                // fromEgから出ていくTrackのTurnTypeをTrack数分の配列で事前に作成
+                // 左折2レーン, 直進2レーン, 右折1レーンの場合以下のようになる
+                // [Left, Left, Straight, Straight, Right]
+                List<RnTurnType> turnTypes = new();
+                Dictionary<RnIntersectionEx.EdgeGroup, int> turnTypeIndex = new();
+                {
+                    // fromEgから出ていくTrackのTurnTypeのテーブルをあらかじめ作成
+                    var startIndex = edgeGroups.IndexOf(fromEg);
+                    for (var i = 0; i < edgeGroups.Count; i++)
+                    {
+                        var index = (startIndex + i + 1) % edgeGroups.Count;
+                        var toEg = edgeGroups[index];
+                        if (toEg.IsBorder == false || toEg == fromEg)
+                            continue;
+                        var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
+                        turnTypeIndex[toEg] = turnTypes.Count;
+                        turnTypes.AddRange(Enumerable.Repeat(turnType, toEg.OutBoundEdges.Count()));
+                    }
+                }
+
                 foreach (var toEg in edgeGroups.Where(e => e.IsBorder && e != fromEg))
                 {
                     // Uターンを許可しない場合
@@ -691,6 +723,15 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 左側で隣接している場合はそれをそのまま使う
                     if (fromEg.LeftSide == toEg.RightSide)
                     {
+                        // #TODO : 以下のようなfrom -> toでかつxがどこともつながっていないただの輪郭線の場合に, 中央線がxでストップしてしまった
+                        //          to
+                        //        _____
+                        //   ____|     |
+                        //  | x
+                        //   -----
+                        //        |
+                        //         ====
+                        //          from
                         var ls = RnLineString.Create(fromEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         way = new RnWay(ls.Refined(1f), false, true);
                         var oLs = RnLineString.Create(toEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
@@ -730,8 +771,6 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
                     }
 
-                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
-
                     void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
                         // 対象外のものは無視
@@ -745,10 +784,10 @@ namespace PLATEAU.RoadNetwork.Structure
 
                         List<BezierKnot> knots = new() { new BezierKnot(fromPos, op.TangentLength * fromNormal, -op.TangentLength * fromNormal) };
 
-                        void AddKnots(Vector3 pos)
+                        void AddKnots(Vector3 pos, bool check = true)
                         {
                             // #NOTE : 戻りが発生しないように90度以上の角度を持つ場合は無視する
-                            if (knots.Count >= 2)
+                            if (knots.Count >= 2 && check)
                             {
                                 Vector3 d1 = pos - (Vector3)knots[^1].Position;
                                 Vector3 d2 = knots[^1].Position - knots[^2].Position;
@@ -839,11 +878,11 @@ namespace PLATEAU.RoadNetwork.Structure
                                 }
                                 delta = d * Vector3.Dot(vn, en1);
                             }
-                            AddKnots(toPos);
+                            AddKnots(toPos, false);
                         }
                         else
                         {
-                            AddKnots(toPos);
+                            AddKnots(toPos, false);
                         }
 
                         var spline = new Spline(knots);
@@ -852,6 +891,13 @@ namespace PLATEAU.RoadNetwork.Structure
                     }
 
                     var outBounds = toEg.OutBoundEdges.ToList();
+                    // 行き先が無い場合は無視
+                    if (outBounds.Count <= 0)
+                        continue;
+                    var turnTypeStartIndex = turnTypeIndex[toEg];
+                    if (turnTypeStartIndex >= turnTypes.Count)
+                        continue;
+                    var turnType = turnTypes[turnTypeIndex[toEg]];
                     if (turnType.IsLeft())
                     {
                         // 左折の場合は左側のレーンのみ作成する
@@ -870,6 +916,30 @@ namespace PLATEAU.RoadNetwork.Structure
                         {
                             foreach (var to in outBounds)
                                 AddTrack(from, to, turnType);
+                        }
+                    }
+                    else if (turnType == RnTurnType.Straight)
+                    {
+                        // 直進のレーンは互いに干渉しないように1:1で作成する
+                        // すでに別のEdgeGroupでStraightがある場合も考慮してoffsetを作る
+                        var offset = turnTypes.Take(turnTypeStartIndex).Count(x => x == RnTurnType.Straight);
+                        // 最低でも1車線はtoEdgeへのトラックを用意する(全くいけなくなるので)
+                        //offset = Mathf.Min(offset, inBounds.Count - 1);
+                        // まだ作っていない直進トラックの数
+                        var remainInBoundNum = inBounds.Count - offset;
+                        var num = Mathf.Min(remainInBoundNum, outBounds.Count);
+                        for (var i = 0; i < num; ++i)
+                        {
+                            // 左から順に見ていく
+                            AddTrack(inBounds[^(i + offset + 1)], outBounds[i], turnType);
+                        }
+
+                        // 右側にこれ以上Trackが作れない場合.
+                        // しょうがないので一番右の直進Trackに合流させる
+                        var rightEgTrackNum = turnTypes.Skip(turnTypeStartIndex + outBounds.Count).Count();
+                        for (var i = num + offset; i < inBounds.Count - rightEgTrackNum; ++i)
+                        {
+                            AddTrack(inBounds[^(i + 1)], outBounds.Last(), turnType);
                         }
                     }
                     else
