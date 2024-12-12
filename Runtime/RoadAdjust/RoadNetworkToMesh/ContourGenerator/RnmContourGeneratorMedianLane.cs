@@ -8,10 +8,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     internal class RnmContourGeneratorMedianLane : IRnmContourGenerator
     {
         private const float PileUpHeight = 0.20f;
-        public RnmContourMeshList Generate(RnModel model)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var contourMeshList = new RnmContourMeshList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var contours = GenerateMedianLane(road);
                 var targetObjs = road.TargetTrans.Select(cog => cog.gameObject);

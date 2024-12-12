@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class RoadNetworkLineSmoother
     {
-        public void Smooth(RnModel model)
+        public void Smooth(IRrTarget target)
         {
             var smoother = new LineSmoother();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 foreach (var sideWalk in road.SideWalks)
                 {
@@ -34,7 +35,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 }
             }
 
-            foreach (var intersection in model.Intersections)
+            foreach (var intersection in target.Intersections())
             {
                 foreach (var sideWalk in intersection.SideWalks)
                 {

@@ -399,12 +399,18 @@ namespace PLATEAU.RoadNetwork.CityObject
             var dstModel = converter.Convert(srcModel, nativeOption);
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
             var attrHelper = new AttributeDataHelper(getter, true);
-            var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
+            // var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
+            var cco = new SubDividedCityObject(dstModel, attrHelper);
 
             var ret = new ConvertCityObjectResult();
             foreach (var co in cityInfos)
             {
-                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c.Name == co.Transform.name);
+                if (co.Transform == null)
+                {
+                    Debug.Log("skipping deleted game object.");
+                    continue;
+                }
+                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c != null && c.Name == co.Transform.name);
                 if (ccoChild == null)
                     continue;
                 ccoChild.SetCityObjectGroup(co.CityObjectGroup);

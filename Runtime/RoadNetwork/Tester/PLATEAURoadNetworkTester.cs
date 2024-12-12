@@ -1,5 +1,7 @@
 ﻿using PLATEAU.CityGML;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -49,6 +51,8 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             var ret = TargetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
+                    .Where(cog => !IsGeneratedRoad(cog.transform)) // 自動生成メッシュは除外します
+                    .ToArray()
                 : TargetPresets
                     .FirstOrDefault(s => s.name == TargetPresetName)
                     ?.targets;
@@ -62,16 +66,26 @@ namespace PLATEAU.RoadNetwork.Tester
                 .ToList();
         }
 
+        private bool IsGeneratedRoad(Transform tran)
+        {
+            return tran.GetComponent<PLATEAUReproducedRoad>() != null;
+        }
+
         /// <summary>
         /// 道路ネットワークを作成する
         /// </summary>
         /// <returns></returns>
-        public async Task CreateNetwork()
+        public async Task<RnModel> CreateNetwork()
         {
             var go = gameObject;
             var targets = GetTargetCityObjects();
             var req = Factory.CreateRequest(targets, go);
-            await Factory.CreateRnModelAsync(req);
+            var model = await Factory.CreateRnModelAsync(req);
+
+            var sm = go.GetOrAddComponent<PLATEAURnStructureModel>();
+            sm.Serialize();
+            
+            return model;
         }
 
         /// <summary>

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,17 +22,29 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RoadNetworkToMesh
     {
-        private readonly RnModel srcModel;
+        private readonly IRrTarget srcTarget;
         private readonly RnmLineSeparateType lineSeparateType;
         private static readonly bool DebugMode = false;
-        
-        public RoadNetworkToMesh(RnModel model, RnmLineSeparateType lineSeparateType)
+
+        public static RoadNetworkToMesh CreateFromNetwork(RnModel network, RnmLineSeparateType lineSeparateType)
         {
-            if (model == null)
+            var target = new RrTargetModel(network); // 処理中だけネットワークを調整したいので、時間はかかりますがディープコピーします。
+            return new RoadNetworkToMesh(target, lineSeparateType);
+        }
+        
+        public static RoadNetworkToMesh CreateFromRoadBases(RnModel parentNetwork, IEnumerable<RnRoadBase> roadBases, RnmLineSeparateType lineSeparateType)
+        {
+            var target = new RrTargetRoadBases(parentNetwork, roadBases);
+            return new RoadNetworkToMesh(target, lineSeparateType);
+        }
+        
+        public RoadNetworkToMesh(IRrTarget target, RnmLineSeparateType lineSeparateType)
+        {
+            if (target == null)
             {
                 Debug.LogError("道路ネットワークがありません。");
             }
-            this.srcModel = model;
+            this.srcTarget = target;
             this.lineSeparateType = lineSeparateType;
         }
 
@@ -38,9 +52,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
+            progressDisplay.SetProgress("道路ネットワークをコピー中", 5f, "");
+            var target = srcTarget.Copy();
             
             progressDisplay.SetProgress("道路ネットワークを調整中", 10f, "");
-            var model = new RnmModelAdjuster().Adjust(srcModel);
+            var model = new RnmModelAdjuster().Adjust(target);
             
             progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
             new RoadNetworkLineSmoother().Smooth(model);
@@ -78,7 +94,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
 
-            var srcToDstTrans = new Dictionary<Transform, Transform>();
+            var dstParent = RoadReproducer.GenerateDstParent();
+
             for (int i = 0; i < contourMeshList.Count; i++)
             {
                 progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中", (float)i * 100f / contourMeshList.Count, $"{i} / {contourMeshList.Count}");
@@ -90,24 +107,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 if (mesh.vertexCount == 0) continue;
 
                 // オブジェクトの生成
-                string dstObjName = srcObjs.Length == 0 ? "RoadUnknown" : $"{srcObjs[0].name}";
-                var dstObj = new GameObject(dstObjName);
-                srcToDstTrans[srcObjs[0].transform] = dstObj.transform;
+                var dstObj = GenerateDstGameObj(dstParent, srcObjs);
                 
-                foreach (var src in srcObjs)
-                {
-                    src.SetActive(false);
-                }
 
                 if (DebugMode)
                 {
-                    var comp = dstObj.AddComponent<PLATEAURoadNetworkToMeshDebug>();
+                    var comp = dstObj.GetOrAddComponent<PLATEAURoadNetworkToMeshDebug>();
                     comp.Init(contourMesh);
                 }
                 
                 
-                var renderer = dstObj.AddComponent<MeshRenderer>();
-                var filter = dstObj.AddComponent<MeshFilter>();
+                var renderer = dstObj.GetOrAddComponent<MeshRenderer>();
+                var filter = dstObj.GetOrAddComponent<MeshFilter>();
                 filter.sharedMesh = mesh;
                 
                 // マテリアルを貼り付けます。
@@ -154,71 +165,34 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 }
             }
             
-            ReplaceSrcToDst(srcToDstTrans, srcModel);
-            
 #if UNITY_EDITOR
             // 生成物を選択状態に
-            Selection.objects = srcToDstTrans.Values.Select(t => t.gameObject).ToArray();
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            // Selection.objects = new []{dstParent.gameObject};
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
 
         }
 
-
-        /// <summary>
-        /// 元の道路ゲームオブジェクトを生成したゲームオブジェクトに置き換えます。
-        /// それに合わせて元の道路ネットワークも修正します。
-        /// 引数に渡す<see cref="RnModel"/>はコピー前のオリジナルである必要があります。
-        /// </summary>
-        private void ReplaceSrcToDst(Dictionary<Transform, Transform> srcToDstTrans,RnModel model)
+        private GameObject GenerateDstGameObj(Transform dstParent, GameObject[] srcObjs)
         {
-            // 道路ネットワークの書き換え
-            var modelRoads = model.Roads.Select(r => (RnRoadBase)r)
-                .Concat(model.Intersections.Select(i => (RnRoadBase)i));
-            foreach (var modelRoad in modelRoads)
+            var srcObj = srcObjs.Length == 0 ? null : srcObjs[0];
+            string srcObjName = srcObj == null ? "RoadUnknown" : $"{srcObj.name}";
+            string dstObjName = $"Generated-{srcObjName}";
+
+            GameObject dstObj = null;
+            if (srcObj != null)
             {
-                var srcs = modelRoad.TargetTrans;
-                var dsts = new List<PLATEAUCityObjectGroup>();
-                foreach (var src in srcs.Select(cog => cog.transform))
-                {
-                    if (srcToDstTrans.TryGetValue(src, out var dst))
-                    {
-                        var dstCog = dst.GetComponent<PLATEAUCityObjectGroup>();
-                        if (dstCog != null)
-                        {
-                            dsts.Add(dstCog);
-                        }
-                    }
-                }
-                modelRoad.TargetTrans = dsts;
-            }
-            
-            // ゲームオブジェクトの置き換え
-            foreach (var (src, dst) in srcToDstTrans)
-            {
-                dst.parent = src.parent;
-                dst.gameObject.SetActive(true);
-                UnityEngine.Object.DestroyImmediate(src.gameObject);
-            }
-            
-            // 道路ネットワークのシリアライズ
-            var structures = UnityEngine.Object.FindObjectsByType<PLATEAURnStructureModel>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            bool isSerialized = false;
-            foreach (var structure in structures)
-            {
-                if (structure.RoadNetwork == model)
-                {
-                    structure.Serialize();
-                    isSerialized = true;
-                    break;
-                }
-                
+                dstObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, srcObj.transform);
             }
 
-            if (!isSerialized)
+            if (dstObj == null)
             {
-                Debug.LogWarning("Modified road network is not serialized.");
+                dstObj = new GameObject(dstObjName);
             }
+            dstObj.transform.SetParent(dstParent);
+            var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
+            comp.Init(ReproducedRoadType.RoadMesh, srcObj == null ? null : srcObj.transform);
+            return dstObj;
         }
         
     }

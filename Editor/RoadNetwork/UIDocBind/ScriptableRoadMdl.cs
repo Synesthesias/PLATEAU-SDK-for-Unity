@@ -1,12 +1,11 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
@@ -23,13 +22,15 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// 道路を編集する際に利用するデータモデルのインターフェイス
     /// クラス内でのLink、LaneはNode間を繋ぐLinkリスト、Laneリストを指す
     /// </summary>
-    public interface IScriptableRoadMdl
+    internal interface IScriptableRoadMdl
     {
-        public void Apply(RoadNetworkSimpleEditSysModule mod);
+        /// <summary> 適用します。これにより変更点があったかどうかを返します。</summary>
+        public bool Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
         public bool IsSuccess { get; }
         public bool IsEditingDetailMode { get; set; }
+        public bool IsSplineEditMode { get; }
         public int NumLeftLane { get; set; }
         public int NumRightLane { get; set; }
         public bool EnableMedianLane { get; set; }
@@ -43,9 +44,10 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     }
 
-    public struct ScriptableRoadMdlData
+    internal struct ScriptableRoadMdlData
     {
         public bool isEditingDetailMode;
+        public bool isSplineEditMode;
         public int numLeftLane;
         public int numRightLane;
         public bool enableMedianLane;
@@ -55,6 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public void Reset(IScriptableRoadMdl mdl)
         {
             isEditingDetailMode = mdl.IsEditingDetailMode;
+            isSplineEditMode = mdl.IsSplineEditMode;
             numLeftLane = mdl.NumLeftLane;
             numRightLane = mdl.NumRightLane;
             enableMedianLane = mdl.EnableMedianLane;
@@ -66,7 +69,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     }
 
 
-    public class ScriptableRoadMdl : ScriptableObject, IScriptableRoadMdl
+    internal class ScriptableRoadMdl : ScriptableObject, IScriptableRoadMdl
     {
         public ScriptableRoadMdl()
         {
@@ -89,6 +92,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public RnRoadGroup road;
 
         public bool isEditingDetailMode;
+        public bool isSplineEditMode;
         public int numLeftLane = 3;
         public int numRightLane = 3;
         public bool enableMedianLane = true;
@@ -104,7 +108,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
         // cacheとの比較を行い、変更があれば変更を通知する
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
         }
@@ -114,6 +118,12 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         {
             get => isEditingDetailMode;
             set => SetPropety(value, ref isEditingDetailMode, nameof(isEditingDetailMode)); 
+        }
+
+        public bool IsSplineEditMode
+        {
+            get => isSplineEditMode;
+            set => SetPropety(value, ref isSplineEditMode, nameof(isSplineEditMode));
         }
         public int NumLeftLane
         {
@@ -164,8 +174,10 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     }
 
-    public class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
+    internal class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
     {
+        private const bool EnableDebugLog = false;
+        
         /// <summary>
         /// 
         /// </summary>
@@ -187,6 +199,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             //public bool _isApply = false;
             road = FindProperty("road");
             isEditingDetailMode = FindProperty("isEditingDetailMode");
+            isSplineEditMode = FindProperty("isSplineEditMode");
             numLeftLane = FindProperty("numLeftLane");
             numRightLane = FindProperty("numRightLane");
 
@@ -209,6 +222,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public SerializedProperty road;
 
         public SerializedProperty isEditingDetailMode;
+        public SerializedProperty isSplineEditMode;
         public SerializedProperty numLeftLane;
         public SerializedProperty numRightLane;
         public SerializedProperty enableMedianLane;
@@ -234,6 +248,20 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
 
+        public bool IsSplineEditMode
+        {
+            get => isSplineEditMode.boolValue;
+            set => isSplineEditMode.boolValue = value;
+        }
+
+        public ScriptableRoadMdl TargetScriptableRoadMdl
+        {
+            get
+            {
+                return targetObject as ScriptableRoadMdl;
+            }
+        }
+
         public bool ChangeLaneWidth(float width)
         {
             throw new NotImplementedException();
@@ -245,17 +273,17 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
 
-        public void Apply(RoadNetworkSimpleEditSysModule mod)
+        
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             if (this.road == null)
             {
                 Debug.Log("編集対象のLinkGroupが設定されていない");
-                return;
+                return false;
             }
 
             bool isChanged = false;
-            var roadObj = targetObject as ScriptableRoadMdl;
-            var road = roadObj.road;
+            var road = TargetScriptableRoadMdl.road;
             if (cache.isEditingDetailMode != IsEditingDetailMode)
             {
                 //if (mod.CanSetDtailMode())
@@ -267,38 +295,44 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 //}
             }
 
+            if (cache.isSplineEditMode != IsSplineEditMode)
+            {
+                Log(IsSplineEditMode, cache.isSplineEditMode, nameof(IsSplineEditMode));
+                cache.isSplineEditMode = IsSplineEditMode;
+            }
+
             bool isChangedLane = false;
             if (cache.numLeftLane != NumLeftLane)
             {
-                Notify(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
+                Log(NumLeftLane, cache.numLeftLane, nameof(NumLeftLane));
                 cache.numLeftLane = NumLeftLane;
-                isChanged = true;
                 isChangedLane = true;
-                editorData.ClearSubData();
+                editorData.ClearSubData<WayEditorDataList>();
             }
             if (cache.numRightLane != NumRightLane)
             {
-                Notify(NumRightLane, cache.numRightLane, nameof(NumRightLane));
+                Log(NumRightLane, cache.numRightLane, nameof(NumRightLane));
                 cache.numRightLane = NumRightLane;
-                isChanged = true;
                 isChangedLane = true;
-                editorData.ClearSubData();
+                editorData.ClearSubData<WayEditorDataList>();
             }
             if (isChangedLane)
             {
                 road.SetLaneCount(NumLeftLane, NumRightLane);
             }
 
+            isChanged |= isChangedLane;
+
             if (cache.enableMedianLane != EnableMedianLane) 
             {
-                Notify(EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
+                Log(EnableMedianLane, cache.enableMedianLane, nameof(EnableMedianLane));
                 cache.enableMedianLane = EnableMedianLane;
                 isChanged = true;
 
                 if (EnableMedianLane == false)
                 {
                     road.RemoveMedian();
-                    editorData.ClearSubData();
+                    editorData.ClearSubData<WayEditorDataList>();
                 }
                 else
                 {
@@ -307,7 +341,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     {
                         Debug.Log("CreateMedianOrSkip() : 作成に失敗");
                     }
-                    editorData.ClearSubData();
+                    editorData.ClearSubData<WayEditorDataList>();
 
                     // ToDo ここで作成したMedianに対してeditorDataで所持している値を適用する
                     //...
@@ -320,14 +354,14 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             bool isChangedSideWalk = isChangedLeftSideWalk || isChangedRightSideWalk;
             if (isChangedLeftSideWalk)
             {
-                Notify(EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
+                Log(EnableLeftSideWalk, cache.enableLeftSideWalk, nameof(EnableLeftSideWalk));
                 cache.enableLeftSideWalk = EnableLeftSideWalk;
                 UpdateSideWalk<CacheLeftSideWalkGroupEditorData>(EnableLeftSideWalk, road, editorData);
 
             }
             if (isChangedRightSideWalk)
             {
-                Notify(EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
+                Log(EnableRightSideWalk, cache.enableRightSideWalk, nameof(EnableRightSideWalk));
                 cache.enableRightSideWalk = EnableRightSideWalk;
                 UpdateSideWalk<CacheRightSideWalkGroupEditorData>(EnableRightSideWalk, road, editorData);
             }
@@ -337,9 +371,11 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                editorData.ClearSubData<WayEditorDataList>();
             }
 
+            isChanged |= isChangedSideWalk;
+
             if (isChanged)
             {
-
+                
             }
 
             static void UpdateSideWalk<_CacheSideWalkData>(bool enable, RnRoadGroup road, EditorData<RnRoadGroup> editorData)
@@ -385,13 +421,35 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                     road.RemoveSideWalks(group);
                 }
             }
+
+            return isChanged;
         }
 
-        private static void Notify<_T>(in _T post, in _T pre, in string name)
+        public void ApplySplineEditMode(RoadNetworkSimpleEditSysModule mod)
+        {
+            var target = new EditorData<RnRoadGroup>((targetObject as ScriptableRoadMdl)?.road);
+            if (IsSplineEditMode)
+            {
+                mod.SplineEditorMod.Enable(this, target);
+            }
+            else
+            {
+                mod.SplineEditorMod.Apply();
+                mod.SplineEditorMod.Disable();
+            }
+        }
+
+        public void DisableSplineEditMode(RoadNetworkSimpleEditSysModule mod)
+        {
+            IsSplineEditMode = false;
+            mod.SplineEditorMod.Disable();
+        }
+
+        private static void Log<_T>(in _T post, in _T pre, in string name)
             where _T : IEquatable<_T>
         {
             var s = string.Format("Changed property : {0}, {1} to {2}.", name, pre, post);
-            //Debug.Log(s); // デバッグ用
+            if (EnableDebugLog) Debug.Log(s);
         }
 
     }

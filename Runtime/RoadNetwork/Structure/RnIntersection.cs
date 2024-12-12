@@ -477,10 +477,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 from.Border.GetLerpPoint(0.5f, out var fromPos);
                 to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                var spline = new Spline
+                var spline = new UnityEngine.Splines.Spline
                         {
-                            new(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
-                            new(toPos, tangentLength *toNormal, -tangentLength *toNormal)
+                            new BezierKnot(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
+                            new BezierKnot(toPos, tangentLength *toNormal, -tangentLength *toNormal)
                         }; ;
                 return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
             }

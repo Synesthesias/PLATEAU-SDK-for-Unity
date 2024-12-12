@@ -14,10 +14,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         public const float PileUpHeightCurb = 0.16f; // PileUpHeightSideWalkより大きくしないと見た目上の不具合があります
         public const float CurbWidth = 0.2f;
         
-        public RnmContourMeshList Generate(RnModel model)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var contours = new RnmContourMeshList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var targetObjs = road.TargetTrans.Select(t => t.gameObject);
                 var sideWalkContours = GenerateSidewalks(road);

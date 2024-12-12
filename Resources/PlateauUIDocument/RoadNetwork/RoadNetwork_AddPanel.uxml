@@ -1,9 +1,8 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="RoadNetwork_RegenerateRoadPanel" path="PlateauUIDocument/RoadNetwork/RoadNetwork_RegenerateRoadPanel" />
-    
-    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Template name="RoadNetwork_RegenerateRoadPanel" src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_RegenerateRoadPanel.uxml" />
+    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
     <ui:VisualElement name="RoadNetwork_AddPanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
-        <ui:Label tabindex="-1" text="新しい道路の形状を指定して追加します" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 12px; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:Label tabindex="-1" text="新しい道路の形状を指定して追加します" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-font-style: bold; font-size: 12px; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
         <ui:VisualElement name="RoadEditPanel" style="flex-grow: 0; display: flex;">
             <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
                 <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
@@ -11,17 +10,17 @@
             <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between; align-items: center; padding-top: 8px; padding-bottom: 8px;">
                     <ui:Label tabindex="-1" text="道路" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 16px;" />
-                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadAddButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;">
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadAddButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center;">
                         <ui:VisualElement name="Icon_Plus" style="flex-grow: 0; width: 18px; height: 18px; flex-shrink: 0;" />
-                        <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
                     </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between; align-items: center; padding-top: 8px; padding-bottom: 8px;">
                     <ui:Label tabindex="-1" text="交差点" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 16px; flex-grow: 0; padding-right: 16px;" />
                     <ui:DropdownField index="1" choices="T字路,十字路" tabindex="0" style="flex-shrink: 1; flex-grow: 1;" />
-                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;">
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center;">
                         <ui:VisualElement name="Icon_Plus" style="flex-grow: 0; width: 18px; height: 18px; flex-shrink: 0;" />
-                        <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+                        <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
                     </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -31,5 +30,5 @@
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-<ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" />
+    <ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" />
 </ui:UXML>

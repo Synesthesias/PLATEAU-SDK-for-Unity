@@ -11,10 +11,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     internal class RnmContourGeneratorCarLane : IRnmContourGenerator
     {
-        public RnmContourMeshList Generate(RnModel model)
+        public RnmContourMeshList Generate(IRrTarget target)
         {
             var contourMeshList = new RnmContourMeshList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var contours = GenerateCarLane(road);
                 var targetObjs = road.TargetTrans.Select(cog => cog.gameObject);

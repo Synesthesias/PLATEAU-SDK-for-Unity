@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using PLATEAU.Editor.RoadNetwork;
-using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -97,7 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// 
     /// </summary>
     /// <typeparam name="_BaseData"></typeparam>
-    public class EditorData<_BaseData>
+    internal class EditorData<_BaseData>
         where _BaseData : class
     {
         public EditorData(_BaseData baseData)
@@ -228,7 +226,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public bool IsEditable { get; set; } = false;
     }
 
-    public class PointEditorData : EditorSubData<RnPoint>
+    internal class PointEditorData : EditorSubData<RnPoint>
     {
         public PointEditorData()
             : base()
@@ -278,7 +276,7 @@ namespace PLATEAU.Editor.RoadNetwork
         //private Vector3 cacheScale;
     }
 
-    public class NodeEditorData
+    internal class NodeEditorData
     {
         public NodeEditorData()
         {
@@ -328,7 +326,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
     }
 
-    public abstract class EditorSubData<_Parent>
+    internal abstract class EditorSubData<_Parent>
         where _Parent : class
     {
         public bool Construct(EditorData<_Parent> parent)
@@ -350,7 +348,7 @@ namespace PLATEAU.Editor.RoadNetwork
         protected EditorData<_Parent> Parent { get; private set; }
     }
 
-    public class RoadGroupEditorData : EditorSubData<RnRoadGroup>
+    internal class RoadGroupEditorData : EditorSubData<RnRoadGroup>
     {
         public RoadGroupEditorData()
             : base()
@@ -379,17 +377,36 @@ namespace PLATEAU.Editor.RoadNetwork
             var a = Parent.Ref.PrevIntersection;
             var b = Parent.Ref.NextIntersection;
 
-            Assert.IsNotNull(a);
-            Assert.IsNotNull(b);
-            if (a.GetHashCode() > b.GetHashCode())
+            if (a != null && b != null)         // 両方がnullでない場合
             {
-                A = a;
-                B = b;
+                if (a.GetHashCode() > b.GetHashCode())
+                {
+                    A = a;
+                    B = b;
+                }
+                else
+                {
+                    A = b;
+                    B = a;
+                }
+            }
+            else if (a != null || b != null)    // 片方がnullである場合
+            {
+                if (a == null)
+                {
+                    A = b;
+                    B = null;
+                }
+                else
+                {
+                    B = a;
+                    A = null;
+                }
             }
             else
             {
-                A = b;
-                B = a;
+                A = null;
+                B = null;
             }
 
             ConnectionLinks = Parent.Ref.Roads;
@@ -406,6 +423,17 @@ namespace PLATEAU.Editor.RoadNetwork
         public EditorData<RnRoadGroup> RoadGroup { get; private set; }
 
         public List<Vector3> CacheRoadPosList { get; set; }
+
+        /// <summary>
+        /// 中心点の計算
+        /// </summary>
+        /// <returns></returns>
+        public Vector3 GetCenter()
+        {
+            var p1 = RoadGroup.Ref.Roads.First().GetCentralVertex();
+            var p2 = RoadGroup.Ref.Roads.Last().GetCentralVertex();
+            return (p1 + p2) * 0.5f;
+        }
 
         public IEnumerable<RnLane> RightLanes
         {
@@ -523,7 +551,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// <summary>
     /// WayEditorDataのリストをサブデータ化したクラス
     /// </summary>
-    public class WayEditorDataList : EditorSubData<RnRoadGroup>
+    internal class WayEditorDataList : EditorSubData<RnRoadGroup>
     {
         public WayEditorDataList()
         {
@@ -555,8 +583,10 @@ namespace PLATEAU.Editor.RoadNetwork
                 foreach (var lane in road.AllLanes)
                 {
                     var ways = NewOrGetWays(laneWays, lane);
-                    ways.Add(lane.LeftWay);
-                    ways.Add(lane.RightWay);
+                    if (lane.LeftWay != null)
+                        ways.Add(lane.LeftWay);
+                    if (lane.RightWay != null)
+                        ways.Add(lane.RightWay);
                 }
             }
 
@@ -567,7 +597,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 foreach (var sideWalk in road.SideWalks)
                 {
                     var ways = NewOrGetWays(sideWalkWays, road);
-                    ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
+                    if (sideWalk.OutsideWay != null)
+                        ways.Add(sideWalk.OutsideWay); // 歩道の外側の線を組み込みたい
                 }
             }
 
@@ -579,11 +610,13 @@ namespace PLATEAU.Editor.RoadNetwork
                 roadGroupEditorData.Ref.GetMedians(out var leftWays, out var rightWays);
                 foreach (var way in leftWays)
                 {
-                    ways.Add(way);
+                    if (way != null)
+                        ways.Add(way);
                 }
                 foreach (var way in rightWays)
                 {
-                    ways.Add(way);
+                    if (way != null)
+                        ways.Add(way);
                 }
             }
 
@@ -620,7 +653,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             static HashSet<RnWay> NewOrGetWays<_RnRoadNetworkClass>(Dictionary<_RnRoadNetworkClass, HashSet<RnWay>> wayCollection, _RnRoadNetworkClass parent)
             {
-                HashSet<RnWay> ways = new HashSet<RnWay>();
+                HashSet<RnWay> ways = null;
                 if (wayCollection.TryGetValue(parent, out ways) == false)
                 {
                     wayCollection.Add(parent, ways = new HashSet<RnWay>());
@@ -680,7 +713,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// ScriptableObjectを保持用
     /// 旧仕様との差分を吸収するためのクラス
     /// </summary>
-    public class ScriptableObjectFolder : EditorSubData<RnRoadGroup>
+    internal class ScriptableObjectFolder : EditorSubData<RnRoadGroup>
     {
         protected override bool Construct()
         {
@@ -750,14 +783,14 @@ namespace PLATEAU.Editor.RoadNetwork
     /// <summary>
     /// 変更前の結果保持用
     /// </summary>
-    public abstract class CacheSideWalkGroupEditorData : EditorSubData<RnRoadGroup>
+    internal abstract class CacheSideWalkGroupEditorData : EditorSubData<RnRoadGroup>
     {
         public IReadOnlyCollection<RnRoadGroup.RnSideWalkGroup> Group { get; protected set; }
         public bool HasSideWalk { get => Group?.Count > 0; }
 
     }
 
-    public class CacheLeftSideWalkGroupEditorData : CacheSideWalkGroupEditorData
+    internal class CacheLeftSideWalkGroupEditorData : CacheSideWalkGroupEditorData
     {
         protected override bool Construct()
         {
@@ -766,7 +799,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return true;
         }
     }
-    public class CacheRightSideWalkGroupEditorData : CacheSideWalkGroupEditorData
+    internal class CacheRightSideWalkGroupEditorData : CacheSideWalkGroupEditorData
     {
         protected override bool Construct()
         {
@@ -776,7 +809,7 @@ namespace PLATEAU.Editor.RoadNetwork
         }
     }
 
-    public abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
+    internal abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
     {
         public IReadOnlyCollection<RnNeighbor> Points { get => points; }
 
@@ -785,7 +818,7 @@ namespace PLATEAU.Editor.RoadNetwork
     }
 
 
-    public class EnterablePointEditorData : NeighborPointEditarData
+    internal class EnterablePointEditorData : NeighborPointEditarData
     {
         protected override bool Construct()
         {
@@ -813,7 +846,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
     }
 
-    public class ExitablePointEditorData : NeighborPointEditarData
+    internal class ExitablePointEditorData : NeighborPointEditarData
     {
         protected override bool Construct()
         {

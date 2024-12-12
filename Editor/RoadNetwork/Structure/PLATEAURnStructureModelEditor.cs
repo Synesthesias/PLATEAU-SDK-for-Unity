@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -68,27 +69,17 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         public void OnSceneGUI()
         {
             // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            UpdateRoadNetworkGUISystem();
+            var editor = RoadNetworkEditingSystem.SingletonInstance;
+            if (editor == null)
+                return;
 
-            void UpdateRoadNetworkGUISystem()
-            {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
-                    return;
-
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.OnSceneGUI(target as PLATEAURnStructureModel);
-            }
+            var guiSystem = editor.SceneGUISystem;
+            guiSystem.OnSceneGUI(target as PLATEAURnStructureModel);
+            
+            var splineEditSystem = editor.simpleEditSysModule.SplineEditorMod;
+            splineEditSystem.OnSceneGUI(target as PLATEAURnStructureModel);
         }
+
         public override void OnInspectorGUI()
         {
             var obj = target as PLATEAURnStructureModel;

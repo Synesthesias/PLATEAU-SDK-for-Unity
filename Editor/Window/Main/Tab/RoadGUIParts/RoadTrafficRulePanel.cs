@@ -1,8 +1,4 @@
-﻿using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -14,18 +10,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         static readonly string name = "RoadNetwork_TrafficRulePanel";
 
 
-        public RoadTrafficRulePanel() : base(name)
+        public RoadTrafficRulePanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
-        public override void Init(VisualElement root)
+        protected override void OnTabSelected(VisualElement root)
         {
-            base.Init(root);
+            base.OnTabSelected(root);
         }
 
-        public override void Terminate(VisualElement root)
+        protected override void OnTabUnselected()
         {
-            base.Terminate(root);
+            base.OnTabUnselected();
         }
     }
 }

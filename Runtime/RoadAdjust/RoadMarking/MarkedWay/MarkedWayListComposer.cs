@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
@@ -8,7 +9,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     public class MarkedWayListComposer : IMarkedWayListComposer
     {
         /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWayList"/>を収集します。 </summary>
-        public MarkedWayList ComposeFrom(RnModel model)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             // ここに、どの線を追加したいか記述します。
             var composers = new IMarkedWayListComposer[]
@@ -22,7 +23,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var ret = new MarkedWayList();
             foreach (var composer in composers)
             {
-                ret.AddRange(composer.ComposeFrom(model));
+                ret.AddRange(composer.ComposeFrom(target));
             }
             return ret;
         }
@@ -30,7 +31,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     internal interface IMarkedWayListComposer
     {
-        public MarkedWayList ComposeFrom(RnModel model);
+        public MarkedWayList ComposeFrom(IRrTarget target);
     }
     
 }

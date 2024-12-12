@@ -257,7 +257,7 @@ namespace PLATEAU.RoadNetwork.Structure
             RoadNetworkStorage ret;
             using (var _ = new DebugTimer("Serialize"))
             {
-                ret = serializer.Serialize(this);
+                ret = serializer.Serialize(this, false);
             }
 
             // 自分は元に戻す
@@ -427,6 +427,14 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var intersection in Intersections)
             {
                 intersection.BuildTracks();
+            }
+        }
+
+        public void AddDefaultTrafficSignalLights()
+        {
+            foreach (var intersection in intersections)
+            {
+                TrafficSignalLightController.CreateDefault(intersection);
             }
         }
 

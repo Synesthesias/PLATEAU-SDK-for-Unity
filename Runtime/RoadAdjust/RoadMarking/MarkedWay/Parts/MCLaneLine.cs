@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
@@ -9,10 +10,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class MCLaneLine : IMarkedWayListComposer
     {
-        public MarkedWayList ComposeFrom(RnModel model)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var ret = new MarkedWayList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var carLanes = road.MainLanes;
                 // 車道のうち、端でない（路側帯線でない）もののLeftWayは車線境界線です。

@@ -54,9 +54,14 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool IgnoreHighway { get; set; } = true;
 
+        // 信号制御器をデフォ値で生成するか
+        [field: SerializeField]
+        public bool AddTrafficSignalLights { get; set; } = true;
+
+
         // RGraph作るときのファクトリパラメータ
         [field: SerializeField]
-        public RGraphFactory GraphFactory { get; set; }
+        public RGraphFactory GraphFactory { get; set; } = new();
 
         // 中間データを保存する
         [field: SerializeField]
@@ -772,6 +777,12 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 道路を分割する
                 ret.SplitLaneByWidth(RoadSize, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
+
+                // 信号制御器をデフォ値で配置する
+                if (AddTrafficSignalLights)
+                    ret.AddDefaultTrafficSignalLights();
+
+
                 return Task.FromResult(ret);
             }
             catch (Exception e)

@@ -1,5 +1,4 @@
 using PLATEAU.Editor.Window.Common;
-using System;
 using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts

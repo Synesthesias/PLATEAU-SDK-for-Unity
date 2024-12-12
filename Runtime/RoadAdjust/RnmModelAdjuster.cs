@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -11,14 +12,11 @@ namespace PLATEAU.RoadAdjust
     public class RnmModelAdjuster
     {
         private const float ShrinkDist = 0.3f;
-        public RnModel Adjust(RnModel srcModel)
+        public IRrTarget Adjust(IRrTarget srcTarget)
         {
-            // 変更対象はディープコピーです。
-            var serializer = new RoadNetworkSerializer();
-            var model = serializer.Deserialize(serializer.Serialize(srcModel));
 
             
-            foreach (var road in model.Roads)
+            foreach (var road in srcTarget.Roads())
             {
                 // 歩道の車道側を内側に移動します。
                 // 歩道を狭くする意図:
@@ -40,7 +38,7 @@ namespace PLATEAU.RoadAdjust
                     MoveToward(median.RightWay, median.LeftWay, ShrinkDist, 0, 0);
                 }
             }
-            foreach(var intersection in model.Intersections)
+            foreach(var intersection in srcTarget.Intersections())
             {
                 // 上の歩道を狭くする処理と同様に交差点も狭くします。
                 // ただし、交差点の端の点だけは歩道と共有するため、移動の重複を防ぐため除外します。
@@ -50,7 +48,7 @@ namespace PLATEAU.RoadAdjust
                 }
             }
 
-            return model;
+            return srcTarget;
         }
 
         /// <summary>

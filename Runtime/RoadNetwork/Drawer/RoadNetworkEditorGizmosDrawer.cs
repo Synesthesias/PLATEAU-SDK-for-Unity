@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,6 +16,11 @@ namespace PLATEAU.RoadNetwork
     {
         private List<System.Action> drawFuncs = new List<System.Action>();
         public List<System.Action> DrawFuncs { get { return drawFuncs; } }
+
+        public void Clear()
+        {
+            DrawFuncs.Clear();
+        }
 
         public void OnDrawGizmos()
         {
@@ -30,6 +39,5 @@ namespace PLATEAU.RoadNetwork
             Handles.zTest = preZTest;
 #endif
         }
-
     }
 }
