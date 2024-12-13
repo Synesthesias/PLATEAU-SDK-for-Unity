@@ -182,7 +182,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
                 if (GUILayout.Button("Lod1 Adjust Height"))
                 {
-                    var removed = graph.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1PointHeightTolerance);
+                    var removed = graph.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1PointHeightTolerance);
                     foreach (var r in removed)
                     {
                         DebugEx.DrawSphere(r.Position, 1f, Color.red, duration: 10);
