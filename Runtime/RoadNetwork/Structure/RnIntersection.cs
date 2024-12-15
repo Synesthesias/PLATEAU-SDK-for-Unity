@@ -445,6 +445,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="track"></param>
         public bool TryAddOrUpdateTrack(RnTrack track)
         {
+            if (track == null)
+                return false;
             // trackの入口/出口がこの交差点のものかチェックする
             if (!edges.Any(e =>
                     e.Border.IsSameLine(track.FromBorder) || !edges.Any(e => e.Border.IsSameLine(track.ToBorder))))
@@ -956,6 +958,10 @@ namespace PLATEAU.RoadNetwork.Structure
             track = TryCreateTwoLineTrack();
             if (track != null)
                 return track;
+
+            // 中央テーブル作れない時は諦める
+            if (widthTable == null)
+                return null;
 
             List<BezierKnot> knots = new()
                     { new BezierKnot(fromPos, op.TangentLength * fromNormal, -op.TangentLength * fromNormal) };
