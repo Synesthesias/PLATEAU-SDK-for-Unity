@@ -674,7 +674,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (op.ClearTracks)
                 tracks.Clear();
 
-            var centerGraph = this.CreateCenterLineGraph();
+            var centerGraph = this.CreateCenterLineGraphOrDefault();
             var edgeGroups = this.CreateEdgeGroup();
             foreach (var fromEg in edgeGroups.Where(e => e.IsBorder))
             {
@@ -763,7 +763,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     //}
                     // それ以外の場合は中央線を使う
                     // ただし自分自身に戻る(Uターン)の場合は中央線使わない
-                    else if (fromEg.Key != toEg.Key)
+                    else if (fromEg.Key != toEg.Key && centerGraph != null)
                     {
                         way = centerGraph.CenterLines.GetValueOrDefault(fromEg.Key)?.GetValueOrDefault(toEg.Key);
                         var oLs = RnLineString.Create(toEg.RightSide.Edges.SelectMany(e => e.Border.Points));
@@ -1551,6 +1551,19 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
+        public static CenterLineGraph CreateCenterLineGraphOrDefault(this RnIntersection self, float refineInterval = 3f)
+        {
+            try
+            {
+                return self.CreateCenterLineGraph(refineInterval);
+            }
+            catch (Exception e)
+            {
+                // #FIXME : 例外が発生する状況もおかしいので要チェック
+                DebugEx.LogWarning(e);
+                return null;
+            }
+        }
 
         /// <summary>
         /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)

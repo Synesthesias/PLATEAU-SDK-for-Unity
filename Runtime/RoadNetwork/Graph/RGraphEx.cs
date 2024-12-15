@@ -158,7 +158,7 @@ namespace PLATEAU.RoadNetwork.Graph
                 if (f.LodLevel <= maxLod)
                 {
                     // 2重実行対策. すでにLOD3の他の頂点にマージされている場合はスキップ
-                    targetVertices.UnionWith(f.ComputeOutlineVertices().Where(v => v.GetMaxLodLevel() <= maxLod));
+                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() <= maxLod));
                 }
                 else
                 {
