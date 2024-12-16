@@ -1,5 +1,6 @@
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,14 +35,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
-                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true));
+                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane.NextBorder), ArrowAngle(lane, true));
                         ret.Add(nextArrow);
                     }
 
                     if (lane.PrevBorder != null)
                     {
                         var inter = lane.IsReverse ? nextIntersection : prevIntersection;
-                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false));
+                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane.PrevBorder), ArrowAngle(lane, false));
                         ret.Add(prevArrow);
                     }
                     
@@ -52,24 +53,27 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             return ret;
         }
 
-        private RoadMarkingInstance GenerateArrow(RnWay laneBorder, RnIntersection intersection, Vector3 position)
+        /// <summary>
+        /// 車線タイプを判別し、矢印モデルを生成します。
+        /// <paramref name="rotation"/>は矢印モデルをy軸を中心に何度回転させるかです。
+        /// </summary>
+        private RoadMarkingInstance GenerateArrow(RnWay laneBorder, RnIntersection intersection, Vector3 position, float rotation)
         {
             if (intersection == null) return null;
             var type = ArrowType(laneBorder, intersection);
             var meshInstance = type.ToMeshInstance();
             if (meshInstance == null)
             {
-                Debug.LogError("mesh instance is null.");
                 return null;
             }
             
+            meshInstance.RotateYAxis(rotation);
             meshInstance.Translate(position);
             return meshInstance;
         }
 
-        private Vector3 ArrowPosition(RnLane lane, bool isNext)
+        private Vector3 ArrowPosition(RnWay border)
         {
-            var border = isNext ? lane.NextBorder : lane.PrevBorder;
             if (border.Count == 0)
             {
                 Debug.Log("Skipping because border count is 0.");
@@ -82,6 +86,25 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             }
 
             return (border[0] + border[^1]) / 2f;
+        }
+
+        /// <summary>
+        /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。
+        /// </summary>
+        private float ArrowAngle(RnLane lane, bool isNext)
+        {
+            var way = lane.CreateCenterWay();
+            if (way.Count <= 1)
+            {
+                Debug.Log("Skipping Angle because way point count is below 2.");
+                return 0;
+            }
+
+            var diff = isNext
+                ? way.GetPoint(way.Count - 1).Vertex - way.GetPoint(way.Count - 2).Vertex
+                : way.GetPoint(0).Vertex - way.GetPoint(1).Vertex;
+            return Vector2.SignedAngle(diff.Xz(), Vector2.up);
+
         }
         
 

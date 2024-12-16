@@ -29,6 +29,26 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 transform = Matrix4x4.Translate(moveVector) * CombineInstance.transform
             };
         }
+
+        public void RotateYAxis(float angle)
+        {
+            // 度数法からラジアンに変換
+            float rad = angle * Mathf.Deg2Rad;
+        
+            // Y軸周りの回転行列を作成
+            Matrix4x4 rotationMatrix = Matrix4x4.identity;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+        
+            rotationMatrix.m00 = cos;
+            rotationMatrix.m02 = sin;
+            rotationMatrix.m20 = -sin;
+            rotationMatrix.m22 = cos;
+        
+            // 既存の行列に回転を適用
+            var transform = rotationMatrix * CombineInstance.transform;
+            CombineInstance = new CombineInstance { mesh = CombineInstance.mesh, transform = transform };
+        }
     }
 
     /// <summary>
