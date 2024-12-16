@@ -283,7 +283,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public float CalcLength(float startPointIndex, float endPointIndex)
         {
-            var stI = Mathf.FloorToInt(startPointIndex);
+            var stI = Mathf.Max(0, Mathf.FloorToInt(startPointIndex));
             var enI = Mathf.Min(Count - 1, Mathf.FloorToInt(endPointIndex));
             if (stI >= Count - 1)
                 return 0f;
@@ -522,6 +522,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="distance"></param>
         public static void GetNearestPoint(this RnLineString self, Vector3 v, out Vector3 nearest, out float pointIndex, out float distance)
         {
+            // 点が1つしかない場合はその点を返す
+            if (self.Count == 1)
+            {
+                nearest = self[0];
+                pointIndex = 0;
+                distance = (v - nearest).magnitude;
+                return;
+            }
+
             nearest = Vector3.zero;
             var sqrDistance = float.MaxValue;
             pointIndex = -1f;

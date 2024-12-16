@@ -8,6 +8,31 @@ using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.Util
 {
+    /// <summary>
+    /// Editor専用. usingでくくられた間の処理速度を計測する
+    /// </summary>
+    public class DebugTimer : IDisposable
+    {
+#if UNITY_EDITOR
+        private Stopwatch Sw { get; }
+        private string Message { get; }
+#endif
+        public DebugTimer(string message)
+        {
+#if UNITY_EDITOR
+            Sw = new Stopwatch();
+            Message = message;
+            Sw.Start();
+#endif
+        }
+
+        public void Dispose()
+        {
+#if UNITY_EDITOR
+            DebugEx.Log($"{Message}({Sw.ElapsedMilliseconds}[ms])");
+#endif
+        }
+    }
     public static class DebugEx
     {
         /// <summary>

@@ -309,6 +309,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             public bool showEdgeGroup = false;
 
+            // 接続先の無いレーンを表示する
+            public bool showNoTrackBorder = false;
+
             protected override IEnumerable<Drawer<RnIntersection>> GetChildDrawers()
             {
                 yield return showTrack;
@@ -358,6 +361,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     else
                     {
                         DrawEdge(showNonBorderEdge);
+                    }
+                }
+
+                if (showNoTrackBorder)
+                {
+                    foreach (var border in intersection.Neighbors)
+                    {
+                        if (border.IsMedianBorder)
+                            continue;
+                        if (intersection.Tracks.Any(t => t.ContainsBorder(border.Border)))
+                            continue;
+
+                        work.Self.DrawString(border.GetDebugLabelOrDefault(), border.CalcCenter(), color: Color.red);
                     }
                 }
 

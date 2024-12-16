@@ -54,7 +54,7 @@ namespace PLATEAU.RoadNetwork.Util
     /// </summary>
     public class LineCrossPointResult
     {
-        public class Intersection
+        public class TargetLineInfo
         {
             /// <summary>
             /// 対象線分
@@ -72,8 +72,16 @@ namespace PLATEAU.RoadNetwork.Util
         /// <summary>
         /// 交点チェック対象のLineString情報
         /// </summary>
-        public List<Intersection> TargetLines { get; set; } = new();
+        public List<TargetLineInfo> TargetLines { get; set; } = new();
 
+        /// <summary>
+        /// TargetLinesのうち、交差しているもの
+        /// </summary>
+        public IEnumerable<TargetLineInfo> CrossingLines => TargetLines.Where(t => t.Intersections.Count > 0);
+
+        /// <summary>
+        /// 対象の線分
+        /// </summary>
         public LineSegment3D LineSegment { get; set; }
     }
 
@@ -183,6 +191,12 @@ namespace PLATEAU.RoadNetwork.Util
             return line;
         }
 
+        /// <summary>
+        /// lineSegmentとwaysの交点を取得する. ただし、2Dでの交点
+        /// </summary>
+        /// <param name="lineSegment"></param>
+        /// <param name="ways"></param>
+        /// <returns></returns>
         public static LineCrossPointResult GetLineIntersections(LineSegment3D lineSegment, IEnumerable<RnWay> ways)
         {
             var ret = new LineCrossPointResult { LineSegment = lineSegment };
@@ -194,7 +208,7 @@ namespace PLATEAU.RoadNetwork.Util
 
             foreach (var way in targetLines)
             {
-                var elem = new LineCrossPointResult.Intersection { LineString = way };
+                var elem = new LineCrossPointResult.TargetLineInfo { LineString = way };
 
                 foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
                 {

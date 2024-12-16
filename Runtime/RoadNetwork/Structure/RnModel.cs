@@ -4,6 +4,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -234,24 +235,35 @@ namespace PLATEAU.RoadNetwork.Structure
         public RoadNetworkStorage Serialize(bool createEmptyCheck = true)
         {
             // シリアライズ前に一度全レーンに対して中央線を作成する
-            foreach (var road in Roads)
-            {
-                foreach (var l in road.MainLanes)
-                    l.CreateCenterWay();
-            }
 
+
+            using (var _ = new DebugTimer("Create Center Way"))
+            {
+                foreach (var road in Roads)
+                {
+                    foreach (var l in road.MainLanes)
+                        l.CreateCenterWay();
+                }
+            }
             if (createEmptyCheck)
             {
+                using var _ = new DebugTimer("Create Empty Roads");
                 CreateEmptyRoadBetweenInteraction();
                 CreateEmptyIntersectionBetweenRoad();
             }
 
+
             var serializer = new RoadNetworkSerializer();
-            var ret = serializer.Serialize(this, false);
+            RoadNetworkStorage ret;
+            using (var _ = new DebugTimer("Serialize"))
+            {
+                ret = serializer.Serialize(this, false);
+            }
 
             // 自分は元に戻す
             if (createEmptyCheck)
             {
+                using var _ = new DebugTimer("Remove Empty Roads");
                 RemoveEmptyRoadBetweenIntersection();
                 RemoveEmptyIntersectionBetweenRoad();
             }
@@ -310,7 +322,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    DebugEx.LogException(e);
                 }
             }
         }
@@ -557,7 +569,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    DebugEx.LogException(e);
                     failedRoads.Add(link.DebugMyId);
                 }
             }
@@ -867,7 +879,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 .ToHashSet();
 
             // 未決定のもの
-            HashSet<LineCrossPointResult.Intersection> undesideds = new();
+            HashSet<LineCrossPointResult.TargetLineInfo> undesideds = new();
 
             // 片方のLineStringが別のLineStringの部分集合だったりすると
             // 交点が同じでも別のRnPointになる. それを防ぐために共通テーブルを用意する
@@ -886,7 +898,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 });
             }
 
-            void AddTable(LineCrossPointResult.Intersection inter, bool isFrontPrev)
+            void AddTable(LineCrossPointResult.TargetLineInfo inter, bool isFrontPrev)
             {
                 var item = inter.Intersections.First();
                 SplitByIndex(inter.LineString, item.index, out var front, out var back);
@@ -1028,7 +1040,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// roadの水平切断可能かチェックする
+        /// intersectionの水平切断可能かチェックする
         /// </summary>
         /// <param name="self"></param>
         /// <param name="inter"></param>
