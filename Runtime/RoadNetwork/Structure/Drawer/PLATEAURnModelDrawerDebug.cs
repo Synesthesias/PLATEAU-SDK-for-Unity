@@ -11,6 +11,7 @@ using UnityEngine.Serialization;
 using UnityEngine.Splines;
 using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug;
 using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
+using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -213,12 +214,32 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // スプラインのノットで描画する
                 public bool showKnots = false;
 
+                // fromがこれを満たすトラックのみ表示
+                public VisibleType fromRoadType = VisibleType.All;
+
+                // toがこれを満たすトラックのみ表示
+                public VisibleType toRoadType = VisibleType.All;
+
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
                     var color = baseColor;
 
                     foreach (var track in intersection.Tracks)
                     {
+                        if (fromRoadType != VisibleType.All)
+                        {
+                            var fromRoad = intersection.FindEdges(track.FromBorder).FirstOrDefault()?.Road;
+                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
+                                continue;
+                        }
+
+                        if (toRoadType != VisibleType.All)
+                        {
+                            var toRoad = intersection.FindEdges(track.ToBorder).FirstOrDefault()?.Road;
+                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
+                                continue;
+                        }
+
                         if (useTurnTypeColor)
                         {
                             color = DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
@@ -857,6 +878,20 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 if (ret == false)
                     Visited.Add(obj);
                 return true;
+            }
+
+            public VisibleType GetVisibleType(Object obj, IEnumerable<PLATEAUCityObjectGroup> cityObjects)
+            {
+                var ret = VisibleType.Empty;
+                if (Self.SelectedObjects.Contains(obj))
+                    ret |= VisibleType.GuiSelected;
+
+                if (cityObjects != null && cityObjects.Any(RnEx.IsEditorSceneSelected))
+                    ret |= VisibleType.SceneSelected;
+
+                if (ret == VisibleType.Empty)
+                    ret = VisibleType.NonSelected;
+                return ret;
             }
         }
 
