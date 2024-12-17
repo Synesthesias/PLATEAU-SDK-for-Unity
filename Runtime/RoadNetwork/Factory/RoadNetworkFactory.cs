@@ -777,7 +777,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 道路を分割する
-                ret.SplitLaneByWidth(RoadSize, out var failedLinks);
+                ret.SplitLaneByWidth(RoadSize, false, out var failedLinks);
                 ret.ReBuildIntersectionTracks();
 
                 // 信号制御器をデフォ値で配置する

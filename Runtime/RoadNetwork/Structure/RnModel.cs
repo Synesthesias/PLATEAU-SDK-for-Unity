@@ -519,8 +519,13 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-
-        public void SplitLaneByWidth(float roadWidth, out List<ulong> failedRoads)
+        /// <summary>
+        /// roadWidthの道路幅を基準にレーンを分割する
+        /// </summary>
+        /// <param name="roadWidth"></param>
+        /// <param name="rebuildTrack">レーン分割後に関連する交差点のトラックを再生成する</param>
+        /// <param name="failedRoads"></param>
+        public void SplitLaneByWidth(float roadWidth, bool rebuildTrack, out List<ulong> failedRoads)
         {
             failedRoads = new List<ulong>();
             var visitedRoads = new HashSet<RnRoad>();
@@ -550,7 +555,8 @@ namespace PLATEAU.RoadNetwork.Structure
                         {
                             var width = roadGroup.Roads.Select(r => r.GetLanes(dir).Sum(l => l.CalcWidth())).Min();
                             var num = (int)(width / roadWidth);
-                            roadGroup.SetLaneCount(dir, num);
+                            // 
+                            roadGroup.SetLaneCount(dir, num, rebuildTrack);
                         }
                     }
                     // 
@@ -563,7 +569,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
                         var leftLaneCount = (num + 1) / 2;
                         var rightLaneCount = num - leftLaneCount;
-                        roadGroup.SetLaneCount(leftLaneCount, rightLaneCount);
+                        roadGroup.SetLaneCount(leftLaneCount, rightLaneCount, rebuildTrack);
                     }
 
                 }
