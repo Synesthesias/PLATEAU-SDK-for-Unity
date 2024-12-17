@@ -198,7 +198,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 public Color baseColor = Color.yellow * 0.7f;
 
-                public bool useTurnTypeColor = false;
 
                 public Color disConnectedColor = Color.red;
 
@@ -231,7 +230,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     }
                 }
 
-                public List<TurnTypeColor> turnTypeColor = EnumEx.GetValues<RnTurnType>().Select(x => new TurnTypeColor(x, DebugEx.GetDebugColor((int)x, RnTurnTypeEx.Count))).ToList();
+                public bool useTurnTypeColor = false;
+                public List<TurnTypeColor> turnTypeColors = EnumEx.GetValues<RnTurnType>().Select(x => new TurnTypeColor(x, DebugEx.GetDebugColor((int)x, RnTurnTypeEx.Count))).ToList();
 
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
@@ -255,7 +255,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                         if (useTurnTypeColor)
                         {
-                            color = turnTypeColor.FirstOrDefault(x => x.Type == track.TurnType)?.Color ?? DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
+                            color = turnTypeColors.FirstOrDefault(x => x.Type == track.TurnType)?.Color ?? DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
                         }
 
                         Color CheckRoad(RnWay trackBorderWay)
