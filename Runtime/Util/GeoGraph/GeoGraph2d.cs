@@ -1876,6 +1876,32 @@ namespace PLATEAU.Util.GeoGraph
             ret.Add(ret.Last() + 1);
             return ret;
         }
+
+        /// <summary>
+        /// pointがverticesで構成される多角形の内部にあるかどうかを返す
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static bool IsInsidePolygon(Vector2 point, IEnumerable<Vector2> vertices)
+        {
+            var edges = GeoGraphEx.GetEdges(vertices, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+            var ray = new Ray2D(point, Vector2.right);
+            var count = 0;
+            // Crossing Number algorithmで判定する
+            // https://www.nttpc.co.jp/technology/number_algorithm.html
+            foreach (var e in edges)
+            {
+                if (LineUtil.HalfLineSegmentIntersection(
+                        ray, e.Start, e.End, out var inter, out float t1,
+                        out float t2) && t1 > 0f && t2 is > 0f and < 1f)
+                {
+                    count++;
+                }
+            }
+            return count % 2 == 1;
+        }
+
 #if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {

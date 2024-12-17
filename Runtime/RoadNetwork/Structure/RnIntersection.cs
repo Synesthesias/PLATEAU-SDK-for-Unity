@@ -883,6 +883,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 // 交差しない場合は無視
                 if (fromRay.CalcIntersectionBy2D(toRay, plane, out var cp, out var _, out var _) == false)
                     return null;
+
+                // 交点が内部に無い場合は無視
+                if (this.IsInside2D(cp) == false)
+                    return null;
+
                 // 直進で繋がるとき
                 var cp1 =
                     this.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f, cp));
@@ -920,11 +925,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
             }
 
-            var track = TryCreateOneLineTrack();
+            // 先に1回のカーブで繋がるトラックをチェック(そっちの方がきれいな曲線になりやすいので)
+            var track = TryCreateTwoLineTrack();
             if (track != null)
                 return track;
 
-            track = TryCreateTwoLineTrack();
+            // 作れない場合直進で繋がるかチェックする
+            track = TryCreateOneLineTrack();
             if (track != null)
                 return track;
 
@@ -1565,6 +1572,24 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Select(l => l.Border)
                 .Concat(self.SideWalks.SelectMany(s => s.SideWays));
             return RnEx.GetLineIntersections(lineSegment, targetLines);
+        }
+
+        /// <summary>
+        /// 2D平面に射影したうえでの内部判定
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static bool IsInside2D(this RnIntersection self, Vector3 pos)
+        {
+            List<RnPoint> points = new List<RnPoint>(self.Edges.Sum(x => x.Border.Count));
+            foreach (var p in self.Edges.SelectMany(e => e.Border.Points))
+            {
+                if (points.Any() && (points.Last() == p || points.First() == p))
+                    continue;
+                points.Add(p);
+            }
+            return GeoGraph2D.IsInsidePolygon(pos.Xz(), points.Select(x => x.Vertex.Xz()));
         }
 
 #if false
