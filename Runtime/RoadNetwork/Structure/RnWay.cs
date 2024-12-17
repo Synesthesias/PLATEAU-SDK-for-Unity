@@ -671,6 +671,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             self.GetNearestPoint(v, out nearest, out var pointIndex, out distance);
 
+            if (self.IsValidOrDefault() == false)
+                return false;
             var st = Mathf.Clamp((int)pointIndex, 0, self.Count - 2);
             var en = Mathf.Clamp(Mathf.CeilToInt(pointIndex - 1), 0, self.Count - 2);
 

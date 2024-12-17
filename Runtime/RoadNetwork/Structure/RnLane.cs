@@ -522,6 +522,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (border.GetPoint(0) == RightWay.GetPoint(0))
                 return RnLaneBorderDir.Right2Left;
 
+            if (border.IsValid == false)
+                return null;
+
             var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
             // #NOTE : Laneが複雑な形状をしているときのためPrevはPrev側, NextBorderだとNext側を見る
             var index = type == RnLaneBorderType.Prev ? 0 : -1;
