@@ -992,7 +992,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         /// <param name="visibleType"></param>
         private void DrawLane(RnLane lane, LaneOption op, VisibleType visibleType)
         {
-            laneOp?.Draw(work, lane, visibleType);
+            op?.Draw(work, lane, visibleType);
         }
 
         private void DrawRoad(RnRoad road, VisibleType visibleType)
