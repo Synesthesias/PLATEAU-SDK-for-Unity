@@ -167,6 +167,12 @@ namespace PLATEAU.RoadNetwork.Util
         /// <returns></returns>
         public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, RnWay startBorder, RnWay endBorder, float t, float pointSkipDistance = 1e-3f)
         {
+            // 左右がどちらも直線もしくは点以下の場合 -> start/endを直接つなぐ
+            if (leftVertices.Count <= 2 && rightVertices.Count <= 2)
+            {
+                return new RnLineString(new List<RnPoint> { start, end });
+            }
+
             var line = new RnLineString();
             void AddPoint(RnPoint p)
             {
