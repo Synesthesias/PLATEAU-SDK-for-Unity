@@ -144,7 +144,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="mergeCellSize"></param>
         /// <param name="mergeCellLength"></param>
         /// <param name="heightTolerance"></param>
-        public static HashSet<RVertex> AdjustLod1Height(this RGraph self, float mergeCellSize, int mergeCellLength,
+        public static HashSet<RVertex> AdjustSmallLodHeight(this RGraph self, float mergeCellSize, int mergeCellLength,
             float heightTolerance)
         {
             HashSet<RVertex> removed = new();
@@ -153,10 +153,12 @@ namespace PLATEAU.RoadNetwork.Graph
             var table = new Dictionary<Vector2Int, HashSet<RVertex>>();
             foreach (var f in self.Faces)
             {
-                if (f.LodLevel == 1)
+                // LOD1/2には高さ情報が無いのでheightToleranceで吸着処理をかける
+                var maxLod = 2;
+                if (f.LodLevel <= maxLod)
                 {
                     // 2重実行対策. すでにLOD3の他の頂点にマージされている場合はスキップ
-                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() == 1));
+                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() <= maxLod));
                 }
                 else
                 {
@@ -397,7 +399,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance, float lod1HeightTolerance)
         {
-            self.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1HeightTolerance);
+            self.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1HeightTolerance);
             self.EdgeReduction();
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
             self.EdgeReduction();

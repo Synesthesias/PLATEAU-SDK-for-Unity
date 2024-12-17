@@ -75,6 +75,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return IsSameInOut(other.FromBorder, other.ToBorder);
         }
+
+        /// <summary>
+        /// FromBorderもしくはToBorderがwayと同じかどうか
+        /// </summary>
+        /// <param name="way"></param>
+        /// <returns></returns>
+        public bool ContainsBorder(RnWay way)
+        {
+            return FromBorder.IsSameLine(way) || ToBorder.IsSameLine(way);
+        }
     }
 
     // 交差点における曲がり具合
@@ -435,6 +445,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="track"></param>
         public bool TryAddOrUpdateTrack(RnTrack track)
         {
+            if (track == null)
+                return false;
             // trackの入口/出口がこの交差点のものかチェックする
             if (!edges.Any(e =>
                     e.Border.IsSameLineReference(track.FromBorder) || !edges.Any(e => e.Border.IsSameLineReference(track.ToBorder))))
@@ -451,6 +463,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return true;
         }
 
+        /// <summary>
+        /// トラック情報を追加/更新する.
+        /// 同じfrom/toのトラックがすでにある場合は上書きする. そうでない場合は追加する
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
         public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
         {
             const float tangentLength = 10f;
@@ -459,7 +478,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var track = CreateTrack(from, to, turnType);
             return TryAddOrUpdateTrack(track);
 
-            RnTrack CreateTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            static RnTrack CreateTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
             {
                 var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
                 var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
@@ -467,7 +486,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 from.Border.GetLerpPoint(0.5f, out var fromPos);
                 to.Border.GetLerpPoint(0.5f, out var toPos);
 
-                var spline = new UnityEngine.Splines.Spline
+                var spline = new Spline
                         {
                             new BezierKnot(fromPos, tangentLength * fromNormal, -tangentLength *fromNormal),
                             new BezierKnot(toPos, tangentLength *toNormal, -tangentLength *toNormal)
@@ -657,11 +676,33 @@ namespace PLATEAU.RoadNetwork.Structure
             if (op.ClearTracks)
                 tracks.Clear();
 
-            var centerGraph = this.CreateCenterLineGraph();
+            var centerGraph = this.CreateCenterLineGraphOrDefault();
             var edgeGroups = this.CreateEdgeGroup();
             foreach (var fromEg in edgeGroups.Where(e => e.IsBorder))
             {
                 var inBounds = fromEg.InBoundEdges.ToList();
+
+                // fromEg -> toEgのTurnTypeとtoEgよりも左側に同じTurnTypeがいくつあるか
+                // fromEgから出ていくTrackのTurnTypeをTrack数分の配列で事前に作成
+                // 左折2レーン, 直進2レーン, 右折1レーンの場合以下のようになる
+                // [Left, Left, Straight, Straight, Right]
+                List<RnTurnType> turnTypes = new();
+                Dictionary<RnIntersectionEx.EdgeGroup, int> turnTypeIndex = new();
+                {
+                    // fromEgから出ていくTrackのTurnTypeのテーブルをあらかじめ作成
+                    var startIndex = edgeGroups.IndexOf(fromEg);
+                    for (var i = 0; i < edgeGroups.Count; i++)
+                    {
+                        var index = (startIndex + i + 1) % edgeGroups.Count;
+                        var toEg = edgeGroups[index];
+                        if (toEg.IsBorder == false || toEg == fromEg)
+                            continue;
+                        var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
+                        turnTypeIndex[toEg] = turnTypes.Count;
+                        turnTypes.AddRange(Enumerable.Repeat(turnType, toEg.OutBoundEdges.Count()));
+                    }
+                }
+
                 foreach (var toEg in edgeGroups.Where(e => e.IsBorder && e != fromEg))
                 {
                     // Uターンを許可しない場合
@@ -691,6 +732,15 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 左側で隣接している場合はそれをそのまま使う
                     if (fromEg.LeftSide == toEg.RightSide)
                     {
+                        // #TODO : 以下のようなfrom -> toでかつxがどこともつながっていないただの輪郭線の場合に, 中央線がxでストップしてしまった
+                        //          to
+                        //        _____
+                        //   ____|     |
+                        //  | x
+                        //   -----
+                        //        |
+                        //         ====
+                        //          from
                         var ls = RnLineString.Create(fromEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
                         way = new RnWay(ls.Refined(1f), false, true);
                         var oLs = RnLineString.Create(toEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
@@ -715,7 +765,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     //}
                     // それ以外の場合は中央線を使う
                     // ただし自分自身に戻る(Uターン)の場合は中央線使わない
-                    else if (fromEg.Key != toEg.Key)
+                    else if (fromEg.Key != toEg.Key && centerGraph != null)
                     {
                         way = centerGraph.CenterLines.GetValueOrDefault(fromEg.Key)?.GetValueOrDefault(toEg.Key);
                         var oLs = RnLineString.Create(toEg.RightSide.Edges.SelectMany(e => e.Border.Points));
@@ -730,128 +780,23 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
                     }
 
-                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
-
                     void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
                     {
                         // 対象外のものは無視
                         if (op.IsBuildTarget(this, from, to) == false)
                             return;
-
-                        var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
-
-                        from.Border.GetLerpPoint(0.5f, out var fromPos);
-                        to.Border.GetLerpPoint(0.5f, out var toPos);
-
-                        List<BezierKnot> knots = new() { new BezierKnot(fromPos, op.TangentLength * fromNormal, -op.TangentLength * fromNormal) };
-
-                        void AddKnots(Vector3 pos)
-                        {
-                            // #NOTE : 戻りが発生しないように90度以上の角度を持つ場合は無視する
-                            if (knots.Count >= 2)
-                            {
-                                Vector3 d1 = pos - (Vector3)knots[^1].Position;
-                                Vector3 d2 = knots[^1].Position - knots[^2].Position;
-
-                                if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
-                                    return;
-                            }
-
-                            var tanIn = 0.5f * (knots[^1].Position - (float3)pos);
-                            var knot = new BezierKnot(pos, tanIn, -tanIn);
-                            var last = knots[^1];
-                            last.TangentOut = -knot.TangentIn;
-                            knots[^1] = last;
-                            knots.Add(knot);
-                        }
-
-
-                        // ベースラインを法線方向に動かしてトラックラインを作成する
-                        // 入口の道路幅と出口の道路幅が違うので, 法線方向へのオフセットも距離に応じて線形補完する
-                        // そのうえで、なるべく輪郭を崩さないようにする処理も入れる
-                        if (way != null && way.Count > 2)
-                        {
-                            Vector3 EdgeNormal(int startVertexIndex)
-                            {
-                                var p0 = way[startVertexIndex];
-                                var p1 = way[startVertexIndex + 1];
-                                // Vector3.Crossは左手系なので逆
-                                var ret = (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
-                                if (way.IsReverseNormal)
-                                    ret = -ret;
-                                return ret;
-                            }
-
-                            var sLen = (way[0] - fromPos).magnitude;
-                            var eLen = (way[^1] - toPos).magnitude;
-
-                            // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
-                            var sSign = Vector3.Dot(fromPos - way[0], EdgeNormal(0)) < 0 ? -1 : 1;
-                            var eSign = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0 ? -1 : 1;
-
-                            var index = 0;
-                            // 現在見る点と次の点の辺/頂点の法線を保存しておく
-                            // 線分の法線
-                            var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
-                            // 先頭の法線が逆の場合計算がおかしくなるので反転して最後に適用するときに戻す
-                            if (sSign < 0)
-                                edgeNormal[0] = edgeNormal[0].AxisSymmetric(way[1] - way[0]);
-
-                            // 頂点の法線
-                            var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
-
-                            var length = way.CalcLength();
-                            var len = 0f;
-                            var delta = 1f;
-                            for (var i = 0; i < way.Count - 1; i++)
-                            {
-                                var en0 = edgeNormal[index];
-                                var en1 = edgeNormal[(index + 1) & 1];
-                                var vn = vertexNormal[index];
-                                // 形状維持するためにオフセット距離を変える
-                                // en0成分の移動量がdeltaになるように, vnの移動量を求める
-                                var m = Vector3.Dot(vn, en0);
-                                var d = delta;
-                                bool isZero = Mathf.Abs(m) < 1e-5f;
-                                if (isZero == false)
-                                    d /= m;
-
-                                if (i < way.Count - 2)
-                                {
-                                    edgeNormal[index] = EdgeNormal(i + 1);
-                                    vertexNormal[index] =
-                                        (edgeNormal[index] + vertexNormal[(index + 1) & 1]).normalized;
-                                }
-
-                                index = (index + 1) & 1;
-                                if (i != 0)
-                                {
-                                    len += (way[i] - way[i - 1]).magnitude;
-                                    var p = len / length;
-
-                                    var sL = Mathf.Min(sLen, widthTable[i]);
-                                    var eL = Mathf.Min(eLen, widthTable[i]);
-                                    //var l = Mathf.Lerp(sL, eL, p) * d;
-                                    //var l = sL * d;
-                                    var l = Mathf.Lerp(sSign * sL, eSign * eL, p) * Mathf.Lerp(d, 1f, p);
-                                    var pos = way[i] + vn * l;
-                                    AddKnots(pos);
-                                }
-                                delta = d * Vector3.Dot(vn, en1);
-                            }
-                            AddKnots(toPos);
-                        }
-                        else
-                        {
-                            AddKnots(toPos);
-                        }
-
-                        var spline = new Spline(knots);
-                        var track = new RnTrack(from.Border, to.Border, spline, edgeTurnType);
+                        var track = CreateTrackOrDefault(op, way, widthTable, from, to, edgeTurnType);
                         TryAddOrUpdateTrack(track);
                     }
 
                     var outBounds = toEg.OutBoundEdges.ToList();
+                    // 行き先が無い場合は無視
+                    if (outBounds.Count <= 0)
+                        continue;
+                    var turnTypeStartIndex = turnTypeIndex[toEg];
+                    if (turnTypeStartIndex >= turnTypes.Count)
+                        continue;
+                    var turnType = turnTypes[turnTypeIndex[toEg]];
                     if (turnType.IsLeft())
                     {
                         // 左折の場合は左側のレーンのみ作成する
@@ -872,6 +817,30 @@ namespace PLATEAU.RoadNetwork.Structure
                                 AddTrack(from, to, turnType);
                         }
                     }
+                    else if (turnType == RnTurnType.Straight)
+                    {
+                        // 直進のレーンは互いに干渉しないように1:1で作成する
+                        // すでに別のEdgeGroupでStraightがある場合も考慮してoffsetを作る
+                        var offset = turnTypes.Take(turnTypeStartIndex).Count(x => x == RnTurnType.Straight);
+                        // 最低でも1車線はtoEdgeへのトラックを用意する(全くいけなくなるので)
+                        //offset = Mathf.Min(offset, inBounds.Count - 1);
+                        // まだ作っていない直進トラックの数
+                        var remainInBoundNum = inBounds.Count - offset;
+                        var num = Mathf.Min(remainInBoundNum, outBounds.Count);
+                        for (var i = 0; i < num; ++i)
+                        {
+                            // 左から順に見ていく
+                            AddTrack(inBounds[^(i + offset + 1)], outBounds[i], turnType);
+                        }
+
+                        // 右側にこれ以上Trackが作れない場合.
+                        // しょうがないので一番右の直進Trackに合流させる
+                        var rightEgTrackNum = turnTypes.Skip(turnTypeStartIndex + outBounds.Count).Count();
+                        for (var i = num + offset; i < inBounds.Count - rightEgTrackNum; ++i)
+                        {
+                            AddTrack(inBounds[^(i + 1)], outBounds.Last(), turnType);
+                        }
+                    }
                     else
                     {
                         foreach (var from in inBounds)
@@ -885,6 +854,222 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 }
             }
+        }
+
+        /// <summary>
+        /// from/toを繋ぐトラックを作成する
+        /// </summary>
+        /// <param name="op"></param>
+        /// <param name="way"></param>
+        /// <param name="widthTable"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="edgeTurnType"></param>
+        /// <returns></returns>
+        private RnTrack CreateTrackOrDefault(BuildTrackOption op, RnWay way, List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+        {
+            var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
+            var toNormal = to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+
+            from.Border.GetLerpPoint(0.5f, out var fromPos);
+            to.Border.GetLerpPoint(0.5f, out var toPos);
+
+            // 直進できるなら何もしない
+
+            bool IsCollide(LineCrossPointResult lcp)
+            {
+                return lcp.CrossingLines.Any(t => t.LineString != from.Border.LineString && t.LineString != to.Border.LineString);
+            }
+
+            // 直進でつながるトラックを作成
+            RnTrack TryCreateOneLineTrack()
+            {
+                // 直進でつながったとしても角度つくようだとダメ
+                if (edgeTurnType != RnTurnType.Straight)
+                    return null;
+
+                // 直進で繋がるとき
+                var oneLineCrossPoints =
+                this.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f,
+                    toPos - toNormal * 0.1f));
+
+                // 途中でEdgesと交差する場合は外に出るからダメ
+                if (IsCollide(oneLineCrossPoints))
+                    return null;
+
+                var spline = new Spline
+                {
+                    { new BezierKnot(fromPos), TangentMode.AutoSmooth },
+                    { new BezierKnot(toPos), TangentMode.AutoSmooth }
+                };
+                return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
+            }
+
+            RnTrack TryCreateTwoLineTrack()
+            {
+                var plane = AxisPlane.Xz;
+                var fromRay = new Ray(fromPos - fromNormal * 0.1f, -fromNormal);
+                var toRay = new Ray(toPos - toNormal * 0.1f, -toNormal);
+
+                // 交差しない場合は無視
+                if (fromRay.CalcIntersectionBy2D(toRay, plane, out var cp, out var _, out var _) == false)
+                    return null;
+                // 直進で繋がるとき
+                var cp1 =
+                    this.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f, cp));
+
+                var cp2
+                    = this.GetEdgeCrossPoints(new LineSegment3D(cp, toPos - toNormal * 0.1f));
+
+                if (IsCollide(cp1) || IsCollide(cp2))
+                    return null;
+
+                var curveOffset = 3;
+                var spline = new Spline();
+                spline.Add(new BezierKnot(fromPos), TangentMode.AutoSmooth);
+
+#if false
+                spline.Add(new BezierKnot(cp), TangentMode.AutoSmooth);
+#else
+                var fromCpLen = (fromPos - cp).magnitude;
+                if (fromCpLen > 1e-3f)
+                {
+                    var len = Mathf.Clamp(curveOffset, 0, fromCpLen - 1);
+                    var p = Vector3.Lerp(cp, fromPos, len / fromCpLen);
+                    spline.Add(new BezierKnot(p, 0, -fromNormal * len), TangentMode.AutoSmooth);
+                }
+
+                var toCpLen = (toPos - cp).magnitude;
+                if (toCpLen > 1e-3f)
+                {
+                    var len = Mathf.Clamp(curveOffset, 0, toCpLen - 1);
+                    var p = Vector3.Lerp(cp, toPos, len / toCpLen);
+                    spline.Add(new BezierKnot(p, toNormal * len, 0), TangentMode.AutoSmooth);
+                };
+#endif
+                spline.Add(new BezierKnot(toPos), TangentMode.AutoSmooth);
+                return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
+            }
+
+            var track = TryCreateOneLineTrack();
+            if (track != null)
+                return track;
+
+            track = TryCreateTwoLineTrack();
+            if (track != null)
+                return track;
+
+            // 中央テーブル作れない時は諦める
+            if (widthTable == null)
+                return null;
+
+            List<BezierKnot> knots = new()
+                    { new BezierKnot(fromPos, op.TangentLength * fromNormal, -op.TangentLength * fromNormal) };
+
+            void AddKnots(Vector3 pos, bool check = true)
+            {
+                // #NOTE : 戻りが発生しないように90度以上の角度を持つ場合は無視する
+                if (knots.Count >= 2 && check)
+                {
+                    Vector3 d1 = pos - (Vector3)knots[^1].Position;
+                    Vector3 d2 = knots[^1].Position - knots[^2].Position;
+
+                    if (Vector2.Angle(d1.Xz(), d2.Xz()) > 90)
+                        return;
+                }
+
+                var tanIn = 0.5f * (knots[^1].Position - (float3)pos);
+                var knot = new BezierKnot(pos, tanIn, -tanIn);
+                var last = knots[^1];
+                last.TangentOut = -knot.TangentIn;
+                knots[^1] = last;
+                knots.Add(knot);
+            }
+
+            // ベースラインを法線方向に動かしてトラックラインを作成する
+            // 入口の道路幅と出口の道路幅が違うので, 法線方向へのオフセットも距離に応じて線形補完する
+            // そのうえで、なるべく輪郭を崩さないようにする処理も入れる
+            if (way != null && way.Count > 2)
+            {
+                Vector3 EdgeNormal(int startVertexIndex)
+                {
+                    var p0 = way[startVertexIndex];
+                    var p1 = way[startVertexIndex + 1];
+                    // Vector3.Crossは左手系なので逆
+                    var ret = (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
+                    if (way.IsReverseNormal)
+                        ret = -ret;
+                    return ret;
+                }
+
+                var sLen = (way[0] - fromPos).magnitude;
+                var eLen = (way[^1] - toPos).magnitude;
+
+                // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
+                var sSign = Vector3.Dot(fromPos - way[0], EdgeNormal(0)) < 0 ? -1 : 1;
+                var eSign = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0 ? -1 : 1;
+
+                var index = 0;
+                // 現在見る点と次の点の辺/頂点の法線を保存しておく
+                // 線分の法線
+                var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
+                // 先頭の法線が逆の場合計算がおかしくなるので反転して最後に適用するときに戻す
+                if (sSign < 0)
+                    edgeNormal[0] = edgeNormal[0].AxisSymmetric(way[1] - way[0]);
+
+                // 頂点の法線
+                var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
+
+                var length = way.CalcLength();
+                var len = 0f;
+                var delta = 1f;
+                for (var i = 0; i < way.Count - 1; i++)
+                {
+                    var en0 = edgeNormal[index];
+                    var en1 = edgeNormal[(index + 1) & 1];
+                    var vn = vertexNormal[index];
+                    // 形状維持するためにオフセット距離を変える
+                    // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                    var m = Vector3.Dot(vn, en0);
+                    var d = delta;
+                    bool isZero = Mathf.Abs(m) < 1e-5f;
+                    if (isZero == false)
+                        d /= m;
+
+                    if (i < way.Count - 2)
+                    {
+                        edgeNormal[index] = EdgeNormal(i + 1);
+                        vertexNormal[index] =
+                            (edgeNormal[index] + vertexNormal[(index + 1) & 1]).normalized;
+                    }
+
+                    index = (index + 1) & 1;
+                    if (i != 0)
+                    {
+                        len += (way[i] - way[i - 1]).magnitude;
+                        var p = len / length;
+
+                        var sL = Mathf.Min(sLen, widthTable[i]);
+                        var eL = Mathf.Min(eLen, widthTable[i]);
+                        //var l = Mathf.Lerp(sL, eL, p) * d;
+                        //var l = sL * d;
+                        var l = Mathf.Lerp(sSign * sL, eSign * eL, p) * Mathf.Lerp(d, 1f, p);
+                        var pos = way[i] + vn * l;
+                        AddKnots(pos);
+                    }
+
+                    delta = d * Vector3.Dot(vn, en1);
+                }
+
+                AddKnots(toPos, false);
+            }
+            else
+            {
+                AddKnots(toPos, false);
+            }
+
+            var spline = new Spline(knots);
+            return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
         }
 
         /// <summary>
@@ -1372,6 +1557,19 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
+        public static CenterLineGraph CreateCenterLineGraphOrDefault(this RnIntersection self, float refineInterval = 3f)
+        {
+            try
+            {
+                return self.CreateCenterLineGraph(refineInterval);
+            }
+            catch (Exception e)
+            {
+                // #FIXME : 例外が発生する状況もおかしいので要チェック
+                DebugEx.LogWarning(e);
+                return null;
+            }
+        }
 
         /// <summary>
         /// borderWayで指定した境界線と繋がっているレーンリスト(基本的に0か1)
@@ -1384,7 +1582,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
         /// <summary>
-        /// selfの全LinestringとlineSegmentの交点を取得する
+        /// selfの全LinestringとlineSegmentの交点を取得する. ただし2D平面に射影したうえでの交点を返す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="lineSegment"></param>
