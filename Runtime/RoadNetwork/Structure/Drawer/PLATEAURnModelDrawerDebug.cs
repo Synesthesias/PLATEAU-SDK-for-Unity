@@ -7,10 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Splines;
-using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug;
-using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
 using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
@@ -220,6 +217,22 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // toがこれを満たすトラックのみ表示
                 public VisibleType toRoadType = VisibleType.All;
 
+                [Serializable]
+                public class TurnTypeColor
+                {
+                    [field: SerializeField]
+                    public RnTurnType Type { get; set; }
+                    [field: SerializeField]
+                    public Color Color { get; set; }
+                    public TurnTypeColor(RnTurnType type, Color color)
+                    {
+                        Type = type;
+                        Color = color;
+                    }
+                }
+
+                public List<TurnTypeColor> turnTypeColor = EnumEx.GetValues<RnTurnType>().Select(x => new TurnTypeColor(x, DebugEx.GetDebugColor((int)x, RnTurnTypeEx.Count))).ToList();
+
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
                     var color = baseColor;
@@ -242,7 +255,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                         if (useTurnTypeColor)
                         {
-                            color = DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
+                            color = turnTypeColor.FirstOrDefault(x => x.Type == track.TurnType)?.Color ?? DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
                         }
 
                         Color CheckRoad(RnWay trackBorderWay)
