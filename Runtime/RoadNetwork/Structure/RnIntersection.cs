@@ -677,41 +677,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 tracks.Clear();
 
             var centerGraph = this.CreateCenterLineGraphOrDefault();
-            var edgeGroups = this.CreateEdgeGroup();
-            foreach (var fromEg in edgeGroups.Where(e => e.IsBorder))
+            // fromEg -> toEgに対する中心線とその各点に置ける幅のテーブル
+            Dictionary<RnIntersectionEx.EdgeGroup, Dictionary<RnIntersectionEx.EdgeGroup, (RnWay, List<float>)>> thickCenterLinTables = new();
+            (RnWay, List<float>) GetThickCenterLineWay(RnIntersectionEx.EdgeGroup fromEg, RnIntersectionEx.EdgeGroup toEg)
             {
-                var inBounds = fromEg.InBoundEdges.ToList();
-
-                // fromEg -> toEgのTurnTypeとtoEgよりも左側に同じTurnTypeがいくつあるか
-                // fromEgから出ていくTrackのTurnTypeをTrack数分の配列で事前に作成
-                // 左折2レーン, 直進2レーン, 右折1レーンの場合以下のようになる
-                // [Left, Left, Straight, Straight, Right]
-                List<RnTurnType> turnTypes = new();
-                Dictionary<RnIntersectionEx.EdgeGroup, int> turnTypeIndex = new();
+                var tables = thickCenterLinTables.GetValueOrCreate(fromEg);
+                if (tables.ContainsKey(toEg) == false)
                 {
-                    // fromEgから出ていくTrackのTurnTypeのテーブルをあらかじめ作成
-                    var startIndex = edgeGroups.IndexOf(fromEg);
-                    for (var i = 0; i < edgeGroups.Count; i++)
-                    {
-                        var index = (startIndex + i + 1) % edgeGroups.Count;
-                        var toEg = edgeGroups[index];
-                        if (toEg.IsBorder == false || toEg == fromEg)
-                            continue;
-                        var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
-                        turnTypeIndex[toEg] = turnTypes.Count;
-                        turnTypes.AddRange(Enumerable.Repeat(turnType, toEg.OutBoundEdges.Count()));
-                    }
-                }
-
-                foreach (var toEg in edgeGroups.Where(e => e.IsBorder && e != fromEg))
-                {
-                    // Uターンを許可しない場合
-                    if (fromEg.Key == toEg.Key && op.AllowSelfTrack == false)
-                        continue;
-
-                    // 隣り合っている場合.
-                    RnWay way = null;
-
                     // 反対側に行き過ぎないように
                     // ベースとなる線分と, 反対側の線分の距離テーブル
                     // ベース線分がother.RightSideの場合は, other.LeftSideとの距離テーブルを作成する
@@ -728,7 +700,8 @@ namespace PLATEAU.RoadNetwork.Structure
                     // B -> Cに行く場合は, 右折なので中央線をベースラインに使う. -> CのRightSideと中央線の距離テーブルを作成
                     List<float> widthTable = null;
 
-
+                    // 隣り合っている場合.
+                    RnWay way = null;
                     // 左側で隣接している場合はそれをそのまま使う
                     if (fromEg.LeftSide == toEg.RightSide)
                     {
@@ -750,19 +723,6 @@ namespace PLATEAU.RoadNetwork.Structure
                             return distance;
                         }).ToList();
                     }
-                    //else if (eg.RightSide == other.LeftSide)
-                    //{
-                    //    var ls = RnLineString.Create(eg.RightSide.Edges.SelectMany(e => e.Border.Points));
-                    //    way = new RnWay(ls.Refined(1f), true, false);
-
-                    //    var oLs = RnLineString.Create(other.RightSide.Edges.SelectMany(e => e.Border.Points));
-
-                    //    widthTable = way.Points.Select(x =>
-                    //    {
-                    //        oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
-                    //        return distance;
-                    //    }).ToList();
-                    //}
                     // それ以外の場合は中央線を使う
                     // ただし自分自身に戻る(Uターン)の場合は中央線使わない
                     else if (fromEg.Key != toEg.Key && centerGraph != null)
@@ -780,80 +740,208 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
                     }
 
-                    void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
-                    {
-                        // 対象外のものは無視
-                        if (op.IsBuildTarget(this, from, to) == false)
-                            return;
-                        var track = CreateTrackOrDefault(op, way, widthTable, from, to, edgeTurnType);
-                        TryAddOrUpdateTrack(track);
-                    }
+                    tables[toEg] = (way, widthTable);
+                }
 
-                    var outBounds = toEg.OutBoundEdges.ToList();
-                    // 行き先が無い場合は無視
-                    if (outBounds.Count <= 0)
-                        continue;
-                    var turnTypeStartIndex = turnTypeIndex[toEg];
-                    if (turnTypeStartIndex >= turnTypes.Count)
-                        continue;
-                    var turnType = turnTypes[turnTypeIndex[toEg]];
-                    if (turnType.IsLeft())
-                    {
-                        // 左折の場合は左側のレーンのみ作成する
-                        var num = Mathf.Min(inBounds.Count, outBounds.Count);
-                        foreach (var from in Enumerable.Range(0, num).Select(i => inBounds[^(i + 1)]))
-                        {
-                            foreach (var to in outBounds)
-                                AddTrack(from, to, turnType);
-                        }
-                    }
-                    else if (turnType.IsRight())
-                    {
-                        // 右折の場合は右側のレーンのみ作成する
-                        var num = Mathf.Min(inBounds.Count, outBounds.Count);
-                        foreach (var from in inBounds.Take(num))
-                        {
-                            foreach (var to in outBounds)
-                                AddTrack(from, to, turnType);
-                        }
-                    }
-                    else if (turnType == RnTurnType.Straight)
-                    {
-                        // 直進のレーンは互いに干渉しないように1:1で作成する
-                        // すでに別のEdgeGroupでStraightがある場合も考慮してoffsetを作る
-                        var offset = turnTypes.Take(turnTypeStartIndex).Count(x => x == RnTurnType.Straight);
-                        // 最低でも1車線はtoEdgeへのトラックを用意する(全くいけなくなるので)
-                        //offset = Mathf.Min(offset, inBounds.Count - 1);
-                        // まだ作っていない直進トラックの数
-                        var remainInBoundNum = inBounds.Count - offset;
-                        var num = Mathf.Min(remainInBoundNum, outBounds.Count);
-                        for (var i = 0; i < num; ++i)
-                        {
-                            // 左から順に見ていく
-                            AddTrack(inBounds[^(i + offset + 1)], outBounds[i], turnType);
-                        }
+                return tables[toEg];
+            }
 
-                        // 右側にこれ以上Trackが作れない場合.
-                        // しょうがないので一番右の直進Trackに合流させる
-                        var rightEgTrackNum = turnTypes.Skip(turnTypeStartIndex + outBounds.Count).Count();
-                        for (var i = num + offset; i < inBounds.Count - rightEgTrackNum; ++i)
-                        {
-                            AddTrack(inBounds[^(i + 1)], outBounds.Last(), turnType);
-                        }
-                    }
-                    else
-                    {
-                        foreach (var from in inBounds)
-                        {
-                            foreach (var to in outBounds)
-                            {
-                                AddTrack(from, to, turnType);
-                            }
-                        }
-                    }
+            var borderEdgeGroups = this.CreateEdgeGroup().Where(e => e.IsBorder).ToList();
+            for (var startEdgeIndex = 0; startEdgeIndex < borderEdgeGroups.Count; ++startEdgeIndex)
+            {
+                var fromEg = borderEdgeGroups[startEdgeIndex];
+                var inBoundsLeft2Right = fromEg.InBoundEdges.ToList().Reversed().ToList();
+                if (inBoundsLeft2Right.Count == 0)
+                    continue;
 
+                // fromEg -> toEgのTurnTypeとtoEgよりも左側に同じTurnTypeがいくつあるか
+                // fromEgから出ていくTrackのTurnTypeをTrack数分の配列で事前に作成
+                // 左折2レーン, 直進2レーン, 右折1レーンの場合以下のようになる
+                // [Left, Left, Straight, Straight, Right]
+
+                List<(RnTurnType Type, RnIntersectionEx.EdgeGroup ToEg, RnNeighbor To)> outBoundsLeft2Rights = new();
+
+                // fromEgから出ていくTrackのTurnTypeのテーブルをあらかじめ作成
+                var size = op.AllowSelfTrack ? borderEdgeGroups.Count : borderEdgeGroups.Count - 1;
+                for (var i = 0; i < size; i++)
+                {
+                    var index = (startEdgeIndex + i + 1) % borderEdgeGroups.Count;
+                    var toEg = borderEdgeGroups[index];
+                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
+                    foreach (var to in toEg.OutBoundEdges)
+                    {
+                        outBoundsLeft2Rights.Add((turnType, toEg, to));
+                    }
+                }
+
+                // 行き先が無い場合は無視
+                if (outBoundsLeft2Rights.Count == 0)
+                    continue;
+
+                void MakeTrack(RnNeighbor from, int outBoundIndex)
+                {
+                    var (turnType, toEg, to) = outBoundsLeft2Rights[outBoundIndex];
+                    // 対象外のものは無視
+                    if (op.IsBuildTarget(this, from, to) == false)
+                        return;
+
+                    // 隣り合っている場合.
+                    var (way, widthTable) = GetThickCenterLineWay(fromEg, toEg);
+
+                    var track = CreateTrackOrDefault(op, way, widthTable, from, to, turnType);
+                    TryAddOrUpdateTrack(track);
+                }
+
+                if (inBoundsLeft2Right.Count > outBoundsLeft2Rights.Count)
+                {
+                    // 一番右のトラックに余った分を割り当てる
+                    for (var i = 0; i < inBoundsLeft2Right.Count; ++i)
+                    {
+                        var outBoundIndex = Mathf.Clamp(i, 0, outBoundsLeft2Rights.Count - 1);
+                        var from = inBoundsLeft2Right[i];
+                        MakeTrack(from, outBoundIndex);
+                    }
+                }
+                else
+                {
+                    // 両端のトラックに余った分は割り当てる
+                    var startIndex = (outBoundsLeft2Rights.Count - inBoundsLeft2Right.Count + 1) / 2;
+                    for (var i = 0; i < outBoundsLeft2Rights.Count; ++i)
+                    {
+                        var inBoundIndex = Mathf.Clamp(i - startIndex, 0, inBoundsLeft2Right.Count - 1);
+                        var from = inBoundsLeft2Right[inBoundIndex];
+                        MakeTrack(from, i);
+                    }
                 }
             }
+
+            //foreach (var fromEg in borderEdgeGroups)
+            //{
+            //    var inBounds = fromEg.InBoundEdges.ToList();
+
+            //    // fromEg -> toEgのTurnTypeとtoEgよりも左側に同じTurnTypeがいくつあるか
+            //    // fromEgから出ていくTrackのTurnTypeをTrack数分の配列で事前に作成
+            //    // 左折2レーン, 直進2レーン, 右折1レーンの場合以下のようになる
+            //    // [Left, Left, Straight, Straight, Right]
+            //    List<RnTurnType> turnTypes = new();
+
+
+            //    Dictionary<RnIntersectionEx.EdgeGroup, int> turnTypeIndex = new();
+
+            //    List<(RnTurnType Type, RnNeighbor To)> groups = new();
+            //    {
+            //        List<RnNeighbor> left2Rights = inBounds.Reversed().ToList();
+            //        // fromEgから出ていくTrackのTurnTypeのテーブルをあらかじめ作成
+            //        var startIndex = borderEdgeGroups.IndexOf(fromEg);
+
+            //        var size = op.AllowSelfTrack ? borderEdgeGroups.Count : borderEdgeGroups.Count - 1;
+            //        for (var i = 0; i < size; i++)
+            //        {
+            //            var index = (startIndex + i + 1) % borderEdgeGroups.Count;
+            //            var toEg = borderEdgeGroups[index];
+            //            var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
+            //            turnTypeIndex[toEg] = turnTypes.Count;
+            //            turnTypes.AddRange(Enumerable.Repeat(turnType, toEg.OutBoundEdges.Count()));
+
+            //            foreach (var to in toEg.OutBoundEdges)
+            //            {
+            //                groups.Add((turnType, to));
+            //            }
+            //        }
+            //    }
+
+
+
+            //    foreach (var toEg in borderEdgeGroups)
+            //    {
+            //        // Uターンを許可しない場合
+            //        if (fromEg.Key == toEg.Key && op.AllowSelfTrack == false)
+            //            continue;
+
+            //        // 隣り合っている場合.
+            //        var (way, widthTable) = GetWidthTable(fromEg, toEg);
+            //        void AddTrack(RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            //        {
+            //            // 対象外のものは無視
+            //            if (op.IsBuildTarget(this, from, to) == false)
+            //                return;
+            //            var track = CreateTrackOrDefault(op, way, widthTable, from, to, edgeTurnType);
+            //            TryAddOrUpdateTrack(track);
+            //        }
+
+            //        var outBounds = toEg.OutBoundEdges.ToList();
+            //        // 行き先が無い場合は無視
+            //        if (outBounds.Count <= 0)
+            //            continue;
+            //        var turnTypeStartIndex = turnTypeIndex[toEg];
+            //        if (turnTypeStartIndex >= turnTypes.Count)
+            //            continue;
+            //        var turnType = turnTypes[turnTypeIndex[toEg]];
+            //        if (turnType.IsLeft())
+            //        {
+            //            // 左折の場合は左側のレーンのみ作成する
+            //            var num = Mathf.Min(inBounds.Count, outBounds.Count);
+            //            for (var i = 0; i < num; ++i)
+            //            {
+            //                AddTrack(inBounds[^(i + 1)], outBounds[i], turnType);
+            //            }
+            //            //foreach (var from in Enumerable.Range(0, num).Select(i => inBounds[^(i + 1)]))
+            //            //{
+            //            //    foreach (var to in outBounds)
+            //            //        AddTrack(from, to, turnType);
+            //            //}
+            //        }
+            //        else if (turnType.IsRight())
+            //        {
+            //            // 右折の場合は右側のレーンのみ作成する
+            //            var num = Mathf.Min(inBounds.Count, outBounds.Count);
+            //            for (var i = 0; i < num; ++i)
+            //            {
+            //                AddTrack(inBounds[i], outBounds[^(i + 1)], turnType);
+            //            }
+            //            //foreach (var from in inBounds.Take(num))
+            //            //{
+            //            //    foreach (var to in outBounds)
+            //            //        AddTrack(from, to, turnType);
+            //            //}
+            //        }
+            //        else if (turnType == RnTurnType.Straight)
+            //        {
+            //            // 直進のレーンは互いに干渉しないように1:1で作成する
+            //            // すでに別のEdgeGroupでStraightがある場合も考慮してoffsetを作る
+            //            var offset = turnTypes.Take(turnTypeStartIndex).Count(x => x == RnTurnType.Straight);
+            //            // 最低でも1車線はtoEdgeへのトラックを用意する(全くいけなくなるので)
+            //            //offset = Mathf.Min(offset, inBounds.Count - 1);
+            //            // まだ作っていない直進トラックの数
+            //            var remainInBoundNum = inBounds.Count - offset;
+            //            var num = Mathf.Min(remainInBoundNum, outBounds.Count);
+            //            for (var i = 0; i < num; ++i)
+            //            {
+            //                // 左から順に見ていく
+            //                AddTrack(inBounds[^(i + offset + 1)], outBounds[i], turnType);
+            //            }
+
+            //            // 右側にこれ以上Trackが作れない場合.
+            //            // しょうがないので一番右の直進Trackに合流させる
+            //            var rightEgTrackNum = turnTypes.Skip(turnTypeStartIndex + outBounds.Count).Count();
+            //            for (var i = num + offset; i < inBounds.Count - rightEgTrackNum; ++i)
+            //            {
+            //                AddTrack(inBounds[^(i + 1)], outBounds.Last(), turnType);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            foreach (var from in inBounds)
+            //            {
+            //                foreach (var to in outBounds)
+            //                {
+            //                    AddTrack(from, to, turnType);
+            //                }
+            //            }
+            //        }
+
+            //    }
+            //}
         }
 
         /// <summary>
@@ -884,18 +972,23 @@ namespace PLATEAU.RoadNetwork.Structure
             // 直進でつながるトラックを作成
             RnTrack TryCreateOneLineTrack()
             {
+                // 直進で繋がるとき
+                var segment = new LineSegment3D(fromPos - fromNormal * 0.1f,
+                    toPos - toNormal * 0.1f);
+
                 // 直進でつながったとしても角度つくようだとダメ
-                if (edgeTurnType != RnTurnType.Straight)
+                // #TODO : マジックナンバー
+                var ang = Vector2.Angle(-fromNormal.Xz(), segment.Direction.Xz());
+                if (ang > 30)
                     return null;
 
-                // 直進で繋がるとき
                 var oneLineCrossPoints =
-                this.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f,
-                    toPos - toNormal * 0.1f));
+                this.GetEdgeCrossPoints(segment);
 
                 // 途中でEdgesと交差する場合は外に出るからダメ
                 if (IsCollide(oneLineCrossPoints))
                     return null;
+
 
                 var spline = new Spline
                 {
