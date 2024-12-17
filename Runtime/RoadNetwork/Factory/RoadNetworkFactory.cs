@@ -224,17 +224,17 @@ namespace PLATEAU.RoadNetwork.Factory
                 return new RnWay(LineMap[key], false);
             }
 
-            public List<RnSideWalk> CreateSideWalk(float lod1SideWalkSize)
+            public List<RnSideWalk> CreateSideWalk(float minRoadSize, float lod1SideWalkSize)
             {
                 var visited = new Dictionary<RnPoint, (RnPoint pos, List<Vector3> normal)>();
 
                 var ret = new List<RnSideWalk>();
                 // LOD1の場合は周りにlod1RoadSize分歩道があると仮定して動かす
-                void MoveWay(RnWay way, RnRoadBase parent, RnSideWalkLaneType laneType)
+                void MoveWay(RnWay way, RnRoadBase parent, RnSideWalkLaneType laneType, float sideWalkSize)
                 {
                     if (way == null)
                         return;
-                    if (lod1SideWalkSize <= 0f)
+                    if (sideWalkSize < lod1SideWalkSize)
                         return;
 
                     var normals = Enumerable.Range(0, way.Count)
@@ -250,7 +250,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         if (visited.ContainsKey(p) == false)
                         {
                             var before = new RnPoint(p.Vertex);
-                            p.Vertex -= n * lod1SideWalkSize;
+                            p.Vertex -= n * sideWalkSize;
                             visited[p] = new(before, new List<Vector3> { n }); //new VertexInfo { Normal = n, Position = last };
                             outsidePoints.Add(before);
                         }
@@ -262,7 +262,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             {
                                 n -= Vector3.Dot(n, nn) * nn;
                             }
-                            p.Vertex -= n * lod1SideWalkSize;
+                            p.Vertex -= n * sideWalkSize;
                             last.normal.Add(n);
                             outsidePoints.Add(last.pos);
                         }
@@ -280,15 +280,49 @@ namespace PLATEAU.RoadNetwork.Factory
                         continue;
                     if (tran.Node is RnRoad road)
                     {
+                        // 歩道を作ることで道路がminRoadSize以下になる場合は作らない
                         var leftLane = road.MainLanes.FirstOrDefault();
                         var rightLane = road.MainLanes.LastOrDefault();
-                        MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane);
-                        MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane);
+                        if (leftLane == rightLane)
+                        {
+                            var leftWidth = leftLane.CalcMinWidth();
+                            var sideWalkSize = Mathf.Min(leftWidth - minRoadSize * 2, lod1SideWalkSize);
+                            MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane, sideWalkSize);
+                            MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane, sideWalkSize);
+                        }
+                        else
+                        {
+                            var leftWidth = leftLane.CalcMinWidth();
+                            var rightWidth = rightLane.CalcMinWidth();
+                            MoveWay(leftLane?.LeftWay, road, RnSideWalkLaneType.LeftLane, Mathf.Min(leftWidth - minRoadSize, lod1SideWalkSize));
+                            MoveWay(rightLane?.RightWay, road, RnSideWalkLaneType.RightLane, Mathf.Min(rightWidth - minRoadSize, lod1SideWalkSize));
+
+                        }
                     }
                     else if (tran.Node is RnIntersection intersection)
                     {
+                        // 歩道を作ることで交差点の境界線幅がminRoadSize以下になる場合は作らない
+                        float? sideWalkSize = null;
+                        foreach (var eg in intersection.CreateEdgeGroup().Where(e => e.IsBorder == false && e.IsValid))
+                        {
+                            // 真ん中カーブした境界線だったりすると無駄に長くなったりするので最初と最後の点だけで距離を取る
+                            var e0 = eg.Edges[0];
+                            var e1 = eg.Edges[^1];
+                            var width = (e0.Border[0] - e1.Border[^1]).magnitude;
+
+                            // 左右から移動させられるので2倍した値でチェックする
+                            if (sideWalkSize == null)
+                            {
+                                sideWalkSize = width - 2 * minRoadSize;
+                            }
+                            else
+                            {
+                                sideWalkSize = Mathf.Min(sideWalkSize.Value, width - 2 * minRoadSize);
+                            }
+                        }
+
                         foreach (var edge in intersection.Edges.Where(x => x.IsBorder == false))
-                            MoveWay(edge.Border, intersection, RnSideWalkLaneType.Undefined);
+                            MoveWay(edge.Border, intersection, RnSideWalkLaneType.Undefined, Mathf.Min(sideWalkSize ?? 0f, lod1SideWalkSize));
                     }
                 }
 
@@ -677,7 +711,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 歩道を作成する
-                var sideWalks = work.CreateSideWalk(Lod1SideWalkSize);
+                var sideWalks = work.CreateSideWalk(RoadSize, Lod1SideWalkSize);
                 foreach (var sideWalk in sideWalks)
                     ret.AddSideWalk(sideWalk);
                 if (AddSideWalk)

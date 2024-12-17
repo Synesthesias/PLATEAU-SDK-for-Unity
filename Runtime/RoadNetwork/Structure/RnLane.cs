@@ -735,6 +735,44 @@ namespace PLATEAU.RoadNetwork.Structure
             return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
         }
 
+        /// <summary>
+        /// このレーンのうち最も狭くなる場所の幅を返す.頂点ごとに計算するため割と重い
+        /// 左右のレーンが不正の場合は0を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcMinWidth(this RnLane self)
+        {
+            if (self == null)
+                return 0f;
+            if (self.LeftWay.IsValidOrDefault() == false)
+                return 0f;
+            if (self.RightWay.IsValidOrDefault() == false)
+                return 0f;
+
+            var minW = float.MaxValue;
+            foreach (var v in self.LeftWay)
+            {
+                self.RightWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            foreach (var v in self.RightWay)
+            {
+                self.LeftWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            return minW;
+        }
+
+
+        /// <summary>
+        /// Laneの幅を設定する. 頂点ごとに計算するため割と重い
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="getWidth"></param>
+        /// <param name="moveLeft"></param>
         private static bool TrySetWidth(this RnLane self, Func<int, float, float> getWidth, bool moveLeft)
         {
             if (self.HasBothBorder == false)
@@ -761,7 +799,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     return (nextPos, t2);
                 }
 
-                var lastWayIndex = fixWayIndex;
                 var (pos, t) = GetFixSeg(fixWayIndex);
 
                 if (t < 0f || t > 1f)
