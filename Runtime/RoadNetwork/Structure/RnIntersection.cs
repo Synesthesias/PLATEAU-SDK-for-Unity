@@ -855,7 +855,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 // 直進でつながったとしても角度つくようだとダメ
                 // #TODO : マジックナンバー
                 var ang = Vector2.Angle(-fromNormal.Xz(), segment.Direction.Xz());
-                if (ang > 30)
+                if (ang > 15)
                     return null;
 
                 var oneLineCrossPoints =
