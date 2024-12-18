@@ -8,11 +8,12 @@ using UnityEngine;
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
     /// <summary>
-    /// 道路のレーン編集のために、線1つをシーン上に描画します。
+    /// 道路のレーン編集（交差点編集時の線も含む）のために、線1つをシーン上に描画します。
     /// 線の種類をサブクラスで書き分けます。
     /// </summary>
     public interface ILaneLineDrawer
     {
+        protected const float HeightOffset = 0.2f; // 線が、道路標示のポリゴンなどにめり込まない程度の高さです。
         void Draw();
     }
     
@@ -37,7 +38,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (line.Count < 2) return;
             var prevColor = Gizmos.color;
             Gizmos.color = color;
-            Gizmos.DrawLineStrip(line.ToArray() ,false);
+            Gizmos.DrawLineStrip(line.Select(p => p + Vector3.up * ILaneLineDrawer.HeightOffset).ToArray() ,false);
             Gizmos.color = prevColor;
 #endif
         }
@@ -60,12 +61,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public void Draw()
         {
 #if UNITY_EDITOR
-            const float YOffset = 0.5f;
             const float OneArrowLength = 3f;
             const float OneSpaceLength = 1f;
             var prevColor = Gizmos.color;
             Gizmos.color = color;
-            DrawDashedArrows(way.Select(v => v.PutY(v.y + YOffset)), false, OneArrowLength, OneSpaceLength);
+            DrawDashedArrows(way.Select(v => v.PutY(v.y + ILaneLineDrawer.HeightOffset)), false, OneArrowLength, OneSpaceLength);
             Gizmos.color = prevColor;
 #endif
         }

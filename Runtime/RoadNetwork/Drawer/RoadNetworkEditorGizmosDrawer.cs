@@ -16,6 +16,10 @@ namespace PLATEAU.RoadNetwork
     {
         private List<ILaneLineDrawer> lines = new();
 
+        public void Clear()
+        {
+            lines.Clear();
+        }
 
         public void SetLine(IEnumerable<ILaneLineDrawer> linesArg)
         {

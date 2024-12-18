@@ -12,35 +12,26 @@ using UnityEngine.Rendering;
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
     /// <summary>
-    /// ギズモの描画システム
-    /// ギズモ描画を行う処理を生成する。
-    /// 実際の描画はMonoBehaviourを継承したギズモ描画クラスを用意したのでそこで行う。
+    /// 道路のレーン編集（交差点編集時の線も含む）のために、
+    /// シーン上に描画するための線を生成します。
     /// </summary>
-    internal class EditingSystemGizmos
+    internal class LaneLineGizmoGenerator
     {
-        
-
         // それぞれのwayの色
-        
         private static readonly Color selectingWayColor = Color.red;
-                
-        private static readonly Color leftSideWayColor = Color.yellow;
+        private static readonly Color leftSideWayColor = new Color(0.7f, 0.1f, 0.9f);
         private static readonly Color rightSideWayColor = Color.green;
         private static readonly Color medianWayColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
-        
-        private static readonly Color sideWalkColor = Color.magenta;
+        private static readonly Color sideWalkColor = new Color(0.7f, 0.6f, 0.3f);
         private static readonly Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
-                
         private static readonly Color intersectionOutlineColor = new Color(0.2f, 0.6f, 0.5f);
         private static readonly Color intersectionBorderColor = new Color(0.2f, 1f, 0.2f);
-
         private static readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
         
-
         /// <summary>
         /// 編集用のギズモの線を生成します。
         /// </summary>
-        public List<ILaneLineDrawer> GenerateEditingLines(
+        public List<ILaneLineDrawer> Generate(
             object selectingElement,
             WayEditorData highLightWay,
             EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData,
