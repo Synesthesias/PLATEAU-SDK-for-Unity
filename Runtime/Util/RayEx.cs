@@ -55,7 +55,7 @@ namespace PLATEAU.Util
             {
                 var d2 = new Vector2(ray.direction.GetTangent(plane).magnitude, ray.direction.GetNormal(plane)).normalized;
                 var x = (inter2 - ray.origin.GetTangent(plane)).magnitude;
-                var y = d2.y * x;
+                var y = d2.y * x + ray.origin.GetNormal(plane);
                 t = x * Mathf.Sqrt(1 + d2.y * d2.y);
                 return y;
             }
