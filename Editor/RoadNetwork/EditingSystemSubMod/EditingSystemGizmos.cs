@@ -42,9 +42,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private List<LaneLineDrawerSolid> slideDummyWayList = new();
 
         // 交差点の外周
-        private List<List<Vector3>> intersectionOutline = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> intersectionOutline = new ();
         // 交差点と道路の境界
-        private List<List<Vector3>> intersectionBorder = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> intersectionBorder = new();
 
         // それぞれのwayの色
 
@@ -59,8 +59,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private static readonly Color sideWalkColor = Color.magenta;
         private static readonly Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
                 
-        private static readonly Color intersectionOutlineColor = Color.gray;
-        private static readonly Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
+        private static readonly Color intersectionOutlineColor = new Color(0.2f, 0.6f, 0.5f);
+        private static readonly Color intersectionBorderColor = new Color(0.2f, 1f, 0.2f);
 
         private static readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
 
@@ -245,12 +245,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
                 {
                     if (neighbor.Border != null)
-                        intersectionOutline.Add(neighbor.Border.ToList());
+                        intersectionBorder.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor));
+                }
+            }
+            
+            intersectionOutline.Clear();
+            if (intersectionEditorData != null)
+            {
+                foreach (var edge in intersectionEditorData.Ref.Edges.Where(e => e.Road == null))
+                {
+                    intersectionOutline.Add(new LaneLineDrawerSolid(edge.Border.ToList(), intersectionOutlineColor));
                 }
             }
 
         }
-
 
         /// <summary>
         /// 描画コマンドの生成
@@ -259,63 +267,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public List<Action> BuildDrawCommands()
         {
             drawFuncs.Clear();
-
-
+            
             drawFuncs.Add(() => {foreach(var s in sideWalks) s.Draw();});
             drawFuncs.Add(() => {foreach(var l in leftLaneWayList) l.Draw();});
             drawFuncs.Add(() => {foreach (var r in rightLaneWayList) r.Draw(); });
             drawFuncs.Add(() => selectingWay.Draw());
             drawFuncs.Add(() => {foreach (var s in slideDummyWayList) s.Draw(); });
-
-            AddDrawFunc(ref drawFuncs, intersectionOutline, intersectionOutlineColor);
-
-            AddDrawFunc(ref drawFuncs, intersectionBorder, intersectionBorderColor);
-
+            drawFuncs.Add(() => {foreach (var i in intersectionOutline) i.Draw(); });
+            drawFuncs.Add(() => {foreach (var i in intersectionBorder) i.Draw(); });
             drawFuncs.Add(() => {foreach(var m in medianWayList) m.Draw();});
-
-
             drawFuncs.Add(() => {foreach(var m in mainLaneCenterWay) m.Draw();});
-
-            
 
             return drawFuncs;
         }
-
-        private static void AddDrawFunc(ref List<Action> drawFuncs, List<List<Vector3>> lines, Color color)
-        {
-            if (lines.Count == 0)
-            {
-                return;
-            }
-            drawFuncs.Add(() =>
-            {
-                Gizmos.color = color;
-                foreach (var line in lines)
-                {
-                    Gizmos.DrawLineStrip(line.ToArray(), false);
-                }
-            });
-
-        }
-
-        private static bool CalcCenterPos(IEnumerable<RnPoint> points, out UnityEngine.Vector3 v)
-        {
-            var nP = points.Count();
-            if (nP <= 0)
-            {
-                v = Vector3.zero;
-                return false;
-            }
-            var sum = Vector3.zero;
-            foreach (var p in points)
-            {
-                sum += p.Vertex;
-            }
-            var borderPos = sum / nP;
-            v = borderPos;
-            return true;
-        }
-        
-
     }
 }
