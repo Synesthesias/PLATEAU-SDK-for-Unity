@@ -82,8 +82,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             }
         }
 
-        /// <summary> 結合します。 </summary>
-        public Mesh Combine()
+        /// <summary> 結合してMeshを生成します。 </summary>
+        public Mesh Combine(out Material[] outMaterials)
         {
             // マテリアルごとに結合します。
             var mats = ((RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial))).Where(m => m != RoadMarkingMaterial.None);
@@ -91,6 +91,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             foreach (var mat in mats)
             {
                 var combineTargets = instances.Where(i => i.MaterialType == mat).Select(i => i.CombineInstance).ToArray();
+                if (combineTargets.Length == 0) continue;
                 var combined = new Mesh();
                 combined.indexFormat = IndexFormat.UInt32;
                 combined.CombineMeshes(combineTargets, true);
@@ -103,6 +104,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var allCombinedMesh = new Mesh();
             allCombinedMesh.indexFormat = IndexFormat.UInt32;
             allCombinedMesh.CombineMeshes(allCombineTargets, false);
+            outMaterials = matCombined.Keys.Select(m => m.ToMaterial()).ToArray();
             return allCombinedMesh;
         }
     }

@@ -1,8 +1,8 @@
 using PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -75,7 +75,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     // 道路の線をメッシュに変換します。
                     var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
                     var points = way.Line.Points;
-                    var instance = gen.GenerateMesh(points.ToArray());
+                    var instance = gen.GenerateMeshInstance(points.ToArray());
 
                     instances.Add(instance);
                 }
@@ -84,14 +84,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 var arrowComposer = new DirectionalArrowComposer(innerTarget);
                 instances.AddRange(arrowComposer.Generate());
 
-                var dstMesh = instances.Combine();
-                GenerateGameObj(dstMesh, dstParent, rb);
+                var dstMesh = instances.Combine(out var materials);
+                GenerateGameObj(dstMesh, dstParent, rb, materials);
             }
         }
 
         
 
-        private void GenerateGameObj(Mesh mesh, Transform dstParent, RnRoadBase srcRoad)
+        private void GenerateGameObj(Mesh mesh, Transform dstParent, RnRoadBase srcRoad, Material[] materials)
         {
             var targetRoads = srcRoad.TargetTrans;
             var targetRoad = targetRoads == null || targetRoads.Count == 0 ? null : targetRoads.First();
@@ -116,7 +116,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var meshFilter = dstObj.GetOrAddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
             var meshRenderer = dstObj.GetOrAddComponent<MeshRenderer>();
-            meshRenderer.sharedMaterials = RoadMarkingMaterialExtension.Materials();
+            meshRenderer.sharedMaterials = materials;
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off; // 道路と重なっているので影は不要
             dstObj.transform.parent = dstParent;
             mesh.name = dstName;
