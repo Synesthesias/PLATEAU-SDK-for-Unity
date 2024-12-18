@@ -771,6 +771,8 @@ namespace PLATEAU.RoadNetwork.Structure
                     var toEg = borderEdgeGroups[index];
                     if (toEg.IsValid == false)
                         continue;
+                    if (toEg.OutBoundEdges.Any() == false)
+                        continue;
                     var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, RnModel.Plane);
                     foreach (var to in toEg.OutBoundEdges)
                     {
@@ -877,8 +879,9 @@ namespace PLATEAU.RoadNetwork.Structure
             RnTrack TryCreateTwoLineTrack()
             {
                 var plane = RnModel.Plane;
-                var fromRay = new Ray(fromPos - fromNormal * 0.1f, -fromNormal);
-                var toRay = new Ray(toPos - toNormal * 0.1f, -toNormal);
+                var offset = 0.01f;
+                var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
+                var toRay = new Ray(toPos - toNormal * offset, -toNormal);
 
                 // 交差しない場合は無視
                 if (fromRay.CalcIntersectionBy2D(toRay, plane, out var cp, out var _, out var _) == false)
@@ -1585,11 +1588,13 @@ namespace PLATEAU.RoadNetwork.Structure
             List<RnPoint> points = new List<RnPoint>(self.Edges.Sum(x => x.Border.Count));
             foreach (var p in self.Edges.SelectMany(e => e.Border.Points))
             {
-                if (points.Any() && (points.Last() == p || points.First() == p))
+                if (points.Any() && points.Last() == p)
                     continue;
                 points.Add(p);
             }
-            return GeoGraph2D.IsInsidePolygon(pos.Xz(), points.Select(x => x.Vertex.Xz()));
+            if (points.Count > 1 && points[0] == points[^1])
+                points.RemoveAt(points.Count - 1);
+            return GeoGraph2D.IsInsidePolygon(pos.Xz(), points.Select(x => x.Vertex.Xz()).ToList());
         }
 
 #if false
