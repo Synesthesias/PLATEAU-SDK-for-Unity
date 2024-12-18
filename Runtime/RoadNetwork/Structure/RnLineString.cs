@@ -435,7 +435,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
     public static class RnLineStringEx
     {
-        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = AxisPlane.Xz)
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = RnModel.Plane)
         {
             foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex.ToVector2(axis)), false))
                 yield return new LineSegment2D(e.Item1, e.Item2);

@@ -473,7 +473,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
         {
             const float tangentLength = 10f;
-            var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, AxisPlane.Xz);
+            var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, RnModel.Plane);
 
             var track = CreateTrack(from, to, turnType);
             return TryAddOrUpdateTrack(track);
@@ -771,7 +771,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     var toEg = borderEdgeGroups[index];
                     if (toEg.IsValid == false)
                         continue;
-                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, AxisPlane.Xz);
+                    var turnType = RnTurnTypeEx.GetTurnType(-fromEg.Normal, toEg.Normal, RnModel.Plane);
                     foreach (var to in toEg.OutBoundEdges)
                     {
                         outBoundsLeft2Rights.Add((turnType, toEg, to));
@@ -876,7 +876,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             RnTrack TryCreateTwoLineTrack()
             {
-                var plane = AxisPlane.Xz;
+                var plane = RnModel.Plane;
                 var fromRay = new Ray(fromPos - fromNormal * 0.1f, -fromNormal);
                 var toRay = new Ray(toPos - toNormal * 0.1f, -toNormal);
 
@@ -1074,7 +1074,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // 時計回りになるように整列
-            if (GeoGraph2D.IsClockwise(edges.Select(e => e.Border[0].ToVector2(AxisPlane.Xz))) == false)
+            if (GeoGraph2D.IsClockwise(edges.Select(e => e.Border[0].ToVector2(RnModel.Plane))) == false)
             {
                 foreach (var e in edges)
                     e.Border.Reverse(true);

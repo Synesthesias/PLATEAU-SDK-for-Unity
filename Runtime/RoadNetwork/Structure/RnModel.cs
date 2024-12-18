@@ -15,6 +15,8 @@ namespace PLATEAU.RoadNetwork.Structure
     {
         public const float Epsilon = float.Epsilon;
 
+        public const AxisPlane Plane = AxisPlane.Xz;
+
         //----------------------------------
         // start: フィールド
         //----------------------------------
@@ -629,7 +631,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public static RoadCutResult CanSliceRoadHorizontalAndConvert2Intersection(this RnModel self, RnRoad road,
             LineSegment3D lineSegment1, LineSegment3D lineSegment2)
         {
-            if (lineSegment1.TrySegmentIntersectionBy2D(lineSegment2, AxisPlane.Xz, -1f, out var _))
+            if (lineSegment1.TrySegmentIntersectionBy2D(lineSegment2, RnModel.Plane, -1f, out var _))
                 return RoadCutResult.CrossCutLine;
 
             var check1 = self.CanSliceRoadHorizontal(road, lineSegment1, out var inters1);
@@ -869,7 +871,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (check != RoadCutResult.Success)
                 return new SliceRoadHorizontalResult { Result = check };
 
-            var lineSegment2D = lineSegment.To2D(AxisPlane.Xz);
+            var lineSegment2D = lineSegment.To2D(RnModel.Plane);
 
             // key   : 元のLineString
             // value : 分割後のselfのprev/next側のLineString
@@ -1145,7 +1147,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (check != RoadCutResult.Success)
                 return new SliceIntersectionResult { Result = check };
 
-            var lineSegment2D = lineSegment.To2D(AxisPlane.Xz);
+            var lineSegment2D = lineSegment.To2D(RnModel.Plane);
 
             // key   : 元のLineString
             // value : 分割後のselfのprev/next側のLineString

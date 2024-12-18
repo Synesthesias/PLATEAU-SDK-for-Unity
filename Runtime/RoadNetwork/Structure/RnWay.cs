@@ -864,7 +864,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         /// <param name="plane"></param>
         /// <returns></returns>
-        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = AxisPlane.Xz)
+        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = RnModel.Plane)
         {
             return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
         }

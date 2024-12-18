@@ -658,7 +658,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rights =
                 self.RightWay.Vertices.ToList();
             AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
-            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
+            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, RnModel.Plane, p2);
             foreach (var s in segments)
             {
                 AddPoint(s);
@@ -780,7 +780,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 Debug.Log($"[TrySetWidth] Lane {self.DebugMyId} HasBothBorder == false");
                 return false;
             }
-            var plane = AxisPlane.Xz;
+            var plane = RnModel.Plane;
             // 動かさない
             var fixWay = moveLeft ? self.RightWay : self.LeftWay;
             var moveWay = moveLeft ? self.LeftWay : self.RightWay;
@@ -1051,7 +1051,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         else
                             AddPoint(prevBorder.Points.First());
 
-                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
+                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), RnModel.Plane, rate);
                         foreach (var s in segments)
                         {
                             AddPoint(new RnPoint(s));
