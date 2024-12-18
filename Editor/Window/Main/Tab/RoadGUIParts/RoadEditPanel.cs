@@ -154,7 +154,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 // 既存のモデルオブジェクトを解除
                 rootVisualElement.Unbind();
 
-                // 仮 詳細編集モード
+                // 仮 詳細編集モード → 未完成のためGUI上ではオフにしています
                 rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
                 {
                     var mod = EditorInterface.system.RoadNetworkSimpleEditModule;
