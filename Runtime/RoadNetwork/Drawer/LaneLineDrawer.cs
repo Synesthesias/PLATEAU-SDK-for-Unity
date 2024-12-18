@@ -3,9 +3,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
@@ -32,11 +30,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             this.color = color;
         }
 
-        public static LaneLineDrawerSolid CreateWithEmptyLine(Color color)
-        {
-            return new LaneLineDrawerSolid(new List<Vector3>(), color);
-        }
-
         public void Draw()
         {
 #if UNITY_EDITOR
@@ -48,13 +41,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             Gizmos.color = prevColor;
 #endif
         }
-
-        public void SetLine(List<Vector3> lineArg)
-        {
-            line = lineArg;
-        }
-
-        public void ClearLine() => line.Clear();
     }
 
     

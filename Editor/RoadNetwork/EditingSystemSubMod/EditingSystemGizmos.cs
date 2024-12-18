@@ -18,38 +18,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// </summary>
     internal class EditingSystemGizmos
     {
-        /// <summary>
-        /// 描画コマンド群
-        /// </summary>
-        private List<System.Action> drawFuncs = new List<Action>();
-
-        // 選択中のwayを表現する頂点リスト
-        private LaneLineDrawerSolid selectingWay = LaneLineDrawerSolid.CreateWithEmptyLine(selectingWayColor);
-
-        // 左側、右側車線のwayを表現する頂点リスト
-        private List<LaneLineDrawerSolid> leftLaneWayList = new();
-        private List<LaneLineDrawerSolid> rightLaneWayList = new();
-
-        // 中央分離帯
-        private List<LaneLineDrawerSolid> medianWayList = new ();
-
-        // 歩道
-        private List<LaneLineDrawerSolid> sideWalks = new();
-
-        private List<LaneLineDrawerArrow> mainLaneCenterWay = new();
-
-        // 選択中のwayをスライドした時の結果表示
-        private List<LaneLineDrawerSolid> slideDummyWayList = new();
-
-        // 交差点の外周
-        private List<LaneLineDrawerSolid> intersectionOutline = new ();
-        // 交差点と道路の境界
-        private List<LaneLineDrawerSolid> intersectionBorder = new();
+        
 
         // それぞれのwayの色
-
-
-        private static readonly Color connectionColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
+        
         private static readonly Color selectingWayColor = Color.red;
                 
         private static readonly Color leftSideWayColor = Color.yellow;
@@ -63,75 +35,44 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private static readonly Color intersectionBorderColor = new Color(0.2f, 1f, 0.2f);
 
         private static readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
-
-        public EditingSystemGizmos()
-        {
-
-        }
-
-        public void Clear()
-        {
-            drawFuncs.Clear();
-            selectingWay.ClearLine();
-            leftLaneWayList.Clear();
-            rightLaneWayList.Clear();
-            medianWayList.Clear();
-            sideWalks.Clear();
-            slideDummyWayList.Clear();
-            intersectionOutline.Clear();
-            intersectionBorder.Clear();
-            mainLaneCenterWay.Clear();
-        }
+        
 
         /// <summary>
-        /// 描画コマンド生成に必要なデータを更新する
+        /// 編集用のギズモの線を生成します。
         /// </summary>
-        /// <param name="selectingElement"></param>
-        /// <param name="highLightWay"></param>
-        /// <param name="linkGroupEditorData"></param>
-        /// <param name="slideDummyWay"></param>
-        public void Update(
+        public List<ILaneLineDrawer> GenerateEditingLines(
             object selectingElement,
             WayEditorData highLightWay,
             EditorDataList<EditorData<RnRoadGroup>> linkGroupEditorData,
             RnWay slideDummyWay)
         {
+            List<ILaneLineDrawer> lineDrawers = new();
+            
             if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<RoadGroupEditorData> eConn) == false)
             {
                 Assert.IsTrue(false);
-                return;
+                return lineDrawers;
             }
-
+            
+            
             // RoadGroupが選択されている
-            rightLaneWayList.Clear();
-            leftLaneWayList.Clear();
-            sideWalks.Clear();
-            medianWayList.Clear();
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
 
-                // 歩道の描画
+                // 歩道の線を追加
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalks.Add(new LaneLineDrawerSolid(sideWalk.OutsideWay.ToList(), sideWalkColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(sideWalk.OutsideWay.ToList(), sideWalkColor));
                     }
                 }
 
-                var laneGroup = new LaneGroupEditorData(roadGroupEditorData.Ref);
-
-
                 var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>().Raw;
 
-                // 車線のwayを描画
+                // 車線のwayを追加
                 foreach (var wayEditorData in wayEditorDataList)
                 {
-                    // 選択中のwayは別の描画処理で対応するためスキップ
-                    if (selectingElement == wayEditorData)
-                    {
-                        continue;
-                    }
 
                     if (wayEditorData.Type != WayEditorData.WayType.Main)
                     {
@@ -149,16 +90,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     Debug.Assert(parent != null);
                     if (parent.IsReverse == false)
                     {
-                        leftLaneWayList.Add(new LaneLineDrawerSolid(way, leftSideWayColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(way, leftSideWayColor));
                     }
                     else
                     {
-                        rightLaneWayList.Add(new LaneLineDrawerSolid(way, rightSideWayColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(way, rightSideWayColor));
                     }
                 }
 
                 // 車線の向きを描画
-                mainLaneCenterWay.Clear();
                 foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     foreach (var lane in road.MainLanes)
@@ -166,7 +106,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         var centerWay = lane.CreateCenterWay();
                         if (centerWay == null)
                             continue;
-                        mainLaneCenterWay.Add(new LaneLineDrawerArrow(centerWay, mainLaneCenterWayColor));
+                        lineDrawers.Add(new LaneLineDrawerArrow(centerWay, mainLaneCenterWayColor));
                     }
                 }
 
@@ -193,7 +133,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         way.Add(p);
                     }
 
-                    sideWalks.Add(new LaneLineDrawerSolid(way, sideWalkColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(way, sideWalkColor));
                 }
 
                 // 中央分離帯のwayを描画
@@ -216,69 +156,44 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     {
                         way.Add(p);
                     }
-
-                    medianWayList.Add(new LaneLineDrawerSolid(way, medianWayColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(way, medianWayColor));
                 }
 
             }
-
-
-            selectingWay.ClearLine();
+            
+            // 選択中の線を追加
             if (highLightWay != null)
             {
                 if (highLightWay is WayEditorData selectingWayData)
                 {
-                    selectingWay.SetLine(selectingWayData.Ref.ToList());
+                    lineDrawers.Add(new LaneLineDrawerSolid(selectingWayData.Ref.ToList(), selectingWayColor));
                 }
             }
-
-            slideDummyWayList.Clear();
+            
             if (slideDummyWay != null)
             {
-                slideDummyWayList.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor));
+                lineDrawers.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor));
             }
 
-            intersectionBorder.Clear();
             var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
             if (intersectionEditorData != null)
             {
                 foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
                 {
                     if (neighbor.Border != null)
-                        intersectionBorder.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor));
                 }
             }
             
-            intersectionOutline.Clear();
             if (intersectionEditorData != null)
             {
                 foreach (var edge in intersectionEditorData.Ref.Edges.Where(e => e.Road == null))
                 {
-                    intersectionOutline.Add(new LaneLineDrawerSolid(edge.Border.ToList(), intersectionOutlineColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(edge.Border.ToList(), intersectionOutlineColor));
                 }
             }
 
-        }
-
-        /// <summary>
-        /// 描画コマンドの生成
-        /// </summary>
-        /// <returns></returns>
-        public List<Action> BuildDrawCommands()
-        {
-            drawFuncs.Clear();
-            
-            drawFuncs.Add(() => {foreach(var s in sideWalks) s.Draw();});
-            drawFuncs.Add(() => {foreach(var l in leftLaneWayList) l.Draw();});
-            drawFuncs.Add(() => {foreach (var r in rightLaneWayList) r.Draw(); });
-            drawFuncs.Add(() => selectingWay.Draw());
-            drawFuncs.Add(() => {foreach (var s in slideDummyWayList) s.Draw(); });
-            drawFuncs.Add(() => {foreach (var i in intersectionOutline) i.Draw(); });
-            drawFuncs.Add(() => {foreach (var i in intersectionBorder) i.Draw(); });
-            drawFuncs.Add(() => {foreach(var m in medianWayList) m.Draw();});
-            drawFuncs.Add(() => {foreach(var m in mainLaneCenterWay) m.Draw();});
-
-            return drawFuncs;
+            return lineDrawers;
         }
     }
 }

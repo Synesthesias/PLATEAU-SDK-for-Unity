@@ -510,20 +510,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
 
             // gizmos描画の更新
-            var gizmosSys = this.gizmosSys;
             var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
             var guisys = system.SceneGUISystem;
             if (guisys != null)
             {
                 // gizmosの更新
-                gizmosSys.Update(
+                var lines = gizmosSys.GenerateEditingLines(
                     system.SelectedRoadNetworkElement,
                     waySlideCalcCache?.ClosestWay,
                     this.roadGroupEditorData,
                     dummyWay);
-                var cmds = gizmosSys.BuildDrawCommands();
-                gizmosdrawer.DrawFuncs.Clear();
-                gizmosdrawer.DrawFuncs.AddRange(cmds);
+                gizmosdrawer.SetLine(lines);
 
                 // guiの更新
 
@@ -611,14 +608,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             editingIntersection.SetTarget(null);
             editingIntersection.Activate(false);
-
-            gizmosSys.Clear();
-
-            var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();
-            if (gizmosDrawer != null)
-            {
-                gizmosDrawer.Clear();
-            }
 
             EditorApplication.update -= Update;
             ClearCache();
