@@ -460,7 +460,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="line"></param>
         /// <param name="axis"></param>
         /// <returns></returns>
-        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, LineSegment3D line, AxisPlane axis = AxisPlane.Xz)
+        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, LineSegment3D line, AxisPlane axis = RnModel.Plane)
         {
             foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
             {
@@ -481,7 +481,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="axis"></param>
         /// <returns></returns>
         public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, Ray ray,
-            AxisPlane axis = AxisPlane.Xz)
+            AxisPlane axis = RnModel.Plane)
         {
             foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
             {
@@ -500,7 +500,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="res"></param>
         /// <param name="axis"></param>
         /// <returns></returns>
-        public static bool TryGetNearestIntersectionBy2D(this RnLineString self, Ray ray, out (Vector3 v, float index) res, AxisPlane axis = AxisPlane.Xz)
+        public static bool TryGetNearestIntersectionBy2D(this RnLineString self, Ray ray, out (Vector3 v, float index) res, AxisPlane axis = RnModel.Plane)
         {
             var ret = self.GetIntersectionBy2D(ray, axis).ToList();
             if (ret.Any() == false)
@@ -694,7 +694,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         /// <param name="plane"></param>
         /// <returns></returns>
-        public static float GetDistance2D(this RnLineString self, RnLineString other, AxisPlane plane = AxisPlane.Xz)
+        public static float GetDistance2D(this RnLineString self, RnLineString other, AxisPlane plane = RnModel.Plane)
         {
             var ret = float.MaxValue;
             foreach (var e1 in self.GetEdges2D())
