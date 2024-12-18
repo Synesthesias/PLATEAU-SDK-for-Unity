@@ -671,6 +671,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             self.GetNearestPoint(v, out nearest, out var pointIndex, out distance);
 
+            if (self.IsValidOrDefault() == false)
+                return false;
             var st = Mathf.Clamp((int)pointIndex, 0, self.Count - 2);
             var en = Mathf.Clamp(Mathf.CeilToInt(pointIndex - 1), 0, self.Count - 2);
 
@@ -862,7 +864,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         /// <param name="plane"></param>
         /// <returns></returns>
-        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = AxisPlane.Xz)
+        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = RnModel.Plane)
         {
             return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
         }

@@ -167,6 +167,12 @@ namespace PLATEAU.RoadNetwork.Util
         /// <returns></returns>
         public static RnLineString CreateInnerLerpLineString(IReadOnlyList<Vector3> leftVertices, IReadOnlyList<Vector3> rightVertices, RnPoint start, RnPoint end, RnWay startBorder, RnWay endBorder, float t, float pointSkipDistance = 1e-3f)
         {
+            // 左右がどちらも直線もしくは点以下の場合 -> start/endを直接つなぐ
+            if (leftVertices.Count <= 2 && rightVertices.Count <= 2)
+            {
+                return new RnLineString(new List<RnPoint> { start, end });
+            }
+
             var line = new RnLineString();
             void AddPoint(RnPoint p)
             {
@@ -176,14 +182,14 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             AddPoint(start);
-            var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, AxisPlane.Xz, t);
+            var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, RnModel.Plane, t);
             // 1つ目の点はボーダーと重複するのでスキップ
             // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
             foreach (var s in segments.Skip(1))
                 AddPoint(new RnPoint(s));
             AddPoint(end);
             // 自己交差があれば削除する
-            var plane = AxisPlane.Xz;
+            var plane = RnModel.Plane;
             GeoGraph2D.RemoveSelfCrossing(line.Points
                 , t => t.Vertex.GetTangent(plane)
                 , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
@@ -210,7 +216,7 @@ namespace PLATEAU.RoadNetwork.Util
             {
                 var elem = new LineCrossPointResult.TargetLineInfo { LineString = way };
 
-                foreach (var r in way.GetIntersectionBy2D(lineSegment, AxisPlane.Xz))
+                foreach (var r in way.GetIntersectionBy2D(lineSegment, RnModel.Plane))
                 {
                     elem.Intersections.Add((r.index, r.v));
                 }

@@ -7,10 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Splines;
-using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug;
-using static PLATEAU.RoadNetwork.Util.LineCrossPointResult;
+using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -200,7 +198,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 public Color baseColor = Color.yellow * 0.7f;
 
-                public bool useTurnTypeColor = false;
 
                 public Color disConnectedColor = Color.red;
 
@@ -213,15 +210,52 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // スプラインのノットで描画する
                 public bool showKnots = false;
 
+                // fromがこれを満たすトラックのみ表示
+                public VisibleType fromRoadType = VisibleType.All;
+
+                // toがこれを満たすトラックのみ表示
+                public VisibleType toRoadType = VisibleType.All;
+
+                [Serializable]
+                public class TurnTypeColor
+                {
+                    [field: SerializeField]
+                    public RnTurnType Type { get; set; }
+                    [field: SerializeField]
+                    public Color Color { get; set; }
+                    public TurnTypeColor(RnTurnType type, Color color)
+                    {
+                        Type = type;
+                        Color = color;
+                    }
+                }
+
+                public bool useTurnTypeColor = false;
+                public List<TurnTypeColor> turnTypeColors = EnumEx.GetValues<RnTurnType>().Select(x => new TurnTypeColor(x, DebugEx.GetDebugColor((int)x, RnTurnTypeEx.Count))).ToList();
+
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
                     var color = baseColor;
 
                     foreach (var track in intersection.Tracks)
                     {
+                        if (fromRoadType != VisibleType.All)
+                        {
+                            var fromRoad = intersection.FindEdges(track.FromBorder).FirstOrDefault()?.Road;
+                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
+                                continue;
+                        }
+
+                        if (toRoadType != VisibleType.All)
+                        {
+                            var toRoad = intersection.FindEdges(track.ToBorder).FirstOrDefault()?.Road;
+                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
+                                continue;
+                        }
+
                         if (useTurnTypeColor)
                         {
-                            color = DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
+                            color = turnTypeColors.FirstOrDefault(x => x.Type == track.TurnType)?.Color ?? DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
                         }
 
                         Color CheckRoad(RnWay trackBorderWay)
@@ -858,6 +892,20 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     Visited.Add(obj);
                 return true;
             }
+
+            public VisibleType GetVisibleType(Object obj, IEnumerable<PLATEAUCityObjectGroup> cityObjects)
+            {
+                var ret = VisibleType.Empty;
+                if (Self.SelectedObjects.Contains(obj))
+                    ret |= VisibleType.GuiSelected;
+
+                if (cityObjects != null && cityObjects.Any(RnEx.IsEditorSceneSelected))
+                    ret |= VisibleType.SceneSelected;
+
+                if (ret == VisibleType.Empty)
+                    ret = VisibleType.NonSelected;
+                return ret;
+            }
         }
 
         DrawWork work = new DrawWork(null, null);
@@ -944,7 +992,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         /// <param name="visibleType"></param>
         private void DrawLane(RnLane lane, LaneOption op, VisibleType visibleType)
         {
-            laneOp?.Draw(work, lane, visibleType);
+            op?.Draw(work, lane, visibleType);
         }
 
         private void DrawRoad(RnRoad road, VisibleType visibleType)

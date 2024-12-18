@@ -536,6 +536,11 @@ namespace PLATEAU.Util.GeoGraph
 
             var length = GetLineSegmentLength(vertices) * p;
             var len = 0f;
+            midPoint = Vector3.zero;
+            if (vertices.Count == 0)
+                return -1;
+
+            midPoint = vertices[0];
             for (var i = 0; i < vertices.Count - 1; ++i)
             {
                 var p0 = vertices[i];
@@ -550,7 +555,6 @@ namespace PLATEAU.Util.GeoGraph
                 }
             }
 
-            midPoint = Vector3.zero;
             return -1;
         }
 
