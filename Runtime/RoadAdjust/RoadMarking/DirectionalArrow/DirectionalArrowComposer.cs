@@ -14,6 +14,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
     {
         private IRrTarget target;
         
+        /// <summary> 矢印を停止線からどの距離に置くか </summary>
+        private const float ArrowPositionOffset = 4.5f;
+        
         public DirectionalArrowComposer(IRrTarget target)
         {
             this.target = target;
@@ -35,14 +38,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
-                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane.NextBorder), ArrowAngle(lane, true));
+                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true), ArrowAngle(lane, true));
                         ret.Add(nextArrow);
                     }
 
                     if (lane.PrevBorder != null)
                     {
                         var inter = lane.IsReverse ? nextIntersection : prevIntersection;
-                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane.PrevBorder), ArrowAngle(lane, false));
+                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false), ArrowAngle(lane, false));
                         ret.Add(prevArrow);
                     }
                     
@@ -72,21 +75,36 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             return meshInstance;
         }
 
-        private Vector3 ArrowPosition(RnWay border)
+        private Vector3 ArrowPosition(RnLane lane, bool isNext)
         {
-            if (border.Count == 0)
+            var center = lane.CreateCenterWay();
+            if (center.Count == 0)
             {
-                Debug.Log("Skipping because border count is 0.");
+                Debug.Log("Skipping because center way count is 0.");
                 return Vector3.zero;
             }
-
-            if(border.Count == 1)
+            float len = 0;
+            int index = isNext ? center.Count - 1 : 0;
+            var pos = center.GetPoint(index);
+            while(len < ArrowPositionOffset) // オフセットの分だけ線上を動かします。
             {
-                return border[0];
+                index += isNext ? -1 : 1;
+                if (index < 0 || index >= center.Count) break;
+                var nextPos = center.GetPoint(index);
+                float lenDiff = Vector3.Distance(nextPos, pos);
+                if (len + lenDiff >= ArrowPositionOffset)
+                {
+                    float t = (len + lenDiff - ArrowPositionOffset) / lenDiff; // オーバーした割合
+                    return Vector3.Lerp(pos, nextPos, 1 - t);
+                }
+
+                pos = nextPos;
+                len += lenDiff;
             }
 
-            return (border[0] + border[^1]) / 2f;
+            return pos;
         }
+        
 
         /// <summary>
         /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。

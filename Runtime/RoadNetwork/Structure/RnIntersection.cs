@@ -83,7 +83,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool ContainsBorder(RnWay way)
         {
-            return FromBorder.IsSameLine(way) || ToBorder.IsSameLine(way);
+            return FromBorder.IsSameLineReference(way) || ToBorder.IsSameLineReference(way);
         }
     }
 
