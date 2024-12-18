@@ -23,26 +23,23 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         private List<System.Action> drawFuncs = new List<Action>();
 
-        // 交差間の繋がり(RnRoadGroup)を表現する頂点リスト
-        private List<Vector3> intersectionConnectionLinePairs = new List<Vector3>();
-
         // 選択中のwayを表現する頂点リスト
-        private List<Vector3> selectingWay = new List<Vector3>();
+        private LaneLineDrawerSolid selectingWay = LaneLineDrawerSolid.CreateWithEmptyLine(selectingWayColor);
 
         // 左側、右側車線のwayを表現する頂点リスト
-        private List<List<Vector3>> leftLaneWayList = new List<List<Vector3>>();
-        private List<List<Vector3>> rightLaneWayList = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> leftLaneWayList = new();
+        private List<LaneLineDrawerSolid> rightLaneWayList = new();
 
         // 中央分離帯
-        private List<List<Vector3>> medianWayList = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> medianWayList = new ();
 
         // 歩道
-        private List<List<Vector3>> sideWalks = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> sideWalks = new();
 
-        private List<RnWay> mainLaneCenterWay = new List<RnWay>();
+        private List<LaneLineDrawerArrow> mainLaneCenterWay = new();
 
         // 選択中のwayをスライドした時の結果表示
-        private List<List<Vector3>> slideDummyWayList = new List<List<Vector3>>();
+        private List<LaneLineDrawerSolid> slideDummyWayList = new();
 
         // 交差点の外周
         private List<List<Vector3>> intersectionOutline = new List<List<Vector3>>();
@@ -51,24 +48,21 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         // それぞれのwayの色
 
-        private readonly Color selectingColorOffset = new Color(0.2f, 0.2f, 0.2f, 0);
-        private readonly Color dummyColorOffset = new Color(-0.2f, -0.2f, -0.2f, 0);
 
-        private readonly Color connectionColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
-        private readonly Color selectingWayColor = Color.red;
+        private static readonly Color connectionColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
+        private static readonly Color selectingWayColor = Color.red;
                 
-        private readonly Color leftSideWayColor = Color.yellow;
-        private readonly Color rightSideWayColor = Color.green;
-        private readonly Color medianWayColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
+        private static readonly Color leftSideWayColor = Color.yellow;
+        private static readonly Color rightSideWayColor = Color.green;
+        private static readonly Color medianWayColor = Color.blue - new Color(0.1f, 0.1f, 0, 0);
+        
+        private static readonly Color sideWalkColor = Color.magenta;
+        private static readonly Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
                 
-        private readonly Color guideWayColor = Color.black;
-        private readonly Color sideWalkColor = Color.magenta;
-        private readonly Color slideDummyWayColor = Color.red + new Color(-0.2f, -0.2f, -0.2f, 0);
-                
-        private readonly Color intersectionOutlineColor = Color.gray;
-        private readonly Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
+        private static readonly Color intersectionOutlineColor = Color.gray;
+        private static readonly Color intersectionBorderColor = Color.gray + new Color(-0.2f, -0.2f, -0.2f, 0);
 
-        private readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
+        private static readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
 
         public EditingSystemGizmos()
         {
@@ -78,8 +72,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public void Clear()
         {
             drawFuncs.Clear();
-            intersectionConnectionLinePairs.Clear();
-            selectingWay.Clear();
+            selectingWay.ClearLine();
             leftLaneWayList.Clear();
             rightLaneWayList.Clear();
             medianWayList.Clear();
@@ -108,59 +101,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 Assert.IsTrue(false);
                 return;
             }
-            List<RoadGroupEditorData> connections = eConn.ToList();
-            connections.Remove(null);
-
-            // 仮　専用ノード間の繋がりを描画
-            intersectionConnectionLinePairs.Clear();
-            var pts = intersectionConnectionLinePairs;
-            pts.Capacity = (connections.Count + 3) * 2;
-            foreach (var item in connections)
-            {
-                if (item == null)
-                    continue;
-
-                var roadGroup = selectingElement as EditorData<RnRoadGroup>;
-                if (item.RoadGroup == roadGroup)
-                {
-                    continue;
-                }
-                if (item.CacheRoadPosList == null)
-                {
-                    item.CacheRoadPosList = new List<Vector3>(item.ConnectionLinks.Count * 2);
-
-                    foreach (var link in item.ConnectionLinks)
-                    {
-                        var allLanes = link.AllLanes.GetEnumerator();
-                        Vector3 prevBorderPos = Vector3.zero;
-                        Vector3 nextBorderPos = Vector3.zero;
-
-                        if (allLanes.MoveNext())
-                        {
-                            var lane = allLanes.Current;
-                            var prevpoints = lane.PrevBorder?.Points;
-                            var nextpoints = lane.NextBorder?.Points;
-
-                            if (prevpoints == null || nextpoints == null)   // 独立している道路がある場合
-                            {
-                                continue;
-                            }
-
-                            if (CalcCenterPos(prevpoints, out prevBorderPos) &&
-                                CalcCenterPos(nextpoints, out nextBorderPos))
-                            {
-                                item.CacheRoadPosList.Add(prevBorderPos);
-                                item.CacheRoadPosList.Add(nextBorderPos);
-                            }
-                        }
-                    }
-                }
-                foreach (var p in item.CacheRoadPosList)
-                {
-                    pts.Add(p);
-                }
-
-            }
 
             // RoadGroupが選択されている
             rightLaneWayList.Clear();
@@ -175,7 +115,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        sideWalks.Add(sideWalk.OutsideWay.ToList());
+                        sideWalks.Add(new LaneLineDrawerSolid(sideWalk.OutsideWay.ToList(), sideWalkColor));
                     }
                 }
 
@@ -209,11 +149,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     Debug.Assert(parent != null);
                     if (parent.IsReverse == false)
                     {
-                        leftLaneWayList.Add(way);
+                        leftLaneWayList.Add(new LaneLineDrawerSolid(way, leftSideWayColor));
                     }
                     else
                     {
-                        rightLaneWayList.Add(way);
+                        rightLaneWayList.Add(new LaneLineDrawerSolid(way, rightSideWayColor));
                     }
                 }
 
@@ -226,7 +166,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         var centerWay = lane.CreateCenterWay();
                         if (centerWay == null)
                             continue;
-                        mainLaneCenterWay.Add(centerWay);
+                        mainLaneCenterWay.Add(new LaneLineDrawerArrow(centerWay, mainLaneCenterWayColor));
                     }
                 }
 
@@ -253,7 +193,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         way.Add(p);
                     }
 
-                    sideWalks.Add(way);
+                    sideWalks.Add(new LaneLineDrawerSolid(way, sideWalkColor));
                 }
 
                 // 中央分離帯のwayを描画
@@ -277,28 +217,25 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         way.Add(p);
                     }
 
-                    medianWayList.Add(way);
+                    medianWayList.Add(new LaneLineDrawerSolid(way, medianWayColor));
                 }
-
-
 
             }
 
-            intersectionConnectionLinePairs = pts;
 
-            selectingWay.Clear();
+            selectingWay.ClearLine();
             if (highLightWay != null)
             {
                 if (highLightWay is WayEditorData selectingWayData)
                 {
-                    selectingWay.AddRange(selectingWayData.Ref.ToList());
+                    selectingWay.SetLine(selectingWayData.Ref.ToList());
                 }
             }
 
             slideDummyWayList.Clear();
             if (slideDummyWay != null)
             {
-                slideDummyWayList.Add(slideDummyWay.ToList());
+                slideDummyWayList.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor));
             }
 
             intersectionBorder.Clear();
@@ -323,70 +260,23 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         {
             drawFuncs.Clear();
 
-            foreach (var sideWalk in sideWalks)
-            {
-                if (sideWalk == null)
-                {
-                    continue;
-                }
-                var sideWalkList = sideWalk.ToArray();
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = sideWalkColor;
-                    Gizmos.DrawLineStrip(sideWalkList, false);
-                });
-            }
 
-            var nParis = intersectionConnectionLinePairs.Count;
-            if (nParis >= 2 && nParis % 2 == 0)
-            {
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = connectionColor;
-                    Gizmos.DrawLineList(intersectionConnectionLinePairs.ToArray());
-                });
-            }
-
-            AddDrawFunc(ref drawFuncs, leftLaneWayList, leftSideWayColor);
-            AddDrawFunc(ref drawFuncs, rightLaneWayList, rightSideWayColor);
-
-            // 選択中のwayを描画
-            if (selectingWay.Count >= 2)
-            {
-                drawFuncs.Add(() =>
-                {
-                    Gizmos.color = selectingWayColor;
-                    {
-                        Gizmos.DrawLineStrip(selectingWay.ToArray(), false);
-                    }
-                });
-            }
-
-            AddDrawFunc(ref drawFuncs, slideDummyWayList, slideDummyWayColor);
+            drawFuncs.Add(() => {foreach(var s in sideWalks) s.Draw();});
+            drawFuncs.Add(() => {foreach(var l in leftLaneWayList) l.Draw();});
+            drawFuncs.Add(() => {foreach (var r in rightLaneWayList) r.Draw(); });
+            drawFuncs.Add(() => selectingWay.Draw());
+            drawFuncs.Add(() => {foreach (var s in slideDummyWayList) s.Draw(); });
 
             AddDrawFunc(ref drawFuncs, intersectionOutline, intersectionOutlineColor);
 
             AddDrawFunc(ref drawFuncs, intersectionBorder, intersectionBorderColor);
 
-            AddDrawFunc(ref drawFuncs, medianWayList, medianWayColor);
+            drawFuncs.Add(() => {foreach(var m in medianWayList) m.Draw();});
 
-            if (mainLaneCenterWay.Count > 0)
-            {
-                drawFuncs.Add(()=>{
-                    foreach (var centerWay in mainLaneCenterWay)
-                    {
-                        Gizmos.color = mainLaneCenterWayColor;
-                        DrawDashedArrowsLocal(centerWay);
-                    }
-                });
-            }
 
-            void DrawDashedArrowsLocal(IEnumerable<Vector3> vertices, bool isLoop = false,
-                float lineLength = 3f, float spaceLength = 1f)
-            {
-                const float yOffset = 0.5f;
-                DrawDashedArrows(vertices.Select(v => v.PutY(v.y + yOffset)), isLoop, lineLength, spaceLength);
-            }
+            drawFuncs.Add(() => {foreach(var m in mainLaneCenterWay) m.Draw();});
+
+            
 
             return drawFuncs;
         }
@@ -425,169 +315,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             v = borderPos;
             return true;
         }
-
-
-        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, float lineLength = 3f, float spaceLength = 1f)
-        {
-            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
-                DrawDashedArrow(e.Item1, e.Item2, lineLength, spaceLength);
-        }
-
-
-        /// <summary>
-        /// デバッグで破線(矢印)を描画する
-        /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="isLoop"></param>
-        /// <param name="color"></param>
-        /// <param name="lineLength"></param>
-        /// <param name="spaceLength"></param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        public static void DrawDashedArrows(IEnumerable<Vector3> vertices, bool isLoop = false, Color? color = null, float lineLength = 3f, float spaceLength = 1f,
-            bool depthTest = true)
-        {
-            foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
-                DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, depthTest);
-        }
-
-        public static void DrawDashedArrow(Vector3 st, Vector3 en, float lineLength = 1f, float spaceLength = 0.2f, float arrowSize = 0.5f, Vector3? arrowUp = null)
-        {
-            var len = (en - st).magnitude;
-
-            var n = len / (lineLength + spaceLength);
-            if (n <= 0f)
-                return;
-
-            var offset = 1f / n;
-            var s = offset * lineLength / (lineLength + spaceLength);
-
-            for (var t = 0f; t < 1f; t += offset)
-            {
-                var p0 = Vector3.Lerp(st, en, t);
-                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
-                DrawArrow(p0, p1, arrowSize, arrowUp);
-            }
-        }
-
-        /// <summary>
-        /// デバッグで破線を描画する
-        /// </summary>
-        /// <param name="st"></param>
-        /// <param name="en"></param>
-        /// <param name="color"></param>
-        /// <param name="lineLength"></param>
-        /// <param name="spaceLength"></param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        /// <param name="arrowSize"></param>
-        /// <param name="arrowUp"></param>
-        /// <param name="arrowColor"></param>
-        public static void DrawDashedArrow(Vector3 st, Vector3 en
-            , Color? color = null, float lineLength = 1f, float spaceLength = 0.2f, bool depthTest = true, float arrowSize = 0.5f, Vector3? arrowUp = null, Color? arrowColor = null)
-        {
-            var len = (en - st).magnitude;
-
-            var n = len / (lineLength + spaceLength);
-            if (n <= 0f)
-                return;
-
-            var offset = 1f / n;
-            var s = offset * lineLength / (lineLength + spaceLength);
-
-            for (var t = 0f; t < 1f; t += offset)
-            {
-                var p0 = Vector3.Lerp(st, en, t);
-                var p1 = Vector3.Lerp(st, en, Mathf.Min(1f, t + s));
-                DrawArrow(p0, p1, arrowSize, arrowUp, color, arrowColor: arrowColor, depthTest: depthTest);
-            }
-        }
-
-        public static void DrawArrow(
-              Vector3 start
-            , Vector3 end
-            , float arrowSize = 0.5f
-            , Vector3? arrowUp = null)
-        {
-            Vector3 up = arrowUp ?? Vector3.up;
-
-            DrawLine(start, end);
-            if (arrowSize > 0f)
-            {
-                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
-                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
-                var a2 = Quaternion.AngleAxis(-90, up) * a1;
-                a1 = a1.normalized;
-                a2 = a2.normalized;
-                DrawLine(end + a1 * arrowSize, end);
-                DrawLine(end + a2 * arrowSize, end);
-            }
-        }
-        /// <summary>
-        /// start -> endの方向に矢印を描画する
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="arrowSize"></param>
-        /// <param name="arrowUp"></param>
-        /// <param name="bodyColor"></param>
-        /// <param name="arrowColor">矢印部分だけの色. nullの場合はcolorと同じ</param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        public static void DrawArrow(
-            Vector3 start
-            , Vector3 end
-            , float arrowSize = 0.5f
-            , Vector3? arrowUp = null
-            , Color? bodyColor = null
-            , Color? arrowColor = null
-            , bool depthTest = true)
-        {
-            Vector3 up = arrowUp ?? Vector3.up;
-
-            var bodyColorImpl = bodyColor ?? Color.white;
-
-            DrawLine(start, end, bodyColorImpl, depthTest);
-            if (arrowSize > 0f)
-            {
-                up = Vector3.Cross(end - start, Vector3.Cross(end - start, up)).normalized;
-                var a1 = Quaternion.AngleAxis(45f, up) * (start - end);
-                var a2 = Quaternion.AngleAxis(-90, up) * a1;
-                a1 = a1.normalized;
-                a2 = a2.normalized;
-                var arrowColorImpl = arrowColor ?? bodyColorImpl;
-                DrawLine(end + a1 * arrowSize, end, arrowColorImpl, depthTest);
-                DrawLine(end + a2 * arrowSize, end, arrowColorImpl, depthTest);
-            }
-        }
-
-        /// <summary>
-        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="color"></param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        public static void DrawLine(Vector3 start, Vector3 end)
-        {
-            Gizmos.DrawLine(start, end);
-        }
-
-        /// <summary>
-        /// Debug.DrawLineのラッパー. デバッグ描画系をここに集約するため
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="color"></param>
-        /// <param name="duration"></param>
-        /// <param name="depthTest"></param>
-        public static void DrawLine(Vector3 start, Vector3 end, Color? color, bool depthTest)
-        {
-            Gizmos.color = color ?? Color.white;
-            Handles.zTest = depthTest ? CompareFunction.Always : CompareFunction.LessEqual;
-            Gizmos.DrawLine(start, end);
-        }
+        
 
     }
 }

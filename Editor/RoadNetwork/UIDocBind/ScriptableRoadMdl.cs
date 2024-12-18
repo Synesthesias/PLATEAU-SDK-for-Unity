@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
-using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {

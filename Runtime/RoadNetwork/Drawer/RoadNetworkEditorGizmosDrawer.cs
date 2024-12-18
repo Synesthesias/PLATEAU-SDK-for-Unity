@@ -34,7 +34,6 @@ namespace PLATEAU.RoadNetwork
             {
                 func();
             }
-
             Gizmos.color = preCol;
             Handles.zTest = preZTest;
 #endif
