@@ -118,7 +118,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             system.RoadNetworkSimpleEditModule?.Init();
 
-            system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoadNetworkElement;
+            system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoad;
             system.EnableLimitSceneViewDefaultControl = true;
         }
 
@@ -135,11 +135,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         void TerminateSystem_()
         {
             rootVisualElement.Unbind();
-            EditingSystem.system.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadNetworkElement;
+            EditingSystem.system.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoad;
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
         }
 
-        private void OnChangedSelectedRoadNetworkElement()
+        private void OnChangedSelectedRoad()
         {
             var roadGroupEditorData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
             if (roadGroupEditorData != null)
