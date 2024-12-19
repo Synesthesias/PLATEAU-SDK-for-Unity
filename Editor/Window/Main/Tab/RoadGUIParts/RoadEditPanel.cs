@@ -254,7 +254,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             return mdl.Item;
         }
 
-        public bool Apply(RoadNetworkSimpleEditSysModule mod)
+        public bool Apply(RoadNetworkEditSceneViewGui mod)
         {
             throw new NotImplementedException();
         }

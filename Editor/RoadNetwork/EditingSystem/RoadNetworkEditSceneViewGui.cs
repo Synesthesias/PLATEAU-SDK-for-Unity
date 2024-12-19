@@ -13,11 +13,14 @@ using UnityEngine.Assertions;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 {
-    internal class RoadNetworkSimpleEditSysModule
+    /// <summary>
+    /// 道路ネットワーク編集で、シーンビュー上のGUIを表示します。
+    /// </summary>
+    internal class RoadNetworkEditSceneViewGui
     {
         public List<EditorData<RnRoadGroup>> Connections { get => roadGroupEditorData; }
 
-        public RoadNetworkSimpleEditSysModule(GameObject root, RnModel rnModel,
+        public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
             IRoadNetworkEditingSystem system)
         {
             ReConstruct(root, rnModel, system);

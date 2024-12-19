@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public RoadNetworkSceneGUISystem sceneGUISystem;
 
         // Laneの生成機能を提供するモジュール
-        public RoadNetworkSimpleEditSysModule simpleEditSysModule;
+        public RoadNetworkEditSceneViewGui editSceneViewGui;
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
@@ -133,7 +133,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         private void Terminate()
         {
-            simpleEditSysModule?.Terminate();
+            editSceneViewGui?.Terminate();
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 }
 
 
-                simpleEditSysModule = new RoadNetworkSimpleEditSysModule(roadNetworkEditingSystemObjRoot, roadNetwork, system);
+                editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, system);
                 //simpleEditSysModule.Init();
 
             }

@@ -232,7 +232,7 @@ namespace PLATEAU.Editor.RoadNetwork
             else if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
             {
                 // 詳細モードがオフの場合
-                // レーンの幅編集は RoadNetworkSimpleEditSysModule.Update で行います
+                // レーンの幅編集は RoadNetworkEditSceneViewGui.Update で行います
             }
             else // 詳細モードでのみ表示
             {
