@@ -19,7 +19,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         
 
         /// <summary>
-        /// 道路レーン編集の画面をシーン上に描画します。
         /// ドラッグしてスライド中の<see cref="RnWay"/>を返します。
         /// スライド中のものがなければnullを返します。
         /// </summary>
