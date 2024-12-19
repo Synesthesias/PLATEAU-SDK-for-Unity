@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     internal class RoadEditPanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_EditPanel";
-        public RoadNetworkEditingSystem EditorInterface { get; private set; }
+        public RoadNetworkEditingSystem EditingSystem { get; private set; }
 
         private SerializedScriptableRoadMdl lastSelectedRoad;
         private SerializedScriptableRoadMdl selectedRoad;
@@ -109,11 +109,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
 
             // 編集システムの初期化
-            EditorInterface =
-                RoadNetworkEditingSystem.TryInitalize(EditorInterface, rootVisualElement, new EditorInstance(rootVisualElement, this));
+            EditingSystem =
+                RoadNetworkEditingSystem.TryInitalize(EditingSystem, rootVisualElement, new EditorInstance(rootVisualElement, this));
 
             // システムの取得
-            var system = EditorInterface.system;
+            var system = EditingSystem.system;
             system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
 
             system.RoadNetworkSimpleEditModule?.Init();
@@ -135,13 +135,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         void TerminateSystem_()
         {
             rootVisualElement.Unbind();
-            EditorInterface.system.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadNetworkElement;
-            RoadNetworkEditingSystem.TryTerminate(EditorInterface, rootVisualElement);
+            EditingSystem.system.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadNetworkElement;
+            RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
         }
 
         private void OnChangedSelectedRoadNetworkElement()
         {
-            var roadGroupEditorData = EditorInterface.system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+            var roadGroupEditorData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
             if (roadGroupEditorData != null)
             {
                 lastSelectedRoad = selectedRoad;
@@ -154,10 +154,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 // 既存のモデルオブジェクトを解除
                 rootVisualElement.Unbind();
 
-                // 仮 詳細編集モード
+                // 仮 詳細編集モード → 未完成のためGUI上ではオフにしています
                 rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
                 {
-                    var mod = EditorInterface.system.RoadNetworkSimpleEditModule;
+                    var mod = EditingSystem.system.RoadNetworkSimpleEditModule;
                     var obj = se as IScriptableRoadMdl;
                     if (mod.CanSetDtailMode())
                     {
@@ -176,10 +176,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 rootVisualElement.Bind(selectedRoad);
             }
 
-            var intersectionData = EditorInterface.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
+            var intersectionData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
             if (intersectionData != null)
             {
-                EditorInterface.system.RoadNetworkSimpleEditModule?.Setup(intersectionData);
+                EditingSystem.system.RoadNetworkSimpleEditModule?.Setup(intersectionData);
 
                 //var applyIntersectionButton = element.Q<Button>("ApplyIntersectionButton");
                 //if (applyIntersectionButton == null)
@@ -201,7 +201,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// </summary>
         private void OnApplyRoadButtonClicked()
         {
-            bool isChanged = selectedRoad.Apply(EditorInterface.system.RoadNetworkSimpleEditModule);
+            bool isChanged = selectedRoad.Apply(EditingSystem.system.RoadNetworkSimpleEditModule);
             if (!isChanged)
             {
                 return;
@@ -236,7 +236,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
             
             // 道路に適用します
-            var network = EditorInterface.system.RoadNetwork;
+            var network = EditingSystem.system.RoadNetwork;
             var target = new RrTargetRoadBases(network, selectedRoad.TargetScriptableRoadMdl.road.Roads);
             new RoadReproducer().Generate(target);
         }

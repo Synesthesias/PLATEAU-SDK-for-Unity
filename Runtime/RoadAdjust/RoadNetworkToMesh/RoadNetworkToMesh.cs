@@ -148,9 +148,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     var srcAttr = srcObjs[0].GetComponent<PLATEAUCityObjectGroup>();
                     if (srcAttr != null)
                     {
-                        var dstAttr = dstObj.AddComponent<PLATEAUCityObjectGroup>();
+                        var dstAttr = dstObj.GetOrAddComponent<PLATEAUCityObjectGroup>();
                         dstAttr.CopyFrom(srcAttr);
-                        dstObj.AddComponent<MeshCollider>();
+                        dstObj.GetOrAddComponent<MeshCollider>();
                     }
                     
                     // 他のコンポーネントをコピーします。
