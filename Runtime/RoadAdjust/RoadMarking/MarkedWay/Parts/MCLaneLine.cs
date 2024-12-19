@@ -1,5 +1,4 @@
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Structure;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {

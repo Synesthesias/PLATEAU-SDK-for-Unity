@@ -305,7 +305,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static bool IsNeighboring(this RnSideWalk self, RnSideWalk other)
         {
-            return self.AllWays.Any(x => other.AllWays.Any(b => x.IsSameLine(b)));
+            return self.AllWays.Any(x => other.AllWays.Any(b => x.IsSameLineReference(b)));
         }
 
 
