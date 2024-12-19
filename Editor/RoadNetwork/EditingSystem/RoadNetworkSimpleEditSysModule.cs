@@ -26,9 +26,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private GameObject roadNetworkEditingSystemObjRoot;
         private RnModel roadNetwork;
         private IRoadNetworkEditingSystem system;
-
-        private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
-
+        
         // 詳細編集モードかどうか
         private bool isEditingDetailMode = false;
 
@@ -49,6 +47,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
         private RnSplineEditor splineEditor = new();
+        private bool isMouseDownHold = false;
 
         private enum State
         {
@@ -74,7 +73,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             roadNetwork = rnModel;
             this.system = system;
 
-            EditorApplication.update -= Update;
+            SceneView.duringSceneGui -= Update;
             ClearCache();
         }
 
@@ -98,16 +97,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
             foreach (var node in roadNetwork.Intersections)
             {
-                //var name = sb.AppendFormat("Node{0}", id).ToString();
-                //var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                ////var obj = new GameObject(name, typeof(MeshFilter));
-                //obj.transform.position = node.GetCenterPoint();
-                //obj.transform.SetParent(roadNetworkEditingSystemObjRoot.transform, false);
-                ////var obj = GameObject.InstantiateGameObjects(prefab,);
-                ////var obj = GameObject.Instantiate(
-                ////    prefab, node.GetCenterPoint(), Quaternion.Euler(90.0f,0.0f,0.0f), roadNetworkEditingSystemObjRoot.transform);
-                //obj.name = name;
-                //obj.transform.hasChanged = false;   // transformの変更を検知するためfalseを設定
                 var subData = new NodeEditorData();
                 nodeEditorData.Add(node, subData);
 
@@ -120,9 +109,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 intersectionEditorData.Add(intersection, new EditorData<RnIntersection>(intersection));
             }
 
-            // pointのeditor用のデータを作成
-            //var lineE = roadNetwork.CollectAllLineStrings();
-            //lineE.Reset();
+
             var lineE = roadNetwork.CollectAllLineStrings().GetEnumerator();
             while (lineE.MoveNext())
             {
@@ -202,8 +189,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
 
             // Transform変更を検知する
-            EditorApplication.update -= Update;
-            EditorApplication.update += Update;
+            SceneView.duringSceneGui -= Update;
+            SceneView.duringSceneGui += Update;
 
 
             // キャッシュの生成
@@ -304,69 +291,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             public Vector3 ClosestPointOnRay { get; private set; } // 
         }
 
-        private void Update()
+        private void Update(SceneView sceneView)
         {
             if (roadNetworkEditingSystemObjRoot == null)
                 return;
-
-            // マウスの状態をチェック
-            if (sceneViewEvBuf == null)
-            {
-                sceneViewEvBuf = EditingSystemSubMod.SceneViewEventBuffer.GetBuffer();
-            }
-
-            bool isChanged = false;
-            //foreach (var data in nodeEditorData)
-            //{
-            //    var val = data.Value;
-            //    var transform = val.RefGameObject.transform;
-            //    if (transform.hasChanged)
-            //    {
-            //        // 平行移動を適用する
-            //        Debug.Log("has changed " + val.RefGameObject.name);
-            //        val.ApplyTranslate();
-
-            //        // 検知状態をリセット
-            //        transform.hasChanged = false;
-
-            //        isChanged = true;
-            //    }
-            //}
-
-            if (isChanged)
-            {
-                this.system.NotifyChangedRoadNetworkObject2Editor();
-            }
-
-            // billboardの更新
-            bool isNeedUpdateBillboard = false;
-            //var camera = sceneViewEvBuf.CameraPosition; // おそらく描画時にのみインスタンスが設定される
-            var camera = SceneView.currentDrawingSceneView?.camera; // おそらく描画時にのみインスタンスが設定される
-            if (camera?.transform.hasChanged == true)
-                isNeedUpdateBillboard = true;
-
-            foreach (var data in nodeEditorData)
-            {
-                if (isNeedUpdateBillboard == false)
-                    break;
-
-                var cameraPos = camera.transform.position;
-                var val = data.Value;
-            }
-
-            if (camera)
-            {
-                camera.transform.hasChanged = false;
-            }
-
-            // 検知状態のリセット
-            //foreach (var data in nodeEditorData)
-            //{
-            //    var val = data.Value;
-            //    var transform = val.RefGameObject.transform;
-            //    // 検知状態をリセット
-            //    transform.hasChanged = false;
-            //}
+            
 
             // マウス位置に近いwayを算出
 
@@ -379,7 +308,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             List<RoadGroupEditorData> connections = eConn.ToList();
             connections.Remove(null);
 
-            var mousePos = sceneViewEvBuf.MousePosition;
+            var mousePos = Event.current.mousePosition;
             Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
 
             //WayEditorData closestWay = null;
@@ -411,11 +340,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // dummyのwayを表示する
             RnWay dummyWay = null;
 
-            var mouseDown = sceneViewEvBuf.MouseDown;
-            var mouseUp = sceneViewEvBuf.MouseUp;
-            if (mouseDown)
+            var mouseDown = Event.current.type == EventType.MouseDown;
+            var mouseUp = Event.current.type == EventType.MouseUp;
+            if (mouseDown) isMouseDownHold = true;
+            if (mouseUp) isMouseDownHold = false;
+            
+            if (isMouseDownHold)
             {
-                //Debug.Log("mouse down");
 
                 // Wayを選択する
                 if (currentState == State.Default)
@@ -436,7 +367,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                             // 最近傍2点way->rayでwayのどの方向に延びているかを算出
                             // 内積を取ることでベクトルが同じ方向を向いているかを調べる
 
-                            var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                            var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneView.camera.transform.position;
                             var line = waySlideCalcCache.ClosestWay.Ref.IsReversed
                                 ? waySlideCalcCache.ClosestLine.VecB2A
                                 : waySlideCalcCache.ClosestLine.VecA2B;
@@ -471,7 +402,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                         // 最近傍2点way->rayでwayのどの方向に延びているかを算出
                         // 内積を取ることでベクトルが同じ方向を向いているかを調べる
 
-                        var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneViewEvBuf.CameraPosition;
+                        var vecCamera2Way = waySlideCalcCache.ClosestPointOnWay - sceneView.camera.transform.position;
                         var wayRightVec = Vector3.Cross(vecCamera2Way, waySlideCalcCache.ClosestLine.VecA2B);
                         //Debug.DrawRay(wayCalcData.ClosestPointOnWay, wayRightVec, Color.yellow, 0.1f);
 
@@ -504,8 +435,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     currentState = State.Default;
                 }
             }
-            //Debug.Log("dis" + closestDis);
-            //Debug.Log("update");
 
 
             // gizmos描画の更新
@@ -616,7 +545,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             
             GetRoadNetworkEditorGizmos().Clear();
             
-            EditorApplication.update -= Update;
+            SceneView.duringSceneGui -= Update;
             ClearCache();
         }
         
