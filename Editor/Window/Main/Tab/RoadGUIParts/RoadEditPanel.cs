@@ -111,13 +111,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             // 編集システムの初期化
             EditingSystem =
                 RoadNetworkEditingSystem.TryInitalize(EditingSystem, rootVisualElement, new EditorInstance(rootVisualElement, this));
-
+            
             // システムの取得
             var system = EditingSystem.system;
             system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
-
+            
             system.RoadNetworkSimpleEditModule?.Init();
-
+            
             system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoad;
             system.EnableLimitSceneViewDefaultControl = true;
         }

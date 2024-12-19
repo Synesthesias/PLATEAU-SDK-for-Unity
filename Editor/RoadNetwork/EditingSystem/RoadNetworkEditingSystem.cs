@@ -87,8 +87,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             newSystem =
                 new RoadNetworkEditingSystem(instance, root);
-
-            oldSystem = newSystem;
+            
             return newSystem;
         }
 
@@ -213,12 +212,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 system.RoadNetworkObject = roadNetworkObj;
 
                 // 仮ポイントを　地形にスワップする
-                var lineE = roadNetwork.CollectAllWays().GetEnumerator();
-                while (lineE.MoveNext())
-                {
-                    var way = lineE.Current;
-                    SnapPointsToDemAndTran(way.Points);
-                }
+                // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
+                // while (lineE.MoveNext())
+                // {
+                //     var way = lineE.Current;
+                //     SnapPointsToDemAndTran(way.Points);
+                // }
 
 
                 editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, system);
