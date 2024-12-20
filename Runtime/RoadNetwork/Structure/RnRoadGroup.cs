@@ -1063,7 +1063,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 親の方向と一致している場合はprevLane -> nextLaneの方向になっているかチェックする
                     if (prevLane.IsReverse == false)
                     {
-                        if (nowLane.PrevBorder.IsSameLine(prevLane.NextBorder) == false)
+                        if (nowLane.PrevBorder.IsSameLineReference(prevLane.NextBorder) == false)
                         {
                             DebugEx.LogError($"invalid Direction Lane[{j}] ${prevRoad.GetTargetTransName()} -> ${nowRoad.GetTargetTransName()}");
                             return false;
@@ -1072,7 +1072,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 親の方向と逆の場合はnextLane -> prevLaneの方向になっているかチェックする
                     else
                     {
-                        if (prevLane.PrevBorder.IsSameLine(nowLane.NextBorder) == false)
+                        if (prevLane.PrevBorder.IsSameLineReference(nowLane.NextBorder) == false)
                         {
                             DebugEx.LogError($"invalid Direction Lane[{j}] ${prevRoad.GetTargetTransName()} -> ${nowRoad.GetTargetTransName()}");
                             return false;
@@ -1223,25 +1223,25 @@ namespace PLATEAU.RoadNetwork.Structure
                         }
 
                         // start - startで重なっている場合
-                        if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                        if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
                         {
                             Merge(true, RnWayEx.AppendFront2LineString);
                             dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
                         }
                         // start - endで重なっている場合
-                        else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                        else if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
                         {
                             Merge(false, RnWayEx.AppendFront2LineString);
                             dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
                         }
                         // end - endで重なっている場合
-                        else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
+                        else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
                         {
                             Merge(true, RnWayEx.AppendBack2LineString);
                             dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
                         }
                         // end - startで重なっている場合
-                        else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
+                        else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
                         {
                             Merge(false, RnWayEx.AppendBack2LineString);
                             dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
