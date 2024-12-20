@@ -426,6 +426,7 @@ Scroller #unity-drag-container {
     background-color: rgba(103, 103, 103, 0);
     border-width: 0;
     color: rgb(0, 55, 55);
+    font-weight: bold;
 }
 
 #StraightToggle .unity-base-field__label {
