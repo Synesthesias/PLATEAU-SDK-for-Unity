@@ -1169,6 +1169,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Where(b => b != null)
                 .Select(b => b.GetLerpPoint(0.5f)));
         }
+
+        public void SetIsEmptyIntersection(bool val)
+        {
+            IsEmptyIntersection = val;
+        }
+        
 #if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
