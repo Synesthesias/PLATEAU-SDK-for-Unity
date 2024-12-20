@@ -63,7 +63,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsSameInOut(RnWay from, RnWay to)
         {
-            return FromBorder.IsSameLine(from) && ToBorder.IsSameLine(to);
+            return FromBorder.IsSameLineReference(from) && ToBorder.IsSameLineReference(to);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool ContainsBorder(RnWay way)
         {
-            return FromBorder.IsSameLine(way) || ToBorder.IsSameLine(way);
+            return FromBorder.IsSameLineReference(way) || ToBorder.IsSameLineReference(way);
         }
     }
 
@@ -203,7 +203,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 if (Road is RnRoad road)
                 {
-                    if (road.MedianLane != null && road.MedianLane.AllBorders.Any(b => b.IsSameLine(Border)))
+                    if (road.MedianLane != null && road.MedianLane.AllBorders.Any(b => b.IsSameLineReference(Border)))
                         return true;
                 }
 
@@ -222,9 +222,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (Road is RnRoad road)
             {
                 var ret = RnFlowTypeMask.Empty;
-                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.NextBorder.IsSameLineReference(Border)))
                     ret |= RnFlowTypeMask.Inbound;
-                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.PrevBorder.IsSameLine(Border)))
+                if (road.GetConnectedLanes(Border).Any(l => l.IsMedianLane == false && l.PrevBorder.IsSameLineReference(Border)))
                     ret |= RnFlowTypeMask.Outbound;
                 return ret;
             }
@@ -267,7 +267,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 foreach (var lane in road.MainLanes)
                 {
                     // Borderと同じ線上にあるレーンを返す
-                    if (lane.AllBorders.Any(b => b.IsSameLine(Border)))
+                    if (lane.AllBorders.Any(b => b.IsSameLineReference(Border)))
                         yield return lane;
                 }
             }
@@ -401,7 +401,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="afterRoad"></param>
         public void ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
         {
-            foreach (var e in edges.Where(e => e.Border.IsSameLine(border)))
+            foreach (var e in edges.Where(e => e.Border.IsSameLineReference(border)))
                 e.Road = afterRoad;
         }
 
@@ -449,7 +449,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             // trackの入口/出口がこの交差点のものかチェックする
             if (!edges.Any(e =>
-                    e.Border.IsSameLine(track.FromBorder) || !edges.Any(e => e.Border.IsSameLine(track.ToBorder))))
+                    e.Border.IsSameLineReference(track.FromBorder) || !edges.Any(e => e.Border.IsSameLineReference(track.ToBorder))))
             {
                 DebugEx.LogError("交差点に含まれないトラックが追加されようとしています");
                 return false;
@@ -528,7 +528,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lane"></param>
         public void RemoveEdge(RnRoad road, RnLane lane)
         {
-            RemoveEdges(x => x.Road == road && ((lane.PrevBorder?.IsSameLine(x.Border) ?? false) || (lane.NextBorder?.IsSameLine(x.Border) ?? false)));
+            RemoveEdges(x => x.Road == road && ((lane.PrevBorder?.IsSameLineReference(x.Border) ?? false) || (lane.NextBorder?.IsSameLineReference(x.Border) ?? false)));
         }
 
         /// <summary>
@@ -1351,7 +1351,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (self == null || borderWay == null)
                 return Enumerable.Empty<RnNeighbor>();
 
-            return self.Edges.Where(e => e.Border?.IsSameLine(borderWay) ?? false);
+            return self.Edges.Where(e => e.Border?.IsSameLineReference(borderWay) ?? false);
         }
 
         /// <summary>

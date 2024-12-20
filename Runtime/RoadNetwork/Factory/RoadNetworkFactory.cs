@@ -542,9 +542,9 @@ namespace PLATEAU.RoadNetwork.Factory
                     if (lane == null)
                         return;
                     var prev = Lines.Where(l => l.IsBorder && l.Way != null)
-                        .FirstOrDefault(l => lane.PrevBorder?.IsSameLine(l.Way) ?? false);
+                        .FirstOrDefault(l => lane.PrevBorder?.IsSameLineReference(l.Way) ?? false);
                     var next = Lines.Where(l => l.IsBorder && l.Way != null)
-                        .FirstOrDefault(l => lane.NextBorder?.IsSameLine(l.Way) ?? false);
+                        .FirstOrDefault(l => lane.NextBorder?.IsSameLineReference(l.Way) ?? false);
 
                     var prevRoad = prev?.Neighbor?.Node;
                     var nextRoad = next?.Neighbor?.Node;
@@ -716,7 +716,7 @@ namespace PLATEAU.RoadNetwork.Factory
                                     // #TODO : 自動生成の段階で分かれているケースが存在するならは点や法線方向で判定するように変える
                                     if (way == null)
                                         laneType = RnSideWalkLaneType.Undefined;
-                                    else if (insideWay.IsSameLine(way))
+                                    else if (insideWay.IsSameLineReference(way))
                                         laneType = RnSideWalkLaneType.LeftLane;
                                     else
                                         laneType = RnSideWalkLaneType.RightLane;

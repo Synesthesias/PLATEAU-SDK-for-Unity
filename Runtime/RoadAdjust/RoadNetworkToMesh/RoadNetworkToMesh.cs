@@ -15,6 +15,10 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary>
