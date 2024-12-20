@@ -55,11 +55,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         /// <summary>
         /// 道路ネットワークをディープコピーします。
+        /// ただし<see cref="RoadReproducer"/>に使う部分のみコピーします。
         /// </summary>
         public IRrTarget Copy()
         {
-            var serializer = new RoadNetworkSerializer();
-            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model, false));
+            // var serializer = new RoadNetworkSerializer();
+            // var copiedNetwork = serializer.Deserialize(serializer.Serialize(model, false)); // 完全コピー
+
+            // ↓ RrRoadNetworkCopier の正しさをチェックしたい場合は、上のコメントアウトを外して完全コピーと結果を比較してください。
+            var copiedNetwork = new RrRoadNetworkCopier().Copy(model, out _);
+            
             return new RrTargetModel(copiedNetwork);
         }
         
@@ -71,12 +76,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// </summary>
     public class RrTargetRoadBases : IRrTarget
     {
-        private RnModel parentModel; // この道路ネットワークのうち、 roadBases に含まれるもののみを対象に取ります。
+        private RnModel network; // この道路ネットワークのうち、 roadBases に含まれるもののみを対象に取ります。
         private RnRoadBase[] roadBases;
         
-        public RrTargetRoadBases(RnModel parentModel, IEnumerable<RnRoadBase> roadBases)
+        public RrTargetRoadBases(RnModel network, IEnumerable<RnRoadBase> roadBases)
         {
-            this.parentModel = parentModel;
+            this.network = network;
             this.roadBases = roadBases.ToArray();
         }
 
@@ -101,26 +106,24 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
         }
 
-        /// <summary>
-        /// ターゲットだけコピーします。
-        /// <see cref="parentModel"/>はコピーしません。
-        /// </summary>
         public IRrTarget Copy()
         {
-            var model = new RnModel();
-            foreach (var rb in roadBases)
-            {
-                model.AddRoadBase(rb);
-            }
-
-            var serializer = new RoadNetworkSerializer();
-            // ignoreKeyNotFoundWarningをtrueとする理由: 道路ネットワークの一部をコピーする以上、隣接データがないのは織り込み済みのため 
-            var copiedNetwork = serializer.Deserialize(serializer.Serialize(model, true));
-            var copiedRoadBases = copiedNetwork.Roads.Cast<RnRoadBase>().Concat(copiedNetwork.Intersections);
-            return new RrTargetRoadBases(parentModel, copiedRoadBases);
-
+            // var network = new RnModel();
+            // foreach (var rb in roadBases)
+            // {
+            //     network.AddRoadBase(rb);
+            // }
+            // var serializer = new RoadNetworkSerializer();
+            // var copiedNetwork = serializer.Deserialize(serializer.Serialize(network, true));
+            // var copiedRoadBases = copiedNetwork.Roads.Cast<RnRoadBase>().Concat(copiedNetwork.Intersections);
+            
+            // ↓ RrRoadNetworkCopier の正しさをチェックしたいときは、上のコメントアウトを外して完全コピーの結果と比較してください。
+            var copiedNetwork = new RrRoadNetworkCopier().Copy(network, out var roadSrcToDst);
+            var copiedRoadBases = roadBases.Select(src => roadSrcToDst[src]);
+            
+            return new RrTargetRoadBases(copiedNetwork, copiedRoadBases);
         }
 
-        public RnModel Network() => parentModel;
+        public RnModel Network() => network;
     }
 }

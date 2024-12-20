@@ -112,9 +112,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 }
             }
 
-            public List<EditorData<RnRoadGroup>> Connections => system.simpleEditSysModule?.Connections;
+            public List<EditorData<RnRoadGroup>> Connections => system.editSceneViewGui?.Connections;
 
-            public RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule => system.simpleEditSysModule;
+            public RoadNetworkEditSceneViewGui RoadNetworkSimpleEditModule => system.editSceneViewGui;
 
             public RoadNetworkSceneGUISystem SceneGUISystem => system.SceneGUISystem;
 
