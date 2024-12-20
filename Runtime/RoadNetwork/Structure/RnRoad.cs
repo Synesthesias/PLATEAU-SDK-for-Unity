@@ -874,7 +874,7 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var lane in self.MainLanes)
             {
                 // Borderと同じ線上にあるレーンを返す
-                if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
+                if (lane.AllBorders.Any(b => b.IsSameLine(border)))
                     yield return lane;
             }
         }
@@ -1153,25 +1153,25 @@ namespace PLATEAU.RoadNetwork.Structure
                     }
 
                     // start - startで重なっている場合
-                    if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
+                    if (dstSw.StartEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
                     {
                         MergeSideWalk(true, RnWayEx.AppendFront2LineString);
                         dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
                     }
                     // start - endで重なっている場合
-                    else if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
+                    else if (dstSw.StartEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
                     {
                         MergeSideWalk(false, RnWayEx.AppendFront2LineString);
                         dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
                     }
                     // end - endで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
+                    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.EndEdgeWay) ?? false)
                     {
                         MergeSideWalk(true, RnWayEx.AppendBack2LineString);
                         dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
                     }
                     // end - startで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
+                    else if (dstSw.EndEdgeWay?.IsSameLine(srcSw.StartEdgeWay) ?? false)
                     {
                         MergeSideWalk(false, RnWayEx.AppendBack2LineString);
                         dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
@@ -1250,7 +1250,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     foreach (var w in sw.AllWays)
                     {
-                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLineReference(w))))
+                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLine(w))))
                         {
                             checkBorderPoints.Add(w[0]);
                             checkBorderPoints.Add(w[^1]);

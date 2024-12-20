@@ -11,7 +11,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal interface ILineMeshGenerator
     {
-        public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> points);
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points);
     }
     
     
@@ -28,7 +28,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             this.lineWidth = lineWidth;
         }
         
-        public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> points)
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points)
         {
             
             if (points.Count < 2)
@@ -90,7 +90,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             this.lineWidth = lineWidth;
         }
 
-        public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> srcPointsArg)
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> srcPointsArg)
         {
             // 破線の基点を揃えるために、方向によっては逆順にします。
             Vector3[] srcPoints = direction ? srcPointsArg.ToArray() : srcPointsArg.Reverse().ToArray();
@@ -130,7 +130,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     {
                         // 実線部から空白部への切り替え時です。実線を生成し、描画キューを空にします。
                         drawQue.Enqueue(lineEndPos);
-                        var combine = gen.GenerateMeshInstance(drawQue.ToArray()).CombineInstance;
+                        var combine = gen.GenerateMesh(drawQue.ToArray()).CombineInstance;
                         combines.Add(combine);
                         drawQue.Clear();
                     }
@@ -155,7 +155,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     internal class EmptyLineMeshGenerator : ILineMeshGenerator
     {
-        public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> points)
+        public RoadMarkingInstance GenerateMesh(IReadOnlyList<Vector3> points)
         {
             return new RoadMarkingInstance(new Mesh(), RoadMarkingMaterial.White);
         }

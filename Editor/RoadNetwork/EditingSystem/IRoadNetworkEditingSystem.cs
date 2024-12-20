@@ -71,6 +71,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// </summary>
         void NotifyChangedRoadNetworkObject2Editor();
 
-        RoadNetworkEditSceneViewGui RoadNetworkSimpleEditModule { get; }
+        RoadNetworkSimpleEditSysModule RoadNetworkSimpleEditModule { get; }
     }
 }

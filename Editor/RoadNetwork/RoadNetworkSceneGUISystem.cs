@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -15,6 +16,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     internal class RoadNetworkSceneGUISystem
     {
+
         private const string LaneTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_lane.png";
         private const string NodeTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_node.png";
 
@@ -45,7 +47,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private IRoadNetworkEditingSystem editorSystem;
 
         private SceneGUISystemState systemState;
-
+        
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
@@ -128,6 +130,7 @@ namespace PLATEAU.Editor.RoadNetwork
         /// </summary>
         private void OnSceneGUISimpleEdit()
         {
+
             var camera = SceneView.currentDrawingSceneView.camera;
 
             // 対象選択
@@ -217,9 +220,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        /// <summary>
-        /// 道路を選択したときにシーンビュー上に表示される道路編集UIを表示します。
-        /// </summary>
         private void DrawSelectedRoadGroup(EditorData<RnRoadGroup> selectedConnection)
         {
             var roadGroupEditorData = selectedConnection;
@@ -231,128 +231,146 @@ namespace PLATEAU.Editor.RoadNetwork
             }
             else if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
             {
-                // 詳細モードがオフの場合
-                // レーンの幅編集は RoadNetworkEditSceneViewGui.Update で行います
-            }
-            else // 詳細モードでのみ表示
-            {
-                DrawRoadLaneDetailEditor(roadGroupEditorData);
-            }
-        }
+                // 簡易モードで表示
+                // 各車線、歩道、張横分離帯の幅を調整するためのハンドル描画
 
-        private void DrawRoadLaneDetailEditor(EditorData<RnRoadGroup> roadGroupEditorData)
-        {
-            SceneGUIState state = new SceneGUIState();
-            systemState.Init(out state);
-
-            var currentCamera = SceneView.currentDrawingSceneView.camera;
-            state.currentCamera = currentCamera;
-
-
-            foreach (var road in roadGroupEditorData.Ref.Roads)
-            {
-                if (state.isDirtyTarget)
+                var nLeftLane = roadGroupEditorData.Ref.GetLeftLaneCount();
+                var nRightLane = roadGroupEditorData.Ref.GetRightLaneCount();
+                var nLane = nLeftLane + nRightLane;
+                HashSet<RnWay> ways = new HashSet<RnWay>(nLane * 2);
+                List<RnWay> unionWay = new List<RnWay>(nLane * 2 - 2); // 端の2つは覗く
+                var lanes = roadGroupEditorData.Ref.Roads[0].MainLanes;
+                foreach (var lane in lanes)
                 {
-                    break;
-                }
-
-                foreach (var sideWalk in road.SideWalks)
-                {
-                    foreach (var point in sideWalk.OutsideWay.Points)
+                    foreach (var way in lane.BothWays)
                     {
-                        if (state.isDirtyTarget)
+                        // 共有されているwayか？
+                        if (ways.Add(way) == false)
                         {
-                            break;
+                            //unionWay.Add(way);
                         }
-
-                        var parent = sideWalk.OutsideWay;
-
-                        var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
-
-                        DeployPointMoveHandle(point, state, size);
                     }
                 }
 
-                foreach (var lane in road.AllLanes)
+                unionWay = ways.ToList();
+
+                Handles.BeginGUI();
+                Handles.EndGUI();
+            }
+            else // 詳細モードでのみ表示
+            {
+                SceneGUIState state = new SceneGUIState();
+                systemState.Init(out state);
+
+                var currentCamera = SceneView.currentDrawingSceneView.camera;
+                state.currentCamera = currentCamera;
+
+
+                foreach (var road in roadGroupEditorData.Ref.Roads)
                 {
                     if (state.isDirtyTarget)
                     {
                         break;
                     }
 
-                    HashSet<RnWay> ways = new HashSet<RnWay>(lane.BothWays);
-                    foreach (var way in lane.BothWays)
+                    foreach (var sideWalk in road.SideWalks)
                     {
-                        ways.Add(way);
-                    }
-
-                    foreach (var way in ways)
-                    {
-                        if (state.isDirtyTarget)
-                        {
-                            break;
-                        }
-
-                        foreach (var point in way.Points)
+                        foreach (var point in sideWalk.OutsideWay.Points)
                         {
                             if (state.isDirtyTarget)
                             {
                                 break;
                             }
 
-                            var parent = way;
+                            var parent = sideWalk.OutsideWay;
 
-                            var networkOperator = editorSystem.EditOperation;
                             var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
 
+                            DeployPointMoveHandle(point, state, size);
+                        }
+                    }
 
-                            // ctrlを押しているか
-                            if (Event.current.control == false)
+                    foreach (var lane in road.AllLanes)
+                    {
+                        if (state.isDirtyTarget)
+                        {
+                            break;
+                        }
+
+                        HashSet<RnWay> ways = new HashSet<RnWay>(lane.BothWays);
+                        foreach (var way in lane.BothWays)
+                        {
+                            ways.Add(way);
+                        }
+
+                        foreach (var way in ways)
+                        {
+                            if (state.isDirtyTarget)
                             {
-                                DeployPointMoveHandle(point, state, size);
-                                continue;
+                                break;
                             }
-                            else
+
+                            foreach (var point in way.Points)
                             {
-                                var currentEvent = Event.current;
+                                if (state.isDirtyTarget)
                                 {
-                                    // ポイントの追加
-                                    if (currentEvent.shift == false)
+                                    break;
+                                }
+
+                                var parent = way;
+
+                                var networkOperator = editorSystem.EditOperation;
+                                var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
+
+
+                                // ctrlを押しているか
+                                if (Event.current.control == false)
+                                {
+                                    DeployPointMoveHandle(point, state, size);
+                                    continue;
+                                }
+                                else
+                                {
+                                    var currentEvent = Event.current;
                                     {
-                                        // ポイントの追加ボタンの表示
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size,
-                                            RoadNetworkAddPointButtonHandleCap);
-                                        if (isClicked)
+                                        // ポイントの追加
+                                        if (currentEvent.shift == false)
                                         {
-                                            // parent.Pointsからpointを検索してインデックスを取得
-                                            var idx = parent.Points.ToList().IndexOf(point);
-                                            if (idx == -1)
+                                            // ポイントの追加ボタンの表示
+                                            var isClicked = Handles.Button(point, Quaternion.identity, size, size,
+                                                RoadNetworkAddPointButtonHandleCap);
+                                            if (isClicked)
+                                            {
+                                                // parent.Pointsからpointを検索してインデックスを取得
+                                                var idx = parent.Points.ToList().IndexOf(point);
+                                                if (idx == -1)
+                                                    continue;
+                                                state.delayCommand += () =>
+                                                {
+                                                    networkOperator.AddPoint(parent, idx,
+                                                        new RnPoint(point.Vertex + Vector3.up));
+                                                    Debug.Log("ポイント追加ボタンが押された");
+                                                };
+                                                state.isDirtyTarget = true;
                                                 continue;
-                                            state.delayCommand += () =>
-                                            {
-                                                networkOperator.AddPoint(parent, idx,
-                                                    new RnPoint(point.Vertex + Vector3.up));
-                                                Debug.Log("ポイント追加ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
-                                            continue;
+                                            }
                                         }
-                                    }
-                                    // ポイントの削除
-                                    else
-                                    {
-                                        // ポイントの削除ボタンの表示
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size,
-                                            RoadNetworkRemovePointButtonHandleCap);
-                                        if (isClicked)
+                                        // ポイントの削除
+                                        else
                                         {
-                                            state.delayCommand += () =>
+                                            // ポイントの削除ボタンの表示
+                                            var isClicked = Handles.Button(point, Quaternion.identity, size, size,
+                                                RoadNetworkRemovePointButtonHandleCap);
+                                            if (isClicked)
                                             {
-                                                networkOperator.RemovePoint(parent, point);
-                                                Debug.Log("ポイント削除ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
-                                            continue;
+                                                state.delayCommand += () =>
+                                                {
+                                                    networkOperator.RemovePoint(parent, point);
+                                                    Debug.Log("ポイント削除ボタンが押された");
+                                                };
+                                                state.isDirtyTarget = true;
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
@@ -360,19 +378,19 @@ namespace PLATEAU.Editor.RoadNetwork
                         }
                     }
                 }
+
+                // 遅延実行 コレクションの要素数などを変化させる
+                if (state.delayCommand != null)
+                    state.delayCommand.Invoke();
+
+                // 選択した道路オブジェクトに変更があったとき
+                if (state.isDirtyTarget)
+                {
+                    editorSystem.NotifyChangedRoadNetworkObject2Editor(); // 通知
+                }
+
+                systemState.Apply(state);
             }
-
-            // 遅延実行 コレクションの要素数などを変化させる
-            if (state.delayCommand != null)
-                state.delayCommand.Invoke();
-
-            // 選択した道路オブジェクトに変更があったとき
-            if (state.isDirtyTarget)
-            {
-                editorSystem.NotifyChangedRoadNetworkObject2Editor(); // 通知
-            }
-
-            systemState.Apply(state);
         }
 
         private void DrawSelectedIntersection(EditorData<RnIntersection> intersectionData)
@@ -693,8 +711,8 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             return Handles.FreeMoveHandle(pos, size, snap, Handles.SphereHandleCap);
         }
-
-
+        
+        
         /// <summary>
         /// 
         /// </summary>
@@ -771,7 +789,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             ZeroMask = PointZeroMask & LaneZeroMask & LinkZeroMask & NodeZeroMask
         }
-
+        
         /// <summary>
         /// OnSceneGUI()内での状態
         /// </summary>

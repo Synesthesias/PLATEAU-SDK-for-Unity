@@ -756,7 +756,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         work.Self.DrawDashedArrows(centerWay, color: showCenterWay.color.PutA(GetLaneAlpha(lane)));
                 }
 
-                if (lane.NextBorder != null && lane.PrevBorder != null && lane.NextBorder.IsSameLineReference(lane.PrevBorder))
+                if (lane.NextBorder != null && lane.PrevBorder != null && lane.NextBorder.IsSameLine(lane.PrevBorder))
                 {
                     DebugEx.DrawString($"Invalid Border Lane ", lane.GetCentralVertex());
                 }

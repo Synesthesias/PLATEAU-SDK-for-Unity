@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
@@ -24,7 +25,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     internal interface IScriptableRoadMdl
     {
         /// <summary> 適用します。これにより変更点があったかどうかを返します。</summary>
-        public bool Apply(RoadNetworkEditSceneViewGui mod);
+        public bool Apply(RoadNetworkSimpleEditSysModule mod);
 
         // 処理の成否を返す
         public bool IsSuccess { get; }
@@ -107,7 +108,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         }
 
         // cacheとの比較を行い、変更があれば変更を通知する
-        public bool Apply(RoadNetworkEditSceneViewGui mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             throw new NotImplementedException();
         }
@@ -273,7 +274,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
 
         
-        public bool Apply(RoadNetworkEditSceneViewGui mod)
+        public bool Apply(RoadNetworkSimpleEditSysModule mod)
         {
             if (this.road == null)
             {
@@ -424,7 +425,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             return isChanged;
         }
 
-        public void ApplySplineEditMode(RoadNetworkEditSceneViewGui mod)
+        public void ApplySplineEditMode(RoadNetworkSimpleEditSysModule mod)
         {
             var target = new EditorData<RnRoadGroup>((targetObject as ScriptableRoadMdl)?.road);
             if (IsSplineEditMode)
@@ -438,7 +439,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             }
         }
 
-        public void DisableSplineEditMode(RoadNetworkEditSceneViewGui mod)
+        public void DisableSplineEditMode(RoadNetworkSimpleEditSysModule mod)
         {
             IsSplineEditMode = false;
             mod.SplineEditorMod.Disable();

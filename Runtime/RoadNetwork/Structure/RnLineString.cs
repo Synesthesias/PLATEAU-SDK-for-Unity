@@ -36,7 +36,6 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             Points = new RnPoint[initialSize].ToList();
         }
-        
 
         public RnLineString(IEnumerable<RnPoint> points)
         {
@@ -430,17 +429,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (x.Count != y.Count)
                 return false;
 
-            for (int i = 0; i < x.Count; i++)
-            {
-                var xi = x[i];
-                var yi = y[i];
-                const float Threshold = 0.001f;
-                if (Math.Abs(xi.x - yi.x) > Threshold) return false;
-                if (Math.Abs(xi.y - yi.y) > Threshold) return false;
-                if (Math.Abs(xi.z - yi.z) > Threshold) return false;
-            }
-
-            return true;
+            return x.Points.SequenceEqual(y.Points);
         }
     }
 

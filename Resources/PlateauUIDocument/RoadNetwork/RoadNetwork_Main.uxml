@@ -12,9 +12,9 @@
             <ui:RadioButton label="交通規制" name="MenuTrafficRule" class="MenuEnd" style="flex-shrink: 1; border-left-width: 0; display: none; visibility: hidden;" />
         </ui:GroupBox>
         <ui:ScrollView vertical-scroller-visibility="Auto" style="flex-grow: 1;">
-            <ui:Instance template="RoadNetwork_GeneratePanel" name="RoadNetwork_GeneratePanel" style="display: flex;" />
-            <ui:Instance template="RoadNetwork_EditPanel" name="RoadNetwork_EditPanel" style="display: flex;" />
-            <ui:Instance template="RoadNetwork_AddPanel" name="RoadNetwork_AddPanel" style="display: flex;" />
+            <ui:Instance template="RoadNetwork_GeneratePanel" name="RoadNetwork_GeneratePanel" style="display: none;" />
+            <ui:Instance template="RoadNetwork_EditPanel" name="RoadNetwork_EditPanel" style="display: none;" />
+            <ui:Instance template="RoadNetwork_AddPanel" name="RoadNetwork_AddPanel" style="display: none;" />
             <ui:Instance template="RoadNetwork_TrafficRulePanel" name="RoadNetwork_TrafficRulePanel" />
         </ui:ScrollView>
     </ui:VisualElement>

@@ -1,6 +1,10 @@
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -54,7 +58,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public RoadNetworkSceneGUISystem sceneGUISystem;
 
         // Laneの生成機能を提供するモジュール
-        public RoadNetworkEditSceneViewGui editSceneViewGui;
+        public RoadNetworkSimpleEditSysModule simpleEditSysModule;
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
@@ -87,7 +91,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             newSystem =
                 new RoadNetworkEditingSystem(instance, root);
-            
+
+            oldSystem = newSystem;
             return newSystem;
         }
 
@@ -132,7 +137,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         private void Terminate()
         {
-            editSceneViewGui?.Terminate();
+            simpleEditSysModule?.Terminate();
         }
 
         /// <summary>
@@ -212,15 +217,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 system.RoadNetworkObject = roadNetworkObj;
 
                 // 仮ポイントを　地形にスワップする
-                // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
-                // while (lineE.MoveNext())
-                // {
-                //     var way = lineE.Current;
-                //     SnapPointsToDemAndTran(way.Points);
-                // }
+                var lineE = roadNetwork.CollectAllWays().GetEnumerator();
+                while (lineE.MoveNext())
+                {
+                    var way = lineE.Current;
+                    SnapPointsToDemAndTran(way.Points);
+                }
 
 
-                editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, system);
+                simpleEditSysModule = new RoadNetworkSimpleEditSysModule(roadNetworkEditingSystemObjRoot, roadNetwork, system);
                 //simpleEditSysModule.Init();
 
             }

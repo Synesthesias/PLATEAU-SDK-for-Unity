@@ -47,6 +47,6 @@
                 <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStopButton" class="LightActionButton" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Toggle label="詳細編集モード" name="DetailEditMode" style="font-size: 12px; display: none;" />
+        <ui:Toggle label="詳細編集モード" name="DetailEditMode" style="font-size: 12px;" />
     </ui:VisualElement>
 </ui:UXML>
