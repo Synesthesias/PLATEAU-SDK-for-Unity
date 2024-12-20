@@ -1,11 +1,11 @@
-﻿using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
-using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.RoadNetwork
 {
@@ -14,12 +14,16 @@ namespace PLATEAU.RoadNetwork
     /// </summary>
     public class RoadNetworkEditorGizmos : MonoBehaviour
     {
-        private List<System.Action> drawFuncs = new List<System.Action>();
-        public List<System.Action> DrawFuncs { get { return drawFuncs; } }
+        private List<ILaneLineDrawer> lines = new();
 
         public void Clear()
         {
-            DrawFuncs.Clear();
+            lines.Clear();
+        }
+
+        public void SetLine(IEnumerable<ILaneLineDrawer> linesArg)
+        {
+            lines = linesArg.ToList();
         }
 
         public void OnDrawGizmos()
@@ -27,15 +31,12 @@ namespace PLATEAU.RoadNetwork
 #if UNITY_EDITOR
             var preZTest = Handles.zTest;
             Handles.zTest = CompareFunction.Always;
-            var preCol = Gizmos.color;
 
 
-            foreach (var func in DrawFuncs)
+            foreach (var l in lines)
             {
-                func();
+                l.Draw();
             }
-
-            Gizmos.color = preCol;
             Handles.zTest = preZTest;
 #endif
         }

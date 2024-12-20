@@ -381,7 +381,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         continue;
 
                     var otherNeighbor =
-                        other.Neighbors.FirstOrDefault(n => n.Border.IsSameLine(neighbor.Border) && n.Road == inter);
+                        other.Neighbors.FirstOrDefault(n => n.Border.IsSameLineReference(neighbor.Border) && n.Road == inter);
                     if (otherNeighbor == null)
                         continue;
 
