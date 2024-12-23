@@ -26,19 +26,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         // UI要素
         private readonly Button roadSplineStartButton;
         private readonly Button roadSplineStopButton;
+        private readonly Toggle editModeToggle;
 
         public RoadEditPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
-
+            
             // ボタン類の設定
-            var editModeToggle = self.Q<Toggle>("EditModeButton");
+            editModeToggle = self.Q<Toggle>("EditModeButton");
             if (editModeToggle == null)
             {
                 Debug.LogError("EditModeToggle is not found.");
                 return;
             }
             editModeToggle.value = RoadNetworkEditingSystem.SingletonInstance?.system != null;
-            editModeToggle.RegisterCallback<ChangeEvent<bool>>(OnEditModeToggleClicked());
+            editModeToggle.RegisterCallback<ChangeEvent<bool>>(OnEditModeToggleClicked);
 
             // バインドパスの設定
             self.Q<IntegerField>("LeftSide").bindingPath = "numLeftLane";
@@ -83,24 +84,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary>
         /// 「編集モード」ボタンが押された時
         /// </summary>
-        private EventCallback<ChangeEvent<bool>> OnEditModeToggleClicked()
+        private void OnEditModeToggleClicked(ChangeEvent<bool> evt)
         {
-            return (evt) =>
+            if (evt.newValue)
             {
-                if (evt.newValue)
-                {
-                    OnEditModeActivated();
-                }
-                else
-                {
-                    var system = RoadNetworkEditingSystem.SingletonInstance?.system;
-                    if (system != null)
-                    {
-                        system.EnableLimitSceneViewDefaultControl = false;
-                        TerminateSystem_();
-                    }
-                }
-            };
+                OnEditModeActivated();
+            }
+            else
+            {
+                OnEditModeDeactivated();
+            }
         }
 
         /// <summary> 「編集モード」ボタンが押されて編集モードになったとき </summary>
@@ -122,21 +115,31 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             system.EnableLimitSceneViewDefaultControl = true;
         }
 
+        /// <summary> 「編集モード」ボタンが押されて編集モードが解除されたとき </summary>
+        private void OnEditModeDeactivated()
+        {
+            TerminateSystem_();
+        }
 
         protected override void OnTabUnselected()
         {
-
-            var sys = RoadNetworkEditingSystem.SingletonInstance?.system;
-            if (sys != null)
-                TerminateSystem_();
+            TerminateSystem_();
             base.OnTabUnselected();
         }
 
         void TerminateSystem_()
         {
+            
             rootVisualElement.Unbind();
-            EditingSystem.system.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoad;
+            var sys = RoadNetworkEditingSystem.SingletonInstance?.system;
+            if (sys != null)
+            {
+                sys.EnableLimitSceneViewDefaultControl = false;
+                sys.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoad;
+            }
+            
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
+            if(editModeToggle != null) editModeToggle.value = false;
         }
 
         private void OnChangedSelectedRoad()
