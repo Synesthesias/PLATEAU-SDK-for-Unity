@@ -281,10 +281,6 @@ namespace PLATEAU.Editor.RoadNetwork
                     }
 
                     HashSet<RnWay> ways = new HashSet<RnWay>(lane.BothWays);
-                    foreach (var way in lane.BothWays)
-                    {
-                        ways.Add(way);
-                    }
 
                     foreach (var way in ways)
                     {
