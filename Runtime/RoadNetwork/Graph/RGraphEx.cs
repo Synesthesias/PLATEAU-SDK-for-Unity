@@ -354,6 +354,68 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// 辺のリダクション処理（同じ頂点を持つ辺をマージする)
+        /// </summary>
+        /// <param name="self"></param>
+        public static void MergeIsolatedVertices(this RGraph self)
+        {
+            var edges = self.GetAllEdges().ToList();
+            var edgeTable = new Dictionary<EdgeKey, HashSet<REdge>>();
+
+            foreach (var e in edges)
+            {
+                var key = new EdgeKey(e.V0, e.V1);
+                edgeTable.GetValueOrCreate(key).Add(e);
+
+            }
+
+            foreach (var f in self.Faces)
+            {
+                f.MergeIsolatedVertex();
+            }
+        }
+
+        /// <summary>
+        /// o-o
+        /// | |
+        /// o-o---o ←の様な飛び出た頂点をマージする(他のFaceに繋がっていたとしてもマージする)  
+        /// </summary>
+        /// <param name="self"></param>
+        public static void MergeIsolatedVertex(this RFace self)
+        {
+            var vertices = self.Edges.SelectMany(x => x.Vertices).ToHashSet();
+            Dictionary<RVertex, RVertex> vertexMerges = new();
+            foreach (var v in vertices)
+            {
+                bool found = false;
+                REdge edge = null;
+                foreach (var e in v.Edges)
+                {
+                    if (e.Faces.Contains(self) == false)
+                        continue;
+                    // 2つ以上のFaceに繋がっている場合はマージしない
+                    if (edge != null)
+                    {
+                        found = true;
+                        break;
+                    }
+
+                    edge = e;
+                }
+
+                if (found == false && edge != null)
+                {
+                    vertexMerges[v] = edge.GetOppositeVertex(v);
+                }
+            }
+            DebugEx.Log($"Merge isolated vertex {vertexMerges.Count}");
+            foreach (var v in vertexMerges)
+            {
+                v.Key.MergeTo(v.Value);
+            }
+        }
+
+        /// <summary>
         /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceGroupにする.
         /// </summary>
         /// <param name="self"></param>
@@ -402,6 +464,7 @@ namespace PLATEAU.RoadNetwork.Graph
             self.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1HeightTolerance);
             self.EdgeReduction();
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
+            self.MergeIsolatedVertices();
             self.EdgeReduction();
             self.InsertVertexInNearEdge(midPointTolerance);
             self.EdgeReduction();

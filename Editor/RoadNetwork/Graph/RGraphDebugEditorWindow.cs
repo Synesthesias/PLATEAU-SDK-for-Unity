@@ -63,6 +63,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 {
                     f.RemoveInnerVertex();
                 }
+
+                if (GUILayout.Button("MergeIsolatedVertex"))
+                {
+                    f.MergeIsolatedVertex();
+                }
             }
         }
         FaceEdit faceEdit = new FaceEdit();
