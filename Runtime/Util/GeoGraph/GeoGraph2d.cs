@@ -1876,6 +1876,51 @@ namespace PLATEAU.Util.GeoGraph
             ret.Add(ret.Last() + 1);
             return ret;
         }
+
+        /// <summary>
+        /// pointがverticesで構成される多角形の内部にあるかどうかを返す. 
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static bool IsInsidePolygon(Vector2 point, IList<Vector2> vertices)
+        {
+            // Winding Number Algorithmで判定する
+            // https://www.nttpc.co.jp/technology/number_algorithm.html
+            var wn = 0;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var v1 = vertices[i];
+                var v2 = vertices[(i + 1) % vertices.Count];
+
+                // 上向きの辺、下向きの辺によって処理が分かれる。
+                // 上向きの辺。点Pがy軸方向について、始点と終点の間にある。ただし、終点は含まない。
+                if ((v1.y <= point.y) && (v2.y > point.y))
+                {
+                    // 辺は点pよりも右側にある。ただし、重ならない。
+                    // 辺が点pと同じ高さになる位置を特定し、その時のxの値と点pのxの値を比較する。
+                    var vt = (point.y - v1.y) / (v2.y - v1.y);
+                    if (point.x < (v1.x + (vt * (v2.x - v1.x))))
+                    {
+                        ++wn;
+                    }
+                }
+                // 下向きの辺。点Pがy軸方向について、始点と終点の間にある。ただし、始点は含まない。
+                else if ((v1.y > point.y) && (v2.y <= point.y))
+                {
+                    // 辺は点pよりも右側にある。ただし、重ならない。
+                    // 辺が点pと同じ高さになる位置を特定し、その時のxの値と点pのxの値を比較する。
+                    var vt = (point.y - v1.y) / (v2.y - v1.y);
+                    if (point.x < (v1.x + (vt * (v2.x - v1.x))))
+                    {
+                        --wn;
+                    }
+                }
+            }
+
+            return wn != 0;
+        }
+
 #if false
         public static Dictionary<Vector2, List<Tuple<Vector2, Vector2>>> ComputeIntersections(IEnumerable<Tuple<Vector2, Vector2>> originalSegments)
         {

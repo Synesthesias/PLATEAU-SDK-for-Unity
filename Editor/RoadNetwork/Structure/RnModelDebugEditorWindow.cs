@@ -472,6 +472,27 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     work.DelayExec.Add(() => intersection.SeparateContinuousBorder());
                 }
+
+                if (GUILayout.Button("Create Inside Objects"))
+                {
+                    List<RnPoint> points = new List<RnPoint>(intersection.Edges.Sum(x => x.Border.Count));
+                    foreach (var pos in intersection.Edges.SelectMany(e => e.Border.Points))
+                    {
+                        if (points.Any() && points.Last() == pos)
+                            continue;
+                        points.Add(pos);
+                    }
+                    if (points.Count > 1 && points[0] == points[^1])
+                        points.RemoveAt(points.Count - 1);
+
+                    var obj = new GameObject("InsideObjects");
+                    foreach (var pos in points)
+                    {
+                        var go = new GameObject("Point");
+                        go.transform.SetParent(obj.transform);
+                        go.transform.position = pos.Vertex;
+                    }
+                }
             }
 
         }

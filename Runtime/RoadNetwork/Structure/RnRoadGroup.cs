@@ -207,8 +207,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return afterLanes;
         }
 
-
-        private void SetLaneCountImpl(int count, RnDir dir)
+        /// <summary>
+        /// レーン分割する
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="dir"></param>
+        /// <param name="rebuildTrack">分割後に対象のレーンに紐づくトラックをリビルドする</param>
+        private void SetLaneCountImpl(int count, RnDir dir, bool rebuildTrack)
         {
             if (IsValid == false)
                 return;
@@ -268,11 +273,15 @@ namespace PLATEAU.RoadNetwork.Structure
                 Roads[i].ReplaceLanes(lanes, dir);
             }
 
-            if (NextIntersection != null && newNextBorders.Any())
-                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+            // トラックのリビルドするかチェックする
+            if (rebuildTrack)
+            {
+                if (NextIntersection != null && newNextBorders.Any())
+                    NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
 
-            if (PrevIntersection != null && newPrevBorders.Any())
-                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+                if (PrevIntersection != null && newPrevBorders.Any())
+                    PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+            }
         }
 
         /// <summary>
@@ -356,7 +365,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
-        private void SetLaneCountWithoutMedian(int leftCount, int rightCount)
+        /// <param name="rebuildTrack"></param>
+        private void SetLaneCountWithoutMedian(int leftCount, int rightCount, bool rebuildTrack)
         {
             if (IsValid == false)
                 return;
@@ -407,11 +417,14 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var l in Roads)
                 l.SetMedianLane(null);
 
-            if (NextIntersection != null && newNextBorders.Any())
-                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+            if (rebuildTrack)
+            {
+                if (NextIntersection != null && newNextBorders.Any())
+                    NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
 
-            if (PrevIntersection != null && newPrevBorders.Any())
-                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+                if (PrevIntersection != null && newPrevBorders.Any())
+                    PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+            }
         }
 
         /// <summary>
@@ -419,7 +432,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="leftCount"></param>
         /// <param name="rightCount"></param>
-        public void SetLaneCount(int leftCount, int rightCount)
+        /// <param name="rebuildTrack"></param>
+        public void SetLaneCount(int leftCount, int rightCount, bool rebuildTrack = true)
         {
             if (IsValid == false)
                 return;
@@ -442,19 +456,20 @@ namespace PLATEAU.RoadNetwork.Structure
             if ((nowLeft > 0 || leftCount == 0) &&
                 (nowRight > 0 || rightCount == 0))
             {
-                SetLeftLaneCount(leftCount);
-                SetRightLaneCount(rightCount);
+                SetLeftLaneCount(leftCount, rebuildTrack);
+                SetRightLaneCount(rightCount, rebuildTrack);
                 return;
             }
 
-            SetLaneCountWithoutMedian(leftCount, rightCount);
+            SetLaneCountWithoutMedian(leftCount, rightCount, rebuildTrack);
         }
 
         /// <summary>
         /// 左側レーン数を変更する
         /// </summary>
         /// <param name="count"></param>
-        public void SetLeftLaneCount(int count)
+        /// <param name="rebuildTrack"></param>
+        public void SetLeftLaneCount(int count, bool rebuildTrack = true)
         {
             // 既に指定の数になっている場合は何もしない
             if (GetLeftLaneCount() == count)
@@ -463,12 +478,12 @@ namespace PLATEAU.RoadNetwork.Structure
             // 左車線が無い場合は全車線含めて変更する
             if (GetLeftLaneCount() == 0 || count == 0)
             {
-                SetLaneCountWithoutMedian(count, GetRightLaneCount());
+                SetLaneCountWithoutMedian(count, GetRightLaneCount(), rebuildTrack);
             }
             // すでに左車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCountImpl(count, RnDir.Left);
+                SetLaneCountImpl(count, RnDir.Left, rebuildTrack);
             }
         }
 
@@ -476,7 +491,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 右側レーン数を変更する
         /// </summary>
         /// <param name="count"></param>
-        public void SetRightLaneCount(int count)
+        /// <param name="rebuildTrack"></param>
+        public void SetRightLaneCount(int count, bool rebuildTrack = true)
         {
             // 既に指定の数になっている場合は何もしない
             if (GetRightLaneCount() == count)
@@ -485,12 +501,12 @@ namespace PLATEAU.RoadNetwork.Structure
             // 右車線が無い場合は全車線含めて変更する
             if (GetRightLaneCount() == 0 || count == 0)
             {
-                SetLaneCountWithoutMedian(GetLeftLaneCount(), count);
+                SetLaneCountWithoutMedian(GetLeftLaneCount(), count, rebuildTrack);
             }
             // すでに右車線がある場合はそれだけで変更する
             else
             {
-                SetLaneCountImpl(count, RnDir.Right);
+                SetLaneCountImpl(count, RnDir.Right, rebuildTrack);
             }
         }
 
@@ -499,16 +515,17 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="count"></param>
+        /// <param name="rebuildTrack">レーン分割後に関係する交差点のトラックを再生成する</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void SetLaneCount(RnDir dir, int count)
+        public void SetLaneCount(RnDir dir, int count, bool rebuildTrack = true)
         {
             switch (dir)
             {
                 case RnDir.Left:
-                    SetLeftLaneCount(count);
+                    SetLeftLaneCount(count, rebuildTrack);
                     break;
                 case RnDir.Right:
-                    SetRightLaneCount(count);
+                    SetRightLaneCount(count, rebuildTrack);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dir), dir, $"SetLaneCount({dir})");
@@ -788,7 +805,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     if (sideWalk.LaneType == RnSideWalkLaneType.LeftLane)
                         leftSideWalks.Add(sideWalk);
-                    else if(sideWalk.LaneType == RnSideWalkLaneType.RightLane)
+                    else if (sideWalk.LaneType == RnSideWalkLaneType.RightLane)
                         rightSideWalks.Add(sideWalk);
                     else
                     {
@@ -1412,7 +1429,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
 
             // 同じ交差点を含むか（Next,Prevは問わない）
-            var isSameIntersection = 
+            var isSameIntersection =
                 (a.PrevIntersection == b.PrevIntersection && a.NextIntersection == b.NextIntersection) ||
                 (a.PrevIntersection == b.NextIntersection && a.NextIntersection == b.PrevIntersection);
 

@@ -523,6 +523,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (border.GetPoint(0) == RightWay.GetPoint(0))
                 return RnLaneBorderDir.Right2Left;
 
+            if (border.IsValid == false)
+                return null;
+
             var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
             // #NOTE : Laneが複雑な形状をしているときのためPrevはPrev側, NextBorderだとNext側を見る
             var index = type == RnLaneBorderType.Prev ? 0 : -1;
@@ -656,7 +659,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rights =
                 self.RightWay.Vertices.ToList();
             AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
-            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
+            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, RnModel.Plane, p2);
             foreach (var s in segments)
             {
                 AddPoint(s);
@@ -733,6 +736,44 @@ namespace PLATEAU.RoadNetwork.Structure
             return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
         }
 
+        /// <summary>
+        /// このレーンのうち最も狭くなる場所の幅を返す.頂点ごとに計算するため割と重い
+        /// 左右のレーンが不正の場合は0を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcMinWidth(this RnLane self)
+        {
+            if (self == null)
+                return 0f;
+            if (self.LeftWay.IsValidOrDefault() == false)
+                return 0f;
+            if (self.RightWay.IsValidOrDefault() == false)
+                return 0f;
+
+            var minW = float.MaxValue;
+            foreach (var v in self.LeftWay)
+            {
+                self.RightWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            foreach (var v in self.RightWay)
+            {
+                self.LeftWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            return minW;
+        }
+
+
+        /// <summary>
+        /// Laneの幅を設定する. 頂点ごとに計算するため割と重い
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="getWidth"></param>
+        /// <param name="moveLeft"></param>
         private static bool TrySetWidth(this RnLane self, Func<int, float, float> getWidth, bool moveLeft)
         {
             if (self.HasBothBorder == false)
@@ -740,7 +781,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 Debug.Log($"[TrySetWidth] Lane {self.DebugMyId} HasBothBorder == false");
                 return false;
             }
-            var plane = AxisPlane.Xz;
+            var plane = RnModel.Plane;
             // 動かさない
             var fixWay = moveLeft ? self.RightWay : self.LeftWay;
             var moveWay = moveLeft ? self.LeftWay : self.RightWay;
@@ -759,7 +800,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     return (nextPos, t2);
                 }
 
-                var lastWayIndex = fixWayIndex;
                 var (pos, t) = GetFixSeg(fixWayIndex);
 
                 if (t < 0f || t > 1f)
@@ -1012,7 +1052,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         else
                             AddPoint(prevBorder.Points.First());
 
-                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
+                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), RnModel.Plane, rate);
                         foreach (var s in segments)
                         {
                             AddPoint(new RnPoint(s));

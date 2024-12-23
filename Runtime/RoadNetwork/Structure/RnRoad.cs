@@ -977,7 +977,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 throw new ArgumentException($"TryGetAdjustBorderSegment. Invalid border type ${borderType}");
             }
-            var plane = AxisPlane.Xz;
+            var plane = RnModel.Plane;
             var leftSeg2D = leftSeg.To2D(plane);
             var rightSeg2D = rightSeg.To2D(plane);
             // leftWay/rightWayの最後の直線の2等分線に対して直角な線
