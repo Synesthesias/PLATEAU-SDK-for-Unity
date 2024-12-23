@@ -53,8 +53,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // dummyのwayを表示する。ここでいうdummyとは、Wayをスライドさせる際に表示する仮のWayのこと
             RnWay slidingWay = null;
 
-            var mouseDown = Event.current.type == EventType.MouseDown && Event.current.button == 0;
-            var mouseUp = Event.current.type == EventType.MouseUp && Event.current.button == 0;
+            var evt = Event.current;
+            var mouseDown = evt.type == EventType.MouseDown && evt.button == 0 && evt.alt == false;
+            var mouseUp = evt.type == EventType.MouseUp && evt.button == 0;
             if (mouseDown) isMouseDownHold = true;
             if (mouseUp) isMouseDownHold = false;
 
