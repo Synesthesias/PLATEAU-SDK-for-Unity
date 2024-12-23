@@ -16,9 +16,11 @@ namespace PLATEAU.RoadAdjust
     {
         public void Generate(IRrTarget target)
         {
+            // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
             rnm.Generate();
             
+            // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target);
             rm.Generate();
         }

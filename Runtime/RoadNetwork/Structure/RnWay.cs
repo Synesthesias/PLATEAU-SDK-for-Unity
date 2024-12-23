@@ -891,5 +891,33 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
         }
+        
+        /// <summary>
+        /// 線の端から<paramref name="distance"/>メートル辿ったときの位置を返します。
+        /// <paramref name="endSide"/>がtrueの場合、線を逆（配列のend側）から辿ります。
+        /// </summary>
+        public static Vector3 PositionAtDistance(this RnWay way, float distance, bool endSide)
+        {
+            float len = 0;
+            int index = endSide ? way.Count - 1 : 0;
+            var pos = way.GetPoint(index);
+            while(len < distance) // オフセットの分だけ線上を動かします。
+            {
+                index += endSide ? -1 : 1;
+                if (index < 0 || index >= way.Count) break;
+                var nextPos = way.GetPoint(index);
+                float lenDiff = Vector3.Distance(nextPos, pos);
+                if (len + lenDiff >= distance)
+                {
+                    float t = (len + lenDiff - distance) / lenDiff; // オーバーした割合
+                    return Vector3.Lerp(pos, nextPos, 1 - t);
+                }
+
+                pos = nextPos;
+                len += lenDiff;
+            }
+
+            return pos;
+        }
     }
 }
