@@ -26,7 +26,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private GameObject roadNetworkEditingSystemObjRoot;
         private RnModel roadNetwork;
         private IRoadNetworkEditingSystem system;
-        private EditingSystemSubMod.EditingSystemGizmos gizmosSys = new EditingSystemSubMod.EditingSystemGizmos();
 
         private EditingSystemSubMod.IEventBuffer sceneViewEvBuf = null;
 
@@ -510,20 +509,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
 
             // gizmos描画の更新
-            var gizmosSys = this.gizmosSys;
-            var gizmosdrawer = roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
+            var gizmosdrawer = GetRoadNetworkEditorGizmos();
             var guisys = system.SceneGUISystem;
             if (guisys != null)
             {
                 // gizmosの更新
-                gizmosSys.Update(
+                var lines = new LaneLineGizmoGenerator().Generate(
                     system.SelectedRoadNetworkElement,
                     waySlideCalcCache?.ClosestWay,
                     this.roadGroupEditorData,
                     dummyWay);
-                var cmds = gizmosSys.BuildDrawCommands();
-                gizmosdrawer.DrawFuncs.Clear();
-                gizmosdrawer.DrawFuncs.AddRange(cmds);
+                gizmosdrawer.SetLine(lines);
 
                 // guiの更新
 
@@ -548,6 +544,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
             EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);
+        }
+
+        private RoadNetworkEditorGizmos GetRoadNetworkEditorGizmos()
+        {
+            if (roadNetworkEditingSystemObjRoot == null) return null;
+            return roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
         }
 
         private void SelectWay(Ray ray, WayEditorDataList wayEditorDataList, bool isMouseOnViewport)
@@ -611,15 +613,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             editingIntersection.SetTarget(null);
             editingIntersection.Activate(false);
-
-            gizmosSys.Clear();
-
-            var gizmosDrawer = roadNetworkEditingSystemObjRoot?.GetComponent<RoadNetworkEditorGizmos>();
-            if (gizmosDrawer != null)
-            {
-                gizmosDrawer.Clear();
-            }
-
+            
+            GetRoadNetworkEditorGizmos().Clear();
+            
             EditorApplication.update -= Update;
             ClearCache();
         }
