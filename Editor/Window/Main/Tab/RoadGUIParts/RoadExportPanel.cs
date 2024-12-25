@@ -1,16 +1,6 @@
-﻿using PLATEAU.RoadAdjust;
-using PLATEAU.Util.Async;
-using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.RoadNetwork.Factory;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-
-// Testerを使わず生成するようにする
-using PLATEAU.RoadNetwork.Tester;
-using PLATEAU.Util;
-using System;
-using Object = UnityEngine.Object; // Todo 削除予定
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -26,10 +16,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         private string exportPath;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="rootVisualElement"></param>
         public RoadExportPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
         }
 
+        /// <summary>
+        /// タブが選択された時の処理
+        /// </summary>
+        /// <param name="root"></param>
         protected override void OnTabSelected(VisualElement root)
         {
             base.OnTabSelected(root);
@@ -48,7 +46,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
 
-            // 生成ボタンを押した時の挙動
             blowseMethod = CreateBlowseMethod();
             blowseButton.clicked += blowseMethod;
 
@@ -57,7 +54,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         }
 
         /// <summary>
-        /// 生成ボタンを押したときの挙動を定義します。
+        /// エクスポートボタンを押したときの挙動を定義します
         /// </summary>
         private Action CreateExportMethod()
         {
@@ -69,6 +66,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             };
         }
 
+        /// <summary>
+        /// 参照ボタンを押したときの挙動を定義します
+        /// </summary>
+        /// <returns></returns>
         private Action CreateBlowseMethod()
         {
             return () =>
@@ -88,6 +89,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             };
         }
 
+        /// <summary>
+        /// タブが非選択になった時の処理
+        /// </summary>
         protected override void OnTabUnselected()
         {
             var exportButton = self.Q<Button>("ButtonExport");

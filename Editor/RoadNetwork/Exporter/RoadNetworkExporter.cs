@@ -1,23 +1,24 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.Geometries;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using System.Linq;
-using PLATEAU.RoadNetwork.Structure;
-using NetTopologySuite.Geometries;
-using PLATEAU.Native;
+using UnityEngine;
+using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
     public class RoadNetworkExporter
     {
+        /// <summary>
+        /// 座標参照系（CRS: EPSG 6697）
+        /// </summary>
         private const string CRS = "urn:ogc:def:crs:EPSG::6697";
 
+        /// <summary>
+        /// 道路ネットワークのコンテキスト情報
+        /// </summary>
         private RoadNetworkContext roadNetworkContext;
+
+        // エクスポートするファイル名の定義
 
         public const string ExportFileNameLink = "roadnetwork_link.geojson";
         public const string ExportFileNameLane = "roadnetwork_lane.geojson";
@@ -27,25 +28,47 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         public const string ExportFileNameSignalLight = "roadnetwork_signallight.geojson";
         public const string ExportFileNameSignalStep = "roadnetwork_signalstep.geojson";
 
+        /// <summary>
+        /// エクスポートパス
+        /// </summary>
         private string exportPath = Application.persistentDataPath;
 
+        /// <summary>
+        /// ノードのリスト
+        /// </summary>
         private List<RoadNetworkElementNode> Nodes { get; set; } = new List<RoadNetworkElementNode>();
 
+        /// <summary>
+        /// リンクのリスト
+        /// </summary>
         private List<RoadNetworkElementLink> Links { get; set; } = new List<RoadNetworkElementLink>();
 
+        /// <summary>
+        /// 信号制御器のリスト
+        /// </summary>
         private List<RoadNetworkElementSignalController> SignalControllers { get; set; } = new List<RoadNetworkElementSignalController>();
 
+        /// <summary>
+        /// 信号灯火器のリスト
+        /// </summary>
         private List<RoadNetworkElementSignalLight> SignalLights { get; set; } = new List<RoadNetworkElementSignalLight>();
 
+        /// <summary>
+        /// 信号現示階梯のリスト
+        /// </summary>
         private List<RoadNetworkElementSignalStep> SignalSteps { get; set; } = new List<RoadNetworkElementSignalStep>();
 
+        /// <summary>
+        /// 道路ネットワークを指定されたパスにエクスポートします
+        /// </summary>
+        /// <param name="path">エクスポート先のパス</param>
         public void ExportRoadNetwork(string path)
         {
             exportPath = path;
 
             roadNetworkContext = new RoadNetworkContext();
 
-            GenerateSimRoadNetwork(roadNetworkContext);
+            GenerateExpRoadNetwork(roadNetworkContext);
 
             ExportNode(Nodes);
 
@@ -62,7 +85,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportSignalStep(SignalSteps);
         }
 
-        private void GenerateSimRoadNetwork(RoadNetworkContext context)
+        /// <summary>
+        /// エクスポート用の道路ネットワークを生成します
+        /// </summary>
+        /// <param name="context">道路ネットワークのコンテキスト</param>
+        private void GenerateExpRoadNetwork(RoadNetworkContext context)
         {
             var roadNetworkRoads = context.RoadNetworkGetter.GetRoadBases();
 
@@ -183,10 +210,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             // 接続点ノード・仮想ノードの座標を設定
             foreach (var node in Nodes)
             {
-                if (node.OriginTran == null)
+                if (node.IsVirtual)
                 {
                     // 接続されているリンクの隣接情報から座標を取得する
-                    // OriginTranがない時点で交差点ではなく接続点なので上流・下流ともに１つでいい
+                    // 交差点ではなく接続点なので上流・下流ともに１つでいい
                     var uplink = Links.Where(x => x.DownNode == node && x.GetOriginLanes().Count > 0);
                     var downlink = Links.Where(x => x.UpNode == node && x.GetOriginLanes().Count > 0);
 
@@ -207,6 +234,13 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             }
         }
 
+        /// <summary>
+        /// レーンのリストから中心点を計算します
+        /// </summary>
+        /// <param name="context">道路ネットワークのコンテキスト</param>
+        /// <param name="lanes">レーンのリスト</param>
+        /// <param name="isNext">次のボーダーを使用するかどうか</param>
+        /// <returns>中心点の座標</returns>
         public Vector3 CalculateCenter(RoadNetworkContext context, List<RnID<RnDataLane>> lanes, bool isNext)
         {
             var allLanes = context.RoadNetworkGetter.GetLanes();
@@ -236,6 +270,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return CalculateCenter(borderVertices);
         }
 
+        /// <summary>
+        /// 座標のリストから中心点を計算します
+        /// </summary>
+        /// <param name="positions">座標のリスト</param>
+        /// <returns>中心点の座標</returns>
         public Vector3 CalculateCenter(List<Vector3> positions)
         {
             if (positions == null || positions.Count == 0)
@@ -253,6 +292,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return sum / positions.Count;
         }
 
+        /// <summary>
+        /// リンクをエクスポートします
+        /// </summary>
+        /// <param name="simRoadNetworkLinks">リンクのリスト</param>
         private void ExportLink(List<RoadNetworkElementLink> simRoadNetworkLinks)
         {
             var simLinks = new List<GeoJsonFeature>();
@@ -260,7 +303,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             foreach (var simLink in simRoadNetworkLinks)
             {
                 // レーンが存在しない場合はリンクを出力しない
-                if (simLink.OriginTran != null && simLink.GetOriginLanes().Count == 0)
+                if (simLink.GetOriginLanes().Count == 0)
                 {
                     Debug.Log("No valid lane is linked to this link. " + simLink.ID);
 
@@ -276,7 +319,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                     ID = simLink.ID,
                     UPNODE = simLink.UpNode.ID,
                     DOWNNODE = simLink.DownNode.ID,
-                    LENGTH = simLink.GetLaneLength(),
+                    LENGTH = simLink.GetLinkLength(),
                     LANENUM = simLink.GetLaneNum(),
 
                     // 拡張性のために残す
@@ -292,6 +335,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(simLinks, ExportFileNameLink);
         }
 
+        /// <summary>
+        /// レーンをエクスポートします
+        /// </summary>
+        /// <param name="simRoadNetworkLinks">リンクのリスト</param>
         private void ExportLane(List<RoadNetworkElementLink> simRoadNetworkLinks)
         {
             var simLanes = new List<GeoJsonFeature>();
@@ -320,6 +367,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(simLanes, ExportFileNameLane);
         }
 
+        /// <summary>
+        /// ノードをエクスポートします
+        /// </summary>
+        /// <param name="simRoadNetworkNodes">ノードのリスト</param>
         private void ExportNode(List<RoadNetworkElementNode> simRoadNetworkNodes)
         {
             var simNodes = new List<GeoJsonFeature>();
@@ -341,6 +392,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(simNodes, ExportFileNameNode);
         }
 
+        /// <summary>
+        /// トラックをエクスポートします
+        /// </summary>
+        /// <param name="simRoadNetworkNodes">ノードのリスト</param>
         private void ExportTrack(List<RoadNetworkElementNode> simRoadNetworkNodes)
         {
             var simNodes = new List<GeoJsonFeature>();
@@ -373,6 +428,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(simNodes, ExportFileNameTrack);
         }
 
+        /// <summary>
+        /// 信号制御器をエクスポートします。
+        /// </summary>
+        /// <param name="simSignalControllers">信号制御器のリスト</param>
         private void ExportSignalController(List<RoadNetworkElementSignalController> simSignalControllers)
         {
             var geoJsonFeature = new List<GeoJsonFeature>();
@@ -404,6 +463,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(geoJsonFeature, ExportFileNameSignalControler);
         }
 
+        /// <summary>
+        /// 信号灯火気をエクスポートします
+        /// </summary>
+        /// <param name="simSignalLights">信号灯火器のリスト</param>
         private void ExportSignalLight(List<RoadNetworkElementSignalLight> simSignalLights)
         {
             var geoJsonFeature = new List<GeoJsonFeature>();
@@ -430,6 +493,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(geoJsonFeature, ExportFileNameSignalLight);
         }
 
+        /// <summary>
+        /// 信号現示階梯をエクスポートします
+        /// </summary>
+        /// <param name="simSignalSteps">信号現示階梯のリスト</param>
         private void ExportSignalStep(List<RoadNetworkElementSignalStep> simSignalSteps)
         {
             var geoJsonFeature = new List<GeoJsonFeature>();
@@ -459,6 +526,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ExportGeoJson(geoJsonFeature, ExportFileNameSignalStep);
         }
 
+        /// <summary>
+        /// GeoJSON形式でデータをエクスポートします
+        /// </summary>
+        /// <param name="features">GeoJSONフィーチャーのリスト</param>
+        /// <param name="fileName">エクスポートするファイル名</param>
         private async void ExportGeoJson(List<GeoJsonFeature> features, string fileName)
         {
             var geoJson = GeoJsonExporter.CreateGeoJson(features, CRS);

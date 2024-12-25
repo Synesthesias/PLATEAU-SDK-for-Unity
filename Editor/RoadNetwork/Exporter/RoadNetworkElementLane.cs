@@ -1,33 +1,43 @@
-﻿using GeoJSON.Net.Geometry;
-using PLATEAU.CityInfo;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Splines;
-using NetTopologySuite.Geometries;
+using PLATEAU.Native;
+using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
     /// <summary>
-    /// 道路ネットワークのレーンを表すクラス
+    /// レーンを表すクラス
     /// </summary>
     public class RoadNetworkElementLane : RoadNetworkElement
     {
+        /// <summary>
+        /// レーン識別子のプレフィックス
+        /// </summary>
         public static readonly string IDPrefix = "Lane";
 
-        private const double EarthRadiusKm = 6371.0; // 地球の半径 (km)
+        /// <summary>
+        /// 地球の半径 (km)
+        /// </summary>
+        private const double EarthRadiusKm = 6371.0;
 
+        /// <summary>
+        /// 元となる道路ネットワーク上のレーン
+        /// </summary>
         public RnDataLane OriginLane { get; private set; } = null;
 
+        /// <summary>
+        /// レーンの順序
+        /// </summary>
         public int Order { get; private set; } = 0;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="context">道路ネットワークのコンテキスト</param>
+        /// <param name="id">レーンのID</param>
+        /// <param name="lane">元のレーンデータ</param>
+        /// <param name="order">レーンの順序</param>
         public RoadNetworkElementLane(RoadNetworkContext context, string id, RnDataLane lane, int order) : base(context, CreateID(id, order))
         {
             OriginLane = lane;
@@ -35,6 +45,12 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             Order = order;
         }
 
+        /// <summary>
+        /// レーン識別子を生成します
+        /// </summary>
+        /// <param name="id">元のID</param>
+        /// <param name="order">レーンの順序</param>
+        /// <returns>生成されたID</returns>
         private static string CreateID(string id, int order)
         {
             var newID = IDPrefix + id + "_" + order;
@@ -42,6 +58,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return newID;
         }
 
+        /// <summary>
+        /// ジオメトリ情報を取得します
+        /// </summary>
+        /// <param name="isCenter">中心線を使用するかどうか</param>
+        /// <returns>ジオメトリ情報のリスト</returns>
         public List<GeoJSON.Net.Geometry.Position> GetGeometory(bool isCenter = true)
         {
             var coods = new List<GeoJSON.Net.Geometry.Position>();
@@ -55,41 +76,6 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             var isReverse = OriginLane.IsReverse;
 
             var way = isCenter ? OriginLane.CenterWay : OriginLane.RightWay;
-
-            // RightWayの場合方向はがCenterWayと一致するかどうか調べる
-            //if (isCenter == false && OriginLane.CenterWay.IsValid && OriginLane.RightWay.IsValid)
-            //{
-            //    var linestringCenter = ways[OriginLane.CenterWay.ID].LineString;
-            //    var linestringRight = ways[OriginLane.RightWay.ID].LineString;
-
-            //    if (linestrings[linestringCenter.ID].Points.Count >= 2 && linestrings[linestringRight.ID].Points.Count >= 2)
-            //    {
-            //        var centerStart = linestrings[linestringCenter.ID].Points[0];
-            //        var centerEnd = linestrings[linestringCenter.ID].Points[1];
-
-            //        var rightStart = linestrings[linestringRight.ID].Points[0];
-            //        var rightEnd = linestrings[linestringRight.ID].Points[1];
-
-            //        var centerStartCood = points[centerStart.ID].Vertex;
-            //        var centerEndCood = points[centerEnd.ID].Vertex;
-
-            //        var rightStartCood = points[rightStart.ID].Vertex;
-            //        var rightEndCood = points[rightEnd.ID].Vertex;
-
-            //        var centerVector = centerEndCood - centerStartCood;
-            //        var rightVector = rightEndCood - rightStartCood;
-
-            //        var dot = Vector3.Dot(centerVector, rightVector);
-
-            //        if (dot < 0)
-            //        {
-            //            if (isReverse == false)
-            //            {
-            //                isReverse = true;
-            //            }
-            //        }
-            //    }
-            //}
 
             if (way.IsValid)
             {
@@ -137,11 +123,20 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return coods;
         }
 
+        /// <summary>
+        /// レーンの長さを取得します
+        /// </summary>
+        /// <returns>レーンの長さ</returns>
         public float GetLength()
         {
             return (float)CalculateTotalDistance(GetGeometory());
         }
 
+        /// <summary>
+        /// ジオメトリ情報のリストから総距離を計算します
+        /// </summary>
+        /// <param name="positions">ジオメトリ情報のリスト</param>
+        /// <returns>総距離</returns>
         private double CalculateTotalDistance(List<GeoJSON.Net.Geometry.Position> positions)
         {
             double totalDistance = 0.0;
@@ -156,6 +151,12 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return totalDistance;
         }
 
+        /// <summary>
+        /// 2つの位置間のハーバーサイン距離を計算します
+        /// </summary>
+        /// <param name="pos1">開始位置</param>
+        /// <param name="pos2">終了位置</param>
+        /// <returns>ハーバーサイン距離</returns>
         private double HaversineDistance(GeoJSON.Net.Geometry.Position pos1, GeoJSON.Net.Geometry.Position pos2)
         {
             double lat1 = pos1.Latitude * Math.PI / 180.0;
@@ -174,8 +175,9 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         }
 
         /// <summary>
-        /// レーンの幅員を取得する
+        /// レーンの幅員を取得します
         /// </summary>
+        /// <returns>レーンの幅員</returns>
         public float GetLaneWidth()
         {
             var ways = roadNetworkContext.RoadNetworkGetter.GetWays();
@@ -227,11 +229,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         }
 
         /// <summary>
-        /// 2つの点集合間の最短距離を計算する
+        /// 2つの点集合間の最短距離を計算します
         /// </summary>
-        /// <param name="pointSetA"></param>
-        /// <param name="pointSetB"></param>
-        /// <returns></returns>
+        /// <param name="pointSetA">点集合A</param>
+        /// <param name="pointSetB">点集合B</param>
+        /// <returns>最短距離</returns>
         private float GetMinimumDistanceBetweenPointSets(List<Vector3> pointSetA, List<Vector3> pointSetB)
         {
             float minDistance = float.MaxValue;

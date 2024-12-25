@@ -1,43 +1,74 @@
-﻿using GeoJSON.Net.Geometry;
-using PLATEAU.CityInfo;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Splines;
+using PLATEAU.Native;
+using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
     /// <summary>
-    /// 道路ネットワークのトラックを表すクラス
+    /// トラックを表すクラス
     /// </summary>
     public class RoadNetworkElementTrack : RoadNetworkElement
     {
+        /// <summary>
+        /// トラック識別子のプレフィックス
+        /// </summary>
         public static readonly string IDPrefix = "Track";
 
+        /// <summary>
+        /// 元となる道路ネットワーク上のトラックデータ
+        /// </summary>
         public RnDataTrack OriginTrack { get; private set; } = null;
 
-        private const int TrackResolution = 10; // Trackの解像度
+        /// <summary>
+        /// トラックの解像度
+        /// </summary>
+        private const int TrackResolution = 10;
 
+        /// <summary>
+        /// トラックの順序
+        /// </summary>
         public int Order { get; private set; } = 0;
 
+        /// <summary>
+        /// 上り方向の距離
+        /// </summary>
         public float UpDistance = 0.0f;
 
+        /// <summary>
+        /// 下り方向の距離
+        /// </summary>
         public float DownDistance = 0.0f;
 
+        /// <summary>
+        /// 上り方向のリンク
+        /// </summary>
         public RoadNetworkElementLink UpLink = null;
 
+        /// <summary>
+        /// 下り方向のリンク
+        /// </summary>
         public RoadNetworkElementLink DownLink = null;
 
+        /// <summary>
+        /// 上り方向の接続レーン番号
+        /// </summary>
         public int UpLane = 0;
 
+        /// <summary>
+        /// 下り方向の接続レーン番号
+        /// </summary>
         public int DownLane = 0;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="context">道路ネットワークのコンテキスト</param>
+        /// <param name="id">トラックのID</param>
+        /// <param name="track">元のトラックデータ</param>
+        /// <param name="tracks">トラックのリスト</param>
+        /// <param name="links">リンクのリスト</param>
         public RoadNetworkElementTrack(RoadNetworkContext context, string id, RnDataTrack track, List<RoadNetworkElementTrack> tracks, List<RoadNetworkElementLink> links) : base(context, IDPrefix + id)
         {
             ID = IDPrefix + id;
@@ -89,6 +120,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             ID += "_" + uplink[0] + "_" + downlink[0] + "_" + Order;
         }
 
+        /// <summary>
+        /// ジオメトリ情報を取得します
+        /// </summary>
+        /// <returns>ジオメトリ情報のリスト</returns>
         public List<GeoJSON.Net.Geometry.Position> GetGeometory()
         {
             var coods = new List<GeoJSON.Net.Geometry.Position>();
@@ -107,6 +142,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return coods;
         }
 
+        /// <summary>
+        /// トラックの長さを取得します
+        /// </summary>
+        /// <returns>トラックの長さ</returns>
         public float GetLength()
         {
             return UnityEngine.Splines.SplineUtility.CalculateLength(OriginTrack.Spline, Matrix4x4.identity);

@@ -1,29 +1,41 @@
-﻿using PLATEAU.CityInfo;
-using PLATEAU.Geometries;
-using PLATEAU.Native;
-using PLATEAU.RoadNetwork;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using PLATEAU.CityInfo;
+using PLATEAU.Native;
+using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
     /// <summary>
-    /// シミュレーション用道路ネットワークのノードを表すクラス
+    /// ノードを表すクラス
     /// </summary>
     public class RoadNetworkElementNode : RoadNetworkElement
     {
+        /// <summary>
+        /// ノード識別子のプレフィックス
+        /// </summary>
         public static readonly string IDPrefix = "Node";
 
+        /// <summary>
+        /// 道路ネットワーク上のインデックス
+        /// </summary>
         public int RoadNetworkIndex { get; private set; } = -1;
 
+        /// <summary>
+        /// ノードの座標
+        /// IsVertualがtrueの場合は、この座標が使用される。
+        /// </summary>
         public Vector3 Coord;
 
+        /// <summary>
+        /// ノードに所属するトラックのリスト
+        /// </summary>
         public List<RoadNetworkElementTrack> Tracks = new List<RoadNetworkElementTrack>();
 
+        /// <summary>
+        /// 元となる道路ネットワーク上の交差点
+        /// </summary>
         public RnDataIntersection OriginNode
         {
             get
@@ -37,22 +49,9 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             }
         }
 
-        public PLATEAUCityObjectGroup OriginTran
-        {
-            get
-            {
-                return OriginNode?.TargetTran;
-            }
-        }
-
-        public Mesh Mesh
-        {
-            get
-            {
-                return OriginTran?.GetComponent<MeshFilter>().sharedMesh;
-            }
-        }
-
+        /// <summary>
+        /// ノードが仮想ノードかどうかを返します
+        /// </summary>
         public bool IsVirtual
         {
             get
@@ -61,11 +60,22 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             }
         }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="context">道路ネットワークのコンテキスト</param>
+        /// <param name="id">ノードのID</param>
+        /// <param name="index">道路ネットワークのインデックス</param>
         public RoadNetworkElementNode(RoadNetworkContext context, string id, int index) : base(context, CreateID(id))
         {
             RoadNetworkIndex = index;
         }
 
+        /// <summary>
+        /// ノードの識別子を生成します
+        /// </summary>
+        /// <param name="id">元のID</param>
+        /// <returns>生成されたID</returns>
         private static string CreateID(string id)
         {
             var newID = IDPrefix + id;
@@ -73,6 +83,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return newID;
         }
 
+        /// <summary>
+        /// ノードに属するするトラックを生成します
+        /// </summary>
+        /// <param name="links">リンクのリスト</param>
         public void GenerateTrack(List<RoadNetworkElementLink> links)
         {
             Tracks = new List<RoadNetworkElementTrack>();
@@ -88,6 +102,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             }
         }
 
+        /// <summary>
+        /// ジオメトリ情報を取得します
+        /// </summary>
+        /// <returns>ジオメトリ情報</returns>
         public GeoJSON.Net.Geometry.Position GetGeometory()
         {
             Vector3 coord = Coord;
@@ -102,6 +120,10 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             return new GeoJSON.Net.Geometry.Position(geoCoord.Latitude, geoCoord.Longitude);
         }
 
+        /// <summary>
+        /// ノードの位置を取得します
+        /// </summary>
+        /// <returns>ノードの位置</returns>
         public Vector3 GetPosition()
         {
             var coods = new List<Vector3>();
