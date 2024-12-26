@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -46,11 +47,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 return;
             }
 
+            var exportPathField = self.Q<TextField>("ExportPathField");
+            if (exportButton == null)
+            {
+                Debug.LogError("Failed to load ButtonExport");
+                return;
+            }
+
             blowseMethod = CreateBlowseMethod();
             blowseButton.clicked += blowseMethod;
 
             exportMethod = CreateExportMethod();
             exportButton.clicked += exportMethod;
+
+            exportPathField.SetEnabled(false);
         }
 
         /// <summary>
@@ -60,6 +70,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             return () =>
             {
+                if (!Directory.Exists(exportPath))
+                {
+                    PLATEAU.Util.Dialogue.Display("有効な出力先フォルダを指定してください", "OK");
+
+                    return;
+                }
+
                 var exporter = new PLATEAU.Editor.RoadNetwork.Exporter.RoadNetworkExporter();
 
                 exporter.ExportRoadNetwork(exportPath);
