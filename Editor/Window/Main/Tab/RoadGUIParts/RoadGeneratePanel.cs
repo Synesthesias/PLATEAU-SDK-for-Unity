@@ -65,46 +65,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             GetT("Ignore_Highwaay").value = factory.IgnoreHighway;
             
 
-            
-            
-
-
             // 生成ボタンを押した時の挙動
             setupMethod = CreateSetupMethod();
             generateButton.clicked += setupMethod;
-
-            /// <summary>
-            /// 道路ネットワークを作成する
-            /// </summary>
-            /// <returns></returns>
-            // async Task CreateNetwork()
-            // {
-            //     var go = selfGameObject;
-            //     var targets = GetTargetCityObjects();
-            //     var req = factory.CreateRequest(targets, go);
-            //     await factory.CreateRnModelAsync(req);
-            // }
-
-            // List<PLATEAUCityObjectGroup> GetTargetCityObjects()
-            // {
-            //     List<TestTargetPresets> TargetPresets;
-            //     string TargetPresetName;
-            //     const bool TargetAll = true;
-            //
-            //     var ret = TargetAll
-            //         ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
-            //         : TargetPresets
-            //             .FirstOrDefault(s => s.name == TargetPresetName)
-            //             ?.targets;
-            //     if (ret == null)
-            //         return new List<PLATEAUCityObjectGroup>();
-            //
-            //     return ret
-            //         .Where(c => c.transform.childCount == 0)
-            //         .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
-            //         .Distinct()
-            //         .ToList();
-            // }
 
         }
 
@@ -129,6 +92,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var midPointTolerrance = GetF("Remove_Mid_Point_Tolerance").value;
                 var allowEdgeAngle = GetF("Terminate_Allow_Edge_Angle").value;
                 var ignoreHighway = GetT("Ignore_Highwaay").value;
+                var crosswalkFreq = CrosswalkFreq(Get<DropdownField>("Crosswalk").index);
 
                 var tester = Object.FindObjectOfType<PLATEAURoadNetworkTester>();
                 if (tester == null)
@@ -160,7 +124,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var model = tester.CreateNetwork().ContinueWithErrorCatch().Result;
                 
                 // 道路の白線、停止線、道路メッシュを生成します。
-                new RoadReproducer().Generate(new RrTargetModel(model));
+                new RoadReproducer().Generate(new RrTargetModel(model), crosswalkFreq);
 
             };
         }
@@ -180,5 +144,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         }
 
 
+        /// <summary> 横断歩道のUIの選択肢IDをenumに変換します。 </summary>
+        private CrosswalkFrequency CrosswalkFreq(int uiChoiceIndex)
+        {
+            switch (uiChoiceIndex)
+            {
+                case 0:
+                    return CrosswalkFrequency.BigRoad;
+                case 1:
+                    return CrosswalkFrequency.All;
+                case 2:
+                    return CrosswalkFrequency.None;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

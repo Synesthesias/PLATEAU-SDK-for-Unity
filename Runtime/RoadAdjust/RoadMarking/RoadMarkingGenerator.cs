@@ -13,12 +13,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// <summary>
     /// 道路ネットワークをもとに、車線の線となるメッシュを生成します。
     /// </summary>
-    public class RoadMarkingGenerator
+    internal class RoadMarkingGenerator
     {
         private readonly IRrTarget targetBeforeCopy;
+        private CrosswalkFrequency crosswalkFrequency;
         
         
-        public RoadMarkingGenerator(IRrTarget target)
+        public RoadMarkingGenerator(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
         {
             
             if (target != null)
@@ -29,7 +30,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 Debug.LogError("target road network is null.");
             }
-            
+
+            this.crosswalkFrequency = crosswalkFrequency;
         }
 
         /// <summary> 路面標示をメッシュとして生成します。 </summary>
@@ -80,7 +82,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             }
             
             // 交差点を生成します。
-            var crosswalkInstances = new CrosswalkComposer().Compose(target);
+            var crosswalkInstances = new CrosswalkComposer().Compose(target, crosswalkFrequency);
             foreach (var crosswalk in crosswalkInstances)
             {
                 var crosswalkCombiner = new RoadMarkingCombiner();

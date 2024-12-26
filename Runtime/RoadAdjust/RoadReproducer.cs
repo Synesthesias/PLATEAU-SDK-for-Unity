@@ -14,17 +14,17 @@ namespace PLATEAU.RoadAdjust
     /// </summary>
     internal class RoadReproducer
     {
-        public void Generate(IRrTarget target)
+        public void Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
         {
             // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
             rnm.Generate();
-            
+
             // 道路標示を生成
-            var rm = new RoadMarking.RoadMarkingGenerator(target);
+            var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
             rm.Generate();
         }
-        
+
         public static Transform GenerateDstParent()
         {
             var dstParent = SceneManager.GetActiveScene()
@@ -38,4 +38,6 @@ namespace PLATEAU.RoadAdjust
             return dstParent.transform;
         }
     }
+    
+
 }

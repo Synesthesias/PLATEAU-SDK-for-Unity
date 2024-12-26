@@ -19,11 +19,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
         private const float LineOffset = 0.1f;
         
         
-        public List<CrosswalkInstance> Compose(IRrTarget target)
+        public List<CrosswalkInstance> Compose(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
         {
             var ret = new List<CrosswalkInstance>();
+            var placementRule = crosswalkFrequency.ToPlacementRule();
             foreach (var road in target.Roads())
             {
+                if (!placementRule.ShouldPlace(road)) continue;
                 if (road.Next is RnIntersection nextIntersection)
                 {
                     var nextBorder = new MWLine(road.GetMergedBorder(RnLaneBorderType.Next, null));

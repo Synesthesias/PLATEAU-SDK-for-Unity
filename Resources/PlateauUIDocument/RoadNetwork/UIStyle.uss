@@ -20,7 +20,6 @@
     border-color: rgb(136, 147, 146);
 }
 
-
 #MenuGroup .unity-radio-button > VisualElement {
     display: none;
 }
@@ -103,13 +102,9 @@
     width: 50%;
 }
 
-
 #InputGroup .unity-float-field__label {
     width: 50%;
 }
-
-
-
 
 #CategoryTitle {
     margin: 0;
@@ -481,3 +476,10 @@ Scroller #unity-drag-container {
     transition: 0.2s;
 }
 
+.unity-popup-field__input {
+    flex-grow: 1.5;
+}
+
+.unity-popup-field__label {
+    flex-grow: 1;
+}
