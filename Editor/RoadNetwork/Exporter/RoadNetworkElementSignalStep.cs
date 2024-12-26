@@ -2,7 +2,6 @@
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
-{
     /// <summary>
     /// 信号現示階梯を表すクラス
     /// </summary>

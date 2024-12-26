@@ -8,8 +8,8 @@
         "Unity.Splines",
         "Unity.Splines.Editor",
         "Unity.Mathematics",
-        "GeoJSON.Net",
-        "AssemblyDefinition"
+        "GeoJSON.NetAssemblyDefinition",
+        "NetTopologySuiteAssemblyDefinition"
     ],
     "includePlatforms": [
         "Editor"
