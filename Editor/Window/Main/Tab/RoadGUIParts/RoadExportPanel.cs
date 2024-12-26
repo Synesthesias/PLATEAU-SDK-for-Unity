@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -80,6 +81,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var exporter = new PLATEAU.Editor.RoadNetwork.Exporter.RoadNetworkExporter();
 
                 exporter.ExportRoadNetwork(exportPath);
+
+                EditorUtility.RevealInFinder(exportPath + "/");
             };
         }
 
