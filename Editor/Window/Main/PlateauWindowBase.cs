@@ -45,8 +45,9 @@ namespace PLATEAU.Editor.Window.Main
 
         private void OnDestroy()
         {
-            gui.Dispose();
+            gui?.Dispose();
         }
+        
     }
 
     internal class VisualElementDisposable

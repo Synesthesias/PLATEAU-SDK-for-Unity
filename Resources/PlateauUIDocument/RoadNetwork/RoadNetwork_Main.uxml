@@ -14,9 +14,9 @@
             <ui:RadioButton label="エクスポート" name="MenuExport" class="MenuEnd" style="flex-shrink: 1; border-left-width: 0;" />
         </ui:GroupBox>
         <ui:ScrollView vertical-scroller-visibility="Auto" style="flex-grow: 1;">
-            <ui:Instance template="RoadNetwork_GeneratePanel" name="RoadNetwork_GeneratePanel" style="display: none;" />
-            <ui:Instance template="RoadNetwork_EditPanel" name="RoadNetwork_EditPanel" style="display: none;" />
-            <ui:Instance template="RoadNetwork_AddPanel" name="RoadNetwork_AddPanel" style="display: none;" />
+            <ui:Instance template="RoadNetwork_GeneratePanel" name="RoadNetwork_GeneratePanel" style="display: flex;" />
+            <ui:Instance template="RoadNetwork_EditPanel" name="RoadNetwork_EditPanel" style="display: flex;" />
+            <ui:Instance template="RoadNetwork_AddPanel" name="RoadNetwork_AddPanel" style="display: flex;" />
             <ui:Instance template="RoadNetwork_TrafficRulePanel" name="RoadNetwork_TrafficRulePanel" />
             <ui:Instance template="RoadNetwork_ExportPanel" name="RoadNetwork_ExportPanel" style="display: none;" />
         </ui:ScrollView>
