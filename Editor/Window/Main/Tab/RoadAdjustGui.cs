@@ -16,7 +16,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
     public class RoadAdjustGui : ITabContent
     {
         /// <summary> 子タブのUIと機能クラスを関連付ける辞書です。 </summary>
-        private Dictionary<RadioButton, RoadGuiParts.RoadAdjustGuiPartBase> childTabsDict = new ();
+        private Dictionary<RadioButton, RoadGuiParts.RoadAdjustGuiPartBase> childTabsDict = new();
 
         private RoadAdjustGuiPartBase currentTab;
         private TemplateContainer container;
@@ -28,15 +28,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
         public VisualElement CreateGui()
         {
             container = LoadMainUxml();
-            
+
             var main = container.Q<VisualElement>("RoadNetwork_Main");
             if (main == null)
             {
                 Debug.LogError("Failed to find main element of road adjusting.");
             }
-            
+
             CreateChildTabs(main);
-            
+
             return container;
         }
 
@@ -70,7 +70,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 {menuGroup.Q<RadioButton>("MenuGenerate"), new RoadGuiParts.RoadGeneratePanel(mainVE)},
                 {menuGroup.Q<RadioButton>("MenuEdit"), new RoadGuiParts.RoadEditPanel(mainVE)},
                 {menuGroup.Q<RadioButton>("MenuAdd"), new RoadGuiParts.RoadAddPanel(mainVE)},
-                {menuGroup.Q<RadioButton>("MenuTrafficRule"), new RoadGuiParts.RoadTrafficRulePanel(mainVE)}
+                {menuGroup.Q<RadioButton>("MenuTrafficRule"), new RoadGuiParts.RoadTrafficRulePanel(mainVE)},
+                {menuGroup.Q<RadioButton>("MenuExport"), new RoadGuiParts.RoadExportPanel(mainVE)}
             };
 
             // 各子タブの選択時と選択解除時の処理を設定します。
@@ -101,9 +102,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             panel.OnRoadChildTabSelected(mainVE);
             currentTab = panel;
         }
-        
 
-        
         public void Dispose()
         {
             currentTab.OnRoadChildTabUnselected(mainVE);
@@ -112,7 +111,5 @@ namespace PLATEAU.Editor.Window.Main.Tab
         public void OnTabUnselect()
         {
         }
-        
-
     }
 }
