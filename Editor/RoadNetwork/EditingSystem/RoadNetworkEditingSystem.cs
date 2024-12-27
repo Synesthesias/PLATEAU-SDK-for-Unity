@@ -48,7 +48,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public TrafficSignalControllerPhase selectedSignalPhase;
 
         // 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        public readonly IRoadNetworkEditingSystem system;
+        public readonly EditingSystem system;
 
         public IRoadNetworkEditOperation editOperation;
         public RoadNetworkSceneGUISystem sceneGUISystem;

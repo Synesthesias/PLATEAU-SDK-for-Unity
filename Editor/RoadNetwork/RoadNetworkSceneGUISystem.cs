@@ -29,7 +29,7 @@ namespace PLATEAU.Editor.RoadNetwork
         Texture2D trafficLightControllerTex;
         Texture2D trafficLight_blueTex;
 
-        public RoadNetworkSceneGUISystem(IRoadNetworkEditingSystem editorSystem)
+        public RoadNetworkSceneGUISystem(EditingSystem.EditingSystem editorSystem)
         {
             Assert.IsNotNull(editorSystem);
             this.editorSystem = editorSystem;
@@ -42,9 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private const float signalControllerScaleFactor = 0.3f;
         private readonly Vector3 selectBtnPosOffset = Vector3.up * 10.0f;
 
-        private IRoadNetworkEditingSystem editorSystem;
-
-        private SceneGUISystemState systemState;
+        private EditingSystem.EditingSystem editorSystem;
 
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
@@ -146,7 +144,7 @@ namespace PLATEAU.Editor.RoadNetwork
             var intersectionEditorData = editorSystem.SelectedRoadNetworkElement as EditorData<RnIntersection>;
             if (intersectionEditorData != null)
             {
-                DrawSelectedIntersection(intersectionEditorData);
+                // 交差点編集の描画は RoadNetworkEditSceneViewGui.Updateで行います
             }
         }
 
@@ -242,8 +240,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private void DrawRoadLaneDetailEditor(EditorData<RnRoadGroup> roadGroupEditorData)
         {
-            SceneGUIState state = new SceneGUIState();
-            systemState.Init(out state);
+            RoadEditSceneGUIState state = new RoadEditSceneGUIState();
 
             var currentCamera = SceneView.currentDrawingSceneView.camera;
             state.currentCamera = currentCamera;
@@ -327,7 +324,7 @@ namespace PLATEAU.Editor.RoadNetwork
                                             state.delayCommand += () =>
                                             {
                                                 networkOperator.AddPoint(parent, idx,
-                                                    new RnPoint(point.Vertex + Vector3.up));
+                                                new RnPoint(point.Vertex + Vector3.up));
                                                 Debug.Log("ポイント追加ボタンが押された");
                                             };
                                             state.isDirtyTarget = true;
@@ -368,80 +365,9 @@ namespace PLATEAU.Editor.RoadNetwork
                 editorSystem.NotifyChangedRoadNetworkObject2Editor(); // 通知
             }
 
-            systemState.Apply(state);
         }
 
-        private void DrawSelectedIntersection(EditorData<RnIntersection> intersectionData)
-        {
-            // 簡易モードで表示
-            if (editorSystem.EditSceneViewGui.IsDetailMode() == false)
-            {
-                SceneGUIState state = new SceneGUIState();
-                systemState.Init(out state);
-
-                var currentCamera = SceneView.currentDrawingSceneView.camera;
-                state.currentCamera = currentCamera;
-
-
-                var EditingIntersectionMod = editorSystem.EditSceneViewGui.EditingIntersectionMod;
-
-                var buttonSize = 2.0f;
-
-                bool isSelectdEntablePoint = EditingIntersectionMod.IsSelectdEntablePoint;
-                if (isSelectdEntablePoint == false)
-                {
-                    foreach (var item in EditingIntersectionMod.EnterablePoints)
-                    {
-                        // 流入点の位置にボタンを表示する
-                        if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize,
-                                RoadNetworkEntarablePointButtonHandleCap))
-                        {
-                            EditingIntersectionMod.SetEntablePoint(item);
-                            // 流入点が選択された
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var item in EditingIntersectionMod.ExitablePoints)
-                    {
-                        // 流出点の位置にボタンを表示する
-                        if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize,
-                                RoadNetworkExitablePointButtonHandleCap))
-                        {
-                            // 流出点が選択された
-                            EditingIntersectionMod.SetExitablePoint(item);
-                            break;
-                        }
-                    }
-                }
-
-                // Trackの生成、削除に必要な設定が済んで更新できるか？
-                if (EditingIntersectionMod.CanTryUpdateTrack)
-                {
-                    EditingIntersectionMod.UpdateTrack();
-                }
-
-
-                // 遅延実行 コレクションの要素数などを変化させる
-                if (state.delayCommand != null)
-                    state.delayCommand.Invoke();
-
-                // 変更を通知する
-                if (state.isDirtyTarget)
-                {
-                    editorSystem.NotifyChangedRoadNetworkObject2Editor();
-                }
-
-                systemState.Apply(state);
-            }
-            else // 詳細モードでのみ表示
-            {
-            }
-        }
-
-        private static void DeployPointMoveHandle(RnPoint point, SceneGUIState state, float size)
+        private static void DeployPointMoveHandle(RnPoint point, RoadEditSceneGUIState state, float size)
         {
             EditorGUI.BeginChangeCheck();
             var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
@@ -472,7 +398,7 @@ namespace PLATEAU.Editor.RoadNetwork
             return sqrMag < distance * distance;
         }
 
-        private bool Button2DOn3D(SceneGUIState state, Vector3 pos2d_dis, Texture2D texture)
+        private bool Button2DOn3D(RoadEditSceneGUIState state, Vector3 pos2d_dis, Texture2D texture)
         {
             return Button2DOn3D(state.currentCamera, pos2d_dis, texture);
         }
@@ -651,22 +577,6 @@ namespace PLATEAU.Editor.RoadNetwork
             }
         }
 
-        private static void RoadNetworkEntarablePointButtonHandleCap(int controlID, Vector3 position,
-            Quaternion rotation, float size, EventType eventType)
-        {
-            if (eventType == EventType.Repaint)
-                Handles.color = Color.red;
-            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-        }
-
-        private static void RoadNetworkExitablePointButtonHandleCap(int controlID, Vector3 position,
-            Quaternion rotation, float size, EventType eventType)
-        {
-            if (eventType == EventType.Repaint)
-                Handles.color = Color.blue;
-            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-        }
-
         private static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
             float size, EventType eventType)
         {
@@ -768,47 +678,35 @@ namespace PLATEAU.Editor.RoadNetwork
             ZeroMask = PointZeroMask & LaneZeroMask & LinkZeroMask & NodeZeroMask
         }
 
-        /// <summary>
-        /// OnSceneGUI()内での状態
-        /// </summary>
-        private struct SceneGUIState
+        
+        
+    }
+    
+    /// <summary>
+    /// OnSceneGUI()内での状態
+    /// </summary>
+    internal struct RoadEditSceneGUIState
+    {
+        public bool isDirtyTarget; // ターゲットに変更があったか
+        public Action delayCommand; // 遅延コマンド　要素の追加や削除を行う際に利用する foreach外で利用する 
+
+        // cache
+        public Vector3 linkPos;
+        public Vector3 lanePos;
+
+        public Vector3 nodePos;
+        public Vector3 signalControllerPos;
+        public Vector3 signalLightPos;
+
+        // loop operation
+        public bool isContinue;
+        public bool isBreak;
+        internal Camera currentCamera;
+
+        public void ResetLoopOperationFlags()
         {
-            public bool isDirtyTarget; // ターゲットに変更があったか
-            public Action delayCommand; // 遅延コマンド　要素の追加や削除を行う際に利用する foreach外で利用する 
-
-            // cache
-            public Vector3 linkPos;
-            public Vector3 lanePos;
-
-            public Vector3 nodePos;
-            public Vector3 signalControllerPos;
-            public Vector3 signalLightPos;
-
-            // loop operation
-            public bool isContinue;
-            public bool isBreak;
-            internal Camera currentCamera;
-
-            public void ResetLoopOperationFlags()
-            {
-                isContinue = false;
-                isBreak = false;
-            }
-        }
-
-        /// <summary>
-        /// クラス内の状態
-        /// </summary>
-        private struct SceneGUISystemState
-        {
-            public void Init(out SceneGUIState state)
-            {
-                state = new SceneGUIState { isDirtyTarget = false, delayCommand = null, };
-            }
-
-            public void Apply(in SceneGUIState state)
-            {
-            }
+            isContinue = false;
+            isBreak = false;
         }
     }
 }

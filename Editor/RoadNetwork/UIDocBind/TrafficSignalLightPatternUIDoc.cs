@@ -50,7 +50,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         /// <param name="system"></param>
         /// <param name="assets"></param>
         /// <param name="root"></param>
-        public TrafficSignalLightPatternUIDoc(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+        public TrafficSignalLightPatternUIDoc(EditingSystem.EditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
             this.system = system;
             this.assets = assets;
@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             Init();
         }
 
-        private IRoadNetworkEditingSystem system;
+        private EditingSystem.EditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement patternPanelRoot;
         private VisualElement phasePanelRoot;

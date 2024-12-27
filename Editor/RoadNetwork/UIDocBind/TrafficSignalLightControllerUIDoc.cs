@@ -20,14 +20,14 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         /// <param name="system"></param>
         /// <param name="assets"></param>
         /// <param name="root"></param>
-        public TrafficSignalLightControllerUIDoc(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+        public TrafficSignalLightControllerUIDoc(EditingSystem.EditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
         {
             this.system = system;
             this.assets = assets;
             this.root = root;
         }
 
-        private IRoadNetworkEditingSystem system;
+        private EditingSystem.EditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement root;
 

@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// ドラッグしてスライド中の<see cref="RnWay"/>を返します。
         /// スライド中のものがなければnullを返します。
         /// </summary>
-        public RnWay Draw(IRoadNetworkEditingSystem system, SceneView sceneView, out bool isRoadChanged)
+        public RnWay Draw(EditingSystem system, SceneView sceneView, out bool isRoadChanged)
         {
             isRoadChanged = false;
             var mousePos = Event.current.mousePosition;

@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <see cref="RoadNetworkEditingSystem"/>内部システムが利用するインスタンス
         /// 内部システム同士が連携する時や共通データにアクセスする際に利用する
         /// </summary>
-        internal class EditingSystem : IRoadNetworkEditingSystem
+        internal class EditingSystem
         {
             private readonly RoadNetworkEditingSystem system;
             public event EventHandler OnChangedEditMode;

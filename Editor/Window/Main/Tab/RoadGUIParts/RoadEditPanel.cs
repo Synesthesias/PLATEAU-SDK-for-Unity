@@ -117,7 +117,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
             system.EditSceneViewGui?.Init();
             
-            system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoad;
+            system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoadBase;
             system.EnableLimitSceneViewDefaultControl = true;
         }
 
@@ -141,14 +141,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             if (sys != null)
             {
                 sys.EnableLimitSceneViewDefaultControl = false;
-                sys.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoad;
+                sys.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadBase;
             }
             
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
             if(editModeToggle != null) editModeToggle.value = false;
         }
 
-        private void OnChangedSelectedRoad()
+        /// <summary>
+        /// 道路または交差点が選択されたとき
+        /// </summary>
+        private void OnChangedSelectedRoadBase()
         {
             var roadGroupEditorData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
             if (roadGroupEditorData != null)
@@ -194,7 +197,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var intersectionData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
             if (intersectionData != null)
             {
-                EditingSystem.system.EditSceneViewGui?.Setup(intersectionData);
+                EditingSystem.system.EditSceneViewGui?.SetupIntersection(intersectionData);
 
                 //var applyIntersectionButton = element.Q<Button>("ApplyIntersectionButton");
                 //if (applyIntersectionButton == null)
@@ -275,11 +278,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var mdl = linkGroupEditorData.ReqSubData<ScriptableObjectFolder>();
             return mdl.Item;
         }
-
-        public bool Apply(RoadNetworkEditSceneViewGui mod)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         private class EditorInstance : RoadNetworkEditingSystem.ISystemInstance
         {
