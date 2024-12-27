@@ -115,7 +115,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var system = EditingSystem.system;
             system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
             
-            system.RoadNetworkSimpleEditModule?.Init();
+            system.EditSceneViewGui?.Init();
             
             system.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoad;
             system.EnableLimitSceneViewDefaultControl = true;
@@ -165,7 +165,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 // 仮 詳細編集モード → 未完成のためGUI上ではオフにしています
                 rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
                 {
-                    var mod = EditingSystem.system.RoadNetworkSimpleEditModule;
+                    var mod = EditingSystem.system.EditSceneViewGui;
                     var obj = se as IScriptableRoadMdl;
                     if (mod.CanSetDtailMode())
                     {
@@ -178,7 +178,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
                 UpdateSplineButtonVisual(false);
                 lastSelectedRoad?.DisableSplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system
-                    .RoadNetworkSimpleEditModule);
+                    .EditSceneViewGui);
 
                 // モデルのバインド
                 rootVisualElement.Bind(selectedRoad);
@@ -194,7 +194,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var intersectionData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
             if (intersectionData != null)
             {
-                EditingSystem.system.RoadNetworkSimpleEditModule?.Setup(intersectionData);
+                EditingSystem.system.EditSceneViewGui?.Setup(intersectionData);
 
                 //var applyIntersectionButton = element.Q<Button>("ApplyIntersectionButton");
                 //if (applyIntersectionButton == null)
@@ -216,7 +216,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// </summary>
         private void OnApplyRoadButtonClicked()
         {
-            bool isChanged = selectedRoad.Apply(EditingSystem.system.RoadNetworkSimpleEditModule);
+            bool isChanged = selectedRoad.Apply(EditingSystem.system.EditSceneViewGui);
             isChanged |= prevPlaceCrosswalkToggle != placeCrosswalkToggle.value;
             if (!isChanged)
             {
@@ -247,7 +247,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             UpdateSplineButtonVisual(true);
             selectedRoad.IsSplineEditMode = true;
-            selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
+            selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.EditSceneViewGui);
         }
 
         private void OnRoadSplineStopButtonClicked()
@@ -256,7 +256,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             roadSplineStartButton.SetEnabled(true);
             roadSplineStopButton.SetEnabled(false);
             selectedRoad.IsSplineEditMode = false;
-            selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.RoadNetworkSimpleEditModule);
+            selectedRoad.ApplySplineEditMode(RoadNetworkEditingSystem.SingletonInstance?.system.EditSceneViewGui);
             
             // 道路に適用します
             var network = EditingSystem.system.RoadNetwork;

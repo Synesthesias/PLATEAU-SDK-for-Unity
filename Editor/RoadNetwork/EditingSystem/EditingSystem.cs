@@ -114,7 +114,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             public List<EditorData<RnRoadGroup>> Connections => system.editSceneViewGui?.Connections;
 
-            public RoadNetworkEditSceneViewGui RoadNetworkSimpleEditModule => system.editSceneViewGui;
+            public RoadNetworkEditSceneViewGui EditSceneViewGui => system.editSceneViewGui;
 
             public RoadNetworkSceneGUISystem SceneGUISystem => system.SceneGUISystem;
 

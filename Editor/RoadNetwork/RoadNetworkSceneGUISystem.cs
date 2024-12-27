@@ -225,11 +225,11 @@ namespace PLATEAU.Editor.RoadNetwork
             var roadGroupEditorData = selectedConnection;
 
 
-            if (editorSystem.RoadNetworkSimpleEditModule.SplineEditorMod.IsEnabled)
+            if (editorSystem.EditSceneViewGui.SplineEditorMod.IsEnabled)
             {
                 // スプライン編集モード。何もしない
             }
-            else if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+            else if (editorSystem.EditSceneViewGui.IsDetailMode() == false)
             {
                 // 詳細モードがオフの場合
                 // レーンの幅編集は RoadNetworkEditSceneViewGui.Update で行います
@@ -374,7 +374,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private void DrawSelectedIntersection(EditorData<RnIntersection> intersectionData)
         {
             // 簡易モードで表示
-            if (editorSystem.RoadNetworkSimpleEditModule.IsDetailMode() == false)
+            if (editorSystem.EditSceneViewGui.IsDetailMode() == false)
             {
                 SceneGUIState state = new SceneGUIState();
                 systemState.Init(out state);
@@ -383,7 +383,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 state.currentCamera = currentCamera;
 
 
-                var EditingIntersectionMod = editorSystem.RoadNetworkSimpleEditModule.EditingIntersectionMod;
+                var EditingIntersectionMod = editorSystem.EditSceneViewGui.EditingIntersectionMod;
 
                 var buttonSize = 2.0f;
 

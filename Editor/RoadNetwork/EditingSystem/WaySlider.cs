@@ -32,8 +32,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>();
 
-                bool isSelectable = !system.RoadNetworkSimpleEditModule.isEditingDetailMode &&
-                                    !system.RoadNetworkSimpleEditModule.SplineEditorMod.IsEnabled;
+                bool isSelectable = !system.EditSceneViewGui.isEditingDetailMode &&
+                                    !system.EditSceneViewGui.SplineEditorMod.IsEnabled;
                 wayEditorDataList.SetSelectable(isSelectable);
 
                 var isMouseOnViewport = true;
