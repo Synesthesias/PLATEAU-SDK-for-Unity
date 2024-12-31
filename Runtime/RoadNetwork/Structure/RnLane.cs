@@ -563,52 +563,6 @@ namespace PLATEAU.RoadNetwork.Structure
     /// </summary>
     public static class RnLaneEx
     {
-        private struct Reference
-        {
-            public bool IsLeftWay { get; set; }
-
-            public int Index { get; set; }
-        }
-
-        // Baseの方向を基底とするローカル座標系において
-        // left.origin -> mid.Startは放物線
-        // mid.Start -> mid.Endは線分となる軌跡
-        private class EventFunc
-        {
-            public Parabola2D? Left { get; set; }
-
-            public LineSegment2D Segment { get; }
-
-            public int LeftIndex { get; }
-
-            public int RightIndex { get; }
-
-            public Vector2 Min
-            {
-                get
-                {
-                    if (Left.HasValue)
-                        return Left.Value.Origin;
-                    return Segment.Start;
-                }
-            }
-
-            public Vector2 Max
-            {
-                get
-                {
-                    return Segment.End;
-                }
-            }
-
-            public EventFunc(LineSegment2D segment, int leftIndex, int rightIndex)
-            {
-                Segment = segment;
-                LeftIndex = leftIndex;
-                RightIndex = rightIndex;
-            }
-        }
-
         private static Tuple<Vector2, Vector2> GetAxis(LineSegment2D axis)
         {
             return new Tuple<Vector2, Vector2>(axis.Direction, new Vector2(axis.Direction.y, -axis.Direction.x));

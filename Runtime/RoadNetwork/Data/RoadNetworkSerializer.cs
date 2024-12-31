@@ -477,7 +477,6 @@ namespace PLATEAU.RoadNetwork.Data
             var phases = CollectForDeserialize<RnDataTrafficSignalPhase, TrafficSignalControllerPhase>(refTable, roadNetworkStorage.PrimitiveDataStorage.TrafficSignalPhases);
             var points = CollectForDeserialize<RnDataPoint, RnPoint>(refTable, roadNetworkStorage.PrimitiveDataStorage.Points);
             var lineStrings = CollectForDeserialize<RnDataLineString, RnLineString>(refTable, roadNetworkStorage.PrimitiveDataStorage.LineStrings);
-            var blocks = CollectForDeserialize<RnDataBlock, RnBlock>(refTable, roadNetworkStorage.PrimitiveDataStorage.Blocks);
             var ways = CollectForDeserialize<RnDataWay, RnWay>(refTable, roadNetworkStorage.PrimitiveDataStorage.Ways);
             var lanes = CollectForDeserialize<RnDataLane, RnLane>(refTable, roadNetworkStorage.PrimitiveDataStorage.Lanes);
             var roadBases = CollectForDeserialize<RnDataRoadBase, RnRoadBase>(refTable, roadNetworkStorage.PrimitiveDataStorage.RoadBases);
