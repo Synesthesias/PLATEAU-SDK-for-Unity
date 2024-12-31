@@ -408,16 +408,53 @@ namespace PLATEAU.Util.GeoGraph
         public static List<Vector3> GetInnerLerpSegments(
             IReadOnlyList<Vector3> leftVertices
             , IReadOnlyList<Vector3> rightVertices
-            , AxisPlane plane,
-            float p)
+            , AxisPlane plane
+            , float p
+            , float checkMeter = 3f
+            )
         {
             p = Mathf.Clamp01(p);
+
+            // 線分になっていない場合は無視する
+            if (leftVertices.Count < 2 || rightVertices.Count < 2)
+                return new List<Vector3>();
+
+            // それぞれ直線の場合は高速化の特別処理入れる
+            if (leftVertices.Count == 2 && rightVertices.Count == 2)
+            {
+                return new List<Vector3>()
+                {
+                    Vector3.Lerp(leftVertices[0], rightVertices[0], p),
+                    Vector3.Lerp(leftVertices[1], rightVertices[1], p)
+                };
+            }
+
             var leftEdges = GetEdges(leftVertices, false).Select(v => new LineSegment3D(v.Item1, v.Item2)).ToList();
             var rightEdges = GetEdges(rightVertices, false).Select(v => new LineSegment3D(v.Item1, v.Item2)).ToList();
 
             var indices = new List<float>();
 
-            indices.AddRange(Enumerable.Range(0, leftVertices.Count).Select(i => (float)i));
+            checkMeter = Mathf.Max(checkMeter, 1f);
+
+            // 左の線分の頂点をイベントポイントとして登録
+            // ただし、線分がcheckMeter以上の場合はcheckMeter間隔でイベントポイントを追加する
+            for (var i = 0; i < leftVertices.Count; i++)
+            {
+                indices.Add(i);
+                // 最後の頂点はチェックしない
+                if (i == leftVertices.Count - 1)
+                    break;
+                var p0 = leftVertices[i];
+                var p1 = leftVertices[i + 1];
+                var sqrLen = (p1 - p0).sqrMagnitude;
+                if (sqrLen > checkMeter * checkMeter)
+                {
+                    var len = Mathf.Sqrt(sqrLen);
+                    var num = len / checkMeter;
+                    for (var j = 0; j < num - 1; ++j)
+                        indices.Add(i + (j + 1f) / num);
+                }
+            }
 
             bool IsInInnerSide(LineSegment3D? e, Vector3 d, bool reverse, bool isPrev)
             {
