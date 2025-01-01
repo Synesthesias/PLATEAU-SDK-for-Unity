@@ -17,8 +17,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     internal class RoadNetworkEditingSystem
     {
         
-        public static RoadNetworkEditingSystem SingletonInstance;
-        
         /// <summary> シーンビュー上に描画するGUI </summary>
         public RoadNetworkEditSceneViewGui editSceneViewGui;
 
@@ -92,10 +90,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 oldSystem.Terminate();
             }
-
-            // 仮
-            RoadNetworkEditingSystem.SingletonInstance = null;
-            return;
+            
         }
 
 
@@ -103,8 +98,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             system = new EditingSystem(this);
             TryInitialize();
-
-            SingletonInstance = this;
+            
         }
 
         
