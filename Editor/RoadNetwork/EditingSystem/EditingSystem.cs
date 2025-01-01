@@ -116,12 +116,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             public RoadNetworkEditSceneViewGui EditSceneViewGui => system.editSceneViewGui;
 
-            public RoadNetworkSceneGUISystem SceneGUISystem => system.SceneGUISystem;
+            public RoadNetworkEditTargetSelectButton EditTargetSelectButton => system.EditTargetSelectButton;
 
             public bool EnableLimitSceneViewDefaultControl
             {
-                get => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl;
-                set => system.sceneGUISystem.EnableLimitSceneViewDefaultContorl = value;
+                get => system.editTargetSelectButton.EnableLimitSceneViewDefaultContorl;
+                set => system.editTargetSelectButton.EnableLimitSceneViewDefaultContorl = value;
             }
 
             public void NotifyChangedRoadNetworkObject2Editor()

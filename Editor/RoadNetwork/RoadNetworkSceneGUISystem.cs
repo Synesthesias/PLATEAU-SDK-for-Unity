@@ -13,7 +13,7 @@ namespace PLATEAU.Editor.RoadNetwork
     /// SceneGUIまわりの機能を管理するクラス
     /// 記述先のファイルを変更するかも？
     /// </summary>
-    internal class RoadNetworkSceneGUISystem
+    internal class RoadNetworkEditTargetSelectButton
     {
         private const string LaneTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_lane.png";
         private const string NodeTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_node.png";
@@ -29,17 +29,16 @@ namespace PLATEAU.Editor.RoadNetwork
         Texture2D trafficLightControllerTex;
         Texture2D trafficLight_blueTex;
 
-        public RoadNetworkSceneGUISystem(EditingSystem.EditingSystem editorSystem)
+        public RoadNetworkEditTargetSelectButton(EditingSystem.EditingSystem editorSystem)
         {
             Assert.IsNotNull(editorSystem);
             this.editorSystem = editorSystem;
         }
 
-        private const float pointHndScaleFactor = 0.15f;
+        public const float PointHndScaleFactor = 0.15f;
         private const float laneHndScaleFactor = 0.4f;
-        private const float linkHndScaleFactor = 0.5f;
-        private const float signalLightHndScaleFactor = 0.2f;
-        private const float signalControllerScaleFactor = 0.3f;
+        public const float LinkHndScaleFactor = 0.5f;
+        
         private readonly Vector3 selectBtnPosOffset = Vector3.up * 10.0f;
 
         private EditingSystem.EditingSystem editorSystem;
@@ -84,6 +83,13 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 OnSceneGUISimpleEdit(); // ここが描画メイン
                 return;
+            }
+            
+            // 詳細モードを描画します（詳細モードは未完成です）
+            if (editorSystem.EditSceneViewGui.IsDetailMode())
+            {
+                var selectedRoadGroup = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+                new RoadLaneDetailEditor().Draw(selectedRoadGroup, editorSystem);
             }
         }
 
@@ -132,20 +138,8 @@ namespace PLATEAU.Editor.RoadNetwork
             DrawTargetSelectButtonRoad(camera);
             DrawTargetSelectButtonIntersection(camera);
 
-
-            // 選択している道路がある場合、編集画面を表示します
-            var selectedConnection = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-            if (selectedConnection != null)
-            {
-                DrawSelectedRoadGroup(selectedConnection);
-            }
-
-            // 選択している交差点がある場合、編集画面を表示します
-            var intersectionEditorData = editorSystem.SelectedRoadNetworkElement as EditorData<RnIntersection>;
-            if (intersectionEditorData != null)
-            {
-                // 交差点編集の描画は RoadNetworkEditSceneViewGui.Updateで行います
-            }
+            // 道路レーンの幅編集は RoadNetworkEditSceneViewGui.Update で行います。
+            // 交差点編集の描画は RoadNetworkEditSceneViewGui.Updateで行います。
         }
 
         /// <summary>
@@ -214,173 +208,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
         }
-
-        /// <summary>
-        /// 道路を選択したときにシーンビュー上に表示される道路編集UIを表示します。
-        /// </summary>
-        private void DrawSelectedRoadGroup(EditorData<RnRoadGroup> selectedConnection)
-        {
-            var roadGroupEditorData = selectedConnection;
-
-
-            if (editorSystem.EditSceneViewGui.SplineEditorMod.IsEnabled)
-            {
-                // スプライン編集モード。何もしない
-            }
-            else if (editorSystem.EditSceneViewGui.IsDetailMode() == false)
-            {
-                // 詳細モードがオフの場合
-                // レーンの幅編集は RoadNetworkEditSceneViewGui.Update で行います
-            }
-            else // 詳細モードでのみ表示
-            {
-                DrawRoadLaneDetailEditor(roadGroupEditorData);
-            }
-        }
-
-        private void DrawRoadLaneDetailEditor(EditorData<RnRoadGroup> roadGroupEditorData)
-        {
-            RoadEditSceneGUIState state = new RoadEditSceneGUIState();
-
-            var currentCamera = SceneView.currentDrawingSceneView.camera;
-            state.currentCamera = currentCamera;
-
-
-            foreach (var road in roadGroupEditorData.Ref.Roads)
-            {
-                if (state.isDirtyTarget)
-                {
-                    break;
-                }
-
-                foreach (var sideWalk in road.SideWalks)
-                {
-                    foreach (var point in sideWalk.OutsideWay.Points)
-                    {
-                        if (state.isDirtyTarget)
-                        {
-                            break;
-                        }
-
-                        var parent = sideWalk.OutsideWay;
-
-                        var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
-
-                        DeployPointMoveHandle(point, state, size);
-                    }
-                }
-
-                foreach (var lane in road.AllLanes)
-                {
-                    if (state.isDirtyTarget)
-                    {
-                        break;
-                    }
-
-                    HashSet<RnWay> ways = new HashSet<RnWay>(lane.BothWays);
-
-                    foreach (var way in ways)
-                    {
-                        if (state.isDirtyTarget)
-                        {
-                            break;
-                        }
-
-                        foreach (var point in way.Points)
-                        {
-                            if (state.isDirtyTarget)
-                            {
-                                break;
-                            }
-
-                            var parent = way;
-
-                            var networkOperator = editorSystem.EditOperation;
-                            var size = HandleUtility.GetHandleSize(point) * pointHndScaleFactor;
-
-
-                            // ctrlを押しているか
-                            if (Event.current.control == false)
-                            {
-                                DeployPointMoveHandle(point, state, size);
-                                continue;
-                            }
-                            else
-                            {
-                                var currentEvent = Event.current;
-                                {
-                                    // ポイントの追加
-                                    if (currentEvent.shift == false)
-                                    {
-                                        // ポイントの追加ボタンの表示
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size,
-                                            RoadNetworkAddPointButtonHandleCap);
-                                        if (isClicked)
-                                        {
-                                            // parent.Pointsからpointを検索してインデックスを取得
-                                            var idx = parent.Points.ToList().IndexOf(point);
-                                            if (idx == -1)
-                                                continue;
-                                            state.delayCommand += () =>
-                                            {
-                                                networkOperator.AddPoint(parent, idx,
-                                                new RnPoint(point.Vertex + Vector3.up));
-                                                Debug.Log("ポイント追加ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
-                                            continue;
-                                        }
-                                    }
-                                    // ポイントの削除
-                                    else
-                                    {
-                                        // ポイントの削除ボタンの表示
-                                        var isClicked = Handles.Button(point, Quaternion.identity, size, size,
-                                            RoadNetworkRemovePointButtonHandleCap);
-                                        if (isClicked)
-                                        {
-                                            state.delayCommand += () =>
-                                            {
-                                                networkOperator.RemovePoint(parent, point);
-                                                Debug.Log("ポイント削除ボタンが押された");
-                                            };
-                                            state.isDirtyTarget = true;
-                                            continue;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 遅延実行 コレクションの要素数などを変化させる
-            if (state.delayCommand != null)
-                state.delayCommand.Invoke();
-
-            // 選択した道路オブジェクトに変更があったとき
-            if (state.isDirtyTarget)
-            {
-                editorSystem.NotifyChangedRoadNetworkObject2Editor(); // 通知
-            }
-
-        }
-
-        private static void DeployPointMoveHandle(RnPoint point, RoadEditSceneGUIState state, float size)
-        {
-            EditorGUI.BeginChangeCheck();
-            var vertPos = DeployFreeMoveHandle(point, size, snap: Vector3.zero);
-            if (EditorGUI.EndChangeCheck())
-            {
-                var mousePos = Event.current.mousePosition;
-                var ray = HandleUtility.GUIPointToWorldRay(mousePos);
-                const float maxRayDistance = 1000.0f;
-                RoadNetworkEditingSystem.SnapPointToObj(point, ray, maxRayDistance, "dem_", "tran_");
-                state.isDirtyTarget = true;
-            }
-        }
-
+        
         private bool SetRoadNetworkObject2System(UnityEngine.Object target)
         {
             editorSystem.RoadNetworkObject = target;
@@ -450,233 +278,9 @@ namespace PLATEAU.Editor.RoadNetwork
         }
 
 
-        private static void RoadNetworkTrafficSignalLightCap(int controlID, Vector3 position, Quaternion rotation,
-            float size, EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-                    break;
-                case EventType.Repaint:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-                    break;
-            }
-        }
+        
 
-        private static void RoadNetworkNodeHandleCap(int controlID, Vector3 position, Quaternion rotation, float size,
-            EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-                    break;
-                case EventType.Repaint:
-                    Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-                    break;
-            }
-        }
-
-        private static void RoadNetworkLinkHandleCap(int controlID, Vector3 position, Quaternion rotation, float size,
-            EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    //Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-                    Handles.DrawWireCube(position, new Vector3(size, size, size));
-                    var subCubeSize = size * signalControllerScaleFactor;
-                    Handles.DrawWireCube(position + Vector3.right * subCubeSize,
-                        new Vector3(subCubeSize, subCubeSize, subCubeSize));
-                    Handles.DrawWireCube(position + Vector3.left * subCubeSize,
-                        new Vector3(subCubeSize, subCubeSize, subCubeSize));
-                    Handles.DrawLine(position + Vector3.right * size * linkHndScaleFactor,
-                        position + Vector3.left * size * linkHndScaleFactor);
-                    break;
-            }
-        }
-
-        private static void RoadNetworkLaneHandleCap(int controlID, Vector3 position, Quaternion rotation, float size,
-            EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    Handles.DrawWireCube(position, new Vector3(size, size, size));
-                    Handles.DrawWireCube(position,
-                        new Vector3(size, size * pointHndScaleFactor, size * signalControllerScaleFactor));
-                    break;
-            }
-        }
-
-        private static void RoadNetworkSplitLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
-            float size, EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
-                    Handles.DrawWireCube(position + Vector3.forward * 0.07f,
-                        new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
-                    Handles.DrawWireCube(position + Vector3.back * 0.07f,
-                        new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
-                    break;
-            }
-        }
-
-        private static void RoadNetworkAddPointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
-            float size, EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
-                    Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
-                    Handles.DrawWireCube(position, new Vector3(size * 0.15f, size * pointHndScaleFactor, size));
-                    break;
-            }
-        }
-
-        private static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
-            float size, EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
-                    Handles.DrawWireCube(position, new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
-                    break;
-            }
-        }
-
-        private static void RoadNetworkRemoveLaneButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
-            float size, EventType eventType)
-        {
-            switch (eventType)
-            {
-                case EventType.MouseMove:
-                case EventType.Layout:
-                    Handles.CubeHandleCap(controlID, position, rotation, size, eventType);
-
-                    break;
-                case EventType.Repaint:
-                    Handles.DrawWireDisc(position, Vector3.up, size * linkHndScaleFactor);
-                    Handles.DrawWireCube(position + Vector3.forward * 0.07f,
-                        new Vector3(size, size * pointHndScaleFactor, size * 0.15f));
-                    break;
-            }
-        }
-
-        private static Vector3 DeployFreeMoveHandle(in Vector3 pos, float size, in Vector3 snap)
-        {
-            return Handles.FreeMoveHandle(pos, size, snap, Handles.SphereHandleCap);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private enum DisplayHndOperation : int
-        {
-            NoOperation = 0,
-            Add = 1,
-            Remove = 2,
-            Move = 3,
-            Select = 4,
-            _Num
-        }
-
-        private enum DisplayHndOperationMask : int
-        {
-            NoOperation = 1 << DisplayHndOperation.NoOperation,
-            Add = 1 << DisplayHndOperation.Add,
-            Remove = 1 << DisplayHndOperation.Remove,
-            Move = 1 << DisplayHndOperation.Move,
-            Select = 1 << DisplayHndOperation.Select
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private enum DisplayHndType : int
-        {
-            // Target
-            Point = 0,
-            Lane = 1,
-            Link = 2,
-            Node = 3,
-            _Num
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public enum DisplayHndMaskSet : int
-        {
-            Point = DisplayHndOperationMask.NoOperation, // 
-            PointAdd = Point | DisplayHndOperationMask.Add, // 
-            PointRemove = Point | DisplayHndOperationMask.Remove, // 
-            PointMove = Point | DisplayHndOperationMask.Move, // 
-            PointSelect = Point | DisplayHndOperationMask.Select, // 
-            PointZeroMask = ~(PointAdd | PointRemove | PointMove | PointSelect),
-
-            _LaneShiftOffset = DisplayHndType.Lane * DisplayHndOperation._Num,
-            Lane = DisplayHndOperationMask.NoOperation << _LaneShiftOffset, // 
-            LaneAdd = Lane | DisplayHndOperationMask.Add << _LaneShiftOffset,
-            LaneRemove = Lane | DisplayHndOperationMask.Remove << _LaneShiftOffset,
-
-            //LaneMove = Lane | DisplayHndOperationMask.Move << _LaneShiftOffset,
-            LaneSelect = Lane | DisplayHndOperationMask.Select << _LaneShiftOffset,
-            LaneZeroMask = ~(LaneAdd | LaneRemove | LaneSelect),
-
-            _LinkShiftOffset = DisplayHndType.Link * DisplayHndOperation._Num,
-            Link = DisplayHndOperationMask.NoOperation << _LinkShiftOffset, // 
-            LinkAdd = Link | DisplayHndOperationMask.Add << _LinkShiftOffset,
-            LinkRemove = Link | DisplayHndOperationMask.Remove << _LinkShiftOffset,
-
-            //LinkMove = Road | DisplayHndOperationMask.Move << _LinkShiftOffset,
-            LinkSelect = Link | DisplayHndOperationMask.Select << _LinkShiftOffset,
-            LinkZeroMask = ~(LinkAdd | LinkRemove | LinkSelect),
-
-            _NodeShiftOffset = DisplayHndType.Node * DisplayHndOperation._Num,
-            Node = DisplayHndOperationMask.NoOperation << _NodeShiftOffset, // 
-
-            //NodeAdd = Node | DisplayHndOperationMask.Add << _NodeShiftOffset,
-            //NodeRemove = Node | DisplayHndOperationMask.Remove << _NodeShiftOffset,
-            //NodeMove = Node | DisplayHndOperationMask.Move << _NodeShiftOffset,
-            NodeSelect = Node | DisplayHndOperationMask.Select << _NodeShiftOffset,
-            NodeZeroMask = ~(NodeSelect),
-
-            ZeroMask = PointZeroMask & LaneZeroMask & LinkZeroMask & NodeZeroMask
-        }
+        
 
         
         

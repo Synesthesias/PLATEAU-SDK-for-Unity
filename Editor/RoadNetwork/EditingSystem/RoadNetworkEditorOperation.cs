@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
         //public RoadNetworkUIDoc UIDocEditor { get; }
         public IRoadNetworkEditOperation NetworkOperator { get; }
-        public RoadNetworkSceneGUISystem SceneGUISystem { get; }
+        public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; }
     }
 
 

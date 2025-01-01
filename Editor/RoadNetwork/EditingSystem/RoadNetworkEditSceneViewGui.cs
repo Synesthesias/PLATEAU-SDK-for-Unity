@@ -276,7 +276,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             // gizmos描画の更新
             var gizmosdrawer = GetRoadNetworkEditorGizmos();
-            var guisys = system.SceneGUISystem;
+            var guisys = system.EditTargetSelectButton;
             if (guisys != null)
             {
                 // gizmosの更新

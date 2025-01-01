@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// UnityEditor.Editorを継承するクラスでのみ使用する
         /// 呼び出す箇所は一か所にする
         /// </summary>
-        public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
+        public RoadNetworkEditTargetSelectButton EditTargetSelectButton => editTargetSelectButton;
 
         public readonly ISystemInstance systemInstance;
 
@@ -51,7 +51,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public readonly EditingSystem system;
 
         public IRoadNetworkEditOperation editOperation;
-        public RoadNetworkSceneGUISystem sceneGUISystem;
+        public RoadNetworkEditTargetSelectButton editTargetSelectButton;
 
         // Laneの生成機能を提供するモジュール
         public RoadNetworkEditSceneViewGui editSceneViewGui;
@@ -145,7 +145,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             // 初期化の必要性チェック
             bool needIniteditOperation = editOperation == null;
-            bool needInitGUISystem = sceneGUISystem == null;
+            bool needInitGUISystem = editTargetSelectButton == null;
             bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
 
             // 初期化 Initlaize()
@@ -156,7 +156,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             if (needInitGUISystem)
             {
-                sceneGUISystem = new RoadNetworkSceneGUISystem(system);
+                editTargetSelectButton = new RoadNetworkEditTargetSelectButton(system);
             }
 
             if (needInitGameObj)

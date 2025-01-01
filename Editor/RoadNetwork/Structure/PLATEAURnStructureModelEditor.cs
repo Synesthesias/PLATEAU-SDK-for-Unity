@@ -73,11 +73,12 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (editor == null)
                 return;
 
-            var guiSystem = editor.SceneGUISystem;
+            var guiSystem = editor.EditTargetSelectButton;
             guiSystem.OnSceneGUI(target as PLATEAURnStructureModel);
             
             var splineEditSystem = editor.editSceneViewGui.SplineEditorMod;
             splineEditSystem.OnSceneGUI(target as PLATEAURnStructureModel);
+            
         }
 
         public override void OnInspectorGUI()
