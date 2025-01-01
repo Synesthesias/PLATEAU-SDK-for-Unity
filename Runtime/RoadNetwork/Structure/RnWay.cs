@@ -8,33 +8,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
-    /// <summary>
-    /// WayのPointsをReadOnlyで返すラッパー
-    /// </summary>
-    public class RnWayPoints : IReadOnlyList<RnPoint>
-    {
-        private readonly RnWay way;
-
-        public RnWayPoints(RnWay way)
-        {
-            this.way = way;
-        }
-
-        public IEnumerator<RnPoint> GetEnumerator()
-        {
-            return way.Points.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public int Count => way.Count;
-
-        public RnPoint this[int index] => way.GetPoint(index);
-    }
-
     public class RnWayEqualityComparer : IEqualityComparer<RnWay>
     {
         // 同じLineStringであれば同一判定とする

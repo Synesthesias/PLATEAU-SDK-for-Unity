@@ -568,43 +568,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 中央分離帯の幅を設定する. 非推奨. 個別にWayを動かすことを推奨
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="moveOption"></param>
-        [Obsolete("非推奨. 個別にWayを動かす or ExpandMedianWidthを使うこと")]
-        public bool SetMedianWidth(float width, LaneWayMoveOption moveOption)
-        {
-            if (HasMedian() == false)
-                return false;
-
-            Align();
-            foreach (var road in Roads)
-            {
-                var nowWidth = road.GetMedianWidth();
-                var deltaWidth = width - nowWidth;
-                //// サイズ0の中央分離帯だと法線方向が定まらないので、すでに幅の存在するレーンを動かすことで
-                //// 中央分離帯の幅を設定する
-                var centerLeft = road.GetLeftLanes().Last();
-                var centerRight = road.GetRightLanes().First();
-                switch (moveOption)
-                {
-                    case LaneWayMoveOption.MoveBothWay:
-                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
-                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth * 0.5f);
-                        break;
-                    case LaneWayMoveOption.MoveLeftWay:
-                        centerLeft.RightWay?.MoveAlongNormal(-deltaWidth);
-                        break;
-                    case LaneWayMoveOption.MoveRightWay:
-                        centerRight.RightWay?.MoveAlongNormal(-deltaWidth);
-                        break;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
         /// 中央分離帯の幅を拡縮する. deltaWidthが正なら幅が増加する
         /// </summary>
         /// <param name="deltaWidth"></param>
