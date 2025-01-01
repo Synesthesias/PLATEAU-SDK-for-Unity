@@ -67,7 +67,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // 境界線情報を取得
-        public virtual IEnumerable<RnBorder> GetBorders() { yield break; }
+        public virtual IEnumerable<RnWay> GetBorders() { yield break; }
 
         // 隣接するRoadを取得
         public virtual IEnumerable<RnRoadBase> GetNeighborRoads() { yield break; }

@@ -182,14 +182,14 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // 境界線情報を取得
-        public override IEnumerable<RnBorder> GetBorders()
+        public override IEnumerable<RnWay> GetBorders()
         {
             foreach (var lane in MainLanes)
             {
                 if (lane.PrevBorder != null)
-                    yield return new RnBorder(lane.PrevBorder);
+                    yield return lane.PrevBorder;
                 if (lane.NextBorder != null)
-                    yield return new RnBorder(lane.NextBorder);
+                    yield return lane.NextBorder;
             }
         }
 
