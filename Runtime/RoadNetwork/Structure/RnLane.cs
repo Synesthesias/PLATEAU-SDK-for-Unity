@@ -252,6 +252,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             catch
             {
+                Debug.LogError("Could not create center way.");
                 return null;
             }
         }
@@ -281,7 +282,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     foreach (var lane in road.AllLanes)
                     {
-                        if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                        if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
                             yield return lane;
                     }
                 }
@@ -296,7 +297,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var n in Parent.GetNeighborRoads())
             {
-                if (n.GetBorders().Any(b => border.IsSameLine(b.EdgeWay)))
+                if (n.GetBorders().Any(b => border.IsSameLineReference(b.EdgeWay)))
                     yield return n;
             }
         }

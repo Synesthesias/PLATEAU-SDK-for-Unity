@@ -7,7 +7,9 @@
         "PLATEAU.Runtime",
         "Unity.Splines",
         "Unity.Splines.Editor",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "GeoJSON.NetAssemblyDefinition",
+        "NetTopologySuiteAssemblyDefinition"
     ],
     "includePlatforms": [
         "Editor"

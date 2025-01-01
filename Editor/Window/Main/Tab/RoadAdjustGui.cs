@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
     public class RoadAdjustGui : ITabContent
     {
         /// <summary> 子タブのUIと機能クラスを関連付ける辞書です。 </summary>
-        private Dictionary<RadioButton, RoadGuiParts.RoadAdjustGuiPartBase> childTabsDict = new ();
+        private Dictionary<RadioButton, RoadGuiParts.RoadAdjustGuiPartBase> childTabsDict = new();
 
+        private RoadAdjustGuiPartBase currentTab;
         private TemplateContainer container;
+        private VisualElement mainVE;
         
         /// <summary>
         /// 「道路調整」タブおよびその子タブ「生成」「編集」「追加」を生成します。
@@ -25,15 +28,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
         public VisualElement CreateGui()
         {
             container = LoadMainUxml();
-            
+
             var main = container.Q<VisualElement>("RoadNetwork_Main");
             if (main == null)
             {
                 Debug.LogError("Failed to find main element of road adjusting.");
             }
-            
+
             CreateChildTabs(main);
-            
+
             return container;
         }
 
@@ -58,15 +61,17 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// <summary>
         /// 子タブ「生成」「編集」「追加」を用意します。
         /// </summary>
-        private void CreateChildTabs(VisualElement mainVE)
+        private void CreateChildTabs(VisualElement mainVEArg)
         {
+            mainVE = mainVEArg;
             var menuGroup = mainVE.Q<VisualElement>("MenuGroup");
             childTabsDict = new()
             {
                 {menuGroup.Q<RadioButton>("MenuGenerate"), new RoadGuiParts.RoadGeneratePanel(mainVE)},
                 {menuGroup.Q<RadioButton>("MenuEdit"), new RoadGuiParts.RoadEditPanel(mainVE)},
                 {menuGroup.Q<RadioButton>("MenuAdd"), new RoadGuiParts.RoadAddPanel(mainVE)},
-                {menuGroup.Q<RadioButton>("MenuTrafficRule"), new RoadGuiParts.RoadTrafficRulePanel(mainVE)}
+                {menuGroup.Q<RadioButton>("MenuTrafficRule"), new RoadGuiParts.RoadTrafficRulePanel(mainVE)},
+                {menuGroup.Q<RadioButton>("MenuExport"), new RoadGuiParts.RoadExportPanel(mainVE)}
             };
 
             // 各子タブの選択時と選択解除時の処理を設定します。
@@ -77,7 +82,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 {
                     if (e.newValue)
                     {
-                        panel.OnRoadChildTabSelected(mainVE);
+                        ActivateChildTab(panel, mainVE);
+                        
                     }
                     else
                     {
@@ -88,19 +94,22 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             // 初期表示のタブをアクティブにします。
             var initialActive = childTabsDict.First(kvp => kvp.Key.name == "MenuGenerate");
-            initialActive.Value.OnRoadChildTabSelected(mainVE);
+            ActivateChildTab(initialActive.Value, mainVE);
         }
-        
 
-        
+        private void ActivateChildTab(RoadAdjustGuiPartBase panel, VisualElement mainVE)
+        {
+            panel.OnRoadChildTabSelected(mainVE);
+            currentTab = panel;
+        }
+
         public void Dispose()
         {
+            currentTab.OnRoadChildTabUnselected(mainVE);
         }
 
         public void OnTabUnselect()
         {
         }
-        
-
     }
 }
