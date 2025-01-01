@@ -14,10 +14,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         internal class EditingSystem
         {
             private readonly RoadNetworkEditingSystem system;
-            public event EventHandler OnChangedEditMode;
             public event Action OnChangedSelectRoadNetworkElement;
-            public event EventHandler OnChangedSignalControllerPattern;
-            public event EventHandler OnChangedSignalControllerPhase;
             
             
             public EditingSystem(RoadNetworkEditingSystem system)
@@ -46,32 +43,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
                     system.roadNetworkObject = value;
                     system.roadNetworkModel = roadNetwork;
-                    OnChangedRoadNetworkObject?.Invoke(this, EventArgs.Empty);
                 }
 
             }
-            public event EventHandler OnChangedRoadNetworkObject;
 
             public RnModel RoadNetwork
             {
                 get => system.roadNetworkModel;
             }
-
-            public RoadNetworkEditMode CurrentEditMode
-            {
-                get => system.editingMode;
-                set
-                {
-                    if (system.editingMode == value)
-                        return;
-                    system.editingMode = value;
-                    OnChangedEditMode?.Invoke(this, EventArgs.Empty);
-                }
-            }
             
-
-            public IRoadNetworkEditOperation EditOperation => system.editOperation;
-
+            
             public object SelectedRoadNetworkElement
             {
                 get => system.selectedRoadNetworkElement;
@@ -83,8 +64,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     OnChangedSelectRoadNetworkElement?.Invoke();
                 }
             }
-
-            public RoadNetworkEditingSystem.ISystemInstance Instance => system.systemInstance;
+            
 
             public TrafficSignalControllerPattern SelectedSignalControllerPattern
             {
@@ -94,7 +74,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     if (system.selectedSignalPattern == value)
                         return;
                     system.selectedSignalPattern = value;
-                    OnChangedSignalControllerPattern?.Invoke(this, EventArgs.Empty);
 
                     system.selectedSignalPhase = null;
                 }
@@ -108,11 +87,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     if (system.selectedSignalPhase == value)
                         return;
                     system.selectedSignalPhase = value;
-                    OnChangedSignalControllerPhase?.Invoke(this, EventArgs.Empty);
                 }
             }
 
-            public List<EditorData<RnRoadGroup>> Connections => system.editSceneViewGui?.Connections;
 
             public RoadNetworkEditSceneViewGui EditSceneViewGui => system.editSceneViewGui;
 
@@ -120,8 +97,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             public bool EnableLimitSceneViewDefaultControl
             {
-                get => system.editTargetSelectButton.EnableLimitSceneViewDefaultContorl;
-                set => system.editTargetSelectButton.EnableLimitSceneViewDefaultContorl = value;
+                get => system.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl;
+                set => system.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = value;
             }
 
             public void NotifyChangedRoadNetworkObject2Editor()

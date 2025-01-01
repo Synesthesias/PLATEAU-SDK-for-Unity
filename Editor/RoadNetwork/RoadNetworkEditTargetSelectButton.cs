@@ -10,8 +10,7 @@ using UnityEngine.Assertions;
 namespace PLATEAU.Editor.RoadNetwork
 {
     /// <summary>
-    /// SceneGUIまわりの機能を管理するクラス
-    /// 記述先のファイルを変更するかも？
+    /// 道路の編集モードをオンにしたときにシーンビュー上に表示される、編集対象の道路や交差点を選択するためのボタンです。
     /// </summary>
     internal class RoadNetworkEditTargetSelectButton
     {
@@ -78,12 +77,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     return;
             }
 
-            // 仮　簡易編集機能モード時は旧ハンドル描画、管理システムは利用しない
-            if (editorSystem.CurrentEditMode == RoadNetworkEditMode.EditRoadStructure)
-            {
-                OnSceneGUISimpleEdit(); // ここが描画メイン
-                return;
-            }
+            OnSceneGUISimpleEdit(); // ここが描画メイン
             
             // 詳細モードを描画します（詳細モードは未完成です）
             if (editorSystem.EditSceneViewGui.IsDetailMode())

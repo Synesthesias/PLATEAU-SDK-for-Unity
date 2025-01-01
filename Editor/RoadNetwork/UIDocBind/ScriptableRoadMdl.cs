@@ -175,7 +175,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     internal class SerializedScriptableRoadMdl : SerializedObject, IScriptableRoadMdl
     {
-        private const bool EnableDebugLog = false;
+        private static bool EnableDebugLog = false;
         
         /// <summary>
         /// 

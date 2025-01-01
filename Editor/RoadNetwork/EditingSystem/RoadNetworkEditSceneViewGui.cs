@@ -65,8 +65,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             roadNetworkEditingSystemObjRoot = root;
             roadNetwork = rnModel;
             this.system = system;
-
-            SceneView.duringSceneGui -= Update;
+            
             ClearCache();
         }
 
@@ -180,10 +179,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 linkGroupEditorData.IsEditable = true;
             }
 
-            // Transform変更を検知する
-            SceneView.duringSceneGui -= Update;
-            SceneView.duringSceneGui += Update;
-
 
             // キャッシュの生成
             roadGroupEditorData.AddCache("linkGroup", (d) =>
@@ -240,7 +235,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary>
         /// 描画します
         /// </summary>
-        private void Update(SceneView sceneView)
+        public void Update(SceneView sceneView)
         {
             if (roadNetworkEditingSystemObjRoot == null)
                 return;
@@ -406,7 +401,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             
             GetRoadNetworkEditorGizmos().Clear();
             
-            SceneView.duringSceneGui -= Update;
             ClearCache();
         }
         

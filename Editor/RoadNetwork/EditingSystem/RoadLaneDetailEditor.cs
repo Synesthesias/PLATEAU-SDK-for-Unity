@@ -1,3 +1,4 @@
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
                             var parent = way;
 
-                            var networkOperator = editorSystem.EditOperation;
                             var size = HandleUtility.GetHandleSize(point) * RoadNetworkEditTargetSelectButton.PointHndScaleFactor;
 
 
@@ -97,8 +97,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                                                 continue;
                                             state.delayCommand += () =>
                                             {
-                                                networkOperator.AddPoint(parent, idx,
-                                                new RnPoint(point.Vertex + Vector3.up));
+                                                parent.LineString.Points.Insert(idx, new RnPoint(point.Vertex + Vector3.up));
                                                 Debug.Log("ポイント追加ボタンが押された");
                                             };
                                             state.isDirtyTarget = true;
@@ -115,8 +114,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                                         {
                                             state.delayCommand += () =>
                                             {
-                                                networkOperator.RemovePoint(parent, point);
-                                                Debug.Log("ポイント削除ボタンが押された");
+
+                                                var isSuc = parent.LineString.Points.Remove(point);
+                                                if (isSuc)
+                                                {
+                                                    Debug.Log("ポイントが削除された");
+                                                }
+                                                else
+                                                {
+                                                    Debug.Log("ポイントが削除されなかった");
+                                                }
+                                                
                                             };
                                             state.isDirtyTarget = true;
                                             continue;
@@ -150,7 +158,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 var mousePos = Event.current.mousePosition;
                 var ray = HandleUtility.GUIPointToWorldRay(mousePos);
                 const float maxRayDistance = 1000.0f;
-                RoadNetworkEditingSystem.SnapPointToObj(point, ray, maxRayDistance, "dem_", "tran_");
+                new RoadNetworkEditLandSnapper().SnapPointToObj(point, ray, maxRayDistance, "dem_", "tran_");
                 state.isDirtyTarget = true;
             }
         }

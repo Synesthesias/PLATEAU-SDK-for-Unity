@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     internal class RoadEditPanel : RoadAdjustGuiPartBase
     {
         static readonly string name = "RoadNetwork_EditPanel";
-        public RoadNetworkEditingSystem EditingSystem { get; private set; }
+        private RoadNetworkEditingSystem EditingSystem { get; set; }
 
         private SerializedScriptableRoadMdl lastSelectedRoad;
         private SerializedScriptableRoadMdl selectedRoad;
@@ -109,11 +109,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             // 編集システムの初期化
             EditingSystem =
-                RoadNetworkEditingSystem.TryInitalize(EditingSystem, rootVisualElement, new EditorInstance(rootVisualElement, this));
+                RoadNetworkEditingSystem.TryInitalize(EditingSystem);
             
             // システムの取得
             var system = EditingSystem.system;
-            system.CurrentEditMode = RoadNetworkEditMode.EditRoadStructure;
             
             system.EditSceneViewGui?.Init();
             
@@ -240,6 +239,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
         }
 
+        /// <summary>
+        /// 道路ネットワークを元に道路メッシュや白線生成を行います
+        /// </summary>
         private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoad> changedRoads)
         {
             new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads), CrosswalkFreq());
@@ -279,27 +281,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             return mdl.Item;
         }
         
-
-        private class EditorInstance : RoadNetworkEditingSystem.ISystemInstance
-        {
-            public EditorInstance(VisualElement root, RoadEditPanel editor)
-            {
-                this.root = root;
-                this.editor = editor;
-            }
-            VisualElement root;
-            RoadEditPanel editor;
-
-            public void RequestReinitialize()
-            {
-                editor.OnTabSelected(root);
-                ReInitialize();
-            }
-
-            public void ReInitialize()
-            {
-            }
-        }
 
         private CrosswalkFrequency CrosswalkFreq()
         {
