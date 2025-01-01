@@ -1339,7 +1339,6 @@ namespace PLATEAU.Util.GeoGraph
                 ev.IsCrossed = isHit;
             }
 
-#if true
             {
 
                 var leftIndex = 0;
@@ -1614,6 +1613,5 @@ namespace PLATEAU.Util.GeoGraph
 
             return wn != 0;
         }
-
     }
 }

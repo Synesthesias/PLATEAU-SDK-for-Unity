@@ -63,10 +63,6 @@ namespace PLATEAU.RoadNetwork.Data
         {
             return primStorage.Lanes.DataList;
         }
-        public IReadOnlyList<RnDataBlock> GetBlocks()
-        {
-            return primStorage.Blocks.DataList;
-        }
         public IReadOnlyList<RnDataWay> GetWays()
         {
             return primStorage.Ways.DataList;
@@ -108,7 +104,6 @@ namespace PLATEAU.RoadNetwork.Data
         {
             TestNull(nameof(RnRoadBase), GetRoadBases());
             TestNull(nameof(RnDataLane), GetLanes());
-            TestNull(nameof(RnDataBlock), GetBlocks());
             TestNull(nameof(RnDataWay), GetWays());
             TestNull(nameof(RnDataLineString), GetLineStrings());
             TestNull(nameof(RnDataPoint), GetPoints());
@@ -134,8 +129,6 @@ namespace PLATEAU.RoadNetwork.Data
                     return primStorage.RoadBases;
                 case nameof(RnDataLane):
                     return primStorage.Lanes;
-                case nameof(RnDataBlock):
-                    return primStorage.Blocks;
                 case nameof(RnDataWay):
                     return primStorage.Ways;
                 case nameof(RnDataLineString):

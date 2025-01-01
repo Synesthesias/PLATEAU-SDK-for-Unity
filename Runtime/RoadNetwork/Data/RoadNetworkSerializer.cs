@@ -158,7 +158,7 @@ namespace PLATEAU.RoadNetwork.Data
                     {
                         throw new InvalidDataException($"Object {val.GetType().Name} is not found in table");
                     }
-                    
+
                 return Table[val];
             }
         }
@@ -433,7 +433,6 @@ namespace PLATEAU.RoadNetwork.Data
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Points, ignoreKeyNotFoundWarning);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.LineStrings, ignoreKeyNotFoundWarning);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Lanes, ignoreKeyNotFoundWarning);
-            CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Blocks, ignoreKeyNotFoundWarning);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.RoadBases, ignoreKeyNotFoundWarning);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.Ways, ignoreKeyNotFoundWarning);
             CollectForSerialize(refTable, roadNetworkModel, ret.PrimitiveDataStorage.SideWalks, ignoreKeyNotFoundWarning);
