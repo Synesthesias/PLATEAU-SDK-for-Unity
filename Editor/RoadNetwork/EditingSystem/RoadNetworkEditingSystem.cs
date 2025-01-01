@@ -44,6 +44,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
+        private PLATEAURnStructureModel structureModel;
 
 
         public static RoadNetworkEditingSystem TryInitalize(
@@ -59,21 +60,23 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             newSystem =
                 new RoadNetworkEditingSystem();
             
+            
             return newSystem;
         }
 
         /// <summary>
         /// シーンビュー上に描画します
         /// </summary>
-        public void OnSceneGUI(PLATEAURnStructureModel target)
+        private void OnSceneGUI(SceneView sceneView)
         {
+            if (structureModel == null) return;
             var guiSystem = EditTargetSelectButton;
-            guiSystem.OnSceneGUI(target);
+            guiSystem.OnSceneGUI(structureModel);
 
-            editSceneViewGui.Update(SceneView.currentDrawingSceneView);
+            editSceneViewGui.Update(sceneView);
             
             var splineEditSystem = editSceneViewGui.SplineEditorMod;
-            splineEditSystem.OnSceneGUI(target);
+            splineEditSystem.OnSceneGUI(structureModel);
         }
 
         public static void TryTerminate(
@@ -109,6 +112,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private void Terminate()
         {
             editSceneViewGui?.Terminate();
+            SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         /// <summary>
@@ -152,6 +156,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
                 // 新規の編集オブジェクトを作成 
                 roadNetworkEditingSystemObjRoot = new GameObject(roadNetworkEditingSystemObjName, typeof(RoadNetworkEditorGizmos));
+
+                SceneView.duringSceneGui += OnSceneGUI;
             }
 
             // 道路ネットワークの取得を試みる
@@ -161,6 +167,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 Debug.Log("Can't find PLATEAURnStructureModel");
                 return false;
             }
+
+            structureModel = r;
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {

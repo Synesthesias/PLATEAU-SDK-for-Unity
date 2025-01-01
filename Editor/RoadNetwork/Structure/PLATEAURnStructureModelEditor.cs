@@ -65,18 +65,6 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
         }
 
-
-        public void OnSceneGUI()
-        {
-            // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            var editor = RoadNetworkEditingSystem.SingletonInstance;
-            if (editor == null)
-                return;
-
-            editor.OnSceneGUI(target as PLATEAURnStructureModel);
-            
-        }
-
         public override void OnInspectorGUI()
         {
             var obj = target as PLATEAURnStructureModel;
