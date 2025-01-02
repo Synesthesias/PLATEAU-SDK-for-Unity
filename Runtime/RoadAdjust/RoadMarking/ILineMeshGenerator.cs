@@ -77,17 +77,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class DashedLineMeshGenerator : ILineMeshGenerator
     {
-        /// <summary> 破線内の1つの線の長さ </summary>
-        private const float DashLength = 5f;
-        private bool direction;
-        private RoadMarkingMaterial materialType;
-        private float lineWidth;
+        private readonly bool direction;
+        private readonly RoadMarkingMaterial materialType;
+        private readonly float lineWidth;
+        private readonly float dashLength;
 
-        public DashedLineMeshGenerator(RoadMarkingMaterial materialType, bool direction, float lineWidth)
+        public DashedLineMeshGenerator(RoadMarkingMaterial materialType, bool direction, float lineWidth, float dashLength)
         {
             this.materialType = materialType;
             this.direction = direction;
             this.lineWidth = lineWidth;
+            this.dashLength = dashLength;
         }
 
         public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> srcPointsArg)
@@ -116,9 +116,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 float lenDiff = Vector3.Distance(srcPoints[i], srcPoints[i - 1]);
                 if (lenDiff <= 0.0000001) continue;
                 lenImComplete += lenDiff;
-                while (lenImComplete > DashLength) // 2点の間に、DashLengthが複数入る場合に対応するためのwhileです。
+                while (lenImComplete > dashLength) // 2点の間に、dashLengthが複数入る場合に対応するためのwhileです。
                 {
-                    float lenLineEnd = lenLineStart + DashLength;
+                    float lenLineEnd = lenLineStart + dashLength;
                     float t = (lenLineEnd - lengths[i - 1]) / lenDiff;
                     var lineEndPos = Vector3.Lerp(srcPoints[i - 1], srcPoints[i], t);
                     if (isBlank)
@@ -137,7 +137,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
                     isBlank = !isBlank;
                     lenLineStart = lenLineEnd;
-                    lenImComplete -= DashLength;
+                    lenImComplete -= dashLength;
                 }
 
                 if (!isBlank)

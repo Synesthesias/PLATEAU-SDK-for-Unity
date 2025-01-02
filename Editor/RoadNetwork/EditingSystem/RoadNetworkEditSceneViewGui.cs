@@ -329,7 +329,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             // 道路を生成
             var roads = roadGroupEditorData.Ref.Roads;
-            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()));
+            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()), CrosswalkFrequency.All);
         }
 
         public class EditingIntersection

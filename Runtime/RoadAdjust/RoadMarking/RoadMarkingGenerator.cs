@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadMarking.Crosswalk;
 using PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
@@ -12,12 +13,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// <summary>
     /// 道路ネットワークをもとに、車線の線となるメッシュを生成します。
     /// </summary>
-    public class RoadMarkingGenerator
+    internal class RoadMarkingGenerator
     {
         private readonly IRrTarget targetBeforeCopy;
+        private CrosswalkFrequency crosswalkFrequency;
         
         
-        public RoadMarkingGenerator(IRrTarget target)
+        public RoadMarkingGenerator(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
         {
             
             if (target != null)
@@ -28,7 +30,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 Debug.LogError("target road network is null.");
             }
-            
+
+            this.crosswalkFrequency = crosswalkFrequency;
         }
 
         /// <summary> 路面標示をメッシュとして生成します。 </summary>
@@ -52,7 +55,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var dstParent = RoadReproducer.GenerateDstParent();
 
             var roadBases = target.RoadBases().ToArray();
-            for (int i = 0; i < roadBases.Length; i++) // 道路オブジェクトごとに結合します。
+            
+            // 路面標示のうち、道路ごとに結合するものをこの道路forループの中に書きます。
+            for (int i = 0; i < roadBases.Length; i++)
             {
                 var rb = roadBases[i];
                 string roadName = rb.TargetTrans == null || rb.TargetTrans.Count == 0
@@ -62,49 +67,77 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     $"[{i + 1} / {roadBases.Length}] {roadName}");
                 var innerTarget = new RrTargetRoadBases(target.Network(), new[] { rb });
 
-                // 道路の線を取得します。
-                var ways = new MarkedWayListComposer().ComposeFrom(innerTarget);
-
-
-                ways.AddRange(new StopLineComposer().ComposeFrom(innerTarget));
-
-
-                var instances = new RoadMarkingCombiner();
-                foreach (var way in ways.MarkedWays)
-                {
-                    // 道路の線をメッシュに変換します。
-                    var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
-                    var points = way.Line.Points;
-                    var instance = gen.GenerateMeshInstance(points.ToArray());
-
-                    instances.Add(instance);
-                }
+                var combiner = new RoadMarkingCombiner();
+                
+                // 白線を生成します。
+                combiner.AddRange(GenerateRoadLines(innerTarget)); 
+                
 
                 // 交差点前の矢印を生成します。
                 var arrowComposer = new DirectionalArrowComposer(innerTarget);
-                instances.AddRange(arrowComposer.Generate());
+                combiner.AddRange(arrowComposer.Compose());
 
-                var dstMesh = instances.Combine(out var materials);
-                GenerateGameObj(dstMesh, dstParent, rb, materials);
+                var dstMesh = combiner.Combine(out var materials);
+                GenerateGameObj(dstMesh, materials, dstParent, rb, ReproducedRoadType.LaneLineAndArrow, ReproducedRoadDirection.None);
             }
+            
+            // 交差点を生成します。
+            var crosswalkInstances = new CrosswalkComposer().Compose(target, crosswalkFrequency);
+            foreach (var crosswalk in crosswalkInstances)
+            {
+                var crosswalkCombiner = new RoadMarkingCombiner();
+                crosswalkCombiner.Add(crosswalk.RoadMarkingInstance);
+                var crosswalkMesh = crosswalkCombiner.Combine(out var crosswalkMats);
+                GenerateGameObj(crosswalkMesh, crosswalkMats, dstParent, crosswalk.SrcRoad, ReproducedRoadType.Crosswalk, crosswalk.Direction);
+            }
+            
         }
 
+        private IEnumerable<RoadMarkingInstance> GenerateRoadLines(IRrTarget innerTarget)
+        {
+            // 道路の白線を位置を計算します。
+            var ways = new MarkedWayListComposer().ComposeFrom(innerTarget);
+
+
+            ways.AddRange(new StopLineComposer().ComposeFrom(innerTarget));
+            
+            foreach (var way in ways.MarkedWays)
+            {
+                // 道路の白線の位置からメッシュインスタンスに変換します。
+                var gen = way.Type.ToLineMeshGenerator(way.IsReversed);
+                var points = way.Line.Points;
+                var instance = gen.GenerateMeshInstance(points.ToArray());
+
+                yield return instance;
+            }
+        }
         
 
-        private void GenerateGameObj(Mesh mesh, Transform dstParent, RnRoadBase srcRoad, Material[] materials)
+        /// <summary>
+        /// 道路標示をゲームオブジェクトとして配置します。
+        /// 引数の最初の2つを除くものをキーとし、シーン上に同じキーのものがあればそれを置き換えます。なければ新規作成します。
+        /// </summary>
+        private void GenerateGameObj(Mesh mesh, Material[] materials, Transform dstParent, RnRoadBase srcRoad,
+            ReproducedRoadType reproducedType, ReproducedRoadDirection direction)
         {
-            var targetRoads = srcRoad.TargetTrans;
+            var targetRoads = srcRoad?.TargetTrans;
             var targetRoad = targetRoads == null || targetRoads.Count == 0 ? null : targetRoads.First();
             var targetName = targetRoad == null ? "UnknownRoad" : targetRoad.name;
-            string dstName = $"RoadMarking-{targetName}";
+            string dstName = $"{reproducedType.ToGameObjName()}-{targetName}";
+            if(direction != ReproducedRoadDirection.None)
+            {
+                dstName += $"-{direction}";
+            }
             GameObject dstObj = null;
             if (targetRoad != null)
             {
-                dstObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMarking, targetRoad.transform);
+                // シーンに同じものがあれば、それを置き換えます。
+                dstObj = PLATEAUReproducedRoad.Find(reproducedType, targetRoad.transform, direction);
             }
 
             if (dstObj == null)
             {
+                // シーンに同じものがなければ新規作成します。
                 dstObj = new GameObject(dstName);
             }
             
@@ -121,7 +154,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             dstObj.transform.parent = dstParent;
             mesh.name = dstName;
             var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
-            comp.Init(ReproducedRoadType.RoadMarking, targetRoad == null ? null : targetRoad.transform);
+            comp.Init(reproducedType, targetRoad == null ? null : targetRoad.transform, direction);
         }
     }
 }

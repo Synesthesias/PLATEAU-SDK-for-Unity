@@ -9,6 +9,8 @@ using static PLATEAU.Editor.RoadNetwork.EditingSystem.RoadNetworkEditingSystem;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -27,7 +29,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private readonly Button roadSplineStartButton;
         private readonly Button roadSplineStopButton;
         private readonly Toggle editModeToggle;
+        private readonly Toggle placeCrosswalkToggle;
 
+        private bool prevPlaceCrosswalkToggle = false;
         public RoadEditPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
             
@@ -47,6 +51,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             self.Q<Toggle>("EnableMedianLane").bindingPath = "enableMedianLane";
             self.Q<Toggle>("EnableLeftSideWalk").bindingPath = "enableLeftSideWalk";
             self.Q<Toggle>("EnableRightSideWalk").bindingPath = "enableRightSideWalk";
+            placeCrosswalkToggle = GetT("PlaceCrosswalk");
+            
             var d = self.Q<Toggle>("DetailEditMode");
             if (d != null)
                 d.bindingPath = "isEditingDetailMode";
@@ -152,7 +158,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 // 無ければ生成する あれば流用する
                 selectedRoad = this.CreateOrGetRoadGroupData(roadGroupEditorData);
 
-                var roadGroup = roadGroupEditorData.Ref;
 
                 // 既存のモデルオブジェクトを解除
                 rootVisualElement.Unbind();
@@ -177,6 +182,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
                 // モデルのバインド
                 rootVisualElement.Bind(selectedRoad);
+                
+                // 現在の交差点の有無をチェックボックスに反映させます
+                var roads = roadGroupEditorData.Ref.Roads.FirstOrDefault()?.TargetTrans;
+                var roadTrans = roads == null || roads.Count == 0 || roads[0] == null ? null : roads[0].transform;
+                bool doCrosswalkExist = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roadTrans, ReproducedRoadDirection.Next);
+                placeCrosswalkToggle.value = doCrosswalkExist;
+                prevPlaceCrosswalkToggle = doCrosswalkExist;
             }
 
             var intersectionData = EditingSystem.system.SelectedRoadNetworkElement as EditorData<RnIntersection>;
@@ -205,6 +217,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private void OnApplyRoadButtonClicked()
         {
             bool isChanged = selectedRoad.Apply(EditingSystem.system.RoadNetworkSimpleEditModule);
+            isChanged |= prevPlaceCrosswalkToggle != placeCrosswalkToggle.value;
             if (!isChanged)
             {
                 return;
@@ -220,9 +233,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
             var network = rnMdl.RoadNetwork;
 
-            new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads));
+            ReproduceRoad(network, changedRoads);
+            
         }
 
+        private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoad> changedRoads)
+        {
+            new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads), CrosswalkFreq());
+            prevPlaceCrosswalkToggle = placeCrosswalkToggle.value;
+        }
+        
         private void OnRoadSplineStartButtonClicked()
         {
             UpdateSplineButtonVisual(true);
@@ -240,8 +260,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
             // 道路に適用します
             var network = EditingSystem.system.RoadNetwork;
-            var target = new RrTargetRoadBases(network, selectedRoad.TargetScriptableRoadMdl.road.Roads);
-            new RoadReproducer().Generate(target);
+            ReproduceRoad(network, selectedRoad.TargetScriptableRoadMdl.road.Roads);
         }
 
         private void UpdateSplineButtonVisual(bool isSplineEditMode)
@@ -281,6 +300,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             public void ReInitialize()
             {
             }
+        }
+
+        private CrosswalkFrequency CrosswalkFreq()
+        {
+            return placeCrosswalkToggle.value ? CrosswalkFrequency.All : CrosswalkFrequency.Delete;
         }
     }
 }
