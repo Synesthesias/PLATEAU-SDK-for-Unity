@@ -148,7 +148,7 @@ namespace PLATEAU.RoadNetwork.Structure
             IsReversed = isReversed;
             IsReverseNormal = isReverseNormal;
         }
-        
+
         public RnWay(RnWay other)
         {
             LineString = other.LineString.Clone(true);
@@ -488,7 +488,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (other == null)
                 return false;
             return LineString == other.LineString;
-            
+
         }
 
         /// <summary>
@@ -778,19 +778,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetAdvancedPointFromFront(this RnWay self, float offset, out int startIndex, out int endIndex)
         {
-            if (self.IsReversed)
-            {
-                var ret = self.LineString.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
-                startIndex = self.SwitchIndex(startIndex);
-                endIndex = self.SwitchIndex(endIndex);
-                return ret;
-            }
-            else
-            {
-                var ret = self.LineString.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
-                startIndex = self.SwitchIndex(startIndex);
-                return ret;
-            }
+            return self.GetAdvancedPoint(offset, false, out startIndex, out endIndex);
         }
 
         /// <summary>
@@ -804,25 +792,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetAdvancedPointFromBack(this RnWay self, float offset, out int startIndex, out int endIndex)
         {
-            if (self.IsReversed)
-            {
-                var ret = self.LineString.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
-                startIndex = self.SwitchIndex(startIndex);
-                endIndex = self.SwitchIndex(endIndex);
-                return ret;
-            }
-            else
-            {
-                var ret = self.LineString.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
-                startIndex = self.SwitchIndex(startIndex);
-                endIndex = self.SwitchIndex(endIndex);
-                return ret;
-            }
+            return self.GetAdvancedPoint(offset, true, out startIndex, out endIndex);
         }
 
         /// <summary>
         /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
-        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// 線分の長さがoffsetより短い場合は終端点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
         /// </summary>
         /// <param name="self"></param>
         /// <param name="offset"></param>
@@ -832,21 +808,19 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse, out int startIndex, out int endIndex)
         {
-            if (reverse)
-                return self.GetAdvancedPointFromBack(offset, out startIndex, out endIndex);
-            else
-                return self.GetAdvancedPointFromFront(offset, out startIndex, out endIndex);
+            var ret = self.LineString.GetAdvancedPoint(offset, reverse != self.IsReversed, out startIndex, out endIndex);
+            startIndex = self.SwitchIndex(startIndex);
+            endIndex = self.SwitchIndex(endIndex);
+            return ret;
         }
 
         /// <summary>
         /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
-        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// 線分の長さがoffsetより短い場合は終端点を返す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="offset"></param>
         /// <param name="reverse"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="endIndex"></param>
         /// <returns></returns>
         public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse)
         {

@@ -36,7 +36,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             Points = new RnPoint[initialSize].ToList();
         }
-        
+
 
         public RnLineString(IEnumerable<RnPoint> points)
         {
@@ -649,53 +649,76 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// selfの先頭から線分に沿ってoffsetだけ進んだ点を返す.
         /// 線分の長さがoffsetより短い場合は最後の点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
         /// </summary>
         /// <param name="self"></param>
         /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
         /// <returns></returns>
         public static Vector3 GetAdvancedPointFromFront(this RnLineString self, float offset, out int startIndex, out int endIndex)
         {
-            for (var i = 0; i < self.Count - 1; ++i)
-            {
-                var p0 = self[i];
-                var p1 = self[i + 1];
-                var len = (p0 - p1).magnitude;
-                if (len >= offset)
-                {
-                    startIndex = i;
-                    endIndex = i + 1;
-                    return p0 + (p1 - p0).normalized * offset;
-                }
-                offset -= len;
-            }
-            startIndex = endIndex = self.Count - 1;
-            return self[^1];
+            return self.GetAdvancedPoint(offset, false, out startIndex, out endIndex);
         }
 
         /// <summary>
         /// selfの最後から線分に沿ってoffsetだけ進んだ点を返す.
         /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
         /// </summary>
         /// <param name="self"></param>
         /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
         /// <returns></returns>
         public static Vector3 GetAdvancedPointFromBack(this RnLineString self, float offset, out int startIndex, out int endIndex)
         {
-            for (var i = self.Count - 1; i >= 1; --i)
+            return self.GetAdvancedPoint(offset, true, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの最初(reverse=trueの時は最後)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は終端点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnLineString self, float offset, bool reverse, out int startIndex,
+            out int endIndex)
+        {
+            if (self.Count == 0)
             {
-                var p0 = self[i];
-                var p1 = self[i - 1];
+                startIndex = endIndex = -1;
+                return Vector3.zero;
+            }
+
+            var delta = reverse ? -1 : 1;
+            var beginIndex = reverse ? self.Count - 1 : 0;
+
+            var index = beginIndex;
+            foreach (var _ in Enumerable.Range(0, self.Count - 1))
+            {
+                var nextIndex = index + delta;
+                var p0 = self[index];
+                var p1 = self[nextIndex];
                 var len = (p0 - p1).magnitude;
                 if (len >= offset)
                 {
-                    startIndex = i;
-                    endIndex = i - 1;
+                    startIndex = index;
+                    endIndex = index + delta;
                     return p0 + (p1 - p0).normalized * offset;
                 }
+
+                offset -= len;
+                index = nextIndex;
             }
 
-            startIndex = endIndex = 0;
-            return self[0];
+            startIndex = endIndex = self.Count - 1 - beginIndex;
+            return self[endIndex];
         }
 
         /// <summary>
