@@ -22,7 +22,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             this.target = target;
         }
 
-        public List<RoadMarkingInstance> Generate()
+        public List<RoadMarkingInstance> Compose()
         {
             var ret = new List<RoadMarkingInstance>();
             
@@ -83,27 +83,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 Debug.Log("Skipping because center way count is 0.");
                 return Vector3.zero;
             }
-            float len = 0;
-            int index = isNext ? center.Count - 1 : 0;
-            var pos = center.GetPoint(index);
-            while(len < ArrowPositionOffset) // オフセットの分だけ線上を動かします。
-            {
-                index += isNext ? -1 : 1;
-                if (index < 0 || index >= center.Count) break;
-                var nextPos = center.GetPoint(index);
-                float lenDiff = Vector3.Distance(nextPos, pos);
-                if (len + lenDiff >= ArrowPositionOffset)
-                {
-                    float t = (len + lenDiff - ArrowPositionOffset) / lenDiff; // オーバーした割合
-                    return Vector3.Lerp(pos, nextPos, 1 - t);
-                }
 
-                pos = nextPos;
-                len += lenDiff;
-            }
-
-            return pos;
+            return center.PositionAtDistance(ArrowPositionOffset, isNext);
         }
+        
         
 
         /// <summary>

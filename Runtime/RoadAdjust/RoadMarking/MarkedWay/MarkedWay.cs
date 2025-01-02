@@ -103,6 +103,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
         /// <summary> 法令で定められた、停止線の線の太さです。 </summary>
         private const float StopLineWidth = 0.45f;
+
+        /// <summary> 法令で定められた、車線の破線の空白と実線部のインターバルです。 </summary>
+        private const float DashLength = 5f;
         
         public static ILineMeshGenerator ToLineMeshGenerator(this MarkedWayType type, bool direction)
         {
@@ -111,11 +114,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 case MarkedWayType.CenterLineOver6MWidth:
                     return new SolidLineMeshGenerator(RoadMarkingMaterial.White, CarLaneLineWidth);
                 case MarkedWayType.CenterLineUnder6MWidth:
-                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth);
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth, DashLength);
                 case MarkedWayType.CenterLineNearIntersection:
                     return new SolidLineMeshGenerator(RoadMarkingMaterial.Yellow, CarLaneLineWidth);
                 case MarkedWayType.LaneLine:
-                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth);
+                    return new DashedLineMeshGenerator(RoadMarkingMaterial.White, direction, CarLaneLineWidth, DashLength);
                 case MarkedWayType.ShoulderLine:
                     return new SolidLineMeshGenerator(RoadMarkingMaterial.White, CarLaneLineWidth);
                 case MarkedWayType.StopLine:

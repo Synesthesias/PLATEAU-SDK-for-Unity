@@ -8,6 +8,7 @@
         <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
             <ui:FloatField label="車線幅(メートル )" value="42.2" name="RoadSizeField" style="align-items: center; font-size: 12px;" />
             <ui:FloatField label="歩道生成時の歩道幅" value="42.2" name="SideWalkSize" style="align-items: center; font-size: 12px;" />
+            <ui:DropdownField label="横断歩道の配置" name="Crosswalk" choices="大きい道路に配置,すべての交差点に配置,配置しない" index="0" style="font-size: 12px; -unity-text-align: middle-left;" />
             <ui:Toggle label="道路LOD3の歩道情報を利用" name="Add_Lod_Side_Walk" style="font-size: 12px;" />
             <ui:Toggle label="中央分離帯を作成" name="Check_Median" style="font-size: 12px;" />
             <ui:Toggle label="信号制御器を自動配置" name="Add_TrafficSignalLight" style="font-size: 12px;" />

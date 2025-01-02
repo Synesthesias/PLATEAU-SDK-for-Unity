@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
     <ui:VisualElement name="RoadNetwork_EditPanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
         <ui:Label tabindex="-1" text="道路ネットワーク編集と、それをもとに道路再生成を行います" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-text-align: upper-center;" />
         <ui:VisualElement style="flex-grow: 1; align-items: center; padding-top: 6px; padding-bottom: 6px;">
@@ -20,6 +20,7 @@
                     <ui:Toggle label="中央分離帯の有無" name="EnableMedianLane" style="font-size: 12px;" />
                     <ui:Toggle label="左側歩道の有無" name="EnableLeftSideWalk" style="font-size: 12px;" />
                     <ui:Toggle label="右側歩道の有無" name="EnableRightSideWalk" style="font-size: 12px;" />
+                    <ui:Toggle label="横断歩道を配置" value="true" name="PlaceCrosswalk" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; padding-top: 8px; padding-bottom: 8px; align-items: center;">
