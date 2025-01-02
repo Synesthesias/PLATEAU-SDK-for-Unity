@@ -50,17 +50,19 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         /// <param name="system"></param>
         /// <param name="assets"></param>
         /// <param name="root"></param>
-        public TrafficSignalLightPatternUIDoc(EditingSystem.EditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+        public TrafficSignalLightPatternUIDoc(EditingSystem.EditingSystem system, RoadNetworkEditTarget editTarget, RoadNetworkEditorAssets assets, VisualElement root)
         {
             this.system = system;
             this.assets = assets;
             this.patternPanelRoot = root;
+            this.editTarget = editTarget; 
             Init();
         }
 
         private EditingSystem.EditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement patternPanelRoot;
+        private RoadNetworkEditTarget editTarget;
         private VisualElement phasePanelRoot;
 
         private TrafficSignalLightPatternUIEx trafficSignalLightPatternUIEx;
@@ -68,7 +70,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         void Init()
         {
             patternPanelRoot.Clear();
-            var controller = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+            var controller = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
 
             // UI表示用に拡張したクラスを作成
             trafficSignalLightPatternUIEx = new TrafficSignalLightPatternUIEx(system.SelectedSignalControllerPattern);

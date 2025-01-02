@@ -13,7 +13,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class RoadLaneDetailEditor
     {
-        public void Draw(EditorData<RnRoadGroup> roadGroupEditorData, EditingSystem editorSystem)
+        public void Draw(EditorData<RnRoadGroup> roadGroupEditorData, RoadNetworkEditTarget editTarget)
         {
             RoadEditSceneGUIState state = new RoadEditSceneGUIState();
 
@@ -144,7 +144,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // 選択した道路オブジェクトに変更があったとき
             if (state.isDirtyTarget)
             {
-                editorSystem.NotifyChangedRoadNetworkObject2Editor(); // 通知
+                editTarget.SetDirty(); // 通知
             }
         }
         

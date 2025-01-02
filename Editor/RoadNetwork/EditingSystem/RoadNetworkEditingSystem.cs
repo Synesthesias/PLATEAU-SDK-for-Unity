@@ -24,13 +24,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; set; }
         
 
-        // 選択している道路ネットワークを所持したオブジェクト
-        public UnityEngine.Object roadNetworkObject;
-        // 選択している道路ネットワーク
-        public RnModel roadNetworkModel;
-
-        // 選択中の道路ネットワーク要素 Road,Lane,Block...etc
-        public System.Object selectedRoadNetworkElement;
+        // 編集対象
+        public RoadNetworkEditTarget roadNetworkEditTarget;
 
         // 選択中の信号制御器のパターン
         public TrafficSignalControllerPattern selectedSignalPattern;
@@ -71,6 +66,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var guiSystem = EditTargetSelectButton;
             guiSystem.OnSceneGUI(structureModel);
 
+            if (editSceneViewGui == null)
+            {
+                Debug.Log("editSceneViewGui is null.");
+                return;
+            }
             editSceneViewGui.Update(sceneView);
             
             var splineEditSystem = editSceneViewGui.SplineEditorMod;
@@ -118,11 +118,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // 初期化の必要性チェック
             bool needInitGUISystem = EditTargetSelectButton == null;
             bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
-            
 
+            roadNetworkEditTarget = new RoadNetworkEditTarget();
             if (needInitGUISystem)
             {
-                EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(system);
+                EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(editSceneViewGui, roadNetworkEditTarget);
             }
 
             if (needInitGameObj)
@@ -173,28 +173,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var roadNetworkObj = r.gameObject;
 
             // その他 初期化
-            if (roadNetwork != null)
+            if (roadNetworkObj == null)
             {
-                // 自動設定機能
-                this.roadNetworkObject = roadNetworkObj;
-                Selection.activeGameObject = roadNetworkObj;
-
-                system.RoadNetworkObject = roadNetworkObj;
-
-                // 道路ネットワークを地形にスナップします
-                // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
-                // var snapper = new RoadNetworkEditLandSnapper();
-                // while (lineE.MoveNext())
-                // {
-                //     var way = lineE.Current;
-                //     snapper.SnapPointsToDemAndTran(way.Points);
-                // }
-
-
-                editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, system);
-                //simpleEditSysModule.Init();
-
+                Debug.Log("roadNetworkObj is null.");
+                return false;
             }
+
+            // 自動設定機能
+            Selection.activeGameObject = roadNetworkObj;
+            roadNetworkEditTarget.RoadNetworkComponent = structureModel;
+
+            // 道路ネットワークを地形にスナップします
+            // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
+            // var snapper = new RoadNetworkEditLandSnapper();
+            // while (lineE.MoveNext())
+            // {
+            //     var way = lineE.Current;
+            //     snapper.SnapPointsToDemAndTran(way.Points);
+            // }
+
+
+            editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
+                roadNetworkEditTarget);
+            //simpleEditSysModule.Init();
+
 
             return true;
         }

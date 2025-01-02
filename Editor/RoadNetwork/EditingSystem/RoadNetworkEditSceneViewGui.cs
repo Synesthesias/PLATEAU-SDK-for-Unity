@@ -21,14 +21,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public List<EditorData<RnRoadGroup>> Connections { get => roadGroupEditorData; }
 
         public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
-            EditingSystem system)
+            RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target)
         {
-            ReConstruct(root, rnModel, system);
+            ReConstruct(root, rnModel, editTargetSelectButton, target);
         }
 
         private GameObject roadNetworkEditingSystemObjRoot;
         private RnModel roadNetwork;
-        private EditingSystem system;
+        private RoadNetworkEditTargetSelectButton editTargetSelectButton;
+        private RoadNetworkEditTarget editTarget;
         
         // 詳細編集モードかどうか
         public bool isEditingDetailMode = false;
@@ -57,14 +58,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// 計算や処理に必要な要素を初期化する
         /// </summary>
         public void ReConstruct(GameObject root, RnModel rnModel,
-            EditingSystem system)
+            RoadNetworkEditTargetSelectButton targetSelectButton, RoadNetworkEditTarget target)
         {
             Assert.IsNotNull(root);
             Assert.IsNotNull(rnModel);
-            Assert.IsNotNull(system);
+            Assert.IsNotNull(targetSelectButton);
             roadNetworkEditingSystemObjRoot = root;
             roadNetwork = rnModel;
-            this.system = system;
+            editTargetSelectButton = targetSelectButton;
+            this.editTarget = target;
             
             ClearCache();
         }
@@ -262,50 +264,47 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             connections.Remove(null);
 
             // 道路レーンをドラッグでスライドする
-            var slidingWay = waySlider.Draw(system, sceneView, out bool isRoadChanged);
+            var slidingWay = waySlider.Draw(this, editTarget, sceneView, out bool isRoadChanged);
             if (isRoadChanged)
             {
-                OnRoadChanged(system.SelectedRoadNetworkElement as EditorData<RnRoadGroup>);
+                OnRoadChanged(editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>);
             }
             
 
             // gizmos描画の更新
             var gizmosdrawer = GetRoadNetworkEditorGizmos();
-            var guisys = system.EditTargetSelectButton;
-            if (guisys != null)
-            {
-                // gizmosの更新
-                var lines = new LaneLineGizmoGenerator().Generate(
-                    system.SelectedRoadNetworkElement,
-                    waySlider.WaySlideCalcCache?.ClosestWay,
-                    this.roadGroupEditorData,
-                    slidingWay);
-                gizmosdrawer.SetLine(lines);
 
-                // guiの更新
+            // gizmosの更新
+            var lines = new LaneLineGizmoGenerator().Generate(
+                editTarget.SelectedRoadNetworkElement,
+                waySlider.WaySlideCalcCache?.ClosestWay,
+                this.roadGroupEditorData,
+                slidingWay);
+            gizmosdrawer.SetLine(lines);
 
-                guisys.connections = this.roadGroupEditorData;
-                //if (connections.Count > 0)
-                //{
-                //    Handles.DrawLines(pts);
-                //    //Gizmos.DrawLineList(pts);
-                //}
-                guisys.intersections = null;
-                guisys.intersections = intersectionEditorData.Values;
-                //var intersectionsPoss = guisys.intersections;
-                //intersectionsPoss.Capacity = nodeEditorData.Count;
-                //foreach (var item in nodeEditorData.Values)
-                //{
-                //    if (item.IsIntersection == false)
-                //        continue;
-                //    intersectionsPoss.Add(item.RefGameObject.transform.position);
-                //}
-            }
+            // guiの更新
+
+            editTargetSelectButton.connections = this.roadGroupEditorData;
+            //if (connections.Count > 0)
+            //{
+            //    Handles.DrawLines(pts);
+            //    //Gizmos.DrawLineList(pts);
+            //}
+            editTargetSelectButton.intersections = null;
+            editTargetSelectButton.intersections = intersectionEditorData.Values;
+            //var intersectionsPoss = guisys.intersections;
+            //intersectionsPoss.Capacity = nodeEditorData.Count;
+            //foreach (var item in nodeEditorData.Values)
+            //{
+            //    if (item.IsIntersection == false)
+            //        continue;
+            //    intersectionsPoss.Add(item.RefGameObject.transform.position);
+            //}
         }
 
         private void UpdateIntersection()
         {
-            var editingIntersectionMod = system.EditSceneViewGui.EditingIntersectionMod;
+            var editingIntersectionMod = EditingIntersectionMod;
             if (editingIntersectionMod.Intersection == null) return;
             
             RoadEditSceneGUIState state = new RoadEditSceneGUIState();
@@ -362,7 +361,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // 変更を通知する
             if (state.isDirtyTarget)
             {
-                system.NotifyChangedRoadNetworkObject2Editor();
+                editTarget.SetDirty();
             }
         }
         

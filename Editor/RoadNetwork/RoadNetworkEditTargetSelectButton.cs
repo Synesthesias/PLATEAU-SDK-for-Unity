@@ -27,11 +27,13 @@ namespace PLATEAU.Editor.RoadNetwork
         Texture2D nodeTex;
         Texture2D trafficLightControllerTex;
         Texture2D trafficLight_blueTex;
+        private RoadNetworkEditTarget editTarget;
+        private RoadNetworkEditSceneViewGui editSceneViewGui;
 
-        public RoadNetworkEditTargetSelectButton(EditingSystem.EditingSystem editorSystem)
+        public RoadNetworkEditTargetSelectButton(RoadNetworkEditSceneViewGui editSceneViewGui, RoadNetworkEditTarget editTarget)
         {
-            Assert.IsNotNull(editorSystem);
-            this.editorSystem = editorSystem;
+            this.editTarget = editTarget;
+            this.editSceneViewGui = editSceneViewGui;
         }
 
         public const float PointHndScaleFactor = 0.15f;
@@ -39,9 +41,7 @@ namespace PLATEAU.Editor.RoadNetwork
         public const float LinkHndScaleFactor = 0.5f;
         
         private readonly Vector3 selectBtnPosOffset = Vector3.up * 10.0f;
-
-        private EditingSystem.EditingSystem editorSystem;
-
+        
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
@@ -58,10 +58,10 @@ namespace PLATEAU.Editor.RoadNetwork
         /// <summary>
         /// 道路編集において、シーンビュー上で編集対象を選択し、シーンビュー上で編集し、結果を適用します。
         /// </summary>
-        public void OnSceneGUI(UnityEngine.Object target)
+        public void OnSceneGUI(PLATEAURnStructureModel target)
         {
             SetRoadNetworkObject2System(target);
-            var network = GetRoadNetwork();
+            var network = editTarget.RoadNetwork;
             if (network == null)
                 return;
 
@@ -80,10 +80,10 @@ namespace PLATEAU.Editor.RoadNetwork
             OnSceneGUISimpleEdit(); // ここが描画メイン
             
             // 詳細モードを描画します（詳細モードは未完成です）
-            if (editorSystem.EditSceneViewGui.IsDetailMode())
+            if (editSceneViewGui?.IsDetailMode() is true)
             {
-                var selectedRoadGroup = editorSystem.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-                new RoadLaneDetailEditor().Draw(selectedRoadGroup, editorSystem);
+                var selectedRoadGroup = editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+                new RoadLaneDetailEditor().Draw(selectedRoadGroup, editTarget);
             }
         }
 
@@ -146,7 +146,7 @@ namespace PLATEAU.Editor.RoadNetwork
             foreach (var item in connections)
             {
                 // 選択済みのオブジェクト
-                if (item == editorSystem.SelectedRoadNetworkElement)
+                if (item == editTarget.SelectedRoadNetworkElement)
                     continue;
 
                 var subData = item.ReqSubData<RoadGroupEditorData>();
@@ -164,7 +164,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     if (isClicked)
                     {
                         //Debug.Log(subData.A.ToString() + "-" + subData.B.ToString()); // デバッグ用
-                        editorSystem.SelectedRoadNetworkElement = item;
+                        editTarget.SelectedRoadNetworkElement = item;
                         return;
                     }
                 }
@@ -180,7 +180,7 @@ namespace PLATEAU.Editor.RoadNetwork
             foreach (var intersection in intersections)
             {
                 // 選択済みのオブジェクト
-                if (intersection == editorSystem.SelectedRoadNetworkElement)
+                if (intersection == editTarget.SelectedRoadNetworkElement)
                     continue;
 
                 Color pre = GUI.color;
@@ -196,23 +196,19 @@ namespace PLATEAU.Editor.RoadNetwork
                     var isClicked = Button2DOn3D(camera, pos2d_dis, nodeTex);
                     if (isClicked)
                     {
-                        editorSystem.SelectedRoadNetworkElement = intersection;
+                        editTarget.SelectedRoadNetworkElement = intersection;
                         return;
                     }
                 }
             }
         }
         
-        private bool SetRoadNetworkObject2System(UnityEngine.Object target)
+        private bool SetRoadNetworkObject2System(PLATEAURnStructureModel target)
         {
-            editorSystem.RoadNetworkObject = target;
-            return editorSystem.RoadNetworkObject != null;
+            editTarget.RoadNetworkComponent = target;
+            return editTarget.RoadNetworkComponent != null;
         }
-
-        private RnModel GetRoadNetwork()
-        {
-            return editorSystem.RoadNetwork;
-        }
+        
 
         private bool IsVisibleDistance(Camera camera, Vector3 pos, float distance)
         {
