@@ -943,22 +943,38 @@ namespace PLATEAU.Util.GeoGraph
             return ret;
         }
 
-        public static void RemoveSelfCrossing<T>(List<T> self, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creator)
+        /// <summary>
+        /// pointsで表現された線分リストが自己交差している場合,その部分を削除する
+        ///   4--5
+        ///   |  |
+        ///   3------2
+        ///      |   |
+        ///      6   1
+        /// ↑の様な線分だと以下のようになる
+        ///      3---2
+        ///      |   |
+        ///      4   1
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="points"></param>
+        /// <param name="selector"></param>
+        /// <param name="creator">交点に新しい点を作成する関数.　p1-p2の線分, p3-p4の線分と交点intersection,  (p1, p2, p3, p4, intersection, t1, t2) -> T</param>
+        public static void RemoveSelfCrossing<T>(List<T> points, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creator)
         {
-            for (var i = 0; i < self.Count - 2; ++i)
+            for (var i = 0; i < points.Count - 2; ++i)
             {
-                var p1 = selector(self[i]);
-                var p2 = selector(self[i + 1]);
-                for (var j = i + 2; j < self.Count - 1;)
+                var p1 = selector(points[i]);
+                var p2 = selector(points[i + 1]);
+                for (var j = i + 2; j < points.Count - 1;)
                 {
-                    var p3 = selector(self[j]);
-                    var p4 = selector(self[j + 1]);
+                    var p3 = selector(points[j]);
+                    var p4 = selector(points[j + 1]);
 
                     if (LineUtil.SegmentIntersection(p1, p2, p3, p4, out var intersection, out var f1, out var f2))
                     {
-                        var newNode = creator(self[i], self[i + 1], self[j], self[j + 1], intersection, f1, 2);
-                        self.RemoveRange(i + 1, j - i);
-                        self.Insert(i + 1, newNode);
+                        var newNode = creator(points[i], points[i + 1], points[j], points[j + 1], intersection, f1, f2);
+                        points.RemoveRange(i + 1, j - i);
+                        points.Insert(i + 1, newNode);
                         // もう一回最初から検索しなおす
                         j = i + 2;
                     }
