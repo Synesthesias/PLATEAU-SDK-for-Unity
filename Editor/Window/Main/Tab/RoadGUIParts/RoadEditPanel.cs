@@ -112,13 +112,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             EditingSystem =
                 RoadNetworkEditingSystem.TryInitalize(EditingSystem);
             
-            // システムの取得
-            var system = EditingSystem.system;
-            
             EditingSystem.editSceneViewGui?.Init();
             
             EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoadBase;
-            system.EnableLimitSceneViewDefaultControl = true;
+            EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = true;
         }
 
         /// <summary> 「編集モード」ボタンが押されて編集モードが解除されたとき </summary>
@@ -137,12 +134,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             
             rootVisualElement.Unbind();
-            var sys = EditingSystem?.system;
-            if (sys != null)
-            {
-                sys.EnableLimitSceneViewDefaultControl = false;
-                EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadBase;
-            }
+            EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = false;
+            EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadBase;
             
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
             if(editModeToggle != null) editModeToggle.value = false;

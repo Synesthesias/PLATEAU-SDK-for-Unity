@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,19 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// </summary>
     internal class TrafficSignalLightControllerUIDoc
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="system"></param>
-        /// <param name="assets"></param>
-        /// <param name="root"></param>
-        public TrafficSignalLightControllerUIDoc(EditingSystem.EditingSystem system, RoadNetworkEditTarget editTarget, RoadNetworkEditorAssets assets, VisualElement root)
+
+        public TrafficSignalLightControllerUIDoc(TrafficSignalEditor trafficSignalEditor, RoadNetworkEditTarget editTarget, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            this.system = system;
             this.assets = assets;
             this.root = root;
             this.editTarget = editTarget;
+            this.trafficSignalEditor = trafficSignalEditor;
         }
 
-        private EditingSystem.EditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement root;
         private RoadNetworkEditTarget editTarget;
+        private TrafficSignalEditor trafficSignalEditor;
 
         private TrafficSignalLightPatternUIDoc trafficSignalLightPatternUIDoc;
         private VisualElement trafficPatternPanelRoot;
@@ -95,10 +91,10 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 var trafficLightController = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
-                    if (system.SelectedSignalControllerPattern != null)
+                    if (trafficSignalEditor.SelectedSignalControllerPattern != null)
                     {
                         // 交通信号灯制御パターンのUIを作成
-                        trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(system, editTarget, assets, trafficPatternPanelRoot);
+                        trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(trafficSignalEditor,editTarget, assets, trafficPatternPanelRoot);
                     }
                 }
             };
@@ -198,7 +194,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                         var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPattern;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
-                        system.SelectedSignalControllerPattern = userData;
+                        trafficSignalEditor.SelectedSignalControllerPattern = userData;
                     });
                     radioBtn.userData = item;
                     radioBtnGroup.Add(inst);

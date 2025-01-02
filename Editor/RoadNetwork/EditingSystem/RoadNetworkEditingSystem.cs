@@ -23,17 +23,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary> シーンビュー上で、編集対象の道路または交差点を選択するボタンを表示する </summary>
         public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; set; }
         
-
-        // 編集対象
+        /// <summary> 道路ネットワークの編集対象です。 </summary>
         public RoadNetworkEditTarget roadNetworkEditTarget;
 
-        // 選択中の信号制御器のパターン
-        public TrafficSignalControllerPattern selectedSignalPattern;
-        // 選択中の信号制御器のパターンのフェーズ
-        public TrafficSignalControllerPhase selectedSignalPhase;
-
-        // 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        public readonly EditingSystem system;
+        /// <summary> 信号情報の編集。現在は使われていません。 </summary>
+        public TrafficSignalEditor trafficSignalEditor;
+        
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
@@ -96,9 +91,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         public RoadNetworkEditingSystem()
         {
-            system = new EditingSystem(this);
             TryInitialize();
-            
         }
 
         
@@ -115,6 +108,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// </summary>
         private bool TryInitialize()
         {
+            trafficSignalEditor = new TrafficSignalEditor();
+            
+            
             // 初期化の必要性チェック
             bool needInitGUISystem = EditTargetSelectButton == null;
             bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
@@ -196,7 +192,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
                 roadNetworkEditTarget);
             //simpleEditSysModule.Init();
-
 
             return true;
         }
