@@ -344,11 +344,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 隣接道路との境界線を取得
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<RnBorder> GetBorders()
+        public override IEnumerable<RnWay> GetBorders()
         {
             foreach (var neighbor in Neighbors.Where(n => n.Road != null))
             {
-                yield return new RnBorder(neighbor.Border);
+                yield return neighbor.Border;
             }
         }
 
@@ -1153,7 +1153,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             IsEmptyIntersection = val;
         }
-        
+
 #if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する

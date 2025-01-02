@@ -45,7 +45,6 @@ namespace PLATEAU.RoadNetwork
             [typeof(RnNeighbor)] = "Nb",
             [typeof(RnTrack)] = "Tr",
             [typeof(RnSideWalk)] = "Sw",
-            [typeof(RnBorder)] = "Bd",
         };
 
         /// <summary>
