@@ -23,7 +23,7 @@ namespace PLATEAU.RoadAdjust
         private const int LaneCountThreshold = 2;
         
         /// <summary> 道路の長さがこの値未満の道路には設置しません </summary>
-        private const float LengthThreshold = 100f;
+        private const float LengthThreshold = 30f;
         
         public bool ShouldPlace(RnRoad road)
         {
@@ -31,15 +31,9 @@ namespace PLATEAU.RoadAdjust
             if (road.MainLanes.Count < LaneCountThreshold) return false;
             // 十分長いこと
             var lane = road.MainLanes[0];
-            var line = lane.Points.ToArray();
-            float len = 0;
-            for (int i = 1; i < line.Length; i++)
-            {
-                len += Vector3.Distance(line[i - 1].Vertex, line[i].Vertex);
-                if (len >= LengthThreshold) return true;
-            }
-            
-            return false;
+            float leftLength = lane.LeftWay?.CalcLength() ?? 0f;
+            float rightLength = lane.RightWay?.CalcLength() ?? 0f;
+            return Mathf.Max(leftLength, rightLength) >= LengthThreshold;
         }
     }
 
