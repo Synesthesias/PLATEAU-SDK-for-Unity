@@ -25,10 +25,5 @@ namespace PLATEAU.RoadNetwork.Data
         [field: SerializeField]
         [RoadNetworkSerializeMember("medianLane")]
         public RnID<RnDataLane> MedianLane { get; set; }
-
-        // 即性情報
-        [field: SerializeField]
-        [RoadNetworkSerializeMember]
-        public RnRoadAttribute RnRoadAttribute { get; set; }
     }
 }

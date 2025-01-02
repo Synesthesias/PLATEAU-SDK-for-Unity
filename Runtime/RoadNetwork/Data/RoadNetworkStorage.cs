@@ -144,10 +144,6 @@ namespace PLATEAU.RoadNetwork.Data
             = new PrimitiveStorage<RnDataLane>();
 
         [field: SerializeField]
-        public PrimitiveStorage<RnDataBlock> Blocks { get; set; } =
-            new PrimitiveStorage<RnDataBlock>();
-
-        [field: SerializeField]
         public PrimitiveStorage<RnDataWay> Ways { get; set; } = new PrimitiveStorage<RnDataWay>();
 
         [field: SerializeField]

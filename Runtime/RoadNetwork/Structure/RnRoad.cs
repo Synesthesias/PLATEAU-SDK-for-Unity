@@ -10,14 +10,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
-
-    [Flags]
-    public enum RnRoadAttribute
-    {
-        // 1レーンしかない時にそのレーンが両方向かどうか
-        BothSide = 1 << 0,
-    }
-    //[Serializable]
     public class RnRoad : RnRoadBase
     {
         //----------------------------------
@@ -36,9 +28,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
         // 中央分離帯
         private RnLane medianLane;
-
-        // 即性情報
-        public RnRoadAttribute RnRoadAttribute { get; set; }
 
         //----------------------------------
         // end: フィールド
@@ -182,14 +171,14 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // 境界線情報を取得
-        public override IEnumerable<RnBorder> GetBorders()
+        public override IEnumerable<RnWay> GetBorders()
         {
             foreach (var lane in MainLanes)
             {
                 if (lane.PrevBorder != null)
-                    yield return new RnBorder(lane.PrevBorder);
+                    yield return lane.PrevBorder;
                 if (lane.NextBorder != null)
-                    yield return new RnBorder(lane.NextBorder);
+                    yield return lane.NextBorder;
             }
         }
 
