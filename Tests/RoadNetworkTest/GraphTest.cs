@@ -96,5 +96,109 @@ namespace Tests.RoadNetworkTest
                 , 1f
                 );
         }
+
+        /// <summary>
+        /// RnLineString.GetAdvancedPointのテスト
+        /// </summary>
+        [Test()]
+        public void LineStringAdvancedPointTest()
+        {
+            var points = Enumerable.Range(0, 10)
+                .Select(i => new RnPoint(Vector3.right * i))
+                .ToList();
+
+            var lineString = new RnLineString(points);
+
+
+            void Test(float offset, bool reverse, Vector3 ans, int ansStartIndex, int ansEndIndex)
+            {
+                var ret = lineString.GetAdvancedPoint(offset, reverse, out var startIndex, out var endIndex);
+
+                Assert.AreEqual(ans, ret, $"ans {offset}/{reverse}");
+                Assert.AreEqual(ansStartIndex, startIndex, $"startIndex. {offset}/{reverse}");
+                Assert.AreEqual(ansEndIndex, endIndex, $"endIndex. {offset}/{reverse}");
+            }
+
+            for (var i = 0; i < points.Count - 1; ++i)
+            {
+                var l = i + 0.5f;
+                Test(l, false, Vector3.right * l, i, i + 1);
+                Test(l, true, Vector3.right * (points.Count - 1 - l), points.Count - 1 - i, points.Count - 1 - i - 1);
+            }
+
+            Test(points.Count - 1, false, points[^1].Vertex, points.Count - 2, points.Count - 1);
+            Test(points.Count - 1, true, points[0].Vertex, 1, 0);
+
+            Test(points.Count, false, points[^1].Vertex, points.Count - 1, points.Count - 1);
+            Test(points.Count, true, points[0].Vertex, 0, 0);
+        }
+
+        /// <summary>
+        /// RnWay.GetAdvancedPointのテスト
+        /// </summary>
+        [Test()]
+        public void WayAdvancedPointTest()
+        {
+            var points = Enumerable.Range(0, 10)
+                .Select(i => new RnPoint(Vector3.right * i))
+                .ToList();
+
+            var lineString = new RnLineString(points);
+
+            void Test(RnWay way, float offset, bool reverse, float ans, int ansStartIndex = -1, int ansEndIndex = -1)
+            {
+                if (ansStartIndex < 0)
+                {
+                    ansStartIndex = Mathf.Min(points.Count - 1, Mathf.FloorToInt(offset));
+                    ansEndIndex = Mathf.Min(points.Count - 1, Mathf.CeilToInt(offset));
+                    if (reverse)
+                    {
+                        ansStartIndex = points.Count - 1 - ansStartIndex;
+                        ansEndIndex = points.Count - 1 - ansEndIndex;
+                    }
+                }
+
+                var ret = way.GetAdvancedPoint(offset, reverse, out var startIndex, out var endIndex);
+                Assert.AreEqual(Vector3.right * ans, ret, $"ans {offset}/{reverse}/{way.IsReversed}");
+                Assert.AreEqual(ansStartIndex, startIndex, $"startIndex. {offset}/{reverse}/{way.IsReversed}");
+                Assert.AreEqual(ansEndIndex, endIndex, $"endIndex. {offset}/{reverse}/{way.IsReversed}");
+            }
+
+
+            var start = 0f;
+            var end = points.Count - 1f;
+
+            {
+                var way = new RnWay(lineString, true, false);
+                Test(way, 0.5f, false, end - 0.5f);
+            }
+            foreach (var rev in new[] { false, true })
+            {
+                var way = new RnWay(lineString, rev, false);
+
+                for (var i = 0; i < points.Count - 1; ++i)
+                {
+                    var l = i + 0.5f;
+                    var ans = l;
+                    if (rev)
+                        ans = points.Count - 1 - l;
+
+                    Test(way, l, false, ans);
+                    Test(way, l, true, (points.Count - 1 - ans));
+                }
+
+                {
+                    var revAns = start;
+                    var ans = end;
+                    if (rev)
+                        (revAns, ans) = (ans, revAns);
+                    Test(way, points.Count - 1, false, ans, points.Count - 2, points.Count - 1);
+                    Test(way, points.Count - 1, true, revAns, 1, 0);
+
+                    Test(way, points.Count, false, ans, points.Count - 1, points.Count - 1);
+                    Test(way, points.Count, true, revAns, 0, 0);
+                }
+            }
+        }
     }
 }
