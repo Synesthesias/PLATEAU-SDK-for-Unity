@@ -467,25 +467,24 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラック情報を追加/更新する.
         /// 同じfrom/toのトラックがすでにある場合は上書きする. そうでない場合は追加する
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
         public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
         {
             const float tangentLength = 10f;
             var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, RnModel.Plane);
 
             var track = CreateTrack(this, from, to, turnType);
+            if (track == null) return false;
             return TryAddOrUpdateTrack(track);
 
             static RnTrack CreateTrack(RnIntersection inters, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
             {
-                var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2).normalized;
-                var toNormal = -to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
-
+                var borderEdgeGroups = inters.CreateEdgeGroup().Where(e => e.IsBorder).ToList();
+                var fromEg = borderEdgeGroups.FirstOrDefault(eg => eg.Key == from.Road);
+                var toEg = borderEdgeGroups.FirstOrDefault(eg => eg.Key == to.Road);
+                if (fromEg == null || toEg == null) return null;
+                var thickLinTables = new RnTracksBuilder.ThickCenterLineTables();
                 var trackBuilder = new RnTracksBuilder();
-                var outBound = new RnTracksBuilder.OutBound(edgeTurnType, null, to);
-                return trackBuilder.MakeTrack(inters, from, BuildTrackOption.Default(), null, null, outBound);
+                return trackBuilder.MakeTrack(inters, from, BuildTrackOption.Default(), fromEg, thickLinTables, new RnTracksBuilder.OutBound(edgeTurnType, toEg, to));
 
             }
         }

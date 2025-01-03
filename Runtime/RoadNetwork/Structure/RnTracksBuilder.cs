@@ -184,14 +184,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// from/toを繋ぐトラックを作成する
         /// </summary>
-        /// <param name="op"></param>
-        /// <param name="way"></param>
-        /// <param name="widthTable"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="edgeTurnType"></param>
-        /// <returns></returns>
-        private RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
+        public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
             List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
         {
             var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
