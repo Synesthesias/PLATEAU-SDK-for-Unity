@@ -82,7 +82,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             CreateSpline(target.Ref);
 
-            core = new SplineEditorCore(splineContainer);
+            core = new SplineEditorCore(spline);
             core.SetStartPointConstraint(true,
                 target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[0].Vertex,
                 target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[^1].Vertex
@@ -156,11 +156,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             foreach (var leftLane in road.GetLeftLanes())
             {
                 points = leftLane.LeftWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, !leftLane.LeftWay.IsReversed);
+                ConvertSplineToLineStringPoints(spline, ref points, offset, leftLane.IsReverse ^ leftLane.LeftWay.IsReversed);
                 offset -= laneWidth;
 
                 points = leftLane.RightWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, !leftLane.RightWay.IsReversed);
+                ConvertSplineToLineStringPoints(spline, ref points, offset, leftLane.IsReverse ^ leftLane.RightWay.IsReversed);
             }
 
             if (road.MedianLane != null)
@@ -171,12 +171,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             foreach (var rightLane in road.GetRightLanes())
             {
                 points = rightLane.RightWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.RightWay.IsReversed);
+                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.IsReverse ^ rightLane.RightWay.IsReversed);
 
                 offset -= laneWidth;
 
                 points = rightLane.LeftWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.LeftWay.IsReversed);
+                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.IsReverse ^ rightLane.LeftWay.IsReversed);
             }
         }
 
@@ -214,23 +214,23 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             this.spline = spline;
         }
 
-        private void ConvertSplineToLineStringPoints(Spline spline, ref List<RnPoint> destPoints, float offset, bool isForward)
+        private void ConvertSplineToLineStringPoints(Spline spline, ref List<RnPoint> destPoints, float offset, bool isReversed)
         {
             var firstPoint = destPoints.First();
             var lastPoint = destPoints.Last();
             destPoints.Clear();
 
             // 始点に頂点を追加
-            float t = isForward ? 0f : 1f;
+            float t = isReversed ? 1f : 0f;
             Vector3 prevPoint = spline.EvaluatePosition(t);
             Vector3 prevTangent = spline.EvaluateTangent(t);
             firstPoint.Vertex = GetOffsetPointToNormalDirection(prevPoint, prevTangent, offset);
             destPoints.Add(firstPoint);
 
-            while (isForward ? t < 1f : t > 0f)
+            while (isReversed ? t > 0f : t < 1f)
             {
                 // 1m毎にスプライン上の点を取ってきて、30m以上離れているか5度以上角度が異なる場合に頂点として追加
-                spline.GetPointAtLinearDistance(t, isForward ? 1f : -1f, out float newT);
+                spline.GetPointAtLinearDistance(t, isReversed ? -1f : 1f, out float newT);
                 var newPoint = spline.EvaluatePosition(newT);
                 var newTangent = spline.EvaluateTangent(newT);
 
@@ -243,12 +243,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
                 t = newT;
 
-                if (isForward ? t >= 1f : t <= 0f)
+                if (isReversed ? t <= 0f : t >= 1f)
                 {
                     // 終点に頂点を追加
                     lastPoint.Vertex = GetOffsetPointToNormalDirection(
-                        spline.EvaluatePosition(isForward ? 1f : 0f),
-                        spline.EvaluateTangent(isForward ? 1f : 0f),
+                        spline.EvaluatePosition(isReversed ? 0f : 1f),
+                        spline.EvaluateTangent(isReversed ? 0f : 1f),
                         offset);
                     destPoints.Add(lastPoint);
                 }
