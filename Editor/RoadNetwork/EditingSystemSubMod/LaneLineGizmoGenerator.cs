@@ -97,7 +97,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         var centerWay = lane.CreateCenterWay();
                         if (centerWay == null)
                             continue;
-                        lineDrawers.Add(new LaneLineDrawerArrow(centerWay, mainLaneCenterWayColor));
+                        lineDrawers.Add(new LaneLineDrawerArrow(centerWay, mainLaneCenterWayColor, LaneLineDrawMethod.Gizmos));
                     }
                 }
 
