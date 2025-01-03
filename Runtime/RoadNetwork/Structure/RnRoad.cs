@@ -1072,7 +1072,7 @@ namespace PLATEAU.RoadNetwork.Structure
             oppositeRoadBase?.ReplaceNeighbor(self, intersection);
 
             // トラックを生成しなおす
-            intersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
+            intersection.BuildTracks(BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
 
             var dstSideWalks = intersection.SideWalks.ToList();
             var srcSideWalks = self.SideWalks.ToList();

@@ -166,7 +166,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             if (track != null)
                 targetIntersection.RemoveTrack(track);
             else
+            {
                 targetIntersection.TryAddOrUpdateTrack(selectEntablePoint, selectExitablePoint);
+            }
 
             selectEntablePoint = null;
             selectExitablePoint = null;
