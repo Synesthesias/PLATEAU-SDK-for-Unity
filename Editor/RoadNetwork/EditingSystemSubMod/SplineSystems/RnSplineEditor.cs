@@ -18,16 +18,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private SplineContainer splineContainer;
         private Spline spline = new Spline();
         private GameObject roadNetworkObject;
-        private SplineEditorHandles splineEditHandles;
+        private SplineEditorCore core;
 
         private bool IsInitialized { get; set; } = false;
         public bool IsEnabled { get; private set; } = false;
-        
-        public ISplineEditedReceiver splineEditedReceiver;
 
-        public RnSplineEditor(ISplineEditedReceiver splineEditedReceiver)
+        public RnSplineEditor()
         {
-            this.splineEditedReceiver = splineEditedReceiver;
         }
 
         /// <summary>
@@ -85,7 +82,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             CreateSpline(target.Ref);
 
-            var core = new SplineEditorCore(spline);
+            core = new SplineEditorCore(spline);
             core.SetStartPointConstraint(true,
                 target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[0].Vertex,
                 target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[^1].Vertex
@@ -94,7 +91,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[^1].Vertex,
                 target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[0].Vertex
             );
-            splineEditHandles = new SplineEditorHandles(core, FinishSplineEdit, CancelSplineEdit);
         }
 
         /// <summary>
@@ -109,23 +105,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             spline.Clear();
         }
 
-        public void FinishSplineEdit()
-        {
-            Apply();
-            Disable();
-            splineEditedReceiver.OnSplineEdited();
-        }
-
-        private void CancelSplineEdit()
-        {
-            Disable();
-            splineEditedReceiver.OnSplineEditCanceled();
-        }
-        
         /// <summary>
         /// スプラインの編集結果を道路に適用
         /// </summary>
-        private void Apply()
+        public void Apply()
         {
             Assert.IsTrue(IsInitialized, "初期化されていない");
 
@@ -150,7 +133,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (!IsEnabled)
                 return;
 
-            splineEditHandles.HandleSceneGUI();
+            SplineEditorHandles.HandleSceneGUI(core);
         }
 
         private void ApplySpline()
@@ -510,11 +493,5 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             return false;
         }
-    }
-
-    internal interface ISplineEditedReceiver
-    {
-        public void OnSplineEdited();
-        public void OnSplineEditCanceled();
     }
 }

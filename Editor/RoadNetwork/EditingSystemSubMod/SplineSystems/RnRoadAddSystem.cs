@@ -9,7 +9,7 @@ using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
-    internal class RnRoadAddSystem : RnSplineSystemBase, ICreatedSplineReceiver
+    internal class RnRoadAddSystem : RnSplineSystemBase
     {
         public bool IsActive { get; private set; } = false;
 
@@ -19,7 +19,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public Action<RnRoadGroup> OnRoadAdded { get; set; }
 
         private SplineCreateHandles splineCreateHandles;
-        
+
+        // 前フレームで作図モード中かどうかのフラグ (作図完了判定に使用)
+        private bool wasCreatingSpline = false;
 
         // クリックした頂点に紐づく「更新対象の道路」を記憶しておく
         private RnRoadGroup selectedRoad;
@@ -29,13 +31,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public RnRoadAddSystem(RoadNetworkAddSystemContext context)
         {
             this.context = context;
-            splineCreateHandles = new SplineCreateHandles(splineEditorCore, this);
+            splineCreateHandles = new SplineCreateHandles(splineEditorCore);
         }
 
         public void Activate()
         {
             IsActive = true;
-            splineCreateHandles = new SplineCreateHandles(splineEditorCore, this);
+            splineCreateHandles = new SplineCreateHandles(splineEditorCore);
         }
 
         public void Deactivate()
@@ -61,6 +63,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             // 2. SplineCreateHandles でノット追加＆移動を処理
             splineCreateHandles.HandleSceneGUI();
+
+            // 3. 作図完了を検知
+            DetectSplineCreationCompletion();
         }
 
         private List<(Vector3 position, RnRoadGroup road)> GetVertexRoadPairs(RoadNetworkSkeletonData skeletonData)
@@ -73,7 +78,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var spline = roadSkeleton.Spline;
 
                 if (spline.Knots.Count() == 0)
+                {
+                    Debug.LogWarning($"スプラインが存在しない道路があります: ID{road.Roads[0].DebugMyId}");
                     continue;
+                }
 
                 if (road.PrevIntersection == null)
                     vertexRoadPairs.Add((spline.Knots.First().Position, road));
@@ -132,8 +140,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// → クリック時に記憶しておいた `selectedRoad` を用いて、
         ///    その道路をスプラインに反映する
         /// </summary>
-        public void OnSplineCreated(Spline newSpline)
+        private void OnSplineCreationFinished()
         {
+            Spline newSpline = splineEditorCore.Spline;
 
             if (selectedRoad == null)
             {
@@ -269,6 +278,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             return ways;
         }
-        
+
+        private void DetectSplineCreationCompletion()
+        {
+            bool isCreatingNow = splineCreateHandles.IsCreatingSpline;
+            if (!isCreatingNow && wasCreatingSpline)
+            {
+                // 直前まで作図モードだった → 今フレームで終了した
+                OnSplineCreationFinished();
+            }
+            wasCreatingSpline = isCreatingNow;
+        }
     }
 }

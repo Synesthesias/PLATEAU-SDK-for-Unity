@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.RoadNetwork;
+using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -55,7 +56,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             UpdateRoadAddButtonVisual(false);
 
-            // var system = RoadNetworkEditingSystem.SingletonInstance;
+            var system = RoadNetworkEditingSystem.SingletonInstance;
             RoadNetworkAddSystem.Active.RoadAddSystem.Deactivate();
         }
 

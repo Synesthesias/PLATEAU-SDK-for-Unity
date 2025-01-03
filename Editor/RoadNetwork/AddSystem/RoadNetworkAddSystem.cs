@@ -1,4 +1,4 @@
-﻿using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadNetwork.Structure;
@@ -26,7 +26,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, false);
 
-                // スケルトン更新
+                // �X�P���g���X�V
                 Context.SkeletonData.UpdateData(roadGroup);
             };
         }
@@ -41,7 +41,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active = new RoadNetworkAddSystem(structureModel);
 
-            // SceneViewの更新イベントにフック
+            // SceneView�̍X�V�C�x���g�Ƀt�b�N
             SceneView.duringSceneGui += Active.OnSceneGUI;
 
             return true;
@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active.Terminate();
 
-            // SceneViewの更新イベントから除外
+            // SceneView�̍X�V�C�x���g���珜�O
             SceneView.duringSceneGui -= Active.OnSceneGUI;
 
             Active = null;
