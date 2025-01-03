@@ -17,8 +17,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     internal class RoadNetworkEditingSystem
     {
         
-        /// <summary> シーンビュー上に描画するGUI </summary>
-        public RoadNetworkEditSceneViewGui editSceneViewGui;
+        /// <summary> シーンビュー上で道路を変更するGUI </summary>
+        public RoadNetworkEditSceneViewGui roadEditSceneViewGui;
+
+        /// <summary> シーンビュー上で交差点を編集するGUI </summary>
+        public IntersectionEditSceneViewGui intersectionEditSceneViewGui;
 
         /// <summary> シーンビュー上で、編集対象の道路または交差点を選択するボタンを表示する </summary>
         public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; set; }
@@ -34,24 +37,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private GameObject roadNetworkEditingSystemObjRoot;
         private PLATEAURnStructureModel structureModel;
 
-
-        public static RoadNetworkEditingSystem TryInitalize(
-            RoadNetworkEditingSystem oldSystem)
-        {
-
-            var newSystem = oldSystem;
-            if (newSystem != null)
-            {
-                newSystem.Terminate();
-            }
-
-            newSystem =
-                new RoadNetworkEditingSystem();
-            
-            
-            return newSystem;
-        }
-
         /// <summary>
         /// シーンビュー上に描画します
         /// </summary>
@@ -61,14 +46,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var guiSystem = EditTargetSelectButton;
             guiSystem.OnSceneGUI(structureModel);
 
-            if (editSceneViewGui == null)
+            if (roadEditSceneViewGui == null)
             {
                 Debug.Log("editSceneViewGui is null.");
                 return;
             }
-            editSceneViewGui.Update(sceneView);
+            roadEditSceneViewGui.Update(sceneView);
+            intersectionEditSceneViewGui.Update();
             
-            var splineEditSystem = editSceneViewGui.SplineEditorMod;
+            var splineEditSystem = roadEditSceneViewGui.SplineEditorMod;
             splineEditSystem.OnSceneGUI(structureModel);
         }
 
@@ -96,9 +82,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         
 
-        private void Terminate()
+        public void Terminate()
         {
-            editSceneViewGui?.Terminate();
+            roadEditSceneViewGui?.Terminate();
+            intersectionEditSceneViewGui?.Terminate();
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
@@ -118,7 +105,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             roadNetworkEditTarget = new RoadNetworkEditTarget();
             if (needInitGUISystem)
             {
-                EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(editSceneViewGui, roadNetworkEditTarget);
+                EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(roadEditSceneViewGui, roadNetworkEditTarget);
             }
 
             if (needInitGameObj)
@@ -189,8 +176,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // }
 
 
-            editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
+            roadEditSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
                 roadNetworkEditTarget);
+            intersectionEditSceneViewGui = new IntersectionEditSceneViewGui(roadNetworkEditTarget);
             //simpleEditSysModule.Init();
 
             return true;
