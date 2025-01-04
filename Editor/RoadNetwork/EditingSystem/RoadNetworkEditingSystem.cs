@@ -32,15 +32,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary> 信号情報の編集。現在は使われていません。 </summary>
         public TrafficSignalEditor trafficSignalEditor;
         
-
-        /// <summary> シーンビュー上で、編集対象の道路または交差点を選択するボタンを表示する </summary>
-        public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; set; }
-        
-        /// <summary> 道路ネットワークの編集対象です。 </summary>
-        public RoadNetworkEditTarget roadNetworkEditTarget;
-
-        /// <summary> 信号情報の編集。現在は使われていません。 </summary>
-        public TrafficSignalEditor trafficSignalEditor;
         
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
@@ -67,26 +58,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var splineEditSystem = roadEditSceneViewGui.SplineEditorMod;
             splineEditSystem.OnSceneGUI(structureModel);
         }
-
-        /// <summary>
-        /// シーンビュー上に描画します
-        /// </summary>
-        private void OnSceneGUI(SceneView sceneView)
-        {
-            if (structureModel == null) return;
-            var guiSystem = EditTargetSelectButton;
-            guiSystem.OnSceneGUI(structureModel);
-
-            if (editSceneViewGui == null)
-            {
-                Debug.Log("editSceneViewGui is null.");
-                return;
-            }
-            editSceneViewGui.Update(sceneView);
-            
-            var splineEditSystem = editSceneViewGui.SplineEditorMod;
-            splineEditSystem.OnSceneGUI(structureModel);
-        }
+        
 
         public static void TryTerminate(
             RoadNetworkEditingSystem oldSystem, VisualElement root)
