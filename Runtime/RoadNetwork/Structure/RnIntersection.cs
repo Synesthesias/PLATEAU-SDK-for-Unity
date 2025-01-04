@@ -810,13 +810,47 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 else
                 {
-                    // 両端のトラックに余った分は割り当てる
-                    var startIndex = (outBoundsLeft2Rights.Count - inBoundsLeft2Right.Count + 1) / 2;
+                    var inBoundIndex = 0;
                     for (var i = 0; i < outBoundsLeft2Rights.Count; ++i)
                     {
-                        var inBoundIndex = Mathf.Clamp(i - startIndex, 0, inBoundsLeft2Right.Count - 1);
-                        var from = inBoundsLeft2Right[inBoundIndex];
-                        MakeTrack(from, i);
+                        // 残りが足りない場合は進める
+                        // i=0版は必ずinBoundIndex=0にする
+                        // inBoundIndexが次に進めるかチェックする
+                        if (i > 0 && inBoundIndex < inBoundsLeft2Right.Count - 1)
+                        {
+                            // 残りの流出先の数と流入先の数が同じ場合は残りは1:1対応なので進める
+                            if ((inBoundsLeft2Right.Count - inBoundIndex) > (outBoundsLeft2Rights.Count - i))
+                            {
+                                inBoundIndex++;
+                            }
+                            else
+                            {
+                                // 直進の時は可能な限り流入位置とまっすぐの位置になる物を採用するようにする
+                                var to = outBoundsLeft2Rights[i];
+                                var toPos = GetEdgeCenter2D(to.To);
+                                // 直進に関しては可能な限り流入位置とまっすぐの位置になる物を採用するようにする
+                                if (to.Type == RnTurnType.Straight)
+                                {
+                                    var now = inBoundsLeft2Right[inBoundIndex];
+                                    var next = inBoundsLeft2Right[inBoundIndex + 1];
+
+                                    var nowDir = GetEdgeNormal2D(now);
+                                    var nowPos = GetEdgeCenter2D(now);
+                                    var nowAngle = Vector2.Angle(nowDir, toPos - nowPos);
+
+                                    var nextDir = GetEdgeNormal2D(next);
+                                    var nextPos = GetEdgeCenter2D(next);
+                                    var nextAngle = Vector2.Angle(nextDir, toPos - nextPos);
+
+                                    if (nowAngle > nextAngle)
+                                    {
+                                        inBoundIndex++;
+                                    }
+                                }
+                            }
+                        }
+
+                        MakeTrack(inBoundsLeft2Right[inBoundIndex], i);
                     }
                 }
             }
@@ -834,8 +868,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         private RnTrack CreateTrackOrDefault(BuildTrackOption op, RnWay way, List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
         {
-            var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
-            var toNormal = to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+            var fromNormal = GetEdgeNormal(from);
+            var toNormal = GetEdgeNormal(to);
 
             from.Border.GetLerpPoint(0.5f, out var fromPos);
             to.Border.GetLerpPoint(0.5f, out var toPos);
@@ -878,20 +912,20 @@ namespace PLATEAU.RoadNetwork.Structure
 
             RnTrack TryCreateTwoLineTrack()
             {
-                var plane = RnModel.Plane;
                 var offset = 0.01f;
                 var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
                 var toRay = new Ray(toPos - toNormal * offset, -toNormal);
 
                 // 交差しない場合は無視
-                if (fromRay.CalcIntersectionBy2D(toRay, plane, out var cp, out var _, out var _) == false)
+                if (fromRay.CalcIntersectionBy2D(toRay, RnDef.Plane, out var cp, out var _, out var _) == false)
                     return null;
 
                 // 交点が内部に無い場合は無視
                 if (this.IsInside2D(cp) == false)
                     return null;
 
-                // 直進で繋がるとき
+                // cpからfromPos/toPosに向かう線分とEdgesの交点を取得
+                // 交点がある場合は外に出てしまうので無視
                 var cp1 =
                     this.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f, cp));
 
@@ -1083,6 +1117,12 @@ namespace PLATEAU.RoadNetwork.Structure
                     e.Border.Reverse(true);
                 edges.Reverse();
             }
+
+            // 法線は必ず外向きを向くようにする
+            foreach (var e in Edges)
+            {
+                AlignEdgeNormal(e);
+            }
         }
 
         /// <summary>
@@ -1249,6 +1289,59 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             return ret;
         }
+
+        /// <summary>
+        /// 輪郭線の法線方向を外側向くように整える
+        /// </summary>
+        /// <param name="edge"></param>
+        private static void AlignEdgeNormal(RnNeighbor edge)
+        {
+            if (edge.Border.IsReverseNormal)
+                edge.Border.IsReverseNormal = false;
+        }
+
+        /// <summary>
+        /// edgeの法線方向取得(外側を向いているはず)
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeNormal(RnNeighbor edge)
+        {
+            // 一応向きを整える
+            AlignEdgeNormal(edge);
+            return edge.Border.GetEdgeNormal((edge.Border.Count - 1) / 2);
+        }
+
+        /// <summary>
+        /// edgeの法線方向(2D)取得(外側を向いているはず)
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeNormal2D(RnNeighbor edge)
+        {
+            return GetEdgeNormal(edge).GetTangent(RnDef.Plane);
+        }
+
+        /// <summary>
+        /// edgeの中心点取得
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeCenter(RnNeighbor edge)
+        {
+            return edge.Border.GetLerpPoint(0.5f);
+        }
+
+        /// <summary>
+        /// edgeの中心点(2D)取得
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeCenter2D(RnNeighbor edge)
+        {
+            return GetEdgeCenter(edge).ToVector2(RnDef.Plane);
+        }
+
     }
 
     public static class RnIntersectionEx
