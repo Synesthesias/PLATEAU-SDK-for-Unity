@@ -276,56 +276,6 @@ namespace PLATEAU.Editor.RoadNetwork
         //private Vector3 cacheScale;
     }
 
-    internal class NodeEditorData
-    {
-        public NodeEditorData()
-        {
-            PointWithWeight.Clear();
-        }
-
-        public bool AddPoint(EditorData<RnPoint> point, float weight)
-        {
-            Assert.IsTrue(0 <= weight && weight <= 1.0f, "weight " + weight.ToString());
-            Assert.IsNotNull(point);
-            var subData = point.GetSubData<PointEditorData>();
-            Assert.IsNotNull(subData);
-            return PointWithWeight.TryAdd(point, (subData, weight));
-        }
-
-        public void RemovePoint(EditorData<RnPoint> point)
-        {
-            PointWithWeight.Remove(point);
-        }
-
-        public void SetPointWeight(EditorData<RnPoint> point, float weight)
-        {
-            var isSuc = PointWithWeight.TryGetValue(point, out var w);
-            if (isSuc)
-            {
-                w.weight = weight;
-            }
-        }
-
-        private struct CacheTransform
-        {
-            public CacheTransform(Transform transform)
-            {
-                position = transform.position;
-            }
-
-            public Vector3 position;
-        }
-        private CacheTransform baseTransform;
-
-        private Dictionary<EditorData<RnPoint>, (PointEditorData data, float weight)> PointWithWeight { get; set; } =
-            new Dictionary<EditorData<RnPoint>, (PointEditorData, float)>();
-
-        public List<RoadGroupEditorData> Connections { get; private set; } = new List<RoadGroupEditorData>();
-
-        public bool IsIntersection { get => Connections.Count >= 3; }
-
-    }
-
     internal abstract class EditorSubData<_Parent>
         where _Parent : class
     {
@@ -807,71 +757,6 @@ namespace PLATEAU.Editor.RoadNetwork
             Group = right;
             return true;
         }
-    }
-
-    internal abstract class NeighborPointEditarData : EditorSubData<RnIntersection>
-    {
-        public IReadOnlyCollection<RnNeighbor> Points { get => points; }
-
-        protected IReadOnlyCollection<RnNeighbor> points = null;
-
-    }
-
-
-    internal class EnterablePointEditorData : NeighborPointEditarData
-    {
-        protected override bool Construct()
-        {
-            points = CollectEnterablePoints(Parent);
-            return true;
-        }
-
-        private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(EditorData<RnIntersection> data)
-        {
-            var enterablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
-            foreach (var neighbor in data.Ref.Neighbors)
-            {
-                if (CheckEnterablePoint(neighbor))
-                    enterablePoints.Add(neighbor);
-            }
-            return enterablePoints;
-        }
-
-        private static bool CheckEnterablePoint(RnNeighbor neighbor)
-        {
-            var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
-            return isInboud;
-        }
-
-
-    }
-
-    internal class ExitablePointEditorData : NeighborPointEditarData
-    {
-        protected override bool Construct()
-        {
-            points = CollectExitablePoints(Parent);
-            return true;
-        }
-
-        private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(EditorData<RnIntersection> data)
-        {
-            var exitablePoints = new List<RnNeighbor>(data.Ref.Neighbors.Count());
-            foreach (var neighbor in data.Ref.Neighbors)
-            {
-                if (CheckExitablePoint(neighbor))
-                    exitablePoints.Add(neighbor);
-            }
-            return exitablePoints;
-        }
-
-        private static bool CheckExitablePoint(RnNeighbor neighbor)
-        {
-            var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
-            return isOutbound;
-        }
-
-
     }
 
 }

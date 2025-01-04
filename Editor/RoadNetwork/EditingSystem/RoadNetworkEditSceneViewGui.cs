@@ -18,7 +18,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class RoadNetworkEditSceneViewGui
     {
-        public List<EditorData<RnRoadGroup>> Connections { get => roadGroupEditorData; }
 
         public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
             RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target)
@@ -36,17 +35,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData =
             new Dictionary<RnIntersection, EditorData<RnIntersection>>();
-
-        private Dictionary<RnRoadBase, NodeEditorData> nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>();
+        
 
         private EditorDataList<EditorData<RnRoadGroup>> roadGroupEditorData =
             new EditorDataList<EditorData<RnRoadGroup>>();
-
-        private Dictionary<RnPoint, EditorData<RnPoint>> ptEditorData = new Dictionary<RnPoint, EditorData<RnPoint>>();
         
-
-        public EditingIntersection EditingIntersectionMod { get => editingIntersection; }
-        private EditingIntersection editingIntersection = new();
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
         private RnSplineEditor splineEditor = new();
         
@@ -80,48 +73,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             ClearCache();
 
             SplineEditorMod.Initialize();
-
-            nodeEditorData = new Dictionary<RnRoadBase, NodeEditorData>(roadNetwork.Intersections.Count);
+            
             // ノードに紐づくオブジェクトを作成 editor用のデータを作成
             var nodePrefabPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/RoadNetwork/Node.prefab";
             // プレハブをResourcesフォルダからロード
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(nodePrefabPath);
             Assert.IsNotNull(prefab);
-            var id = 0;
-            StringBuilder sb = new StringBuilder("Node".Length + "XXX".Length);
-            foreach (var node in roadNetwork.Intersections)
-            {
-                var subData = new NodeEditorData();
-                nodeEditorData.Add(node, subData);
-
-                id++;
-                sb.Clear();
-            }
 
             foreach (var intersection in roadNetwork.Intersections)
             {
                 intersectionEditorData.Add(intersection, new EditorData<RnIntersection>(intersection));
             }
-
-
-            var lineE = roadNetwork.CollectAllLineStrings();
-            foreach (var line in lineE)
-            {
-                //Ray ray;
-                foreach (var point in line.Points)
-                {
-                    var ptData = new EditorData<RnPoint>(point);
-                    var isSuc = ptEditorData.TryAdd(point, ptData);
-                    if (isSuc)
-                    {
-                        var d = ptData.Add<PointEditorData>();
-                        Assert.IsNotNull(d);
-                    }
-                }
-            }
-
-            // Nodeとその近辺のPointを紐づける
-            HashSet<RnPoint> points = new HashSet<RnPoint>(500); // capacityは適当
+            
             var numNode = roadNetwork.Intersections.Count;
             if (numNode == 0)
                 return;
@@ -145,8 +108,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 }
 
                 // 同じものを格納済みかチェック
-                var prevIntersection = linkGroup.PrevIntersection;
-                var nextIntersection = linkGroup.NextIntersection;
                 var isContain = false;
                 foreach (var group in roadGroups)
                 {
@@ -163,10 +124,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 // 編集用データを追加
                 var editorData = new EditorData<RnRoadGroup>(linkGroup);
                 var rgEditorData = editorData.Add<RoadGroupEditorData>();
-                if (prevIntersection != null)
-                    nodeEditorData[prevIntersection].Connections.Add(rgEditorData);
-                if (nextIntersection != null)
-                    nodeEditorData[nextIntersection].Connections.Add(rgEditorData);
                 roadGroups.Add(rgEditorData);
                 roadGroupEditorData.Add(editorData);
             }
@@ -227,10 +184,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
         private void ClearCache()
         {
-            nodeEditorData.Clear();
             roadGroupEditorData.Clear();
             roadGroupEditorData.ClearCache();
-            ptEditorData.Clear();
             intersectionEditorData.Clear();
         }
 
@@ -243,7 +198,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 return;
             
             UpdateRoad(sceneView);
-            UpdateIntersection();
 
 
             // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
@@ -301,104 +255,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             //    intersectionsPoss.Add(item.RefGameObject.transform.position);
             //}
         }
-
-        private void UpdateIntersection()
-        {
-            var editingIntersectionMod = EditingIntersectionMod;
-            if (editingIntersectionMod.Intersection == null) return;
-            
-            RoadEditSceneGUIState state = new RoadEditSceneGUIState();
-
-            var currentCamera = SceneView.currentDrawingSceneView.camera;
-            state.currentCamera = currentCamera;
-
-
-            
-
-            var buttonSize = 2.0f;
-
-            bool isSelectdEntablePoint = editingIntersectionMod.IsSelectdEntablePoint;
-            if (isSelectdEntablePoint == false)
-            {
-                foreach (var item in editingIntersectionMod.EnterablePoints)
-                {
-                    // 流入点の位置にボタンを表示する
-                    if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize,
-                            RoadNetworkEntarablePointButtonHandleCap))
-                    {
-                        editingIntersectionMod.SetEntablePoint(item);
-                        // 流入点が選択された
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                foreach (var item in editingIntersectionMod.ExitablePoints)
-                {
-                    // 流出点の位置にボタンを表示する
-                    if (Handles.Button(item.CalcCenter(), Quaternion.identity, buttonSize, buttonSize,
-                            RoadNetworkExitablePointButtonHandleCap))
-                    {
-                        // 流出点が選択された
-                        editingIntersectionMod.SetExitablePoint(item);
-                        break;
-                    }
-                }
-            }
-
-            // Trackの生成、削除に必要な設定が済んで更新できるか？
-            if (editingIntersectionMod.CanTryUpdateTrack)
-            {
-                editingIntersectionMod.UpdateTrack();
-            }
-
-
-            // 遅延実行 コレクションの要素数などを変化させる
-            if (state.delayCommand != null)
-                state.delayCommand.Invoke();
-
-            // 変更を通知する
-            if (state.isDirtyTarget)
-            {
-                editTarget.SetDirty();
-            }
-        }
         
-        private static void RoadNetworkExitablePointButtonHandleCap(int controlID, Vector3 position,
-            Quaternion rotation, float size, EventType eventType)
-        {
-            if (eventType == EventType.Repaint)
-                Handles.color = Color.blue;
-            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-        }
-        
-        private static void RoadNetworkEntarablePointButtonHandleCap(int controlID, Vector3 position,
-            Quaternion rotation, float size, EventType eventType)
-        {
-            if (eventType == EventType.Repaint)
-                Handles.color = Color.red;
-            Handles.SphereHandleCap(controlID, position, rotation, size, eventType);
-        }
-
         private RoadNetworkEditorGizmos GetRoadNetworkEditorGizmos()
         {
             if (roadNetworkEditingSystemObjRoot == null) return null;
             return roadNetworkEditingSystemObjRoot.GetComponent<RoadNetworkEditorGizmos>();
         }
 
-        public void SetupIntersection(EditorData<RnIntersection> data)
-        {
-            editingIntersection.SetTarget(data);
-            editingIntersection.Activate(true);
-        }
-
         public void Terminate()
         {
-            editingIntersection.SetTarget(null);
-            editingIntersection.Activate(false);
             
-            GetRoadNetworkEditorGizmos().Clear();
+            GetRoadNetworkEditorGizmos()?.Clear();
             
             ClearCache();
         }
