@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
@@ -14,22 +15,19 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
     /// </summary>
     internal class TrafficSignalLightControllerUIDoc
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="system"></param>
-        /// <param name="assets"></param>
-        /// <param name="root"></param>
-        public TrafficSignalLightControllerUIDoc(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+
+        public TrafficSignalLightControllerUIDoc(TrafficSignalEditor trafficSignalEditor, RoadNetworkEditTarget editTarget, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            this.system = system;
             this.assets = assets;
             this.root = root;
+            this.editTarget = editTarget;
+            this.trafficSignalEditor = trafficSignalEditor;
         }
 
-        private IRoadNetworkEditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement root;
+        private RoadNetworkEditTarget editTarget;
+        private TrafficSignalEditor trafficSignalEditor;
 
         private TrafficSignalLightPatternUIDoc trafficSignalLightPatternUIDoc;
         private VisualElement trafficPatternPanelRoot;
@@ -57,7 +55,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             patternAddBtn.clicked += () =>
             {
                 // 選択された交通信号灯制御器の取得
-                var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+                var trafficLightController = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
                     // 新しい交通信号制御パターンの追加
@@ -72,7 +70,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             patternRemoveBtn.clicked += () =>
             {
                 // 選択された交通信号灯制御器の取得
-                var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+                var trafficLightController = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
                     // パターンが存在する場合、最後のパターンを削除
@@ -90,19 +88,19 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             patternEditBtn.clicked += () =>
             {
                 // 選択された交通信号灯制御器の取得
-                var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+                var trafficLightController = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
                 if (trafficLightController != null)
                 {
-                    if (system.SelectedSignalControllerPattern != null)
+                    if (trafficSignalEditor.SelectedSignalControllerPattern != null)
                     {
                         // 交通信号灯制御パターンのUIを作成
-                        trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(system, assets, trafficPatternPanelRoot);
+                        trafficSignalLightPatternUIDoc = new TrafficSignalLightPatternUIDoc(trafficSignalEditor,editTarget, assets, trafficPatternPanelRoot);
                     }
                 }
             };
 
             // 選択された交通信号灯制御器の取得
-            var trafficLightController = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+            var trafficLightController = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
             // 信号制御器が持つパターンリストを元にUIを同期する
             SyncTrafficLightControlPatternList(assets, panelInst, trafficLightController);
 
@@ -196,7 +194,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                         var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPattern;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
-                        system.SelectedSignalControllerPattern = userData;
+                        trafficSignalEditor.SelectedSignalControllerPattern = userData;
                     });
                     radioBtn.userData = item;
                     radioBtnGroup.Add(inst);

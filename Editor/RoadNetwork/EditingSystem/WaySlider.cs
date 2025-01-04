@@ -22,18 +22,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// ドラッグしてスライド中の<see cref="RnWay"/>を返します。
         /// スライド中のものがなければnullを返します。
         /// </summary>
-        public RnWay Draw(IRoadNetworkEditingSystem system, SceneView sceneView, out bool isRoadChanged)
+        public RnWay Draw(RoadNetworkEditSceneViewGui editSceneViewGui, RoadNetworkEditTarget editTarget, SceneView sceneView, out bool isRoadChanged)
         {
             isRoadChanged = false;
             var mousePos = Event.current.mousePosition;
             Ray ray = HandleUtility.GUIPointToWorldRay(mousePos);
 
-            if (system.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
+            if (editTarget.SelectedRoadNetworkElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
                 var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>();
 
-                bool isSelectable = !system.RoadNetworkSimpleEditModule.isEditingDetailMode &&
-                                    !system.RoadNetworkSimpleEditModule.SplineEditorMod.IsEnabled;
+                bool isSelectable = !editSceneViewGui.isEditingDetailMode &&
+                                    !editSceneViewGui.SplineEditorMod.IsEnabled;
                 wayEditorDataList.SetSelectable(isSelectable);
 
                 var isMouseOnViewport = true;

@@ -1,3 +1,4 @@
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
@@ -13,82 +14,62 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// 管理元
     /// 出来るだけサブシステム同士で連携を取らないようにする
     /// </summary>
-    internal class RoadNetworkEditingSystem : IRoadNetworkEditingSystemInterface
+    internal class RoadNetworkEditingSystem
     {
         
-        public static RoadNetworkEditingSystem SingletonInstance;
-
-        /// <summary>
-        /// 編集機能を提供するインターフェイス
-        /// </summary>
-        public IRoadNetworkEditOperation NetworkOperator => editOperation;
-
-        /// <summary>
-        /// シーンのGUIのシステムを提供する
-        /// UnityEditor.Editorを継承するクラスでのみ使用する
-        /// 呼び出す箇所は一か所にする
-        /// </summary>
-        public RoadNetworkSceneGUISystem SceneGUISystem => sceneGUISystem;
-
-        public readonly ISystemInstance systemInstance;
-
-        // 選択している道路ネットワークを所持したオブジェクト
-        public UnityEngine.Object roadNetworkObject;
-        // 選択している道路ネットワーク
-        public RnModel roadNetworkModel;
-        // 現在の編集モード
-        public RoadNetworkEditMode editingMode;
-
-        // 選択中の道路ネットワーク要素 Road,Lane,Block...etc
-        public System.Object selectedRoadNetworkElement;
-
-        // 選択中の信号制御器のパターン
-        public TrafficSignalControllerPattern selectedSignalPattern;
-        // 選択中の信号制御器のパターンのフェーズ
-        public TrafficSignalControllerPhase selectedSignalPhase;
-
-        // 内部システム同士が連携する時や共通データにアクセスする際に利用する
-        public readonly IRoadNetworkEditingSystem system;
-
-        public IRoadNetworkEditOperation editOperation;
-        public RoadNetworkSceneGUISystem sceneGUISystem;
-
-        // Laneの生成機能を提供するモジュール
+        /// <summary> シーンビュー上に描画するGUI </summary>
         public RoadNetworkEditSceneViewGui editSceneViewGui;
+
+        /// <summary> シーンビュー上で、編集対象の道路または交差点を選択するボタンを表示する </summary>
+        public RoadNetworkEditTargetSelectButton EditTargetSelectButton { get; set; }
+        
+        /// <summary> 道路ネットワークの編集対象です。 </summary>
+        public RoadNetworkEditTarget roadNetworkEditTarget;
+
+        /// <summary> 信号情報の編集。現在は使われていません。 </summary>
+        public TrafficSignalEditor trafficSignalEditor;
+        
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
-        private const float SnapHeightOffset = 0.1f; // ポイントスナップ時の高低差のオフセット（0だとポイント間を繋ぐ線がめり込むことがあるため）
-        
-        /// <summary>
-        /// システムのインスタンスを管理する機能を提供するインターフェイス
-        /// </summary>
-        public interface ISystemInstance
-        {
-            void RequestReinitialize();
-            void ReInitialize();
-        }
+        private PLATEAURnStructureModel structureModel;
+
 
         public static RoadNetworkEditingSystem TryInitalize(
-            RoadNetworkEditingSystem oldSystem, VisualElement root, ISystemInstance instance)
+            RoadNetworkEditingSystem oldSystem)
         {
-            if (root == null)
-            {
-                Debug.LogError("Root is null.");
-                return oldSystem;
-            }
 
             var newSystem = oldSystem;
             if (newSystem != null)
             {
-                newSystem.system.Instance.ReInitialize();
                 newSystem.Terminate();
             }
 
             newSystem =
-                new RoadNetworkEditingSystem(instance, root);
+                new RoadNetworkEditingSystem();
+            
             
             return newSystem;
+        }
+
+        /// <summary>
+        /// シーンビュー上に描画します
+        /// </summary>
+        private void OnSceneGUI(SceneView sceneView)
+        {
+            if (structureModel == null) return;
+            var guiSystem = EditTargetSelectButton;
+            guiSystem.OnSceneGUI(structureModel);
+
+            if (editSceneViewGui == null)
+            {
+                Debug.Log("editSceneViewGui is null.");
+                return;
+            }
+            editSceneViewGui.Update(sceneView);
+            
+            var splineEditSystem = editSceneViewGui.SplineEditorMod;
+            splineEditSystem.OnSceneGUI(structureModel);
         }
 
         public static void TryTerminate(
@@ -102,30 +83,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
             if (oldSystem != null)
             {
-                oldSystem.system.Instance.ReInitialize();
                 oldSystem.Terminate();
             }
-
-            // 仮
-            RoadNetworkEditingSystem.SingletonInstance = null;
-            return;
+            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="editorInstance"></param>
-        /// <param name="rootVisualElement"></param>
-        public RoadNetworkEditingSystem(ISystemInstance editorInstance, VisualElement rootVisualElement)
+
+        public RoadNetworkEditingSystem()
         {
-            Assert.IsNotNull(editorInstance);
-            this.systemInstance = editorInstance;
-
-            Assert.IsNotNull(rootVisualElement);
-            system = new EditingSystem(this);
-            TryInitialize(rootVisualElement);
-
-            SingletonInstance = this;
+            TryInitialize();
         }
 
         
@@ -133,30 +99,26 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private void Terminate()
         {
             editSceneViewGui?.Terminate();
+            SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         /// <summary>
         /// 初期化を試みる
         /// 多重初期化はしないので複数回呼び出しても問題ない
         /// </summary>
-        /// <param name="rootVisualElement"></param>
-        /// <returns></returns>
-        private bool TryInitialize(VisualElement rootVisualElement)
+        private bool TryInitialize()
         {
+            trafficSignalEditor = new TrafficSignalEditor();
+            
+            
             // 初期化の必要性チェック
-            bool needIniteditOperation = editOperation == null;
-            bool needInitGUISystem = sceneGUISystem == null;
+            bool needInitGUISystem = EditTargetSelectButton == null;
             bool needInitGameObj = roadNetworkEditingSystemObjRoot == null;
 
-            // 初期化 Initlaize()
-            if (needIniteditOperation)
-            {
-                editOperation = new RoadNetworkEditorOperation();
-            }
-
+            roadNetworkEditTarget = new RoadNetworkEditTarget();
             if (needInitGUISystem)
             {
-                sceneGUISystem = new RoadNetworkSceneGUISystem(system);
+                EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(editSceneViewGui, roadNetworkEditTarget);
             }
 
             if (needInitGameObj)
@@ -184,15 +146,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
                 // 新規の編集オブジェクトを作成 
                 roadNetworkEditingSystemObjRoot = new GameObject(roadNetworkEditingSystemObjName, typeof(RoadNetworkEditorGizmos));
+
+                SceneView.duringSceneGui += OnSceneGUI;
             }
 
-            // 道路ネットワークの取得を試みる　
+            // 道路ネットワークの取得を試みる
             var r = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
             if (r == null)
             {
                 Debug.Log("Can't find PLATEAURnStructureModel");
                 return false;
             }
+
+            structureModel = r;
             var roadNetwork = r.RoadNetwork;
             if (roadNetwork == null)
             {
@@ -203,80 +169,34 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var roadNetworkObj = r.gameObject;
 
             // その他 初期化
-            if (roadNetwork != null)
+            if (roadNetworkObj == null)
             {
-                // 自動設定機能
-                this.roadNetworkObject = roadNetworkObj;
-                Selection.activeGameObject = roadNetworkObj;
-
-                system.RoadNetworkObject = roadNetworkObj;
-
-                // 仮ポイントを　地形にスワップする
-                // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
-                // while (lineE.MoveNext())
-                // {
-                //     var way = lineE.Current;
-                //     SnapPointsToDemAndTran(way.Points);
-                // }
-
-
-                editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, system);
-                //simpleEditSysModule.Init();
-
+                Debug.Log("roadNetworkObj is null.");
+                return false;
             }
+
+            // 自動設定機能
+            Selection.activeGameObject = roadNetworkObj;
+            roadNetworkEditTarget.RoadNetworkComponent = structureModel;
+
+            // 道路ネットワークを地形にスナップします
+            // var lineE = roadNetwork.CollectAllWays().GetEnumerator();
+            // var snapper = new RoadNetworkEditLandSnapper();
+            // while (lineE.MoveNext())
+            // {
+            //     var way = lineE.Current;
+            //     snapper.SnapPointsToDemAndTran(way.Points);
+            // }
+
+
+            editSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
+                roadNetworkEditTarget);
+            //simpleEditSysModule.Init();
 
             return true;
         }
 
-        public static void SnapPointsToDemAndTran(IEnumerable<RnPoint> items)
-        {
-            foreach (var item in items)
-            {
-                SnapPointToDemAndTran(item);
-            }
-        }
-
-        public static void SnapPointToDemAndTran(RnPoint item)
-        {
-            Ray ray;
-            const float rayDis = 1000.0f;
-            const float maxRayDistance = rayDis * 2.0f;
-            ray = new Ray(item.Vertex + Vector3.up * rayDis, Vector3.down);
-            SnapPointToObj(item, ray, maxRayDistance, "dem_", "tran_");
-        }
-
-        public static void SnapPointToObj(RnPoint item, in Ray ray, float maxDistance, params string[] filter)
-        {
-            var hits = Physics.RaycastAll(ray, maxDistance);    // 地形メッシュが埋まっていてもスナップ出来るように
-
-            var isTarget = false;
-            var closestDist = float.MaxValue;
-            Vector3 targetPos = Vector3.zero;
-            foreach (RaycastHit hit in hits)
-            {
-                foreach (var f in filter)
-                {
-                    if (hit.collider.name.Contains(f))
-                    {
-                        var dis = Vector3.Distance(hit.point, ray.origin);
-                        if (dis < closestDist)
-                        {
-                            closestDist = dis;
-                            targetPos = hit.point;
-                        }
-                        isTarget = true;
-                        continue;
-                    }
-                }
-            }
-
-            if (isTarget)
-            {
-                item.Vertex = targetPos + Vector3.up * SnapHeightOffset;
-                return;
-            }
-
-        }
+        
         
     }
 }
