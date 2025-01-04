@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadNetwork.Structure;
@@ -41,7 +41,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active = new RoadNetworkAddSystem(structureModel);
 
-            // SceneView�̍X�V�C�x���g�Ƀt�b�N
+            // SceneViewの更新イベントにフック
             SceneView.duringSceneGui += Active.OnSceneGUI;
 
             return true;
@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active.Terminate();
 
-            // SceneView�̍X�V�C�x���g���珜�O
+            // SceneViewの更新イベントから除外
             SceneView.duringSceneGui -= Active.OnSceneGUI;
 
             Active = null;

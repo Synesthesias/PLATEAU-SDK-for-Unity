@@ -78,10 +78,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var spline = roadSkeleton.Spline;
 
                 if (spline.Knots.Count() == 0)
-                {
-                    Debug.LogWarning($"スプラインが存在しない道路があります: ID{road.Roads[0].DebugMyId}");
                     continue;
-                }
 
                 if (road.PrevIntersection == null)
                     vertexRoadPairs.Add((spline.Knots.First().Position, road));
