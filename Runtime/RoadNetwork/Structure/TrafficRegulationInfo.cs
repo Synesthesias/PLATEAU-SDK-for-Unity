@@ -19,14 +19,14 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 信号制御器
     /// </summary>
     [Serializable]
-    public class TrafficSignalLightController : ARnParts<TrafficSignalLightController>
+    public partial class TrafficSignalLightController : ARnParts<TrafficSignalLightController>
     {
 
         public static bool CreateDefault(RnIntersection intersection)
         {
             Assert.IsNotNull(intersection);
             // 信号制御器の作成、信号機の作成
-            var trafficController = 
+            var trafficController =
                 new TrafficSignalLightController("SignalController" + intersection.DebugMyId, intersection, intersection.GetCenterPoint());
 
             // 信号制御器の登録
@@ -198,7 +198,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 信号灯器
     /// 注意　配置されている道路に交差点も設定出来るため注意
     /// </summary>
-    public class TrafficSignalLight : ARnParts<TrafficSignalLight>
+    public partial class TrafficSignalLight : ARnParts<TrafficSignalLight>
     {
         /// <summary>
         /// デシリアライズ用
@@ -308,7 +308,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 信号制御のパターン
     /// 開始時刻、制御パターンID、フェーズのリスト、信号灯のオフセットを持つ
     /// </summary>
-    public class TrafficSignalControllerPattern : ARnParts<TrafficSignalControllerPattern>
+    public partial class TrafficSignalControllerPattern : ARnParts<TrafficSignalControllerPattern>
     {
         /// <summary>
         /// デシリアライズ用
@@ -330,7 +330,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 信号制御のフェーズ
     /// 信号制御のパターンに含まれる要素
     /// </summary>
-    public class TrafficSignalControllerPhase : ARnParts<TrafficSignalControllerPhase>
+    public partial class TrafficSignalControllerPhase : ARnParts<TrafficSignalControllerPhase>
     {
         /// <summary>
         /// デシリアライズ用

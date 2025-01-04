@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PLATEAU.Util
 {
@@ -66,7 +67,7 @@ namespace PLATEAU.Util
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static bool IsSimpleType(this Type type)
+        public static bool IsSimpleType(Type type)
         {
             return type.IsPrimitive || type.IsEnum || type == typeof(string);
         }
@@ -98,7 +99,7 @@ namespace PLATEAU.Util
                 yield return new Tuple<FieldInfo, object>(memberInfo, obj);
             }
             // プリミティブ型は子を持たないので打ち切る
-            else if (type.IsSimpleType())
+            else if (IsSimpleType(type))
             {
                 yield break;
             }
@@ -114,7 +115,6 @@ namespace PLATEAU.Util
             // それ以外の
             else
             {
-
                 var fieldInfos = type.GetFields(flags);
                 foreach (var fieldInfo in fieldInfos)
                 {
@@ -157,6 +157,11 @@ namespace PLATEAU.Util
         {
             return GetPropertyBackingField(propertyInfo?.DeclaringType, propertyInfo);
         }
+
+        /// <summary>
+        /// BackingFieldの名前からプロパティ名を取得する
+        /// </summary>
+        public static readonly Regex BackingFieldNameRegex = new Regex(@"^<(.+)>k__BackingField$");
 
         /// <summary>
         /// 親タイプをすべて取得

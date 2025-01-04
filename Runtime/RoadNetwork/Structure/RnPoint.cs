@@ -4,7 +4,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
-    public class RnPoint : ARnParts<RnPoint>
+    public partial class RnPoint : ARnParts<RnPoint>
     {
         [field: SerializeField] public Vector3 Vertex { get; set; }
 

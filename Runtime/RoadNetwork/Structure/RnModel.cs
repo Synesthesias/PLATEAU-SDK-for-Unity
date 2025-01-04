@@ -11,7 +11,7 @@ using UnityEngine;
 namespace PLATEAU.RoadNetwork.Structure
 {
     // #NOTE : Editorが重いのでSerialize対象にしない
-    public class RnModel
+    public partial class RnModel
     {
         public const float Epsilon = float.Epsilon;
 

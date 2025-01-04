@@ -10,7 +10,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// Serialize時にnewする必要があるのでabstractにはできない
     /// </summary>
     [Serializable]
-    public class RnRoadBase : ARnParts<RnRoadBase>
+    public partial class RnRoadBase : ARnParts<RnRoadBase>
     {
         //----------------------------------
         // start: フィールド

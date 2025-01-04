@@ -15,7 +15,7 @@ using UnityEngine.Splines;
 namespace PLATEAU.RoadNetwork.Structure
 {
     [Serializable]
-    public class RnTrack : ARnParts<RnTrack>
+    public partial class RnTrack : ARnParts<RnTrack>
     {
         //----------------------------------
         // start: フィールド
@@ -168,7 +168,7 @@ namespace PLATEAU.RoadNetwork.Structure
     }
 
     [Serializable]
-    public class RnNeighbor : ARnParts<RnNeighbor>
+    public partial class RnNeighbor : ARnParts<RnNeighbor>
     {
         //----------------------------------
         // start: フィールド
@@ -278,7 +278,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 交差点
     /// </summary>
     [Serializable]
-    public class RnIntersection : RnRoadBase
+    public partial class RnIntersection : RnRoadBase
     {
         //----------------------------------
         // start: フィールド

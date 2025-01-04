@@ -30,7 +30,7 @@ namespace PLATEAU.RoadNetwork.Structure
         RightLane,
     }
 
-    public class RnSideWalk : ARnParts<RnSideWalk>
+    public partial class RnSideWalk : ARnParts<RnSideWalk>
     {
         //----------------------------------
         // start: フィールド
