@@ -75,7 +75,7 @@ namespace PLATEAU.RoadNetwork.Structure
         MoveBothWay
     }
 
-    public class RnLane : ARnParts<RnLane>
+    public partial class RnLane : ARnParts<RnLane>
     {
         //----------------------------------
         // start: フィールド

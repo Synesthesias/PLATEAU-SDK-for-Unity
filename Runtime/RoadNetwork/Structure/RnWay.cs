@@ -57,7 +57,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 同じ線分だけど向きが逆ということが多々あるのでメモリ削減 & 比較を楽にするため
     /// </summary>
     [Serializable]
-    public class RnWay : ARnParts<RnWay>, IReadOnlyList<Vector3>
+    public partial class RnWay : ARnParts<RnWay>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
@@ -148,7 +148,7 @@ namespace PLATEAU.RoadNetwork.Structure
             IsReversed = isReversed;
             IsReverseNormal = isReverseNormal;
         }
-        
+
         public RnWay(RnWay other)
         {
             LineString = other.LineString.Clone(true);
@@ -488,7 +488,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (other == null)
                 return false;
             return LineString == other.LineString;
-            
+
         }
 
         /// <summary>
@@ -864,7 +864,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
         }
-        
+
         /// <summary>
         /// 線の端から<paramref name="distance"/>メートル辿ったときの位置を返します。
         /// <paramref name="endSide"/>がtrueの場合、線を逆（配列のend側）から辿ります。
@@ -874,7 +874,7 @@ namespace PLATEAU.RoadNetwork.Structure
             float len = 0;
             int index = endSide ? way.Count - 1 : 0;
             var pos = way.GetPoint(index);
-            while(len < distance) // オフセットの分だけ線上を動かします。
+            while (len < distance) // オフセットの分だけ線上を動かします。
             {
                 index += endSide ? -1 : 1;
                 if (index < 0 || index >= way.Count) break;

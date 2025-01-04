@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
-    public class RnRoad : RnRoadBase
+    public partial class RnRoad : RnRoadBase
     {
         //----------------------------------
         // start: フィールド

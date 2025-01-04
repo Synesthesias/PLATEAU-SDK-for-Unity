@@ -12,7 +12,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 線分群クラス. 頂点のリストを持つ
     /// </summary>
     [Serializable]
-    public class RnLineString : ARnParts<RnLineString>, IReadOnlyList<Vector3>
+    public partial class RnLineString : ARnParts<RnLineString>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
@@ -36,7 +36,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             Points = new RnPoint[initialSize].ToList();
         }
-        
+
 
         public RnLineString(IEnumerable<RnPoint> points)
         {

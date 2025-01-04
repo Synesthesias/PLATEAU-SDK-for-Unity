@@ -1,10 +1,12 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -677,6 +679,56 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                     if (GUILayout.Button("Remove Empty Intersection"))
                         model.RemoveEmptyIntersectionBetweenRoad();
+
+                    if (GUILayout.Button("Collect Check"))
+                    {
+                        var work2 = new CollectRnModelWork();
+                        using (new DebugTimer("Collect[Generated Code]"))
+                        {
+                            model.Collect(work2);
+                        }
+                        CollectRnModelWork work1 = null;
+                        using (new DebugTimer("Collect[Reflection]"))
+                        {
+                            work1 = Collect(model);
+                        }
+
+                        bool success = true;
+                        void Check<T>(HashSet<T> a, HashSet<T> b)
+                        {
+                            var name = typeof(T).Name;
+                            var aList = a.OrderBy(x => x.GetHashCode()).ToList();
+                            var bList = b.OrderBy(x => x.GetHashCode()).ToList();
+                            if (aList.Count != bList.Count)
+                            {
+                                Debug.LogError($"{name} Count Error {aList.Count} != {bList.Count}");
+                                success = false;
+                                return;
+                            }
+
+                            for (var i = 0; i < aList.Count; i++)
+                            {
+                                if (aList[i].Equals(bList[i]) == false)
+                                {
+                                    Debug.LogError($"{name} Error {aList[i]} != {bList[i]}");
+                                    success = false;
+                                }
+                            }
+                        }
+
+                        Check(work1.RnLanes, work2.RnLanes);
+                        Check(work1.RnLineStrings, work2.RnLineStrings);
+                        Check(work1.RnPoints, work2.RnPoints);
+                        Check(work1.RnRoadBases, work2.RnRoadBases);
+                        Check(work1.RnSideWalks, work2.RnSideWalks);
+                        Check(work1.RnWays, work2.RnWays);
+                        Check(work1.TrafficSignalControllerPatterns, work2.TrafficSignalControllerPatterns);
+                        Check(work1.TrafficSignalControllerPhases, work2.TrafficSignalControllerPhases);
+                        Check(work1.TrafficSignalLights, work2.TrafficSignalLights);
+                        Check(work1.TrafficSignalLightControllers, work2.TrafficSignalLightControllers);
+                        if (success)
+                            DebugEx.Log("Collect Check Success");
+                    }
                 }
             }
 
@@ -685,6 +737,36 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 e.Invoke();
         }
 
+        internal static CollectRnModelWork Collect(RnModel roadNetworkModel)
+        {
+            void Impl<T>(HashSet<T> hashSet) where T : class
+            {
+                var src = TypeUtil
+                    .GetAllMembersRecursively(roadNetworkModel, typeof(T), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Select(x => x.Item2)
+                    .Where(x => x != null)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var obj in src)
+                {
+                    hashSet.Add((T)obj);
+                }
+            }
+
+            var ret = new CollectRnModelWork();
+            Impl(ret.TrafficSignalLightControllers);
+            Impl(ret.TrafficSignalLights);
+            Impl(ret.TrafficSignalControllerPatterns);
+            Impl(ret.TrafficSignalControllerPhases);
+            Impl(ret.RnPoints);
+            Impl(ret.RnLineStrings);
+            Impl(ret.RnLanes);
+            Impl(ret.RnRoadBases);
+            Impl(ret.RnWays);
+            Impl(ret.RnSideWalks);
+            return ret;
+        }
         /// <summary>
         /// ウィンドウを取得する、存在しない場合に生成する
         /// </summary>
