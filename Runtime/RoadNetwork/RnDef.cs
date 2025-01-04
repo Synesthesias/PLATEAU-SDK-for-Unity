@@ -1,4 +1,6 @@
-﻿namespace PLATEAU.RoadNetwork
+﻿using PLATEAU.Util.GeoGraph;
+
+namespace PLATEAU.RoadNetwork
 {
 
     // 左右を表すenum
@@ -25,5 +27,13 @@
         {
             return dir == RnDir.Left ? RnDir.Right : RnDir.Left;
         }
+    }
+
+    /// <summary>
+    /// 共通定義情報
+    /// </summary>
+    internal static class RnDef
+    {
+        public const AxisPlane Plane = AxisPlane.Xz;
     }
 }
