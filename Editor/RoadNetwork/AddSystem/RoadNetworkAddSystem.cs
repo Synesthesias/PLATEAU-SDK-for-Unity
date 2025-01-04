@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+ï»¿using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadNetwork.Structure;
@@ -21,11 +21,11 @@ namespace PLATEAU.Editor.RoadNetwork
             RoadAddSystem = new RnRoadAddSystem(Context);
             RoadAddSystem.OnRoadAdded = (roadGroup) =>
             {
-                // “¹˜Hƒ‚ƒfƒ‹Ä¶¬
+                // é“è·¯ãƒ¢ãƒ‡ãƒ«å†ç”Ÿæˆ
                 bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roadGroup.Roads[0].TargetTrans[0].transform, ReproducedRoadDirection.Next);
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete);
 
-                // ƒXƒPƒ‹ƒgƒ“XV
+                // ã‚¹ã‚±ãƒ«ãƒˆãƒ³æ›´æ–°
                 Context.SkeletonData.UpdateData(roadGroup);
             };
         }
@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active = new RoadNetworkAddSystem(structureModel);
 
-            // SceneView‚ÌXVƒCƒxƒ“ƒg‚ÉƒtƒbƒN
+            // SceneViewã®æ›´æ–°ã‚¤ãƒ™ãƒ³ãƒˆã«ãƒ•ãƒƒã‚¯
             SceneView.duringSceneGui += Active.OnSceneGUI;
 
             return true;
@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
             Active.Terminate();
 
-            // SceneView‚ÌXVƒCƒxƒ“ƒg‚©‚çœŠO
+            // SceneViewã®æ›´æ–°ã‚¤ãƒ™ãƒ³ãƒˆã‹ã‚‰é™¤å¤–
             SceneView.duringSceneGui -= Active.OnSceneGUI;
 
             Active = null;
