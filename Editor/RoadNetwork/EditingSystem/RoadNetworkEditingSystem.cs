@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
         private PLATEAURnStructureModel structureModel;
-        
+
         /// <summary>
         /// シーンビュー上に描画します
         /// </summary>
@@ -108,7 +108,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             if (needInitGUISystem)
             {
                 EditTargetSelectButton = new RoadNetworkEditTargetSelectButton(roadEditSceneViewGui, roadNetworkEditTarget);
-
             }
 
             if (needInitGameObj)

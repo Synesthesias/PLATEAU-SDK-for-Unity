@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork.Structure
     {
         public const float Epsilon = float.Epsilon;
 
-        public const AxisPlane Plane = AxisPlane.Xz;
+        internal const AxisPlane Plane = RnDef.Plane;
 
         //----------------------------------
         // start: フィールド

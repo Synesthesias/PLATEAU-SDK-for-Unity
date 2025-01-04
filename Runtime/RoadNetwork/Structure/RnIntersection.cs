@@ -614,6 +614,12 @@ namespace PLATEAU.RoadNetwork.Structure
                     e.Border.Reverse(true);
                 edges.Reverse();
             }
+
+            // 法線は必ず外向きを向くようにする
+            foreach (var e in Edges)
+            {
+                AlignEdgeNormal(e);
+            }
         }
 
         /// <summary>
@@ -780,6 +786,59 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             return ret;
         }
+
+        /// <summary>
+        /// 輪郭線の法線方向を外側向くように整える
+        /// </summary>
+        /// <param name="edge"></param>
+        private static void AlignEdgeNormal(RnNeighbor edge)
+        {
+            if (edge.Border.IsReverseNormal)
+                edge.Border.IsReverseNormal = false;
+        }
+
+        /// <summary>
+        /// edgeの法線方向取得(外側を向いているはず)
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeNormal(RnNeighbor edge)
+        {
+            // 一応向きを整える
+            AlignEdgeNormal(edge);
+            return edge.Border.GetEdgeNormal((edge.Border.Count - 1) / 2);
+        }
+
+        /// <summary>
+        /// edgeの法線方向(2D)取得(外側を向いているはず)
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeNormal2D(RnNeighbor edge)
+        {
+            return GetEdgeNormal(edge).GetTangent(RnDef.Plane);
+        }
+
+        /// <summary>
+        /// edgeの中心点取得
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeCenter(RnNeighbor edge)
+        {
+            return edge.Border.GetLerpPoint(0.5f);
+        }
+
+        /// <summary>
+        /// edgeの中心点(2D)取得
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeCenter2D(RnNeighbor edge)
+        {
+            return GetEdgeCenter(edge).ToVector2(RnDef.Plane);
+        }
+
     }
 
     public static class RnIntersectionEx
