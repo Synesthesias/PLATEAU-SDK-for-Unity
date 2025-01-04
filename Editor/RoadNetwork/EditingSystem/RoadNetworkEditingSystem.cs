@@ -57,6 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var splineEditSystem = roadEditSceneViewGui.SplineEditorMod;
             splineEditSystem.OnSceneGUI(structureModel);
         }
+        
 
         public static void TryTerminate(
             RoadNetworkEditingSystem oldSystem, VisualElement root)

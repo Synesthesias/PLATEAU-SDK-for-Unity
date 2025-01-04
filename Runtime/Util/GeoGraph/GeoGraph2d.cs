@@ -41,7 +41,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <returns></returns>
         public static List<T> ComputeConvexVolume<T>(IEnumerable<T> vertices, Func<T, Vector3> toVec3, AxisPlane plane, float sameLineTolerance = 0f)
         {
-            Vector3 ToVec2(T a) => toVec3(a).GetTangent(plane);
+            Vector2 ToVec2(T a) => toVec3(a).GetTangent(plane);
             // リストの最後の辺が時計回りになっているかを確認
             bool IsLastClockwise(List<T> list)
             {

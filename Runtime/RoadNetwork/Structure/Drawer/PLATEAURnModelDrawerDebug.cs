@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Splines;
 using Object = System.Object;
 
@@ -346,6 +347,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 接続先の無いレーンを表示する
             public bool showNoTrackBorder = false;
 
+            // 輪郭線の法線を表示する
+            public bool showEdgeNormal = false;
+
             protected override IEnumerable<Drawer<RnIntersection>> GetChildDrawers()
             {
                 yield return showTrack;
@@ -396,6 +400,16 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     {
                         DrawEdge(showNonBorderEdge);
                     }
+                    if (showEdgeNormal)
+                    {
+                        var normal = RnIntersection.GetEdgeNormal(n);
+                        var center = RnIntersection.GetEdgeCenter(n);
+                        work.Self.DrawLine(center, center - 50 * normal);
+                    }
+
+                    if (work.Self.showPartsType.HasFlag(RnPartsTypeMask.Neighbor))
+                        DebugEx.DrawString($"{n.GetDebugLabelOrDefault()}", RnIntersection.GetEdgeCenter(n));
+
                 }
 
                 if (showNoTrackBorder)

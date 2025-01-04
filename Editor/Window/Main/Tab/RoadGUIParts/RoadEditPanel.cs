@@ -162,6 +162,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
                 {
                     var mod = EditingSystem.roadEditSceneViewGui;
+
                     var obj = se as IScriptableRoadMdl;
                     if (mod.CanSetDtailMode())
                     {
@@ -212,6 +213,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private void OnApplyRoadButtonClicked()
         {
             bool isChanged = selectedRoad.Apply(EditingSystem.roadEditSceneViewGui);
+
             isChanged |= prevPlaceCrosswalkToggle != placeCrosswalkToggle.value;
             if (!isChanged)
             {
@@ -247,6 +249,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             UpdateSplineButtonVisual(true);
             selectedRoad.IsSplineEditMode = true;
             selectedRoad.ApplySplineEditMode(EditingSystem?.roadEditSceneViewGui);
+
         }
 
         private void OnRoadSplineStopButtonClicked()
