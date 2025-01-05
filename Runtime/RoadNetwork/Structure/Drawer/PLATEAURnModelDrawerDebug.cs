@@ -140,6 +140,76 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
         }
 
+        private static IEnumerable<LineSegment3D> GetSplineSegments(Spline a, float interval)
+        {
+            var length = a.GetLength();
+            var num = Mathf.Max(1, Mathf.FloorToInt(length / interval));
+
+            for (var i = 0; i < num; ++i)
+            {
+                var t1 = 1f * i / num;
+                var t2 = 1f * (i + 1) / num;
+                a.Evaluate(t1, out var p1, out var _, out var _);
+                a.Evaluate(t2, out var p2, out var _, out var _);
+                yield return new LineSegment3D(p1, p2);
+            }
+        }
+
+        private static IEnumerable<(T a, U b)> DirectProduct<T, U>(IEnumerable<T> a, IEnumerable<U> b)
+        {
+            var bList = b.ToList();
+            foreach (var x in a)
+            {
+                foreach (var y in bList)
+                {
+                    yield return (x, y);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Spline間の最短距離を計算する
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private static float CalcSplineNearestPoint(Spline a, Spline b, out Vector3 aPos, out Vector3 bPos)
+        {
+            float checkIntervalMeter = 3f;
+            var aSegments = GetSplineSegments(a, checkIntervalMeter).ToList();
+            var bSegments = GetSplineSegments(b, checkIntervalMeter).ToList();
+
+            aPos = bPos = Vector3.zero;
+            if (aSegments.Count == 0 || bSegments.Count == 0)
+            {
+                return float.MaxValue;
+            }
+
+            var min = float.MaxValue;
+            foreach (var (x, y) in DirectProduct(aSegments, bSegments))
+            {
+                var n = y.GetNearestPoint(x.Start);
+                var d = (n - x.Start).magnitude;
+                if (d < min)
+                {
+                    aPos = x.Start;
+                    bPos = n;
+                    min = d;
+                }
+
+                n = x.GetNearestPoint(y.Start);
+                d = (n - y.Start).magnitude;
+                if (d < min)
+                {
+                    aPos = n;
+                    bPos = y.Start;
+                    min = d;
+                }
+            }
+
+            return min;
+        }
+
         [Serializable]
         public class IntersectionDrawer : Drawer<RnIntersection>
         {
@@ -217,6 +287,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 // toがこれを満たすトラックのみ表示
                 public VisibleType toRoadType = VisibleType.All;
 
+                // 同じエッジグループから出るトラックで隣り合うトラックとの最低限の距離
+                public float needSplineDistance = 0f;
+
                 [Serializable]
                 public class TurnTypeColor
                 {
@@ -238,22 +311,29 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 {
                     var color = baseColor;
 
-                    foreach (var track in intersection.Tracks)
+                    bool IsTarget(RnTrack track)
                     {
                         if (fromRoadType != VisibleType.All)
                         {
                             var fromRoad = intersection.FindEdges(track.FromBorder).FirstOrDefault()?.Road;
                             if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
-                                continue;
+                                return false;
                         }
 
                         if (toRoadType != VisibleType.All)
                         {
                             var toRoad = intersection.FindEdges(track.ToBorder).FirstOrDefault()?.Road;
                             if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
-                                continue;
+                                return false;
                         }
 
+                        return true;
+                    }
+
+                    foreach (var track in intersection.Tracks)
+                    {
+                        if (IsTarget(track) == false)
+                            continue;
                         if (useTurnTypeColor)
                         {
                             color = turnTypeColors.FirstOrDefault(x => x.Type == track.TurnType)?.Color ?? DebugEx.GetDebugColor((int)track.TurnType, RnTurnTypeEx.Count);
@@ -309,6 +389,34 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                             }
                         }
                     }
+
+                    if (needSplineDistance > 0f)
+                    {
+                        foreach (var (a, b) in DirectProduct(
+                                     intersection.Tracks.Where(IsTarget)
+                                     , intersection.Tracks.Where(IsTarget)))
+                        {
+                            if (a.FromBorder.IsSameLineSequence(b.FromBorder))
+                                continue;
+
+                            var aEdge = intersection.FindEdges(a.FromBorder).FirstOrDefault();
+                            var bEdge = intersection.FindEdges(b.FromBorder).FirstOrDefault();
+                            if (aEdge == null || bEdge == null)
+                                continue;
+
+                            if (aEdge.Road != bEdge.Road)
+                                continue;
+
+
+                            var distance = CalcSplineNearestPoint(a.Spline, b.Spline, out var aPos, out var bPos);
+                            if (distance < needSplineDistance)
+                            {
+                                work.Self.DrawLine(aPos, bPos, color: Color.red);
+                                work.Self.DrawString($"{distance}", Vector3.Lerp(aPos, bPos, 0.5f));
+                            }
+                        }
+                    }
+
 
                     return true;
                 }
