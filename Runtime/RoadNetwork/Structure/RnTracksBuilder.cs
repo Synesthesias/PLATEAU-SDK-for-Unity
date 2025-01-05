@@ -81,14 +81,49 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
                 else
                 {
-                    // 両端のトラックに余った分は割り当てる
-                    var startIndex = (outBoundsLeft2Rights.Count - inBoundsLeft2Right.Count + 1) / 2;
+                    var inBoundIndex = 0;
                     for (var i = 0; i < outBoundsLeft2Rights.Count; ++i)
                     {
-                        var inBoundIndex = Mathf.Clamp(i - startIndex, 0, inBoundsLeft2Right.Count - 1);
-                        var from = inBoundsLeft2Right[inBoundIndex];
+                        // 残りが足りない場合は進める
+                        // i=0版は必ずinBoundIndex=0にする
+                        // inBoundIndexが次に進めるかチェックする
+                        if (i > 0 && inBoundIndex < inBoundsLeft2Right.Count - 1)
+                        {
+                            // 残りの流出先の数と流入先の数が同じ場合は残りは1:1対応なので進める
+                            if ((inBoundsLeft2Right.Count - inBoundIndex) > (outBoundsLeft2Rights.Count - i))
+                            {
+                                inBoundIndex++;
+                            }
+                            else
+                            {
+                                // 直進の時は可能な限り流入位置とまっすぐの位置になる物を採用するようにする
+                                var to = outBoundsLeft2Rights[i];
+                                var toPos = RnIntersection.GetEdgeCenter2D(to.To);
+                                // 直進に関しては可能な限り流入位置とまっすぐの位置になる物を採用するようにする
+                                if (to.TurnType == RnTurnType.Straight)
+                                {
+                                    var now = inBoundsLeft2Right[inBoundIndex];
+                                    var next = inBoundsLeft2Right[inBoundIndex + 1];
+
+                                    var nowDir = RnIntersection.GetEdgeNormal2D(now);
+                                    var nowPos = RnIntersection.GetEdgeCenter2D(now);
+                                    var nowAngle = Vector2.Angle(nowDir, toPos - nowPos);
+
+                                    var nextDir = RnIntersection.GetEdgeNormal2D(next);
+                                    var nextPos = RnIntersection.GetEdgeCenter2D(next);
+                                    var nextAngle = Vector2.Angle(nextDir, toPos - nextPos);
+
+                                    if (nowAngle > nextAngle)
+                                    {
+                                        inBoundIndex++;
+                                    }
+                                }
+                            }
+                        }
+
+                        var fromNeighbor = inBoundsLeft2Right[inBoundIndex];
                         var outBound = outBoundsLeft2Rights[i];
-                        var track = MakeTrack(intersection, from, op, fromEg, thickCenterLinTables, outBound);
+                        var track = MakeTrack(intersection, fromNeighbor, op, fromEg, thickCenterLinTables, outBound);
                         intersection.TryAddOrUpdateTrack(track);
                     }
                 }
@@ -187,8 +222,8 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
             List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
         {
-            var fromNormal = from.Border.GetEdgeNormal((from.Border.Count - 1) / 2);
-            var toNormal = to.Border.GetEdgeNormal((to.Border.Count - 1) / 2).normalized;
+            var fromNormal = RnIntersection.GetEdgeNormal(from);
+            var toNormal = RnIntersection.GetEdgeNormal(to);
 
             from.Border.GetLerpPoint(0.5f, out var fromPos);
             to.Border.GetLerpPoint(0.5f, out var toPos);
@@ -358,20 +393,20 @@ namespace PLATEAU.RoadNetwork.Structure
         private RnTrack TryCreateTwoLineTrack(RnIntersection intersection, Vector3 fromPos, Vector3 fromNormal,
             Vector3 toPos, Vector3 toNormal, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
         {
-            var plane = RnModel.Plane;
             var offset = 0.01f;
             var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
             var toRay = new Ray(toPos - toNormal * offset, -toNormal);
 
             // 交差しない場合は無視
-            if (fromRay.CalcIntersectionBy2D(toRay, plane, out var cp, out var _, out var _) == false)
+            if (fromRay.CalcIntersectionBy2D(toRay, RnDef.Plane, out var cp, out var _, out var _) == false)
                 return null;
 
             // 交点が内部に無い場合は無視
             if (intersection.IsInside2D(cp) == false)
                 return null;
 
-            // 直進で繋がるとき
+            // cpからfromPos/toPosに向かう線分とEdgesの交点を取得
+            // 交点がある場合は外に出てしまうので無視
             var cp1 =
                 intersection.GetEdgeCrossPoints(new LineSegment3D(fromPos - fromNormal * 0.1f, cp));
 
@@ -410,7 +445,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
         }
 
-        bool IsCollide(LineCrossPointResult lcp, RnNeighbor from, RnNeighbor to)
+        private bool IsCollide(LineCrossPointResult lcp, RnNeighbor from, RnNeighbor to)
         {
             return lcp.CrossingLines.Any(t =>
                 t.LineString != from.Border.LineString && t.LineString != to.Border.LineString);
@@ -418,9 +453,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
         internal class OutBound
         {
-            public RnTurnType TurnType;
-            public RnIntersectionEx.EdgeGroup ToEg;
-            public RnNeighbor To;
+            public RnTurnType TurnType { get; set; }
+            public RnIntersectionEx.EdgeGroup ToEg { get; set; }
+            public RnNeighbor To { get; set; }
 
             public OutBound(RnTurnType turnType, RnIntersectionEx.EdgeGroup toEg, RnNeighbor to)
             {
