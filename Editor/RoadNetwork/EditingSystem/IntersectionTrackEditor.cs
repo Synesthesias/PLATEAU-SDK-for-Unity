@@ -1,3 +1,4 @@
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public void Draw(RoadNetworkEditTarget editTarget, RnIntersection targetIntersection)
         {
             var buttonSize = 2.0f;
+            
+            DrawIntersectionLine(targetIntersection);
 
             bool isSelectdEntablePoint = IsSelectdEntablePoint;
             if (isSelectdEntablePoint == false)
@@ -62,6 +65,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 editTarget.SetDirty();
             }
         }
+
+        private void DrawIntersectionLine(RnIntersection intersection)
+        {
+            foreach (var track in intersection.Tracks)
+            {
+                var spline = track.Spline;
+                var points = spline.Knots.Select(knot => new RnPoint(knot.Position));
+                var way = new RnWay(new RnLineString(points));
+                new LaneLineDrawerArrow(way, Color.yellow, LaneLineDrawMethod.Handles, 0f).Draw();
+            }
+        }
+
         
         private bool CanTryUpdateTrack
         {
@@ -152,7 +167,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             if (track != null)
                 targetIntersection.RemoveTrack(track);
             else
+            {
                 targetIntersection.TryAddOrUpdateTrack(selectEntablePoint, selectExitablePoint);
+            }
 
             selectEntablePoint = null;
             selectExitablePoint = null;

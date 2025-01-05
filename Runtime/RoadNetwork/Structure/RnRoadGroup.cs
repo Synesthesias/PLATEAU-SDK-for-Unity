@@ -277,10 +277,10 @@ namespace PLATEAU.RoadNetwork.Structure
             if (rebuildTrack)
             {
                 if (NextIntersection != null && newNextBorders.Any())
-                    NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+                    NextIntersection.BuildTracks(BuildTrackOption.WithBorder(newNextBorders));
 
                 if (PrevIntersection != null && newPrevBorders.Any())
-                    PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+                    PrevIntersection.BuildTracks(BuildTrackOption.WithBorder(newPrevBorders));
             }
         }
 
@@ -354,10 +354,10 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             if (NextIntersection != null && newNextBorders.Any())
-                NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+                NextIntersection.BuildTracks(BuildTrackOption.WithBorder(newNextBorders));
 
             if (PrevIntersection != null && newPrevBorders.Any())
-                PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+                PrevIntersection.BuildTracks(BuildTrackOption.WithBorder(newPrevBorders));
         }
 
         /// <summary>
@@ -420,10 +420,10 @@ namespace PLATEAU.RoadNetwork.Structure
             if (rebuildTrack)
             {
                 if (NextIntersection != null && newNextBorders.Any())
-                    NextIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newNextBorders));
+                    NextIntersection.BuildTracks(BuildTrackOption.WithBorder(newNextBorders));
 
                 if (PrevIntersection != null && newPrevBorders.Any())
-                    PrevIntersection.BuildTracks(RnIntersection.BuildTrackOption.WithBorder(newPrevBorders));
+                    PrevIntersection.BuildTracks(BuildTrackOption.WithBorder(newPrevBorders));
             }
         }
 

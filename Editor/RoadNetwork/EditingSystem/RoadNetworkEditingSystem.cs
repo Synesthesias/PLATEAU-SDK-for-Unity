@@ -32,6 +32,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary> 信号情報の編集。現在は使われていません。 </summary>
         public TrafficSignalEditor trafficSignalEditor;
         
+        
 
         private const string roadNetworkEditingSystemObjName = "_RoadNetworkEditingSystemRoot";
         private GameObject roadNetworkEditingSystemObjRoot;
