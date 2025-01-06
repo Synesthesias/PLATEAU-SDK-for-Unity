@@ -29,13 +29,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public RnRoadAddSystem(RoadNetworkAddSystemContext context)
         {
             this.context = context;
-            splineCreateHandles = new SplineCreateHandles(splineEditorCore, this);
+            splineCreateHandles = new SplineCreateHandles(splineEditorCore, SplineCreateHandles.KnotAddMethod.AppendToLast, this);
         }
 
         public void Activate()
         {
             IsActive = true;
-            splineCreateHandles = new SplineCreateHandles(splineEditorCore, this);
+            splineCreateHandles = new SplineCreateHandles(splineEditorCore, SplineCreateHandles.KnotAddMethod.AppendToLast, this);
         }
 
         public void Deactivate()

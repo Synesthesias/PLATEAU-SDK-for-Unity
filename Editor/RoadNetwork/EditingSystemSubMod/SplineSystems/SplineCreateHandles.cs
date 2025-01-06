@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using PLATEAU.Util.GeoGraph;
+using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -12,11 +14,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private SplineEditorCore currentCore;
         private float fixedY = 0f;
         private ICreatedSplineReceiver finishReceiver;
+        private KnotAddMethod knotAddMethod;
 
-        public SplineCreateHandles(SplineEditorCore core, ICreatedSplineReceiver finishReceiver)
+        public SplineCreateHandles(SplineEditorCore core, KnotAddMethod knotAddMethod, ICreatedSplineReceiver finishReceiver)
         {
             IsCreatingSpline = false;
             currentCore = core;
+            this.knotAddMethod = knotAddMethod;
             this.finishReceiver = finishReceiver;
         }
 
@@ -48,15 +52,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             HandleKnotMovement();
 
-            if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
+            if (LineUtil.IsMouseDown())
             {
+                // クリックで線に点を追加します。
                 Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
 
+                var newKnotPos = Vector3.zero;
                 if (Physics.Raycast(ray, out RaycastHit hit, 10000f))
                 {
-                    Vector3 newKnotPos = hit.point;
+                    newKnotPos = hit.point;
                     newKnotPos.y = fixedY;
-                    AddKnot(newKnotPos);
                     e.Use();
                 }
                 else
@@ -64,12 +69,28 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     Plane plane = new Plane(Vector3.up, new Vector3(0f, fixedY, 0f));
                     if (plane.Raycast(ray, out float distance))
                     {
-                        Vector3 newKnotPos = ray.GetPoint(distance);
+                        newKnotPos = ray.GetPoint(distance);
                         newKnotPos.y = fixedY;
                         AddKnot(newKnotPos);
                         e.Use();
                     }
                 }
+
+                // 指定した方法で点を追加
+                switch (knotAddMethod)
+                {
+                    case KnotAddMethod.AppendToLast:
+                        AddKnot(newKnotPos);
+                        break;
+                    case KnotAddMethod.InsertClickPos:
+                        var line = currentCore.Spline.Knots.Select(k => k.Position).Select(p => new Vector3(p.x, p.y, p.z)).ToArray();
+                        float t = LineInsertIndexT(newKnotPos, line);
+                        currentCore.AddKnotAtT(newKnotPos, t);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                
             }
 
             DrawPreviewLines();
@@ -128,6 +149,51 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
 
             Handles.DrawAAPolyLine(2f, points);
+        }
+        
+        /// <summary> lineに点pを挿入するとき、もっとも線に近いインデックスに挿入するにはどこにすべきか(0～1)を返します。 </summary>
+        private float LineInsertIndexT(Vector3 p, Vector3[] line)
+        {
+            if (line.Length <= 1) return 0;
+            float minDist = float.MaxValue;
+            int nearestID = 0;
+            for(int i=0; i<line.Length-1; i++)
+            {
+                var dist = DistanceFromPointToLineSegment(p, line[i], line[i+1]);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    nearestID = i;
+                }
+            }
+            float t = (0.01f + nearestID) / (line.Length - 1);
+            t = Mathf.Clamp01(t);
+            return t;
+        }
+
+        /// <summary> 点pから線分abまでの距離を返します。 </summary>
+        private float DistanceFromPointToLineSegment(Vector3 p, Vector3 a, Vector3 b)
+        {
+            // 参考 : https://qiita.com/deltaMASH/items/e7ffcca78c9b75710d09
+            var ap = p - a;
+            var ab = b - a;
+            var ba = a - b;
+            var bp = p - b;
+            if (Vector3.Dot(ap, ab) < 0) return ap.magnitude;
+            if (Vector3.Dot(bp, ba) < 0) return bp.magnitude;
+            var aiNorm = Vector3.Dot(ap, ab) / ab.magnitude;
+            var neighbor = a + ab / ab.magnitude * aiNorm;
+            var dist = (p - neighbor).magnitude;
+            return dist;
+        }
+
+        /// <summary> クリックで点を足すときの方法です </summary>
+        internal enum KnotAddMethod
+        {
+            /// <summary> 線の最後に追加します </summary>
+            AppendToLast,
+            /// <summary> クリック位置に挿入します </summary>
+            InsertClickPos
         }
     }
 

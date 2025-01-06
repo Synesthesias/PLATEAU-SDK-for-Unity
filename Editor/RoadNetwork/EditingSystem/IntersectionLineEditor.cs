@@ -74,7 +74,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
 
             var splineCore = new SplineEditorCore(spline);
-            splineHandle = new SplineCreateHandles(splineCore, this);
+            splineHandle = new SplineCreateHandles(splineCore, SplineCreateHandles.KnotAddMethod.InsertClickPos, this);
             splineHandle.BeginCreateSpline(spline.Knots.First().Position);
         }
 
