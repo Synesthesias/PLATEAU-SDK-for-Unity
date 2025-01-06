@@ -64,9 +64,9 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                     f.RemoveInnerVertex();
                 }
 
-                if (GUILayout.Button("MergeIsolatedVertex"))
+                if (GUILayout.Button("RemoveIsolatedEdge"))
                 {
-                    f.MergeIsolatedVertex();
+                    f.RemoveIsolatedEdge();
                 }
             }
         }
@@ -197,6 +197,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 if (GUILayout.Button("Vertex Reduction"))
                 {
                     graph.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+                }
+
+                if (GUILayout.Button("MergeIsolatedVertices"))
+                {
+                    graph.RemoveIsolatedEdgeFromFace();
                 }
 
                 if (GUILayout.Button("Edge Reduction"))

@@ -354,66 +354,88 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 辺のリダクション処理（同じ頂点を持つ辺をマージする)
+        /// 各Faceに対して以下のような飛び出た辺をFaceから取り除く
+        /// o-o
+        /// | |
+        /// o-o---o ←の様な飛び出た頂点を削除する 
         /// </summary>
         /// <param name="self"></param>
-        public static void MergeIsolatedVertices(this RGraph self)
+        public static void RemoveIsolatedEdgeFromFace(this RGraph self)
         {
-            var edges = self.GetAllEdges().ToList();
-            var edgeTable = new Dictionary<EdgeKey, HashSet<REdge>>();
-
-            foreach (var e in edges)
-            {
-                var key = new EdgeKey(e.V0, e.V1);
-                edgeTable.GetValueOrCreate(key).Add(e);
-
-            }
-
             foreach (var f in self.Faces)
             {
-                f.MergeIsolatedVertex();
+                f.RemoveIsolatedEdge();
+            }
+
+            foreach (var f in self.Faces.Where(f => f.Edges.Count == 0).ToList())
+            {
+                self.RemoveFace(f);
             }
         }
 
         /// <summary>
         /// o-o
         /// | |
-        /// o-o---o ←の様な飛び出た頂点をマージする(他のFaceに繋がっていたとしてもマージする)  
+        /// o-o---o ←の様な飛び出た辺をFaceから削除する.
+        /// 戻り値は削除された辺の数
         /// </summary>
         /// <param name="self"></param>
-        public static void MergeIsolatedVertex(this RFace self)
+        public static HashSet<REdge> RemoveIsolatedEdge(this RFace self)
         {
-            var vertices = self.Edges.SelectMany(x => x.Vertices).ToHashSet();
-            Dictionary<RVertex, RVertex> vertexMerges = new();
-            foreach (var v in vertices)
+            bool IsIsolatedEdge(REdge edge)
             {
-                bool found = false;
-                REdge edge = null;
-                foreach (var e in v.Edges)
+                // edgeのどっちかの頂点がedgeでしかselfに繋がっていない場合は孤立している
+                return edge.Vertices
+                    .Any(v =>
+                        v == null ||
+                        !v.Edges.Where(e => e != edge).Any(e => e.Faces.Contains(self)));
+            }
+
+            Queue<REdge> removeEdgeQueue = new();
+            foreach (var edge in self.Edges)
+            {
+                if (IsIsolatedEdge(edge))
                 {
-                    if (e.Faces.Contains(self) == false)
+                    removeEdgeQueue.Enqueue(edge);
+                }
+            }
+
+            HashSet<REdge> removeEdgeSet = new();
+            HashSet<REdge> disconnectedEdges = new();
+            while (removeEdgeQueue.Any())
+            {
+                var edge = removeEdgeQueue.Dequeue();
+                // すでに削除済みの場合は無視
+                if (removeEdgeSet.Add(edge) == false)
+                    continue;
+                self.RemoveEdge(edge);
+
+                // edgeが削除されたことにより別の辺が孤立するかもしれないのでそれも削除キューに入れる
+                // 以下のような場合, b-cの辺を削除するとa-bの辺も孤立する
+                // o-o
+                // | |
+                // o-o-a-b-c ←の様な飛び出た辺をFaceから削除する.
+                foreach (var e in edge.GetNeighborEdges())
+                {
+                    if (IsIsolatedEdge(e) == false)
                         continue;
-                    // 2つ以上のFaceに繋がっている場合はマージしない
-                    if (edge != null)
-                    {
-                        found = true;
-                        break;
-                    }
-
-                    edge = e;
+                    removeEdgeQueue.Enqueue(e);
                 }
 
-                if (found == false && edge != null)
+                // どの面にも所属しない辺になったら削除する
+                if (edge.Faces.Count == 0)
                 {
-                    vertexMerges[v] = edge.GetOppositeVertex(v);
+                    edge.DisConnect();
+                    disconnectedEdges.Add(edge);
                 }
             }
-            DebugEx.Log($"Merge isolated vertex {vertexMerges.Count}");
-            foreach (var v in vertexMerges)
-            {
-                v.Key.MergeTo(v.Value);
-            }
+            //if (removeEdgeSet.Any())
+            //    DebugEx.Log($"[{self.GetDebugLabelOrDefault()}] Remove edges {removeEdgeSet.Count}");
+            if (disconnectedEdges.Any())
+                DebugEx.Log($"[{self.GetDebugLabelOrDefault()}] Disconnected edges {disconnectedEdges.Count}");
+            return disconnectedEdges;
         }
+
 
         /// <summary>
         /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceGroupにする.
@@ -464,7 +486,7 @@ namespace PLATEAU.RoadNetwork.Graph
             self.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1HeightTolerance);
             self.EdgeReduction();
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
-            self.MergeIsolatedVertices();
+            self.RemoveIsolatedEdgeFromFace();
             self.EdgeReduction();
             self.InsertVertexInNearEdge(midPointTolerance);
             self.EdgeReduction();
@@ -683,6 +705,11 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
+        /// <summary>
+        /// facesのアウトライン頂点を計算する
+        /// </summary>
+        /// <param name="faces"></param>
+        /// <returns></returns>
         private static List<RVertex> ComputeOutlineVertices(IList<RFace> faces)
         {
             var vertices = faces
