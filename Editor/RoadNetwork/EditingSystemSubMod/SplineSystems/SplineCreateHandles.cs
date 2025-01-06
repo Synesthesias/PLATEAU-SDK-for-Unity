@@ -5,17 +5,19 @@ using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
-    public class SplineCreateHandles
+    internal class SplineCreateHandles
     {
         public bool IsCreatingSpline { get; private set; }
 
         private SplineEditorCore currentCore;
         private float fixedY = 0f;
+        private ICreatedSplineReceiver finishReceiver;
 
-        public SplineCreateHandles(SplineEditorCore core)
+        public SplineCreateHandles(SplineEditorCore core, ICreatedSplineReceiver finishReceiver)
         {
             IsCreatingSpline = false;
             currentCore = core;
+            this.finishReceiver = finishReceiver;
         }
 
         public void BeginCreateSpline(Vector3 startPoint, SplineContainer targetContainer = null)
@@ -76,6 +78,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public void EndCreateSpline()
         {
             IsCreatingSpline = false;
+            finishReceiver.OnSplineCreated(currentCore.Spline);
         }
 
         private void AddKnot(Vector3 pos)
@@ -126,5 +129,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             Handles.DrawAAPolyLine(2f, points);
         }
+    }
+
+    /// <summary> <see cref="SplineCreateHandles"/>でスプラインの生成が完了した通知を受け取ります。 </summary>
+    internal interface ICreatedSplineReceiver
+    {
+        public void OnSplineCreated(Spline createdSpline);
     }
 }

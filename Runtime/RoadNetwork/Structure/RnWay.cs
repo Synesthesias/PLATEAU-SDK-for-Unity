@@ -69,7 +69,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public bool IsReverseNormal { get; set; } = false;
 
         // 頂点群
-        public RnLineString LineString { get; private set; }
+        public RnLineString LineString { get; internal set; }
 
         //----------------------------------
         // end: フィールド
