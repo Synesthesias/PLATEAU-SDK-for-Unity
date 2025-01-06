@@ -1,6 +1,7 @@
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -23,15 +24,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// <summary>
     /// <see cref="ILaneLineDrawer"/>の実線版です。
     /// </summary>
-    public class LaneLineDrawerSolid : ILaneLineDrawer
+    internal class LaneLineDrawerSolid : ILaneLineDrawer
     {
         private List<Vector3> line;
         private Color color;
+        private LaneLineDrawMethod method;
 
-        public LaneLineDrawerSolid(List<Vector3> line, Color color)
+        public LaneLineDrawerSolid(List<Vector3> line, Color color, LaneLineDrawMethod method)
         {
             this.line = line;
             this.color = color;
+            this.method = method;
         }
 
         public void Draw()
@@ -39,10 +42,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 #if UNITY_EDITOR
             if (line == null) return;
             if (line.Count < 2) return;
-            var prevColor = Gizmos.color;
-            Gizmos.color = color;
-            Gizmos.DrawLineStrip(line.Select(p => p + Vector3.up * ILaneLineDrawer.HeightOffset).ToArray() ,false);
-            Gizmos.color = prevColor;
+            var prevColor = method switch
+            {
+                LaneLineDrawMethod.Gizmos => Gizmos.color,
+                LaneLineDrawMethod.Handles => Handles.color,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            var positions = line.Select(p => p + Vector3.up * ILaneLineDrawer.HeightOffset).ToArray();
+
+            switch (method)
+            {
+                case LaneLineDrawMethod.Gizmos:
+                    Gizmos.color = color;
+                    Gizmos.DrawLineStrip(positions,false);
+                    Gizmos.color = prevColor;
+                    break;
+                case LaneLineDrawMethod.Handles:
+                    Handles.color = color;
+                    Handles.DrawPolyLine(positions);
+                    Handles.color = prevColor;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
 #endif
         }
     }

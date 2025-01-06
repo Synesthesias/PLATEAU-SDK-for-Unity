@@ -12,17 +12,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
         private RnIntersection targetIntersection;
         private readonly IntersectionTrackEditor trackEditor = new();
+        private readonly IntersectionLineEditor lineEditor;
         private readonly RoadNetworkEditTarget editTarget;
         
         public IntersectionEditSceneViewGui(RoadNetworkEditTarget target)
         {
             editTarget = target;
+            lineEditor = new IntersectionLineEditor(target);
         }
         
         public void Update()
         {
             if (targetIntersection == null) return;
             trackEditor.Draw(editTarget, targetIntersection);
+            lineEditor.Draw();
         }
 
         public void Terminate()

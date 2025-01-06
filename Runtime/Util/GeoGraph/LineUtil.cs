@@ -266,11 +266,6 @@ namespace PLATEAU.Util.GeoGraph
         /// radiusで判定に余裕を持たせる
         /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
         /// </summary>
-        /// <param name="line"></param>
-        /// <param name="radius"></param>
-        /// <param name="ray"></param>
-        /// <param name="closestPoint"></param>
-        /// <returns></returns>
         public static float CheckHit(Line line, float radius, in Ray ray,
             out Vector3 closestPoint, out Vector3 closestPoint2)
         {
@@ -663,5 +658,11 @@ namespace PLATEAU.Util.GeoGraph
             return self.GetNearestPoint(p, out var _);
         }
 
+        public static bool IsMouseDown()
+        {
+            var evt = Event.current;
+            var mouseDown = evt.type == EventType.MouseDown && evt.button == 0 && evt.alt == false;
+            return mouseDown;
+        }
     }
 }
