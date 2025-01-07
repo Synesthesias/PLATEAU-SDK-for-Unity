@@ -4,13 +4,13 @@
 #
 name: Lint
 
-on:
-  workflow_dispatch:
-
 #on:
-#  push:
-#    branches-ignore:
-#      - 'master'
+#  workflow_dispatch:
+
+on:
+  push:
+    branches:
+      - 'feature/linter'
 
 jobs:
   build:
