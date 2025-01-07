@@ -189,7 +189,9 @@ namespace PLATEAU.RoadNetwork.CityObject
                 foreach (var item in vertexMap)
                     newVertices[item.Value] = item.Key;
 
-                DebugEx.Log($"Vertex size {Vertices.Count} -> {newVertices.Count}, Remove triangle = {removeTriangleNum}");
+                // 削除されたときにログを出す
+                if (removeTriangleNum > 0)
+                    DebugEx.Log($"Vertex size {Vertices.Count} -> {newVertices.Count}, Remove triangle = {removeTriangleNum}");
                 Vertices = newVertices;
             }
 

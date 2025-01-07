@@ -111,6 +111,18 @@ namespace PLATEAU.Util.GeoGraph
             distanceFromStart = Mathf.Clamp(distanceFromStart, 0f, self.Magnitude);
             return self.Start + distanceFromStart * self.Direction;
         }
+
+        /// <summary>
+        /// selfとvの距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public static float GetDistance(this LineSegment3D self, Vector3 v)
+        {
+            return (v - self.GetNearestPoint(v)).magnitude;
+        }
+
         delegate bool Intersection2D(LineSegment2D a, LineSegment2D b, out Vector3 aInter, out Vector3 bInter, out float at, out float ab);
         private static bool TryIntersectionBy2D(this LineSegment3D self, LineSegment3D other, AxisPlane plane, Intersection2D func, float normalTolerance,
             out Vector3 intersection, out float t1, out float t2)
