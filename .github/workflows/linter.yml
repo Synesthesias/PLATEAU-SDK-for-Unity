@@ -25,7 +25,7 @@ jobs:
       - name: Super-linter
         uses: super-linter/super-linter@v5
         env:
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true # 全てのファイルを対象に
           VALIDATE_ANSIBLE: false
           DEFAULT_BRANCH: 'feature/linter'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
