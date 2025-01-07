@@ -33,21 +33,6 @@
                 <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadSplineStopButton" class="LightActionButton" style="display: none;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="IntersectionEditPanel" style="flex-grow: 0; display: flex;">
-            <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
-                <ui:Label tabindex="-1" text="交差点編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px; padding-bottom: 8px; flex-direction: row; align-items: center; justify-content: space-between;">
-                <ui:Label tabindex="-1" text="経路追加・削除" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
-                <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionEditStartButton" class="LightActionButton" />
-                <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionEditStopButton" class="LightActionButton" />
-            </ui:VisualElement>
-            <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 8px; padding-bottom: 16px; flex-direction: row; align-items: center; justify-content: space-between;">
-                <ui:Label tabindex="-1" text="スプライン編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
-                <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStartButton" class="LightActionButton" />
-                <ui:Button text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionSplineStopButton" class="LightActionButton" />
-            </ui:VisualElement>
-        </ui:VisualElement>
         <ui:Toggle label="詳細編集モード" name="DetailEditMode" style="font-size: 12px; display: none;" />
     </ui:VisualElement>
 </ui:UXML>
