@@ -4,6 +4,9 @@
 #
 name: Lint
 
+on:
+  workflow_dispatch:
+
 #on:
 #  push:
 #    branches-ignore:
@@ -15,11 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Super-linter
-        uses: docker://github/super-linter:v2.2.0
+        uses: super-linter/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_ANSIBLE: false
+#          DEFAULT_BRANCH: master
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
