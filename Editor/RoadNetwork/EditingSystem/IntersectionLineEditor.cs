@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private RnWay mouseHoveredLine;
         private RnWay selectedLine;
         private LineEditState state = LineEditState.LineNotSelected;
-        private SplineCreateHandles splineHandle;
+        private SplineEditorCore splineCore;
 
         private enum LineEditState
         {
@@ -31,7 +31,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public IntersectionLineEditor(RoadNetworkEditTarget target)
         {
             this.target = target;
-            
         }
         
         /// <summary> 毎フレームのシーンビューへの描画 </summary>
@@ -55,7 +54,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     break;
                 case LineEditState.LineSelected:
                     DrawLine(selectedLine, new Color(1f, 0.4f, 0.3f));
-                    splineHandle.HandleSceneGUI();
+                    SplineEditorHandles.HandleSceneGUI(splineCore);
+                    if (Event.current.keyCode == KeyCode.Return)
+                    {
+                        OnSplineCreated(splineCore.Spline);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -73,9 +76,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 spline.Add(new BezierKnot(point));
             }
 
-            var splineCore = new SplineEditorCore(spline);
-            splineHandle = new SplineCreateHandles(splineCore, SplineCreateHandles.KnotAddMethod.InsertClickPos, this);
-            splineHandle.BeginCreateSpline(spline.Knots.First().Position);
+            splineCore = new SplineEditorCore(spline);
         }
 
         /// <summary> 線の編集を確定したとき、それを道路ネットワークに適用します。 </summary>
