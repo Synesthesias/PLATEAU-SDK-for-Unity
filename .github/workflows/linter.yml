@@ -1,0 +1,25 @@
+#
+# Super-Linter
+# https://github.com/super-linter/super-linter
+#
+name: Lint
+
+#on:
+#  push:
+#    branches-ignore:
+#      - 'master'
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Super-linter
+        uses: docker://github/super-linter:v2.2.0
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ANSIBLE: false
+
