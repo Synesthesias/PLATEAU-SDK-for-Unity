@@ -4,6 +4,7 @@ using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -16,10 +17,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class IntersectionLineEditor : ICreatedSplineReceiver
     {
-        private RnWay[] shapes;
         private RoadNetworkEditTarget target;
-        private RnWay mouseHoveredLine;
-        private RnWay selectedLine;
+        private IEditTargetLine mouseHoveredLine;
+        private IEditTargetLine selectedLine;
         private LineEditState state = LineEditState.LineNotSelected;
         private SplineEditorCore splineCore;
 
@@ -39,12 +39,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var intersectionEdit = target.SelectedRoadNetworkElement as EditorData<RnIntersection>;
             var intersection = intersectionEdit?.Ref;
             if (intersection == null) return;
-            shapes = intersection.Edges.Where(e => e.Road == null).Select(n => n.Border).ToArray();
+            
             
             switch (state)
             {
                 case LineEditState.LineNotSelected:
-                    DrawIntersectionShapes();
+                    var lines = IEditTargetLine.ComposeFrom(intersection);
+                    DrawIntersectionShapes(lines);
                     bool isNewLineClicked = CheckLineClicked();
                     if (isNewLineClicked)
                     {
@@ -53,7 +54,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     }
                     break;
                 case LineEditState.LineSelected:
-                    DrawLine(selectedLine, new Color(1f, 0.4f, 0.3f));
+                    DrawPreviewLine();
                     SplineEditorHandles.HandleSceneGUI(splineCore);
                     if (Event.current.keyCode == KeyCode.Return)
                     {
@@ -71,7 +72,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private void StartEditingLine()
         {
             var spline = new Spline();
-            foreach (var point in selectedLine.Points.Select(p => p.Vertex))
+            foreach (var point in selectedLine.Line)
             {
                 spline.Add(new BezierKnot(point));
             }
@@ -85,27 +86,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             state = LineEditState.LineNotSelected;
             
             var targetIntersection = (target.SelectedRoadNetworkElement as EditorData<RnIntersection>)?.Ref;
-            
-            // 交差点のEdgeの線に対して適用するのと同じく、対応するSidewalkを探して同じように適用します。
-            // Sidewalkへ適用しないと、白線は変わるのに歩道の形は変わらなくなります。
-            var correspondSidewalkInside =
-                targetIntersection
-                    ?.SideWalks
-                    .Select(sw => sw.InsideWay)
-                    .FirstOrDefault(way => way.IsSameLineSequence(selectedLine));
-            
-            var positions = createdSpline.Knots.Select(k => new RnPoint(k.Position)).ToArray();
-            var line = new RnLineString(positions);
-            
-            // 交差点のEdgeに線を適用します。
-            selectedLine.LineString = line;
-            
-            // 歩道に線に適用します。
-            if (correspondSidewalkInside != null)
-            {
-                correspondSidewalkInside.LineString = line;
-            }
-            
+
+            selectedLine.Apply(targetIntersection, createdSpline);
             
             var reproduceTarget = new RrTargetRoadBases(target.RoadNetwork, new[]{targetIntersection});
             new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All);
@@ -114,25 +96,35 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         }
         
 
-        private void DrawIntersectionShapes()
+        private void DrawIntersectionShapes(IEditTargetLine[] lines)
         {
-            if (shapes == null)
+            mouseHoveredLine = GetMouseHoveredLine(lines);
+            foreach (var line in lines)
             {
-                Debug.Log("shapes is null.");
-                return;
-            }
-
-            mouseHoveredLine = GetMouseHoveredLine();
-            foreach (var shape in shapes)
-            {
-                var color = shape == mouseHoveredLine ? Color.red : Color.cyan;
-                DrawLine(shape, color);
+                bool isMouseHovered = line == mouseHoveredLine;
+                if (!isMouseHovered && line is EditTargetTrack)
+                {
+                    // マウスホバーでないトラックの線は、ここではなくIntersectionTrackEditorで描画します。
+                    continue;
+                }
+                var color = isMouseHovered ? Color.red : Color.cyan;
+                
+                // マウスホバーの線が他の線と埋もれないように少し位置を上げます。
+                var drawingLine = isMouseHovered ? line.Line.Select(l => l + Vector3.up * 0.01f) : line.Line;
+                DrawLine(drawingLine.ToArray(), color);
             }
         }
 
-        private void DrawLine(RnWay shape, Color color)
+        private void DrawLine(Vector3[] line, Color color)
         {
-            var drawer = new LaneLineDrawerSolid(shape.ToList(), color, LaneLineDrawMethod.Handles);
+            var drawer = new LaneLineDrawerSolid(line.ToList(), color, LaneLineDrawMethod.Handles);
+            drawer.Draw();
+        }
+
+        private void DrawPreviewLine()
+        {
+            var line = splineCore.Spline.Knots.Select(k => k.Position).Select(f => new Vector3(f.x, f.y, f.z)).ToList();
+            var drawer = new LaneLineDrawerSolid(line, new Color(1f, 0.4f, 0.3f), LaneLineDrawMethod.Handles);
             drawer.Draw();
         }
         
@@ -146,31 +138,110 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return isNewLineClicked;
         }
 
-        private RnWay GetMouseHoveredLine()
+        private IEditTargetLine GetMouseHoveredLine(IEditTargetLine[] lines)
         {
             var mouseScreenPos = Event.current.mousePosition;
             var ray = HandleUtility.GUIPointToWorldRay(mouseScreenPos);
             float minDist = float.MaxValue;
-            RnWay nearestShape = null;
-            foreach (var shape in shapes)
+            IEditTargetLine nearestLine = null;
+            foreach (var line in lines)
             {
-                for (int i = 0; i < shape.Count - 1; i++)
+                var positions = line.Line;
+                for (int i = 0; i < positions.Length - 1; i++)
                 {
-                    var p1 = shape[i];
-                    var p2 = shape[i + 1];
+                    var p1 = positions[i];
+                    var p2 = positions[i + 1];
                     var distance = LineUtil.CheckHit(new LineUtil.Line(p1, p2), 2f, ray, out var closestPoint,
                         out var closestPoint2);
                     if (distance >= 0f && distance < minDist)
                     {
                         minDist = distance;
-                        nearestShape = shape;
+                        nearestLine = line;
                     }
                 }
             }
 
-            return nearestShape;
+            return nearestLine;
         }
 
-        
+        private interface IEditTargetLine
+        {
+            public void Apply(RnIntersection intersection, Spline createdSpline);
+
+            public Vector3[] Line { get;}
+
+            public static IEditTargetLine[] ComposeFrom(RnIntersection intersection)
+            {
+                var shapes = intersection
+                    .Edges
+                    .Where(e => e.Road == null)
+                    .Select(n => n.Border)
+                    .Select(b => new EditTargetShape(b));
+                var tracks = intersection
+                    .Tracks
+                    .Select(t => new EditTargetTrack(t));
+                return shapes.Cast<IEditTargetLine>().Concat(tracks).ToArray();
+            }
+        }
+
+        private class EditTargetTrack : IEditTargetLine
+        {
+            public RnTrack Track { get; set; }
+            
+            public EditTargetTrack(RnTrack track)
+            {
+                Track = track;
+            }
+
+            public void Apply(RnIntersection intersection, Spline createdSpline)
+            {
+                Track.Spline = createdSpline;
+            }
+            
+            public Vector3[] Line
+            {
+                get => Track.Spline.Knots.Select(k => k.Position).Select(f => new Vector3(f.x, f.y, f.z)).ToArray();
+            }
+        }
+
+        /// <summary> 交差点で編集対象となる線 </summary>
+        private class EditTargetShape : IEditTargetLine
+        {
+            private RnWay Way { get; set; }
+            
+            public EditTargetShape(RnWay way)
+            {
+                Way = way;
+            }
+
+
+            /// <summary> 編集した線を道路ネットワークに適用します。 </summary>
+            public void Apply(RnIntersection intersection, Spline createdSpline)
+            {
+                // 交差点のEdgeの線に対して適用するのと同じく、対応するSidewalkを探して同じように適用します。
+                // Sidewalkへ適用しないと、白線は変わるのに歩道の形は変わらなくなります。
+                var correspondSidewalkInside =
+                    intersection
+                        ?.SideWalks
+                        .Select(sw => sw.InsideWay)
+                        .FirstOrDefault(way => way.IsSameLineSequence(way));
+
+                var positions = createdSpline.Knots.Select(k => new RnPoint(k.Position)).ToArray();
+                var line = new RnLineString(positions);
+
+                // 交差点のEdgeに線を適用します。
+                Way.LineString = line;
+
+                // 歩道に線に適用します。
+                if (correspondSidewalkInside != null)
+                {
+                    correspondSidewalkInside.LineString = line;
+                }
+            }
+            
+            public Vector3[] Line{
+                get => Way.LineString.Points.Select(p => p.Vertex).Select(v => new Vector3(v.x, v.y, v.z)).ToArray();
+            }
+        }
     }
 }

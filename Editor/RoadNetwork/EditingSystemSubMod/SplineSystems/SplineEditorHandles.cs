@@ -36,11 +36,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 // ノットがホバーされている：このノットのみ移動可能
                 HandleMovement(core);
+                DrawAllKnotsStaticExceptHovered(core);
             }
             else
             {
                 // ノットホバーなし：ノットは静的表示、スプライン上クリックで追加可能
-                DrawAllKnotsStatic(core);
+                DrawAllKnotsStaticExceptHovered(core);
                 HandleAddition(core);
             }
         }
@@ -108,11 +109,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private static void DrawAllKnotsStatic(SplineEditorCore core)
+        private static void DrawAllKnotsStaticExceptHovered(SplineEditorCore core)
         {
             int knotCount = core.GetKnotCount();
             for (int i = 0; i < knotCount; i++)
             {
+                if (i == hoveredKnotIndex) continue;
                 Vector3 pos = core.GetKnotPosition(i);
                 float size = HandleUtility.GetHandleSize(pos) * 0.1f;
                 Handles.color = Color.cyan;
