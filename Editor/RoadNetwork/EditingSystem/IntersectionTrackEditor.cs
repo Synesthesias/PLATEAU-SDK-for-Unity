@@ -1,4 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +63,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             // Trackの生成、削除に必要な設定が済んで更新できるか？
             if (CanTryUpdateTrack)
             {
-                UpdateTrack(targetIntersection);
+                UpdateTrack(editTarget, targetIntersection);
                 editTarget.SetDirty();
             }
         }
@@ -159,7 +161,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary>
         /// 選択状態やトラックの有無で処理を分岐する
         /// </summary>
-        public void UpdateTrack(RnIntersection targetIntersection)
+        public void UpdateTrack(RoadNetworkEditTarget editTarget, RnIntersection targetIntersection)
         {
             Assert.IsTrue(CanTryUpdateTrack);
 
@@ -170,7 +172,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 targetIntersection.TryAddOrUpdateTrack(selectEntablePoint, selectExitablePoint);
             }
+            
+            // トラックの変更によって、周辺道路が標示すべき車線矢印が変わるかもしれないので、周辺道路を再生成します。
+            var neighborRoads = targetIntersection.Neighbors.Where(n => n.Road != null).Select(n => n.Road);
+            var reproducer = new RoadReproducer();
+            var updateTarget = new RrTargetRoadBases(editTarget.RoadNetwork, neighborRoads);
+            reproducer.Generate(updateTarget, CrosswalkFrequency.All);
+            
 
+            // 選択解除
             selectEntablePoint = null;
             selectExitablePoint = null;
         }
