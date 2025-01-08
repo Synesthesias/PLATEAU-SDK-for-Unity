@@ -24,6 +24,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         private SerializedScriptableRoadMdl lastSelectedRoad;
         private SerializedScriptableRoadMdl selectedRoad;
+        private Toggle detailEditModeToggle;
 
         // UI要素
         private readonly Button roadSplineStartButton;
@@ -54,9 +55,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             self.Q<Toggle>("EnableRightSideWalk").bindingPath = "enableRightSideWalk";
             placeCrosswalkToggle = GetT("PlaceCrosswalk");
             
-            var d = self.Q<Toggle>("DetailEditMode");
-            if (d != null)
-                d.bindingPath = "isEditingDetailMode";
+            detailEditModeToggle = self.Q<Toggle>("DetailEditMode");
+            detailEditModeToggle.RegisterCallback<ChangeEvent<bool>>(evt =>
+            {
+                OnChangeDetailEditMode(evt.newValue);
+            });
 
             // 道路の適用ボタン
             var applyRoadButton = rootVisualElement.Q<Button>("ApplyRoadButton");
@@ -112,7 +115,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             if (EditingSystem != null) EditingSystem.Terminate();
             EditingSystem = new RoadNetworkEditingSystem();
             
-            EditingSystem.roadEditSceneViewGui?.Init();
+            EditingSystem.roadEditSceneViewGui?.Init(detailEditModeToggle.value);
             
             EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoadBase;
             EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = true;
@@ -165,20 +168,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
                 // 既存のモデルオブジェクトを解除
                 rootVisualElement.Unbind();
-
-                // 仮 詳細編集モード → 未完成のためGUI上ではオフにしています
-                rootVisualElement.TrackSerializedObjectValue(selectedRoad, (se) =>
-                {
-                    var mod = EditingSystem.roadEditSceneViewGui;
-                    var obj = se as IScriptableRoadMdl;
-                    if (mod.CanSetDtailMode())
-                    {
-                        if (mod.IsDetailMode() != obj.IsEditingDetailMode)
-                        {
-                            mod.SetDetailMode(obj.IsEditingDetailMode);
-                        }
-                    }
-                });
 
                 UpdateSplineButtonVisual(false);
                 lastSelectedRoad?.DisableSplineEditMode(EditingSystem?.roadEditSceneViewGui);
@@ -238,6 +227,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             ReproduceRoad(network, changedRoads);
             
+        }
+
+        /// <summary> 「詳細編集モード」のチェックボックスが変わった時 </summary>
+        private void OnChangeDetailEditMode(bool newValue)
+        {
+            EditingSystem?.ChangeDetailEditMode(newValue);
         }
         
         /// <summary>

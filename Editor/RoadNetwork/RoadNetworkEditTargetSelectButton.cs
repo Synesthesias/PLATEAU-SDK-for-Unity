@@ -78,13 +78,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             OnSceneGUISimpleEdit(); // ここが描画メイン
-            
-            // 詳細モードを描画します（詳細モードは未完成です）
-            if (editSceneViewGui?.IsDetailMode() is true)
-            {
-                var selectedRoadGroup = editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
-                new RoadLaneDetailEditor().Draw(selectedRoadGroup, editTarget);
-            }
+
         }
 
         private bool LoadTexture()
