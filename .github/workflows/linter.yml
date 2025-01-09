@@ -27,6 +27,7 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_ANSIBLE: false
+          FILTER_REGEX_INCLUDE: '.*cs'
           DEFAULT_BRANCH: 'feature/linter'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
