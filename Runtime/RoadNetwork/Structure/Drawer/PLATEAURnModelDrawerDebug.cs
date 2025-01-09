@@ -253,6 +253,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 public bool showRightThick = false;
 
+                public bool showTickLength = false;
+
                 // fromがこれを満たすトラックのみ表示
                 public VisibleType fromRoadType = VisibleType.All;
 
@@ -303,13 +305,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                                 if (showLeftThick)
                                 {
-                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.LeftThickOffsets[k].normalized * 0.1f,
+                                    var len = 0.1f;
+                                    if (showTickLength)
+                                        len = thickWay.LeftThickOffsets[k].magnitude; ;
+                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.LeftThickOffsets[k].normalized * len,
                                         bodyColor: Color.yellow);
                                 }
 
                                 if (showRightThick)
                                 {
-                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.RightThickOffsets[k].normalized * 0.1f,
+                                    var len = 0.1f;
+                                    if (showTickLength)
+                                        len = thickWay.RightThickOffsets[k].magnitude; ;
+                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.RightThickOffsets[k].normalized * len,
                                         bodyColor: Color.magenta);
                                 }
 
