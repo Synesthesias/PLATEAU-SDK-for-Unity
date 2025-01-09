@@ -38,15 +38,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
-                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true), ArrowAngle(lane, true));
-                        ret.Add(nextArrow);
+                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true, out var isSucceedP), ArrowAngle(lane, true, out bool isSucceedA));
+                        if(isSucceedP && isSucceedA) ret.Add(nextArrow);
                     }
 
                     if (lane.PrevBorder != null)
                     {
                         var inter = lane.IsReverse ? nextIntersection : prevIntersection;
-                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false), ArrowAngle(lane, false));
-                        ret.Add(prevArrow);
+                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false, out var isSucceedP), ArrowAngle(lane, false, out var isSucceedA));
+                        if(isSucceedP && isSucceedA) ret.Add(prevArrow);
                     }
                     
                     
@@ -75,15 +75,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             return meshInstance;
         }
 
-        private Vector3 ArrowPosition(RnLane lane, bool isNext)
+        private Vector3 ArrowPosition(RnLane lane, bool isNext, out bool isSucceed)
         {
             var center = lane.CreateCenterWay();
-            if (center.Count == 0)
+            if (center == null || center.Count == 0)
             {
                 Debug.Log("Skipping because center way count is 0.");
+                isSucceed = false;
                 return Vector3.zero;
             }
 
+            isSucceed = true;
             return center.PositionAtDistance(ArrowPositionOffset, isNext);
         }
         
@@ -92,18 +94,20 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         /// <summary>
         /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。
         /// </summary>
-        private float ArrowAngle(RnLane lane, bool isNext)
+        private float ArrowAngle(RnLane lane, bool isNext, out bool isSucceed)
         {
             var way = lane.CreateCenterWay();
-            if (way.Count <= 1)
+            if (way == null || way.Count <= 1)
             {
                 Debug.Log("Skipping Angle because way point count is below 2.");
+                isSucceed = false;
                 return 0;
             }
 
             var diff = isNext
                 ? way.GetPoint(way.Count - 1).Vertex - way.GetPoint(way.Count - 2).Vertex
                 : way.GetPoint(0).Vertex - way.GetPoint(1).Vertex;
+            isSucceed = true;
             return Vector2.SignedAngle(diff.Xz(), Vector2.up);
 
         }
