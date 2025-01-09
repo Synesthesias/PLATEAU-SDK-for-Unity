@@ -10,7 +10,7 @@ namespace PLATEAU.CityAdjust.AlignLand
     /// </summary>
     public class ALConfig
     {
-        public PLATEAUInstancedCityModel TargetModel { get; private set; }
+        public PLATEAUInstancedCityModel targetModel { get; private set; }
         public Transform[] Lands { get; private set; }
         public HashSet<PredefinedCityModelPackage> TargetPackages { get; set; }
         public bool DoDestroySrcObj { get; private set; }
@@ -25,7 +25,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             HashSet<PredefinedCityModelPackage> targetPackages, bool doDestroySrcObj,
             int heightmapWidth, bool fillEdges, bool applyConvolutionFilterToHeightMap, bool alignLandNormal, bool alignInvert)
         {
-            this.TargetModel = targetModel;
+            this.targetModel = targetModel;
             Lands = lands;
             TargetPackages = targetPackages;
             DoDestroySrcObj = doDestroySrcObj;
