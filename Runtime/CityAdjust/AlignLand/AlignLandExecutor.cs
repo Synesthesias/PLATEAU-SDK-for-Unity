@@ -67,9 +67,9 @@ namespace PLATEAU.CityAdjust.AlignLand
             progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
             var alignTarget = new UniqueParentTransformList();
             var alignInvertTarget = new UniqueParentTransformList();
-            foreach (var cog in conf.targetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
+            foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
             {
-                var package = conf.targetModel.GetPackage(cog);
+                var package = conf.TargetModel.GetPackage(cog);
                 if (!conf.TargetPackages.Contains(package)) continue;
                 var targetMf = cog.GetComponent<MeshFilter>();
                 if (targetMf == null) continue;
