@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Splines;
+using static PLATEAU.RoadNetwork.Structure.RnTracksBuilder;
 using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
@@ -245,10 +245,88 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         public class IntersectionOption : IntersectionDrawer
         {
             [Serializable]
+            private class TrackDrawThickWay : IntersectionDrawer
+            {
+                public bool showBaseLine = true;
+
+                public bool showLeftThick = false;
+
+                public bool showRightThick = false;
+
+                // fromがこれを満たすトラックのみ表示
+                public VisibleType fromRoadType = VisibleType.All;
+
+                // toがこれを満たすトラックのみ表示
+                public VisibleType toRoadType = VisibleType.All;
+
+                protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
+                {
+
+                    bool IsTarget(RnIntersectionEx.EdgeGroup fromEg, RnIntersectionEx.EdgeGroup toEg)
+                    {
+                        if (fromRoadType != VisibleType.All)
+                        {
+                            var fromRoad = fromEg.Key;
+                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
+                                return false;
+                        }
+
+                        if (toRoadType != VisibleType.All)
+                        {
+                            var toRoad = toEg.Key;
+                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
+                                return false;
+                        }
+
+                        return true;
+                    }
+
+                    var edgeGroup = intersection.CreateEdgeGroup();
+                    var borders = edgeGroup.Where(x => x.IsBorder).ToList();
+                    var table = new ThickCenterLineTables();
+                    for (var i = 0; i < borders.Count; i++)
+                    {
+                        for (var j = 0; j < borders.Count; j++)
+                        {
+                            if (i == j)
+                                continue;
+                            var from = borders[i];
+                            var to = borders[j];
+                            if (IsTarget(from, to) == false)
+                                continue;
+                            var thickWay = table.GetOrCreateThickWay(intersection, from, to);
+                            if (thickWay == null)
+                                continue;
+
+                            for (var k = 0; k < thickWay.Count; ++k)
+                            {
+
+                                if (showLeftThick)
+                                {
+                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.LeftThickOffsets[k].normalized * 0.1f,
+                                        bodyColor: Color.yellow);
+                                }
+
+                                if (showRightThick)
+                                {
+                                    work?.Self.DrawArrow(thickWay[k], thickWay[k] + thickWay.RightThickOffsets[k].normalized * 0.1f,
+                                        bodyColor: Color.magenta);
+                                }
+
+                                if (k > 0 && showBaseLine)
+                                    work?.Self.DrawLine(thickWay[k - 1], thickWay[k], color: Color.green);
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            [Serializable]
             private class TrackDrawCenterLine : IntersectionDrawer
             {
                 public float showTrackCenterLineRefineInterval = 5f;
-
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
                     var centerLineGraph = intersection.CreateCenterLineGraph(showTrackCenterLineRefineInterval);
@@ -428,11 +506,13 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 [SerializeField] private TrackDrawSpline drawSpline = new() { visible = true };
 
                 [SerializeField] private TrackDrawCenterLine drawCenterLine = new() { visible = false };
+                [SerializeField] private TrackDrawThickWay drawThickLine = new() { visible = false };
 
                 protected override IEnumerable<Drawer<RnIntersection>> GetChildDrawers()
                 {
                     yield return drawSpline;
                     yield return drawCenterLine;
+                    yield return drawThickLine;
                 }
             }
 

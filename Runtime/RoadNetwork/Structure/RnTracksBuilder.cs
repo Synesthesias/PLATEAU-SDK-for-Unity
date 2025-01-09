@@ -139,88 +139,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
 
             // 隣り合っている場合.
-            var (way, widthTable) = GetThickCenterLineWay(intersection, fromEg, outBound.ToEg, thickCenterLinTables);
+            var thickWay = thickCenterLinTables.GetOrCreateThickWay(intersection, fromEg, outBound.ToEg);
 
-            var track = CreateTrackOrDefault(intersection, op, way, widthTable, from, outBound.To, outBound.TurnType);
+            var track = CreateTrackOrDefault(intersection, op, thickWay, from, outBound.To, outBound.TurnType);
             return track;
         }
 
-        private (RnWay, List<float>) GetThickCenterLineWay(RnIntersection intersection,
-            RnIntersectionEx.EdgeGroup fromEg,
-            RnIntersectionEx.EdgeGroup toEg,
-            ThickCenterLineTables thickCenterLinTables)
-        {
-            var tables = thickCenterLinTables.Data.GetValueOrCreate(fromEg);
-            var centerGraph = intersection.CreateCenterLineGraphOrDefault();
-            if (tables.ContainsKey(toEg) == false)
-            {
-                // 反対側に行き過ぎないように
-                // ベースとなる線分と, 反対側の線分の距離テーブル
-                // ベース線分がother.RightSideの場合は, other.LeftSideとの距離テーブルを作成する
-                // ベース線分が中央線の場合はother.RightSideとの距離テーブルを作成する
-                //   |  A  | 
-                //   |  .  |
-                //   |  .   ------  C
-                //   |  .  ....... 
-                //   |  .   ------
-                //   |  .  |
-                //   |  B  |
-                // .は中央線. |-は輪郭線
-                // B -> Aに行く場合は, B.LeftSide == A.RightSide なので AのLeftSideとの距離テーブルを作成
-                // B -> Cに行く場合は, 右折なので中央線をベースラインに使う. -> CのRightSideと中央線の距離テーブルを作成
-                List<float> widthTable = null;
 
-                // 隣り合っている場合.
-                RnWay way = null;
-                // 左側で隣接している場合はそれをそのまま使う
-                if (fromEg.LeftSide == toEg.RightSide)
-                {
-                    // #TODO : 以下のようなfrom -> toでかつxがどこともつながっていないただの輪郭線の場合に, 中央線がxでストップしてしまった
-                    //          to
-                    //        _____
-                    //   ____|     |
-                    //  | x
-                    //   -----
-                    //        |
-                    //         ====
-                    //          from
-                    var ls = RnLineString.Create(fromEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
-                    way = new RnWay(ls.Refined(1f), false, true);
-                    var oLs = RnLineString.Create(toEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
-                    widthTable = way.Points.Select(x =>
-                    {
-                        oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
-                        return distance;
-                    }).ToList();
-                }
-                // それ以外の場合は中央線を使う
-                // ただし自分自身に戻る(Uターン)の場合は中央線使わない
-                else if (fromEg.Key != toEg.Key && centerGraph != null)
-                {
-                    way = centerGraph.CenterLines.GetValueOrDefault(fromEg.Key)?.GetValueOrDefault(toEg.Key);
-                    var oLs = RnLineString.Create(toEg.RightSide.Edges.SelectMany(e => e.Border.Points));
 
-                    if (way != null)
-                    {
-                        widthTable = way.Points.Select(x =>
-                        {
-                            oLs.GetNearestPoint(x.Vertex, out var nearest, out var _, out var distance);
-                            return distance;
-                        }).ToList();
-                    }
-                }
-
-                tables[toEg] = (way, widthTable);
-            }
-
-            return tables[toEg];
-        }
 
         /// <summary>
         /// from/toを繋ぐトラックを作成する
         /// </summary>
-        public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
-            List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+        public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, ThickWay thickWay, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
         {
             var fromNormal = RnIntersection.GetEdgeNormal(from);
             var toNormal = RnIntersection.GetEdgeNormal(to);
@@ -240,7 +171,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return track;
 
             // 中央テーブル作れない時は諦める
-            if (widthTable == null)
+            if (thickWay == null)
                 return null;
 
             List<BezierKnot> knots = new()
@@ -268,86 +199,11 @@ namespace PLATEAU.RoadNetwork.Structure
                 knots.Add(knot);
             }
 
-            // ベースラインを法線方向に動かしてトラックラインを作成する
-            // 入口の道路幅と出口の道路幅が違うので, 法線方向へのオフセットも距離に応じて線形補完する
-            // そのうえで、なるべく輪郭を崩さないようにする処理も入れる
-            if (way != null && way.Count > 2)
+            var points = thickWay.CalcRoute(fromPos, toPos, RnDef.Plane);
+
+            for (var i = 0; i < points.Count; ++i)
             {
-                Vector3 EdgeNormal(int startVertexIndex)
-                {
-                    var p0 = way[startVertexIndex];
-                    var p1 = way[startVertexIndex + 1];
-                    // Vector3.Crossは左手系なので逆
-                    var ret = (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
-                    if (way.IsReverseNormal)
-                        ret = -ret;
-                    return ret;
-                }
-
-                var sLen = (way[0] - fromPos).magnitude;
-                var eLen = (way[^1] - toPos).magnitude;
-
-                // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
-                var sSign = Vector3.Dot(fromPos - way[0], EdgeNormal(0)) < 0 ? -1 : 1;
-                var eSign = Vector3.Dot(toPos - way[^1], EdgeNormal(way.Count - 2)) < 0 ? -1 : 1;
-
-                var index = 0;
-                // 現在見る点と次の点の辺/頂点の法線を保存しておく
-                // 線分の法線
-                var edgeNormal = new[] { (fromPos - way[0]).normalized, EdgeNormal(1) };
-                // 先頭の法線が逆の場合計算がおかしくなるので反転して最後に適用するときに戻す
-                if (sSign < 0)
-                    edgeNormal[0] = edgeNormal[0].AxisSymmetric(way[1] - way[0]);
-
-                // 頂点の法線
-                var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
-
-                var length = way.CalcLength();
-                var len = 0f;
-                var delta = 1f;
-                for (var i = 0; i < way.Count - 1; i++)
-                {
-                    var en0 = edgeNormal[index];
-                    var en1 = edgeNormal[(index + 1) & 1];
-                    var vn = vertexNormal[index];
-                    // 形状維持するためにオフセット距離を変える
-                    // en0成分の移動量がdeltaになるように, vnの移動量を求める
-                    var m = Vector3.Dot(vn, en0);
-                    var d = delta;
-                    bool isZero = Mathf.Abs(m) < 1e-5f;
-                    if (isZero == false)
-                        d /= m;
-
-                    if (i < way.Count - 2)
-                    {
-                        edgeNormal[index] = EdgeNormal(i + 1);
-                        vertexNormal[index] =
-                            (edgeNormal[index] + vertexNormal[(index + 1) & 1]).normalized;
-                    }
-
-                    index = (index + 1) & 1;
-                    if (i != 0)
-                    {
-                        len += (way[i] - way[i - 1]).magnitude;
-                        var p = len / length;
-
-                        var sL = Mathf.Min(sLen, widthTable[i]);
-                        var eL = Mathf.Min(eLen, widthTable[i]);
-                        //var l = Mathf.Lerp(sL, eL, p) * d;
-                        //var l = sL * d;
-                        var l = Mathf.Lerp(sSign * sL, eSign * eL, p) * Mathf.Lerp(d, 1f, p);
-                        var pos = way[i] + vn * l;
-                        AddKnots(pos);
-                    }
-
-                    delta = d * Vector3.Dot(vn, en1);
-                }
-
-                AddKnots(toPos, false);
-            }
-            else
-            {
-                AddKnots(toPos, false);
+                AddKnots(points[i], i > 0 && i < points.Count - 1);
             }
 
             var spline = new Spline(knots);
@@ -428,7 +284,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 var len = Mathf.Clamp(curveOffset, 0, fromCpLen - 1);
                 var p = Vector3.Lerp(cp, fromPos, len / fromCpLen);
-                spline.Add(new BezierKnot(p, 0, -fromNormal * len), TangentMode.AutoSmooth);
+                spline.Add(new BezierKnot(p, 0, -fromNormal * len), TangentMode.Continuous);
             }
 
             var toCpLen = (toPos - cp).magnitude;
@@ -436,10 +292,8 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 var len = Mathf.Clamp(curveOffset, 0, toCpLen - 1);
                 var p = Vector3.Lerp(cp, toPos, len / toCpLen);
-                spline.Add(new BezierKnot(p, toNormal * len, 0), TangentMode.AutoSmooth);
+                spline.Add(new BezierKnot(p, toNormal * len, 0), TangentMode.Continuous);
             }
-
-            ;
 #endif
             spline.Add(new BezierKnot(toPos), TangentMode.AutoSmooth);
             return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
@@ -465,13 +319,229 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+
+
+        /// <summary>
+        /// 厚みのある線
+        /// </summary>
+        public class ThickWay
+        {
+            // ベースライン. 基本は中心線だが, それはLeft/RightThickDirectionsによって変わる
+            private List<Vector3> centerVertices = new();
+            private List<Vector3> leftThickOffsets = new();
+            private List<Vector3> rightThickOffsets = new();
+
+            public IReadOnlyList<Vector3> CenterVertices => centerVertices;
+
+            // CenterVerticesから右側に対するオフセット量
+            public IReadOnlyList<Vector3> LeftThickOffsets => leftThickOffsets;
+
+            // CenterVerticesから左側に対するオフセット量
+            public IReadOnlyList<Vector3> RightThickOffsets => rightThickOffsets;
+
+            public Vector3 this[int index] => CenterVertices[index];
+
+            public int Count => CenterVertices.Count;
+
+
+            public void Add(Vector3 center, Vector3 left, Vector3 right)
+            {
+                centerVertices.Add(center);
+                leftThickOffsets.Add(left - center);
+                rightThickOffsets.Add(right - center);
+            }
+
+            /// <summary>
+            /// CenterVerticesの長さを計算する
+            /// </summary>
+            /// <returns></returns>
+            public float CalcLength()
+            {
+                var ret = 0f;
+                for (var i = 1; i < CenterVertices.Count; ++i)
+                {
+                    ret += (CenterVertices[i] - CenterVertices[i - 1]).magnitude;
+                }
+
+                return ret;
+            }
+
+            /// <summary>
+            /// from -> toに対するルートラインを計算する
+            /// </summary>
+            /// <param name="fromPos"></param>
+            /// <param name="toPos"></param>
+            /// <param name="plane"></param>
+            /// <returns></returns>
+            public List<Vector3> CalcRoute(Vector3 fromPos, Vector3 toPos, AxisPlane plane)
+            {
+                // 線分の方向
+                Vector3 EdgeDir(int startVertexIndex)
+                {
+                    return (this[startVertexIndex + 1] - this[startVertexIndex]).normalized;
+                }
+
+                bool IsRightSide(Vector3 from, Vector3 to)
+                {
+                    return Vector2Ex.Cross(from.ToVector2(plane), to.ToVector2(plane)) < 0;
+                }
+
+                var fromDir = fromPos - this[0];
+                var toDir = toPos - this[^1];
+                // 負数だと左側, 正数だと右側
+                var sLen = fromDir.magnitude;
+                var eLen = toDir.magnitude;
+
+                if (IsRightSide(EdgeDir(0), fromDir) == false)
+                    sLen *= -1;
+
+                if (IsRightSide(EdgeDir(Count - 2), toDir) == false)
+                    eLen *= -1;
+
+                var length = CalcLength();
+                var len = 0f;
+                List<Vector3> ret = new() { fromPos };
+                for (var i = 1; i < Count - 1; i++)
+                {
+                    len += (this[i] - this[i - 1]).magnitude;
+                    var p = len / length;
+                    var offset = Mathf.Lerp(sLen, eLen, p);
+                    var di = offset < 0 ? LeftThickOffsets[i] : RightThickOffsets[i];
+                    // diの段階で方向が決まるのでoffsetは符号なしにする
+                    // di.magnitudeを超えるとはみ出るのでチェック
+                    offset = Mathf.Min(Mathf.Abs(offset), di.magnitude);
+                    ret.Add(this[i] + di.normalized * offset);
+                }
+                ret.Add(toPos);
+                return ret;
+            }
+        }
+
+
         /// <summary>
         /// fromEg -> toEgに対する中心線とその各点に置ける幅のテーブル
         /// </summary>
         internal class ThickCenterLineTables
         {
-            public Dictionary<RnIntersectionEx.EdgeGroup, Dictionary<RnIntersectionEx.EdgeGroup, (RnWay, List<float>)>>
+            public Dictionary<RnIntersectionEx.EdgeGroup, Dictionary<RnIntersectionEx.EdgeGroup, ThickWay>>
                 Data = new();
+
+            /// <summary>
+            /// fromEg -> toEgに対するルート用クラスを取得. 位置 + 左右の厚みを持ったクラス
+            /// </summary>
+            /// <param name="intersection"></param>
+            /// <param name="fromEg"></param>
+            /// <param name="toEg"></param>
+            /// <returns></returns>
+            public ThickWay GetOrCreateThickWay(RnIntersection intersection, RnIntersectionEx.EdgeGroup fromEg, RnIntersectionEx.EdgeGroup toEg)
+            {
+                var tables = Data.GetValueOrCreate(fromEg);
+                var centerGraph = intersection.CreateCenterLineGraphOrDefault();
+                if (tables.ContainsKey(toEg) == false)
+                {
+                    // 反対側に行き過ぎないように
+                    // ベースとなる線分と, 反対側の線分の距離テーブル
+                    // ベース線分がother.RightSideの場合は, other.LeftSideとの距離テーブルを作成する
+                    // ベース線分が中央線の場合はother.RightSideとの距離テーブルを作成する
+                    //   |  A  | 
+                    //   |  .  |
+                    //   |  .   ------  C
+                    //   |  .  ....... 
+                    //   |  .   ------
+                    //   |  .  |
+                    //   |  B  |
+                    // .は中央線. |-は輪郭線
+                    // B -> Aに行く場合は, B.LeftSide == A.RightSide なので AのLeftSideとの距離テーブルを作成
+                    // B -> Cに行く場合は, 右折なので中央線をベースラインに使う. -> CのRightSideと中央線の距離テーブルを作成
+
+
+                    // 隣り合っている場合.
+                    RnWay way = null;
+                    // 左側で隣接している場合はそれをそのまま使う
+                    if (fromEg.LeftSide == toEg.RightSide)
+                    {
+                        // #TODO : 以下のようなfrom -> toでかつxがどこともつながっていないただの輪郭線の場合に, 中央線がxでストップしてしまった
+                        //          to
+                        //        _____
+                        //   ____|     |
+                        //  | x
+                        //   -----
+                        //        |
+                        //         ====
+                        //          from
+                        var ls = RnLineString.Create(fromEg.LeftSide.Edges.SelectMany(e => e.Border.Points));
+                        way = new RnWay(ls.Refined(1f), false, true);
+                        var thickWay = new ThickWay();
+                        var oLs = RnLineString.Create(intersection.Edges.SelectMany(e => e.Border.Points));
+                        for (var i = 0; i < way.Count; ++i)
+                        {
+                            var n = way.GetVertexNormal(i);
+                            var p = way[i];
+                            if (i == 0)
+                            {
+                                thickWay.Add(p, p, fromEg.Edges[0].Border[0]);
+                            }
+                            else if (i == way.Count - 1)
+                            {
+                                thickWay.Add(p, p, toEg.Edges[^1].Border[^1]);
+
+                            }
+                            else
+                            {
+                                var ray = new Ray(way[i] + n * 0.1f, n);
+                                if (oLs.TryHalfLineIntersectionBy2D(ray, RnDef.Plane, out var inter))
+                                {
+                                    thickWay.Add(p, p, inter);
+                                }
+                            }
+                        }
+                        tables[toEg] = thickWay;
+                    }
+                    // それ以外の場合は中央線を使う
+                    // ただし自分自身に戻る(Uターン)の場合は中央線使わない
+                    else if (fromEg.Key != toEg.Key && centerGraph != null)
+                    {
+                        way = centerGraph.CenterLines.GetValueOrDefault(fromEg.Key)?.GetValueOrDefault(toEg.Key);
+                        var oLs = RnLineString.Create(intersection.Edges.SelectMany(e => e.Border.Points));
+
+                        if (way != null)
+                        {
+                            var thickLine = new ThickWay();
+
+                            static Vector3 Center(RnIntersectionEx.EdgeGroup eg)
+                            {
+                                return (eg.Edges[0].Border[0] + eg.Edges[^1].Border[^1]) * 0.5f;
+                            }
+                            var start = Center(fromEg);
+                            var end = Center(toEg);
+                            thickLine.Add(start, fromEg.Edges[^1].Border[^1], fromEg.Edges[0].Border[0]);
+
+                            for (var i = 0; i < way.Count; ++i)
+                            {
+                                var rightDir = -way.GetVertexNormal(i);
+                                var p = way[i];
+
+                                var rightRay = new Ray(way[i] + rightDir * 0.1f, rightDir);
+                                var leftRay = new Ray(way[i] - rightDir * 0.1f, -rightDir);
+                                if (oLs.TryHalfLineIntersectionBy2D(rightRay, RnDef.Plane, out var rightInter))
+                                {
+                                    if (oLs.TryHalfLineIntersectionBy2D(leftRay, RnDef.Plane, out var leftInter))
+                                    {
+                                        thickLine.Add(p, leftInter, rightInter);
+                                    }
+                                }
+                            }
+
+                            thickLine.Add(end, toEg.Edges[0].Border[0], fromEg.Edges[^1].Border[^1]);
+
+                            tables[toEg] = thickLine;
+                        }
+                    }
+
+                }
+
+                return tables.GetValueOrDefault(toEg);
+            }
         }
     }
 

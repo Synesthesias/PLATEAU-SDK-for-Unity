@@ -760,5 +760,34 @@ namespace PLATEAU.RoadNetwork.Structure
                 return distance;
             }).Average();
         }
+
+        /// <summary>
+        /// selfと半直線rayに対してplane平面での交差判定を行う
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ray"></param>
+        /// <param name="plane"></param>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        public static bool TryHalfLineIntersectionBy2D(this RnLineString self, Ray ray, AxisPlane plane, out Vector3 intersection)
+        {
+            intersection = Vector3.zero;
+            var minDistance = float.MaxValue;
+            foreach (var e in self.GetEdges())
+            {
+                if (e.TryHalfLineIntersectionBy2D(ray.origin, ray.direction, plane, -1f, out var inter, out var t1,
+                        out var t2))
+                {
+                    var d = (inter - ray.origin).magnitude;
+                    if (d < minDistance)
+                    {
+                        minDistance = d;
+                        intersection = inter;
+                    }
+                }
+            }
+
+            return minDistance < float.MaxValue;
+        }
     }
 }
