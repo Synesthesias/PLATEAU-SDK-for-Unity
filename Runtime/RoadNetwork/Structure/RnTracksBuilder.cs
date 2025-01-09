@@ -105,11 +105,11 @@ namespace PLATEAU.RoadNetwork.Structure
                                     var now = inBoundsLeft2Right[inBoundIndex];
                                     var next = inBoundsLeft2Right[inBoundIndex + 1];
 
-                                    var nowDir = RnIntersection.GetEdgeNormal2D(now);
+                                    var nowDir = -RnIntersection.GetEdgeNormal2D(now);
                                     var nowPos = RnIntersection.GetEdgeCenter2D(now);
                                     var nowAngle = Vector2.Angle(nowDir, toPos - nowPos);
 
-                                    var nextDir = RnIntersection.GetEdgeNormal2D(next);
+                                    var nextDir = -RnIntersection.GetEdgeNormal2D(next);
                                     var nextPos = RnIntersection.GetEdgeCenter2D(next);
                                     var nextAngle = Vector2.Angle(nextDir, toPos - nextPos);
 
@@ -133,7 +133,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnTrack MakeTrack(RnIntersection intersection, RnNeighbor from, BuildTrackOption op,
             RnIntersectionEx.EdgeGroup fromEg, ThickCenterLineTables thickCenterLinTables, OutBound outBound)
         {
-            
+
             // 対象外のものは無視
             if (op.IsBuildTarget(intersection, from, outBound.To) == false)
                 return null;
@@ -227,7 +227,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             from.Border.GetLerpPoint(0.5f, out var fromPos);
             to.Border.GetLerpPoint(0.5f, out var toPos);
-            
+
             // 先に1回のカーブで繋がるトラックをチェック(そっちの方がきれいな曲線になりやすいので)
             var track = TryCreateTwoLineTrack(intersection, fromPos, fromNormal, toPos, toNormal, from, to,
                 edgeTurnType);
@@ -464,7 +464,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 To = to;
             }
         }
-        
+
         /// <summary>
         /// fromEg -> toEgに対する中心線とその各点に置ける幅のテーブル
         /// </summary>
