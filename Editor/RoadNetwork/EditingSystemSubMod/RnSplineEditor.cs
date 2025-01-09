@@ -143,7 +143,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             const float laneWidth = 3f;
 
             var road = targetRoad.Ref.Roads[0];
-            var totalWidth = road.AllLanes.Count() * laneWidth;
+            var totalWidth = road.MainLanes.Count() * laneWidth;
             if (road.MedianLane != null)
             {
                 totalWidth += medianWidth;

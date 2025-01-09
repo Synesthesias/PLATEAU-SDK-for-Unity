@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     }
                 }
 
-                foreach (var lane in road.AllLanes)
+                foreach (var lane in road.MainLanes)
                 {
                     if (state.isDirtyTarget)
                     {
@@ -124,7 +124,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                                                 {
                                                     Debug.Log("ポイントが削除されなかった");
                                                 }
-                                                
+
                                             };
                                             state.isDirtyTarget = true;
                                             continue;
@@ -147,8 +147,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 editTarget.SetDirty(); // 通知
             }
         }
-        
-        
+
+
         private static void DeployPointMoveHandle(RnPoint point, RoadEditSceneGUIState state, float size)
         {
             EditorGUI.BeginChangeCheck();
@@ -162,12 +162,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 state.isDirtyTarget = true;
             }
         }
-        
+
         private static Vector3 DeployFreeMoveHandle(in Vector3 pos, float size, in Vector3 snap)
         {
             return Handles.FreeMoveHandle(pos, size, snap, Handles.SphereHandleCap);
         }
-        
+
         private static void RoadNetworkRemovePointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
             float size, EventType eventType)
         {
@@ -184,7 +184,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     break;
             }
         }
-        
+
         private static void RoadNetworkAddPointButtonHandleCap(int controlID, Vector3 position, Quaternion rotation,
             float size, EventType eventType)
         {
