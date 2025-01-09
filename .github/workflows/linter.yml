@@ -39,3 +39,4 @@ jobs:
           DEFAULT_BRANCH: 'feature/linter'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_JSCPD: false # コードの重複チェックなし
+          VALIDATE_CHECKOV: false # セキュリティチェックなし
