@@ -42,7 +42,7 @@ namespace PLATEAU.RoadNetwork
             [typeof(RnLane)] = "Ln",
             [typeof(RnLineString)] = "Ls",
             [typeof(RnPoint)] = "Pt",
-            [typeof(RnNeighbor)] = "Nb",
+            [typeof(RnIntersectionEdge)] = "Nb",
             [typeof(RnTrack)] = "Tr",
             [typeof(RnSideWalk)] = "Sw",
         };

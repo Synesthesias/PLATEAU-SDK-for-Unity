@@ -14,8 +14,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     public class IntersectionTrackEditor
     {
         
-        private RnNeighbor selectEntablePoint = null;
-        private RnNeighbor selectExitablePoint = null;
+        private RnIntersectionEdge selectEntablePoint = null;
+        private RnIntersectionEdge selectExitablePoint = null;
         
         public bool IsSelectdEntablePoint
         {
@@ -83,20 +83,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             get => selectEntablePoint != null && selectExitablePoint != null;
         }
 
-        private IReadOnlyCollection<RnNeighbor> EnterablePoints(RnIntersection target)
+        private IReadOnlyCollection<RnIntersectionEdge> EnterablePoints(RnIntersection target)
         {
             return CollectEnterablePoints(target);
         }
 
 
-        private IReadOnlyCollection<RnNeighbor> ExitablePoints(RnIntersection target)
+        private IReadOnlyCollection<RnIntersectionEdge> ExitablePoints(RnIntersection target)
         {
             return CollectExitablePoints(target);
         }
         
-        private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(RnIntersection data)
+        private static IReadOnlyCollection<RnIntersectionEdge> CollectEnterablePoints(RnIntersection data)
         {
-            var enterablePoints = new List<RnNeighbor>(data.Neighbors.Count());
+            var enterablePoints = new List<RnIntersectionEdge>(data.Neighbors.Count());
             foreach (var neighbor in data.Neighbors)
             {
                 if (CheckEnterablePoint(neighbor))
@@ -105,15 +105,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return enterablePoints;
         }
 
-        private static bool CheckEnterablePoint(RnNeighbor neighbor)
+        private static bool CheckEnterablePoint(RnIntersectionEdge intersectionEdge)
         {
-            var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
+            var isInboud = (intersectionEdge.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
             return isInboud;
         }
         
-        private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(RnIntersection data)
+        private static IReadOnlyCollection<RnIntersectionEdge> CollectExitablePoints(RnIntersection data)
         {
-            var exitablePoints = new List<RnNeighbor>(data.Neighbors.Count());
+            var exitablePoints = new List<RnIntersectionEdge>(data.Neighbors.Count());
             foreach (var neighbor in data.Neighbors)
             {
                 if (CheckExitablePoint(neighbor))
@@ -122,38 +122,38 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return exitablePoints;
         }
 
-        private static bool CheckExitablePoint(RnNeighbor neighbor)
+        private static bool CheckExitablePoint(RnIntersectionEdge intersectionEdge)
         {
-            var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
+            var isOutbound = (intersectionEdge.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
             return isOutbound;
         }
         
         /// <summary>
         /// 流入点と流出点を返す
         /// </summary>
-        public (RnNeighbor, RnNeighbor) SelectedPoints
+        public (RnIntersectionEdge, RnIntersectionEdge) SelectedPoints
         {
             get => (selectEntablePoint, selectExitablePoint);
         }
 
-        public void SetEntablePoint(RnNeighbor neighbor, RnIntersection targetIntersection)
+        public void SetEntablePoint(RnIntersectionEdge intersectionEdge, RnIntersection targetIntersection)
         {
-            Assert.IsNotNull(neighbor);
+            Assert.IsNotNull(intersectionEdge);
 
             // 選択中の交差点に含まれているか
-            Assert.IsTrue(EnterablePoints(targetIntersection).Contains(neighbor));
+            Assert.IsTrue(EnterablePoints(targetIntersection).Contains(intersectionEdge));
 
-            selectEntablePoint = neighbor;
+            selectEntablePoint = intersectionEdge;
         }
 
-        public void SetExitablePoint(RnNeighbor neighbor, RnIntersection targetIntersection)
+        public void SetExitablePoint(RnIntersectionEdge intersectionEdge, RnIntersection targetIntersection)
         {
-            Assert.IsNotNull(neighbor);
+            Assert.IsNotNull(intersectionEdge);
 
             // 選択中の交差点に含まれているか
-            Assert.IsTrue(ExitablePoints(targetIntersection).Contains(neighbor));
+            Assert.IsTrue(ExitablePoints(targetIntersection).Contains(intersectionEdge));
 
-            selectExitablePoint = neighbor;
+            selectExitablePoint = intersectionEdge;
         }
 
         /// <summary>

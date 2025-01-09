@@ -92,7 +92,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             List<RoadGroupEditorData>
                 roadGroups =
                     new List<RoadGroupEditorData>(numNode * (numNode - 1)); // node同士の繋がりを表現するコレクション prev+next名で表現する
-            HashSet<RnNeighbor> calcedNeighbor = new HashSet<RnNeighbor>(numNode * (numNode - 1)); // 計算済みのNeighborを保持する
+            HashSet<RnIntersectionEdge> calcedNeighbor = new HashSet<RnIntersectionEdge>(numNode * (numNode - 1)); // 計算済みのNeighborを保持する
             foreach (var road in roadNetwork.Roads)
             {
                 var link = road;

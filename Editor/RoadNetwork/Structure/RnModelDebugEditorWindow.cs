@@ -419,7 +419,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        void ShowLabel(string label, RnNeighbor edge)
+                        void ShowLabel(string label, RnIntersectionEdge edge)
                         {
                             var lane = edge.GetConnectedLane();
                             EditorGUILayout.LabelField($"{label}:{edge.Border.GetDebugIdLabelOrDefault()}/{edge?.Road?.GetDebugLabelOrDefault()}]/{lane.GetDebugLabelOrDefault()}");

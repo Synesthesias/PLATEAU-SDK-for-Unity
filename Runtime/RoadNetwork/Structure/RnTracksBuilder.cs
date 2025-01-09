@@ -130,10 +130,10 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        public RnTrack MakeTrack(RnIntersection intersection, RnNeighbor from, BuildTrackOption op,
+        public RnTrack MakeTrack(RnIntersection intersection, RnIntersectionEdge from, BuildTrackOption op,
             RnIntersectionEx.EdgeGroup fromEg, ThickCenterLineTables thickCenterLinTables, OutBound outBound)
         {
-            
+
             // 対象外のものは無視
             if (op.IsBuildTarget(intersection, from, outBound.To) == false)
                 return null;
@@ -220,14 +220,14 @@ namespace PLATEAU.RoadNetwork.Structure
         /// from/toを繋ぐトラックを作成する
         /// </summary>
         public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
-            List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            List<float> widthTable, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             var fromNormal = RnIntersection.GetEdgeNormal(from);
             var toNormal = RnIntersection.GetEdgeNormal(to);
 
             from.Border.GetLerpPoint(0.5f, out var fromPos);
             to.Border.GetLerpPoint(0.5f, out var toPos);
-            
+
             // 先に1回のカーブで繋がるトラックをチェック(そっちの方がきれいな曲線になりやすいので)
             var track = TryCreateTwoLineTrack(intersection, fromPos, fromNormal, toPos, toNormal, from, to,
                 edgeTurnType);
@@ -359,7 +359,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラックを直線とするにふさわしいかチェックし、そうなら生成して返します。そうでないならnullを返します。
         /// </summary>
         private RnTrack TryCreateOneLineTrack(RnIntersection intersection, Vector3 fromPos, Vector3 fromNormal,
-            Vector3 toPos, Vector3 toNormal, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            Vector3 toPos, Vector3 toNormal, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             // 直進で繋がるとき
             var segment = new LineSegment3D(fromPos - fromNormal * 0.1f,
@@ -391,7 +391,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラックが1回のカーブとするにふさわしいかチェックし、そうならトラックを生成して返します。そうでないならnullを返します。
         /// </summary>
         private RnTrack TryCreateTwoLineTrack(RnIntersection intersection, Vector3 fromPos, Vector3 fromNormal,
-            Vector3 toPos, Vector3 toNormal, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            Vector3 toPos, Vector3 toNormal, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             var offset = 0.01f;
             var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
@@ -445,7 +445,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
         }
 
-        private bool IsCollide(LineCrossPointResult lcp, RnNeighbor from, RnNeighbor to)
+        private bool IsCollide(LineCrossPointResult lcp, RnIntersectionEdge from, RnIntersectionEdge to)
         {
             return lcp.CrossingLines.Any(t =>
                 t.LineString != from.Border.LineString && t.LineString != to.Border.LineString);
@@ -455,16 +455,16 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             public RnTurnType TurnType { get; set; }
             public RnIntersectionEx.EdgeGroup ToEg { get; set; }
-            public RnNeighbor To { get; set; }
+            public RnIntersectionEdge To { get; set; }
 
-            public OutBound(RnTurnType turnType, RnIntersectionEx.EdgeGroup toEg, RnNeighbor to)
+            public OutBound(RnTurnType turnType, RnIntersectionEx.EdgeGroup toEg, RnIntersectionEdge to)
             {
                 TurnType = turnType;
                 ToEg = toEg;
                 To = to;
             }
         }
-        
+
         /// <summary>
         /// fromEg -> toEgに対する中心線とその各点に置ける幅のテーブル
         /// </summary>
@@ -507,7 +507,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// ビルド対象のトラックかどうか
         /// </summary>
-        public bool IsBuildTarget(RnIntersection intersection, RnNeighbor from, RnNeighbor to)
+        public bool IsBuildTarget(RnIntersection intersection, RnIntersectionEdge from, RnIntersectionEdge to)
         {
             if (intersection == null)
                 return false;
