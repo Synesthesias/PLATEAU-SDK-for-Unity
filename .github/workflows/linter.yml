@@ -35,7 +35,7 @@ jobs:
           LINTER_RULES_PATH: '.github/linters'
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_ANSIBLE: false
-          FILTER_REGEX_INCLUDE: '.*cs'
+#          FILTER_REGEX_INCLUDE: '.*cs'
           DEFAULT_BRANCH: 'feature/linter'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_JSCPD: false # コードの重複チェックなし
