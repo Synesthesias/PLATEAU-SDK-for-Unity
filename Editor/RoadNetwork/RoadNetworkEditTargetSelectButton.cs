@@ -39,9 +39,9 @@ namespace PLATEAU.Editor.RoadNetwork
         public const float PointHndScaleFactor = 0.15f;
         private const float laneHndScaleFactor = 0.4f;
         public const float LinkHndScaleFactor = 0.5f;
-        
+
         private readonly Vector3 selectBtnPosOffset = Vector3.up * 10.0f;
-        
+
         public IReadOnlyCollection<EditorData<RnRoadGroup>> connections = new EditorData<RnRoadGroup>[0];
         public Color connectionColor = Color.blue;
 
@@ -78,7 +78,7 @@ namespace PLATEAU.Editor.RoadNetwork
             }
 
             OnSceneGUISimpleEdit(); // ここが描画メイン
-            
+
             // 詳細モードを描画します（詳細モードは未完成です）
             if (editSceneViewGui?.IsDetailMode() is true)
             {
@@ -202,13 +202,13 @@ namespace PLATEAU.Editor.RoadNetwork
                 }
             }
         }
-        
+
         private bool SetRoadNetworkObject2System(PLATEAURnStructureModel target)
         {
             editTarget.RoadNetworkComponent = target;
             return editTarget.RoadNetworkComponent != null;
         }
-        
+
 
         private bool IsVisibleDistance(Camera camera, Vector3 pos, float distance)
         {
@@ -246,9 +246,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
         private static Vector3 CalcLinkPos(RnRoad link)
         {
-            var midIdx = link.AllLanes.Count() / 2;
+            var midIdx = link.MainLanes.Count() / 2;
             // midIdxのLaneを取得する
-            var lanesEnum = link.AllLanes.GetEnumerator();
+            var lanesEnum = link.MainLanes.GetEnumerator();
             var cnt = 0;
             while (lanesEnum.MoveNext())
             {
@@ -268,14 +268,14 @@ namespace PLATEAU.Editor.RoadNetwork
         }
 
 
-        
 
-        
 
-        
-        
+
+
+
+
     }
-    
+
     /// <summary>
     /// OnSceneGUI()内での状態
     /// </summary>

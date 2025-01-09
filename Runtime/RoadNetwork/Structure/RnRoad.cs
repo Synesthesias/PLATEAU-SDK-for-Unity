@@ -38,9 +38,6 @@ namespace PLATEAU.RoadNetwork.Structure
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
 
-        // 全レーン
-        public IEnumerable<RnLane> AllLanes => MainLanes;
-
         /// <summary>
         /// 中央分離帯を含めた全てのレーン。
         /// 左車線 -> 中央分離帯 -> 右車線の順番になっている
@@ -126,7 +123,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             get
             {
-                return Prev is RnIntersection && Next is RnIntersection && AllLanes.All(l => l.IsEmptyLane);
+                return Prev is RnIntersection && Next is RnIntersection && MainLanes.All(l => l.IsEmptyLane);
             }
         }
 
