@@ -112,20 +112,42 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         /// </summary>
         private float ArrowAngle(RnLane lane, bool isNext, out bool isSucceed)
         {
-            var way = lane.CreateCenterWay();
-            if (way == null || way.Count <= 1)
+            // レーンの左右で平均を取ります。
+            int wayCount = 0;
+            float angleSum = 0f;
+            var leftWay = lane.LeftWay;
+            if (leftWay != null && leftWay.Count > 1)
             {
-                Debug.Log("Skipping Angle because way point count is below 2.");
+                angleSum += ArrowAngleOneWay(leftWay, isNext);
+                wayCount++;
+            }
+
+            var rightWay = lane.RightWay;
+            if (rightWay != null && rightWay.Count > 1)
+            {
+                angleSum += ArrowAngleOneWay(rightWay, isNext);
+                wayCount++;
+            }
+            
+            if (wayCount == 0)
+            {
+                Debug.Log("Skipping Angle because way count is 0.");
                 isSucceed = false;
                 return 0;
             }
+            
+            isSucceed = true;
+            return angleSum / wayCount;
 
-            var diff = isNext
+        }
+
+        private float ArrowAngleOneWay(RnWay way, bool isNext)
+        {
+            // wayの頂点数が2以上であることが前提です。頂点数1以下は渡さないようにしてください。
+            var diff = isNext ^ way.IsReversed
                 ? way.GetPoint(way.Count - 1).Vertex - way.GetPoint(way.Count - 2).Vertex
                 : way.GetPoint(0).Vertex - way.GetPoint(1).Vertex;
-            isSucceed = true;
             return Vector2.SignedAngle(diff.Xz(), Vector2.up);
-
         }
         
 
