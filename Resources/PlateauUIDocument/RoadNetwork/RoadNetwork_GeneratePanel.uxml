@@ -18,11 +18,11 @@
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
             <ui:VisualElement style="flex-grow: 1; padding-left: 10px;">
-                <ui:FloatField label="頂点結合のセルサイズ（メートル）" value="42.2" name="Merge_Cell_Size" style="align-items: center; font-size: 12px;" />
-                <ui:IntegerField label="頂点結合の距離（セル数）" value="3" name="Merge_Cell_Length" style="align-items: center; font-size: 12px;" />
+                <ui:FloatField label="頂点結合のセルサイズ（メートル）" value="42.2" name="Merge_Cell_Size" style="align-items: center; font-size: 12px; display: none;" />
+                <ui:IntegerField label="頂点結合の距離（セル数）" value="3" name="Merge_Cell_Length" style="align-items: center; font-size: 12px; display: none;" />
                 <ui:FloatField label="同一直線に近い中間点を削除する距離" value="42.2" name="Remove_Mid_Point_Tolerance" style="font-size: 12px; align-items: center;" />
                 <ui:FloatField label="行き止まり線の拡大許容角度" value="42.2" name="Terminate_Allow_Edge_Angle" style="font-size: 12px; align-items: center;" />
-                <ui:Toggle label="中央分離帯を作成" name="Ignore_Highwaay" style="font-size: 12px;" />
+                <ui:Toggle label="高速道路を対象外にする" name="Ignore_Highwaay" style="font-size: 12px;" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px;">
