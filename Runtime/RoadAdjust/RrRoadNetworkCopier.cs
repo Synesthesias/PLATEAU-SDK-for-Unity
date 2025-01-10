@@ -103,7 +103,7 @@ namespace PLATEAU.RoadAdjust
             {
                 var dstEdge = new RnNeighbor();
                 dstEdge.Border = ways[srcEdge.Border];
-                dstEdge.Road = srcEdge.Road == null ? null : roadBases[srcEdge.Road];
+                dstEdge.Road = srcEdge.Road == null || !roadBases.ContainsKey(srcEdge.Road) ? null : roadBases[srcEdge.Road];
                 neighbors.Add(srcEdge, dstEdge);
             }
 
