@@ -11,6 +11,7 @@ using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 {
@@ -148,6 +149,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
             if(editModeToggle != null) editModeToggle.value = false;
+            SceneView.RepaintAll();
         }
 
         /// <summary>
