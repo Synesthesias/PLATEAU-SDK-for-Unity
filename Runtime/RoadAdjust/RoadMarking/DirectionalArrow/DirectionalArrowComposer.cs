@@ -77,16 +77,32 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
 
         private Vector3 ArrowPosition(RnLane lane, bool isNext, out bool isSucceed)
         {
-            var center = lane.CreateCenterWay();
-            if (center == null || center.Count == 0)
+            // 左のWayと右のWayの平均をとります。
+            int wayCount = 0;
+            var posSum = Vector3.zero;
+            var leftWay = lane.LeftWay;
+            if (leftWay != null && leftWay.Count > 0)
             {
-                Debug.Log("Skipping because center way count is 0.");
+                posSum += leftWay.PositionAtDistance(ArrowPositionOffset, isNext ^ leftWay.IsReversed);
+                wayCount++;
+            }
+
+            var rightWay = lane.RightWay;
+            if (rightWay != null && rightWay.Count > 0)
+            {
+                posSum += rightWay.PositionAtDistance(ArrowPositionOffset, isNext ^ rightWay.IsReversed);
+                wayCount++;
+            }
+            
+            if (wayCount == 0)
+            {
+                Debug.Log("Skipping because way count is 0.");
                 isSucceed = false;
                 return Vector3.zero;
             }
 
             isSucceed = true;
-            return center.PositionAtDistance(ArrowPositionOffset, isNext);
+            return posSum / wayCount;
         }
         
         
