@@ -4,6 +4,8 @@ using PLATEAU.RoadAdjust;
 using PLATEAU.RoadNetwork.Structure;
 using UnityEditor;
 using UnityEngine;
+using PLATEAU.Editor.RoadNetwork.AddSystem;
+using System.Collections.Generic;
 
 namespace PLATEAU.Editor.RoadNetwork
 {
@@ -13,6 +15,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
         public RoadNetworkAddSystemContext Context { get; private set; }
         public RnRoadAddSystem RoadAddSystem { get; private set; }
+        public IntersectionAddSystem IntersectionAddSystem { get; private set; }
 
         private RoadNetworkAddSystem(PLATEAURnStructureModel structureModel)
         {
@@ -29,6 +32,16 @@ namespace PLATEAU.Editor.RoadNetwork
                 // �X�P���g���X�V
                 Context.SkeletonData.UpdateData(roadGroup);
             };
+
+            IntersectionAddSystem = new IntersectionAddSystem(Context);
+            IntersectionAddSystem.OnIntersectionAdded = (intersection) =>
+            {
+                // 交差点モデル再生成
+                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
+                // スケルトン更新
+                //Context.SkeletonData.UpdateData(neighbor);
+            };
+            IntersectionAddSystem.Activate();
         }
 
         public static bool TryInitializeGlobal()
@@ -70,6 +83,7 @@ namespace PLATEAU.Editor.RoadNetwork
         private void OnSceneGUI(SceneView sceneView)
         {
             RoadAddSystem.HandleSceneGUI(sceneView);
+            IntersectionAddSystem.HandleSceneGUI(sceneView);
         }
     }
 }

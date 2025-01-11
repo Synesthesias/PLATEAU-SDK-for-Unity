@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             currentCore = core;
         }
 
-        public void BeginCreateSpline(Vector3 startPoint, SplineContainer targetContainer = null)
+        public void BeginCreateSpline(Vector3 startPoint)
         {
             if (IsCreatingSpline) return;
 
