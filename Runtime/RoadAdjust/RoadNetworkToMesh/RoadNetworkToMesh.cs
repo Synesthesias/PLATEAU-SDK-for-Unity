@@ -100,7 +100,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中", (float)i * 100f / contourMeshList.Count, $"{i} / {contourMeshList.Count}");
                 var contourMesh = contourMeshList[i];
                 var srcObjs = contourMesh.SourceObjects;
-                if (srcObjs.Length == 0) continue;
                 
                 // 輪郭線をテッセレートしてメッシュ化
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
