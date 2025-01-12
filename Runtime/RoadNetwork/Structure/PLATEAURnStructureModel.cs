@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.Util;
 using System.Diagnostics;
 using UnityEngine;
@@ -17,6 +18,10 @@ namespace PLATEAU.RoadNetwork.Structure
         // シリアライズ用フィールド
         [SerializeField]
         private RoadNetworkStorage storage;
+
+        // 生成用パラメータ
+        [field: SerializeField]
+        public RoadNetworkFactory Factory { get; set; } = new();
 
         /// <summary>
         /// 道路構造

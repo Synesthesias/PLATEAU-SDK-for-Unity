@@ -13,10 +13,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
     internal class DirectionalArrowComposer
     {
         private IRrTarget target;
-        
+
         /// <summary> 矢印を停止線からどの距離に置くか </summary>
         private const float ArrowPositionOffset = 4.5f;
-        
+
         public DirectionalArrowComposer(IRrTarget target)
         {
             this.target = target;
@@ -25,13 +25,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         public List<RoadMarkingInstance> Compose()
         {
             var ret = new List<RoadMarkingInstance>();
-            
-            
+
+
             foreach (var road in target.Roads())
             {
                 var nextIntersection = road.Next as RnIntersection;
                 var prevIntersection = road.Prev as RnIntersection;
-                
+
                 // roadでnextとprevを見る、isReverseに応じて
                 foreach (var lane in road.MainLanes)
                 {
@@ -48,10 +48,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                         var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false), ArrowAngle(lane, false));
                         ret.Add(prevArrow);
                     }
-                    
-                    
+
+
                 }
-                
+
             }
             return ret;
         }
@@ -69,7 +69,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             {
                 return null;
             }
-            
+
             meshInstance.RotateYAxis(rotation);
             meshInstance.Translate(position);
             return meshInstance;
@@ -78,7 +78,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         private Vector3 ArrowPosition(RnLane lane, bool isNext)
         {
             var center = lane.CreateCenterWay();
-            if (center.Count == 0)
+            if (center == null || center.Count == 0)
             {
                 Debug.Log("Skipping because center way count is 0.");
                 return Vector3.zero;
@@ -86,8 +86,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
 
             return center.PositionAtDistance(ArrowPositionOffset, isNext);
         }
-        
-        
+
+
 
         /// <summary>
         /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。
@@ -107,7 +107,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             return Vector2.SignedAngle(diff.Xz(), Vector2.up);
 
         }
-        
+
 
         private DirectionalArrowType ArrowType(RnWay laneBorder, RnIntersection intersection)
         {
@@ -130,10 +130,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             if (containStraight) return DirectionalArrowType.Straight;
             if (containRight) return DirectionalArrowType.Right;
             if (containLeft) return DirectionalArrowType.Left;
-            
+
             return DirectionalArrowType.None;
         }
-        
+
     }
 
     internal enum DirectionalArrowType
@@ -147,7 +147,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         public static RoadMarkingInstance ToMeshInstance(this DirectionalArrowType type)
         {
             if (type == DirectionalArrowType.None) return null;
-                // return new RoadMarkingInstance(Resources.Load<Mesh>(ModelFolder + "RoadMarkArrowStraight"), RoadMarkingMaterial.Yellow);;
+            // return new RoadMarkingInstance(Resources.Load<Mesh>(ModelFolder + "RoadMarkArrowStraight"), RoadMarkingMaterial.Yellow);;
 
             var prefab = type switch
             {
