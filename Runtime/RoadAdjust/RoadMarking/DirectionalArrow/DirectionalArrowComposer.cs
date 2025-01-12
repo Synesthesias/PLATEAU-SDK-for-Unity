@@ -35,6 +35,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 // roadでnextとprevを見る、isReverseに応じて
                 foreach (var lane in road.MainLanes)
                 {
+                    // 不正なレーンは無視する
+                    if (lane?.IsValidWay == false)
+                    {
+                        Debug.Log("Skipping invalid lane.");
+                        continue;
+                    }
+
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
@@ -78,7 +85,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         private Vector3 ArrowPosition(RnLane lane, bool isNext)
         {
             var center = lane.CreateCenterWay();
-            if (center == null || center.Count == 0)
+            if (center.Count == 0)
             {
                 Debug.Log("Skipping because center way count is 0.");
                 return Vector3.zero;
