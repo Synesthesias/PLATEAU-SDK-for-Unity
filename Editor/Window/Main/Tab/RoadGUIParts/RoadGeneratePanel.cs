@@ -105,11 +105,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                     modelObject = obj.AddComponent<PLATEAURnStructureModel>();
                 }
 
-                if (modelObject.GetComponent<PLATEAURnStructureModel>() == null)
-                {
-                    modelObject.gameObject.AddComponent<PLATEAURnStructureModel>();
-                }
-
                 // 一応デバッグ描画コンポーネントもつけておく事になった
                 if (modelObject.GetComponent<PLATEAURnModelDrawerDebug>() == null)
                     modelObject.gameObject.AddComponent<PLATEAURnModelDrawerDebug>();
