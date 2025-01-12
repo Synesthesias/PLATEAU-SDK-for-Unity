@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Splines;
 using Object = System.Object;
 
@@ -39,9 +38,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             SceneSelected = 1 << 1,
             // EditorWindowで選択されたもの
             GuiSelected = 1 << 2,
+            // 有効なもの
+            Valid = 1 << 3,
+            // 不正なもの
+            InValid = 1 << 4,
             // 全て
             All = ~0
         }
+
         // --------------------
         // start:フィールド
         // --------------------
@@ -115,7 +119,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         if (drawer.visible == false)
                             return false;
 
-                        if ((work.visibleType & drawer.showVisibleType) == 0)
+                        var visibleType = work.visibleType;
+                        if (drawer.IsValid(obj))
+                        {
+                            visibleType |= VisibleType.Valid;
+                            visibleType &= ~VisibleType.InValid;
+                        }
+                        else
+                        {
+                            visibleType |= VisibleType.InValid;
+                            visibleType &= ~VisibleType.Valid;
+                        }
+
+                        if ((visibleType & drawer.showVisibleType) == 0)
                             return false;
 
                         if (drawer.DrawImpl(work, obj) == false)
@@ -138,6 +154,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
 
             public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
+
+            // 有効な物かどうか
+            public virtual bool IsValid(T self) => true;
         }
 
         private static IEnumerable<LineSegment3D> GetSplineSegments(Spline a, float interval)
@@ -225,9 +244,21 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 return self.TargetTrans;
             }
+
+            public override bool IsValid(RnRoad self)
+            {
+                return self.IsValid;
+            }
         }
 
-        public class LaneDrawer : Drawer<RnLane> { }
+        public class LaneDrawer : Drawer<RnLane>
+        {
+
+            public override bool IsValid(RnLane self)
+            {
+                return self.IsValidWay;
+            }
+        }
 
         public class SideWalkDrawer : Drawer<RnSideWalk>
         {
@@ -235,9 +266,20 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             {
                 return self?.ParentRoad?.TargetTrans ?? Enumerable.Empty<PLATEAUCityObjectGroup>();
             }
+
+            public override bool IsValid(RnSideWalk self)
+            {
+                return self.IsValid;
+            }
         }
 
-        public class WayDrawer : Drawer<RnWay> { }
+        public class WayDrawer : Drawer<RnWay>
+        {
+            public override bool IsValid(RnWay self)
+            {
+                return self.IsValid;
+            }
+        }
 
 
 
