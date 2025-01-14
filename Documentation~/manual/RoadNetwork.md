@@ -30,6 +30,7 @@
 ![](../resources/manual/roadnetwork/generate_panel.png)
 
 道路調整の画面は以下のタブに分かれています。
+
 - `生成`：道路ネットワークの自動生成ができます。
 - `編集`：生成済みの道路ネットワークの編集ができます。
 <!-- - `追加`：生成済みの道路ネットワークに新しい道路や交差点を追加できます。 -->
@@ -133,7 +134,8 @@ PLATEAU SDKウィンドウ上で、車線数や歩道、中央分離帯の有無
 
 
 #### 交差点編集
-編集対象に交差点を選んだとき、トラック（交差点内の車の経路）と形状を編集できます。  
+
+編集対象に交差点を選んだとき、トラック（交差点内の車の経路）と形状を編集できます。
 
 ![](../resources/manual/roadnetwork/editing_intersection_scene_view.png)
 #### トラック（交差点内経路）の追加削除
@@ -156,4 +158,12 @@ PLATEAU SDKウィンドウ上で、車線数や歩道、中央分離帯の有無
 - 道路ネットワークをGeoJSON形式でエクスポートできます。これは地理情報システムでよく利用される形式です。
 
 ![](../resources/manual/roadnetwork/export_road_network.png)
+
+
+### 「エクスポート」タブ
+- 道路ネットワークをGeoJSON形式でエクスポートできます。これは地理情報システムでよく利用される形式です。
+
+![](../resources/manual/roadnetwork/export_road_network.png)
+
+
 
