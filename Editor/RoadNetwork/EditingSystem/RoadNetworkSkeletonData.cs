@@ -17,6 +17,11 @@ namespace PLATEAU.RoadNetwork
 
         public Vector3 Position { get; }
         public RnIntersection Intersection { get; }
+
+        internal void UpdateData()
+        {
+
+        }
     }
 
     internal class RnRoadSkeleton
@@ -76,6 +81,12 @@ namespace PLATEAU.RoadNetwork
         {
             var roadSkeleton = Roads.FirstOrDefault(x => x.Road == roadGroup);
             roadSkeleton?.UpdateSpline();
+        }
+
+        internal void UpdateData(RnIntersection intersection)
+        {
+            var intersectionSkeleton = Intersections.FirstOrDefault(x => x.Intersection == intersection);
+            intersectionSkeleton?.UpdateData();
         }
     }
 }

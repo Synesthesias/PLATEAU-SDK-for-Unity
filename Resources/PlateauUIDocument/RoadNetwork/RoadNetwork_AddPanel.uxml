@@ -17,17 +17,19 @@
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between; align-items: center; padding-top: 8px; padding-bottom: 8px;">
                     <ui:Label tabindex="-1" text="交差点" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 16px; flex-grow: 0; padding-right: 16px;" />
                     <ui:DropdownField index="1" choices="T字路,十字路" tabindex="0" style="flex-shrink: 1; flex-grow: 1;" />
-                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center;">
-                        <ui:VisualElement name="Icon_Plus" style="flex-grow: 0; width: 18px; height: 18px; flex-shrink: 0;" />
-                        <ui:Label tabindex="-1" text="追加" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddStartButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center;">
+                        <ui:Label tabindex="-1" text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
+                    </ui:Button>
+                    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddEndButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center; display: none;">
+                        <ui:Label tabindex="-1" text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); display: flex;" />
                     </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="Divider" style="flex-grow: 1;" />
-            <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
+            <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center; display: none;">
                 <ui:Button text="編集内容を確定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" />
+    <ui:Instance template="RoadNetwork_RegenerateRoadPanel" name="RoadNetwork_RegenerateRoadPanel" style="display: none;" />
 </ui:UXML>

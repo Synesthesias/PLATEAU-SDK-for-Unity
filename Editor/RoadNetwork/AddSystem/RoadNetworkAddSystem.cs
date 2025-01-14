@@ -25,7 +25,9 @@ namespace PLATEAU.Editor.RoadNetwork
             RoadAddSystem.OnRoadAdded = (roadGroup) =>
             {
                 // 道路モデル再生成
-                bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roadGroup.Roads[0].TargetTrans[0].transform, ReproducedRoadDirection.Next);
+                bool crosswalkExists = roadGroup.Roads[0].TargetTrans == null || roadGroup.Roads[0].TargetTrans.Count == 0
+                    ? true
+                    : PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roadGroup.Roads[0].TargetTrans[0].transform, ReproducedRoadDirection.Next);
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete);
 
                 // スケルトン更新
@@ -38,9 +40,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 交差点モデル再生成
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
                 // スケルトン更新
-                //Context.SkeletonData.UpdateData(neighbor);
+                //Context.SkeletonData.UpdateData(intersection);
             };
-            IntersectionAddSystem.Activate();
         }
 
         public static bool TryInitializeGlobal()
@@ -55,6 +56,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // SceneViewの更新イベントにフック
             SceneView.duringSceneGui += Active.OnSceneGUI;
+
+            // マウスカーソルをシーンビューにホバーしないとシーンビューが更新されないため、強制的に再描画
+            SceneView.RepaintAll();
 
             return true;
         }
@@ -83,6 +87,9 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             RoadAddSystem.HandleSceneGUI(sceneView);
             IntersectionAddSystem.HandleSceneGUI(sceneView);
+
+            // マウスカーソルをシーンビューにホバーしないとシーンビューが更新されないため、強制的に再描画
+            SceneView.RepaintAll();
         }
     }
 }
