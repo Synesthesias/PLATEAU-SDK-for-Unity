@@ -57,12 +57,26 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
         }
 
-        public IntersectionEdgeInfo Execute(RnNeighbor neighbor)
+        public IntersectionEdgeInfo Execute(RnNeighbor neighbor, int index)
         {
-            var edgeLineOrigin = neighbor.Border.Points.First();
-            var edgeLineDirection = neighbor.Border.Points.Last().Vertex - neighbor.Border.Points.First().Vertex;
+            var edgeLineOrigin = neighbor.Border.Points.ElementAt(index);
+            var edgeLineDirection = neighbor.Border.Points.ElementAt(index + 1).Vertex - neighbor.Border.Points.ElementAt(index);
             var leftSideWalkEdge = FindLeftSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
             var rightSideWalkEdge = FindRightSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
+            if (index > 0)
+            {
+                var newWay = new RnWay(new RnLineString(neighbor.Border.Points.Take(index + 1)));
+                target.AddEdge(null, newWay);
+                neighbor.Border.Points = neighbor.Border.Points.Skip(index);
+            }
+            if (index < neighbor.Border.Points.Count() - 1)
+            {
+                var newWay = new RnWay(new RnLineString(neighbor.Border.Points.Skip(1)));
+                target.AddEdge(null, newWay);
+                neighbor.Border.Points = neighbor.Border.Points.Take(2);
+            }
+            target.Align();
+
             return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
         }
 

@@ -32,13 +32,15 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         public RnNeighbor neighbor;
         public int index;
         public Vector3 center;
+        public Vector3 forward;
 
-        public ExtensibleIntersectionEdge(RnIntersection intersection, RnNeighbor neighbor, int index, Vector3 center)
+        public ExtensibleIntersectionEdge(RnIntersection intersection, RnNeighbor neighbor, int index, Vector3 center, Vector3 forward)
         {
             this.intersection = intersection;
             this.neighbor = neighbor;
             this.index = index;
             this.center = center;
+            this.forward = forward;
         }
     }
 
@@ -190,7 +192,12 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                     //if (intersection.SideWalks.Any(sideWalk => sideWalk.InsideWay))
                     //    continue;
                     //return new List<(RnWay, int)> { (edge, i) };
-                    extensibleEdges.Add(new ExtensibleIntersectionEdge(intersection, edge, i, (point1.Vertex + point2.Vertex) / 2));
+                    extensibleEdges.Add(new ExtensibleIntersectionEdge(
+                        intersection,
+                        edge,
+                        i,
+                        (point1.Vertex + point2.Vertex) / 2,
+                        Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
                 }
             }
             return extensibleEdges;

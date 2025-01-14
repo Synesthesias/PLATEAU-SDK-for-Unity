@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 isRoadSelected = true;
 
                 // 作図開始
-                splineCreateHandles.BeginCreateSpline(edge.center);
+                splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
             };
             extensiblePointHandles.OnIntersectionSelected = (edge) =>
             {
@@ -53,7 +53,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 isRoadSelected = false;
 
                 // 作図開始
-                splineCreateHandles.BeginCreateSpline(edge.center);
+                splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
             };
         }
 
@@ -102,7 +102,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
             else
             {
-                AddRoadAlongSpline(selectedIntersection, newSpline);
+                newRoad = AddRoadAlongSpline(selectedIntersection, newSpline);
             }
             //else
             //    AddRoadAlongSpline(edge, newSpline);
@@ -115,7 +115,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         /// <param name="targetRoad"></param>
         /// <param name="spline"></param>
-        private void ExtendRoadAlongSpline(RnRoadGroup targetRoad, Spline spline, bool isPrev)
+        private void ExtendRoadAlongSpline(RnRoadGroup targetRoad, Spline spline, bool isPrev, bool enableEdgeReplace = false)
         {
             var road = targetRoad.Roads[0];
 
@@ -158,11 +158,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         newEdgePoints.Add(newEdgePoint);
                 }
 
+                if (oldEdgePoints.Count == 0 || newEdgePoints.Count == 0)
+                {
+                    //Debug.LogWarning($"{laneBorderType}, {oldEdgePoints.Count}, {newEdgePoints.Count}, {lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last())}");
+                    Debug.LogWarning($"old edge count: {oldEdgePoints.Count}, new edge count: {newEdgePoints.Count}");
+                    continue;
+                }
+
                 // ボーダー再構築
                 foreach (var laneBorderType in new List<RnLaneBorderType> { RnLaneBorderType.Prev, RnLaneBorderType.Next })
                 {
-                    Debug.Log($"{laneBorderType}, {oldEdgePoints.Count}, {newEdgePoints.Count}, {lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last())}");
-
                     if (lane.GetBorder(laneBorderType) == null || !lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last()))
                         continue;
                     lane.SetBorder(laneBorderType, new RnWay(new RnLineString(newEdgePoints)));
@@ -199,6 +204,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         newEdgePoints.Add(newEdgePoint);
                 }
 
+                if (oldEdgePoints.Count == 0 || newEdgePoints.Count == 0)
+                {
+                    Debug.LogWarning($"old edge count: {oldEdgePoints.Count}, new edge count: {newEdgePoints.Count}");
+                    continue;
+                }
+
                 // エッジ再構築
                 {
                     var edge = sideWalk.StartEdgeWay;
@@ -222,7 +233,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private RnRoadGroup AddRoadAlongSpline(ExtensibleIntersectionEdge edge, Spline spline)
         {
             var edgeMaker = new RnRoadEdgeMaker(edge.intersection);
-            var edgeInfo = edgeMaker.Execute(edge.neighbor);
+            var edgeInfo = edgeMaker.Execute(edge.neighbor, edge.index);
 
             // 長さ0の道路を生成
             var road = new RnRoad();
@@ -273,7 +284,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <param name="points"></param>
         /// <param name="spline"></param>
         /// <param name="isReversed">trueの場合末尾ではなく先頭から拡張する</param>
-        private void ExtendPointsAlongSpline(List<RnPoint> points, Spline spline, out RnPoint oldEdgePoint, out RnPoint newEdgePoint)
+        private void ExtendPointsAlongSpline(List<RnPoint> points, Spline spline, out RnPoint oldEdgePoint, out RnPoint newEdgePoint, bool enableEdgeReplace = false)
         {
             bool shouldInsert = false;
             oldEdgePoint = null;
@@ -282,6 +293,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             foreach (var point in new Stack<RnPoint>(points))
             {
                 Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
+                new GameObject("V1").transform.position = point.Vertex;
+                new GameObject("Sp").transform.position = spline.EvaluatePosition(0f);
                 if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
                 {
                     pointsOnEdge.Insert(0, point);
@@ -387,12 +400,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private void DetectSplineCreationCompletion()
         {
             bool isCreatingNow = splineCreateHandles.IsCreatingSpline;
-            if (!isCreatingNow && wasCreatingSpline)
+            bool isCreatingFinished = !isCreatingNow && wasCreatingSpline;
+            wasCreatingSpline = isCreatingNow;
+
+            if (isCreatingFinished)
             {
                 // 直前まで作図モードだった → 今フレームで終了した
                 OnSplineCreationFinished();
             }
-            wasCreatingSpline = isCreatingNow;
         }
     }
 }

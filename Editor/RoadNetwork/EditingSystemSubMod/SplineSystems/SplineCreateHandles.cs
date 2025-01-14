@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
+using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
@@ -18,7 +19,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             currentCore = core;
         }
 
-        public void BeginCreateSpline(Vector3 startPoint)
+        public void BeginCreateSpline(Vector3 startPoint, Vector3 startTangent)
         {
             if (IsCreatingSpline) return;
 
@@ -26,6 +27,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             fixedY = startPoint.y;
 
             currentCore.AddKnotAtT(startPoint, 0f);
+            currentCore.SetStartPointConstraint(true, startPoint, startPoint + Vector3.Cross(startTangent, Vector3.up).normalized);
         }
 
         public void HandleSceneGUI()

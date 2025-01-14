@@ -15,6 +15,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private readonly Button roadAddStartButton;
         private readonly Button roadAddEndButton;
 
+        private readonly Button intersectionAddStartButton;
+        private readonly Button intersectionAddEndButton;
+
         public RoadAddPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
             roadAddStartButton = rootVisualElement.Q<Button>("RoadAddStartButton");
@@ -23,6 +26,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             roadAddStartButton.clicked += OnRoadAddStartButtonClicked;
             roadAddEndButton.clicked += OnRoadAddEndButtonClicked;
 
+            intersectionAddStartButton = rootVisualElement.Q<Button>("IntersectionAddStartButton");
+            intersectionAddEndButton = rootVisualElement.Q<Button>("IntersectionAddEndButton");
+
+            intersectionAddStartButton.clicked += OnIntersectionAddStartButtonClicked;
+            intersectionAddEndButton.clicked += OnIntersectionAddEndButtonClicked;
         }
 
         protected override void OnTabSelected(VisualElement root)
@@ -36,6 +44,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
 
             UpdateRoadAddButtonVisual(false);
+            UpdateIntersectionAddButtonVisual(false);
         }
 
         protected override void OnTabUnselected()
@@ -64,6 +73,26 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             ToggleDisplay(!isActive, roadAddStartButton);
             ToggleDisplay(isActive, roadAddEndButton);
+        }
+
+        private void OnIntersectionAddStartButtonClicked()
+        {
+            UpdateIntersectionAddButtonVisual(true);
+
+            RoadNetworkAddSystem.Active.IntersectionAddSystem.Activate();
+        }
+
+        private void OnIntersectionAddEndButtonClicked()
+        {
+            UpdateIntersectionAddButtonVisual(false);
+
+            RoadNetworkAddSystem.Active.IntersectionAddSystem.Deactivate();
+        }
+
+        private void UpdateIntersectionAddButtonVisual(bool isActive)
+        {
+            ToggleDisplay(!isActive, intersectionAddStartButton);
+            ToggleDisplay(isActive, intersectionAddEndButton);
         }
 
         private static void ToggleDisplay(bool isActive, VisualElement element)

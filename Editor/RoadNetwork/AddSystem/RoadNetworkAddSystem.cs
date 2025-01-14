@@ -39,9 +39,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 交差点モデル再生成
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
                 // スケルトン更新
-                //Context.SkeletonData.UpdateData(neighbor);
+                //Context.SkeletonData.UpdateData(intersection);
             };
-            IntersectionAddSystem.Activate();
         }
 
         public static bool TryInitializeGlobal()
@@ -56,6 +55,9 @@ namespace PLATEAU.Editor.RoadNetwork
 
             // SceneViewの更新イベントにフック
             SceneView.duringSceneGui += Active.OnSceneGUI;
+
+            // マウスカーソルをシーンビューにホバーしないとシーンビューが更新されないため、強制的に再描画
+            SceneView.RepaintAll();
 
             return true;
         }
@@ -84,6 +86,9 @@ namespace PLATEAU.Editor.RoadNetwork
         {
             RoadAddSystem.HandleSceneGUI(sceneView);
             IntersectionAddSystem.HandleSceneGUI(sceneView);
+
+            // マウスカーソルをシーンビューにホバーしないとシーンビューが更新されないため、強制的に再描画
+            SceneView.RepaintAll();
         }
     }
 }
