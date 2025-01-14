@@ -16,11 +16,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private bool startConstrainToLineSegment = false;
         private Vector3 startLineStart;
         private Vector3 startLineEnd;
+        private Vector3? startTangent;
 
         // 終点ノット用制約
         private bool endConstrainToLineSegment = false;
         private Vector3 endLineStart;
         private Vector3 endLineEnd;
+        private Vector3? endTangent;
 
         /// <summary> 始点・終点について、制約時のtangentの長さ </summary>
         private const float ConstraintTangentLength = 1f;
@@ -32,6 +34,18 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             this.Spline = spline;
         }
 
+        public void SetStartTangent(Vector3 tangent)
+        {
+            startTangent = tangent;
+            UpdateTangentModes();
+        }
+
+        public void SetEndTangent(Vector3 tangent)
+        {
+            endTangent = tangent;
+            UpdateTangentModes();
+        }
+
         /// <summary>
         /// 始点ノットに対する制約を設定
         /// enable=trueで(lineStart～lineEnd)上に投影
@@ -41,6 +55,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             startConstrainToLineSegment = enable;
             startLineStart = lineStart;
             startLineEnd = lineEnd;
+            startTangent = GetPerpendicular(lineEnd - lineStart);
             UpdateTangentModes();
         }
 
@@ -53,6 +68,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             endConstrainToLineSegment = enable;
             endLineStart = lineStart;
             endLineEnd = lineEnd;
+            endTangent = GetPerpendicular(lineEnd - lineStart);
             UpdateTangentModes();
         }
 
@@ -159,14 +175,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
 
             // 始点ノット
-            if (count > 0 && startConstrainToLineSegment)
+            if (count > 0 && startTangent != null)
             {
                 Spline.SetTangentMode(0, TangentMode.Broken);
                 SetKnotPerpendicularTangents(0, startLineStart, startLineEnd, ConstraintTangentLength);
             }
 
             // 終点ノット
-            if (count > 1 && endConstrainToLineSegment)
+            if (count > 1 && endTangent != null)
             {
                 int lastIndex = count - 1;
                 Spline.SetTangentMode(lastIndex, TangentMode.Broken);
@@ -179,10 +195,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         private void SetKnotPerpendicularTangents(int index, Vector3 lineStart, Vector3 lineEnd, float tangentLength)
         {
-            Vector3 lineDir = (lineEnd - lineStart).normalized;
-            Vector3 perp = GetPerpendicular(lineDir);
             var knot = Spline[index];
-            var knotRotation = Quaternion.LookRotation(perp, Vector3.up);
+            var knotRotation = Quaternion.LookRotation(tangent, Vector3.up);
             knot.Rotation.value.x = knotRotation.x;
             knot.Rotation.value.y = knotRotation.y;
             knot.Rotation.value.z = knotRotation.z;

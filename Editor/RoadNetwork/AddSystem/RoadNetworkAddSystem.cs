@@ -29,8 +29,8 @@ namespace PLATEAU.Editor.RoadNetwork
                 bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, false);
 
-                // �X�P���g���X�V
-                Context.SkeletonData.UpdateData(roadGroup);
+                // スケルトン更新
+                Context.SkeletonData.ReconstructIncludeNeighbors(roadGroup.Roads[0]);
             };
 
             IntersectionAddSystem = new IntersectionAddSystem(Context);
@@ -39,7 +39,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 交差点モデル再生成
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
                 // スケルトン更新
-                //Context.SkeletonData.UpdateData(intersection);
+                Context.SkeletonData.ReconstructIncludeNeighbors(intersection);
             };
         }
 

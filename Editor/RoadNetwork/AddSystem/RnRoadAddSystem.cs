@@ -26,7 +26,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         // 前フレームで作図モード中かどうかのフラグ (作図完了判定に使用)
         private bool wasCreatingSpline = false;
 
-        private RnExtensiblePointHandles extensiblePointHandles;
+        private RnSkeletonHandles extensiblePointHandles;
 
         private RoadNetworkAddSystemContext context;
 
@@ -38,7 +38,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         {
             this.context = context;
             splineCreateHandles = new SplineCreateHandles(splineEditorCore);
-            extensiblePointHandles = new RnExtensiblePointHandles(context);
+            extensiblePointHandles = new RnSkeletonHandles(context);
             extensiblePointHandles.OnRoadSelected = (edge) =>
             {
                 selectedRoad = edge;
