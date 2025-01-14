@@ -218,7 +218,8 @@ namespace PLATEAU.Editor.RoadNetwork
         private bool Button2DOn3D(Camera camera, Vector3 pos2d_dis, Texture2D texture)
         {
             var size2d = Vector2.one * 50;
-            var pos2d = new Vector2(pos2d_dis.x, camera.pixelHeight - pos2d_dis.y);
+            float scaler = EditorGUIUtility.pixelsPerPoint;
+            var pos2d = new Vector2(pos2d_dis.x, camera.pixelHeight - pos2d_dis.y) / scaler;
             var buttonRect = new Rect(pos2d, size2d);
             var style = new GUIStyle();
             style.normal.background = null;
