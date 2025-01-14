@@ -28,7 +28,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         // 処理の成否を返す
         public bool IsSuccess { get; }
-        public bool IsEditingDetailMode { get; set; }
         public bool IsSplineEditMode { get; }
         public int NumLeftLane { get; set; }
         public int NumRightLane { get; set; }
@@ -45,7 +44,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
     internal struct ScriptableRoadMdlData
     {
-        public bool isEditingDetailMode;
         public bool isSplineEditMode;
         public int numLeftLane;
         public int numRightLane;
@@ -55,7 +53,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         public void Reset(IScriptableRoadMdl mdl)
         {
-            isEditingDetailMode = mdl.IsEditingDetailMode;
             isSplineEditMode = mdl.IsSplineEditMode;
             numLeftLane = mdl.NumLeftLane;
             numRightLane = mdl.NumRightLane;
@@ -197,7 +194,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             //public float _laneWidth = 0.0f;
             //public bool _isApply = false;
             road = FindProperty("road");
-            isEditingDetailMode = FindProperty("isEditingDetailMode");
             isSplineEditMode = FindProperty("isSplineEditMode");
             numLeftLane = FindProperty("numLeftLane");
             numRightLane = FindProperty("numRightLane");
@@ -219,8 +215,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
         public EditorData<RnRoadGroup> editorData;
         public SerializedProperty road;
-
-        public SerializedProperty isEditingDetailMode;
+        
         public SerializedProperty isSplineEditMode;
         public SerializedProperty numLeftLane;
         public SerializedProperty numRightLane;
@@ -244,8 +239,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
         public bool EnableMedianLane { get => enableMedianLane.boolValue; set => enableMedianLane.boolValue = value; }
         public bool EnableLeftSideWalk { get => enableLeftSideWalk.boolValue; set => enableLeftSideWalk.boolValue = value; }
         public bool EnableRightSideWalk { get => enableRightSideWalk.boolValue; set => enableRightSideWalk.boolValue = value; }
-
-        public bool IsEditingDetailMode { get => isEditingDetailMode.boolValue; set => isEditingDetailMode.boolValue = value; }
+        
 
         public bool IsSplineEditMode
         {
@@ -283,16 +277,6 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 
             bool isChanged = false;
             var road = TargetScriptableRoadMdl.road;
-            if (cache.isEditingDetailMode != IsEditingDetailMode)
-            {
-                //if (mod.CanSetDtailMode())
-                //{
-                //    Notify(IsEditingDetailMode, cache.isEditingDetailMode, nameof(IsEditingDetailMode));
-                //    cache.isEditingDetailMode = IsEditingDetailMode;
-                //    mod.SetDetailMode(IsEditingDetailMode);
-                //    isChanged = true;
-                //}
-            }
 
             if (cache.isSplineEditMode != IsSplineEditMode)
             {

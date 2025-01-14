@@ -3,10 +3,8 @@ using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util.GeoGraph;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -29,9 +27,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private RnModel roadNetwork;
         private RoadNetworkEditTargetSelectButton editTargetSelectButton;
         private RoadNetworkEditTarget editTarget;
+        private RoadLaneDetailEditor roadDetailEditor;
         
         // 詳細編集モードかどうか
-        public bool isEditingDetailMode = false;
+        private bool isEditingDetailMode = false;
 
         private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData =
             new Dictionary<RnIntersection, EditorData<RnIntersection>>();
@@ -67,7 +66,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// 計算や処理を行う初期化
         /// それらに必要な要素は初期化済みとする
         /// </summary>
-        public void Init()
+        public void Init(bool detailMode)
         {
             ClearCache();
 
@@ -150,27 +149,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             });
             //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
-            return;
+            SetDetailMode(detailMode);   
         }
+        
 
-        /// <summary>
-        /// 詳細編集モードに移行できるか
-        /// 何かの編集機能を利用途中であったりすると移行できない（例　２つのノードをクリックする必要がある機能で1つ目をクリックした後）
-        /// </summary>
-        /// <returns></returns>
-        public bool CanSetDtailMode()
-        {
-            return true;
-        }
 
-        /// <summary>
-        /// 詳細編集モードか？
-        /// </summary>
-        /// <returns></returns>
-        public bool IsDetailMode()
-        {
-            return isEditingDetailMode;
-        }
 
         /// <summary>
         /// 詳細編集モードに移行する
@@ -179,6 +162,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public void SetDetailMode(bool isDetailMode)
         {
             isEditingDetailMode = isDetailMode;
+            if (isDetailMode)
+            {
+                roadDetailEditor = new RoadLaneDetailEditor();
+            }
         }
 
         private void ClearCache()
@@ -195,17 +182,47 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             if (roadNetworkEditingSystemObjRoot == null)
                 return;
-            
-            UpdateRoad(sceneView);
 
+            RefreshGUI();
+
+            if (isEditingDetailMode)
+            {
+                UpdateRoadOnDetailMode();
+            }
+            else
+            {
+                UpdateRoadOnSimpleMode(sceneView);
+            }
+            
 
             // 仮で呼び出し　描画の更新がワンテンポ遅れるため　
             EditorUtility.SetDirty(roadNetworkEditingSystemObjRoot);
         }
 
-        private void UpdateRoad(SceneView sceneView)
+        private void RefreshGUI()
         {
-            // マウス位置に近いwayを算出
+            // guiの更新
+
+            editTargetSelectButton.connections = this.roadGroupEditorData;
+            //if (connections.Count > 0)
+            //{
+            //    Handles.DrawLines(pts);
+            //    //Gizmos.DrawLineList(pts);
+            //}
+            editTargetSelectButton.intersections = null;
+            editTargetSelectButton.intersections = intersectionEditorData.Values;
+            //var intersectionsPoss = guisys.intersections;
+            //intersectionsPoss.Capacity = nodeEditorData.Count;
+            //foreach (var item in nodeEditorData.Values)
+            //{
+            //    if (item.IsIntersection == false)
+            //        continue;
+            //    intersectionsPoss.Add(item.RefGameObject.transform.position);
+            //}
+        }
+
+        private void UpdateRoadOnSimpleMode(SceneView sceneView)
+        {
 
             if (this.roadGroupEditorData.TryGetCache<RoadGroupEditorData>("linkGroup", out var eConn) == false)
             {
@@ -235,24 +252,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 slidingWay);
             gizmosdrawer.SetLine(lines);
 
-            // guiの更新
+            
+        }
 
-            editTargetSelectButton.connections = this.roadGroupEditorData;
-            //if (connections.Count > 0)
-            //{
-            //    Handles.DrawLines(pts);
-            //    //Gizmos.DrawLineList(pts);
-            //}
-            editTargetSelectButton.intersections = null;
-            editTargetSelectButton.intersections = intersectionEditorData.Values;
-            //var intersectionsPoss = guisys.intersections;
-            //intersectionsPoss.Capacity = nodeEditorData.Count;
-            //foreach (var item in nodeEditorData.Values)
-            //{
-            //    if (item.IsIntersection == false)
-            //        continue;
-            //    intersectionsPoss.Add(item.RefGameObject.transform.position);
-            //}
+        private void UpdateRoadOnDetailMode()
+        {
+            var selectedRoadGroup = editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
+            if (selectedRoadGroup == null) return;
+            roadDetailEditor.Draw(selectedRoadGroup.Ref, editTarget);
         }
         
         private RoadNetworkEditorGizmos GetRoadNetworkEditorGizmos()
@@ -265,6 +272,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             
             GetRoadNetworkEditorGizmos()?.Clear();
+            roadDetailEditor = null;
             
             ClearCache();
         }
