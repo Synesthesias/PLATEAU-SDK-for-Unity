@@ -172,6 +172,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             var laneAll = roadNetworkContext.RoadNetworkGetter.GetLanes();
 
+            if (OriginLink == null) return lanes;
             foreach (var lane in OriginLink.MainLanes)
             {
                 if (!lane.IsValid) continue;
