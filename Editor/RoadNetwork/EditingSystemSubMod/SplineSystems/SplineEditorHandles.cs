@@ -36,11 +36,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 // ノットがホバーされている：このノットのみ移動可能
                 HandleMovement(core);
+                DrawAllKnotsStaticExceptHovered(core);
             }
             else
             {
                 // ノットホバーなし：ノットは静的表示、スプライン上クリックで追加可能
-                DrawAllKnotsStatic(core);
+                DrawAllKnotsStaticExceptHovered(core);
                 HandleAddition(core);
             }
         }
@@ -71,7 +72,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (hoveredKnotIndex >= 0 && e.type == EventType.MouseDown && e.button == 0 && e.control)
             {
                 core.RemoveKnot(hoveredKnotIndex);
-                MarkDirty(core);
                 e.Use();
                 return true;
             }
@@ -106,15 +106,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 newPos.y = currentPos.y;
                 core.MoveKnot(i, newPos);
-                MarkDirty(core);
             }
         }
 
-        private static void DrawAllKnotsStatic(SplineEditorCore core)
+        private static void DrawAllKnotsStaticExceptHovered(SplineEditorCore core)
         {
             int knotCount = core.GetKnotCount();
             for (int i = 0; i < knotCount; i++)
             {
+                if (i == hoveredKnotIndex) continue;
                 Vector3 pos = core.GetKnotPosition(i);
                 float size = HandleUtility.GetHandleSize(pos) * 0.1f;
                 Handles.color = Color.cyan;
@@ -141,26 +141,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 if (e.type == EventType.MouseDown && e.button == 0 && !e.control)
                 {
                     core.AddKnotAtT(nearestPoint, outT);
-                    MarkDirty(core);
                     // e.Use()しない → Slider2Dないので問題なし
                 }
             }
         }
 
-        private static void MarkDirty(SplineEditorCore core)
-        {
-            var container = core.GetContainer();
-            if (container != null)
-            {
-                EditorUtility.SetDirty(container);
-                SceneView.RepaintAll();
-            }
-        }
-
         private static Vector3 GetNearestPointOnSpline(SplineEditorCore core, Ray ray, out float outT, int sampleCount = 50)
         {
-            var container = core.GetContainer();
-            var spline = container != null ? container.Spline : null;
+            var spline = core.Spline;
 
             if (spline == null || spline.Count == 0)
             {

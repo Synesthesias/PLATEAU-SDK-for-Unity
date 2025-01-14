@@ -135,8 +135,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
             rootVisualElement.Unbind();
 
-            EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = false;
-            EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadBase;
+            if (EditingSystem != null)
+            {
+                EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = false;
+                EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement -= OnChangedSelectedRoadBase;
+            }
+            
             
             
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);

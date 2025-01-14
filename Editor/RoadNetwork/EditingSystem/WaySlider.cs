@@ -54,7 +54,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             RnWay slidingWay = null;
 
             var evt = Event.current;
-            var mouseDown = evt.type == EventType.MouseDown && evt.button == 0 && evt.alt == false;
+            var mouseDown = LineUtil.IsMouseDown();
             var mouseUp = evt.type == EventType.MouseUp && evt.button == 0;
             if (mouseDown) isMouseDownHold = true;
             if (mouseUp) isMouseDownHold = false;
