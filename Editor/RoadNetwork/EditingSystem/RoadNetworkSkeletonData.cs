@@ -2,43 +2,118 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
 namespace PLATEAU.RoadNetwork
 {
+    internal struct ExtensibleRoadEdge
+    {
+        public RnRoadGroup road;
+        public bool isPrev;
+        public Vector3 center;
+        public Vector3 forward;
+
+        public ExtensibleRoadEdge(RnRoadGroup road, bool isPrev, Vector3 center, Vector3 forward)
+        {
+            this.road = road;
+            this.isPrev = isPrev;
+            this.center = center;
+            this.forward = forward;
+        }
+    }
+
+    internal struct ExtensibleIntersectionEdge
+    {
+        public RnIntersection intersection;
+        public RnNeighbor neighbor;
+        public int index;
+        public Vector3 center;
+        public Vector3 forward;
+
+        public ExtensibleIntersectionEdge(RnIntersection intersection, RnNeighbor neighbor, int index, Vector3 center, Vector3 forward)
+        {
+            this.intersection = intersection;
+            this.neighbor = neighbor;
+            this.index = index;
+            this.center = center;
+            this.forward = forward;
+        }
+    }
+
     internal class RnIntersectionSkeleton
     {
+        public Vector3 Position { get; }
+        public RnIntersection Intersection { get; }
+        public List<ExtensibleIntersectionEdge> ExtensibleEdges { get; private set; }
+
         public RnIntersectionSkeleton(RnIntersection intersection)
         {
             Intersection = intersection;
+            Reconstruct();
         }
 
-        public Vector3 Position { get; }
-        public RnIntersection Intersection { get; }
-
-        internal void UpdateData()
+        public void Reconstruct()
         {
+            ExtensibleEdges = FindExtensibleEdges(Intersection);
+        }
 
+        /// <summary>
+        /// 道路が追加可能なエッジを探す
+        /// </summary>
+        /// <param name="intersection"></param>
+        /// <returns></returns>
+        private static List<ExtensibleIntersectionEdge> FindExtensibleEdges(RnIntersection intersection)
+        {
+            var extensibleEdges = new List<ExtensibleIntersectionEdge>();
+            foreach (var edge in intersection.Edges)
+            {
+                if (edge.IsBorder) continue;
+
+                var border = edge.Border;
+                // 歩道のinsideWayと線分を共有しない線分を探す
+                for (var i = 0; i < border.Points.Count() - 1; i++)
+                {
+                    var point1 = border.Points.ElementAt(i);
+                    var point2 = border.Points.ElementAt(i + 1);
+                    //if (intersection.SideWalks.Any(sideWalk => sideWalk.InsideWay))
+                    //    continue;
+                    //return new List<(RnWay, int)> { (edge, i) };
+                    extensibleEdges.Add(new ExtensibleIntersectionEdge(
+                        intersection,
+                        edge,
+                        i,
+                        (point1.Vertex + point2.Vertex) / 2,
+                        Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
+                }
+            }
+            return extensibleEdges;
         }
     }
 
     internal class RnRoadSkeleton
     {
-        public RnRoadSkeleton(RnRoadGroup road)
+        public Spline Spline { get; private set; }
+        public RnRoad Road { get; }
+        public RnRoadGroup RoadGroup { get; private set; }
+        public List<ExtensibleRoadEdge> ExtensibleEdges { get; private set; }
+
+        public RnRoadSkeleton(RnRoad road)
         {
-            Spline = CreateCenterSpline(road);
             Road = road;
+            Reconstruct();
         }
 
-        public Spline Spline { get; private set; }
-        public RnRoadGroup Road { get; }
-
-        public void UpdateSpline()
+        /// <summary>
+        /// 道路のスケルトンを再構築
+        /// </summary>
+        public void Reconstruct()
         {
-            Road.TryCreateSimpleSpline(out var spline, out var width);
-            Spline = spline;
+            RoadGroup = Road.CreateRoadGroup();
+            Spline = CreateCenterSpline(RoadGroup);
+            ExtensibleEdges = FindExtensibleEdge(RoadGroup, Spline);
         }
 
         private static Spline CreateCenterSpline(RnRoadGroup road)
@@ -63,6 +138,21 @@ namespace PLATEAU.RoadNetwork
 
             return spline;
         }
+
+        private static List<ExtensibleRoadEdge> FindExtensibleEdge(RnRoadGroup road, Spline spline)
+        {
+            var extensibleEdges = new List<ExtensibleRoadEdge>();
+
+            if (spline.Knots.Count() == 0)
+                return extensibleEdges;
+
+            if (road.PrevIntersection == null)
+                extensibleEdges.Add(new ExtensibleRoadEdge(road, true, spline.Knots.First().Position, -spline.EvaluateTangent(0f)));
+            if (road.NextIntersection == null)
+                extensibleEdges.Add(new ExtensibleRoadEdge(road, false, spline.Knots.Last().Position, -spline.EvaluateTangent(1f)));
+
+            return extensibleEdges;
+        }
     }
 
     internal class RoadNetworkSkeletonData
@@ -72,21 +162,87 @@ namespace PLATEAU.RoadNetwork
 
         public RoadNetworkSkeletonData(PLATEAURnStructureModel structureModel)
         {
-            Roads = structureModel.RoadNetwork.Roads.Select(x => new RnRoadSkeleton(x.CreateRoadGroup())).ToList();
+            Roads = structureModel.RoadNetwork.Roads.Select(x => new RnRoadSkeleton(x)).ToList();
 
             Intersections = structureModel.RoadNetwork.Intersections.Select(x => new RnIntersectionSkeleton(x)).ToList();
         }
 
-        internal void UpdateData(RnRoadGroup roadGroup)
+        /// <summary>
+        /// 隣接交差点も含めて道路のスケルトンを再構築
+        /// </summary>
+        public void ReconstructIncludeNeighbors(RnRoad road)
         {
-            var roadSkeleton = Roads.FirstOrDefault(x => x.Road == roadGroup);
-            roadSkeleton?.UpdateSpline();
+            var roadSkeleton = Roads.FirstOrDefault(x => x.Road == road);
+            if (roadSkeleton == null)
+            {
+                roadSkeleton = new RnRoadSkeleton(road);
+                Roads.Add(roadSkeleton);
+            }
+            else
+            {
+                roadSkeleton?.Reconstruct();
+            }
+            foreach (var intersection in new List<RnIntersection> { roadSkeleton.RoadGroup.PrevIntersection, roadSkeleton.RoadGroup.NextIntersection })
+            {
+                Reconstruct(intersection);
+            }
         }
 
-        internal void UpdateData(RnIntersection intersection)
+        /// <summary>
+        /// 隣接道路も含めて交差点のスケルトンを再構築
+        /// </summary>
+        public void ReconstructIncludeNeighbors(RnIntersection intersection)
         {
             var intersectionSkeleton = Intersections.FirstOrDefault(x => x.Intersection == intersection);
-            intersectionSkeleton?.UpdateData();
+            if (intersectionSkeleton == null)
+            {
+                intersectionSkeleton = new RnIntersectionSkeleton(intersection);
+                Intersections.Add(intersectionSkeleton);
+            }
+            else
+            {
+                intersectionSkeleton?.Reconstruct();
+            }
+            foreach (var road in intersection.GetNeighborRoads())
+            {
+                Reconstruct((RnRoad)road);
+            }
+        }
+
+        /// <summary>
+        /// 道路のスケルトンを再構築
+        /// </summary>
+        /// <param name="road"></param>
+        public void Reconstruct(RnRoad road)
+        {
+            var roadSkeleton = Roads.FirstOrDefault(x => x.Road == road);
+            if (roadSkeleton == null)
+            {
+                roadSkeleton = new RnRoadSkeleton(road);
+                Roads.Add(roadSkeleton);
+            }
+            else
+            {
+                roadSkeleton?.Reconstruct();
+            }
+        }
+
+        /// <summary>
+        /// 交差点のスケルトンを再構築
+        /// </summary>
+        /// <param name="intersection"></param>
+        public void Reconstruct(RnIntersection intersection)
+        {
+            var intersectionSkeleton = Intersections.FirstOrDefault(x => x.Intersection == intersection);
+            if (intersectionSkeleton == null)
+            {
+                intersectionSkeleton = new RnIntersectionSkeleton(intersection);
+                Intersections.Add(intersectionSkeleton);
+            }
+            else
+            {
+                intersectionSkeleton?.Reconstruct();
+            }
         }
     }
 }

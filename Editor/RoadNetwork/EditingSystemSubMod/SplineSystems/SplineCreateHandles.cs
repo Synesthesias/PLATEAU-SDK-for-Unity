@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.Splines;
-using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
@@ -27,7 +24,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             fixedY = startPoint.y;
 
             currentCore.AddKnotAtT(startPoint, 0f);
-            currentCore.SetStartPointConstraint(true, startPoint, startPoint + Vector3.Cross(startTangent, Vector3.up).normalized);
+            currentCore.SetStartTangent(startTangent);
         }
 
         public void HandleSceneGUI()

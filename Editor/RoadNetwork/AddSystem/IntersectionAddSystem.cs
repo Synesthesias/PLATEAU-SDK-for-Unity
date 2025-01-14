@@ -1,12 +1,10 @@
-﻿using PLATEAU.RoadNetwork.Factory;
-using PLATEAU.RoadNetwork.Graph;
+﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.AddSystem
 {
@@ -19,13 +17,13 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         /// </summary>
         public Action<RnIntersection> OnIntersectionAdded { get; set; }
 
-        private RnExtensiblePointHandles extensiblePointHandles;
+        private RnSkeletonHandles extensiblePointHandles;
         private RoadNetworkAddSystemContext context;
 
         public IntersectionAddSystem(RoadNetworkAddSystemContext context)
         {
             this.context = context;
-            extensiblePointHandles = new RnExtensiblePointHandles(context);
+            extensiblePointHandles = new RnSkeletonHandles(context);
             extensiblePointHandles.OnRoadSelected += HandlePointPicked;
         }
 
@@ -161,7 +159,8 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward + right) * 3f));
             exteriorPoints.Add(lastPoint);
 
-            for (int i = 0; i < 15; i += 4) {
+            for (int i = 0; i < 15; i += 4)
+            {
                 var startWay = new RnWay(new RnLineString(new[] { exteriorPoints[i], exteriorPoints[i + 1] }));
                 var endWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 2], exteriorPoints[i + 3] }));
                 var insideWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 3], exteriorPoints[i] }));
@@ -184,6 +183,13 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             intersection.Align();
             context.RoadNetwork.AddIntersection(intersection);
+
+            var road = edge.road.Roads[0];
+            if (edge.isPrev)
+                road.SetPrevNext(intersection, road.Next);
+            else
+                road.SetPrevNext(road.Prev, intersection);
+
             OnIntersectionAdded?.Invoke(intersection);
         }
 
@@ -357,12 +363,14 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                 if (sideWalk.StartEdgeWay == null)
                 {
                     sideWalk.SetStartEdgeWay(new RnWay(new RnLineString(pointsOnEdge)));
-                } else
+                }
+                else
                 {
                     sideWalk.StartEdgeWay.LineString.Points.AddRange(pointsOnEdge.Skip(1));
                 }
                 return sideWalk.StartEdgeWay;
-            } else
+            }
+            else
             {
                 if (sideWalk.EndEdgeWay == null || sideWalk.EndEdgeWay.LineString.Points.Contains(pointsOnEdge.First()))
                 {
