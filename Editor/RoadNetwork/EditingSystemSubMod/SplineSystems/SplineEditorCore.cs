@@ -1,3 +1,4 @@
+﻿using System;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -9,23 +10,37 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// </summary>
     public class SplineEditorCore
     {
-        private SplineContainer splineContainer;
         private Spline spline;
 
         // 始点ノット用制約
         private bool startConstrainToLineSegment = false;
         private Vector3 startLineStart;
         private Vector3 startLineEnd;
+        private Vector3? startTangent;
 
         // 終点ノット用制約
         private bool endConstrainToLineSegment = false;
         private Vector3 endLineStart;
         private Vector3 endLineEnd;
+        private Vector3? endTangent;
 
-        public SplineEditorCore(SplineContainer container)
+        public Spline Spline { get => spline; set => spline = value; }
+
+        public SplineEditorCore(Spline spline)
         {
-            splineContainer = container;
-            spline = container != null ? container.Spline : null;
+            this.Spline = spline;
+        }
+
+        public void SetStartTangent(Vector3 tangent)
+        {
+            startTangent = tangent;
+            UpdateTangentModes();
+        }
+
+        public void SetEndTangent(Vector3 tangent)
+        {
+            endTangent = tangent;
+            UpdateTangentModes();
         }
 
         /// <summary>
@@ -37,6 +52,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             startConstrainToLineSegment = enable;
             startLineStart = lineStart;
             startLineEnd = lineEnd;
+            startTangent = GetPerpendicular(lineEnd - lineStart);
             UpdateTangentModes();
         }
 
@@ -49,45 +65,39 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             endConstrainToLineSegment = enable;
             endLineStart = lineStart;
             endLineEnd = lineEnd;
+            endTangent = GetPerpendicular(lineEnd - lineStart);
             UpdateTangentModes();
         }
 
         public int GetKnotCount()
         {
-            return spline != null ? spline.Count : 0;
+            return Spline != null ? Spline.Count : 0;
         }
 
         public Vector3 GetKnotPosition(int index)
         {
-            if (spline == null || index < 0 || index >= spline.Count)
+            if (Spline == null || index < 0 || index >= Spline.Count)
                 return Vector3.zero;
-            return spline[index].Position;
-        }
-
-        public SplineContainer GetContainer()
-        {
-            return splineContainer;
+            return Spline[index].Position;
         }
 
         public void RemoveKnot(int index)
         {
-            if (spline == null) return;
-            if (index < 0 || index >= spline.Count) return;
-            spline.RemoveAt(index);
-            MarkDirty();
+            if (Spline == null) return;
+            if (index < 0 || index >= Spline.Count) return;
+            Spline.RemoveAt(index);
             UpdateTangentModes();
         }
 
         public void AddKnotAtT(Vector3 position, float t)
         {
-            if (spline == null) return;
+            if (Spline == null) return;
 
-            int count = spline.Count;
+            int count = Spline.Count;
             if (count == 0)
             {
                 var newKnot = new BezierKnot(position, Vector3.forward, -Vector3.forward, Quaternion.identity);
-                spline.Add(newKnot);
-                MarkDirty();
+                Spline.Add(newKnot);
                 UpdateTangentModes();
                 return;
             }
@@ -98,17 +108,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             int insertIndex = Mathf.Clamp(segmentIndex + 1, 1, count);
 
             var newKnot2 = new BezierKnot(position, Vector3.forward, -Vector3.forward, Quaternion.identity);
-            spline.Insert(insertIndex, newKnot2);
-            MarkDirty();
+            Spline.Insert(insertIndex, newKnot2);
             UpdateTangentModes();
         }
 
         public void MoveKnot(int index, Vector3 newPosition)
         {
-            if (spline == null) return;
-            if (index < 0 || index >= spline.Count) return;
+            if (Spline == null) return;
+            if (index < 0 || index >= Spline.Count) return;
 
-            int knotCount = spline.Count;
+            int knotCount = Spline.Count;
 
             // 始点制約
             if (index == 0 && startConstrainToLineSegment)
@@ -121,11 +130,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 newPosition = ProjectPointOnSegment(newPosition, endLineStart, endLineEnd);
             }
 
-            var knot = spline[index];
+            var knot = Spline[index];
             knot.Position = newPosition;
-            spline.SetKnot(index, knot);
-            MarkDirty();
+            Spline.SetKnot(index, knot);
             UpdateTangentModes();
+        }
+
+        public void Reset()
+        {
+            Spline.Clear();
         }
 
         private Vector3 ProjectPointOnSegment(Vector3 p, Vector3 A, Vector3 B)
@@ -147,51 +160,47 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         private void UpdateTangentModes()
         {
-            if (spline == null) return;
+            if (Spline == null) return;
 
-            int count = spline.Count;
+            int count = Spline.Count;
             if (count == 0) return;
 
             // 全てをAutoSmoothにしてから必要なノットを修正
             for (int i = 0; i < count; i++)
             {
-                spline.SetTangentMode(i, TangentMode.AutoSmooth);
+                Spline.SetTangentMode(i, TangentMode.AutoSmooth);
             }
 
             // 始点ノット
-            if (count > 0 && startConstrainToLineSegment)
+            if (count > 0 && startTangent != null)
             {
-                spline.SetTangentMode(0, TangentMode.Broken);
-                SetKnotPerpendicularTangents(0, startLineStart, startLineEnd);
+                Spline.SetTangentMode(0, TangentMode.Broken);
+                SetKnotTangents(0, startTangent.Value);
             }
 
             // 終点ノット
-            if (count > 1 && endConstrainToLineSegment)
+            if (count > 1 && endTangent != null)
             {
                 int lastIndex = count - 1;
-                spline.SetTangentMode(lastIndex, TangentMode.Broken);
-                SetKnotPerpendicularTangents(lastIndex, endLineStart, endLineEnd);
+                Spline.SetTangentMode(lastIndex, TangentMode.Broken);
+                SetKnotTangents(lastIndex, endTangent.Value);
             }
-
-            MarkDirty();
         }
 
         /// <summary>
         /// 指定ノットのタンジェントを、指定線分に対して垂直な方向に設定
         /// </summary>
-        private void SetKnotPerpendicularTangents(int index, Vector3 lineStart, Vector3 lineEnd)
+        private void SetKnotTangents(int index, Vector3 tangent)
         {
-            Vector3 lineDir = (lineEnd - lineStart).normalized;
-            Vector3 perp = GetPerpendicular(lineDir);
-            var knot = spline[index];
-            var knotRotation = Quaternion.LookRotation(perp, Vector3.up);
+            var knot = Spline[index];
+            var knotRotation = Quaternion.LookRotation(tangent, Vector3.up);
             knot.Rotation.value.x = knotRotation.x;
             knot.Rotation.value.y = knotRotation.y;
             knot.Rotation.value.z = knotRotation.z;
             knot.Rotation.value.w = knotRotation.w;
             knot.TangentIn = new float3(0f, 0f, -20f);
             knot.TangentOut = new float3(0f, 0f, 20f);
-            spline.SetKnot(index, knot);
+            Spline.SetKnot(index, knot);
         }
 
         /// <summary>
@@ -207,15 +216,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             return perp;
         }
 
-        private void MarkDirty()
+        public Vector3 EvaluateSplineAtT(float t)
         {
-#if UNITY_EDITOR
-            if (splineContainer != null)
-            {
-                UnityEditor.EditorUtility.SetDirty(splineContainer);
-                UnityEditor.SceneView.RepaintAll();
-            }
-#endif
+            if (Spline == null) return Vector3.zero;
+            Spline.Evaluate(t, out var position, out var _, out var _);
+            return position;
         }
     }
 }

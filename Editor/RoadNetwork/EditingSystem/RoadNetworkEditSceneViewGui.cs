@@ -45,7 +45,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         
         /// <summary> 道路のレーンをドラッグで編集する機能です。 </summary>
         private WaySlider waySlider = new WaySlider();
-        
 
         /// <summary>
         /// 計算や処理に必要な要素を初期化する
