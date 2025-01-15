@@ -23,6 +23,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         }
 
 
+        public void Translate(Vector3 diff)
+        {
+            Line.Points = Line.Points.Select(p => p + diff);
+        }
     }
 
     /// <summary>
@@ -168,6 +172,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             foreach (var way in wayList.ways)
             {
                 Add(way);
+            }
+        }
+
+        public void Translate(Vector3 diff)
+        {
+            foreach(var way in ways)
+            {
+                way.Translate(diff);
             }
         }
 

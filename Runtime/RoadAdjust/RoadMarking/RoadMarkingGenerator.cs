@@ -98,8 +98,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             // 道路の白線を位置を計算します。
             var ways = new MarkedWayListComposer().ComposeFrom(innerTarget);
 
-
-            ways.AddRange(new StopLineComposer().ComposeFrom(innerTarget));
+            // 停止線を生成します
+            var stopLines = new StopLineComposer().ComposeFrom(innerTarget);
+            ways.AddRange(stopLines);
             
             foreach (var way in ways.MarkedWays)
             {

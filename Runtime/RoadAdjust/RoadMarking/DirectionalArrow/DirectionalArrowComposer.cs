@@ -13,6 +13,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
     internal class DirectionalArrowComposer
     {
         private IRrTarget target;
+        private const float ArrowMeshHeightOffset = 0.07f; // 経験的に道路に埋まらないくらいの高さ
         
         /// <summary> 矢印を停止線からどの距離に置くか </summary>
         private const float ArrowPositionOffset = 4.5f;
@@ -71,7 +72,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             }
             
             meshInstance.RotateYAxis(rotation);
-            meshInstance.Translate(position);
+            meshInstance.Translate(position + Vector3.up * ArrowMeshHeightOffset);
             return meshInstance;
         }
 
