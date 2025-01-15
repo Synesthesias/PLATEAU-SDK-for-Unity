@@ -1,5 +1,5 @@
 .unity-text-element {
-    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Regular");
+    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Regular SDF");
     /*-unity-font: resource("Fonts/MPLUSRounded1c-Regular");*/
 }
 
