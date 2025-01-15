@@ -7,11 +7,11 @@
     <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
     <ui:VisualElement name="RoadNetwork_Main" style="flex-grow: 1; padding-top: 16px; padding-right: 16px; padding-bottom: 16px; padding-left: 16px;">
         <ui:GroupBox name="MenuGroup" style="flex-direction: row; flex-shrink: 1; flex-grow: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;">
-            <ui:RadioButton label="生成" name="MenuGenerate" value="true" class="MenuFirst" style="flex-shrink: 1;" />
-            <ui:RadioButton label="編集" name="MenuEdit" class="MenuMiddle" style="flex-shrink: 1; border-left-width: 0;" />
+            <ui:RadioButton label="生成" name="MenuGenerate" value="true" class="MenuFirst bold-font" style="flex-shrink: 1;" />
+            <ui:RadioButton label="編集" name="MenuEdit" class="MenuMiddle bold-font" style="flex-shrink: 1; border-left-width: 0;" />
             <ui:RadioButton label="追加" name="MenuAdd" class="MenuMiddle" style="flex-shrink: 1; border-left-width: 0; display: none;" />
             <ui:RadioButton label="交通規制" name="MenuTrafficRule" class="MenuMiddle" style="flex-shrink: 1; border-left-width: 0; display: none; visibility: hidden;" />
-            <ui:RadioButton label="エクスポート" name="MenuExport" class="MenuEnd" style="flex-shrink: 1; border-left-width: 0;" />
+            <ui:RadioButton label="エクスポート" name="MenuExport" class="MenuEnd bold-font" style="flex-shrink: 1; border-left-width: 0;" />
         </ui:GroupBox>
         <ui:ScrollView vertical-scroller-visibility="Auto" style="flex-grow: 1;">
             <ui:Instance template="RoadNetwork_GeneratePanel" name="RoadNetwork_GeneratePanel" style="display: flex;" />
