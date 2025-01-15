@@ -1,11 +1,14 @@
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
+using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
     public class StopLineComposer
     {
+        private const float HeightOffset = 0.07f; // 経験的にこのくらいの高さなら道路にめりこまないという値
+        
         public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var wayList = new MarkedWayList();
@@ -24,6 +27,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 }
             }
 
+            wayList.Translate(Vector3.up * HeightOffset);
             return wayList;
         }
 
