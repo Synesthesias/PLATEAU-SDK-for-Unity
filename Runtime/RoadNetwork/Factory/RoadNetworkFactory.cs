@@ -1,4 +1,6 @@
-﻿using PLATEAU.CityInfo;
+﻿using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
@@ -955,6 +957,27 @@ namespace PLATEAU.RoadNetwork.Factory
             EditorUtility.SetDirty(req.Model);
 #endif
             return model;
+        }
+
+        /// <summary>
+        /// 変換対象かどうか
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool IsConvertTarget(PLATEAUCityObjectGroup target)
+        {
+            return target.transform.childCount == 0
+                   && target.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road);
+        }
+
+        /// <summary>
+        /// 変換された道路かどうか
+        /// </summary>
+        /// <param name="tran"></param>
+        /// <returns></returns>
+        public static bool IsGeneratedRoad(Transform tran)
+        {
+            return tran.GetComponent<PLATEAUReproducedRoad>() != null;
         }
     }
 }

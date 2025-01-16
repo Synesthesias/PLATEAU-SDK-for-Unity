@@ -51,7 +51,7 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             var ret = TargetAll
                 ? (IList<PLATEAUCityObjectGroup>)GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>()
-                    .Where(cog => !IsGeneratedRoad(cog.transform)) // 自動生成メッシュは除外します
+                    .Where(cog => !RoadNetworkFactory.IsGeneratedRoad(cog.transform)) // 自動生成メッシュは除外します
                     .ToArray()
                 : TargetPresets
                     .FirstOrDefault(s => s.name == TargetPresetName)
@@ -60,15 +60,9 @@ namespace PLATEAU.RoadNetwork.Tester
                 return new List<PLATEAUCityObjectGroup>();
 
             return ret
-                .Where(c => c.transform.childCount == 0)
-                .Where(c => c.CityObjects.rootCityObjects.Any(a => a.CityObjectType == CityObjectType.COT_Road))
+                .Where(RoadNetworkFactory.IsConvertTarget)
                 .Distinct()
                 .ToList();
-        }
-
-        private bool IsGeneratedRoad(Transform tran)
-        {
-            return tran.GetComponent<PLATEAUReproducedRoad>() != null;
         }
 
         /// <summary>
@@ -84,7 +78,7 @@ namespace PLATEAU.RoadNetwork.Tester
 
             var sm = go.GetOrAddComponent<PLATEAURnStructureModel>();
             sm.Serialize();
-            
+
             return model;
         }
 

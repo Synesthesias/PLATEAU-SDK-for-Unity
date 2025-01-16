@@ -17,7 +17,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         
         /// <summary> 矢印を停止線からどの距離に置くか </summary>
         private const float ArrowPositionOffset = 4.5f;
-        
+
         public DirectionalArrowComposer(IRrTarget target)
         {
             this.target = target;
@@ -26,16 +26,23 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         public List<RoadMarkingInstance> Compose()
         {
             var ret = new List<RoadMarkingInstance>();
-            
-            
+
+
             foreach (var road in target.Roads())
             {
                 var nextIntersection = road.Next as RnIntersection;
                 var prevIntersection = road.Prev as RnIntersection;
-                
+
                 // roadでnextとprevを見る、isReverseに応じて
                 foreach (var lane in road.MainLanes)
                 {
+                    // 不正なレーンは無視する
+                    if (lane?.IsValidWay == false)
+                    {
+                        Debug.Log("Skipping invalid lane.");
+                        continue;
+                    }
+
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
@@ -49,10 +56,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                         var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false, out var isSucceedP), ArrowAngle(lane, false, out var isSucceedA));
                         if(isSucceedP && isSucceedA) ret.Add(prevArrow);
                     }
-                    
-                    
+
+
                 }
-                
+
             }
             return ret;
         }
@@ -70,7 +77,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             {
                 return null;
             }
-            
+
             meshInstance.RotateYAxis(rotation);
             meshInstance.Translate(position + Vector3.up * ArrowMeshHeightOffset);
             return meshInstance;
@@ -105,8 +112,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             isSucceed = true;
             return posSum / wayCount;
         }
-        
-        
+
+
 
         /// <summary>
         /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。
@@ -150,7 +157,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 : way.GetPoint(0).Vertex - way.GetPoint(1).Vertex;
             return Vector2.SignedAngle(diff.Xz(), Vector2.up);
         }
-        
+
 
         private DirectionalArrowType ArrowType(RnWay laneBorder, RnIntersection intersection)
         {
@@ -173,10 +180,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             if (containStraight) return DirectionalArrowType.Straight;
             if (containRight) return DirectionalArrowType.Right;
             if (containLeft) return DirectionalArrowType.Left;
-            
+
             return DirectionalArrowType.None;
         }
-        
+
     }
 
     internal enum DirectionalArrowType
@@ -190,7 +197,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         public static RoadMarkingInstance ToMeshInstance(this DirectionalArrowType type)
         {
             if (type == DirectionalArrowType.None) return null;
-                // return new RoadMarkingInstance(Resources.Load<Mesh>(ModelFolder + "RoadMarkArrowStraight"), RoadMarkingMaterial.Yellow);;
+            // return new RoadMarkingInstance(Resources.Load<Mesh>(ModelFolder + "RoadMarkArrowStraight"), RoadMarkingMaterial.Yellow);;
 
             var prefab = type switch
             {
