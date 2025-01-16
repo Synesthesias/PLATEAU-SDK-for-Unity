@@ -235,6 +235,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             Clear();
             SceneView.duringSceneGui -= OnSceneGUI;
+            isActive = false;
         }
 
         public void OnTabUnselect()

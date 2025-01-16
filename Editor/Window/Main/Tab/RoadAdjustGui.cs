@@ -93,7 +93,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             // 初期表示のタブをアクティブにします。
+            ActivateInitialTab();
+        }
+
+        private void ActivateInitialTab()
+        {
             var initialActive = childTabsDict.First(kvp => kvp.Key.name == "MenuGenerate");
+            initialActive.Key.value = true;
             ActivateChildTab(initialActive.Value, mainVE);
         }
 
@@ -110,6 +116,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public void OnTabUnselect()
         {
+            // 各子タブの終了処理を呼んだあと、特定のタブを再表示することで初期状態に近い状態に戻します。
+            // ただし一点だけ初期状態と違う点があり、開いている子タブの種類は保持されます。他のタブと挙動を合わせるためです。
+            var prevTab = currentTab;
+            foreach (var childTab in childTabsDict.Values)
+            {
+                childTab.OnRoadChildTabUnselected(mainVE);
+            }
+            ActivateChildTab(prevTab, mainVE);
         }
     }
 }
