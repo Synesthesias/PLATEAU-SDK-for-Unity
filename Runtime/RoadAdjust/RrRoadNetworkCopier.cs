@@ -24,6 +24,7 @@ namespace PLATEAU.RoadAdjust
             foreach (var srcPoint in src.CollectAllLineStrings().SelectMany(ls => ls.Points).Distinct())
             {
                 var dstPoint = new RnPoint(srcPoint.Vertex);
+                dstPoint.DebugMyId = srcPoint.DebugMyId;
                 points.Add(srcPoint, dstPoint);
             }
             
@@ -32,6 +33,7 @@ namespace PLATEAU.RoadAdjust
             foreach (var srcLineStr in src.CollectAllLineStrings())
             {
                 var dstLineStr = new RnLineString(srcLineStr.Points.Select(p => points[p]));
+                dstLineStr.DebugMyId = srcLineStr.DebugMyId;
                 lineStrings.Add(srcLineStr, dstLineStr);
             }
                 
@@ -40,7 +42,9 @@ namespace PLATEAU.RoadAdjust
             foreach (var srcWay in src.CollectAllWays())
             {
                 var lineStr = lineStrings[srcWay.LineString];
-                ways.Add(srcWay, new RnWay(lineStr, srcWay.IsReversed, srcWay.IsReverseNormal));
+                var dstWay = new RnWay(lineStr, srcWay.IsReversed, srcWay.IsReverseNormal);
+                dstWay.DebugMyId = srcWay.DebugMyId;
+                ways.Add(srcWay, dstWay);
             }
             
             // Laneのコピー
@@ -54,6 +58,7 @@ namespace PLATEAU.RoadAdjust
                 
                 var dstLane = new RnLane(dstLeftWay, dstRightWay, dstPrevBorder, dstNextBorder);
                 dstLane.IsReverse = srcLane.IsReverse;
+                dstLane.DebugMyId = srcLane.DebugMyId;
                 
                 lanes.Add(srcLane, dstLane);
             }
@@ -64,6 +69,7 @@ namespace PLATEAU.RoadAdjust
             foreach (var srcRoad in src.Roads)
             {
                 var dstRoad = new RnRoad(srcRoad.TargetTrans);
+                dstRoad.DebugMyId = srcRoad.DebugMyId;
                 foreach (var srcLane in srcRoad.MainLanes)
                 {
                     var dstLane = lanes[srcLane];
@@ -91,6 +97,7 @@ namespace PLATEAU.RoadAdjust
             foreach(var srcInter in src.Intersections)
             {
                 var dstInter = new RnIntersection(srcInter.TargetTrans);
+                dstInter.DebugMyId = srcInter.DebugMyId;
                 dstInter.SetIsEmptyIntersection(srcInter.IsEmptyIntersection);
                 
                 inters.Add(srcInter, dstInter);
@@ -104,6 +111,7 @@ namespace PLATEAU.RoadAdjust
                 var dstEdge = new RnNeighbor();
                 dstEdge.Border = ways[srcEdge.Border];
                 dstEdge.Road = srcEdge.Road == null || !roadBases.ContainsKey(srcEdge.Road) ? null : roadBases[srcEdge.Road];
+                dstEdge.DebugMyId = srcEdge.DebugMyId;
                 neighbors.Add(srcEdge, dstEdge);
             }
 
@@ -115,6 +123,7 @@ namespace PLATEAU.RoadAdjust
                 dstSpline.Copy(srcTrack.Spline);
                 var dstTrack = new RnTrack(ways[srcTrack.FromBorder], ways[srcTrack.ToBorder], dstSpline,
                     srcTrack.TurnType);
+                dstTrack.DebugMyId = srcTrack.DebugMyId;
                 tracks.Add(srcTrack, dstTrack);
             }
 
@@ -161,6 +170,7 @@ namespace PLATEAU.RoadAdjust
                 dstSidewalk.SetStartEdgeWay(dstStartEdge);
                 dstSidewalk.SetEndEdgeWay(dstEndEdge);
                 dstSidewalk.LaneType = laneType;
+                dstSidewalk.DebugMyId = srcSidewalk.DebugMyId;
                 sidewalks.Add(srcSidewalk, dstSidewalk);
             }
             

@@ -19,7 +19,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var contours = new RnmContourMeshList();
             foreach (var road in target.Roads())
             {
-                var targetObjs = road.TargetTrans.Select(t => t.gameObject);
+                var targetObjs = new[] { new RoadReproduceSource(road) };
                 var sideWalkContours = GenerateSidewalks(road);
                 var sideWalkContourMeshes = new RnmContourMeshList(sideWalkContours.Select(s => new RnmContourMesh(targetObjs, s)));
                 contours.AddRange(sideWalkContourMeshes);
