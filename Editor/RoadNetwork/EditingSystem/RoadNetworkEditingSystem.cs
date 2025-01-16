@@ -1,10 +1,8 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystem
@@ -186,7 +184,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return true;
         }
 
-        
+        /// <summary> 「詳細編集モード」のチェックボックスが変わった時 </summary>
+        public void ChangeDetailEditMode(bool newValue)
+        {
+            roadEditSceneViewGui.SetDetailMode(newValue);
+        }
         
     }
 }

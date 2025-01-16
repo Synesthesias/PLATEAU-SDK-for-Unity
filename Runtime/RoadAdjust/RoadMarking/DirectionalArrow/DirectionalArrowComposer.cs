@@ -13,7 +13,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
     internal class DirectionalArrowComposer
     {
         private IRrTarget target;
-
+        private const float ArrowMeshHeightOffset = 0.07f; // 経験的に道路に埋まらないくらいの高さ
+        
         /// <summary> 矢印を停止線からどの距離に置くか </summary>
         private const float ArrowPositionOffset = 4.5f;
 
@@ -45,15 +46,15 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                     if (lane.NextBorder != null)
                     {
                         var inter = lane.IsReverse ? prevIntersection : nextIntersection;
-                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true), ArrowAngle(lane, true));
-                        ret.Add(nextArrow);
+                        var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true, out var isSucceedP), ArrowAngle(lane, true, out bool isSucceedA));
+                        if(isSucceedP && isSucceedA) ret.Add(nextArrow);
                     }
 
                     if (lane.PrevBorder != null)
                     {
                         var inter = lane.IsReverse ? nextIntersection : prevIntersection;
-                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false), ArrowAngle(lane, false));
-                        ret.Add(prevArrow);
+                        var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false, out var isSucceedP), ArrowAngle(lane, false, out var isSucceedA));
+                        if(isSucceedP && isSucceedA) ret.Add(prevArrow);
                     }
 
 
@@ -78,20 +79,38 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
             }
 
             meshInstance.RotateYAxis(rotation);
-            meshInstance.Translate(position);
+            meshInstance.Translate(position + Vector3.up * ArrowMeshHeightOffset);
             return meshInstance;
         }
 
-        private Vector3 ArrowPosition(RnLane lane, bool isNext)
+        private Vector3 ArrowPosition(RnLane lane, bool isNext, out bool isSucceed)
         {
-            var center = lane.CreateCenterWay();
-            if (center.Count == 0)
+            // 左のWayと右のWayの平均をとります。
+            int wayCount = 0;
+            var posSum = Vector3.zero;
+            var leftWay = lane.LeftWay;
+            if (leftWay != null && leftWay.Count > 0)
             {
-                Debug.Log("Skipping because center way count is 0.");
+                posSum += leftWay.PositionAtDistance(ArrowPositionOffset, isNext ^ leftWay.IsReversed);
+                wayCount++;
+            }
+
+            var rightWay = lane.RightWay;
+            if (rightWay != null && rightWay.Count > 0)
+            {
+                posSum += rightWay.PositionAtDistance(ArrowPositionOffset, isNext ^ rightWay.IsReversed);
+                wayCount++;
+            }
+            
+            if (wayCount == 0)
+            {
+                Debug.Log("Skipping because way count is 0.");
+                isSucceed = false;
                 return Vector3.zero;
             }
 
-            return center.PositionAtDistance(ArrowPositionOffset, isNext);
+            isSucceed = true;
+            return posSum / wayCount;
         }
 
 
@@ -99,20 +118,44 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
         /// <summary>
         /// 矢印モデルを、y軸を中心に何度回転すれば良いかを返します。
         /// </summary>
-        private float ArrowAngle(RnLane lane, bool isNext)
+        private float ArrowAngle(RnLane lane, bool isNext, out bool isSucceed)
         {
-            var way = lane.CreateCenterWay();
-            if (way.Count <= 1)
+            // レーンの左右で平均を取ります。
+            int wayCount = 0;
+            float angleSum = 0f;
+            var leftWay = lane.LeftWay;
+            if (leftWay != null && leftWay.Count > 1)
             {
-                Debug.Log("Skipping Angle because way point count is below 2.");
-                return 0;
+                angleSum += ArrowAngleOneWay(leftWay, isNext);
+                wayCount++;
             }
 
-            var diff = isNext
+            var rightWay = lane.RightWay;
+            if (rightWay != null && rightWay.Count > 1)
+            {
+                angleSum += ArrowAngleOneWay(rightWay, isNext);
+                wayCount++;
+            }
+            
+            if (wayCount == 0)
+            {
+                Debug.Log("Skipping Angle because way count is 0.");
+                isSucceed = false;
+                return 0;
+            }
+            
+            isSucceed = true;
+            return angleSum / wayCount;
+
+        }
+
+        private float ArrowAngleOneWay(RnWay way, bool isNext)
+        {
+            // wayの頂点数が2以上であることが前提です。頂点数1以下は渡さないようにしてください。
+            var diff = isNext ^ way.IsReversed
                 ? way.GetPoint(way.Count - 1).Vertex - way.GetPoint(way.Count - 2).Vertex
                 : way.GetPoint(0).Vertex - way.GetPoint(1).Vertex;
             return Vector2.SignedAngle(diff.Xz(), Vector2.up);
-
         }
 
 

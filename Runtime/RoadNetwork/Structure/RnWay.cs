@@ -69,7 +69,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public bool IsReverseNormal { get; set; } = false;
 
         // 頂点群
-        public RnLineString LineString { get; private set; }
+        public RnLineString LineString { get; internal set; }
 
         //----------------------------------
         // end: フィールド
@@ -502,7 +502,24 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 var p1 = GetPoint(i).Vertex;
                 var p2 = other.GetPoint(i).Vertex;
-                const float Threshold = 0.001f;
+                const float Threshold = 0.01f;
+                if (Math.Abs(p1.x - p2.x) > Threshold) return false;
+                if (Math.Abs(p1.y - p2.y) > Threshold) return false;
+                if (Math.Abs(p1.z - p2.z) > Threshold) return false;
+            }
+
+            return true;
+        }
+
+        public bool IsSameLineSequenceReverse(RnWay other)
+        {
+            if (other == null) return false;
+            if (Count != other.Count) return false;
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = GetPoint(i).Vertex;
+                var p2 = other.GetPoint(Count - i - 1).Vertex;
+                const float Threshold = 0.01f;
                 if (Math.Abs(p1.x - p2.x) > Threshold) return false;
                 if (Math.Abs(p1.y - p2.y) > Threshold) return false;
                 if (Math.Abs(p1.z - p2.z) > Threshold) return false;

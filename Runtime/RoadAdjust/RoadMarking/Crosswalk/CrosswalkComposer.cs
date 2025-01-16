@@ -17,6 +17,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
         private const float CrosslineDashInterval = 0.45f;
         /// <summary> 横断歩道の端点を歩道から最低何メートル離すか </summary>
         private const float LineOffset = 0.1f;
+
+        /// <summary> これだけ高さを上げれば道路にめりこまないという経験則 </summary>
+        private const float HeightOffset = 0.07f;
         
         
         public List<CrosswalkInstance> Compose(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
@@ -68,6 +71,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
                 lineWay.PositionAtDistance(crosswalkOffset, false),
                 lineWay.PositionAtDistance(crosswalkOffset, true)
             };
+            crosswalkPositions = crosswalkPositions.Select(p => p + new Vector3(0, HeightOffset, 0)).ToArray();
             // 横断歩道を1本の破線として生成します。
             var crosswalk = new DashedLineMeshGenerator(RoadMarkingMaterial.White, true, CrosslineWidth, CrosslineDashInterval).GenerateMeshInstance(crosswalkPositions);
             return new CrosswalkInstance(crosswalk, srcRoad, direction);

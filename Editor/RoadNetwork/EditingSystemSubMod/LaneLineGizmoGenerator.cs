@@ -55,7 +55,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 {
                     foreach (var sideWalk in road.SideWalks)
                     {
-                        lineDrawers.Add(new LaneLineDrawerSolid(sideWalk.OutsideWay.ToList(), sideWalkColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(sideWalk.OutsideWay.ToList(), sideWalkColor, LaneLineDrawMethod.Gizmos));
                     }
                 }
 
@@ -81,11 +81,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     Debug.Assert(parent != null);
                     if (parent.IsReverse == false)
                     {
-                        lineDrawers.Add(new LaneLineDrawerSolid(way, leftSideWayColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(way, leftSideWayColor, LaneLineDrawMethod.Gizmos));
                     }
                     else
                     {
-                        lineDrawers.Add(new LaneLineDrawerSolid(way, rightSideWayColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(way, rightSideWayColor, LaneLineDrawMethod.Gizmos));
                     }
                 }
 
@@ -124,7 +124,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         way.Add(p);
                     }
 
-                    lineDrawers.Add(new LaneLineDrawerSolid(way, sideWalkColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(way, sideWalkColor, LaneLineDrawMethod.Gizmos));
                 }
 
                 // 中央分離帯のwayを描画
@@ -147,7 +147,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     {
                         way.Add(p);
                     }
-                    lineDrawers.Add(new LaneLineDrawerSolid(way, medianWayColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(way, medianWayColor, LaneLineDrawMethod.Gizmos));
                 }
 
             }
@@ -157,13 +157,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 if (highLightWay is WayEditorData selectingWayData)
                 {
-                    lineDrawers.Add(new LaneLineDrawerSolid(selectingWayData.Ref.ToList(), selectingWayColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(selectingWayData.Ref.ToList(), selectingWayColor, LaneLineDrawMethod.Gizmos));
                 }
             }
             
             if (slideDummyWay != null)
             {
-                lineDrawers.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor));
+                lineDrawers.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor, LaneLineDrawMethod.Gizmos));
             }
 
             var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
@@ -172,7 +172,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
                 {
                     if (neighbor.Border != null)
-                        lineDrawers.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor));
+                        lineDrawers.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor, LaneLineDrawMethod.Gizmos));
                 }
             }
             
@@ -180,7 +180,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 foreach (var edge in intersectionEditorData.Ref.Edges.Where(e => e.Road == null))
                 {
-                    lineDrawers.Add(new LaneLineDrawerSolid(edge.Border.ToList(), intersectionOutlineColor));
+                    lineDrawers.Add(new LaneLineDrawerSolid(edge.Border.ToList(), intersectionOutlineColor, LaneLineDrawMethod.Gizmos));
                 }
             }
 

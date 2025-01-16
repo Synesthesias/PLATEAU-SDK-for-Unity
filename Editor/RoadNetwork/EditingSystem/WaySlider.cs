@@ -15,7 +15,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         SlideState currentState = SlideState.Default;
         public WayCalcData WaySlideCalcCache { get; private set; }
         private bool isMouseDownHold;
+        private Vector2 mousePosDragStart;
         
+        /// <summary> 誤操作防止のため、線のドラッグ操作で動いたマウスのピクセル数がこの数未満であればドラッグをキャンセルします。 </summary>
+        private const float MinMouseDragPixels = 4f; 
         
 
         /// <summary>
@@ -32,21 +35,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 var wayEditorDataList = roadGroupEditorData.ReqSubData<WayEditorDataList>();
 
-                bool isSelectable = !editSceneViewGui.isEditingDetailMode &&
-                                    !editSceneViewGui.SplineEditorMod.IsEnabled;
+                bool isSelectable = !editSceneViewGui.SplineEditorMod.IsEnabled;
                 wayEditorDataList.SetSelectable(isSelectable);
-
-                var isMouseOnViewport = true;
-                if (currentState == SlideState.Default)
+                
+                switch (currentState)
                 {
-                    WaySlideCalcCache = null;
-                    SelectWay(ray, wayEditorDataList, isMouseOnViewport);
-                }
-                else if (currentState == SlideState.SlidingWay)
-                {
-                    var dis = LineUtil.FindClosestPoint(WaySlideCalcCache.ClosestLine, ray, out var closestPointOnWay,
-                        out var closestPointOnRay);
-                    WaySlideCalcCache.Set(dis, closestPointOnWay, closestPointOnRay);
+                    case SlideState.Default:
+                        WaySlideCalcCache = null;
+                        SelectWay(ray, wayEditorDataList);
+                        break;
+                    case SlideState.SlidingWay:
+                        {
+                            var dis = LineUtil.FindClosestPoint(WaySlideCalcCache.ClosestLine, ray, out var closestPointOnWay,
+                                out var closestPointOnRay);
+                            WaySlideCalcCache.Set(dis, closestPointOnWay, closestPointOnRay);
+                            break;
+                        }
                 }
             }
 
@@ -54,37 +58,56 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             RnWay slidingWay = null;
 
             var evt = Event.current;
-            var mouseDown = evt.type == EventType.MouseDown && evt.button == 0 && evt.alt == false;
+            var mouseDown = LineUtil.IsMouseDown();
             var mouseUp = evt.type == EventType.MouseUp && evt.button == 0;
             if (mouseDown) isMouseDownHold = true;
             if (mouseUp) isMouseDownHold = false;
 
             if (isMouseDownHold)
             {
-                // Wayを押下した瞬間
-                if (currentState == SlideState.Default)
+                switch (currentState)
                 {
-                    if (WaySlideCalcCache != null)
-                    {
-                        currentState = SlideState.SlidingWay;
-                    }
-                }
-                // WayをSlide中
-                else if (currentState == SlideState.SlidingWay)
-                {
-                    if (WaySlideCalcCache != null)
-                    {
-                        slidingWay = OnSlidingWay(sceneView);
-                    }
+                    // Wayを押下した瞬間。DefaultからWaitForDragに遷移。
+                    case SlideState.Default:
+                        if (WaySlideCalcCache != null)
+                        {
+                            currentState = SlideState.WaitForDrag;
+                            mousePosDragStart = mousePos;
+                        }
+                        break;
+                    // 線のドラッグ待ち。
+                    case SlideState.WaitForDrag:
+                        if (Vector2.Distance(mousePos, mousePosDragStart) >= MinMouseDragPixels)
+                        {
+                            currentState = SlideState.SlidingWay;
+                        }
+                        break;
+                    
+                    // WayをSlide中
+                    case SlideState.SlidingWay:
+                        if (WaySlideCalcCache != null)
+                        {
+                            slidingWay = OnSlidingWay(sceneView);
+                        }
+
+                        break;
                 }
             }
-            else
+            else // マウスが押されていないとき
             {
-                // Wayのスライドの終了
-                if (currentState == SlideState.SlidingWay)
+                switch (currentState)
                 {
-                    slidingWay = OnEndSlidingWay(sceneView);
-                    isRoadChanged = true;
+                    // Wayのスライドの終了。SlidingWayからDefaultに遷移。
+                    case SlideState.SlidingWay:
+                        slidingWay = OnEndSlidingWay(sceneView);
+                        isRoadChanged = true;
+                        break;
+                    // 線はドラッグされなかった。Defaultに遷移。
+                    case SlideState.WaitForDrag:
+                        currentState = SlideState.Default;
+                        isRoadChanged = false;
+                        break;
+                        
                 }
             }
 
@@ -149,7 +172,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return slidingWay;
         }
         
-        private void SelectWay(Ray ray, WayEditorDataList wayEditorDataList, bool isMouseOnViewport)
+        private void SelectWay(Ray ray, WayEditorDataList wayEditorDataList)
         {
             if (wayEditorDataList == null)
             {
@@ -163,11 +186,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             {
                 if (wayEditorData.IsSelectable == false)
                     continue;
-
-                if (isMouseOnViewport == false) // シーンビュー上にマウスがあるかチェック
-                {
-                    break;
-                }
 
                 if (wayEditorData.IsSelectable == false)
                 {
@@ -204,6 +222,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private enum SlideState
         {
             Default, // 通常の状態
+            WaitForDrag, // 誤操作防止のため、マウスドラッグがなければ線を動かさない。ドラッグ待ち状態。ドラッグがなければDefaultに戻り、ドラッグがあればSlidingWayに遷移。
             SlidingWay, // Wayをスライド中
         }
         

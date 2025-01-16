@@ -1,6 +1,10 @@
 .unity-text-element {
-    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Regular");
-    /*-unity-font: resource("Fonts/MPLUSRounded1c-Regular");*/
+    -unity-font-definition: resource('Fonts/MPLUSRounded1c-Regular SDF');
+    font-size: 14px;
+}
+
+.bold-font {
+    -unity-font-definition: resource('Fonts/MPLUSRounded1c-Bold SDF');
 }
 
 .unity-label {

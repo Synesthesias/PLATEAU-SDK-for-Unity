@@ -87,8 +87,15 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 {
                     var lane = lanes[i];
 
-                    if (allWays[OriginTrack.FromBorder.ID].LineString.ID == allWays[allLanes[lanes[i].ID].NextBorder.ID].LineString.ID ||
-                        allWays[OriginTrack.FromBorder.ID].LineString.ID == allWays[allLanes[lanes[i].ID].PrevBorder.ID].LineString.ID)
+                    var fromBorderID = OriginTrack.FromBorder.ID;
+                    var fromLineID = allWays[fromBorderID].LineString.ID;
+                    var nextBorderID = allLanes[lanes[i].ID].NextBorder.ID;
+                    var prevBorderID = allLanes[lanes[i].ID].PrevBorder.ID;
+                    if (nextBorderID >= allWays.Count || prevBorderID >= allWays.Count || nextBorderID < 0 || prevBorderID < 0) continue;
+                    var nextWayID = allWays[nextBorderID].LineString.ID;
+                    var prevWayID = allWays[prevBorderID].LineString.ID;
+                    if ( fromLineID == nextWayID ||
+                        fromLineID == prevWayID)
                     {
                         UpLink = link;
 
