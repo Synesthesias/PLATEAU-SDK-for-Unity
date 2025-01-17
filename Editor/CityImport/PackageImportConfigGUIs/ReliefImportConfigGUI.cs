@@ -35,7 +35,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 var conf = this.config;
-                conf.AttachMapTile = EditorGUILayout.Toggle("航空写真または地図を貼り付ける", conf.AttachMapTile);
+                conf.AttachMapTile = PlateauEditorStyle.Toggle("航空写真または地図を貼り付ける", conf.AttachMapTile);
                 if (conf.AttachMapTile)
                 {
                     using (PlateauEditorStyle.VerticalScopeLevel2())

@@ -44,7 +44,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
-                    conf.ImportPackage = EditorGUILayout.Toggle("インポートする", conf.ImportPackage);
+                    conf.ImportPackage = PlateauEditorStyle.Toggle("インポートする", conf.ImportPackage);
                     if (!conf.ImportPackage) return;
                     using (PlateauEditorStyle.VerticalScopeLevel1(1))
                     {
