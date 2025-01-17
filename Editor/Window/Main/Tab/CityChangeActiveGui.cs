@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     
                     var duplicateToggleContent =
                         new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
-                    this.disableDuplicate = EditorGUILayout.Toggle(duplicateToggleContent, this.disableDuplicate);
+                    this.disableDuplicate = PlateauEditorStyle.Toggle(duplicateToggleContent, this.disableDuplicate);
                     
                     this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     

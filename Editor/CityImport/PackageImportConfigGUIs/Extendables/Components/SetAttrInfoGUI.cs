@@ -1,4 +1,5 @@
 using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components
@@ -14,7 +15,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
         public override void Draw()
         {
             Conf.DoSetAttrInfo =
-                EditorGUILayout.Toggle("属性情報を含める", Conf.DoSetAttrInfo);
+                PlateauEditorStyle.Toggle("属性情報を含める", Conf.DoSetAttrInfo);
         }
     }
 }

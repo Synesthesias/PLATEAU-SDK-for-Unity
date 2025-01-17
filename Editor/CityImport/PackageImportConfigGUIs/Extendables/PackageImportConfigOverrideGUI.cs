@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables
 
         public override void Draw()
         {
-            DoUseMasterConfig = EditorGUILayout.Toggle("一括設定と同じ", DoUseMasterConfig);
+            DoUseMasterConfig = PlateauEditorStyle.Toggle("一括設定と同じ", DoUseMasterConfig);
             if (DoUseMasterConfig)
             {
                 // 「一括設定と同じ」にチェックが入っているなら、一括設定を適用します。

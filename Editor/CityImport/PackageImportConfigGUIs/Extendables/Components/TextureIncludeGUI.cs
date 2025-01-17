@@ -20,11 +20,11 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
         public override void Draw()
         {
             if (!MayTextureExist) return;
-            Conf.IncludeTexture = EditorGUILayout.Toggle("テクスチャを含める", Conf.IncludeTexture);
+            Conf.IncludeTexture = PlateauEditorStyle.Toggle("テクスチャを含める", Conf.IncludeTexture);
 
             if (!Conf.IncludeTexture) return;
             
-            Conf.EnableTexturePacking = EditorGUILayout.Toggle("テクスチャを結合する", Conf.EnableTexturePacking);
+            Conf.EnableTexturePacking = PlateauEditorStyle.Toggle("テクスチャを結合する", Conf.EnableTexturePacking);
             if (!Conf.EnableTexturePacking) return;
 
             using (PlateauEditorStyle.VerticalScopeLevel1())

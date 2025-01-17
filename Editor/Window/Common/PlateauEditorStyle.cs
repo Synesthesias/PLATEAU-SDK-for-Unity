@@ -349,6 +349,18 @@ namespace PLATEAU.Editor.Window.Common
             maxVal = (int)Mathf.Round(sliderValMax);
         }
 
+        public static bool Toggle(string label, bool value)
+        {
+            // EditorGUILayout.Toggleだとクリックしてもチェックが変わらないことがあったのでToggleLeftに変更。
+            // 具体的な発生条件は、新規プロジェクトにtgz化したPLATEAU SDKをインポートして、何もゲームオブジェクトが選択されていないときにToggleクリックすると変わらない。
+            return EditorGUILayout.ToggleLeft(label, value);
+        }
+
+        public static bool Toggle(GUIContent content, bool value)
+        {
+            return EditorGUILayout.ToggleLeft(content, value);
+        }
+
         /// <summary>
         /// GUIのコンテンツをまとめるのに利用できます。
         /// </summary>
