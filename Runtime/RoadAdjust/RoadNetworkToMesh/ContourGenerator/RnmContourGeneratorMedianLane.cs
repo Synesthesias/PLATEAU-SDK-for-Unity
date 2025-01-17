@@ -14,7 +14,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             foreach (var road in target.Roads())
             {
                 var contours = GenerateMedianLane(road);
-                var targetObjs = road.TargetTrans.Select(cog => cog.gameObject);
+                var targetObjs = new[] { new RoadReproduceSource(road) };
                 var contourMeshes = new RnmContourMeshList(
                     contours.Select(c => new RnmContourMesh(targetObjs, c))
                 );

@@ -12,7 +12,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private const float DistanceMinDiff = 0.01f;
 
-        public void Copy(IEnumerable<GameObject> srcObjsArg, GameObject dst)
+        public void Copy(IEnumerable<RoadReproduceSource> srcObjsArg, GameObject dst)
         {
             // 必要なコンポーネントがなければ何もせず終了します。
             var srcObjs = srcObjsArg.ToArray();
@@ -30,7 +30,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var srcUV4 = new SrcUV4List();
             foreach (var srcObj in srcObjs)
             {
-                var srcMeshFilter = srcObj.GetComponent<MeshFilter>();
+                if (!srcObj.IsSourceExists()) continue;
+                var srcMeshFilter = srcObj.Transform.GetComponent<MeshFilter>();
                 if (srcMeshFilter == null) continue;
                 var srcMesh = srcMeshFilter.sharedMesh;
                 if (srcMesh == null) continue;

@@ -178,9 +178,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 rootVisualElement.Bind(selectedRoad);
                 
                 // 現在の交差点の有無をチェックボックスに反映させます
-                var roads = roadGroupEditorData.Ref.Roads.FirstOrDefault()?.TargetTrans;
-                var roadTrans = roads == null || roads.Count == 0 || roads[0] == null ? null : roads[0].transform;
-                bool doCrosswalkExist = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roadTrans, ReproducedRoadDirection.Next);
+                var roads = new RoadReproduceSource(roadGroupEditorData.Ref.Roads.FirstOrDefault());
+                bool doCrosswalkExist = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, roads, ReproducedRoadDirection.Next);
                 placeCrosswalkToggle.value = doCrosswalkExist;
                 prevPlaceCrosswalkToggle = doCrosswalkExist;
             }

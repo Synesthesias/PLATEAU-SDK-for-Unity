@@ -138,7 +138,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                     // 属性情報をコピーします。
                     // FIXME: srcObjsが複数のケースに未対応
-                    var srcAttr = srcObjs[0].GetComponent<PLATEAUCityObjectGroup>();
+                    var srcAttr = srcObjs[0].Transform == null ? null : srcObjs[0].Transform.GetComponent<PLATEAUCityObjectGroup>();
                     if (srcAttr != null)
                     {
                         var dstAttr = dstObj.GetOrAddComponent<PLATEAUCityObjectGroup>();
@@ -148,12 +148,19 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     
                     // 他のコンポーネントをコピーします。
                     // FIXME: srcObjsが複数のケースに未対応
-                    new ComponentCopier(
-                        ignoreTypes: new[]
-                        { // 上述で作るコンポーネントは除外します。
-                            typeof(MeshFilter), typeof(MeshRenderer), typeof(PLATEAUCityObjectGroup), typeof(MeshCollider)
-                        })
-                        .Copy(srcObjs[0], dstObj);
+                    if (srcObjs[0].Transform != null)
+                    {
+                        var componentCopier =
+                            new ComponentCopier(
+                                ignoreTypes: new[]
+                                {
+                                    // 上述で作るコンポーネントは除外します。
+                                    typeof(MeshFilter), typeof(MeshRenderer), typeof(PLATEAUCityObjectGroup),
+                                    typeof(MeshCollider)
+                                });
+                        componentCopier.Copy(srcObjs[0].Transform.gameObject, dstObj);
+                    }
+                    
                     
                 }
             }
@@ -170,16 +177,16 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// シーン中にゲームオブジェクトとして配置します。
         /// 同じものがシーンにあれば置き換え、なければ生成します。
         /// </summary>
-        private GameObject GenerateDstGameObj(Transform dstParent, GameObject[] srcObjs)
+        private GameObject GenerateDstGameObj(Transform dstParent, RoadReproduceSource[] srcObjs)
         {
             var srcObj = srcObjs.Length == 0 ? null : srcObjs[0];
-            string srcObjName = srcObj == null ? "RoadUnknown" : $"{srcObj.name}";
+            string srcObjName = srcObj == null? "UnknownRoad" : srcObj.GetName();
             string dstObjName = $"{ReproducedRoadType.RoadMesh.ToGameObjName()}-{srcObjName}";
 
             GameObject dstObj = null;
             if (srcObj != null)
             {
-                dstObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, srcObj.transform, ReproducedRoadDirection.None);
+                dstObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, srcObj, ReproducedRoadDirection.None);
             }
 
             if (dstObj == null)
@@ -188,7 +195,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             dstObj.transform.SetParent(dstParent);
             var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
-            comp.Init(ReproducedRoadType.RoadMesh, srcObj == null ? null : srcObj.transform, ReproducedRoadDirection.None);
+            comp.Init(ReproducedRoadType.RoadMesh, srcObj == null ? null : srcObj, ReproducedRoadDirection.None);
             return dstObj;
         }
         

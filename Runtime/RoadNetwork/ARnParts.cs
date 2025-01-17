@@ -12,7 +12,17 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private ulong debugId;
 
-        public ulong DebugMyId => debugId;
+        public ulong DebugMyId
+        {
+            get
+            {
+                return debugId;
+            }
+            set
+            {
+                debugId = value;
+            }
+        }
 
         protected ARnPartsBase(ulong id)
         {

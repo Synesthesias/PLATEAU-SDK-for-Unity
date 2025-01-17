@@ -61,11 +61,10 @@ namespace PLATEAU.RoadAdjust
         /// <summary> 削除を伴います </summary>
         public bool ShouldPlace(RnRoad road)
         {
-            var target = road.TargetTrans;
-            var targetTran = target.Count == 0 || target[0] == null ? null : target[0].transform;
+            var target = new RoadReproduceSource(road);
             var crosswalkA =
-                PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, targetTran, ReproducedRoadDirection.Next);
-            var crosswalkB = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, targetTran, ReproducedRoadDirection.Prev);
+                PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Next);
+            var crosswalkB = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Prev);
             if(crosswalkA != null) Object.DestroyImmediate(crosswalkA);
             if(crosswalkB != null) Object.DestroyImmediate(crosswalkB);
             return false;

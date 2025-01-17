@@ -55,17 +55,16 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var dstParent = RoadReproducer.GenerateDstParent();
 
             var roadBases = target.RoadBases().ToArray();
+            var roadSources = roadBases.Select(rb => new RoadReproduceSource(rb)).ToArray();
             
             // 路面標示のうち、道路ごとに結合するものをこの道路forループの中に書きます。
-            for (int i = 0; i < roadBases.Length; i++)
+            for (int i = 0; i < roadSources.Length; i++)
             {
-                var rb = roadBases[i];
-                string roadName = rb.TargetTrans == null || rb.TargetTrans.Count == 0
-                    ? "UnknownRoad"
-                    : rb.TargetTrans.First().name;
-                progressDisplay.SetProgress("道路標示生成", (float)i / roadBases.Length,
-                    $"[{i + 1} / {roadBases.Length}] {roadName}");
-                var innerTarget = new RrTargetRoadBases(target.Network(), new[] { rb });
+                var roadSource = roadSources[i];
+                string roadName = roadSource.GetName();
+                progressDisplay.SetProgress("道路標示生成", (float)i / roadSources.Length,
+                    $"[{i + 1} / {roadSources.Length}] {roadName}");
+                var innerTarget = new RrTargetRoadBases(target.Network(), new[]{roadBases[i]});
 
                 var combiner = new RoadMarkingCombiner();
                 
@@ -78,7 +77,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 combiner.AddRange(arrowComposer.Compose());
 
                 var dstMesh = combiner.Combine(out var materials);
-                GenerateGameObj(dstMesh, materials, dstParent, rb, ReproducedRoadType.LaneLineAndArrow, ReproducedRoadDirection.None);
+                GenerateGameObj(dstMesh, materials, dstParent, roadSource, ReproducedRoadType.LaneLineAndArrow, ReproducedRoadDirection.None);
             }
             
             // 交差点を生成します。
@@ -88,7 +87,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 var crosswalkCombiner = new RoadMarkingCombiner();
                 crosswalkCombiner.Add(crosswalk.RoadMarkingInstance);
                 var crosswalkMesh = crosswalkCombiner.Combine(out var crosswalkMats);
-                GenerateGameObj(crosswalkMesh, crosswalkMats, dstParent, crosswalk.SrcRoad, ReproducedRoadType.Crosswalk, crosswalk.Direction);
+                var srcRoad = new RoadReproduceSource(crosswalk.SrcRoad);
+                GenerateGameObj(crosswalkMesh, crosswalkMats, dstParent, srcRoad, ReproducedRoadType.Crosswalk, crosswalk.Direction);
             }
             
         }
@@ -118,23 +118,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// 道路標示をゲームオブジェクトとして配置します。
         /// 引数の最初の2つを除くものをキーとし、シーン上に同じキーのものがあればそれを置き換えます。なければ新規作成します。
         /// </summary>
-        private void GenerateGameObj(Mesh mesh, Material[] materials, Transform dstParent, RnRoadBase srcRoad,
+        private void GenerateGameObj(Mesh mesh, Material[] materials, Transform dstParent, RoadReproduceSource srcRoad,
             ReproducedRoadType reproducedType, ReproducedRoadDirection direction)
         {
-            var targetRoads = srcRoad?.TargetTrans;
-            var targetRoad = targetRoads == null || targetRoads.Count == 0 ? null : targetRoads.First();
-            var targetName = targetRoad == null ? "UnknownRoad" : targetRoad.name;
+            var targetName = srcRoad.GetName();
             string dstName = $"{reproducedType.ToGameObjName()}-{targetName}";
             if(direction != ReproducedRoadDirection.None)
             {
                 dstName += $"-{direction}";
             }
-            GameObject dstObj = null;
-            if (targetRoad != null)
-            {
-                // シーンに同じものがあれば、それを置き換えます。
-                dstObj = PLATEAUReproducedRoad.Find(reproducedType, targetRoad.transform, direction);
-            }
+            // シーンに同じものがあれば、それを置き換えます。
+            GameObject dstObj = PLATEAUReproducedRoad.Find(reproducedType, srcRoad, direction);
 
             if (dstObj == null)
             {
@@ -155,7 +149,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             dstObj.transform.parent = dstParent;
             mesh.name = dstName;
             var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
-            comp.Init(reproducedType, targetRoad == null ? null : targetRoad.transform, direction);
+            comp.Init(reproducedType, srcRoad, direction);
         }
     }
 }
