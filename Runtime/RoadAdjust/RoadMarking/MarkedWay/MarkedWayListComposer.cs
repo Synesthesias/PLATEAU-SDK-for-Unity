@@ -1,4 +1,5 @@
-using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
+using UnityEngine;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -7,8 +8,10 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     public class MarkedWayListComposer : IMarkedWayListComposer
     {
-        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWay"/>を収集します。 </summary>
-        public MarkedWayList ComposeFrom(RnModel model)
+        private const float HeightOffset = 0.07f; // 経験的にこのくらいの高さなら道路にめりこまないという値
+        
+        /// <summary> 道路ネットワークから、車線を引く対象となる<see cref="MarkedWayList"/>を収集します。 </summary>
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             // ここに、どの線を追加したいか記述します。
             var composers = new IMarkedWayListComposer[]
@@ -22,7 +25,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var ret = new MarkedWayList();
             foreach (var composer in composers)
             {
-                ret.AddRange(composer.ComposeFrom(model));
+                var markedWayList = composer.ComposeFrom(target);
+                markedWayList.Translate(Vector3.up * HeightOffset);
+                ret.AddRange(markedWayList);
             }
             return ret;
         }
@@ -30,7 +35,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
     internal interface IMarkedWayListComposer
     {
-        public MarkedWayList ComposeFrom(RnModel model);
+        public MarkedWayList ComposeFrom(IRrTarget target);
     }
     
 }

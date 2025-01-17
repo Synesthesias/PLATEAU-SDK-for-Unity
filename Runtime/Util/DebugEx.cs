@@ -8,6 +8,31 @@ using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.Util
 {
+    /// <summary>
+    /// Editor専用. usingでくくられた間の処理速度を計測する
+    /// </summary>
+    public class DebugTimer : IDisposable
+    {
+#if UNITY_EDITOR
+        private Stopwatch Sw { get; }
+        private string Message { get; }
+#endif
+        public DebugTimer(string message)
+        {
+#if UNITY_EDITOR
+            Sw = new Stopwatch();
+            Message = message;
+            Sw.Start();
+#endif
+        }
+
+        public void Dispose()
+        {
+#if UNITY_EDITOR
+            DebugEx.Log($"{Message}({Sw.ElapsedMilliseconds}[ms])");
+#endif
+        }
+    }
     public static class DebugEx
     {
         /// <summary>
@@ -537,6 +562,20 @@ namespace PLATEAU.Util
         {
             foreach (var e in GeoGraphEx.GetEdges(vertices, isLoop))
                 DrawDashedArrow(e.Item1, e.Item2, color, lineLength, spaceLength, duration, depthTest);
+        }
+
+        /// <summary>
+        ///   <para>Draws a line from start to start + dir in world coordinates.</para>
+        /// </summary>
+        /// <param name="start">Point in world space where the ray should start.</param>
+        /// <param name="dir">Direction and length of the ray.</param>
+        /// <param name="color">Color of the drawn line.</param>
+        /// <param name="duration">How long the line will be visible for (in seconds).</param>
+        /// <param name="depthTest">Determines whether objects closer to the camera obscure the line.</param>
+        public static void DrawRay(Vector3 start, Vector3 dir, Color? color = null, float duration = 0f, bool depthTest = true)
+        {
+
+            Debug.DrawRay(start, dir, color ?? Color.white, duration, depthTest);
         }
 
         /// <summary>

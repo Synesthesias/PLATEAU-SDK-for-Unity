@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+using System.Collections.Generic;
 using UnityEngine;
-using static PLATEAU.Editor.RoadNetwork.RoadNetworkEditingSystem;
 using UnityEngine.UIElements;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -10,9 +11,10 @@ using UnityEditor.UIElements;
 namespace PLATEAU.Editor.RoadNetwork.UIDocBind
 {
     /// <summary>
-    /// 信号制御器のパターンを編集するUIDocumentのバインドや挙動の定義を行うクラス
+    /// 信号制御器のパターンを編集するUIDocumentのバインドや挙動の定義を行うクラス。
+    /// 現在は使われていません。
     /// </summary>
-    public class TrafficSignalLightPatternUIDoc
+    internal class TrafficSignalLightPatternUIDoc
     {
         /// <summary>
         /// TrafficSignalLightPatternUIをUIDocument向けに拡張したクラス
@@ -44,34 +46,31 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="system"></param>
-        /// <param name="assets"></param>
-        /// <param name="root"></param>
-        public TrafficSignalLightPatternUIDoc(IRoadNetworkEditingSystem system, RoadNetworkEditorAssets assets, VisualElement root)
+
+        public TrafficSignalLightPatternUIDoc(TrafficSignalEditor trafficSignalEditor, RoadNetworkEditTarget editTarget, RoadNetworkEditorAssets assets, VisualElement root)
         {
-            this.system = system;
+            this.trafficSignalEditor = trafficSignalEditor;
             this.assets = assets;
             this.patternPanelRoot = root;
+            this.editTarget = editTarget; 
             Init();
         }
 
-        private IRoadNetworkEditingSystem system;
         private RoadNetworkEditorAssets assets;
         private VisualElement patternPanelRoot;
+        private RoadNetworkEditTarget editTarget;
         private VisualElement phasePanelRoot;
+        private TrafficSignalEditor trafficSignalEditor;
 
         private TrafficSignalLightPatternUIEx trafficSignalLightPatternUIEx;
 
         void Init()
         {
             patternPanelRoot.Clear();
-            var controller = system.SelectedRoadNetworkElement as TrafficSignalLightController;
+            var controller = editTarget.SelectedRoadNetworkElement as TrafficSignalLightController;
 
             // UI表示用に拡張したクラスを作成
-            trafficSignalLightPatternUIEx = new TrafficSignalLightPatternUIEx(system.SelectedSignalControllerPattern);
+            trafficSignalLightPatternUIEx = new TrafficSignalLightPatternUIEx(trafficSignalEditor.SelectedSignalControllerPattern);
 
             var asset = assets.GetAsset(RoadNetworkEditorAssets.RoadNetworkPatternPanel);
             var patternEditPanelInst = asset.Instantiate();
@@ -82,7 +81,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                 if (controller != null)
                 {
                     var phase = new TrafficSignalControllerPhase(Guid.NewGuid().ToString());
-                    system.SelectedSignalControllerPattern.Phases.Add(phase);
+                    trafficSignalEditor.SelectedSignalControllerPattern.Phases.Add(phase);
                     SyncTrafficLightPatternPhaseList(assets, patternEditPanelInst, controller);
                 }
             };
@@ -92,7 +91,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             {
                 if (controller != null)
                 {
-                    system.SelectedSignalControllerPattern.Phases.Remove(system.SelectedSignalControllerPattern.Phases.Last());
+                    trafficSignalEditor.SelectedSignalControllerPattern.Phases.Remove(trafficSignalEditor.SelectedSignalControllerPattern.Phases.Last());
                     SyncTrafficLightPatternPhaseList(assets, patternEditPanelInst, controller);
                 }
             };
@@ -122,7 +121,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             {
                 var radioBtnAsset = assets.GetAsset(RoadNetworkEditorAssets.RadioButton);
                 // 信号制御パターンリストの同期
-                SyncTrafficLightPatternPhaseList(system.SelectedSignalControllerPattern.Phases, radioBtnGroup, radioBtnAsset);
+                SyncTrafficLightPatternPhaseList(trafficSignalEditor.SelectedSignalControllerPattern.Phases, radioBtnGroup, radioBtnAsset);
             }
             else
             {
@@ -181,7 +180,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                         var userData = UIDocBindHelper.GetUserData(e) as TrafficSignalControllerPhase;
                         var v = e.target as VisualElement;
                         Debug.Assert(userData != null);
-                        system.SelectedSignalPhase = userData;
+                        trafficSignalEditor.SelectedSignalPhase = userData;
                         Debug.Log(userData.Name);
 
                         var phasePanelRoot = patternPanelRoot.Q<VisualElement>("PhasePanelRoot");
@@ -194,7 +193,7 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
                             phasePanelRoot.Add(pahseInst);
                             phasePanelRoot.MarkDirtyRepaint();
 
-                            var phase = system.SelectedSignalPhase;
+                            var phase = trafficSignalEditor.SelectedSignalPhase;
  
                             var spllitField = phasePanelRoot.Q<FloatField>("Split");
                             UIDocBindHelper.Helper.Bind(spllitField, nameof(phase.Split), phase);

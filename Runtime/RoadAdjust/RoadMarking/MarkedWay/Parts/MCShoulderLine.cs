@@ -1,4 +1,4 @@
-using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -9,14 +9,28 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class MCShoulderLine : IMarkedWayListComposer
     {
-        public MarkedWayList ComposeFrom(RnModel model)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var ret = new MarkedWayList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
-                if (!road.TryGetMergedSideWay(null, out var leftWay, out var rightWay)) continue;
-                ret.Add(new MarkedWay(leftWay, MarkedWayType.ShoulderLine, true));
-                ret.Add(new MarkedWay(rightWay, MarkedWayType.ShoulderLine, false));
+                var carLanes = road.MainLanes;
+                if (carLanes.Count == 0) continue;
+                // 端の車線について、そのLeftWayは歩道と車道の間です。
+                var firstLane = carLanes[0];
+                var lastLane = carLanes[^1];
+                var firstLeft = firstLane.LeftWay;
+                var lastLeft = lastLane.LeftWay;
+                if (firstLeft != null)
+                {
+                    ret.Add(new MarkedWay(new MWLine(firstLane.LeftWay), MarkedWayType.ShoulderLine, firstLane.IsReverse));
+                }
+
+                if (lastLeft != null)
+                {
+                    ret.Add(new MarkedWay(new MWLine(lastLane.LeftWay), MarkedWayType.ShoulderLine, lastLane.IsReverse));
+                }
+                
             }
             return ret;
         }

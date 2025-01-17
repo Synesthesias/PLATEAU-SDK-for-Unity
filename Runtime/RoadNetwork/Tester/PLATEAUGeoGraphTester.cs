@@ -1,18 +1,13 @@
-﻿using PLATEAU.CityImport.Import.Convert;
-using PLATEAU.CityInfo;
-using PLATEAU.GranularityConvert;
-using PLATEAU.PolygonMesh;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
-using Debug = UnityEngine.Debug;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
@@ -191,6 +186,7 @@ namespace PLATEAU.RoadNetwork.Tester
             }
         }
 
+
         [Serializable]
         public class Segment3DIntersectionTest
         {
@@ -328,11 +324,11 @@ namespace PLATEAU.RoadNetwork.Tester
                 var p0 = border.GetPoint(x0);
                 var p1 = border.GetPoint(x1);
                 //Debug.DrawLine(new Vector3(x0, y0), new Vector3(x1, y1));
-                Debug.DrawLine(p0, p1);
+                DebugEx.DrawLine(p0, p1);
             }
 
-            Debug.DrawLine(ray.origin - ray.direction * 10, ray.origin + ray.direction * 10);
-            Debug.DrawLine(pos, pos.Xya() + Vector3.forward);
+            DebugEx.DrawLine(ray.origin - ray.direction * 10, ray.origin + ray.direction * 10);
+            DebugEx.DrawLine(pos, pos.Xya() + Vector3.forward);
 
             //Debug.DrawLine(Vector3.left * 10, Vector3.right * 10, Color.red);
             //Debug.DrawLine(Vector3.zero, Vector3.up, Color.green);
@@ -376,7 +372,7 @@ namespace PLATEAU.RoadNetwork.Tester
             DebugEx.DrawArrow(GetVertex(p.indexA).Xay(), GetVertex(p.indexA - 1).Xay(), bodyColor: Color.blue);
 
             var ray = GeoGraph2D.LerpRay(rayA, rayB, p.p);
-            Debug.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
+            DebugEx.DrawRay(ray.origin.Xay(), ray.direction.Xay(), Color.green);
         }
 
         private void UnionPolygonTest(UnionPolygonTestParam p)

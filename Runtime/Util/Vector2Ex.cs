@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLATEAU.Util
 {
@@ -280,5 +281,24 @@ namespace PLATEAU.Util
             return new Vector2Int(Mathf.FloorToInt(self.x), Mathf.FloorToInt(self.y));
         }
 
+        /// <summary>
+        /// 幾何中心を求める
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        public static Vector2 Centroid(IEnumerable<Vector2> points)
+        {
+            var sum = Vector2.zero;
+            var n = 0;
+            foreach (var p in points)
+            {
+                sum += p;
+                n++;
+            }
+
+            if (n == 0)
+                return sum;
+            return sum / n;
+        }
     }
 }

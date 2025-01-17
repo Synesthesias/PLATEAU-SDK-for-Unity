@@ -44,10 +44,37 @@ namespace PLATEAU.RoadNetwork.Tester
         }
         [FormerlySerializedAs("lineStringIntersectionTest")] public RoadSliceTestParam roadIntersectionTest = new RoadSliceTestParam();
 
+
+        [Serializable]
+        public class InsideTestParam
+        {
+            public bool enable = false;
+            public GameObject target;
+        }
+        public InsideTestParam insideTest = new InsideTestParam();
+
+        void InsideTest(InsideTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            var target = p.target;
+            if (!target)
+                return;
+            var vertices = GetVertices();
+            var isInside = GeoGraph2D.IsInsidePolygon(target.transform.position.GetTangent(axis), vertices);
+            DebugEx.DrawString($"{isInside}", target.transform.position);
+        }
+
+
+
         private IEnumerable<Transform> GetChildren(Transform self)
         {
             for (var i = 0; i < self.childCount; i++)
-                yield return self.GetChild(i);
+            {
+                var child = self.GetChild(i);
+                if (child.gameObject.activeInHierarchy)
+                    yield return self.GetChild(i);
+            }
         }
 
         public List<Vector2> GetVertices()
@@ -136,7 +163,8 @@ namespace PLATEAU.RoadNetwork.Tester
 
                     if (exec && isCrossed)
                     {
-                        plateauRnStructureModel.RoadNetwork.SliceRoadHorizontal(road, segment);
+                        var sliceRes = plateauRnStructureModel.RoadNetwork.SliceRoadHorizontal(road, segment);
+                        DebugEx.Log(sliceRes.Result);
                     }
                 }
 
@@ -200,6 +228,7 @@ namespace PLATEAU.RoadNetwork.Tester
             EdgeBorderTest(edgeBorderTest);
             TurnTypeTest(turnTypeTest);
             RoadSliceTest(roadIntersectionTest);
+            InsideTest(insideTest);
         }
 
     }

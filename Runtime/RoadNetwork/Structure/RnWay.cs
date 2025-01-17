@@ -8,33 +8,6 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Structure
 {
-    /// <summary>
-    /// WayのPointsをReadOnlyで返すラッパー
-    /// </summary>
-    public class RnWayPoints : IReadOnlyList<RnPoint>
-    {
-        private RnWay way;
-
-        public RnWayPoints(RnWay way)
-        {
-            this.way = way;
-        }
-
-        public IEnumerator<RnPoint> GetEnumerator()
-        {
-            return way.Points.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public int Count => way.Count;
-
-        public RnPoint this[int index] => way.GetPoint(index);
-    }
-
     public class RnWayEqualityComparer : IEqualityComparer<RnWay>
     {
         // 同じLineStringであれば同一判定とする
@@ -65,7 +38,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (SameLineIsEqual)
             {
-                return x.IsSameLine(y);
+                return x.IsSameLineReference(y);
             }
 
             return x.IsReversed == y.IsReversed && x.IsReverseNormal == y.IsReverseNormal && Equals(x.LineString, y.LineString);
@@ -84,7 +57,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 同じ線分だけど向きが逆ということが多々あるのでメモリ削減 & 比較を楽にするため
     /// </summary>
     [Serializable]
-    public class RnWay : ARnParts<RnWay>, IReadOnlyList<Vector3>
+    public partial class RnWay : ARnParts<RnWay>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
@@ -96,7 +69,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public bool IsReverseNormal { get; set; } = false;
 
         // 頂点群
-        public RnLineString LineString { get; private set; }
+        public RnLineString LineString { get; internal set; }
 
         //----------------------------------
         // end: フィールド
@@ -123,6 +96,12 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 for (var i = 0; i < Count; i++)
                     yield return GetPoint(i);
+            }
+
+            set
+            {
+                var points = value.ToArray();
+                LineString = RnLineString.Create(value, false);
             }
         }
 
@@ -157,11 +136,31 @@ namespace PLATEAU.RoadNetwork.Structure
         // 2頂点以上ある有効な道かどうか
         public bool IsValid => LineString?.IsValid ?? false;
 
+        /// <summary>
+        /// RnWay生成
+        /// </summary>
+        /// <param name="lineString"></param>
+        /// <param name="isReversed">LineStringの向きが逆かどうか</param>
+        /// <param name="isReverseNormal">法線が進行方向に対して左側か右側か. trueなら右側</param>
         public RnWay(RnLineString lineString, bool isReversed = false, bool isReverseNormal = false)
         {
             LineString = lineString;
             IsReversed = isReversed;
             IsReverseNormal = isReverseNormal;
+        }
+
+        public RnWay(RnWay other)
+        {
+            LineString = other.LineString.Clone(true);
+            IsReversed = other.IsReversed;
+            IsReverseNormal = other.IsReverseNormal;
+        }
+
+        public RnWay(RnWay src, bool cloneVertex = true)
+        {
+            LineString = src.LineString.Clone(cloneVertex);
+            IsReversed = src.IsReversed;
+            IsReverseNormal = src.IsReverseNormal;
         }
 
         // デシリアライズのために必要
@@ -202,6 +201,28 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// IsReversed ? Count - 1 - index : index
+        /// LineStringとWayのインデックスの相互変換
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public int SwitchIndex(int index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
+        /// IsReversed ? Count - 1 - index : index
+        /// LineStringとWayのインデックスの相互変換(float版)
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public float SwitchIndex(float index)
+        {
+            return IsReversed ? Count - 1 - index : index;
+        }
+
+        /// <summary>
         /// 頂点アクセス
         /// </summary>
         /// <param name="index"></param>
@@ -212,11 +233,15 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 return LineString[ToRawIndex(index)];
             }
+            set
+            {
+                LineString[ToRawIndex(index)] = value;
+            }
         }
 
         /// <summary>
         /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
-        /// 道の外側を向いている法線ベクトルの平均を返す.正規化はされていない
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
@@ -246,7 +271,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 道の外側を向いている. 正規化はされていない
+        /// 道の外側を向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -338,13 +363,12 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 境界線の中央の点を返す
         /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
         /// </summary>
         /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public int GetLerpPoint(float p, out Vector3 midPoint)
+        public float GetLerpPoint(float p, out Vector3 midPoint)
         {
             return LineUtil.GetLineSegmentLerpPoint(this, p, out midPoint);
         }
@@ -380,7 +404,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 頂点数が2の時は特殊処理
             if (Count == 2)
             {
-                var n = GetEdgeNormal(0).normalized;
+                var n = GetEdgeNormal(0);
                 foreach (var p in Points)
                     p.Vertex += n * offset;
 
@@ -390,7 +414,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var index = 0;
             // 現在見る点と次の点の辺/頂点の法線を保存しておく
             // 線分の法線
-            var edgeNormal = new[] { GetEdgeNormal(0).normalized, GetEdgeNormal(Mathf.Min(Count - 1, 1)).normalized };
+            var edgeNormal = new[] { GetEdgeNormal(0), GetEdgeNormal(Mathf.Min(Count - 1, 1)) };
             // 頂点の法線
             var vertexNormal = new[] { GetVertexNormal(0), GetVertexNormal(1) };
             var delta = offset;
@@ -441,7 +465,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// cloneVertexがtrueの時は頂点もクローンする
         /// </summary>
         /// <returns></returns>
-        public RnWay Clone(bool cloneVertex = true)
+        public RnWay Clone(bool cloneVertex)
         {
             return new RnWay(LineString.Clone(cloneVertex), IsReversed, IsReverseNormal);
         }
@@ -457,16 +481,51 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 同じ線分かどうか
+        /// 同じ線分かどうか（参照を比較）
         /// </summary>
-        /// <param name="other"></param>
-        /// <param name="onlyReferenceEqual"></param>
-        /// <returns></returns>
-        public bool IsSameLine(RnWay other, bool onlyReferenceEqual = true)
+        public bool IsSameLineReference(RnWay other)
         {
-            if (onlyReferenceEqual)
-                return LineString == other.LineString;
-            return RnLineString.Equals(LineString, other.LineString);
+            if (other == null)
+                return false;
+            return LineString == other.LineString;
+
+        }
+
+        /// <summary>
+        /// 同じ線分かどうか（点配列の内容を比較）
+        /// </summary>
+        public bool IsSameLineSequence(RnWay other)
+        {
+            if (other == null) return false;
+            if (Count != other.Count) return false;
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = GetPoint(i).Vertex;
+                var p2 = other.GetPoint(i).Vertex;
+                const float Threshold = 0.01f;
+                if (Math.Abs(p1.x - p2.x) > Threshold) return false;
+                if (Math.Abs(p1.y - p2.y) > Threshold) return false;
+                if (Math.Abs(p1.z - p2.z) > Threshold) return false;
+            }
+
+            return true;
+        }
+
+        public bool IsSameLineSequenceReverse(RnWay other)
+        {
+            if (other == null) return false;
+            if (Count != other.Count) return false;
+            for (int i = 0; i < Count; i++)
+            {
+                var p1 = GetPoint(i).Vertex;
+                var p2 = other.GetPoint(Count - i - 1).Vertex;
+                const float Threshold = 0.01f;
+                if (Math.Abs(p1.x - p2.x) > Threshold) return false;
+                if (Math.Abs(p1.y - p2.y) > Threshold) return false;
+                if (Math.Abs(p1.z - p2.z) > Threshold) return false;
+            }
+
+            return true;
         }
     }
 
@@ -487,27 +546,35 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// nearestからRnWay上の最も近い点を探す
+        /// self.GetPoint(index) == pointとなるindexを返す. 見つからない場合は-1が返る.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static int FindPointIndex(this RnWay self, RnPoint point)
+        {
+            var index = self.LineString.Points.IndexOf(point);
+            if (index < 0)
+                return index;
+            return self.SwitchIndex(index);
+        }
+
+        /// <summary>
+        /// posからRnWay上の最も近い点を探す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="pos"></param>
         /// <param name="nearest"></param>
+        /// <param name="pointIndex"></param>
+        /// <param name="distance"></param>
         /// <returns></returns>
-        public static bool FindNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest)
+        public static void GetNearestPoint(this RnWay self, Vector3 pos, out Vector3 nearest, out float pointIndex, out float distance)
         {
             nearest = Vector3.zero;
-            float len = float.MaxValue;
-            foreach (var s in GeoGraphEx.GetEdges(self, false))
-            {
-                var v = new LineSegment3D(s.Item1, s.Item2).GetNearestPoint(pos);
-                if ((nearest - v).sqrMagnitude < len)
-                {
-                    len = (nearest - v).sqrMagnitude;
-                    nearest = v;
-                }
-            }
-            return len < float.MaxValue;
+            self.LineString.GetNearestPoint(pos, out nearest, out pointIndex, out distance);
+            pointIndex = self.SwitchIndex(pointIndex);
         }
+
 
         /// <summary>
         /// nullチェック込みのIsValid
@@ -529,24 +596,67 @@ namespace PLATEAU.RoadNetwork.Structure
             return self.LineString.CalcLength();
         }
 
+        public static float CalcLength(this RnWay self, float startIndex, float endIndex)
+        {
+            if (self.IsReversed)
+            {
+                return self.LineString.CalcLength(self.SwitchIndex(endIndex), self.SwitchIndex(startIndex));
+            }
+            else
+            {
+                return self.LineString.CalcLength(startIndex, endIndex);
+            }
+        }
+
         /// <summary>
         /// selfの内部のLineStringにbackのLineStringを追加する
         /// self.Points ... back.Pointsの順になるようにIsReverseを考慮して追加する
         /// </summary>
         /// <param name="self"></param>
         /// <param name="back"></param>
-        public static void Append2LineString(this RnWay self, RnWay back)
+        public static void AppendBack2LineString(this RnWay self, RnWay back)
         {
+            if (back == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLineReference(back))
+                return;
             if (self.IsReversed)
             {
                 foreach (var p in back.Points)
-                    self.LineString.AddPointFrontOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointFrontOrSkip(p, 0f, 0f, 0f);
             }
             else
             {
                 // IsReversedがfalseの時はそのまま追加
                 foreach (var p in back.Points)
-                    self.LineString.AddPointOrSkip(p, -1f, -1f, -1f);
+                    self.LineString.AddPointOrSkip(p, 0f, 0f, 0f);
+            }
+        }
+        /// <summary>
+        /// selfの内部のLineStringにfrontのLineStringを追加する
+        /// back.Points... self.Pointsの順になるようにIsReverseを考慮して追加する
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="front"></param>
+        public static void AppendFront2LineString(this RnWay self, RnWay front)
+        {
+            if (front == null)
+                return;
+            // 自己挿入は禁止
+            if (self.IsSameLineReference(front))
+                return;
+            if (self.IsReversed)
+            {
+                // IsReversedの時は逆順に後ろに追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0, 0);
+            }
+            else
+            {
+                // falseの時は逆順に前に追加
+                for (var i = 0; i < front.Count; ++i)
+                    self.LineString.AddPointFrontOrSkip(front.GetPoint(front.Count - 1 - i), 0f, 0f, 0f);
             }
         }
 
@@ -560,6 +670,218 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var ls = RnLineString.Create(a.Points.Concat(b.Points));
             return new RnWay(ls);
+        }
+
+        /// <summary>
+        /// selfの方向に対してvが外側(法線と同じ側)かどうか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="v"></param>
+        /// <param name="nearest"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static bool IsOutSide(this RnWay self, Vector3 v, out Vector3 nearest, out float distance)
+        {
+            self.GetNearestPoint(v, out nearest, out var pointIndex, out distance);
+
+            if (self.IsValidOrDefault() == false)
+                return false;
+            var st = Mathf.Clamp((int)pointIndex, 0, self.Count - 2);
+            var en = Mathf.Clamp(Mathf.CeilToInt(pointIndex - 1), 0, self.Count - 2);
+
+            HashSet<int> set = new HashSet<int> { st, en };
+
+            var d = v - nearest;
+            return set.Any(i => Vector2.Dot(self.GetEdgeNormal(i).Xz(), d.Xz()) >= 0f);
+        }
+
+        /// <summary>
+        /// Wayを法線方向に沿って各頂点を補間しながら移動させる。
+        /// 最初の頂点はstartOffset分だけ、最後の頂点はendOffset分だけ移動され、
+        /// 間の頂点は線形補間されたオフセットとWayの頂点法線をつかってなるべく元の形状を維持するように移動される。
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="startOffset"></param>
+        /// <param name="endOffset"></param>
+        public static void MoveLerpAlongNormal(this RnWay self, Vector3 startOffset, Vector3 endOffset)
+        {
+            if (self.IsValid == false)
+                return;
+
+            if (self.Count == 2)
+            {
+                self.GetPoint(0).Vertex += startOffset;
+                self.GetPoint(1).Vertex += endOffset;
+                return;
+            }
+
+            var index = 0;
+
+
+            // 現在見る点と次の点の辺/頂点の法線を保存しておく
+            // 線分の法線
+
+            Vector3 EdgeNormal(int i)
+            {
+                return self.GetEdgeNormal(i);
+            }
+
+            var sLen = startOffset.magnitude;
+            var eLen = endOffset.magnitude;
+            var sDir = startOffset.normalized;
+            var eDir = endOffset.normalized;
+            // 始点と終点でベースラインをまたぐ場合があるので法線からの方向を記録しておく
+            var sSign = Mathf.Sign(Vector3.Dot(startOffset, EdgeNormal(0)));
+            var eSign = Mathf.Sign(Vector3.Dot(endOffset, EdgeNormal(self.Count - 2)));
+
+            var edgeNormal = new[] { sDir * sSign, EdgeNormal(1) };
+            // 頂点の法線
+            var vertexNormal = new[] { edgeNormal[0], (edgeNormal[0] + edgeNormal[1]).normalized };
+            var delta = 1f;
+
+
+            var totalLength = self.CalcLength();
+            var nowLength = 0f;
+
+            var pointOffset = new Vector3[self.Count];
+            pointOffset[0] = startOffset;
+            pointOffset[self.Count - 1] = endOffset;
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var en0 = edgeNormal[index];
+                var en1 = edgeNormal[(index + 1) & 1];
+                var vn = vertexNormal[index];
+
+                // 形状維持するためにオフセット距離を変える
+                // en0成分の移動量がdeltaになるように, vnの移動量を求める
+                var m = Vector3.Dot(vn, en0);
+                // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
+                var d = delta;
+                bool isZero = Mathf.Abs(m) < 1e-5f;
+                if (isZero == false)
+                    d /= m;
+
+                if (i < self.Count - 2)
+                {
+                    edgeNormal[index] = EdgeNormal(Mathf.Min(self.Count - 2, i + 1));
+                    vertexNormal[index] = (edgeNormal[0] + edgeNormal[1]).normalized;
+                    index = (index + 1) & 1;
+                }
+
+                if (i != 0)
+                {
+                    var p = nowLength / totalLength;
+                    var l = Mathf.Lerp(sSign * sLen, eSign * eLen, p) * Mathf.Lerp(d, 1f, p);
+                    pointOffset[i] = vn * l;
+                }
+                // 次の頂点計算のためにen1線分の移動量を入れる
+                delta = d * Vector3.Dot(vn, en1);
+                nowLength += (self[i + 1] - self[i]).magnitude;
+
+            }
+
+            for (var i = 0; i < self.Count; ++i)
+            {
+                self.GetPoint(i).Vertex += pointOffset[i];
+            }
+        }
+
+        /// <summary>
+        /// selfの先頭から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は最後の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromFront(this RnWay self, float offset, out int startIndex, out int endIndex)
+        {
+            return self.GetAdvancedPoint(offset, false, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの最後から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromBack(this RnWay self, float offset, out int startIndex, out int endIndex)
+        {
+            return self.GetAdvancedPoint(offset, true, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は終端点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse, out int startIndex, out int endIndex)
+        {
+            var ret = self.LineString.GetAdvancedPoint(offset, reverse != self.IsReversed, out startIndex, out endIndex);
+            startIndex = self.SwitchIndex(startIndex);
+            endIndex = self.SwitchIndex(endIndex);
+            return ret;
+        }
+
+        /// <summary>
+        /// selfの開始点(reverse=trueの時は終了点)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は終端点を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnWay self, float offset, bool reverse)
+        {
+            return GetAdvancedPoint(self, offset, reverse, out _, out _);
+        }
+
+        /// <summary>
+        /// 2D平面におけるRnway同士の距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static float GetDistance2D(this RnWay self, RnWay other, AxisPlane plane = RnModel.Plane)
+        {
+            return self?.LineString?.GetDistance2D(other?.LineString, plane) ?? float.MaxValue;
+        }
+
+        /// <summary>
+        /// 線の端から<paramref name="distance"/>メートル辿ったときの位置を返します。
+        /// <paramref name="endSide"/>がtrueの場合、線を逆（配列のend側）から辿ります。
+        /// </summary>
+        public static Vector3 PositionAtDistance(this RnWay way, float distance, bool endSide)
+        {
+            float len = 0;
+            int index = endSide ? way.Count - 1 : 0;
+            var pos = way.GetPoint(index);
+            while (len < distance) // オフセットの分だけ線上を動かします。
+            {
+                index += endSide ? -1 : 1;
+                if (index < 0 || index >= way.Count) break;
+                var nextPos = way.GetPoint(index);
+                float lenDiff = Vector3.Distance(nextPos, pos);
+                if (len + lenDiff >= distance)
+                {
+                    float t = (len + lenDiff - distance) / lenDiff; // オーバーした割合
+                    return Vector3.Lerp(pos, nextPos, 1 - t);
+                }
+
+                pos = nextPos;
+                len += lenDiff;
+            }
+
+            return pos;
         }
     }
 }

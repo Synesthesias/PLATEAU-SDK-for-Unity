@@ -2,10 +2,11 @@
 using Newtonsoft.Json;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
-using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static PLATEAU.CityInfo.CityObjectList;
+using ProgressBar = PLATEAU.Util.ProgressBar;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -30,6 +31,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         public CityAttributeGui(EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
+        }
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
         }
         
         public void Draw()
@@ -229,6 +235,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             Clear();
             SceneView.duringSceneGui -= OnSceneGUI;
+            isActive = false;
         }
 
         public void OnTabUnselect()

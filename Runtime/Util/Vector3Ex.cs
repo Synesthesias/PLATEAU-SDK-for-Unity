@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLATEAU.Util
 {
@@ -236,6 +237,41 @@ namespace PLATEAU.Util
         public static Vector4 Xyza(this Vector3 self, float a)
         {
             return new Vector4(self.x, self.y, self.z, a);
+        }
+
+
+        /// <summary>
+        /// 幾何中心を求める. 頂点の平均
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        public static Vector3 Centroid(IEnumerable<Vector3> points)
+        {
+            var sum = Vector3.zero;
+            var n = 0;
+            foreach (var p in points)
+            {
+                sum += p;
+                n++;
+            }
+
+            if (n == 0)
+                return sum;
+            return sum / n;
+        }
+
+        /// <summary>
+        /// ベクトルselfをaxisに対して線対称にしたベクトルを返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static Vector3 AxisSymmetric(this Vector3 self, Vector3 axis)
+        {
+            axis = axis.normalized;
+            // axisに対する直交成分
+            var n = self - Vector3.Dot(self, axis) * axis;
+            return self - 2 * n;
         }
     }
 }

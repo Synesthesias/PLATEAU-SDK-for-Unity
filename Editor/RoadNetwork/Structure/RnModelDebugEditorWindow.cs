@@ -1,10 +1,12 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -202,6 +204,22 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
         }
 
+        private void EditRoadBase(RnRoadBase roadBase, Work work)
+        {
+            if (roadBase == null)
+                return;
+            ShowBase(roadBase);
+            if (RnEditorUtil.Foldout("TargetTrans", FoldOuts, roadBase))
+            {
+                using var indent = new EditorGUI.IndentLevelScope();
+                foreach (var tran in roadBase.TargetTrans)
+                {
+                    EditorGUILayout.ObjectField(tran, typeof(Transform), true);
+                }
+            }
+
+        }
+
         /// <summary>
         /// 道路の編集
         /// </summary>
@@ -213,7 +231,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (road == null)
                 return;
 
-            ShowBase(road);
+            EditRoadBase(road, work);
             using (new EditorGUI.DisabledScope(false))
             {
                 using var _ = (new EditorGUILayout.HorizontalScope());
@@ -255,11 +273,16 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             }
 
             var roadGroup = road.CreateRoadGroupOrDefault();
-            if (RnEditorUtil.Foldout("RoadGroupOption", p.Foldouts, ("RoadGroupOption", road)))
+            if (RnEditorUtil.Foldout($"RoadGroupOption [{roadGroup.Roads.Count}] ({roadGroup.Roads.Select(x => x.GetDebugLabelOrDefault()).Join2String()})", p.Foldouts, ("RoadGroupOption", road)))
             {
                 if (GUILayout.Button("Align"))
                 {
-                    roadGroup.Align();
+                    work.DelayExec.Add(() => roadGroup.Align());
+                }
+
+                if (GUILayout.Button("Merge"))
+                {
+                    work.DelayExec.Add(() => roadGroup.MergeRoads());
                 }
 
                 EditorGUILayout.LabelField($"LaneCount");
@@ -304,6 +327,11 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         }
                     }
                 }
+
+                if (GUILayout.Button("Adjust Border"))
+                {
+                    work.DelayExec.Add(() => roadGroup.AdjustBorder());
+                }
             }
 
             if (RnEditorUtil.Foldout("Option", p.Foldouts, ("Option", road)))
@@ -313,12 +341,37 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 {
                     work.DelayExec.Add(() => road.DisConnect(false));
                 }
-
+                if (GUILayout.Button("SeparateContinuousBorder"))
+                {
+                    work.DelayExec.Add(() => road.SeparateContinuousBorder());
+                }
                 if (GUILayout.Button("Convert2Intersection"))
                 {
                     work.DelayExec.Add(() => road.ParentModel.Convert2Intersection(road));
                 }
 
+                if (road.Next is RnIntersection && GUILayout.Button("Merge2NextIntersection"))
+                {
+                    work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Next));
+                }
+                if (road.Prev is RnIntersection && GUILayout.Button("Merge2PrevIntersection"))
+                {
+                    work.DelayExec.Add(() => road.TryMerge2NeighborIntersection(RnLaneBorderType.Prev));
+                }
+
+                if (GUILayout.Button("TrySliceRoadHorizontalNearByBorder"))
+                {
+                    work.DelayExec.Add(() => road.ParentModel.TrySliceRoadHorizontalNearByBorder(
+                        road, new RnModelEx.CalibrateIntersectionBorderOption()
+                        , out var prev
+                        , out var center
+                        , out var next
+                        ));
+                }
+                if (GUILayout.Button("CalibrateIntersectionBorder"))
+                {
+                    work.DelayExec.Add(() => road.ParentModel.CalibrateIntersectionBorder(road, new RnModelEx.CalibrateIntersectionBorderOption()));
+                }
             }
         }
         private class IntersectionEdit
@@ -338,7 +391,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 return;
             var p = intersectionEdit;
 
-            ShowBase(intersection);
+            EditRoadBase(intersection, work);
             using (new EditorGUI.DisabledScope(false))
             {
                 if (RnEditorUtil.Foldout("Borders", p.Foldouts, ("Borders", intersection)))
@@ -417,6 +470,31 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     work.DelayExec.Add(() => intersection.DisConnect(false));
                 }
 
+                if (GUILayout.Button("SeparateContinuousBorder"))
+                {
+                    work.DelayExec.Add(() => intersection.SeparateContinuousBorder());
+                }
+
+                if (GUILayout.Button("Create Inside Objects"))
+                {
+                    List<RnPoint> points = new List<RnPoint>(intersection.Edges.Sum(x => x.Border.Count));
+                    foreach (var pos in intersection.Edges.SelectMany(e => e.Border.Points))
+                    {
+                        if (points.Any() && points.Last() == pos)
+                            continue;
+                        points.Add(pos);
+                    }
+                    if (points.Count > 1 && points[0] == points[^1])
+                        points.RemoveAt(points.Count - 1);
+
+                    var obj = new GameObject("InsideObjects");
+                    foreach (var pos in points)
+                    {
+                        var go = new GameObject("Point");
+                        go.transform.SetParent(obj.transform);
+                        go.transform.position = pos.Vertex;
+                    }
+                }
             }
 
         }
@@ -427,11 +505,17 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
         public void EditSideWalk(RnSideWalk sideWalk, Work work)
         {
+            ShowBase(sideWalk);
             using (new EditorGUI.DisabledScope(false))
             {
                 EditorGUILayout.LabelField($"ParentRoad:{sideWalk.ParentRoad.GetDebugMyIdOrDefault()}");
                 EditorGUILayout.EnumPopup("LaneType", sideWalk.LaneType);
             }
+
+            EditorGUILayout.LabelField($"Outside Way {sideWalk.OutsideWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"Inside Way {sideWalk.InsideWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"StartEdge Way {sideWalk.StartEdgeWay.GetDebugIdLabelOrDefault()}");
+            EditorGUILayout.LabelField($"EndEdge Way {sideWalk.EndEdgeWay.GetDebugIdLabelOrDefault()}");
         }
 
         /// <summary>
@@ -595,6 +679,56 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                     if (GUILayout.Button("Remove Empty Intersection"))
                         model.RemoveEmptyIntersectionBetweenRoad();
+
+                    if (GUILayout.Button("Collect Check"))
+                    {
+                        var work2 = new CollectRnModelWork();
+                        using (new DebugTimer("Collect[Generated Code]"))
+                        {
+                            model.Collect(work2);
+                        }
+                        CollectRnModelWork work1 = null;
+                        using (new DebugTimer("Collect[Reflection]"))
+                        {
+                            work1 = Collect(model);
+                        }
+
+                        bool success = true;
+                        void Check<T>(HashSet<T> a, HashSet<T> b)
+                        {
+                            var name = typeof(T).Name;
+                            var aList = a.OrderBy(x => x.GetHashCode()).ToList();
+                            var bList = b.OrderBy(x => x.GetHashCode()).ToList();
+                            if (aList.Count != bList.Count)
+                            {
+                                Debug.LogError($"{name} Count Error {aList.Count} != {bList.Count}");
+                                success = false;
+                                return;
+                            }
+
+                            for (var i = 0; i < aList.Count; i++)
+                            {
+                                if (aList[i].Equals(bList[i]) == false)
+                                {
+                                    Debug.LogError($"{name} Error {aList[i]} != {bList[i]}");
+                                    success = false;
+                                }
+                            }
+                        }
+
+                        Check(work1.RnLanes, work2.RnLanes);
+                        Check(work1.RnLineStrings, work2.RnLineStrings);
+                        Check(work1.RnPoints, work2.RnPoints);
+                        Check(work1.RnRoadBases, work2.RnRoadBases);
+                        Check(work1.RnSideWalks, work2.RnSideWalks);
+                        Check(work1.RnWays, work2.RnWays);
+                        Check(work1.TrafficSignalControllerPatterns, work2.TrafficSignalControllerPatterns);
+                        Check(work1.TrafficSignalControllerPhases, work2.TrafficSignalControllerPhases);
+                        Check(work1.TrafficSignalLights, work2.TrafficSignalLights);
+                        Check(work1.TrafficSignalLightControllers, work2.TrafficSignalLightControllers);
+                        if (success)
+                            DebugEx.Log("Collect Check Success");
+                    }
                 }
             }
 
@@ -603,6 +737,36 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 e.Invoke();
         }
 
+        internal static CollectRnModelWork Collect(RnModel roadNetworkModel)
+        {
+            void Impl<T>(HashSet<T> hashSet) where T : class
+            {
+                var src = TypeUtil
+                    .GetAllMembersRecursively(roadNetworkModel, typeof(T), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Select(x => x.Item2)
+                    .Where(x => x != null)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var obj in src)
+                {
+                    hashSet.Add((T)obj);
+                }
+            }
+
+            var ret = new CollectRnModelWork();
+            Impl(ret.TrafficSignalLightControllers);
+            Impl(ret.TrafficSignalLights);
+            Impl(ret.TrafficSignalControllerPatterns);
+            Impl(ret.TrafficSignalControllerPhases);
+            Impl(ret.RnPoints);
+            Impl(ret.RnLineStrings);
+            Impl(ret.RnLanes);
+            Impl(ret.RnRoadBases);
+            Impl(ret.RnWays);
+            Impl(ret.RnSideWalks);
+            return ret;
+        }
         /// <summary>
         /// ウィンドウを取得する、存在しない場合に生成する
         /// </summary>
@@ -635,7 +799,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
             if (roadBase == null)
                 return false;
-            return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
+            return roadBase.TargetTrans.Any(RnEx.IsEditorSceneSelected);
         }
         /// <summary>
         /// Scene上で選択されているかどうか

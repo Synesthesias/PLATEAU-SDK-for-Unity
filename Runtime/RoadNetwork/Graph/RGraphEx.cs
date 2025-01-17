@@ -144,7 +144,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="mergeCellSize"></param>
         /// <param name="mergeCellLength"></param>
         /// <param name="heightTolerance"></param>
-        public static HashSet<RVertex> AdjustLod1Height(this RGraph self, float mergeCellSize, int mergeCellLength,
+        public static HashSet<RVertex> AdjustSmallLodHeight(this RGraph self, float mergeCellSize, int mergeCellLength,
             float heightTolerance)
         {
             HashSet<RVertex> removed = new();
@@ -153,10 +153,12 @@ namespace PLATEAU.RoadNetwork.Graph
             var table = new Dictionary<Vector2Int, HashSet<RVertex>>();
             foreach (var f in self.Faces)
             {
-                if (f.LodLevel == 1)
+                // LOD1/2には高さ情報が無いのでheightToleranceで吸着処理をかける
+                var maxLod = 2;
+                if (f.LodLevel <= maxLod)
                 {
                     // 2重実行対策. すでにLOD3の他の頂点にマージされている場合はスキップ
-                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() == 1));
+                    targetVertices.UnionWith(f.ComputeConvexHullVertices().Where(v => v.GetMaxLodLevel() <= maxLod));
                 }
                 else
                 {
@@ -352,7 +354,91 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceにする
+        /// 各Faceに対して以下のような飛び出た辺をFaceから取り除く
+        /// o-o
+        /// | |
+        /// o-o---o ←の様な飛び出た頂点を削除する 
+        /// </summary>
+        /// <param name="self"></param>
+        public static void RemoveIsolatedEdgeFromFace(this RGraph self)
+        {
+            foreach (var f in self.Faces)
+            {
+                f.RemoveIsolatedEdge();
+            }
+
+            foreach (var f in self.Faces.Where(f => f.Edges.Count == 0).ToList())
+            {
+                self.RemoveFace(f);
+            }
+        }
+
+        /// <summary>
+        /// o-o
+        /// | |
+        /// o-o---o ←の様な飛び出た辺をFaceから削除する.
+        /// 戻り値は削除された辺の数
+        /// </summary>
+        /// <param name="self"></param>
+        public static HashSet<REdge> RemoveIsolatedEdge(this RFace self)
+        {
+            bool IsIsolatedEdge(REdge edge)
+            {
+                // edgeのどっちかの頂点がedgeでしかselfに繋がっていない場合は孤立している
+                return edge.Vertices
+                    .Any(v =>
+                        v == null ||
+                        !v.Edges.Where(e => e != edge).Any(e => e.Faces.Contains(self)));
+            }
+
+            Queue<REdge> removeEdgeQueue = new();
+            foreach (var edge in self.Edges)
+            {
+                if (IsIsolatedEdge(edge))
+                {
+                    removeEdgeQueue.Enqueue(edge);
+                }
+            }
+
+            HashSet<REdge> removeEdgeSet = new();
+            HashSet<REdge> disconnectedEdges = new();
+            while (removeEdgeQueue.Any())
+            {
+                var edge = removeEdgeQueue.Dequeue();
+                // すでに削除済みの場合は無視
+                if (removeEdgeSet.Add(edge) == false)
+                    continue;
+                self.RemoveEdge(edge);
+
+                // edgeが削除されたことにより別の辺が孤立するかもしれないのでそれも削除キューに入れる
+                // 以下のような場合, b-cの辺を削除するとa-bの辺も孤立する
+                // o-o
+                // | |
+                // o-o-a-b-c ←の様な飛び出た辺をFaceから削除する.
+                foreach (var e in edge.GetNeighborEdges())
+                {
+                    if (IsIsolatedEdge(e) == false)
+                        continue;
+                    removeEdgeQueue.Enqueue(e);
+                }
+
+                // どの面にも所属しない辺になったら削除する
+                if (edge.Faces.Count == 0)
+                {
+                    edge.DisConnect();
+                    disconnectedEdges.Add(edge);
+                }
+            }
+            //if (removeEdgeSet.Any())
+            //    DebugEx.Log($"[{self.GetDebugLabelOrDefault()}] Remove edges {removeEdgeSet.Count}");
+            if (disconnectedEdges.Any())
+                DebugEx.Log($"[{self.GetDebugLabelOrDefault()}] Disconnected edges {disconnectedEdges.Count}");
+            return disconnectedEdges;
+        }
+
+
+        /// <summary>
+        /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceGroupにする.
         /// </summary>
         /// <param name="self"></param>
         /// <param name="isMatch"></param>
@@ -397,9 +483,10 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public static void Optimize(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance, float lod1HeightTolerance)
         {
-            self.AdjustLod1Height(mergeCellSize, mergeCellLength, lod1HeightTolerance);
+            self.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1HeightTolerance);
             self.EdgeReduction();
             self.VertexReduction(mergeCellSize, mergeCellLength, midPointTolerance);
+            self.RemoveIsolatedEdgeFromFace();
             self.EdgeReduction();
             self.InsertVertexInNearEdge(midPointTolerance);
             self.EdgeReduction();
@@ -618,6 +705,11 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
+        /// <summary>
+        /// facesのアウトライン頂点を計算する
+        /// </summary>
+        /// <param name="faces"></param>
+        /// <returns></returns>
         private static List<RVertex> ComputeOutlineVertices(IList<RFace> faces)
         {
             var vertices = faces
@@ -901,15 +993,22 @@ namespace PLATEAU.RoadNetwork.Graph
             // 0 : 外側の辺, 1:内側の辺, 2:境界線
             static int Edge2WayType(REdge e)
             {
-                // 歩道にしか所属しない場合は外側の辺
+                // 自身の歩道にしか所属しない場合は外側の辺
                 if (e.Faces.Count == 1)
                     return 0;
 
+                // 以下複数のFaceと所属する場合
+
                 var t = e.GetAllFaceTypeMaskOrDefault();
-                // 複数の歩道に所属している場合は境界線
+                // 複数の歩道に所属している場合は歩道との境界線
                 if (t.HasAnyFlag(RRoadTypeMask.SideWalk))
                     return 2;
-                // 歩道以外に所属している場合は内側の辺
+
+                // 歩道との境界線ではない and 他のtranメッシュとの境界線は外側の辺
+                if (e.Faces.GroupBy(f => f.CityObjectGroup).Count() > 1)
+                    return 0;
+
+                // 自身のtranメッシュの歩道以外に所属している場合は内側の辺
                 return 1;
             }
             var vertices = self.ComputeOutlineVertices();
@@ -950,7 +1049,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var outsideIndex = ways.FindIndex(w => w.type == 0);
             if (outsideIndex < 0)
             {
-                Debug.LogWarning("outside edge not found");
+                Debug.LogWarning($"outside edge not found {(self.CityObjectGroup ? self.CityObjectGroup.name : "null")}");
                 return false;
             }
 

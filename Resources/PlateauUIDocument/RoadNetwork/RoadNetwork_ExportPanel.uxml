@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <ui:VisualElement name="RoadNetwork_ExportPanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
+        <ui:Label tabindex="-1" text="道路ネットワークをGeoJSON形式で出力します" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bold-font" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:VisualElement class="sectionTitle" style="flex-grow: 0; flex-direction: row; align-items: center;">
+                <ui:VisualElement name="IconArrow" style="flex-grow: 0; flex-shrink: 0;" />
+                <ui:Label text="出力フォルダ" style="color: rgb(255, 255, 255);" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 0; flex-direction: row; align-items: flex-end; margin-top: 8px; margin-bottom: 8px; padding-right: 8px; padding-left: 8px;">
+                <ui:VisualElement style="flex-grow: 1;">
+                    <ui:Label tabindex="-1" text="フォルダパス" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 2px; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 12px; color: rgb(255, 255, 255);" />
+                    <ui:TextField picking-mode="Ignore" name="ExportPathField" value="書き出し先フォルダを指定してください" style="flex-direction: column; flex-shrink: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0;" />
+                </ui:VisualElement>
+                <ui:Button text="参照" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ButtonBrowse" class="GreenButton" style="width: 80px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-grow: 0; border-top-width: 16px; border-right-width: 16px; border-bottom-width: 16px; border-left-width: 16px; align-items: center;">
+                <ui:Button text="エクスポート" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ButtonExport" class="ActionButton" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

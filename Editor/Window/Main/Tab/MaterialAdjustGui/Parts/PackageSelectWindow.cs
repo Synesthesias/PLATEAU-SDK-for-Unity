@@ -1,4 +1,5 @@
 using PLATEAU.Editor.Window.Common;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
@@ -8,16 +9,39 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     internal class PackageSelectWindow : PlateauWindowBase
     {
         private IPackageSelectResultReceiver resultReceiver;
-        public static void Open(IPackageSelectResultReceiver resultReceiver)
+        private PackageSelectGui gui;
+        private bool isInitialized;
+        
+        public static PackageSelectWindow Open()
         {
             var window = GetWindow<PackageSelectWindow>("パッケージ種選択");
-            window.resultReceiver = resultReceiver;
             window.Show();
+            return window;
         }
 
-        protected override IEditorDrawable InitGui()
+        public void Init(IPackageSelectResultReceiver resultReceiverArg)
         {
-            return new PackageSelectGui(resultReceiver, this);
+            this.resultReceiver = resultReceiverArg;
+            gui = new PackageSelectGui(resultReceiver, this);
+            this.isInitialized = true;
+        }
+
+
+
+        protected override VisualElementDisposable CreateGui()
+        {
+            var container = new IMGUIContainer(() =>
+            {
+                if (!isInitialized) return;
+                PlateauEditorStyle.SetCurrentWindow(this);
+                gui.Draw();
+            });
+            return new VisualElementDisposable(container, Dispose);
+        }
+
+        private void Dispose()
+        {
+            gui?.Dispose();
         }
 
     }

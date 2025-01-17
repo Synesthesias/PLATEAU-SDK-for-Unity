@@ -11,7 +11,9 @@ using PLATEAU.Util;
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
+using ProgressBar = PLATEAU.Util.ProgressBar;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -62,6 +64,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 coordinateSystemGui = new CoordinateSystemGui(format, selectedSystem);
             };
             meshFileFormatGui.InvokeOnFormatChanged();
+        }
+        
+        public VisualElement CreateGui()
+        {
+            return new IMGUIContainer(Draw);
         }
         
         public void Draw()

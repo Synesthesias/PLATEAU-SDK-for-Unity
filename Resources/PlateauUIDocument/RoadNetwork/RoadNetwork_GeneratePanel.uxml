@@ -1,0 +1,37 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <ui:VisualElement name="RoadNetwork_GeneratePanel" style="flex-grow: 0; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px;">
+        <ui:Label tabindex="-1" text="道路ネットワーク生成、路面標識生成、路面見た目向上を行います" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bold-font" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 8px; padding-right: 0; padding-bottom: 8px; padding-left: 0; -unity-text-align: upper-center; border-bottom-width: 0; border-top-width: 0; border-right-width: 0; border-left-width: 0;" />
+        <ui:VisualElement name="CategoryTitle" style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="生成パラメータ" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bold-font" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
+            <ui:FloatField label="車線幅(メートル )" value="42.2" name="RoadSizeField" style="align-items: center; font-size: 12px;" />
+            <ui:FloatField label="歩道生成時の歩道幅" value="42.2" name="SideWalkSize" style="align-items: center; font-size: 12px;" />
+            <ui:DropdownField label="横断歩道の配置" name="Crosswalk" choices="大きい道路に配置,すべての交差点に配置,配置しない" index="0" style="font-size: 12px; -unity-text-align: middle-left;" />
+            <ui:Toggle label="道路LOD3の歩道情報を利用" name="Add_Lod_Side_Walk" style="font-size: 12px;" />
+            <ui:Toggle label="中央分離帯があれば生成" name="Check_Median" style="font-size: 12px;" />
+            <ui:Toggle label="信号制御器を自動配置" name="Add_TrafficSignalLight" style="font-size: 12px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="CategoryTitle" style="flex-grow: 1; padding-right: 0; padding-left: 20px; -unity-slice-top: 0; margin-top: 8px;">
+            <ui:Label tabindex="-1" text="詳細設定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bold-font" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="InputGroup" style="flex-grow: 1;">
+            <ui:VisualElement style="flex-grow: 1; padding-left: 10px;">
+                <ui:FloatField label="頂点結合のセルサイズ（メートル）" value="42.2" name="Merge_Cell_Size" style="align-items: center; font-size: 12px; display: none;" />
+                <ui:IntegerField label="頂点結合の距離（セル数）" value="3" name="Merge_Cell_Length" style="align-items: center; font-size: 12px; display: none;" />
+                <ui:FloatField label="同一直線に近い中間点を削除する距離" value="42.2" name="Remove_Mid_Point_Tolerance" style="font-size: 12px; align-items: center;" />
+                <ui:FloatField label="行き止まり線の拡大許容角度" value="42.2" name="Terminate_Allow_Edge_Angle" style="font-size: 12px; align-items: center;" />
+                <ui:Toggle label="高速道路を対象外にする" name="Ignore_Highwaay" style="font-size: 12px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 16px;">
+            <ui:DropdownField label="車線分割" name="Split_Pedestrian" choices="車線をまとめる,車線ごとに分ける" index="0" style="-unity-text-align: middle-left; display: none;" />
+            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" index="0" style="-unity-text-align: middle-left; display: none;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Divider" style="flex-grow: 1;" />
+        <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center;">
+            <ui:Button text="生成" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GenerateButton" class="ActionButton" style="width: 200px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

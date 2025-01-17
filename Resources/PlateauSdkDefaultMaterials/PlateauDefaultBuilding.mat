@@ -190,9 +190,9 @@ Material:
     - _RequireSplitLighting: 0
     - _Side_AmbientOcclusion: 1
     - _Side_Blend: 30
-    - _Side_Metallic: 0
+    - _Side_Metallic: 1
     - _Side_NormalStrength: 1
-    - _Side_Roughness: 1
+    - _Side_Roughness: 0.856
     - _Side_Titling: 0.4
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -211,9 +211,9 @@ Material:
     - _SurfaceType: 0
     - _Top_AmbientOcclusion: 1
     - _Top_Blend: 30
-    - _Top_Metallic: 0
+    - _Top_Metallic: 0.395
     - _Top_NormalStrength: 1
-    - _Top_Roughness: 1
+    - _Top_Roughness: 0.707
     - _Top_Titling: 0.3
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
@@ -232,7 +232,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
     - _Side_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _Top_EmissionColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

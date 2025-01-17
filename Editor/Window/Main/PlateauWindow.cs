@@ -10,7 +10,7 @@ namespace PLATEAU.Editor.Window.Main
     /// </summary>
     internal class PlateauWindow : PlateauWindowBase
     {
-        private PlateauWindowGui gui;
+        private TabWithImage tabs;
 
         [MenuItem("PLATEAU/PLATEAU SDK")]
         public static void Open()
@@ -19,10 +19,10 @@ namespace PLATEAU.Editor.Window.Main
             window.Show();
         }
         
-        protected override IEditorDrawable InitGui()
+        protected override VisualElementDisposable CreateGui()
         {
             // タブの内容を依存性注入により定義します。
-            var tabs = new TabWithImage(
+            tabs = new TabWithImage(
                 80,
                 // インポート
                 new TabElementWithImage("dark_icon_import.png", new CityAddGui(this)),
@@ -33,29 +33,19 @@ namespace PLATEAU.Editor.Window.Main
                         new TabElement("Assetsに保存", new ConvertToAssetGui()),
                         new TabElement("ゲームオブジェクト\nON/OFF", new CityChangeActiveGui()),
                         new TabElement("分割/結合/マテリアル分け", new CityMaterialAdjustPresenter(this)),
-                        new TabElement("地形変換/高さ合わせ", new CityTerrainConvertGui(this))//,
-                        // new TabElement("道路調整",
-                        //     // 道路調整内の入れ子タブ
-                        //     new TabWithFrame(
-                        //         new TabElement("道路見た目補正", new RoadEnhancePresenter()),
-                        //         new TabElement("道路変更", new RoadNetworkToMeshPresenter()))
-                        // )
+                        new TabElement("地形変換/高さ合わせ", new CityTerrainConvertGui(this))
                     )
                 ),
                 // エクスポート
                 new TabElementWithImage("dark_icon_export.png", new CityExportGui()),
                 // 属性情報
-                new TabElementWithImage("dark_icon_information.png", new CityAttributeGui(this))
+                new TabElementWithImage("dark_icon_information.png", new CityAttributeGui(this)),
+                // 道路調整
+                new TabElementWithImage("dark_icon_road.png", new RoadAdjustGui())
             );
-            return new PlateauWindowGui(tabs);
+            
+            return new VisualElementDisposable(tabs.CreateGui(), tabs.Dispose);
         }
-
-        protected override IEditorDrawable InitFooterGui()
-        {
-            return new PlateauWindowFooterGui();
-        }
-
-        /// <summary> テストからアクセスする用 </summary>
-        internal const string NameOfInnerGuiField = nameof(gui);
+        
     }
 }

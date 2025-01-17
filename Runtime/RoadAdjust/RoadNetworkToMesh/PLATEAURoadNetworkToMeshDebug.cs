@@ -4,36 +4,40 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     public class PLATEAURoadNetworkToMeshDebug : MonoBehaviour
     {
-        [SerializeField] private RnmContourList contours;
+        [SerializeField] private RnmContourMeshList contoursMeshList;
         private const float ArrowLength = 3f;
         private const float ArrowAngle = 10f;
         private static readonly Color ArrowColor1 = Color.green;
         private static readonly Color ArrowColor2 = new Color(0f, 0.6f, 0f);
 
-        internal void Init(RnmContourList contoursArg)
+        internal void Init(RnmContourMeshList contoursMeshListArg)
         {
-            contours = contoursArg;
+            contoursMeshList = contoursMeshListArg;
         }
 
-        public void Init(RnmContour contourArg)
+        internal void Init(RnmContourMesh contourMeshArg)
         {
-            var list = new RnmContourList();
-            list.Add(contourArg);
-            contours = list;
+            var list = new RnmContourMeshList();
+            list.Add(contourMeshArg);
+            contoursMeshList = list;
         }
 
         private void OnDrawGizmos()
         {
-            if (contours == null) return;
+            if (contoursMeshList == null) return;
             
-            foreach (var contour in contours)
+            foreach (var contourMesh in contoursMeshList)
             {
-                if (contour.Count == 0) continue;
-                for (int i = 0; i < contour.Count - 1; i++)
+                foreach (var contour in contourMesh)
                 {
-                    DrawArrow(contour[i], contour[i + 1]);
+                    if (contour.Count == 0) continue;
+                    for (int i = 0; i < contour.Count - 1; i++)
+                    {
+                        DrawArrow(contour[i].Position, contour[i + 1].Position);
+                    }
+                    DrawArrow(contour[^1].Position, contour[0].Position);
                 }
-                DrawArrow(contour[^1], contour[0]);
+                
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace PLATEAU.RoadNetwork.Structure
         MoveBothWay
     }
 
-    public class RnLane : ARnParts<RnLane>
+    public partial class RnLane : ARnParts<RnLane>
     {
         //----------------------------------
         // start: フィールド
@@ -124,20 +125,29 @@ namespace PLATEAU.RoadNetwork.Structure
         // end: フィールド
         //----------------------------------
 
-        // 左右両方のWayを返す
+        // 左右両方のWayを返す(nullの物は含まない)
         public IEnumerable<RnWay> BothWays
         {
             get
             {
-                return Enumerable.Repeat(LeftWay, 1).Concat(Enumerable.Repeat(RightWay, 1)).Where(w => w != null);
+                if (LeftWay != null)
+                    yield return LeftWay;
+                if (RightWay != null)
+                    yield return RightWay;
             }
         }
 
+        /// <summary>
+        /// Prev/Nextの境界線を返す(nullの物は含まない)
+        /// </summary>
         public IEnumerable<RnWay> AllBorders
         {
             get
             {
-                return Enumerable.Repeat(PrevBorder, 1).Concat(Enumerable.Repeat(NextBorder, 1)).Where(w => w != null);
+                if (PrevBorder != null)
+                    yield return PrevBorder;
+                if (NextBorder != null)
+                    yield return NextBorder;
             }
         }
 
@@ -221,12 +231,28 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (IsValidWay == false)
                     return null;
 
-                var vertices = GeoGraphEx.GetInnerLerpSegments(LeftWay.Vertices.ToList(), RightWay.Vertices.ToList(), AxisPlane.Xz, 0.5f);
+                var prevBorder = PrevBorder ??
+                                 new RnWay(RnLineString.Create(new List<Vector3> { LeftWay[0], RightWay[0] }));
+                var nextBorder = NextBorder ??
+                                 new RnWay(RnLineString.Create(new List<Vector3>() { LeftWay[^1], RightWay[^1] }));
+
+                var st = prevBorder.GetLerpPoint(0.5f);
+                var en = nextBorder.GetLerpPoint(0.5f);
+                var vertices = RnEx.CreateInnerLerpLineString(
+                    LeftWay.Vertices.ToList()
+                    , RightWay.Vertices.ToList()
+                    , new RnPoint(st)
+                    , new RnPoint(en)
+                    , prevBorder
+                    , nextBorder
+                    , 0.5f);
+
                 centerWay = new RnWay(RnLineString.Create(vertices));
                 return centerWay;
             }
             catch
             {
+                Debug.LogError("Could not create center way.");
                 return null;
             }
         }
@@ -236,8 +262,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public void DisConnectBorder()
         {
-            PrevBorder = PrevBorder?.Clone();
-            NextBorder = NextBorder?.Clone();
+            PrevBorder = PrevBorder?.Clone(true);
+            NextBorder = NextBorder?.Clone(true);
         }
 
         /// <summary>
@@ -256,7 +282,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     foreach (var lane in road.AllLanes)
                     {
-                        if (lane.AllBorders.Any(b => b.IsSameLine(border)))
+                        if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
                             yield return lane;
                     }
                 }
@@ -271,7 +297,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var n in Parent.GetNeighborRoads())
             {
-                if (n.GetBorders().Any(b => border.IsSameLine(b.EdgeWay)))
+                if (n.GetBorders().Any(border.IsSameLineReference))
                     yield return n;
             }
         }
@@ -497,6 +523,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (border.GetPoint(0) == RightWay.GetPoint(0))
                 return RnLaneBorderDir.Right2Left;
 
+            if (border.IsValid == false)
+                return null;
+
             var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
             // #NOTE : Laneが複雑な形状をしているときのためPrevはPrev側, NextBorderだとNext側を見る
             var index = type == RnLaneBorderType.Prev ? 0 : -1;
@@ -535,52 +564,6 @@ namespace PLATEAU.RoadNetwork.Structure
     /// </summary>
     public static class RnLaneEx
     {
-        private struct Reference
-        {
-            public bool IsLeftWay { get; set; }
-
-            public int Index { get; set; }
-        }
-
-        // Baseの方向を基底とするローカル座標系において
-        // left.origin -> mid.Startは放物線
-        // mid.Start -> mid.Endは線分となる軌跡
-        private class EventFunc
-        {
-            public Parabola2D? Left { get; set; }
-
-            public LineSegment2D Segment { get; }
-
-            public int LeftIndex { get; }
-
-            public int RightIndex { get; }
-
-            public Vector2 Min
-            {
-                get
-                {
-                    if (Left.HasValue)
-                        return Left.Value.Origin;
-                    return Segment.Start;
-                }
-            }
-
-            public Vector2 Max
-            {
-                get
-                {
-                    return Segment.End;
-                }
-            }
-
-            public EventFunc(LineSegment2D segment, int leftIndex, int rightIndex)
-            {
-                Segment = segment;
-                LeftIndex = leftIndex;
-                RightIndex = rightIndex;
-            }
-        }
-
         private static Tuple<Vector2, Vector2> GetAxis(LineSegment2D axis)
         {
             return new Tuple<Vector2, Vector2>(axis.Direction, new Vector2(axis.Direction.y, -axis.Direction.x));
@@ -630,7 +613,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rights =
                 self.RightWay.Vertices.ToList();
             AddPoint(Vector3.Lerp(lefts[0], rights[0], p2));
-            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, AxisPlane.Xz, p2);
+            var segments = GeoGraphEx.GetInnerLerpSegments(lefts, rights, RnModel.Plane, p2);
             foreach (var s in segments)
             {
                 AddPoint(s);
@@ -707,6 +690,44 @@ namespace PLATEAU.RoadNetwork.Structure
             return Mathf.Min(self.CalcNextBorderWidth(), self.CalcPrevBorderWidth());
         }
 
+        /// <summary>
+        /// このレーンのうち最も狭くなる場所の幅を返す.頂点ごとに計算するため割と重い
+        /// 左右のレーンが不正の場合は0を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcMinWidth(this RnLane self)
+        {
+            if (self == null)
+                return 0f;
+            if (self.LeftWay.IsValidOrDefault() == false)
+                return 0f;
+            if (self.RightWay.IsValidOrDefault() == false)
+                return 0f;
+
+            var minW = float.MaxValue;
+            foreach (var v in self.LeftWay)
+            {
+                self.RightWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            foreach (var v in self.RightWay)
+            {
+                self.LeftWay.GetNearestPoint(v, out var _, out var _, out var distance);
+                minW = Mathf.Min(minW, distance);
+            }
+
+            return minW;
+        }
+
+
+        /// <summary>
+        /// Laneの幅を設定する. 頂点ごとに計算するため割と重い
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="getWidth"></param>
+        /// <param name="moveLeft"></param>
         private static bool TrySetWidth(this RnLane self, Func<int, float, float> getWidth, bool moveLeft)
         {
             if (self.HasBothBorder == false)
@@ -714,7 +735,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 Debug.Log($"[TrySetWidth] Lane {self.DebugMyId} HasBothBorder == false");
                 return false;
             }
-            var plane = AxisPlane.Xz;
+            var plane = RnModel.Plane;
             // 動かさない
             var fixWay = moveLeft ? self.RightWay : self.LeftWay;
             var moveWay = moveLeft ? self.LeftWay : self.RightWay;
@@ -733,7 +754,6 @@ namespace PLATEAU.RoadNetwork.Structure
                     return (nextPos, t2);
                 }
 
-                var lastWayIndex = fixWayIndex;
                 var (pos, t) = GetFixSeg(fixWayIndex);
 
                 if (t < 0f || t > 1f)
@@ -850,18 +870,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfの全頂点の重心を返す
+        /// レーンの中心線っぽい点を返す. 基本はデバッグ用
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static Vector3 GetCenter(this RnLane self)
+        public static Vector3 GetCentralVertex(this RnLane self)
         {
-            var a = self
-                .GetVertices()
-                .Aggregate(new { sum = Vector3.zero, i = 0 }, (a, p) => new { sum = a.sum + p.Vertex, i = a.i + 1 });
-            if (a.i == 0)
-                return Vector3.zero;
-            return a.sum / a.i;
+            return Vector3Ex.Centroid(self
+                .BothWays
+                .Select(w => w.GetLerpPoint(0.5f)));
         }
 
         public static RnLaneBorderType? GetBorderType(this RnLane self, RnWay border)
@@ -989,7 +1006,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         else
                             AddPoint(prevBorder.Points.First());
 
-                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), AxisPlane.Xz, rate);
+                        var segments = GeoGraphEx.GetInnerLerpSegments(targetLane.LeftWay.Vertices.ToList(), targetLane.RightWay.Vertices.ToList(), RnModel.Plane, rate);
                         foreach (var s in segments)
                         {
                             AddPoint(new RnPoint(s));

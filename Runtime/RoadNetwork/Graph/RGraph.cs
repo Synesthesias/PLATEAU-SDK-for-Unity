@@ -1,5 +1,4 @@
 ﻿using PLATEAU.CityInfo;
-using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -374,6 +373,9 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <returns></returns>
         public IEnumerable<REdge> GetNeighborEdges()
         {
+            // 同じeが複数回返ることは無いはず
+            // 返る場合V0とV1が同じ辺を共有しているがそれはthis以外は存在無いはずなので
+            // (全く同じ辺は２つは無い前提)
             if (V0 != null)
             {
                 foreach (var e in V0.Edges)

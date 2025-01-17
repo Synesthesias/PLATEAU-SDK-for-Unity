@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static PLATEAU.Util.GeoGraph.LineUtil;
 
 namespace PLATEAU.Util.GeoGraph
 {
@@ -268,11 +266,6 @@ namespace PLATEAU.Util.GeoGraph
         /// radiusで判定に余裕を持たせる
         /// また、closestPointは衝突地点ではなく線分上の最も近い点なので注意
         /// </summary>
-        /// <param name="line"></param>
-        /// <param name="radius"></param>
-        /// <param name="ray"></param>
-        /// <param name="closestPoint"></param>
-        /// <returns></returns>
         public static float CheckHit(Line line, float radius, in Ray ray,
             out Vector3 closestPoint, out Vector3 closestPoint2)
         {
@@ -523,19 +516,26 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
-        /// 線分の距離をp : (1-p)で分割した点をmidPointに入れて返す. 戻り値は midPointを含む線分のインデックス(i ~ i+1の線分上にmidPointがある) 
+        /// verticesを頂点とした連続した線分に対して, 
+        /// 前半と後半の長さがp : (1-p)でとなるをmidPointに入れて返す.
+        /// 戻り値は midPointを含む線分のインデックスがfloatで返る. 空頂点だと-1が返る
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="p"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public static int GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
+        public static float GetLineSegmentLerpPoint(IReadOnlyList<Vector3> vertices, float p, out Vector3 midPoint)
         {
             // 0 ~ 1の間でClampする
             p = Mathf.Clamp(p, 0, 1);
 
             var length = GetLineSegmentLength(vertices) * p;
             var len = 0f;
+            midPoint = Vector3.zero;
+            if (vertices.Count == 0)
+                return -1;
+
+            midPoint = vertices[0];
             for (var i = 0; i < vertices.Count - 1; ++i)
             {
                 var p0 = vertices[i];
@@ -546,11 +546,10 @@ namespace PLATEAU.Util.GeoGraph
                 {
                     var f = 1f - ((len - length) / l);
                     midPoint = Vector3.Lerp(p0, p1, f);
-                    return i;
+                    return i + f;
                 }
             }
 
-            midPoint = Vector3.zero;
             return -1;
         }
 
@@ -562,7 +561,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="vertices"></param>
         /// <param name="midPoint"></param>
         /// <returns></returns>
-        public static int GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
+        public static float GetLineSegmentMidPoint(IReadOnlyList<Vector3> vertices, out Vector3 midPoint)
         {
             return GetLineSegmentLerpPoint(vertices, 0.5f, out midPoint);
         }
@@ -659,5 +658,11 @@ namespace PLATEAU.Util.GeoGraph
             return self.GetNearestPoint(p, out var _);
         }
 
+        public static bool IsMouseDown()
+        {
+            var evt = Event.current;
+            var mouseDown = evt.type == EventType.MouseDown && evt.button == 0 && evt.alt == false;
+            return mouseDown;
+        }
     }
 }

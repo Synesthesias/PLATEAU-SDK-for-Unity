@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <ui:VisualElement name="RegenerateRoadPanel" style="flex-grow: 0; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px; border-left-color: rgb(136, 147, 146); border-right-color: rgb(136, 147, 146); border-top-color: rgb(136, 147, 146); border-bottom-color: rgb(136, 147, 146); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px; margin-top: 16px; display: flex;">
+        <ui:VisualElement name="CategoryTitle">
+            <ui:Label tabindex="-1" text="道路モデル生成" parse-escape-sequences="true" display-tooltip-when-elided="true" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="InputGroup" style="flex-grow: 1; padding-top: 3px;">
+            <ui:DropdownField label="車線分割" name="Split_Pedestrian" choices="車線をまとめる,車線ごとに分ける" index="0" style="-unity-text-align: middle-left;" />
+            <ui:DropdownField label="横断歩道の配置頻度" name="Crosswalk_Frequency" choices="車線数に比例する確率で配置,全ての交差点に配置" tabindex="0" index="0" style="-unity-text-align: middle-left; display: none;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 0; padding-top: 16px; padding-bottom: 16px; align-items: center; justify-content: center;">
+            <ui:Button text="道路を再生成" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ActionButton" style="width: 200px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

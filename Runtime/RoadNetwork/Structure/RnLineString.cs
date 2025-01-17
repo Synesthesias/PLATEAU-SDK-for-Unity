@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace PLATEAU.RoadNetwork.Structure
     /// 線分群クラス. 頂点のリストを持つ
     /// </summary>
     [Serializable]
-    public class RnLineString : ARnParts<RnLineString>, IReadOnlyList<Vector3>
+    public partial class RnLineString : ARnParts<RnLineString>, IReadOnlyList<Vector3>
     {
         //----------------------------------
         // start: フィールド
@@ -29,9 +30,14 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnLineString()
         {
-            
         }
-        
+
+        public RnLineString(int initialSize)
+        {
+            Points = new RnPoint[initialSize].ToList();
+        }
+
+
         public RnLineString(IEnumerable<RnPoint> points)
         {
             Points = points.ToList();
@@ -50,8 +56,9 @@ namespace PLATEAU.RoadNetwork.Structure
             if (Points.Count <= 1)
                 return new List<RnLineString>();
 
+            // 1つの時は自分自身を返す(頂点のコピーはしない)
             if (num <= 1)
-                return new List<RnLineString> { Clone() };
+                return new List<RnLineString> { Clone(false) };
 
             if (rateSelector == null)
                 rateSelector = i => 1f / num;
@@ -135,8 +142,9 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="index"></param>
         /// <param name="front"></param>
         /// <param name="back"></param>
+        /// <param name="createPoint"></param>
         /// <returns></returns>
-        public bool SplitByIndex(float index, out RnLineString front, out RnLineString back)
+        public bool SplitByIndex(float index, out RnLineString front, out RnLineString back, Func<Vector3, RnPoint> createPoint = null)
         {
             // indexが整数の時で処理を変える
             var isInt = Mathf.Abs(index - Mathf.RoundToInt(index)) < 1e-5f;
@@ -163,7 +171,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 // 少数の時は中間点をfontの最後とbackの最初に追加
                 var v = Vector3.Lerp(Points[i].Vertex, Points[i + 1].Vertex, index - i);
-                var mid = new RnPoint(v);
+                var mid = createPoint?.Invoke(v) ?? new RnPoint(v);
                 frontPoints.Add(mid);
                 backPoints.Insert(0, mid);
             }
@@ -245,7 +253,17 @@ namespace PLATEAU.RoadNetwork.Structure
             return GetEnumerator();
         }
 
-        public Vector3 this[int index] => Points[index].Vertex;
+        public Vector3 this[int index]
+        {
+            get
+            {
+                return Points[index].Vertex;
+            }
+            set
+            {
+                Points[index].Vertex = value;
+            }
+        }
 
         /// <summary>
         /// 線分の長さを計算する
@@ -259,7 +277,39 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 頂点の法線ベクトルを返す. キャッシュ化されており, DirtyFlagをtrueにすると再計算される
+        /// startPointIndex -> endPointIndexまでの長さを計算する
+        /// </summary>
+        /// <param name="startPointIndex"></param>
+        /// <param name="endPointIndex"></param>
+        /// <returns></returns>
+        public float CalcLength(float startPointIndex, float endPointIndex)
+        {
+            var stI = Mathf.Max(0, Mathf.FloorToInt(startPointIndex));
+            var enI = Mathf.Min(Count - 1, Mathf.FloorToInt(endPointIndex));
+            if (stI >= Count - 1)
+                return 0f;
+
+            var t = startPointIndex - stI;
+            var last = Vector3.Lerp(this[stI], this[stI + 1], t);
+            var ret = 0f;
+            for (var i = stI + 1; i <= enI; ++i)
+            {
+                ret += (this[i] - last).magnitude;
+                last = this[i];
+            }
+
+            if (enI < Count - 1)
+            {
+                var t2 = endPointIndex - enI;
+                ret += (Vector3.Lerp(this[enI], this[enI + 1], t2) - last).magnitude;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 頂点 vertexIndex -> vertexIndex, vertexIndex -> vertexIndex + 1の方向に対して
+        /// 道の外側を向いている法線ベクトルの平均を返す.正規化済み.
         /// </summary>
         /// <param name="vertexIndex"></param>
         /// <returns></returns>
@@ -278,7 +328,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 上(Vector3.up)から見て半時計回りを向いている. . 正規化はされていない
+        /// 上(Vector3.up)から見て半時計回りを向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -287,7 +337,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var p0 = this[startVertexIndex];
             var p1 = this[startVertexIndex + 1];
             // Vector3.Crossは左手系なので逆
-            return -Vector3.Cross(Vector3.up, p1 - p0);
+            return (-Vector3.Cross(Vector3.up, p1 - p0)).normalized;
         }
 
         /// <summary>
@@ -295,7 +345,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// clonePoint : 頂点もコピーするかどうか
         /// </summary>
         /// <returns></returns>
-        public RnLineString Clone(bool cloneVertex = true)
+        public RnLineString Clone(bool cloneVertex)
         {
             if (cloneVertex)
                 return Create(Points.Select(p => p.Clone()), false);
@@ -327,9 +377,10 @@ namespace PLATEAU.RoadNetwork.Structure
         // Static Methods
         // ---------------
 
-        public const float DefaultDistanceEpsilon = 0f;
-        public const float DefaultDegEpsilon = 0.5f;
-        public const float DefaultMidPointTolerance = 0.3f;
+        private const float DefaultDistanceEpsilon = 0f;
+        private const float DefaultDegEpsilon = 0.5f;
+        private const float DefaultMidPointTolerance = 0.3f;
+
 
         /// <summary>
         /// 頂点リストから線分を生成する
@@ -356,9 +407,9 @@ namespace PLATEAU.RoadNetwork.Structure
             return Create(vertices, -1, -1, -1f);
         }
 
-        public static RnLineString Create(IEnumerable<Vector3> vertices)
+        public static RnLineString Create(IEnumerable<Vector3> vertices, bool removeDuplicate = true)
         {
-            return Create(vertices.Select(v => new RnPoint(v)));
+            return Create(vertices.Select(v => new RnPoint(v)), removeDuplicate);
         }
 
         /// <summary>
@@ -379,13 +430,23 @@ namespace PLATEAU.RoadNetwork.Structure
             if (x.Count != y.Count)
                 return false;
 
-            return x.Points.SequenceEqual(y.Points);
+            for (int i = 0; i < x.Count; i++)
+            {
+                var xi = x[i];
+                var yi = y[i];
+                const float Threshold = 0.001f;
+                if (Math.Abs(xi.x - yi.x) > Threshold) return false;
+                if (Math.Abs(xi.y - yi.y) > Threshold) return false;
+                if (Math.Abs(xi.z - yi.z) > Threshold) return false;
+            }
+
+            return true;
         }
     }
 
-    public static class RoadNetworkLineStringEx
+    public static class RnLineStringEx
     {
-        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = AxisPlane.Xz)
+        public static IEnumerable<LineSegment2D> GetEdges2D(this RnLineString self, AxisPlane axis = RnModel.Plane)
         {
             foreach (var e in GeoGraphEx.GetEdges(self.Points.Select(x => x.Vertex.ToVector2(axis)), false))
                 yield return new LineSegment2D(e.Item1, e.Item2);
@@ -403,33 +464,63 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 線分の長さを取得
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static float CalcLength(this RnLineString self)
-        {
-            return LineUtil.GetLineSegmentLength(self);
-        }
-
-        /// <summary>
-        /// selfをlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
+        /// selfとlineの交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
         /// 実際に返る交点はself上の点とその時のインデックス(float)
         /// </summary>
         /// <param name="self"></param>
         /// <param name="line"></param>
         /// <param name="axis"></param>
         /// <returns></returns>
-        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, LineSegment3D line, AxisPlane axis = AxisPlane.Xz)
+        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, LineSegment3D line, AxisPlane axis = RnModel.Plane)
         {
             foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
             {
                 if (item.edge.TrySegmentIntersectionBy2D(line, axis, -1f, out var p, out var t1, out var t2))
                 {
                     var v = item.edge.Lerp(t1);
-                    yield return (v, item.i + t1);
+                    yield return (p, item.i + t1);
                 }
             }
+        }
+
+        /// <summary>
+        /// selfと直線の交点をすべて返す. ただしaxis辺面に射影↓状態で交差判定を行う.
+        /// 実際に返る交点はself上の点とその時のインデックス(float)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ray"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static IEnumerable<(Vector3 v, float index)> GetIntersectionBy2D(this RnLineString self, Ray ray,
+            AxisPlane axis = RnModel.Plane)
+        {
+            foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
+            {
+                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var t1, out var t2))
+                {
+                    yield return (p, item.i + t1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// selfと直線rayの最も近い交点を返す. axisで指定した平面に射影した結果で交点を考える
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ray"></param>
+        /// <param name="res"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public static bool TryGetNearestIntersectionBy2D(this RnLineString self, Ray ray, out (Vector3 v, float index) res, AxisPlane axis = RnModel.Plane)
+        {
+            var ret = self.GetIntersectionBy2D(ray, axis).ToList();
+            if (ret.Any() == false)
+            {
+                res = new();
+                return false;
+            }
+
+            return ret.TryFindMin(x => (x.v - ray.origin).sqrMagnitude, out res);
         }
 
         /// <summary>
@@ -442,21 +533,32 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="distance"></param>
         public static void GetNearestPoint(this RnLineString self, Vector3 v, out Vector3 nearest, out float pointIndex, out float distance)
         {
+            // 点が1つしかない場合はその点を返す
+            if (self.Count == 1)
+            {
+                nearest = self[0];
+                pointIndex = 0;
+                distance = (v - nearest).magnitude;
+                return;
+            }
+
             nearest = Vector3.zero;
-            distance = float.MaxValue;
+            var sqrDistance = float.MaxValue;
             pointIndex = -1f;
             for (var i = 0; i < self.Count - 1; ++i)
             {
                 var segment = new LineSegment3D(self[i], self[i + 1]);
                 var p = segment.GetNearestPoint(v, out var distanceFromStart);
                 var d = (p - v).sqrMagnitude;
-                if (d < distance)
+                if (d < sqrDistance)
                 {
                     nearest = p;
-                    distance = d;
+                    sqrDistance = d;
                     pointIndex = i + distanceFromStart / segment.Magnitude;
                 }
             }
+
+            distance = Mathf.Sqrt(sqrDistance);
         }
 
         /// <summary>
@@ -465,7 +567,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static Vector3 GetLerpPoint(this RnLineString self, float index)
+        public static Vector3 GetPoint(this RnLineString self, float index)
         {
             var i1 = (int)index;
             var i2 = i1 + 1;
@@ -475,6 +577,188 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             var t = index - i1;
             return Vector3.Lerp(self[i1], self[i2], t);
+        }
+
+        /// <summary>
+        /// selfの各線分がintervalより長い場合に間に点を置いていく
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="interval"></param>
+        public static void Refine(this RnLineString self, float interval)
+        {
+            // 余りに小さい場合は何もしない
+            if (interval <= 1e-3f)
+                return;
+
+            for (var i = 0; i < self.Count - 1; ++i)
+            {
+                var p0 = self[i];
+                var p1 = self[i + 1];
+                var len = (p1 - p0).magnitude;
+
+                var num = len / interval;
+                var newPoints = new List<RnPoint>();
+                for (var j = 1; j < num; ++j)
+                {
+                    var t = j / num;
+                    newPoints.Add(new RnPoint(Vector3.Lerp(p0, p1, t)));
+                }
+
+                if (newPoints.Count > 0)
+                    self.Points.InsertRange(i + 1, newPoints);
+                i += newPoints.Count;
+            }
+        }
+
+        /// <summary>
+        /// selfの各線分がintervalより長い場合に間に点を置いて細分化したものを返す.非破壊
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public static RnLineString Refined(this RnLineString self, float interval)
+        {
+            var ret = self.Clone(false);
+            ret.Refine(interval);
+            return ret;
+        }
+
+        /// <summary>
+        /// LineStringの線分群が成す角度の合計を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static float CalcTotalAngle2D(this RnLineString self)
+        {
+            var ret = 0f;
+            LineSegment2D? last = null;
+            foreach (var e in self.GetEdges2D())
+            {
+                if (last != null)
+                {
+                    var ang = Vector2.Angle(last.Value.Direction, e.Direction);
+                    ret += ang;
+                }
+
+                last = e;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// selfの先頭から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は最後の点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromFront(this RnLineString self, float offset, out int startIndex, out int endIndex)
+        {
+            return self.GetAdvancedPoint(offset, false, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの最後から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は先頭の点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPointFromBack(this RnLineString self, float offset, out int startIndex, out int endIndex)
+        {
+            return self.GetAdvancedPoint(offset, true, out startIndex, out endIndex);
+        }
+
+        /// <summary>
+        /// selfの最初(reverse=trueの時は最後)から線分に沿ってoffsetだけ進んだ点を返す.
+        /// 線分の長さがoffsetより短い場合は終端点を返す
+        /// startIndex/endIndexはoffsetの点が所属する線分のインデックス
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="offset"></param>
+        /// <param name="reverse"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <returns></returns>
+        public static Vector3 GetAdvancedPoint(this RnLineString self, float offset, bool reverse, out int startIndex,
+            out int endIndex)
+        {
+            if (self.Count == 0)
+            {
+                startIndex = endIndex = -1;
+                return Vector3.zero;
+            }
+
+            var delta = reverse ? -1 : 1;
+            var beginIndex = reverse ? self.Count - 1 : 0;
+
+            var index = beginIndex;
+            foreach (var _ in Enumerable.Range(0, self.Count - 1))
+            {
+                var nextIndex = index + delta;
+                var p0 = self[index];
+                var p1 = self[nextIndex];
+                var len = (p0 - p1).magnitude;
+                if (len >= offset)
+                {
+                    startIndex = index;
+                    endIndex = index + delta;
+                    return p0 + (p1 - p0).normalized * offset;
+                }
+
+                offset -= len;
+                index = nextIndex;
+            }
+
+            startIndex = endIndex = self.Count - 1 - beginIndex;
+            return self[endIndex];
+        }
+
+        /// <summary>
+        /// 2D平面におけるLineString同士の距離を返す
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
+        public static float GetDistance2D(this RnLineString self, RnLineString other, AxisPlane plane = RnModel.Plane)
+        {
+            var ret = float.MaxValue;
+            foreach (var e1 in self.GetEdges2D())
+            {
+                foreach (var e2 in other.GetEdges2D())
+                {
+                    var d = e1.GetDistance(e2);
+                    ret = Mathf.Min(ret, d);
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// selfのotherに対する距離スコアを返す(線分同士の距離ではない).低いほど近い
+        /// selfの各点に対して, otherとの距離を出して, その平均をスコアとする
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static float? CalcProximityScore(this RnLineString self, RnLineString other)
+        {
+            if (false == ((self?.IsValid ?? false) && (other?.IsValid ?? false)))
+                return null;
+            return self.Select(v =>
+            {
+                other.GetNearestPoint(v, out var _, out var _, out var distance);
+                return distance;
+            }).Average();
         }
     }
 }

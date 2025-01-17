@@ -1,3 +1,4 @@
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
@@ -16,20 +17,28 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         private const float YellowIntersectionThreshold = 30f; // 交差点との距離が近いかどうかのしきい値
         private const float YellowRoadLengthThreshold = 100f; // この長さ以下の道路(交差点に挟まれた範囲)は、センターラインは白色
 
-        public MarkedWayList ComposeFrom(RnModel model)
+        public MarkedWayList ComposeFrom(IRrTarget target)
         {
             var ret = new MarkedWayList();
-            foreach (var road in model.Roads)
+            foreach (var road in target.Roads())
             {
                 var carLanes = road.MainLanes;
                 var widthType = GetCenterLineTypeOfWidth(road);
                 var interDistCalc = new IntersectionDistCalc(road);
+                bool medianLaneExist = road.MedianLane != null;
 
                 for (int i = 0; i < carLanes.Count; i++)
                 {
                     var lane = carLanes[i];
-                    // 次のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
+                    // 隣のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
                     bool isCenterLane = i < carLanes.Count - 1 && lane.IsReverse != carLanes[i + 1].IsReverse;
+                    // 中央分離帯がある場合、センターラインは2つになるので、隣チェックを両方向で行います。
+                    if (medianLaneExist)
+                    {
+                        isCenterLane |= i >= 1 && lane.IsReverse != carLanes[i - 1].IsReverse;
+                    }
+                    
+                    
                     if (!isCenterLane)
                     {
                         continue;
@@ -67,9 +76,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                             lineString.AddPoint(new RnPoint(lerpedPoint));
 
                             // 線を追加
-                            var dstWay = new RnWay(new RnLineString(lineString.Points), srcWay.IsReversed,
-                                srcWay.IsReverseNormal);
-                            ret.Add(new MarkedWay(dstWay, prevInterType, lane.IsReverse));
+                            var dstLine = new MWLine(lineString.Points.Select(p => p.Vertex));
+                            ret.Add(new MarkedWay(dstLine, prevInterType, lane.IsReverse));
                             lineString = new RnLineString(); // リセット
                             lineString.AddPoint(new RnPoint(lerpedPoint)); // 次の始点
                         }
@@ -79,9 +87,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     }
 
                     if (lineString.Count > 0)
-                        ret.Add(new MarkedWay(new RnWay(new RnLineString(lineString.Points), srcWay.IsReversed,
-                            srcWay.IsReverseNormal), prevInterType, lane.IsReverse));
-                    break; // センターラインは道路につき1つだけ
+                        ret.Add(new MarkedWay(new MWLine(lineString.Points.Select(p => p.Vertex)), prevInterType, lane.IsReverse));
+
+                    // センターラインの数は、中央分離帯がなければ最大1個、あれば最大2個です。
+                    if ((ret.Count == 1 && !medianLaneExist) || (ret.Count == 2 && medianLaneExist))
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -188,7 +200,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         {
             if (way.Count <= 1) return float.MaxValue;
 
-            var points = way.Points.ToArray();
+            var points = way.IsReversed ? way.Points.Reverse().ToArray() : way.Points.ToArray();
             int wayIndex = way.IsReversed ? way.Count - 1 - wayIndexOrig : wayIndexOrig;
 
             float prevLen = 0; // 道路の指定地点から、道路のprev方向の端までの距離

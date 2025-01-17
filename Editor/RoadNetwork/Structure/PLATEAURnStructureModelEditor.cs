@@ -1,8 +1,10 @@
-﻿using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -59,35 +61,10 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
             public bool IsSceneSelected(RnRoadBase roadBase)
             {
-                return RnEx.IsEditorSceneSelected(roadBase.CityObjectGroup);
+                return roadBase.TargetTrans.Any(RnEx.IsEditorSceneSelected);
             }
         }
 
-
-        public void OnSceneGUI()
-        {
-            // RoadNetworkを所持しているオブジェクトに表示するGUIシステムを更新する処理
-            UpdateRoadNetworkGUISystem();
-
-            void UpdateRoadNetworkGUISystem()
-            {
-                var hasOpen = RoadNetworkEditorWindow.HasOpenInstances();
-                if (hasOpen == false)
-                {
-                    return;
-                }
-
-                var editorInterface = RoadNetworkEditorWindow.GetEditorInterface();
-                if (editorInterface == null)
-                    return;
-
-                //if (Event.current.type != EventType.Repaint)
-                //    return;
-
-                var guiSystem = editorInterface.SceneGUISystem;
-                guiSystem.OnSceneGUI(target as PLATEAURnStructureModel);
-            }
-        }
         public override void OnInspectorGUI()
         {
             var obj = target as PLATEAURnStructureModel;

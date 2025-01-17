@@ -46,7 +46,6 @@ namespace PLATEAU.RoadNetwork.Data
         {
             return !(a == b);
         }
-        
         public bool Equals(RnID<TPrimDataType> other)
         {
             return id == other.id;

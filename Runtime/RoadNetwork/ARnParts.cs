@@ -12,7 +12,17 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private ulong debugId;
 
-        public ulong DebugMyId => debugId;
+        public ulong DebugMyId
+        {
+            get
+            {
+                return debugId;
+            }
+            set
+            {
+                debugId = value;
+            }
+        }
 
         protected ARnPartsBase(ulong id)
         {
@@ -45,7 +55,6 @@ namespace PLATEAU.RoadNetwork
             [typeof(RnNeighbor)] = "Nb",
             [typeof(RnTrack)] = "Tr",
             [typeof(RnSideWalk)] = "Sw",
-            [typeof(RnBorder)] = "Bd",
         };
 
         /// <summary>
@@ -94,6 +103,8 @@ namespace PLATEAU.RoadNetwork
         /// <returns></returns>
         public static string GetDebugIdLabelOrDefault(this RnWay self)
         {
+            if (self == null)
+                return "null";
             return self.LineString.GetDebugLabelOrDefault();
         }
     }

@@ -38,6 +38,21 @@ namespace PLATEAU.RoadNetwork.CityObject
                 var mesh = cog.GetComponent<MeshFilter>()?.sharedMesh;
                 if (mesh == null)
                     return null;
+                if (mesh.triangles.Length % 3 != 0)
+                {
+                    Debug.LogWarning("Meshの三角形の数が3の倍数ではありません");
+                    return null;
+                }
+
+                for (int i = 0; i < mesh.subMeshCount; i++)
+                {
+                    var submesh = mesh.GetSubMesh(i);
+                    if (submesh.indexCount % 3 != 0)
+                    {
+                        Debug.LogWarning("SubMeshの三角形の数が3の倍数ではありません");
+                        return null;
+                    }
+                }
                 var originalMesh = mesh;
                 if (useContourMesh)
                 {
@@ -357,7 +372,10 @@ namespace PLATEAU.RoadNetwork.CityObject
             foreach (var cityObjectGroup in cityObjectGroups)
             {
                 var info = CityObjectInfo.Create(cityObjectGroup, useContourMesh);
-                cityInfos.Add(info);
+                if (info != null)
+                {
+                    cityInfos.Add(info);
+                }
             }
             var nativeOption = new GranularityConvertOption(ConvertGranularity.PerAtomicFeatureObject, 1);
 
@@ -381,12 +399,18 @@ namespace PLATEAU.RoadNetwork.CityObject
             var dstModel = converter.Convert(srcModel, nativeOption);
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
             var attrHelper = new AttributeDataHelper(getter, true);
-            var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
+            // var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
+            var cco = new SubDividedCityObject(dstModel, attrHelper);
 
             var ret = new ConvertCityObjectResult();
             foreach (var co in cityInfos)
             {
-                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c.Name == co.Transform.name);
+                if (co.Transform == null)
+                {
+                    Debug.Log("skipping deleted game object.");
+                    continue;
+                }
+                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c != null && c.Name == co.Transform.name);
                 if (ccoChild == null)
                     continue;
                 ccoChild.SetCityObjectGroup(co.CityObjectGroup);

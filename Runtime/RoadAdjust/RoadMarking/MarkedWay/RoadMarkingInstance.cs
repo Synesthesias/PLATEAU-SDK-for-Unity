@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace PLATEAU.RoadAdjust.RoadMarking
 {
@@ -11,13 +12,42 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class RoadMarkingInstance
     {
-        public CombineInstance CombineInstance { get; }
+        public CombineInstance CombineInstance { get; private set; }
         public RoadMarkingMaterial MaterialType { get; }
 
         public RoadMarkingInstance(Mesh mesh, RoadMarkingMaterial materialType)
         {
             CombineInstance = new CombineInstance{mesh = mesh, transform = Matrix4x4.identity};
             MaterialType = materialType;
+        }
+
+        public void Translate(Vector3 moveVector)
+        {
+            CombineInstance = new CombineInstance
+            {
+                mesh = CombineInstance.mesh,
+                transform = Matrix4x4.Translate(moveVector) * CombineInstance.transform
+            };
+        }
+
+        public void RotateYAxis(float angle)
+        {
+            // 度数法からラジアンに変換
+            float rad = angle * Mathf.Deg2Rad;
+        
+            // Y軸周りの回転行列を作成
+            Matrix4x4 rotationMatrix = Matrix4x4.identity;
+            float cos = Mathf.Cos(rad);
+            float sin = Mathf.Sin(rad);
+        
+            rotationMatrix.m00 = cos;
+            rotationMatrix.m02 = sin;
+            rotationMatrix.m20 = -sin;
+            rotationMatrix.m22 = cos;
+        
+            // 既存の行列に回転を適用
+            var transform = rotationMatrix * CombineInstance.transform;
+            CombineInstance = new CombineInstance { mesh = CombineInstance.mesh, transform = transform };
         }
     }
 
@@ -27,26 +57,43 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     internal class RoadMarkingCombiner
     {
         /// <summary> 結合対象 </summary>
-        private List<RoadMarkingInstance> instances;
+        private readonly List<RoadMarkingInstance> instances;
 
-        public RoadMarkingCombiner(int capacity)
+        public RoadMarkingCombiner()
         {
-            instances = new List<RoadMarkingInstance>(capacity);
+            instances = new List<RoadMarkingInstance>();
         }
 
         /// <summary> 結合対象を追加します。 </summary>
-        public void Add(RoadMarkingInstance instance) => instances.Add(instance);
+        public void Add(RoadMarkingInstance instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+            instances.Add(instance);
+        }
+        
+        public void AddRange(IEnumerable<RoadMarkingInstance> instances)
+        {
+            foreach (var instance in instances)
+            {
+                Add(instance);
+            }
+        }
 
-        /// <summary> 結合します。 </summary>
-        public Mesh Combine()
+        /// <summary> 結合してMeshを生成します。 </summary>
+        public Mesh Combine(out Material[] outMaterials)
         {
             // マテリアルごとに結合します。
-            var mats = (RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial));
+            var mats = ((RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial))).Where(m => m != RoadMarkingMaterial.None);
             var matCombined = new SortedDictionary<RoadMarkingMaterial, Mesh>();
             foreach (var mat in mats)
             {
                 var combineTargets = instances.Where(i => i.MaterialType == mat).Select(i => i.CombineInstance).ToArray();
+                if (combineTargets.Length == 0) continue;
                 var combined = new Mesh();
+                combined.indexFormat = IndexFormat.UInt32;
                 combined.CombineMeshes(combineTargets, true);
                 matCombined.Add(mat, combined);
             }
@@ -55,7 +102,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     mc => new CombineInstance { mesh = mc.Value, transform = Matrix4x4.identity })
                     .ToArray();
             var allCombinedMesh = new Mesh();
+            allCombinedMesh.indexFormat = IndexFormat.UInt32;
             allCombinedMesh.CombineMeshes(allCombineTargets, false);
+            outMaterials = matCombined.Keys.Select(m => m.ToMaterial()).ToArray();
             return allCombinedMesh;
         }
     }
@@ -65,7 +114,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal enum RoadMarkingMaterial
     {
-        White, Yellow
+        None, White, Yellow
     }
 
     internal static class RoadMarkingMaterialExtension
@@ -87,6 +136,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     return new Material(materialWhite);
                 case RoadMarkingMaterial.Yellow:
                     return new Material(materialYellow);
+                case RoadMarkingMaterial.None:
+                    Debug.LogWarning("material is none.");
+                    return null;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(material), material, null);
             }
@@ -95,7 +147,9 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         public static Material[] Materials()
         {
             var mats = (RoadMarkingMaterial[])Enum.GetValues(typeof(RoadMarkingMaterial));
-            return mats.Select(m => m.ToMaterial()).ToArray();
+            return mats
+                .Where(m => m != RoadMarkingMaterial.None)
+                .Select(m => m.ToMaterial()).ToArray();
         }
     }
 }
