@@ -1,4 +1,5 @@
 using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 
 namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Components
@@ -16,7 +17,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
         public override void Draw()
         {
             Conf.DoSetMeshCollider =
-                EditorGUILayout.Toggle("Mesh Collider をセットする", Conf.DoSetMeshCollider);
+                PlateauEditorStyle.Toggle("Mesh Collider をセットする", Conf.DoSetMeshCollider);
         }
 
     }

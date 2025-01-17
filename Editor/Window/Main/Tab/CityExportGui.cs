@@ -92,7 +92,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     // 選択した出力設定に固有の設定
                     this.formatToExporterGUI[meshFileFormatGui.SelectedFormat].Draw();
 
-                    this.exportTextures = EditorGUILayout.Toggle("テクスチャを含める", this.exportTextures);
+                    this.exportTextures = PlateauEditorStyle.Toggle("テクスチャを含める", this.exportTextures);
                     if (exportTextures)
                     {
                         using (PlateauEditorStyle.VerticalScopeLevel2())
@@ -100,11 +100,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             float prevLabelWidth = EditorGUIUtility.labelWidth;
                             EditorGUIUtility.labelWidth = 200;
                             exportDefaultTextures =
-                                EditorGUILayout.Toggle("SDK付属のデフォルトテクスチャを含める", exportDefaultTextures);
+                                PlateauEditorStyle.Toggle("SDK付属のデフォルトテクスチャを含める", exportDefaultTextures);
                             EditorGUIUtility.labelWidth = prevLabelWidth;
                         }
                     }
-                    this.exportHiddenObject = EditorGUILayout.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
+                    this.exportHiddenObject = PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
 
