@@ -75,9 +75,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         }
 
 
-        public RoadNetworkEditingSystem()
+        public RoadNetworkEditingSystem(ISplineEditedReceiver splineEditedReceiver)
         {
-            TryInitialize();
+            TryInitialize(splineEditedReceiver);
         }
 
         
@@ -93,7 +93,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// 初期化を試みる
         /// 多重初期化はしないので複数回呼び出しても問題ない
         /// </summary>
-        private bool TryInitialize()
+        private bool TryInitialize(ISplineEditedReceiver splineEditedReceiver)
         {
             trafficSignalEditor = new TrafficSignalEditor();
             
@@ -177,7 +177,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
 
             roadEditSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
-                roadNetworkEditTarget);
+                roadNetworkEditTarget, splineEditedReceiver);
             intersectionEditSceneViewGui = new IntersectionEditSceneViewGui(roadNetworkEditTarget);
             //simpleEditSysModule.Init();
 
