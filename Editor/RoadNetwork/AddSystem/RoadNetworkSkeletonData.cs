@@ -1,8 +1,6 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -86,7 +84,7 @@ namespace PLATEAU.RoadNetwork
                         edge,
                         i,
                         (point1.Vertex + point2.Vertex) / 2,
-                        Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
+                        -Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
                 }
             }
             return extensibleEdges;
@@ -116,7 +114,7 @@ namespace PLATEAU.RoadNetwork
             ExtensibleEdges = FindExtensibleEdge(RoadGroup, Spline);
         }
 
-        private static Spline CreateCenterSpline(RnRoadGroup road)
+        public static Spline CreateCenterSpline(RnRoadGroup road)
         {
             road.TryCreateSimpleSpline(out var spline, out var width);
             List<BezierKnot> knots = new List<BezierKnot>();
@@ -139,7 +137,7 @@ namespace PLATEAU.RoadNetwork
             return spline;
         }
 
-        private static List<ExtensibleRoadEdge> FindExtensibleEdge(RnRoadGroup road, Spline spline)
+        public static List<ExtensibleRoadEdge> FindExtensibleEdge(RnRoadGroup road, Spline spline)
         {
             var extensibleEdges = new List<ExtensibleRoadEdge>();
 
@@ -233,6 +231,9 @@ namespace PLATEAU.RoadNetwork
         /// <param name="intersection"></param>
         public void Reconstruct(RnIntersection intersection)
         {
+            if (intersection == null)
+                return;
+
             var intersectionSkeleton = Intersections.FirstOrDefault(x => x.Intersection == intersection);
             if (intersectionSkeleton == null)
             {

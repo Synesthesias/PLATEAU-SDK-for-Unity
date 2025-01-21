@@ -39,6 +39,15 @@ namespace PLATEAU.Editor.RoadNetwork
             {
                 // 交差点モデル再生成
                 new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
+
+                // 隣接道路更新
+                // TODO: 道路が更新された場合のみ更新するようにする
+                foreach (var neighbor in intersection.Neighbors)
+                {
+                    if (neighbor.Road != null)
+                        new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All);
+                }
+
                 // スケルトン更新
                 Context.SkeletonData.ReconstructIncludeNeighbors(intersection);
             };

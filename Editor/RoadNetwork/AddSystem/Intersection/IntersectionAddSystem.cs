@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.AddSystem;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         {
             if (edge.road == null)
                 return;
+
+            var edgeMaker = new RnRoadEdgeMaker(edge.road.Roads[0]);
+            edgeMaker.Execute(edge);
 
             var intersection = new RnIntersection();
 
@@ -193,121 +197,6 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             OnIntersectionAdded?.Invoke(intersection);
         }
 
-        ///// <summary>
-        ///// Splineに沿って道路を拡張する。
-        ///// </summary>
-        ///// <param name="targetRoad"></param>
-        ///// <param name="spline"></param>
-        //private void ExtendRoadAlongSpline(RnRoadGroup targetRoad, Spline spline, bool isPrev)
-        //{
-        //    var road = targetRoad.Roads[0];
-
-        //    var scannedLineStrings = new Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)>();
-
-        //    foreach (var lane in road.AllLanesWithMedian)
-        //    {
-        //        if (road.IsLeftLane(lane))
-        //            Debug.Log("Process left");
-        //        else if (road.IsRightLane(lane))
-        //            Debug.Log("Process right");
-        //        else
-        //            Debug.Log("Process median");
-
-        //        var oldEdgePoints = new List<RnPoint>();
-        //        var newEdgePoints = new List<RnPoint>();
-        //        int i = 0;
-        //        foreach (var way in new[] { lane.LeftWay, lane.RightWay })
-        //        {
-        //            if (i == 0)
-        //                Debug.Log("Process left way");
-        //            else
-        //                Debug.Log("Process right way");
-        //            RnPoint oldEdgePoint = null;
-        //            RnPoint newEdgePoint = null;
-        //            if (!scannedLineStrings.ContainsKey(way.LineString))
-        //            {
-        //                ExtendPointsAlongSpline(way.LineString.Points, spline, out oldEdgePoint, out newEdgePoint);
-        //                scannedLineStrings.Add(way.LineString, (oldEdgePoint, newEdgePoint));
-        //            }
-        //            else
-        //            {
-        //                Debug.Log("skip");
-        //                (oldEdgePoint, newEdgePoint) = scannedLineStrings[way.LineString];
-        //            }
-
-        //            if (oldEdgePoint != null)
-        //                oldEdgePoints.Add(oldEdgePoint);
-        //            if (newEdgePoint != null)
-        //                newEdgePoints.Add(newEdgePoint);
-        //        }
-
-        //        // ボーダー再構築
-        //        foreach (var laneBorderType in new List<RnLaneBorderType> { RnLaneBorderType.Prev, RnLaneBorderType.Next })
-        //        {
-        //            Debug.Log($"{laneBorderType}, {oldEdgePoints.Count}, {newEdgePoints.Count}, {lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last())}");
-
-        //            if (lane.GetBorder(laneBorderType) == null || !lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last()))
-        //                continue;
-        //            lane.SetBorder(laneBorderType, new RnWay(new RnLineString(newEdgePoints)));
-        //        }
-        //    }
-
-        //    foreach (var sideWalk in road.SideWalks)
-        //    {
-        //        var oldEdgePoints = new List<RnPoint>();
-        //        var newEdgePoints = new List<RnPoint>();
-        //        int i = 0;
-        //        foreach (var way in new[] { sideWalk.InsideWay, sideWalk.OutsideWay })
-        //        {
-        //            if (i++ == 0)
-        //                Debug.Log("Process inside way");
-        //            else
-        //                Debug.Log("Process outside way");
-        //            RnPoint oldEdgePoint = null;
-        //            RnPoint newEdgePoint = null;
-        //            if (!scannedLineStrings.ContainsKey(way.LineString))
-        //            {
-        //                ExtendPointsAlongSpline(way.LineString.Points, spline, out oldEdgePoint, out newEdgePoint);
-        //                scannedLineStrings.Add(way.LineString, (oldEdgePoint, newEdgePoint));
-        //            }
-        //            else
-        //            {
-        //                Debug.Log("skip");
-        //                (oldEdgePoint, newEdgePoint) = scannedLineStrings[way.LineString];
-        //            }
-
-        //            if (oldEdgePoint != null)
-        //                oldEdgePoints.Add(oldEdgePoint);
-        //            if (newEdgePoint != null)
-        //                newEdgePoints.Add(newEdgePoint);
-        //        }
-
-        //        // エッジ再構築
-        //        {
-        //            var edge = sideWalk.StartEdgeWay;
-        //            if (edge != null && edge.LineString.Points.Contains(oldEdgePoints.First()))
-        //                sideWalk.SetStartEdgeWay(new RnWay(new RnLineString(newEdgePoints)));
-        //        }
-        //        {
-        //            var edge = sideWalk.EndEdgeWay;
-        //            if (edge != null && edge.LineString.Points.Contains(oldEdgePoints.First()))
-        //                sideWalk.SetEndEdgeWay(new RnWay(new RnLineString(newEdgePoints)));
-        //        }
-        //    }
-
-        //    //foreach (var way in GetAllWaysAlongRoad(road, isPrev))
-        //    //{
-        //    //    //ExtendPointsAlongSpline(way.Item2.LineString.Points, spline, way.Item1 ^ isPrev);
-        //    //}
-        //}
-
-
-        private static Vector3 GetNearestPointToLine(Vector3 point, Vector3 origin, Vector3 direction)
-        {
-            var v = point - origin;
-            return origin + Vector3.Project(v, direction);
-        }
-
         private static float GetDistanceToLine(Vector3 point, Vector3 origin, Vector3 direction)
         {
             return Vector3.Cross(point - origin, direction).magnitude;
@@ -396,5 +285,42 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         //        points.Add
         //    }
         //}
+
+        /// <summary>
+        /// 任意の中心、および任意方向・大きさのベクトル(axisX, axisY)を指定し、
+        /// 4分の1楕円（0°～90°）の上にある 6点 (0°,18°,36°,54°,72°,90°) を取得する。
+        /// 
+        ///   P(θ) = center + axisX * cos(θ) + axisY * sin(θ)
+        /// </summary>
+        /// <param name="center">楕円の中心座標</param>
+        /// <param name="axisX">中心から x方向交点までのベクトル（長さ=a）</param>
+        /// <param name="axisY">中心から y方向交点までのベクトル（長さ=b）</param>
+        /// <returns>計6点のワールド座標</returns>
+        public static Vector3[] GetQuarterEllipsePoints(
+            Vector3 center,
+            Vector3 axisX,
+            Vector3 axisY
+        )
+        {
+            // サンプリングしたい角度
+            float[] anglesDeg = { 0f, 18f, 36f, 54f, 72f, 90f };
+
+            Vector3[] result = new Vector3[anglesDeg.Length];
+
+            for (int i = 0; i < anglesDeg.Length; i++)
+            {
+                float deg = anglesDeg[i];
+                float rad = deg * Mathf.Deg2Rad;
+
+                // P(θ) = center + axisX*cos(θ) + axisY*sin(θ)
+                float cosVal = Mathf.Cos(rad);
+                float sinVal = Mathf.Sin(rad);
+
+                Vector3 pos = center + axisX * cosVal + axisY * sinVal;
+                result[i] = pos;
+            }
+
+            return result;
+        }
     }
 }

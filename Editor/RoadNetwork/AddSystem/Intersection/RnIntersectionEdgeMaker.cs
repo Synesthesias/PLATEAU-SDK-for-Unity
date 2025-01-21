@@ -1,6 +1,4 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -27,11 +25,11 @@ namespace PLATEAU.RoadNetwork.AddSystem
     /// <summary>
     /// 新しく道路・交差点を接続するためのエッジを作成するクラス
     /// </summary>
-    public class RnRoadEdgeMaker
+    public class RnIntersectionEdgeMaker : RnRoadEdgeMakerBase<RnIntersection>
     {
         RnIntersection target;
 
-        public RnRoadEdgeMaker(RnIntersection target)
+        public RnIntersectionEdgeMaker(RnIntersection target)
         {
             this.target = target;
         }
@@ -152,83 +150,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
                 }
             }
             return null;
-        }
-
-        private static RnWay GetOrCreateSideWalkEdge(RnSideWalk sideWalk, Vector3 edgeLineOrigin, Vector3 edgeLineDirection, out bool isStartEdge)
-        {
-            isStartEdge = false;
-            var points = sideWalk.OutsideWay.LineString.Points;
-            // pointsの終点側でエッジ上に存在する点群を取得
-            var pointsOnEdge = new List<RnPoint>();
-            foreach (var point in new Stack<RnPoint>(points))
-            {
-                if (GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection) < 1f)
-                {
-                    pointsOnEdge.Add(point);
-                }
-                else
-                    break;
-            }
-
-            // エッジ上の点がない場合は始点側をチェック
-            if (pointsOnEdge.Count == 0)
-            {
-                foreach (var point in points)
-                {
-                    if (GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection) < 1f)
-                    {
-                        pointsOnEdge.Add(point);
-                    }
-                    else
-                        break;
-                }
-            }
-
-            if (pointsOnEdge.Count <= 1)
-            {
-                return null;
-            }
-
-            // エッジ上の最後の点以外pointsから削除
-            foreach (var point in pointsOnEdge.GetRange(0, pointsOnEdge.Count - 1))
-            {
-                points.Remove(point);
-            }
-
-            if (sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(pointsOnEdge.First()))
-            {
-                isStartEdge = true;
-                if (sideWalk.StartEdgeWay == null)
-                {
-                    sideWalk.SetStartEdgeWay(new RnWay(new RnLineString(pointsOnEdge)));
-                }
-                else
-                {
-                    sideWalk.StartEdgeWay.LineString.Points.AddRange(pointsOnEdge.Skip(1));
-                }
-                return sideWalk.StartEdgeWay;
-            }
-            else
-            {
-                if (sideWalk.EndEdgeWay == null || sideWalk.EndEdgeWay.LineString.Points.Contains(pointsOnEdge.First()))
-                {
-                    if (sideWalk.EndEdgeWay == null)
-                    {
-                        sideWalk.SetEndEdgeWay(new RnWay(new RnLineString(pointsOnEdge)));
-                    }
-                    else
-                    {
-                        sideWalk.EndEdgeWay.LineString.Points.AddRange(pointsOnEdge.Skip(1));
-                    }
-                    return sideWalk.EndEdgeWay;
-                }
-            }
-            return null;
-        }
-
-        private static float GetDistanceToLine(Vector3 point, Vector3 origin, Vector3 direction)
-        {
-            return Vector3.Cross(point - origin, direction).magnitude;
         }
     }
 }

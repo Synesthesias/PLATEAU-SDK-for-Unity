@@ -1,12 +1,10 @@
-﻿using NetTopologySuite.Operation.Valid;
-using PLATEAU.Editor.RoadNetwork.AddSystem;
+﻿using PLATEAU.Editor.RoadNetwork.AddSystem;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.AddSystem;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -97,6 +95,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             RnRoadGroup newRoad = null;
             if (isRoadSelected)
             {
+                new RnRoadEdgeMaker(selectedRoad.road.Roads[0]).Execute(selectedRoad);
                 ExtendRoadAlongSpline(selectedRoad.road, newSpline, selectedRoad.isPrev);
                 newRoad = selectedRoad.road;
             }
@@ -229,41 +228,52 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             //}
         }
 
-
+        /// <summary>
+        /// 交差点に道路を追加する
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <param name="spline"></param>
+        /// <returns></returns>
         private RnRoadGroup AddRoadAlongSpline(ExtensibleIntersectionEdge edge, Spline spline)
         {
-            var edgeMaker = new RnRoadEdgeMaker(edge.intersection);
+            var edgeMaker = new RnIntersectionEdgeMaker(edge.intersection);
             var edgeInfo = edgeMaker.Execute(edge.neighbor, edge.index);
 
             // 長さ0の道路を生成
             var road = new RnRoad();
+            RnWay leftmostWay = null, rightmostWay = null;
             if (edgeInfo.LeftSideWalkEdge != null)
             {
                 var startEdge = new RnWay(new RnLineString(edgeInfo.LeftSideWalkEdge.LineString.Points));
-                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.First() }));
-                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.Last() }));
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.Last() }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.First() }));
                 var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
                 road.AddSideWalk(sideWalk);
                 context.RoadNetwork.AddSideWalk(sideWalk);
+
+                leftmostWay = insideWay;
             }
-            //if (edgeInfo.LeftSideWalkEdge != null)
-            //{
-            //    var startEdge = new RnWay(new RnLineString(edgeInfo.LeftSideWalkEdge.LineString.Points));
-            //    var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.First() }));
-            //    var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.Last() }));
-            //    var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
-            //    road.AddSideWalk(sideWalk);
-            //    context.RoadNetwork.AddSideWalk(sideWalk);
-            //}
+            if (edgeInfo.RightSideWalkEdge != null)
+            {
+                var endEdge = new RnWay(new RnLineString(edgeInfo.RightSideWalkEdge.LineString.Points));
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.First() }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.Last() }));
+                var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, null, endEdge);
+                road.AddSideWalk(sideWalk);
+                context.RoadNetwork.AddSideWalk(sideWalk);
+
+                rightmostWay = insideWay;
+            }
             if (edgeInfo.Neighbor != null)
             {
-                var leftWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.First() }));
-                var rightWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.Last() }));
+                var leftWay = leftmostWay ?? new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.First() }));
+                var rightWay = rightmostWay ?? new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.Last() }));
                 var prevBorder = new RnWay(new RnLineString(edgeInfo.Neighbor.Border.Points));
                 var nextBorder = new RnWay(new RnLineString(edgeInfo.Neighbor.Border.Points));
                 var lane = new RnLane(leftWay, rightWay, prevBorder, nextBorder);
                 road.AddMainLane(lane);
                 edgeInfo.Neighbor.Road = road;
+                road.SetPrevNext(edge.intersection, null);
             }
 
             context.RoadNetwork.AddRoad(road);
@@ -273,13 +283,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             return roadGroup;
         }
 
-        private static float GetDistanceToLine(Vector3 point, Vector3 origin, Vector3 direction)
-        {
-            return Vector3.Cross(point - origin, direction).magnitude;
-        }
-
         /// <summary>
-        /// Splineに沿ってLineStringを拡張する
+        /// Splineに沿ってLineStringの頂点を拡張する
         /// </summary>
         /// <param name="points"></param>
         /// <param name="spline"></param>
