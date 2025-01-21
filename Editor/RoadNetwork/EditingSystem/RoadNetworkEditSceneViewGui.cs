@@ -18,9 +18,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
 
         public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
-            RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target)
+            RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target,
+            ISplineEditedReceiver splineEditedReceiver)
         {
             ReConstruct(root, rnModel, editTargetSelectButton, target);
+            splineEditor = new RnSplineEditor(splineEditedReceiver);
         }
 
         private GameObject roadNetworkEditingSystemObjRoot;
@@ -40,7 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             new EditorDataList<EditorData<RnRoadGroup>>();
         
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
-        private RnSplineEditor splineEditor = new();
+        private RnSplineEditor splineEditor;
         
         /// <summary> 道路のレーンをドラッグで編集する機能です。 </summary>
         private WaySlider waySlider = new WaySlider();

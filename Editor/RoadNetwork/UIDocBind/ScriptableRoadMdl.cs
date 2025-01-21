@@ -417,8 +417,8 @@ namespace PLATEAU.Editor.RoadNetwork.UIDocBind
             }
             else
             {
-                mod.SplineEditorMod.Apply();
-                mod.SplineEditorMod.Disable();
+                // mod.SplineEditorMod.Apply();
+                // mod.SplineEditorMod.Disable();
             }
         }
 
