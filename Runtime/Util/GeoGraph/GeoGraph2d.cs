@@ -1053,7 +1053,10 @@ namespace PLATEAU.Util.GeoGraph
 
                         var part = points.GetRange(i + 1, j - i);
                         part.Insert(0, newNode);
-                        ret.Add(part);
+
+                        // partがさらに自己交差している場合もあるので再帰的に処理する
+                        // partはisLoop=true(交差しているから)
+                        ret.AddRange(ExtractSelfCrossing(part, selector, creator, true));
                         points.RemoveRange(i + 1, j - i);
                         points.Insert(i + 1, newNode);
                         // もう一回最初から検索しなおす
