@@ -94,7 +94,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[^1].Vertex,
                 target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[0].Vertex
             );
-            splineEditHandles = new SplineEditorHandles(core, FinishSplineEdit);
+            splineEditHandles = new SplineEditorHandles(core, FinishSplineEdit, CancelSplineEdit);
         }
 
         /// <summary>
@@ -115,6 +115,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             Disable();
             splineEditedReceiver.OnSplineEdited();
         }
+
+        private void CancelSplineEdit()
+        {
+            Disable();
+            splineEditedReceiver.OnSplineEditCanceled();
+        }
+        
         /// <summary>
         /// スプラインの編集結果を道路に適用
         /// </summary>
@@ -416,5 +423,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     internal interface ISplineEditedReceiver
     {
         public void OnSplineEdited();
+        public void OnSplineEditCanceled();
     }
 }

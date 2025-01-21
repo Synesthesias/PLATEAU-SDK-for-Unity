@@ -67,9 +67,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
 
             var splineCore = new SplineEditorCore(spline);
             splineEditorHandles = new SplineEditorHandles(splineCore, () =>
-            {
-                OnSplineCreated(splineEditorHandles.Core.Spline);
-            });
+                {
+                    OnSplineCreated(splineEditorHandles.Core.Spline);
+                },
+                OnLineEditCanceled
+            );
         }
         
         private void DrawLines(IEditTargetLine[] lines)
@@ -109,6 +111,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
         {
             state = LineEditState.LineNotSelected;
             createdLineReceiver.OnLineCreated(createdSpline, selectedLine);
+            selectedLine = null;
+        }
+
+        private void OnLineEditCanceled()
+        {
+            state = LineEditState.LineNotSelected;
             selectedLine = null;
         }
         
