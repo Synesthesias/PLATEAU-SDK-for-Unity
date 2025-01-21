@@ -1,19 +1,25 @@
-﻿using UnityEditor;
+﻿using PLATEAU.Util.GeoGraph;
+using System;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
-    public class SplineCreateHandles
+    internal class SplineCreateHandles
     {
         public bool IsCreatingSpline { get; private set; }
 
         private SplineEditorCore currentCore;
         private float fixedY = 0f;
+        private ICreatedSplineReceiver finishReceiver;
 
-        public SplineCreateHandles(SplineEditorCore core)
+        public SplineCreateHandles(SplineEditorCore core, ICreatedSplineReceiver finishReceiver)
         {
             IsCreatingSpline = false;
             currentCore = core;
+            this.finishReceiver = finishReceiver;
         }
 
         public void BeginCreateSpline(Vector3 startPoint, Vector3 startTangent)
@@ -24,7 +30,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             fixedY = startPoint.y;
 
             currentCore.AddKnotAtT(startPoint, 0f);
-            currentCore.SetStartTangent(startTangent);
+            currentCore.SetStartPointConstraint(true, startPoint, startPoint + Vector3.Cross(Vector3.up, startTangent).normalized * 0.01f);
         }
 
         public void HandleSceneGUI()
@@ -45,15 +51,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             HandleKnotMovement();
 
-            if (e.type == EventType.MouseDown && e.button == 0 && !e.alt)
+            if (LineUtil.IsMouseDown())
             {
+                // クリックで線に点を追加します。
                 Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
 
+                var newKnotPos = Vector3.zero;
                 if (Physics.Raycast(ray, out RaycastHit hit, 10000f))
                 {
-                    Vector3 newKnotPos = hit.point;
+                    newKnotPos = hit.point;
                     newKnotPos.y = fixedY;
-                    AddKnot(newKnotPos);
                     e.Use();
                 }
                 else
@@ -61,7 +68,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     Plane plane = new Plane(Vector3.up, new Vector3(0f, fixedY, 0f));
                     if (plane.Raycast(ray, out float distance))
                     {
-                        Vector3 newKnotPos = ray.GetPoint(distance);
+                        newKnotPos = ray.GetPoint(distance);
                         newKnotPos.y = fixedY;
                         AddKnot(newKnotPos);
                         e.Use();
@@ -75,6 +82,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public void EndCreateSpline()
         {
             IsCreatingSpline = false;
+            finishReceiver.OnSplineCreated(currentCore.Spline);
         }
 
         private void AddKnot(Vector3 pos)
@@ -125,5 +133,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             Handles.DrawAAPolyLine(2f, points);
         }
+        
+
+    }
+
+    /// <summary> <see cref="SplineCreateHandles"/>でスプラインの生成が完了した通知を受け取ります。 </summary>
+    internal interface ICreatedSplineReceiver
+    {
+        public void OnSplineCreated(Spline createdSpline);
     }
 }

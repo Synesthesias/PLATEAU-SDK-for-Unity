@@ -65,7 +65,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             UpdateRoadAddButtonVisual(false);
 
-            var system = RoadNetworkEditingSystem.SingletonInstance;
             RoadNetworkAddSystem.Active.RoadAddSystem.Deactivate();
         }
 

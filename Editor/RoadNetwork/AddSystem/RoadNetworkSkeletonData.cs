@@ -1,8 +1,6 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -73,20 +71,42 @@ namespace PLATEAU.RoadNetwork
                 if (edge.IsBorder) continue;
 
                 var border = edge.Border;
-                // 歩道のinsideWayと線分を共有しない線分を探す
+                // 歩道の外輪郭となる線分（＝insideWayと線分を共有しない線分）を探す
                 for (var i = 0; i < border.Points.Count() - 1; i++)
                 {
                     var point1 = border.Points.ElementAt(i);
                     var point2 = border.Points.ElementAt(i + 1);
-                    //if (intersection.SideWalks.Any(sideWalk => sideWalk.InsideWay))
-                    //    continue;
-                    //return new List<(RnWay, int)> { (edge, i) };
+                    var isLineExposed = true;
+                    foreach (var sideWalk in intersection.SideWalks)
+                    {
+                        var insideWay = sideWalk.InsideWay;
+                        if (insideWay == null) continue;
+
+                        for (int index = 0; index < insideWay.Points.Count() - 1; index++)
+                        {
+                            var insidePoint1 = insideWay.Points.ElementAt(index);
+                            var insidePoint2 = insideWay.Points.ElementAt(index + 1);
+                            if ((insidePoint1.Vertex == point1.Vertex && insidePoint2.Vertex == point2.Vertex) ||
+                                (insidePoint1.Vertex == point2.Vertex && insidePoint2.Vertex == point1.Vertex))
+                            {
+                                isLineExposed = false;
+                                break;
+                            }
+                        }
+
+                        if (!isLineExposed)
+                            break;
+                    }
+
+                    if (!isLineExposed)
+                        continue;
+
                     extensibleEdges.Add(new ExtensibleIntersectionEdge(
                         intersection,
                         edge,
                         i,
                         (point1.Vertex + point2.Vertex) / 2,
-                        Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
+                        -Vector3.Cross(point1.Vertex - point2.Vertex, Vector3.up).normalized));
                 }
             }
             return extensibleEdges;
@@ -116,7 +136,7 @@ namespace PLATEAU.RoadNetwork
             ExtensibleEdges = FindExtensibleEdge(RoadGroup, Spline);
         }
 
-        private static Spline CreateCenterSpline(RnRoadGroup road)
+        public static Spline CreateCenterSpline(RnRoadGroup road)
         {
             road.TryCreateSimpleSpline(out var spline, out var width);
             List<BezierKnot> knots = new List<BezierKnot>();
@@ -139,7 +159,7 @@ namespace PLATEAU.RoadNetwork
             return spline;
         }
 
-        private static List<ExtensibleRoadEdge> FindExtensibleEdge(RnRoadGroup road, Spline spline)
+        public static List<ExtensibleRoadEdge> FindExtensibleEdge(RnRoadGroup road, Spline spline)
         {
             var extensibleEdges = new List<ExtensibleRoadEdge>();
 
@@ -233,6 +253,9 @@ namespace PLATEAU.RoadNetwork
         /// <param name="intersection"></param>
         public void Reconstruct(RnIntersection intersection)
         {
+            if (intersection == null)
+                return;
+
             var intersectionSkeleton = Intersections.FirstOrDefault(x => x.Intersection == intersection);
             if (intersectionSkeleton == null)
             {

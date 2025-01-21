@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 道路モデル再生成
                 var road = new RoadReproduceSource(roadGroup.Roads[0]);
                 bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
-                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, false);
+                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
 
                 // スケルトン更新
                 Context.SkeletonData.ReconstructIncludeNeighbors(roadGroup.Roads[0]);
@@ -37,7 +37,20 @@ namespace PLATEAU.Editor.RoadNetwork
             IntersectionAddSystem.OnIntersectionAdded = (intersection) =>
             {
                 // 交差点モデル再生成
-                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All);
+                var generatedObj = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All, true);
+                if (generatedObj != null)
+                {
+                    intersection.AddTargetTran(generatedObj);
+                }
+
+                // 隣接道路更新
+                // TODO: 道路が更新された場合のみ更新するようにする
+                foreach (var neighbor in intersection.Neighbors)
+                {
+                    if (neighbor.Road != null)
+                        new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All, true);
+                }
+
                 // スケルトン更新
                 Context.SkeletonData.ReconstructIncludeNeighbors(intersection);
             };
