@@ -1,5 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.RoadNetwork.Voronoi;
+using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;

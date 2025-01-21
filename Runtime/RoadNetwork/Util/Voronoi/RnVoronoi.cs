@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace PLATEAU.RoadNetwork.Voronoi
+namespace PLATEAU.RoadNetwork.Util.Voronoi
 {
     /// <summary>
     /// floatの精度が足りないのでdoubleで計算する
