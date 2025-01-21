@@ -15,6 +15,7 @@ namespace PLATEAU.RoadNetwork
     public class RoadNetworkEditorGizmos : MonoBehaviour
     {
         private List<ILaneLineDrawer> lines = new();
+        private bool isDrawingActive = true;
 
         public void Clear()
         {
@@ -26,9 +27,15 @@ namespace PLATEAU.RoadNetwork
             lines = linesArg.ToList();
         }
 
+        public void SetDrawingActive(bool isActive)
+        {
+            this.isDrawingActive = isActive;
+        }
+
         public void OnDrawGizmos()
         {
 #if UNITY_EDITOR
+            if (!isDrawingActive) return;
             var preZTest = Handles.zTest;
             Handles.zTest = CompareFunction.Always;
 

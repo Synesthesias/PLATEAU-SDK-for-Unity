@@ -74,7 +74,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             EditingSystem = new RoadNetworkEditingSystem(roadEditUI.ShapeUI);
             roadEditUI.EditingSystem = EditingSystem;
             
-            EditingSystem.roadEditSceneViewGui?.Init(false);
+            EditingSystem.roadEditSceneViewGui?.Init(RoadShapeEditState.Normal);
             
             EditingSystem.roadNetworkEditTarget.OnChangedSelectRoadNetworkElement += OnChangedSelectedRoadBase;
             EditingSystem.EditTargetSelectButton.EnableLimitSceneViewDefaultContorl = true;

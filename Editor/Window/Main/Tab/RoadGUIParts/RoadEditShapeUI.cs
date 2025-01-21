@@ -21,9 +21,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private SerializedScriptableRoadMdl selectedRoad;
         private SerializedScriptableRoadMdl lastSelectedRoad;
         private readonly IRoadEditShapeReceiver roadEditShapeReceiver;
-        private ShapeEditState shapeEditState = ShapeEditState.Normal;
+        private RoadShapeEditState shapeEditState = RoadShapeEditState.Normal;
         private VisualElement instructionAllLane;
         private VisualElement instructionIndividualLane;
+        private VisualElement instructionLaneDrag;
 
         public RoadEditShapeUI(VisualElement roadEditUIRoot, IRoadEditShapeReceiver roadEditShapeReceiver)
         {
@@ -40,11 +41,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             instructionAllLane = roadEditUIRoot.Q<VisualElement>("EditAllLanesInstruction");
             instructionIndividualLane = roadEditUIRoot.Q<VisualElement>("EditIndividualLaneInstruction");
+            instructionLaneDrag = roadEditUIRoot.Q<VisualElement>("InstructionLaneDrag");
         }
         
         public void OnRoadSelected(SerializedScriptableRoadMdl nextSelectedRoad)
         {
-            shapeEditState = ShapeEditState.Normal;
+            shapeEditState = RoadShapeEditState.Normal;
             UpdateSplineButtonVisual();
             lastSelectedRoad = this.selectedRoad;
             this.selectedRoad = nextSelectedRoad;
@@ -54,26 +56,27 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary> 「各レーンを個別編集」の開始ボタンが押された時 </summary>
         private void OnIndividualLaneEditModeStartButtonPushed()
         {
-            shapeEditState = ShapeEditState.IndividualLane;
+            shapeEditState = RoadShapeEditState.IndividualLane;
             UpdateSplineButtonVisual();
-            EditingSystem?.ChangeDetailEditMode(true);
+            EditingSystem?.SetRoadShapeEditState(RoadShapeEditState.IndividualLane);
         }
         
         /// <summary> 「各レーンを個別編集」の終了ボタンが押された時 </summary>
         private void OnIndividualLaneEditModeEndButtonPushed()
         {
-            shapeEditState = ShapeEditState.Normal;
+            shapeEditState = RoadShapeEditState.Normal;
             UpdateSplineButtonVisual();
-            EditingSystem?.ChangeDetailEditMode(false);
+            EditingSystem?.SetRoadShapeEditState(RoadShapeEditState.Normal);
         }
         
         /// <summary> 「全車道を一括編集」の開始ボタンが押された時 </summary>
         private void OnAllLaneEditStartButtonClicked()
         {
-            shapeEditState = ShapeEditState.AllLanes;
+            shapeEditState = RoadShapeEditState.AllLanes;
             UpdateSplineButtonVisual();
             selectedRoad.IsSplineEditMode = true;
             selectedRoad.ApplySplineEditMode(EditingSystem?.roadEditSceneViewGui);
+            EditingSystem?.SetRoadShapeEditState(RoadShapeEditState.AllLanes);
         }
 
         /// <summary> 「全車道を一括編集」の終了ボタンが押された時 </summary>
@@ -89,15 +92,26 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         // 全車道を一括編集が終了したとき
         public void OnSplineEdited()
         {
-            shapeEditState = ShapeEditState.Normal;
-            UpdateSplineButtonVisual();
-            allLaneEditButtonStart.SetEnabled(true);
-            selectedRoad.IsSplineEditMode = false;
+            ChangeToNormalState();
             selectedRoad.ApplySplineEditMode(EditingSystem?.roadEditSceneViewGui);
             
             // 道路に適用します
             var network = EditingSystem?.roadNetworkEditTarget.RoadNetwork;
             roadEditShapeReceiver.OnRoadShapeChanged(network, selectedRoad.TargetScriptableRoadMdl.road.Roads);
+        }
+        
+        // 「全車道を一括編集」の線編集がキャンセルされた時
+        public void OnSplineEditCanceled()
+        {
+            ChangeToNormalState();
+        }
+
+        private void ChangeToNormalState()
+        {
+            shapeEditState = RoadShapeEditState.Normal;
+            UpdateSplineButtonVisual();
+            selectedRoad.IsSplineEditMode = false;
+            EditingSystem?.SetRoadShapeEditState(RoadShapeEditState.Normal);
         }
         
         /// <summary>
@@ -107,44 +121,47 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             switch (shapeEditState)
             {
-                case ShapeEditState.Normal:
+                case RoadShapeEditState.Normal:
                     allLaneEditButtonStart.style.display = DisplayStyle.Flex;
                     allLaneEditButtonEnd.style.display = DisplayStyle.None;
                     individualLaneEditModeButtonStart.style.display = DisplayStyle.Flex;
                     individualLaneEditModeButtonEnd.style.display = DisplayStyle.None;
                     instructionAllLane.style.display = DisplayStyle.None;
                     instructionIndividualLane.style.display = DisplayStyle.None;
+                    instructionLaneDrag.style.display = DisplayStyle.Flex;
                     break;
-                case ShapeEditState.AllLanes:
+                case RoadShapeEditState.AllLanes:
                     allLaneEditButtonStart.style.display = DisplayStyle.None;
                     allLaneEditButtonEnd.style.display = DisplayStyle.Flex;
                     individualLaneEditModeButtonStart.style.display = DisplayStyle.None;
                     individualLaneEditModeButtonEnd.style.display = DisplayStyle.None;
                     instructionAllLane.style.display = DisplayStyle.Flex;
                     instructionIndividualLane.style.display = DisplayStyle.None;
+                    instructionLaneDrag.style.display = DisplayStyle.None;
                     break;
-                case ShapeEditState.IndividualLane:
+                case RoadShapeEditState.IndividualLane:
                     allLaneEditButtonStart.style.display = DisplayStyle.None;
                     allLaneEditButtonEnd.style.display = DisplayStyle.None;
                     individualLaneEditModeButtonStart.style.display = DisplayStyle.None;
                     individualLaneEditModeButtonEnd.style.display = DisplayStyle.Flex;
                     instructionAllLane.style.display = DisplayStyle.None;
                     instructionIndividualLane.style.display = DisplayStyle.Flex;
+                    instructionLaneDrag.style.display = DisplayStyle.None;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
         
-
-        private enum ShapeEditState
-        {
-            Normal, AllLanes, IndividualLane
-        }
         
         public interface IRoadEditShapeReceiver
         {
             void OnRoadShapeChanged(RnModel network, IReadOnlyList<RnRoad> changedRoads);
         }
+    }
+    
+    internal enum RoadShapeEditState
+    {
+        Normal, AllLanes, IndividualLane
     }
 }

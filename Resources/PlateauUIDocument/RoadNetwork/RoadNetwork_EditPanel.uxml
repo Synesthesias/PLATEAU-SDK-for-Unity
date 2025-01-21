@@ -29,12 +29,13 @@
             </ui:VisualElement>
             <ui:VisualElement name="Divider" style="flex-grow: 1;" />
             <ui:Label tabindex="-1" text="道路レーン形状編集" parse-escape-sequences="true" display-tooltip-when-elided="true" class="bold-font" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal;" />
+            <ui:Label tabindex="-1" text="線をドラッグして幅を変更できます" parse-escape-sequences="true" display-tooltip-when-elided="true" name="InstructionLaneDrag" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; -unity-text-align: upper-center;" />
             <ui:VisualElement style="flex-grow: 1; margin-bottom: 16px; margin-top: 8px; flex-direction: row; align-items: center;">
                 <ui:Label tabindex="-1" text="全車道を一括編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
                 <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadSplineStartButton" class="LightActionButton" />
                 <ui:Button text="確定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RoadSplineEndButton" class="LightActionButton" />
             </ui:VisualElement>
-            <ui:Label tabindex="-1" text="道路の中心線を編集します&#10;点ドラッグ：点移動&#10;辺クリック：点追加&#10;Ctrl+点クリック：点削除&#10;Enter or 確定ボタン：確定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EditAllLanesInstruction" style="-unity-text-align: upper-center;" />
+            <ui:Label tabindex="-1" text="道路の中心線を編集します&#10;点ドラッグ：点移動&#10;辺クリック：点追加&#10;Ctrl+点クリック：点削除&#10;Enter or 確定ボタン：確定&#10;Esc：キャンセル" parse-escape-sequences="true" display-tooltip-when-elided="true" name="EditAllLanesInstruction" style="-unity-text-align: upper-center;" />
             <ui:VisualElement style="flex-grow: 1; margin-bottom: 16px; margin-top: 8px; flex-direction: row; align-items: center;">
                 <ui:Label tabindex="-1" text="各レーンを個別編集" parse-escape-sequences="true" display-tooltip-when-elided="true" style="flex-shrink: 1; width: 100%;" />
                 <ui:Button text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DetailEditModeStartButton" class="LightActionButton" />
@@ -42,7 +43,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="EditIndividualLaneInstruction" style="flex-grow: 1; align-self: center;">
                 <ui:Label tabindex="-1" text="道路の各線を編集します&#10;&#10;操作方法" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-center;" />
-                <ui:Label tabindex="-1" text="①クリックで線を選択&#10;②線を編集&#10;　　点ドラッグ：点移動&#10;　　辺クリック：点追加&#10;　　Ctrl+点クリック：点削除&#10;　　Enter：確定して①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
+                <ui:Label tabindex="-1" text="①クリックで線を選択&#10;②線を編集&#10;　　点ドラッグ：点移動&#10;　　辺クリック：点追加&#10;　　Ctrl+点クリック：点削除&#10;　　Enter：確定して①に戻る&#10;　　Esc：キャンセルして①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

@@ -15,11 +15,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private static float hoverDistanceThreshold = 0.5f;
         public SplineEditorCore Core { get; }
         private Action onEditFinished;
+        private Action onEditCanceled;
 
-        public SplineEditorHandles(SplineEditorCore core, Action onEditFinished)
+        public SplineEditorHandles(SplineEditorCore core, Action onEditFinished, Action onEditCanceled)
         {
             this.Core = core;
             this.onEditFinished = onEditFinished;
+            this.onEditCanceled = onEditCanceled;
         }
 
         /// <summary>
@@ -58,6 +60,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
             {
                 onEditFinished.Invoke();
+            }
+            
+            // Escでキャンセル
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
+            {
+                onEditCanceled.Invoke();
             }
             
         }
