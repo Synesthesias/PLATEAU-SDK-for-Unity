@@ -379,7 +379,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         private const float DefaultDistanceEpsilon = 0f;
         private const float DefaultDegEpsilon = 0.5f;
-        private const float DefaultMidPointTolerance = 0.3f;
+        private const float DefaultMidPointTolerance = 0.1f;
 
 
         /// <summary>

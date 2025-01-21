@@ -511,6 +511,18 @@ namespace PLATEAU.RoadNetwork.Data
             CreateRnDataStorage(refTable, collectWork.RnRoadBases, ret.PrimitiveDataStorage.RoadBases, ignoreKeyNotFoundWarning);
             CreateRnDataStorage(refTable, collectWork.RnWays, ret.PrimitiveDataStorage.Ways, ignoreKeyNotFoundWarning);
             CreateRnDataStorage(refTable, collectWork.RnSideWalks, ret.PrimitiveDataStorage.SideWalks, ignoreKeyNotFoundWarning);
+
+            void Log<T>(string label, HashSet<T> data)
+            {
+                DebugEx.Log($"{label}[{data.Count}]");
+            }
+            Log(nameof(collectWork.RnRoadBases), collectWork.RnRoadBases);
+            Log(nameof(collectWork.RnSideWalks), collectWork.RnSideWalks);
+            Log(nameof(collectWork.RnLanes), collectWork.RnLanes);
+            Log(nameof(collectWork.RnWays), collectWork.RnWays);
+            Log(nameof(collectWork.RnLineStrings), collectWork.RnLineStrings);
+            Log(nameof(collectWork.RnPoints), collectWork.RnPoints);
+
             refTable.ConvertAll();
             return ret;
         }
