@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
@@ -11,11 +12,8 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
-    public class PLATEAUTesterVoronoiDiagram : MonoBehaviour
+    public class PLATEAUTesterVoronoiDiagram : PLATEAURnTesterLineString
     {
-        public AxisPlane plane = AxisPlane.Xz;
-        public float sphereRadius = 0.1f;
-
         [Serializable]
         public class BeachLineTestParam
         {
@@ -199,36 +197,10 @@ namespace PLATEAU.RoadNetwork.Tester
                 }
             }
         }
-        private IEnumerable<Transform> GetChildren(Transform self)
-        {
-            for (var i = 0; i < self.childCount; i++)
-            {
-                var child = self.GetChild(i);
-                if (child.gameObject.activeInHierarchy == false)
-                    continue;
-                yield return child;
-            }
-        }
-
-        public List<Vector2> GetVertices()
-        {
-            return GetChildren(transform).Select(v => v.position.ToVector2(plane)).ToList();
-        }
-
-        public List<Vector3> GetVertices3D()
-        {
-            return GetChildren(transform).Select(v => v.position).ToList();
-        }
-
         public void OnDrawGizmos()
         {
             if (!gameObject.activeInHierarchy)
                 return;
-            foreach (var v in GetVertices())
-            {
-                Gizmos.DrawSphere(v.ToVector3(plane), sphereRadius);
-            }
-
             BeachLineTest(beachLineTestParam);
             VoronoiTest(lerpSegmentsVoronoiTest);
         }

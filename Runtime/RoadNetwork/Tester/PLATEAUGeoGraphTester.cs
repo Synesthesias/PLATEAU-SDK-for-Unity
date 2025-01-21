@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
+using static PLATEAU.RoadNetwork.Tester.PLATEAURnTesterLineString;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
@@ -100,8 +102,19 @@ namespace PLATEAU.RoadNetwork.Tester
         public UnionPolygonTestParam unionPolygonTest = new UnionPolygonTestParam();
 
 
+        [Header("Copy PLATEAUCityObjectGroup")]
         public List<PLATEAUCityObjectGroup> convertTargets = new List<PLATEAUCityObjectGroup>();
-        public bool convertWithConvexHull = false;
+
+        [Serializable]
+        public enum CopyMethod
+        {
+            None,
+            //ConvexHull,
+            Outline,
+        }
+
+        [SerializeField] private CopyMethod copyMethod;
+
 
         [Serializable]
         public class SplineTestParam
@@ -118,6 +131,7 @@ namespace PLATEAU.RoadNetwork.Tester
             public float drawPointRadius = 0.1f;
             public List<SplinePoint> points = new List<SplinePoint>();
         }
+        [Header("Test")]
         public SplineTestParam splineTest = new SplineTestParam();
 
         static float3 ToFloat3(Vector3 v) => new float3(v.x, v.y, v.z);
@@ -221,26 +235,37 @@ namespace PLATEAU.RoadNetwork.Tester
 
         public void ConvertTrans()
         {
-            var i = 0;
             foreach (var t in convertTargets)
             {
-                var vertices = t.GetComponent<MeshCollider>()
-                        .sharedMesh.vertices.Select(a => a.Xz()).ToList();
-
-                if (convertWithConvexHull)
+                var subDivided = SubDividedCityObjectFactory.ConvertCityObjects(new List<PLATEAUCityObjectGroup> { t });
+                var num = 0;
+                foreach (var so in subDivided.ConvertedCityObjects)
                 {
-                    vertices = GeoGraph2D.ComputeConvexVolume(vertices);
+                    foreach (var mesh in so.Meshes)
+                    {
+                        foreach (var subMesh in mesh.SubMeshes)
+                        {
+                            var polyIndices = new List<List<int>> { subMesh.Triangles };
+                            if (copyMethod == CopyMethod.Outline)
+                                polyIndices = subMesh.CreateOutlineIndices().ToList();
+
+                            foreach (var indices in polyIndices)
+                            {
+                                var obj = new GameObject($"{so.Name}_{num++}");
+                                obj.AddComponent<PLATEAUGeoGraphTesterLineString>();
+                                obj.transform.parent = transform;
+                                for (var i = 0; i < indices.Count; i++)
+                                {
+                                    var v0 = mesh.Vertices[indices[i]];
+                                    var c = new GameObject($"v_{i}");
+                                    c.transform.parent = obj.transform;
+                                    c.transform.position = v0;
+                                }
+                            }
+                        }
+                    }
                 }
 
-                var obj = new GameObject($"{i++}");
-                obj.AddComponent<PLATEAUGeoGraphTesterLineString>();
-                obj.transform.parent = transform;
-                foreach (var v in vertices.Select((v, i) => new { v, i }))
-                {
-                    var c = new GameObject($"v_{v.i}");
-                    c.transform.parent = obj.transform;
-                    c.transform.position = v.v;
-                }
             }
         }
 

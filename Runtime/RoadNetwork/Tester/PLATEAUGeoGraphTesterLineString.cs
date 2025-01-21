@@ -9,12 +9,11 @@ using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
-    public class PLATEAUGeoGraphTesterLineString : MonoBehaviour
+    /// <summary>
+    /// 線分(ポリゴン)を使ったテストクラス
+    /// </summary>
+    public class PLATEAUGeoGraphTesterLineString : PLATEAURnTesterLineString
     {
-        public bool visible = true;
-        public bool visibleNormal = false;
-        public Color color = Color.white;
-        public AxisPlane axis = AxisPlane.Xy;
         [Serializable]
         public class EdgeBorderTestParam
         {
@@ -61,40 +60,10 @@ namespace PLATEAU.RoadNetwork.Tester
             if (!target)
                 return;
             var vertices = GetVertices();
-            var isInside = GeoGraph2D.IsInsidePolygon(target.transform.position.GetTangent(axis), vertices);
+            var isInside = GeoGraph2D.IsInsidePolygon(target.transform.position.GetTangent(plane), vertices);
             DebugEx.DrawString($"{isInside}", target.transform.position);
         }
 
-
-
-        private IEnumerable<Transform> GetChildren(Transform self)
-        {
-            for (var i = 0; i < self.childCount; i++)
-            {
-                var child = self.GetChild(i);
-                if (child.gameObject.activeInHierarchy)
-                    yield return self.GetChild(i);
-            }
-        }
-
-        public List<Vector2> GetVertices()
-        {
-            return GetChildren(transform).Select(v => v.position.ToVector2(axis)).ToList();
-        }
-
-        public List<Vector3> GetVertices3D()
-        {
-            return GetChildren(transform).Select(v => v.position).ToList();
-        }
-
-        /// <summary>
-        /// この順番を逆にする
-        /// </summary>
-        public void ReverseChildrenSibling()
-        {
-            for (var i = 0; i < transform.childCount; i++)
-                transform.GetChild(i).SetAsFirstSibling();
-        }
 
         private void EdgeBorderTest(EdgeBorderTestParam p)
         {
@@ -105,7 +74,7 @@ namespace PLATEAU.RoadNetwork.Tester
 
             void DrawLine(IEnumerable<int> ind, Color color)
             {
-                DebugEx.DrawArrows(ind.Select(i => vertices[i].ToVector3(axis)), color: color);
+                DebugEx.DrawArrows(ind.Select(i => vertices[i].ToVector3(plane)), color: color);
             }
 
             DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
@@ -126,7 +95,7 @@ namespace PLATEAU.RoadNetwork.Tester
             var d1 = vertices[1] - vertices[0];
             var d2 = vertices[2] - vertices[1];
             var type = RnTurnTypeEx.GetTurnType(d1, d2);
-            DebugEx.DrawString($"{type}", vertices[0].ToVector3(axis));
+            DebugEx.DrawString($"{type}", vertices[0].ToVector3(plane));
         }
 
         private void RoadSliceTest(RoadSliceTestParam p)
@@ -200,30 +169,12 @@ namespace PLATEAU.RoadNetwork.Tester
             }
         }
 
-        public void OnDrawGizmos()
+        public new void OnDrawGizmos()
         {
             if (!gameObject.activeInHierarchy)
                 return;
 
-            if (visible)
-            {
-                DebugEx.DrawArrows(GetVertices().Select(v => v.ToVector3(axis)), color: color);
-
-                if (visibleNormal)
-                {
-                    var vertices = GetVertices3D();
-                    for (var i = 0; i < vertices.Count - 1; i++)
-                    {
-                        var v = vertices[i].PutNormal(axis, 0);
-                        var next = vertices[(i + 1) % vertices.Count].PutNormal(axis, 0);
-                        var p = Vector3.Lerp(v, next, 0.5f);
-
-                        var a = axis.NormalVector();
-                        var n = Vector3.Cross(a, next - v).normalized;
-                        DebugEx.DrawArrow(p, p + n, bodyColor: Color.blue);
-                    }
-                }
-            }
+            base.OnDrawGizmos();
 
             EdgeBorderTest(edgeBorderTest);
             TurnTypeTest(turnTypeTest);
