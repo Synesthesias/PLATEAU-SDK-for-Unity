@@ -851,7 +851,7 @@ namespace PLATEAU.Util.GeoGraph
                     return new { success, intersection, f1, f2 };
                 })
                 .Where(p => p.success)
-                .TryFindMin(p => p.f1, out var o);
+                .TryFindMinElement(p => p.f1, out var o);
 
             intersection = o?.intersection ?? Vector2.zero;
             t = o?.f1 ?? 0f;
@@ -907,7 +907,7 @@ namespace PLATEAU.Util.GeoGraph
                     return new { success, intersection, f1, f2 };
                 })
                 .Where(p => p.success)
-                .TryFindMin(p => p.f1, out var o);
+                .TryFindMinElement(p => p.f1, out var o);
 
             intersection = o.intersection;
             t = o.f1;
@@ -944,6 +944,20 @@ namespace PLATEAU.Util.GeoGraph
         }
 
         /// <summary>
+        /// 自己交差している交点のポイントを作成する関数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="seg1Start"></param>
+        /// <param name="seg1End"></param>
+        /// <param name="seg2Start"></param>
+        /// <param name="seg2End"></param>
+        /// <param name="intersection"></param>
+        /// <param name="seg1T"></param>
+        /// <param name="seg2T"></param>
+        /// <returns></returns>
+        public delegate T CreateSelfCrossingIntersectionPoint<T>(T seg1Start, T seg1End, T seg2Start, T seg2End, Vector2 intersection, float seg1T, float seg2T);
+
+        /// <summary>
         /// pointsで表現された線分リストが自己交差している場合,その部分を削除する
         ///   4--5
         ///   |  |
@@ -959,7 +973,7 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="points"></param>
         /// <param name="selector"></param>
         /// <param name="creator">交点に新しい点を作成する関数.　p1-p2の線分, p3-p4の線分と交点intersection,  (p1, p2, p3, p4, intersection, t1, t2) -> T</param>
-        public static void RemoveSelfCrossing<T>(List<T> points, Func<T, Vector2> selector, Func<T, T, T, T, Vector2, float, float, T> creator)
+        public static void RemoveSelfCrossing<T>(List<T> points, Func<T, Vector2> selector, CreateSelfCrossingIntersectionPoint<T> creator)
         {
             for (var i = 0; i < points.Count - 2; ++i)
             {
@@ -984,6 +998,76 @@ namespace PLATEAU.Util.GeoGraph
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// pointsで表現された線分リストが自己交差している場合,その部分を削除する
+        ///   4--5
+        ///   |  |
+        ///   3------2
+        ///      |   |
+        ///      6   1
+        /// ↑の様な線分だと以下のようになる
+        ///      3---2
+        ///      |   |
+        ///      4   1
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="srcPoints"></param>
+        /// <param name="selector"></param>
+        /// <param name="creator">交点に新しい点を作成する関数.　p1-p2の線分, p3-p4の線分と交点intersection,  (p1, p2, p3, p4, intersection, t1, t2) -> T</param>
+        /// <param name="isLoop"></param>
+        public static List<List<T>> ExtractSelfCrossing<T>(
+            IReadOnlyList<T> srcPoints
+            , Func<T, Vector2> selector
+            , CreateSelfCrossingIntersectionPoint<T> creator
+            , bool isLoop = false
+            )
+        {
+            var points = srcPoints.ToList();
+            List<List<T>> ret = new List<List<T>>();
+            for (var i = 0; i < points.Count - 2; ++i)
+            {
+                var p1 = points[i];
+                var p2 = points[i + 1];
+                var v1 = selector(p1);
+                var v2 = selector(p2);
+                for (var j = i + 2; j < points.Count;)
+                {
+                    // ループでない場合は最後の点はチェックしない
+                    if (isLoop == false && j == points.Count - 1)
+                        break;
+
+                    // i==0とj==points.Count-1の時はループの最初と最後で
+                    // 頂点共有だから必ず交差扱いになるので無視する
+                    if (i == 0 && j == points.Count - 1)
+                        break;
+                    var p3 = points[j];
+                    var p4 = points[(j + 1) % points.Count];
+                    var v3 = selector(p3);
+                    var v4 = selector(p4);
+
+                    if (LineUtil.SegmentIntersection(v1, v2, v3, v4, out var intersection, out var f1, out var f2))
+                    {
+                        var newNode = creator(p1, p2, p3, p4, intersection, f1, f2);
+
+                        var part = points.GetRange(i + 1, j - i);
+                        part.Insert(0, newNode);
+                        ret.Add(part);
+                        points.RemoveRange(i + 1, j - i);
+                        points.Insert(i + 1, newNode);
+                        // もう一回最初から検索しなおす
+                        j = i + 2;
+                    }
+                    else
+                    {
+                        ++j;
+                    }
+                }
+            }
+            if (points.Any())
+                ret.Add(points);
+            return ret;
         }
 
         /// <summary>
@@ -1343,7 +1427,7 @@ namespace PLATEAU.Util.GeoGraph
                                 isHit = true;
                             }
                             return new { dist = (near - pos).magnitude, index = i, t = t, isHit = isHit };
-                        }).TryFindMin(x => x.dist, out var x);
+                        }).TryFindMinElement(x => x.dist, out var x);
                     return new NearestPointInfo() { Index = x.index, T = x.t, Distance = x.dist, };
                 }
 
@@ -1628,6 +1712,34 @@ namespace PLATEAU.Util.GeoGraph
             }
 
             return wn != 0;
+        }
+
+        /// <summary>
+        /// 多角形の面積を計算する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static float CalcPolygonArea(IReadOnlyList<Vector2> vertices)
+        {
+            return CalcPolygonArea(vertices, v => v);
+        }
+
+        /// <summary>
+        /// 多角形の面積を計算する
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static float CalcPolygonArea<T>(IReadOnlyList<T> vertices, Func<T, Vector2> toVec2)
+        {
+
+            var area = 0f;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var v1 = toVec2(vertices[i]);
+                var v2 = toVec2(vertices[(i + 1) % vertices.Count]);
+                area += (v1.x * v2.y - v2.x * v1.y);
+            }
+            return Mathf.Abs(area) / 2f;
         }
     }
 }

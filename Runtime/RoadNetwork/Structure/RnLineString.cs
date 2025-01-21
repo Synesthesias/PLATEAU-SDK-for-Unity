@@ -328,7 +328,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         /// <summary>
         /// 頂点 startVertexIndex, startVertexIndex + 1で構成される辺の法線ベクトルを返す
-        /// 上(Vector3.up)から見て半時計回りを向いている. 正規化済み
+        /// 上(Vector3.up)から見て反時計回りを向いている. 正規化済み
         /// </summary>
         /// <param name="startVertexIndex"></param>
         /// <returns></returns>
@@ -520,7 +520,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             }
 
-            return ret.TryFindMin(x => (x.v - ray.origin).sqrMagnitude, out res);
+            return ret.TryFindMinElement(x => (x.v - ray.origin).sqrMagnitude, out res);
         }
 
         /// <summary>

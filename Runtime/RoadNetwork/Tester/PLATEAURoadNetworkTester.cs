@@ -93,7 +93,7 @@ namespace PLATEAU.RoadNetwork.Tester
                          .Where(g => g.Count() > 1))
             {
                 var level = g.Select(a => a.GetLodLevel()).Max();
-                g.TryFindMax(a => a.GetLodLevel(), out var maxG);
+                g.TryFindMaxElement(a => a.GetLodLevel(), out var maxG);
 
                 foreach (var a in g)
                 {
