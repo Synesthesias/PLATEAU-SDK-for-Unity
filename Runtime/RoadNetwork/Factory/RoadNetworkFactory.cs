@@ -585,7 +585,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                     if (leftLine == null && rightLine == null)
                     {
-                        Debug.LogError($"不正なーレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
                         return road;
                     }
 
