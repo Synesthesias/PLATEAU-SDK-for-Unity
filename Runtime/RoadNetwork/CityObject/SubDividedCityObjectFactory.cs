@@ -359,13 +359,12 @@ namespace PLATEAU.RoadNetwork.CityObject
 
 
         /// <summary>
-        /// 
+        /// cityObjectGroupsをSubDividedCityObjectに変換する
         /// </summary>
         /// <param name="cityObjectGroups"></param>
-        /// <param name="epsilon"></param>
         /// <param name="useContourMesh"></param>
         /// <returns></returns>
-        internal static async Task<ConvertCityObjectResult> ConvertCityObjectsAsync(IEnumerable<PLATEAUCityObjectGroup> cityObjectGroups, float epsilon = 0.1f, bool useContourMesh = true)
+        internal static ConvertCityObjectResult ConvertCityObjects(IEnumerable<PLATEAUCityObjectGroup> cityObjectGroups, bool useContourMesh = true)
         {
             // NOTE : CityGranularityConverterを参考
             var cityInfos = new List<CityObjectInfo>();
