@@ -104,7 +104,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         visibleType &= ~VisibleType.NonSelected;
                     }
 
-                    if (work.IsVisited(self) == false)
+                    if (work.IsVisited(self))
                         return false;
 
                     if (GetTargetGameObjects(self) != null && work.Self.targetTran && GetTargetGameObjects(self).Contains(work.Self.targetTran) == false)
@@ -1054,7 +1054,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 var ret = Visited.Contains(obj);
                 if (ret == false)
                     Visited.Add(obj);
-                return true;
+                return ret;
             }
 
             public VisibleType GetVisibleType(Object obj, IEnumerable<PLATEAUCityObjectGroup> cityObjects)
