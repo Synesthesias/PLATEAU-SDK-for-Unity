@@ -120,6 +120,24 @@ namespace PLATEAU.RoadNetwork.Tester
                 transform.GetChild(i).SetAsFirstSibling();
         }
 
+        /// <summary>
+        /// 先頭の頂点を最後尾に移動
+        /// </summary>
+        public void VertexMoveFront()
+        {
+            if (transform.childCount > 0)
+                transform.GetChild(0).SetAsLastSibling();
+        }
+
+        /// <summary>
+        /// 最後尾の頂点を先頭に移動
+        /// </summary>
+        public void VertexMoveBack()
+        {
+            if (transform.childCount > 0)
+                transform.GetChild(transform.childCount - 1).SetAsFirstSibling();
+        }
+
         public void OnDrawGizmos()
         {
             if (!gameObject.activeInHierarchy)

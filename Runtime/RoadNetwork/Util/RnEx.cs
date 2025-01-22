@@ -225,5 +225,30 @@ namespace PLATEAU.RoadNetwork.Util
 
             return ret;
         }
+
+        /// <summary>
+        /// start -> endの線分の法線ベクトルを取得する(上(Vector3.up)から反時計回りを向いている)
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeNormal(Vector3 start, Vector3 end)
+        {
+            var d = end - start;
+            // Vector3.Crossは左手系なので逆
+            return (-Vector3.Cross(Vector3.up, d)).normalized;
+        }
+
+        /// <summary>
+        /// start -> endの線分の法線ベクトルを取得する(反時計回りを向いている)
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeNormal(Vector2 start, Vector2 end)
+        {
+            var d = end - start;
+            return new Vector2(-d.y, d.x).normalized;
+        }
     }
 }

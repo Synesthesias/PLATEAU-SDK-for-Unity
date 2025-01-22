@@ -12,7 +12,7 @@ namespace PLATEAU.RoadNetwork.Tester
     /// <summary>
     /// 線分(ポリゴン)を使ったテストクラス
     /// </summary>
-    public class PLATEAUGeoGraphTesterLineString : PLATEAURnTesterLineString
+    public class PLATEAUGeoGraphTesterLineString : PLATEAURnTesterLineStringHolder
     {
         [Serializable]
         public class EdgeBorderTestParam
@@ -69,17 +69,17 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             if (p.enable == false)
                 return;
-            var vertices = GetVertices();
-            var edgeIndices = GeoGraph2D.FindMidEdge(GetVertices(), p.allowAngle, p.skipAngle, p.op);
+            var vertices = GetVertices().Skip(1).ToList();
+            var edgeIndices = GeoGraph2D.FindMidEdge(vertices, p.allowAngle, p.skipAngle, p.op);
 
             void DrawLine(IEnumerable<int> ind, Color color)
             {
                 DebugEx.DrawArrows(ind.Select(i => vertices[i].ToVector3(plane)), color: color);
             }
 
-            DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
+            //DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
             DrawLine(edgeIndices, Color.red);
-            DrawLine(Enumerable.Range(edgeIndices.Last(), vertices.Count - edgeIndices.Last()), Color.green);
+            //DrawLine(Enumerable.Range(edgeIndices.Last(), vertices.Count - edgeIndices.Last()), Color.green);
         }
 
         private void TurnTypeTest(TunTypeTestParam p)
@@ -173,8 +173,6 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             if (!gameObject.activeInHierarchy)
                 return;
-
-            base.OnDrawGizmos();
 
             EdgeBorderTest(edgeBorderTest);
             TurnTypeTest(turnTypeTest);

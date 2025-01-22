@@ -16,6 +16,12 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
             base.OnInspectorGUI();
             if (GUILayout.Button("Reverse Vertices"))
                 cog.ReverseChildrenSibling();
+
+            if (GUILayout.Button("Move Front"))
+                cog.VertexMoveFront();
+
+            if (GUILayout.Button("Move Back"))
+                cog.VertexMoveBack();
         }
     }
 }
