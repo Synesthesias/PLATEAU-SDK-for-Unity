@@ -53,6 +53,11 @@ namespace PLATEAU.RoadNetwork.Tester
         /// </summary>
         public float sphereRadius = -1f;
 
+        /// <summary>
+        /// 矢印のサイズ
+        /// </summary>
+        public float arrowSize = 0.1f;
+
         [Serializable]
         public enum CopyMethod
         {
@@ -146,7 +151,7 @@ namespace PLATEAU.RoadNetwork.Tester
             if (!visible)
                 return;
 
-            DebugEx.DrawArrows(GetVertices().Select(v => v.ToVector3(plane)), isLoop: showLoop, color: color);
+            DebugEx.DrawArrows(GetVertices().Select(v => v.ToVector3(plane)), isLoop: showLoop, color: color, arrowSize: arrowSize);
 
             if (sphereRadius > 0)
             {

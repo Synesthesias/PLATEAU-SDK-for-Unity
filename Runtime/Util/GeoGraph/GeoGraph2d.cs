@@ -1673,6 +1673,7 @@ namespace PLATEAU.Util.GeoGraph
             return ret;
         }
 
+
         /// <summary>
         /// pointがverticesで構成される多角形の内部にあるかどうかを返す. 
         /// </summary>

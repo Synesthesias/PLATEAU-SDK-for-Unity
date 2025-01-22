@@ -211,7 +211,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
                 protected override bool DrawImpl(DrawWork work, RFace face)
                 {
-                    var vertices = Parent.FrameVertices;
+                    var vertices = Parent.FrameOutlineVertices;
 
                     if (work.Self.showId.HasFlag(RPartsFlag.Face))
                     {
@@ -245,10 +245,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             class TerminateDrawer : FaceDrawer
             {
                 public FaceOption Parent { get; set; }
+                public bool showEdge = false;
+                public bool showBorderVertex = false;
+                public bool showReducedVertex = false;
+                public bool showReducedBorderVertex = false;
 
                 protected override bool DrawImpl(DrawWork work, RFace face)
                 {
-                    var vertices = Parent.FrameVertices;
+                    var vertices = Parent.FrameOutlineVertices;
                     var outlineGroup = RGraphEx
                         .CreateOutlineBorderGroup(vertices,
                             e => e.Faces.Select(f => f.CityObjectGroup).FirstOrDefault(f => f != face.CityObjectGroup));
@@ -258,37 +262,49 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                     if (group == null)
                         return false;
 
-                    List<RVertex> vs = new();
+                    List<RVertex> terminateVertices = new();
                     for (var i = 0; i < group.Edges.Count; ++i)
                     {
                         var e = group.Edges[i];
-                        if (vs.Any())
+                        if (terminateVertices.Any())
                         {
-                            var v = e.GetOppositeVertex(vs.Last());
-                            vs.Add(v);
+                            var v = e.GetOppositeVertex(terminateVertices.Last());
+                            terminateVertices.Add(v);
                         }
                         else if (group.Edges.Count > 1)
                         {
 
                             if (group.Edges[1].Contains(e.V0))
                             {
-                                vs.Add(e.V1);
-                                vs.Add(e.V0);
+                                terminateVertices.Add(e.V1);
+                                terminateVertices.Add(e.V0);
                             }
                             else
                             {
-                                vs.Add(e.V0);
-                                vs.Add(e.V1);
+                                terminateVertices.Add(e.V0);
+                                terminateVertices.Add(e.V1);
                             }
                         }
                     }
-                    for (var i = 0; i < vs.Count - 1; ++i)
+
+                    if (showEdge)
                     {
-                        var st = vs[i];
-                        var en = vs[(i + 1) % vs.Count];
-                        if (st != null && en != null)
-                            work.Self.DrawArrow(st.Position, en.Position);
+                        for (var i = 0; i < terminateVertices.Count - 1; ++i)
+                        {
+                            var st = terminateVertices[i];
+                            var en = terminateVertices[(i + 1) % terminateVertices.Count];
+                            if (st != null && en != null)
+                                work.Self.DrawArrow(st.Position, en.Position);
+                        }
                     }
+                    var vs = terminateVertices.Select(v => RnDef.ToVec2(v.Position)).ToList();
+                    var res = RnEx.FindBorderEdges(vs);
+                    if (showBorderVertex)
+                        work.Self.DrawArrows(res.BorderVertices.Select(v => RnDef.ToVec3(v)), color: Color.red);
+                    if (showReducedVertex)
+                        work.Self.DrawArrows(res.ReducedVertices.Select(v => v.ToVector3(RnDef.Plane)), color: Color.green);
+                    if (showReducedBorderVertex)
+                        work.Self.DrawArrows(res.ReducedBorderVertices.Select(v => v.ToVector3(RnDef.Plane)), color: Color.yellow);
                     return true;
                 }
             }
@@ -303,7 +319,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
                 protected override bool DrawImpl(DrawWork work, RFace self)
                 {
-                    var targetPoints = Parent.FrameVertices
+                    var targetPoints = Parent.FrameOutlineVertices
                         .ToList();
                     var points = targetPoints.Select(v => v.Position.ToVector2(RnDef.Plane)).ToList();
 
@@ -422,7 +438,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             CenterSkeletonDrawer centerSkeletonDrawer = new CenterSkeletonDrawer { visible = false };
 
             // 子Drawer用
-            public List<RVertex> FrameVertices { get; set; } = new();
+            public List<RVertex> FrameOutlineVertices { get; set; } = new();
 
             protected override IEnumerable<DrawerModel.Drawer<DrawWork, RFace>> GetChildDrawers()
             {
@@ -441,7 +457,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 if (face.RoadTypes.HasAnyFlag(work.Self.removeFaceType))
                     return false;
 
-                FrameVertices = showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
+                FrameOutlineVertices = showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
                     : face.ComputeOutlineVertices();
                 normalDrawer.Parent = this;
                 terminateDrawer.Parent = this;

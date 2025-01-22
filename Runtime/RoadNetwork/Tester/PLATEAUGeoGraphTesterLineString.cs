@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -70,15 +71,11 @@ namespace PLATEAU.RoadNetwork.Tester
             if (p.enable == false)
                 return;
             var vertices = GetVertices().Skip(1).ToList();
-            var edgeIndices = GeoGraph2D.FindMidEdge(vertices, p.allowAngle, p.skipAngle, p.op);
+            var res = RnEx.FindBorderEdges(vertices, p.allowAngle, p.skipAngle);
 
-            void DrawLine(IEnumerable<int> ind, Color color)
-            {
-                DebugEx.DrawArrows(ind.Select(i => vertices[i].ToVector3(plane)), color: color);
-            }
 
             //DrawLine(Enumerable.Range(0, edgeIndices[0] + 1), Color.green);
-            DrawLine(edgeIndices, Color.red);
+            DebugEx.DrawArrows(res.BorderVertices.Select(v => v.ToVector3(plane)), color: Color.red);
             //DrawLine(Enumerable.Range(edgeIndices.Last(), vertices.Count - edgeIndices.Last()), Color.green);
         }
 

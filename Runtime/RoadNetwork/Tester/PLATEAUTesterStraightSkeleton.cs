@@ -21,6 +21,8 @@ namespace PLATEAU.RoadNetwork.Tester
 
             public float offset = 0.1f;
 
+            public int nest = 0;
+
             public bool onlyMaxArea = false;
 
 
@@ -37,89 +39,133 @@ namespace PLATEAU.RoadNetwork.Tester
         {
             if (!param.enable)
                 return;
-            var vertices = GetVertices();
-
-
-            static List<Vector2> Reduction(IReadOnlyList<Vector2> srcVertices, float offset)
+            static List<Vector2> Reduction(IReadOnlyList<Vector2> srcVertices, int nest, AxisPlane plane)
             {
+                if (nest <= 0)
+                    return srcVertices.ToList();
+
                 var vertices = srcVertices.ToList();
                 Vector2 GetEdgeNormal(int x)
                 {
                     x += vertices.Count;
-                    return RnEx.GetEdgeNormal(vertices[x % vertices.Count], vertices[(x + 1) % vertices.Count]);
+                    return -RnEx.GetEdgeNormal(vertices[x % vertices.Count], vertices[(x + 1) % vertices.Count]);
+                }
+
+                Vector2 GetVertexNormal(int x)
+                {
+                    return (GetEdgeNormal(x) + GetEdgeNormal(x - 1)).normalized;
                 }
 
                 var ret = vertices.ToList();
                 ret = new List<Vector2>();
 
-                offset = Mathf.Abs(offset);
-                var delta = offset;
+                Dictionary<int, (float minLen, int index, float offset, Vector2 inter)> minLenDic = new();
+
+                void Check(int srcIndex, int dstIndex, Vector2 inter)
+                {
+                    var srcV = vertices[srcIndex];
+                    var dir = (inter - srcV);
+                    var len = dir.magnitude;
+
+                    var en = GetEdgeNormal(srcIndex);
+
+                    var offset = Vector2.Dot(en, dir);
+                    if (minLenDic.TryGetValue(srcIndex, out var minLen) == false)
+                    {
+                        minLenDic[srcIndex] = (len, dstIndex, offset, inter);
+                    }
+                    else if (len < minLen.minLen)
+                    {
+                        minLenDic[srcIndex] = (len, dstIndex, offset, inter);
+                    }
+                }
                 for (var i = 0; i < vertices.Count; ++i)
                 {
-                    var e0 = GetEdgeNormal(i);
-                    var e1 = GetEdgeNormal(i - 1);
-                    var dd = e0 + e1 * (1f - Vector2.Dot(e0, e1));
-                    ret.Add(vertices[i] - dd * delta);
+                    var vn1 = GetVertexNormal(i);
+                    var halfRay1 = new Ray2D(vertices[i], vn1);
+                    for (var j = i + 1; j < vertices.Count; ++j)
+                    {
+                        var vn2 = GetVertexNormal(j);
+
+                        var halfRay2 = new Ray2D(vertices[j], vn2);
+                        if (halfRay2.CalcIntersection(halfRay1, out var inter, out var t1, out var t2) == false)
+                            continue;
+
+                        Check(i, j, inter);
+                        Check(j, i, inter);
+                    }
                 }
-                //while (false)
-                //{
 
+                List<Vector2> Move(List<Vector2> vertices, float delta)
+                {
+                    var points = new List<Vector2>();
+                    for (var i = 0; i < vertices.Count; ++i)
+                    {
+                        var e0 = GetEdgeNormal(i);
+                        var e1 = GetEdgeNormal(i - 1);
+                        var dd = e0 + e1 * (1f - Vector2.Dot(e0, e1));
+                        points.Add(vertices[i] + dd * delta);
+                    }
 
-                //    var removeIndices = new List<(int index, Vector2 after)>();
+                    return points;
+                }
 
+                if (minLenDic.Where(x =>
+                    {
+                        var key = x.Key;
+                        var val = x.Value.index;
+                        return minLenDic[val].index == key;
+                    }).TryFindMinElement(x => x.Value.offset, out var e))
+                {
+                    ret = Move(vertices, e.Value.offset);
+                    var (from, to) = (e.Key, e.Value.index);
+                    if (from > to)
+                        (to, from) = (from, to);
 
-                //    var stopDelta = float.MaxValue;
-                //    var stopIndex = -1;
-                //    for (var i = 0; i < vertices.Count; ++i)
-                //    {
-                //        for (var j = i + 1; j < vertices.Count; ++j)
-                //        {
-                //            var prevIndex = (i - 1 + vertices.Count) % vertices.Count;
-                //            var nowSeg = new LineSegment2D(vertices[i], ret[i]);
-                //            var prevSeg = new LineSegment2D(vertices[j], ret[j]);
-                //            if (nowSeg.TrySegmentIntersection(prevSeg, out var intersection) == false)
-                //                continue;
+                    var range = ret.GetRange(from, to - from);
+                    ret.RemoveRange(from, to - from);
 
-                //            var e2 = GetEdgeNormal(i);
-                //            //removeIndices.Add(new(prevIndex, intersection - backN * offset));
+                    if (GeoGraph2D.CalcPolygonArea(range) > GeoGraph2D.CalcPolygonArea(ret))
+                    {
+                        ret = range;
+                    }
 
-                //            var nowV = nowSeg.End - intersection;
-                //            var preV = prevSeg.End - intersection;
-                //            var d = Vector2.Dot(e2, prevSeg.Direction) * delta;
-                //            stopDelta = Mathf.Min(d, stopDelta);
-                //            stopIndex = i;
-                //        }
+                    DebugEx.DrawString($"{nest}", e.Value.inter.ToVector3(plane));
 
-                //    }
-                //    removeIndices = removeIndices.OrderByDescending(x => x.index).ToList();
-                //    foreach (var i in removeIndices)
-                //    {
-                //        vertices.RemoveAt(i.index);
-                //        vertices[i.index % vertices.Count] = i.after;
-                //    }
-                //}
+                    DebugEx.DrawArrow(vertices[e.Key].ToVector3(plane), e.Value.inter.ToVector3(plane));
+                    DebugEx.DrawArrow(vertices[e.Value.index].ToVector3(plane), e.Value.inter.ToVector3(plane));
 
+                    return Reduction(ret, nest - 1, plane);
+                }
 
-
-                return ret;
+                return vertices;
             }
-            var newVertices = vertices.ToList();
-            newVertices = Reduction(newVertices, param.offset);
+
+            var vertices = GetVertices().Skip(1).ToList();
+
+            if (GeoGraph2D.IsClockwise(vertices) == false)
+                vertices.Reverse();
+            var newVertices = Reduction(vertices, param.nest, plane);
             var lines = GeoGraph2D.ExtractSelfCrossing(newVertices, x => x, ((p1, p2, p3, p4, inter, arg6, arg7) => inter), isLoop: true);
 
             if (param.onlyMaxArea)
             {
-                if (lines.TryFindMaxElement(GeoGraph2D.CalcPolygonArea, out var l))
+                if (lines.TryFindMaxElement(GeoGraph2D.CalcPolygonArea, out var poly))
                 {
-                    DebugEx.DrawArrows(l.Select(v => v.ToVector3(plane)), isLoop: true, color: color);
+                    var srcArea = GeoGraph2D.CalcPolygonArea(vertices);
+                    var dstArea = GeoGraph2D.CalcPolygonArea(poly);
 
-                    var after = Reduction(l, -param.offset);
+                    DebugEx.DrawString($"{(int)(100 * dstArea / srcArea)}%", Vector2Ex.Centroid(vertices).ToVector3(plane));
+
+                    DebugEx.DrawArrows(poly.Select(v => v.ToVector3(plane)), isLoop: true, color: color);
+
+                    //var after = Reduction(l, -param.offset);
                     //DebugEx.DrawArrows(after.Select(v => v.ToVector3(LineString.plane)), isLoop: true, color: LineString.color);
 
-                    var edgeIndices = GeoGraph2D.FindMidEdge(l, param.allowAngle, param.skipAngle, param.op);
+                    var edgeIndices = GeoGraph2D.FindMidEdge(poly, param.allowAngle, param.skipAngle, param.op);
                     void DrawLine(IEnumerable<int> ind, Color color)
                     {
-                        DebugEx.DrawArrows(ind.Select(i => l[i].ToVector3(plane)), color: color);
+                        DebugEx.DrawArrows(ind.Select(i => poly[i].ToVector3(plane)), color: color);
                     }
 
                     DrawLine(edgeIndices, Color.red);

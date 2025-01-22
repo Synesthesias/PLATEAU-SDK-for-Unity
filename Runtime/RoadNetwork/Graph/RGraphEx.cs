@@ -448,7 +448,6 @@ namespace PLATEAU.RoadNetwork.Graph
             foreach (var group in self.Faces.GroupBy(f => f.CityObjectGroup))
             {
                 var faces = group.ToHashSet();
-                var faceGroups = new List<RFaceGroup>();
                 while (faces.Any())
                 {
                     var queue = new Queue<RFace>();
@@ -461,21 +460,21 @@ namespace PLATEAU.RoadNetwork.Graph
                         g.Add(f0);
                         foreach (var f1 in faces)
                         {
+                            // 繋がっていないFaceは無視する
                             if (IsShareEdge(f0, f1) && isMatch(f0, f1))
                             {
                                 g.Add(f1);
                                 queue.Enqueue(f1);
+                                // ここではfacesから削除できない(イテレート中だから)
                             }
                         }
+
                         foreach (var f in queue)
                             faces.Remove(f);
                     }
 
-                    faceGroups.Add(new RFaceGroup(self, group.Key, g));
+                    ret.Add(new RFaceGroup(self, group.Key, g));
                 }
-
-                foreach (var f in faceGroups)
-                    ret.Add(f);
 
             }
             return ret;
@@ -518,8 +517,6 @@ namespace PLATEAU.RoadNetwork.Graph
             var queue = new HashSet<REdge>();
 
             Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
-            Dictionary<Vector3, RVertex> vertexMap = new();
-
             var threshold = tolerance * tolerance;
             for (var i = 0; i < vertices.Count; i++)
             {
@@ -642,7 +639,7 @@ namespace PLATEAU.RoadNetwork.Graph
                             continue;
                         }
 
-                        if (s0.TrySegmentIntersectionBy2D(s1, AxisPlane.Xz, heightTolerance, out var intersection,
+                        if (s0.TrySegmentIntersectionBy2D(s1, RnDef.Plane, heightTolerance, out var intersection,
                                 out var t1, out var t2))
                         {
                             // お互いの端点で交差している場合は無視
@@ -722,7 +719,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var res = GeoGraph2D.ComputeOutline(
                 vertices
                 , v => v.Position
-                , AxisPlane.Xz
+                , RnDef.Plane
                 , v => v.Edges.Where(e => edges.Contains(e)).Select(e => e.GetOppositeVertex(v)).Where(n => n != null));
             return res.Outline ?? new List<RVertex>();
         }
@@ -785,6 +782,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <returns></returns>
         public static bool IsShareEdge(RFace a, RFace b)
         {
+            // #TODO : 共通の辺ではなく共通の頂点になっているが正しいのかチェック
             return a.Edges.SelectMany(e => e.Vertices).Any(v => b.Edges.SelectMany(e => e.Vertices).Contains(v));
         }
 
@@ -810,6 +808,7 @@ namespace PLATEAU.RoadNetwork.Graph
                     subFace.Add(edge);
                     foreach (var e in edge.GetNeighborEdges())
                     {
+                        // すでに分離済み or 別のFaceに属している辺は無視
                         if (edges.Contains(e))
                         {
                             edges.Remove(e);
@@ -823,6 +822,10 @@ namespace PLATEAU.RoadNetwork.Graph
             if (separatedEdges.Count <= 1)
                 return;
 
+            // #TODO : この処理はここではいらないはず
+            //       : この次のfor文の中でRemoveすれば良いはず
+            //       : (Faceの全てのEdgeはseparatedEdgesに含まれているはずなので)
+            // selfは0番目のものだけ残す
             foreach (var e in self.Edges.Where(e => separatedEdges[0].Contains(e) == false).ToList())
                 self.RemoveEdge(e);
 
@@ -1086,6 +1089,58 @@ namespace PLATEAU.RoadNetwork.Graph
         public static HashSet<RVertex> CreateVertexSet(this RFace self)
         {
             return self.Edges.SelectMany(e => e.Vertices).Where(v => v != null).ToHashSet();
+        }
+
+        public class OutlineBorderGroup<T>
+        {
+            public List<REdge> Edges { get; }
+            public T Key { get; }
+
+            public OutlineBorderGroup(T key, List<REdge> edges)
+            {
+                Edges = edges;
+                Key = key;
+            }
+        }
+
+
+        public static List<OutlineBorderGroup<T>> CreateOutlineBorderGroup<T>(
+            List<RVertex> outlineVertices
+            , Func<REdge, T> keySelector
+            , IEqualityComparer<T> comparer = null)
+        {
+            OutlineVertex2Edge(outlineVertices, out var outlineEdges);
+
+
+            T lastKey = default(T);
+            List<REdge> way = new();
+            List<OutlineBorderGroup<T>> ways = new();
+            comparer ??= EqualityComparer<T>.Default;
+            for (var i = 0; i < outlineEdges.Count; ++i)
+            {
+                var e = outlineEdges[i];
+                var key = keySelector(e);
+                if (i == 0 || !comparer.Equals(lastKey, key))
+                {
+                    if (way.Any())
+                        ways.Add(new(lastKey, way));
+
+                    way = new();
+                    lastKey = key;
+                }
+                way.Add(e);
+            }
+
+            if (way.Any())
+                ways.Add(new(lastKey, way));
+
+            if (ways.Count > 1 && comparer.Equals(ways[0].Key, ways[^1].Key))
+            {
+                ways[^1].Edges.AddRange(ways[0].Edges);
+                ways.RemoveAt(0);
+            }
+
+            return ways;
         }
     }
 
