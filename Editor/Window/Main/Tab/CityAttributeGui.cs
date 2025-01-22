@@ -98,6 +98,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private async void OnSceneGUI(SceneView scene)
         {
+            if (!isActive) return;
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);

@@ -28,6 +28,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private readonly IRrTarget srcTargetBeforeCopy;
         private readonly RnmLineSeparateType lineSeparateType;
+        
+        /// <summary> デバッグモードがONなら、輪郭線形状を矢印で表示します </summary>
         private static readonly bool DebugMode = false;
         
         
@@ -96,6 +98,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var srcObjs = contourMesh.SourceObjects;
                 if (srcObjs.Length == 0) continue;
                 
+                // 輪郭線をテッセレートしてメッシュ化
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
                 if (mesh.vertexCount == 0) continue;
 
