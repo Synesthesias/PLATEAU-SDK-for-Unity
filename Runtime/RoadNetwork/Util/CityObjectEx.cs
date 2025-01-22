@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityInfo;
+﻿using PLATEAU.CityGML;
+using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Graph;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,6 +27,11 @@ namespace PLATEAU.RoadNetwork.Util
             // 緊急輸送道路もはじく必要がある
             // LOD3からチェックする
             var ret = RRoadTypeMask.Empty;
+
+            // COT_Roadは強制的に対象にする
+            if (self.CityObjectType == CityObjectType.COT_Road)
+                ret = RRoadTypeMask.Road;
+
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))
             {
                 var str = tranFunction.StringValue;
