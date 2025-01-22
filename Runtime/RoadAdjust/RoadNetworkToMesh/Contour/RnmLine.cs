@@ -135,10 +135,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     // baseの線が切り替わるタイミングで線を分けます。
                     if (nextLine.Count >= 2)
                     {
-                        nextLine.Add(new RnmVertex(baseV)); // 切り替え時に1点追加したほうが自然
+                        nextLine.Add(new RnmVertex(baseV)); // 切り替え時の最後の1点（端）は保持
                         yield return new RnmLine(nextLine);
                     }
                     nextLine.Clear();
+                    nextLine.Add(new RnmVertex(baseV)); // 最初の1点（端）は保持
                 }
                 else // subtractにマッチしない部分。ここは使います。
                 {

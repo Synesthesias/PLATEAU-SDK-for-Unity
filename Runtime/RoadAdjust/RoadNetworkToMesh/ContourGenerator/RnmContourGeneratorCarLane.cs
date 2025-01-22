@@ -37,7 +37,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 var lane = allLanesWithMedian[i];
                 if (lane == road.MedianLane) continue; // MedianLaneは別で処理します
+                
+                // 輪郭線となる線を集めていきます
                 var contourCalc = new RnmContourCalculator(RnmMaterialType.RoadCarLane);
+                
                 var nextBorder = lane.GetBorder(RnLaneBorderType.Next);
                 var prevBorder = lane.GetBorder(RnLaneBorderType.Prev);
                 var uv1Calc = new RnmLaneUV1Calc(lane, allLanesCount, i, nextBorder, prevBorder);
