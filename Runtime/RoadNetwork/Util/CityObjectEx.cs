@@ -30,7 +30,7 @@ namespace PLATEAU.RoadNetwork.Util
 
             // COT_Roadは強制的に対象にする
             if (self.CityObjectType == CityObjectType.COT_Road)
-                ret = RRoadTypeMask.Road;
+                ret |= RRoadTypeMask.Road;
 
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))
             {
