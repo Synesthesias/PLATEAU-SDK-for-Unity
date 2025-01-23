@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -67,6 +68,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             exportPath = path;
 
             roadNetworkContext = new RoadNetworkContext();
+            if (roadNetworkContext.GeoReference == null)
+            {
+                Dialogue.Display("元ゲームオブジェクトが見つからないため、エクスポートに失敗しました。", "OK");
+                return;
+            }
 
             GenerateExpRoadNetwork(roadNetworkContext);
 
