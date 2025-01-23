@@ -539,9 +539,9 @@ namespace PLATEAU.RoadNetwork.Factory
                         return null;
                     }
 
-                    var vertices = line.Vertices.Select(v => v.Position.Xz()).ToList();
-                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
-
+                    var vertices = line.Vertices.Select(v => RnDef.ToVec2(v.Position)).ToList();
+                    var borderResult = RnEx.FindBorderEdges(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
+                    var edgeIndices = borderResult.BorderVertexIndices;
                     RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
                         var ls = Work.CreateWay(ind.Select(x => line.Vertices[x]).ToList());
@@ -941,7 +941,7 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RnModel> CreateRnModelAsync(CreateRnModelRequest req)
         {
             var subDividedRes =
-                await SubDividedCityObjectFactory.ConvertCityObjectsAsync(req.CityObjectGroups, useContourMesh: UseContourMesh);
+                SubDividedCityObjectFactory.ConvertCityObjects(req.CityObjectGroups, useContourMesh: UseContourMesh);
             var subDividedCityObjects = subDividedRes.ConvertedCityObjects;
             var graph = GraphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);

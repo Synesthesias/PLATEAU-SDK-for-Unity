@@ -1,5 +1,10 @@
-﻿using PLATEAU.RoadNetwork.Util;
+﻿using PlasticPipe.PlasticProtocol.Messages;
+using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
+using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
+using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,36 +45,10 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // 描画モード
         public DrawMode drawMode = DrawMode.Normal;
 
-        [Serializable]
-        public class FaceOption : DrawOption
-        {
-            public bool showOutline = true;
-            public bool showConvexVolume = false;
-            public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
-            public RRoadTypeMask showOutlineRemoveMask = RRoadTypeMask.Empty;
-            public bool showCityObjectOutline = false;
-            public bool showOutlineLoop = false;
-        }
 
         public FaceOption faceOption = new FaceOption();
-        [Serializable]
-        public class EdgeOption : DrawOption
-        {
-            public bool useAnyFaceVertexColor = false;
-            // 辺が属するFaceの数を表示する
-            public bool showNeighborCount = false;
-        }
         public EdgeOption edgeOption = new EdgeOption();
 
-        [Serializable]
-        public class VertexOption : DrawOption
-        {
-            public int size = 10;
-            public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
-            public bool showPos = false;
-            public bool showEdgeCount = false;
-            public bool useAnyFaceVertexColor = false;
-        }
         public VertexOption vertexOption = new VertexOption { visible = false };
 
         [Serializable]
@@ -113,22 +92,379 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // --------------------
 
 
-        public HashSet<RFace> TargetFaces { get; } = new();
-        public HashSet<REdge> TargetEdges { get; } = new();
-        public HashSet<RVertex> TargetVertices { get; } = new();
+        public HashSet<object> InVisibleObjects { get; } = new();
+        public HashSet<object> SelectedObjects { get; } = new();
 
-        private class DrawWork
+        public class DrawerModel : RnDebugDrawerModel<RGraph> { }
+
+
+        public class DrawWork : DrawerModel.DrawFrameWork
         {
             public RGraph graph;
 
-            public HashSet<RVertex> visitedVertices = new HashSet<RVertex>();
+            public PLATEAURGraphDrawerDebug Self { get; set; }
+            public DrawWork(PLATEAURGraphDrawerDebug self, RGraph model)
+                : base(model)
+            {
+                Self = self;
+            }
 
-            public HashSet<REdge> visitedEdges = new HashSet<REdge>();
+            public override bool IsGuiSelected(object obj)
+            {
+                return Self.SelectedObjects.Contains(obj);
+            }
+        }
 
-            public HashSet<RFace> visitedFaces = new HashSet<RFace>();
+        public class Drawer<T> : DrawerModel.Drawer<DrawWork, T>
+        {
+        }
+
+        [Serializable]
+        public class FaceDrawer : Drawer<RFace>
+        {
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RFace self)
+            {
+                if (self.CityObjectGroup)
+                    yield return self.CityObjectGroup;
+            }
+        }
+
+        [Serializable]
+        public class EdgeDrawer : Drawer<REdge> { }
+
+        [Serializable]
+        public class VertexDrawer : Drawer<RVertex> { }
+
+        [Serializable]
+        public class VertexOption : VertexDrawer
+        {
+            public int size = 10;
+            public DrawOption neighborOption = new DrawOption { visible = false, color = Color.yellow };
+            public bool showPos = false;
+            public bool showEdgeCount = false;
+            public bool useAnyFaceVertexColor = false;
+
+            protected override bool DrawImpl(DrawWork work, RVertex vertex)
+            {
+                var text = $"●";
+                if (showEdgeCount)
+                    text += $"{vertex.Edges.Count}";
+
+                if (work.Self.showId.HasFlag(RPartsFlag.Vertex))
+                    text += $"[{vertex.DebugMyId}]";
+
+                if (showPos)
+                    text += $"({vertex.Position.x:F2},{vertex.Position.z:F2})";
+
+                work.Self.DrawString(text, vertex.Position, fontSize: size, color: work.Self.GetColor(vertex.GetTypeMaskOrDefault(useAnyFaceVertexColor)));
+                //DebugEx.DrawSphere(vertex.Position, 0.3f, color: GetColor(vertex.GetTypeMaskOrDefault(useAnyFaceVertexColor)));
+
+                if (neighborOption.visible)
+                {
+                    foreach (var e in vertex.Edges)
+                    {
+                        work.Self.DrawLine(e.V0.Position, e.V1.Position, neighborOption.color);
+                    }
+                }
+
+                return true;
+            }
+        }
+        [Serializable]
+        public class EdgeOption : EdgeDrawer
+        {
+            public bool useAnyFaceVertexColor = false;
+            // 辺が属するFaceの数を表示する
+            public bool showNeighborCount = false;
+
+            protected override bool DrawImpl(DrawWork work, REdge edge)
+            {
+                var color = work.Self.GetColor(edge.GetTypeMaskOrDefault(useAnyFaceVertexColor));
+                work.Self.DrawLine(edge.V0.Position, edge.V1.Position, color);
+                if (work.Self.showId.HasFlag(RPartsFlag.Edge))
+                    work.Self.DrawString($"[{edge.DebugMyId}]", (edge.V0.Position + edge.V1.Position) / 2);
+
+                if (showNeighborCount)
+                {
+                    work.Self.DrawString($"{edge.Faces.Count}", (edge.V0.Position + edge.V1.Position) / 2);
+                }
+
+                work.Self.vertexOption.Draw(work, edge.V0, work.visibleType);
+                work.Self.vertexOption.Draw(work, edge.V1, work.visibleType);
+                return true;
+            }
 
         }
 
+        [Serializable]
+        public class FaceOption : FaceDrawer
+        {
+            [Serializable]
+            class NormalDrawer : FaceDrawer
+            {
+                public Color color;
+                public bool showOutline = true;
+                public bool showConvexVolume = false;
+                public bool showOutlineLoop = false;
+
+                public FaceOption Parent { get; set; }
+
+                protected override bool DrawImpl(DrawWork work, RFace face)
+                {
+                    var vertices = Parent.FrameOutlineVertices;
+
+                    if (work.Self.showId.HasFlag(RPartsFlag.Face))
+                    {
+                        var center = vertices.Aggregate(Vector3.zero, (a, v) => v.Position + a) / vertices.Count;
+                        work.Self.DrawString($"F[{face.DebugMyId}]", center);
+                    }
+                    if (showConvexVolume)
+                    {
+                        work.Self.DrawArrows(face.ComputeConvexHullVertices().Select(v => v.Position), isLoop: true, color: color);
+                    }
+                    else if (showOutline)
+                    {
+                        RGraphEx.OutlineVertex2Edge(vertices, out var edges);
+                        foreach (var e in edges)
+                        {
+                            work.Self.edgeOption.Draw(work, e, work.visibleType);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var e in face.Edges)
+                        {
+                            work.Self.edgeOption.Draw(work, e, work.visibleType);
+                        }
+                    }
+                    return true;
+                }
+            }
+
+            [Serializable]
+            class TerminateDrawer : FaceDrawer
+            {
+                public FaceOption Parent { get; set; }
+                public bool showEdge = false;
+                public bool showBorderVertex = false;
+                public bool showReducedVertex = false;
+                public bool showReducedBorderVertex = false;
+
+                protected override bool DrawImpl(DrawWork work, RFace face)
+                {
+                    var vertices = Parent.FrameOutlineVertices;
+                    var outlineGroup = RGraphEx
+                        .CreateOutlineBorderGroup(vertices,
+                            e => e.Faces.Select(f => f.CityObjectGroup).FirstOrDefault(f => f != face.CityObjectGroup));
+                    if (outlineGroup.Count != 2)
+                        return false;
+                    var group = outlineGroup.FirstOrDefault(x => x.Key == null);
+                    if (group == null)
+                        return false;
+
+                    List<RVertex> terminateVertices = new();
+                    for (var i = 0; i < group.Edges.Count; ++i)
+                    {
+                        var e = group.Edges[i];
+                        if (terminateVertices.Any())
+                        {
+                            var v = e.GetOppositeVertex(terminateVertices.Last());
+                            terminateVertices.Add(v);
+                        }
+                        else if (group.Edges.Count > 1)
+                        {
+
+                            if (group.Edges[1].Contains(e.V0))
+                            {
+                                terminateVertices.Add(e.V1);
+                                terminateVertices.Add(e.V0);
+                            }
+                            else
+                            {
+                                terminateVertices.Add(e.V0);
+                                terminateVertices.Add(e.V1);
+                            }
+                        }
+                    }
+
+                    if (showEdge)
+                    {
+                        for (var i = 0; i < terminateVertices.Count - 1; ++i)
+                        {
+                            var st = terminateVertices[i];
+                            var en = terminateVertices[(i + 1) % terminateVertices.Count];
+                            if (st != null && en != null)
+                                work.Self.DrawArrow(st.Position, en.Position);
+                        }
+                    }
+                    var vs = terminateVertices.Select(v => RnDef.ToVec2(v.Position)).ToList();
+                    var res = RnEx.FindBorderEdges(vs);
+                    if (showBorderVertex)
+                        work.Self.DrawArrows(res.BorderVertices.Select(v => RnDef.ToVec3(v)), color: Color.red);
+                    if (showReducedVertex)
+                        work.Self.DrawArrows(res.ReducedVertices.Select(v => v.ToVector3(RnDef.Plane)), color: Color.green);
+                    if (showReducedBorderVertex)
+                        work.Self.DrawArrows(res.ReducedBorderVertices.Select(v => v.ToVector3(RnDef.Plane)), color: Color.yellow);
+                    return true;
+                }
+            }
+
+            [Serializable]
+            class CenterSkeletonDrawer : FaceDrawer
+            {
+                public FaceOption Parent { get; set; }
+
+                public Color centerSkeletonColor = Color.red;
+                public float centerSkeletonRefineInterval = -1f;
+
+                protected override bool DrawImpl(DrawWork work, RFace self)
+                {
+                    var targetPoints = Parent.FrameOutlineVertices
+                        .ToList();
+                    var points = targetPoints.Select(v => v.Position.ToVector2(RnDef.Plane)).ToList();
+
+
+                    if (centerSkeletonRefineInterval > 0.1f)
+                    {
+                        for (var i = 0; i < points.Count;)
+                        {
+                            var v0 = points[i];
+                            var v1 = points[(i + 1) % points.Count];
+
+                            var len = (v0 - v1).magnitude;
+                            var num = (int)(len / centerSkeletonRefineInterval);
+                            if (num <= 0)
+                            {
+                                i++;
+                            }
+                            else
+                            {
+                                var add = new List<Vector2>();
+                                for (var x = 0; x < num; ++x)
+                                {
+                                    var p = (x + 1f) / (num + 1f);
+                                    add.Add(Vector2.Lerp(v0, v1, p));
+                                }
+
+                                points.InsertRange(i + 1, add);
+                                i += add.Count + 1;
+                            }
+                        }
+                    }
+
+                    var voronoi = RnVoronoiEx.CalcVoronoiData(points, v => new Vector2d(v));
+
+                    var vertices2d = points.Select(v => v).ToList();
+
+                    var edges = GeoGraphEx.GetEdges(vertices2d, true)
+                        .Select(v => new LineSegment2D(v.Item1, v.Item2))
+                        .ToList();
+
+                    foreach (var e in voronoi.Edges)
+                    {
+                        if (e.Start == null && e.End == null)
+                            continue;
+
+                        if (e.Start == null || e.End == null)
+                        {
+                            var origin = (e.Start ?? e.End.Value).ToVector2();
+                            var dir = e.Start == null ? -e.Direction.ToVector2() : e.Direction.ToVector2();
+                            var ray = new Ray2D(origin, dir);
+
+                            //DrawLine(origin.ToVector3(RnDef.Plane), origin.ToVector3(RnDef.Plane) + 100 * dir.ToVector3(RnDef.Plane), centerSkeletonColor);
+
+                            //if (GeoGraph2D.IsInsidePolygon(ray.origin, vertices2d) == false)
+                            //    continue;
+                            //var ans = edges.Select(e =>
+                            //    {
+                            //        var res = e.TryHalfLineIntersection(ray.origin, ray.direction, out var inter,
+                            //            out var t1,
+                            //            out var t2);
+                            //        return new { res, inter, t1, t2 };
+                            //    })
+                            //    .Where(x => x.res)
+                            //    .TryFindMin(x => (x.inter - ray.origin).sqrMagnitude, out var m);
+                            //if (ans)
+                            //{
+                            //    DrawLine(ray.origin.ToVector3(RnDef.Plane), m.inter.ToVector3(RnDef.Plane), centerSkeletonColor);
+                            //}
+                        }
+                        else
+                        {
+                            var start = e.Start.Value.ToVector2();
+                            var end = e.End.Value.ToVector2();
+                            var ans = edges.Select(e =>
+                                {
+                                    var res = e.TrySegmentIntersection(start, end, out var inter, out var t1,
+                                        out var t2);
+                                    return new { res, inter, t1, t2 };
+                                }).Where(x => x.res)
+                                .TryFindMinElement(x => (x.inter - start).sqrMagnitude, out var m);
+
+                            //DrawLine(start.ToVector3(RnDef.Plane), end.ToVector3(RnDef.Plane), centerSkeletonColor);
+                            if (ans)
+                            {
+                                //DrawLine(start.ToVector3(RnDef.Plane), m.inter.ToVector3(RnDef.Plane), centerSkeletonColor);
+                            }
+                            else
+                            {
+                                if (GeoGraph2D.IsInsidePolygon(start, vertices2d) &&
+                                    GeoGraph2D.IsInsidePolygon(end, vertices2d))
+                                {
+                                    work.Self.DrawLine(start.ToVector3(RnDef.Plane), end.ToVector3(RnDef.Plane),
+                                        centerSkeletonColor);
+                                }
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            public bool showOutline = true;
+            public bool showConvexVolume = false;
+            public RRoadTypeMask showOutlineMask = RRoadTypeMask.Road;
+            public RRoadTypeMask showOutlineRemoveMask = RRoadTypeMask.Empty;
+            public bool showCityObjectOutline = false;
+
+            [SerializeField]
+            NormalDrawer normalDrawer = new NormalDrawer { visible = true };
+
+            [SerializeField]
+            TerminateDrawer terminateDrawer = new TerminateDrawer { visible = false };
+
+            [SerializeField]
+            CenterSkeletonDrawer centerSkeletonDrawer = new CenterSkeletonDrawer { visible = false };
+
+            // 子Drawer用
+            public List<RVertex> FrameOutlineVertices { get; set; } = new();
+
+            protected override IEnumerable<DrawerModel.Drawer<DrawWork, RFace>> GetChildDrawers()
+            {
+                yield return normalDrawer;
+                yield return terminateDrawer;
+                yield return centerSkeletonDrawer;
+            }
+            protected override bool DrawImpl(DrawWork work, RFace face)
+            {
+                if (face.Visible == false)
+                    return false;
+
+                if (face.RoadTypes.HasAnyFlag(work.Self.showFaceType) == false)
+                    return false;
+
+                if (face.RoadTypes.HasAnyFlag(work.Self.removeFaceType))
+                    return false;
+
+                FrameOutlineVertices = showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
+                    : face.ComputeOutlineVertices();
+                normalDrawer.Parent = this;
+                terminateDrawer.Parent = this;
+                centerSkeletonDrawer.Parent = this;
+                return true;
+            }
+        }
         private void DrawArrows(IEnumerable<Vector3> vertices
             , bool isLoop = false
             , float arrowSize = 0.5f
@@ -191,127 +527,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             return ret;
         }
 
-        private void Draw(VertexOption op, RVertex vertex, DrawWork work)
-        {
-            if (op.visible == false)
-                return;
-
-            if (work.visitedVertices.Contains(vertex))
-                return;
-
-            work.visitedVertices.Add(vertex);
-
-            var text = $"●";
-            if (op.showEdgeCount)
-                text += $"{vertex.Edges.Count}";
-
-            if (showId.HasFlag(RPartsFlag.Vertex))
-                text += $"[{vertex.DebugMyId}]";
-
-            if (op.showPos)
-                text += $"({vertex.Position.x:F2},{vertex.Position.z:F2})";
-
-            DrawString(text, vertex.Position, fontSize: op.size, color: GetColor(vertex.GetTypeMaskOrDefault(op.useAnyFaceVertexColor)));
-            //DebugEx.DrawSphere(vertex.Position, 0.3f, color: GetColor(vertex.GetTypeMaskOrDefault(op.useAnyFaceVertexColor)));
-            if (TargetVertices.Contains(vertex))
-            {
-                if (op.neighborOption.visible)
-                {
-                    //foreach (var b in vertex.GetNeighborVertices())
-                    //{
-                    //    DrawLine(vertex.Position, b.Position, op.neighborOption.color);
-                    //}
-
-                    foreach (var e in vertex.Edges)
-                    {
-                        DrawLine(e.V0.Position, e.V1.Position, op.neighborOption.color);
-                    }
-                }
-            }
-        }
-
-        private void Draw(EdgeOption op, REdge edge, DrawWork work)
-        {
-            if (work.visitedEdges.Contains(edge))
-                return;
-            work.visitedEdges.Add(edge);
-            if (showAll == false && (TargetEdges?.Any() == true) && TargetEdges.Contains(edge) == false)
-                return;
-            if (op.visible)
-            {
-                var color = GetColor(edge.GetTypeMaskOrDefault(op.useAnyFaceVertexColor));
-                DrawLine(edge.V0.Position, edge.V1.Position, color);
-                if (showId.HasFlag(RPartsFlag.Edge))
-                    DrawString($"[{edge.DebugMyId}]", (edge.V0.Position + edge.V1.Position) / 2);
-
-                if (op.showNeighborCount)
-                {
-                    DrawString($"{edge.Faces.Count}", (edge.V0.Position + edge.V1.Position) / 2);
-                }
-            }
-
-            Draw(vertexOption, edge.V0, work);
-            Draw(vertexOption, edge.V1, work);
-        }
-
-        private void Draw(FaceOption op, RFace face, DrawWork work)
-        {
-            if (op.visible == false)
-                return;
-
-            if (face.Visible == false)
-                return;
-
-            if (showAll == false && (TargetFaces?.Any() == true) && TargetFaces.Contains(face) == false)
-                return;
-
-            if (face.RoadTypes.HasAnyFlag(showFaceType) == false)
-                return;
-
-            if (face.RoadTypes.HasAnyFlag(removeFaceType))
-                return;
-
-            if (work.visitedFaces.Contains(face))
-                return;
-
-            work.visitedFaces.Add(face);
-            if (onlySelectedCityObjectGroupVisible)
-            {
-                var show = RnEx.GetSceneSelectedCityObjectGroups().Any(cog => face.CityObjectGroup == cog);
-                if (show == false)
-                    return;
-            }
-
-            var vertices = op.showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, op.showOutlineMask, op.showOutlineRemoveMask)
-                : face.ComputeOutlineVertices();
-
-            RGraphEx.OutlineVertex2Edge(vertices, out var edges);
-            if (showId.HasFlag(RPartsFlag.Face))
-            {
-                var center = vertices.Aggregate(Vector3.zero, (a, v) => v.Position + a) / vertices.Count;
-                DrawString($"F[{face.DebugMyId}]", center);
-            }
-
-            if (op.showConvexVolume)
-            {
-                DrawArrows(face.ComputeConvexHullVertices().Select(v => v.Position), isLoop: true, color: edgeOption.color);
-            }
-            else if (op.showOutline)
-            {
-                foreach (var e in edges)
-                {
-                    Draw(edgeOption, e, work);
-                }
-            }
-            else
-            {
-                foreach (var e in face.Edges)
-                {
-                    Draw(edgeOption, e, work);
-                }
-            }
-        }
-
         private void DrawSideWalk(RGraph graph, DrawWork work)
         {
             void Draw(List<REdge> edges, DrawOption option)
@@ -341,9 +556,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
         private void DrawNormal(RGraph graph, DrawWork work)
         {
+            foreach (var x in SelectedObjects)
+            {
+                if (x is RFace f)
+                    faceOption.Draw(work, f, RnDebugDrawerBase.VisibleType.GuiSelected);
+            }
 
             foreach (var p in graph.Faces)
-                Draw(faceOption, p, work);
+                faceOption.Draw(work, p, RnDebugDrawerBase.VisibleType.NonSelected);
         }
 
         public void OnDrawGizmos()
@@ -357,7 +577,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             var graph = target.Graph;
             if (graph == null)
                 return;
-            var work = new DrawWork { graph = graph };
+            var work = new DrawWork(this, graph);
             switch (drawMode)
             {
                 case DrawMode.Normal:

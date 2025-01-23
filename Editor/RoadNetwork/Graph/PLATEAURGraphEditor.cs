@@ -34,20 +34,30 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 return null;
             }
 
-            public HashSet<RFace> TargetFaces => Drawer.TargetFaces;
-            public HashSet<REdge> TargetEdges => Drawer.TargetEdges;
-            public HashSet<RVertex> TargetVertices => Drawer.TargetVertices;
+            public HashSet<object> InVisibleObjects
+            {
+                get
+                {
+                    if (!Drawer)
+                        return new HashSet<object>();
+                    return Drawer.InVisibleObjects;
+                }
+            }
 
+            public HashSet<object> SelectedObjects
+            {
+                get
+                {
+                    if (!Drawer)
+                        return new HashSet<object>();
+                    return Drawer.SelectedObjects;
+                }
+            }
 
             public bool IsTarget(RFace face)
             {
                 return RnEx.IsEditorSceneSelected(face.CityObjectGroup);
             }
-
-            //public void CreateRnModel()
-            //{
-            //    //target.CreateRoadNetworkByGraphAsync();
-            //}
 
             public PLATEAURGraphDrawerDebug Drawer
             {

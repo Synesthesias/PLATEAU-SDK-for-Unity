@@ -1,7 +1,9 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
@@ -225,5 +227,305 @@ namespace PLATEAU.RoadNetwork.Util
 
             return ret;
         }
+
+        /// <summary>
+        /// start -> endの線分の法線ベクトルを取得する(上(Vector3.up)から反時計回りを向いている)
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static Vector3 GetEdgeNormal(Vector3 start, Vector3 end)
+        {
+            var d = end - start;
+            // Vector3.Crossは左手系なので逆
+            return (-Vector3.Cross(Vector3.up, d)).normalized;
+        }
+
+        /// <summary>
+        /// start -> endの線分の法線ベクトルを取得する(反時計回りを向いている)
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static Vector2 GetEdgeNormal(Vector2 start, Vector2 end)
+        {
+            var d = end - start;
+            return new Vector2(-d.y, d.x).normalized;
+        }
+
+        public class FindBorderEdgesResult
+        {
+            public bool Success { get; set; }
+
+            /// <summary>
+            /// 頂点調整された頂点配列
+            /// </summary>
+            public List<Vector2> ReducedVertices { get; set; }
+
+            public List<int> ReducedBorderVertexIndices { get; set; }
+
+            public IEnumerable<Vector2> ReducedBorderVertices => ReducedBorderVertexIndices.Select(i => ReducedVertices[i]);
+            /// <summary>
+            /// 境界線を表すSrcVerticesのインデックス
+            /// </summary>
+            public List<int> BorderVertexIndices { get; set; }
+
+            /// <summary>
+            /// 元の頂点配列
+            /// </summary>
+            public List<Vector2> SrcVertices { get; set; }
+
+            public IEnumerable<Vector2> BorderVertices => BorderVertexIndices.Select(i => SrcVertices[i]);
+        }
+
+        public static FindBorderEdgesResult FindBorderEdges(IReadOnlyList<Vector2> vertices, float toleranceAngleDegForMidEdge = 20f, float skipAngleDeg = 20f, AxisPlane plane = RnDef.Plane)
+        {
+            var verts = vertices.ToList();
+
+            var isClockwise = GeoGraph2D.IsClockwise(verts);
+
+            FindBorderEdgesResult ret = new() { SrcVertices = verts };
+            var afterVerts = Reduction(verts, (list, i) =>
+            {
+                if (list.Count <= 4)
+                    return true;
+                var area1 = GeoGraph2D.CalcPolygonArea(list);
+                var area2 = GeoGraph2D.CalcPolygonArea(verts);
+                return area1 / area2 < 0.7f;
+            });
+            ret.ReducedVertices = afterVerts;
+
+            var indices = GeoGraph2D.FindMidEdge(afterVerts, toleranceAngleDegForMidEdge, skipAngleDeg);
+            ret.ReducedBorderVertexIndices = indices;
+            var x = (indices.Count - 1) / 2;
+            var ind0 = indices[x];
+            var ind1 = indices[x + 1];
+            var st = afterVerts[ind0];
+            var en = afterVerts[ind1];
+
+            var n = RnEx.GetEdgeNormal(st, en);
+            if (isClockwise == false)
+                n *= -1f;
+            var mid = (st + en) * 0.5f;
+            var ray = new Ray2D(mid, n);
+
+            var minLen = float.MaxValue;
+            var minIndex = -1;
+            var edges = GeoGraphEx.GetEdges(verts, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+
+            for (var i = 0; i < edges.Count; ++i)
+            {
+                var seg = edges[i];
+                if (seg.TryHalfLineIntersection(ray.origin, ray.direction, out var inter, out var t1, out var t2))
+                {
+                    var len = (mid - inter).sqrMagnitude;
+                    if (len < minLen)
+                    {
+                        minLen = len;
+                        minIndex = i;
+                    }
+                }
+            }
+
+            if (minIndex < 0)
+            {
+                ret.Success = false;
+                ret.BorderVertexIndices = GeoGraph2D.FindMidEdge(vertices, toleranceAngleDegForMidEdge, skipAngleDeg);
+                return ret;
+            }
+
+            ret.Success = true;
+            var res = FindCollinearRange(minIndex, edges, toleranceAngleDegForMidEdge);
+            res.Add(res[^1] + 1);
+            ret.BorderVertexIndices = res;
+
+            return ret;
+        }
+
+        public static List<Vector2> Reduction(IReadOnlyList<Vector2> src, Func<List<Vector2>, int, bool> checkStop)
+        {
+            return Reduction(src, x => x, x => x, checkStop, 0);
+        }
+
+        /// <summary>
+        /// polygonVerticesで表される多角形を縮小しシンプルな形状にする
+        /// toVec2はT型からVector2型への変換
+        /// creatorは新規で頂点を作成する
+        /// checkStopは縮小処理の打ち止めチェック
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="polygonVertices"></param>
+        /// <param name="toVec2"></param>
+        /// <param name="creator"></param>
+        /// <param name="checkStop"></param>
+        /// <param name="nest"></param>
+        /// <returns></returns>
+        private static List<T> Reduction<T>(
+            IReadOnlyList<T> polygonVertices
+            , Func<T, Vector2> toVec2
+            , Func<Vector2, T> creator
+            , Func<List<T>, int, bool> checkStop
+            , int nest = 0)
+        {
+            var vertices = polygonVertices.ToList();
+
+            var isClockwise = GeoGraph2D.IsClockwise(vertices.Select(toVec2));
+            var normalSign = isClockwise ? -1 : 1;
+            Vector2 GetPos(int x)
+            {
+                return toVec2(vertices[(x + vertices.Count) % vertices.Count]);
+            }
+
+            Vector2 GetEdgeNormal(int x)
+            {
+                x += vertices.Count;
+                return normalSign * RnEx.GetEdgeNormal(GetPos(x), GetPos(x + 1));
+            }
+
+            Vector2 GetVertexNormal(int x)
+            {
+                return (GetEdgeNormal(x) + GetEdgeNormal(x - 1)).normalized;
+            }
+
+            List<T> Move(float delta)
+            {
+                var points = new List<T>();
+                for (var i = 0; i < vertices.Count; ++i)
+                {
+                    var e0 = GetEdgeNormal(i);
+                    var e1 = GetEdgeNormal(i - 1);
+                    var dd = e0 + e1 * (1f - Vector2.Dot(e0, e1));
+                    points.Add(creator(GetPos(i) + dd * delta));
+                }
+
+                return points;
+            }
+            Dictionary<int, (float minLen, int index, float offset, Vector2 inter)> minLenDic = new();
+
+            void Check(int srcIndex, int dstIndex, Vector2 inter)
+            {
+                var srcV = GetPos(srcIndex);
+                var dir = (inter - srcV);
+                var len = dir.magnitude;
+
+                var en = GetEdgeNormal(srcIndex);
+
+                var offset = Vector2.Dot(en, dir);
+                if (minLenDic.TryGetValue(srcIndex, out var minLen) == false)
+                {
+                    minLenDic[srcIndex] = (len, dstIndex, offset, inter);
+                }
+                else if (len < minLen.minLen)
+                {
+                    minLenDic[srcIndex] = (len, dstIndex, offset, inter);
+                }
+            }
+            for (var i = 0; i < vertices.Count; ++i)
+            {
+                var vn1 = GetVertexNormal(i);
+                var halfRay1 = new Ray2D(GetPos(i), vn1);
+                for (var j = i + 1; j < vertices.Count; ++j)
+                {
+                    var vn2 = GetVertexNormal(j);
+
+                    var halfRay2 = new Ray2D(GetPos(j), vn2);
+                    if (halfRay2.CalcIntersection(halfRay1, out var inter, out var t1, out var t2) == false)
+                        continue;
+
+                    Check(i, j, inter);
+                    Check(j, i, inter);
+                }
+            }
+
+
+            if (minLenDic.Where(x =>
+            {
+                var key = x.Key;
+                var val = x.Value.index;
+                return minLenDic[val].index == key;
+            }).TryFindMinElement(x => x.Value.offset, out var e))
+            {
+                var moved = Move(e.Value.offset);
+                var (from, to) = (e.Key, e.Value.index);
+                if (from > to)
+                    (to, from) = (from, to);
+
+                var range = moved.GetRange(from, to - from);
+                moved.RemoveRange(from, to - from);
+
+                if (GeoGraph2D.CalcPolygonArea(range.Select(toVec2).ToList()) > GeoGraph2D.CalcPolygonArea(moved.Select(toVec2).ToList()))
+                {
+                    moved = range;
+                }
+
+                if (checkStop(moved, nest + 1))
+                    return vertices;
+
+                return Reduction(moved, toVec2, creator, checkStop, nest + 1);
+            }
+
+            return vertices;
+        }
+
+        /// <summary>
+        /// edgesで定義された線分リストのedgeBaseIndex番の辺を基準に, 同一直線となる辺を探す.(許容誤差はtoleranceAngleDegForMidEdge)
+        /// </summary>
+        /// <param name="edgeBaseIndex"></param>
+        /// <param name="edges"></param>
+        /// <param name="toleranceAngleDegForMidEdge"></param>
+        /// <returns></returns>
+        public static List<int> FindCollinearRange(
+            int edgeBaseIndex
+            , IReadOnlyList<LineSegment2D> edges
+            , float toleranceAngleDegForMidEdge = 20f)
+        {
+            var ret = new List<int> { edgeBaseIndex };
+            var stop = new[] { false, false };
+            while (stop.Contains(false) && ret.Count < edges.Count - 1)
+            {
+                // 0 : left用
+                // 1 : right用
+                var infos = new[]
+                {
+                    new {now=ret.First(), d = -1 },
+                    new {now=ret.Last() , d = +1 }
+                };
+                // 差が小さいほうから見る
+                var es = Enumerable.Range(0, 2)
+                    // すでに停止している or 最後まで進んだら無視
+                    .Where(i => stop[i] == false && 0 <= infos[i].now + infos[i].d && infos[i].now + infos[i].d <= edges.Count - 1)
+                    .Select(j =>
+                    {
+                        var info = infos[j];
+                        var e0 = edges[edgeBaseIndex];
+                        var e1 = edges[info.now + info.d];
+                        return new { i = j, index = info.now + info.d, ang = Vector2.Angle(e0.Direction, e1.Direction) };
+                    })
+                    .OrderBy(x => x.ang)
+                    .ToList();
+                if (es.Count == 0)
+                    break;
+                foreach (var e in es)
+                {
+                    if (e.ang > toleranceAngleDegForMidEdge)
+                    {
+                        stop[e.i] = true;
+                        continue;
+                    }
+
+                    if (e.i == 0)
+                    {
+                        ret.Insert(0, e.index);
+                    }
+                    else
+                    {
+                        ret.Add(e.index);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
     }
 }

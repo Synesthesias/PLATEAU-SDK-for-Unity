@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
-using PLATEAU.RoadNetwork.Voronoi;
+using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -573,14 +573,14 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        
+
 
 
         public void BuildTracks(BuildTrackOption op = null)
         {
             new RnTracksBuilder().BuildTracks(this, op);
         }
-        
+
 
         /// <summary>
         /// edgesの順番を整列する. 各Edgeが連結かつ時計回りになるように整列する
@@ -1091,7 +1091,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 dict[start] = (0, null);
                 while (dict.Any(x => visited.Contains(x.Key) == false))
                 {
-                    dict.Where(x => visited.Contains(x.Key) == false).TryFindMin(x => x.Value.len, out var e);
+                    dict.Where(x => visited.Contains(x.Key) == false).TryFindMinElement(x => x.Value.len, out var e);
                     visited.Add(e.Key);
                     foreach (var n in e.Key.Neighbors)
                     {

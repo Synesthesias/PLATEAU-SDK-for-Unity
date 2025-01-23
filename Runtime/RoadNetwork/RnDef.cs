@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Util.GeoGraph;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork
 {
@@ -35,5 +36,15 @@ namespace PLATEAU.RoadNetwork
     internal static class RnDef
     {
         public const AxisPlane Plane = AxisPlane.Xz;
+
+        public static Vector2 ToVec2(Vector3 v)
+        {
+            return v.ToVector2(Plane);
+        }
+
+        public static Vector3 ToVec3(Vector2 v, float a = 0)
+        {
+            return v.ToVector3(Plane, a);
+        }
     }
 }

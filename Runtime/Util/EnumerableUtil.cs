@@ -40,16 +40,36 @@ namespace PLATEAU.Util
             return res;
         }
 
-        public static bool TryFindMin<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, TResult> selector, out TSource minElement, IComparer<TResult> compare = null)
+        /// <summary>
+        /// selectorで指定した値が最小となる元の要素を返す
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="selector"></param>
+        /// <param name="minElement"></param>
+        /// <param name="compare"></param>
+        /// <returns></returns>
+        public static bool TryFindMinElement<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, TResult> selector, out TSource minElement, IComparer<TResult> compare = null)
         {
             compare ??= Comparer<TResult>.Default;
             return self.TryFindCompare(selector, (v1, v2) => compare.Compare(v1, v2) < 0, out minElement);
         }
 
-        public static bool TryFindMax<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, TResult> selector, out TSource minElement, IComparer<TResult> compare = null)
+        /// <summary>
+        /// selectorで指定した値が最大となる元の要素を返す
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="selector"></param>
+        /// <param name="maxElement"></param>
+        /// <param name="compare"></param>
+        /// <returns></returns>
+        public static bool TryFindMaxElement<TSource, TResult>(this IEnumerable<TSource> self, Func<TSource, TResult> selector, out TSource maxElement, IComparer<TResult> compare = null)
         {
             compare ??= Comparer<TResult>.Default;
-            return self.TryFindCompare(selector, (v1, v2) => compare.Compare(v1, v2) > 0, out minElement);
+            return self.TryFindCompare(selector, (v1, v2) => compare.Compare(v1, v2) > 0, out maxElement);
         }
 
         /// <summary>

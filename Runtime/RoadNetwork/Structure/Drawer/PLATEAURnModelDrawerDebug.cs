@@ -28,24 +28,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
     [Serializable]
     public class PLATEAURnModelDrawerDebug : MonoBehaviour
     {
-        [Flags]
-        public enum VisibleType
-        {
-            Empty = 0,
-            // 選択されていないもの
-            NonSelected = 1 << 0,
-            // シーンで選択されたGameObjectに紐づくもの
-            SceneSelected = 1 << 1,
-            // EditorWindowで選択されたもの
-            GuiSelected = 1 << 2,
-            // 有効なもの
-            Valid = 1 << 3,
-            // 不正なもの
-            InValid = 1 << 4,
-            // 全て
-            All = ~0
-        }
-
         // --------------------
         // start:フィールド
         // --------------------
@@ -74,89 +56,43 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // エディタで選択されたオブジェクト
         public HashSet<object> SelectedObjects { get; } = new();
 
-        public class Drawer<T> where T : ARnPartsBase
+        public class DrawerModel : RnDebugDrawerModel<RnModel>
+        { }
+
+        /// <summary>
+        /// Drawの最初でリセットされるフレーム情報
+        /// </summary>
+        public class DrawWork : DrawerModel.DrawFrameWork
         {
-            // 表示非表示設定
-            public bool visible = false;
+            public int DrawRoadGroupCount { get; set; }
 
-            // 表示対象設定
-            public VisibleType showVisibleType = VisibleType.All;
+            public PLATEAURnModelDrawerDebug Self { get; set; }
 
-            protected virtual bool DrawImpl(DrawWork work, T self) { return true; }
-
-            // 子Drawer
-            protected virtual IEnumerable<Drawer<T>> GetChildDrawers() => Enumerable.Empty<Drawer<T>>();
-
-            public bool Draw(DrawWork work, T self, VisibleType visibleType)
+            public DrawWork(PLATEAURnModelDrawerDebug self, RnModel model)
+                : base(model)
             {
-                if (visible == false)
-                    return false;
-
-                if (self == null)
-                    return false;
-
-                var lastVisibleType = visibleType;
-                try
-                {
-                    if (GetTargetGameObjects(self)?.Any(RnEx.IsEditorSceneSelected) ?? false)
-                    {
-                        visibleType |= VisibleType.SceneSelected;
-                        visibleType &= ~VisibleType.NonSelected;
-                    }
-
-                    if (work.IsVisited(self))
-                        return false;
-
-                    if (GetTargetGameObjects(self) != null && work.Self.targetTran && GetTargetGameObjects(self).Contains(work.Self.targetTran) == false)
-                        return false;
-
-                    // 非表示設定されている
-                    if (work.Self.InVisibleObjects.Contains(self))
-                        return false;
-
-                    static bool Exec(Drawer<T> drawer, DrawWork work, T obj)
-                    {
-                        if (drawer.visible == false)
-                            return false;
-
-                        var visibleType = work.visibleType;
-                        if (drawer.IsValid(obj))
-                        {
-                            visibleType |= VisibleType.Valid;
-                            visibleType &= ~VisibleType.InValid;
-                        }
-                        else
-                        {
-                            visibleType |= VisibleType.InValid;
-                            visibleType &= ~VisibleType.Valid;
-                        }
-
-                        if ((visibleType & drawer.showVisibleType) == 0)
-                            return false;
-
-                        if (drawer.DrawImpl(work, obj) == false)
-                            return false;
-
-                        foreach (var child in drawer.GetChildDrawers() ?? new List<Drawer<T>>())
-                        {
-                            Exec(child, work, obj);
-                        }
-
-                        return true;
-                    }
-                    work.visibleType = visibleType;
-                    return Exec(this, work, self);
-                }
-                finally
-                {
-                    work.visibleType = lastVisibleType;
-                }
+                Self = self;
             }
 
-            public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
+            public override bool IsGuiSelected(object obj)
+            {
+                return Self.SelectedObjects.Contains(obj);
+            }
+        }
 
-            // 有効な物かどうか
-            public virtual bool IsValid(T self) => true;
+        public class Drawer<T> : DrawerModel.Drawer<DrawWork, T>
+        {
+            public override bool IsShowTarget(DrawWork work, T self)
+            {
+                if (GetTargetGameObjects(self) != null && work.Self.targetTran && GetTargetGameObjects(self).Contains(work.Self.targetTran) == false)
+                    return false;
+
+                // 非表示設定されている
+                if (work.Self.InVisibleObjects.Contains(self))
+                    return false;
+
+                return true;
+            }
         }
 
         private static IEnumerable<LineSegment3D> GetSplineSegments(Spline a, float interval)
@@ -471,7 +407,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 [SerializeField] private TrackDrawCenterLine drawCenterLine = new() { visible = false };
 
-                protected override IEnumerable<Drawer<RnIntersection>> GetChildDrawers()
+                protected override IEnumerable<RnDebugDrawerModel<RnModel>.Drawer<DrawWork, RnIntersection>> GetChildDrawers()
                 {
                     yield return drawSpline;
                     yield return drawCenterLine;
@@ -500,7 +436,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 輪郭線の法線を表示する
             public bool showEdgeNormal = false;
 
-            protected override IEnumerable<Drawer<RnIntersection>> GetChildDrawers()
+            protected override IEnumerable<RnDebugDrawerModel<RnModel>.Drawer<DrawWork, RnIntersection>> GetChildDrawers()
             {
                 yield return showTrack;
             }
@@ -726,7 +662,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public RoadNormalDrawer normalDrawer = new RoadNormalDrawer { visible = true };
             public RoadGroupDrawer groupDrawer = new RoadGroupDrawer { visible = false, showSpline = true, color = Color.green };
 
-            protected override IEnumerable<Drawer<RnRoad>> GetChildDrawers()
+            protected override IEnumerable<RnDebugDrawerModel<RnModel>.Drawer<DrawWork, RnRoad>> GetChildDrawers()
             {
                 // グループ描画しているときは通常の描画は無視する
                 if (groupDrawer.visible)
@@ -734,7 +670,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 else
                     yield return normalDrawer;
             }
-
         }
 
 
@@ -1028,49 +963,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         // end:フィールド
         // --------------------
 
-        /// <summary>
-        /// Drawの最初でリセットされるフレーム情報
-        /// </summary>
-        public class DrawWork
-        {
-            public HashSet<object> Visited { get; } = new();
-
-            public RnModel Model { get; set; }
-
-            public int DrawRoadGroupCount { get; set; }
-
-            public VisibleType visibleType = VisibleType.Empty;
-
-            public PLATEAURnModelDrawerDebug Self { get; set; }
-
-            public DrawWork(PLATEAURnModelDrawerDebug self, RnModel model)
-            {
-                Self = self;
-                Model = model;
-            }
-
-            public bool IsVisited(object obj)
-            {
-                var ret = Visited.Contains(obj);
-                if (ret == false)
-                    Visited.Add(obj);
-                return ret;
-            }
-
-            public VisibleType GetVisibleType(Object obj, IEnumerable<PLATEAUCityObjectGroup> cityObjects)
-            {
-                var ret = VisibleType.Empty;
-                if (Self.SelectedObjects.Contains(obj))
-                    ret |= VisibleType.GuiSelected;
-
-                if (cityObjects != null && cityObjects.Any(RnEx.IsEditorSceneSelected))
-                    ret |= VisibleType.SceneSelected;
-
-                if (ret == VisibleType.Empty)
-                    ret = VisibleType.NonSelected;
-                return ret;
-            }
-        }
 
         DrawWork work = new DrawWork(null, null);
 
@@ -1143,7 +1035,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             op.Draw(work, way, work.visibleType);
         }
 
-        public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p, VisibleType visibleType)
+        public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p, RnDebugDrawerBase.VisibleType visibleType)
         {
             sideWalkRoadOp?.Draw(work, sideWalk, visibleType);
         }
@@ -1154,12 +1046,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         /// <param name="lane"></param>
         /// <param name="op"></param>
         /// <param name="visibleType"></param>
-        private void DrawLane(RnLane lane, LaneOption op, VisibleType visibleType)
+        private void DrawLane(RnLane lane, LaneOption op, RnDebugDrawerBase.VisibleType visibleType)
         {
             op?.Draw(work, lane, visibleType);
         }
 
-        private void DrawRoad(RnRoad road, VisibleType visibleType)
+        private void DrawRoad(RnRoad road, RnDebugDrawerBase.VisibleType visibleType)
         {
             roadOp?.Draw(work, road, visibleType);
         }
@@ -1172,11 +1064,11 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             foreach (var road in roadNetwork.Roads)
             {
-                DrawRoad(road, VisibleType.NonSelected);
+                DrawRoad(road, RnDebugDrawerBase.VisibleType.NonSelected);
             }
         }
 
-        private void DrawIntersection(RnIntersection intersection, VisibleType visibleType)
+        private void DrawIntersection(RnIntersection intersection, RnDebugDrawerBase.VisibleType visibleType)
         {
             intersectionOp?.Draw(work, intersection, visibleType);
         }
@@ -1189,7 +1081,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         {
             foreach (var intersection in roadNetwork.Intersections)
             {
-                DrawIntersection(intersection, VisibleType.NonSelected);
+                DrawIntersection(intersection, RnDebugDrawerBase.VisibleType.NonSelected);
             }
         }
 
@@ -1199,7 +1091,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             foreach (var sw in roadNetwork.SideWalks)
             {
-                DrawSideWalk(sw, sideWalkRoadOp, VisibleType.NonSelected);
+                DrawSideWalk(sw, sideWalkRoadOp, RnDebugDrawerBase.VisibleType.NonSelected);
             }
         }
 
@@ -1218,21 +1110,21 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 {
                     if (r.ParentModel != roadNetwork)
                         continue;
-                    DrawRoad(r, VisibleType.GuiSelected);
+                    DrawRoad(r, RnDebugDrawerBase.VisibleType.GuiSelected);
                 }
                 else if (x is RnIntersection i)
                 {
                     if (i.ParentModel != roadNetwork)
                         continue;
-                    DrawIntersection(i, VisibleType.GuiSelected);
+                    DrawIntersection(i, RnDebugDrawerBase.VisibleType.GuiSelected);
                 }
                 else if (x is RnLane l)
                 {
-                    DrawLane(l, laneOp, VisibleType.GuiSelected);
+                    DrawLane(l, laneOp, RnDebugDrawerBase.VisibleType.GuiSelected);
                 }
                 else if (x is RnSideWalk sw)
                 {
-                    DrawSideWalk(sw, sideWalkRoadOp, VisibleType.GuiSelected);
+                    DrawSideWalk(sw, sideWalkRoadOp, RnDebugDrawerBase.VisibleType.GuiSelected);
                 }
                 else if (x is RnLineString ls)
                 {
