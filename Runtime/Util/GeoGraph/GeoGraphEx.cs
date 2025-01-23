@@ -306,7 +306,7 @@ namespace PLATEAU.Util.GeoGraph
             {
                 var segment = new LineSegment3D(a, c);
                 var pos = segment.GetNearestPoint(b);
-                return midPointTolerance > 0f && (b - pos).sqrMagnitude <= midPointTolerance * midPointTolerance;
+                return (b - pos).sqrMagnitude <= midPointTolerance * midPointTolerance;
             }
 
             return false;

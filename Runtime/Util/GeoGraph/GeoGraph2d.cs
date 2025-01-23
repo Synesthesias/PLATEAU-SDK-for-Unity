@@ -322,6 +322,17 @@ namespace PLATEAU.Util.GeoGraph
 
             // 自己ループが存在する(同じ点が複数回出てくる)
             public bool HasSelfCrossing { get; set; }
+
+            public ComputeOutlineResult()
+            {
+            }
+
+            public ComputeOutlineResult(bool success, bool hasSelfCrossing, List<T> outline)
+            {
+                Outline = outline;
+                Success = success;
+                HasSelfCrossing = hasSelfCrossing;
+            }
         }
 
         /// <summary>
@@ -533,7 +544,7 @@ namespace PLATEAU.Util.GeoGraph
             // success : outlineVerticesがきれいにループしている
             // hasSelfCrossing : 途中に同じ点が２回出てくる(直線１本でつながっている個所がある
             // outlineVertices : アウトライン頂点
-            (bool success, bool hasSelfCrossing, List<T> outlineVertices)
+            ComputeOutlineResult<T>
                 Search
                 (
                     T start
@@ -613,15 +624,11 @@ namespace PLATEAU.Util.GeoGraph
                     }
                 );
             // 見つかったらそれでおしまい
-            res.Success = leftSearch.success;
-            res.Outline = leftSearch.outlineVertices;
-            res.HasSelfCrossing = leftSearch.hasSelfCrossing;
-            if (res.Success)
-                return res;
+            if (leftSearch.Success)
+                return leftSearch;
 
             // 見つからない場合(３次元的なねじれの位置がある場合等)
             // 反時計回りにも探す
-            res.Outline = leftSearch.outlineVertices.ToList();
             var rightSearch = Search(
                     keys[0]
                     , Vector2.up
@@ -634,22 +641,17 @@ namespace PLATEAU.Util.GeoGraph
                     }
                 );
             // 右回りで見つかったらそれでおしまい
-            if (rightSearch.success)
-            {
-                res.Success = true;
-                res.Outline = rightSearch.outlineVertices;
-                res.HasSelfCrossing = rightSearch.hasSelfCrossing;
-                return res;
-            }
+            if (rightSearch.Success)
+                return rightSearch;
 
             // 両方の結果をマージする
-
+            res.Outline = leftSearch.Outline.ToList();
             // 0番目は共通なので削除
-            rightSearch.outlineVertices.RemoveAt(0);
-            while (rightSearch.outlineVertices.Count > 0)
+            rightSearch.Outline.RemoveAt(0);
+            while (rightSearch.Outline.Count > 0)
             {
-                var v = rightSearch.outlineVertices[0];
-                rightSearch.outlineVertices.RemoveAt(0);
+                var v = rightSearch.Outline[0];
+                rightSearch.Outline.RemoveAt(0);
                 var index = res.Outline.IndexOf(v);
                 if (index >= 0)
                 {
