@@ -83,16 +83,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary> 「編集モード」ボタンが押されて編集モードが解除されたとき </summary>
         private void OnEditModeDeactivated()
         {
-            TerminateSystem_();
+            TerminateSystem();
         }
 
         protected override void OnTabUnselected()
         {
-            TerminateSystem_();
+            TerminateSystem();
             base.OnTabUnselected();
         }
 
-        void TerminateSystem_()
+        private void TerminateSystem()
         {
             
             rootVisualElement.Unbind();

@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private GameObject roadNetworkObject;
         private SplineEditorHandles splineEditHandles;
 
-        public bool IsInitialized { get; private set; } = false;
+        private bool IsInitialized { get; set; } = false;
         public bool IsEnabled { get; private set; } = false;
         
         public ISplineEditedReceiver splineEditedReceiver;
