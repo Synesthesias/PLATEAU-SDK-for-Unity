@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.RoadNetwork
                 // 道路モデル再生成
                 var road = new RoadReproduceSource(roadGroup.Roads[0]);
                 bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
-                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete);
+                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, false);
 
                 // スケルトン更新
                 Context.SkeletonData.UpdateData(roadGroup);

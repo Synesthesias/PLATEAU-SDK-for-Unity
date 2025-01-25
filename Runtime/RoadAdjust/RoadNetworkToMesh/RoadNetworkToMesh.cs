@@ -43,7 +43,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             this.lineSeparateType = lineSeparateType;
         }
 
-        public void Generate()
+        /// <summary>
+        /// 道路ネットワークからメッシュを生成します。
+        /// 引数<paramref name="doSubdivide"/>の説明については<see cref="LineSmoother"/>を参照してください。
+        /// </summary>
+        public void Generate(bool doSubdivide)
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
@@ -54,7 +58,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var target = new RnmModelAdjuster().Adjust(targetBeforeAdjust);
             
             progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
-            new RoadNetworkLineSmoother().Smooth(target);
+            new RoadNetworkLineSmoother().Smooth(target, doSubdivide);
             
             progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中", 30f, "");
             // 生成すべき輪郭線を定義します。

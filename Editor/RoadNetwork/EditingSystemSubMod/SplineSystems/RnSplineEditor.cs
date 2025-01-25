@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private GameObject roadNetworkObject;
         private SplineEditorHandles splineEditHandles;
 
-        public bool IsInitialized { get; private set; } = false;
+        private bool IsInitialized { get; set; } = false;
         public bool IsEnabled { get; private set; } = false;
         
         public ISplineEditedReceiver splineEditedReceiver;
@@ -169,15 +169,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             MergeSeparatedSideWalks(road, out var leftSideWalk, out var rightSideWalk);
 
             var offset = totalWidth / 2;
-            List<RnPoint> points;
             foreach (var leftLane in road.GetLeftLanes())
             {
-                points = leftLane.LeftWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, leftLane.IsReverse ^ leftLane.LeftWay.IsReversed);
+                var leftWayPoints = leftLane.LeftWay.LineString.Points;
+                ConvertSplineToLineStringPointsNonSmooth(spline, ref leftWayPoints, offset, leftLane.IsReverse ^ leftLane.LeftWay.IsReversed);
                 offset -= laneWidth;
 
-                points = leftLane.RightWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, leftLane.IsReverse ^ leftLane.RightWay.IsReversed);
+                var rightWayPoints = leftLane.RightWay.LineString.Points;
+                ConvertSplineToLineStringPointsNonSmooth(spline, ref rightWayPoints, offset, leftLane.IsReverse ^ leftLane.RightWay.IsReversed);
+
             }
 
             if (road.MedianLane != null)
@@ -187,14 +187,63 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             foreach (var rightLane in road.GetRightLanes())
             {
-                points = rightLane.RightWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.IsReverse ^ rightLane.RightWay.IsReversed);
+                var rightWayPoints = rightLane.RightWay.LineString.Points;
+                ConvertSplineToLineStringPointsNonSmooth(spline, ref rightWayPoints, offset, rightLane.IsReverse ^ rightLane.RightWay.IsReversed);
 
                 offset -= laneWidth;
 
-                points = rightLane.LeftWay.LineString.Points;
-                ConvertSplineToLineStringPoints(spline, ref points, offset, rightLane.IsReverse ^ rightLane.LeftWay.IsReversed);
+                var leftWayPoints = rightLane.LeftWay.LineString.Points;
+                ConvertSplineToLineStringPointsNonSmooth(spline, ref leftWayPoints, offset, rightLane.IsReverse ^ rightLane.LeftWay.IsReversed);
+                
             }
+
+            // 境界を設定します。
+            foreach (var lane in road.GetLeftLanes().Concat(road.GetRightLanes()))
+            {
+                SetBorder(lane, lane.LeftWay.LineString.Points, lane.RightWay.LineString.Points, lane.LeftWay.IsReversed, lane.RightWay.IsReversed);
+            }
+            
+        }
+
+        private void SetBorder(RnLane lane, List<RnPoint> leftWayPoints, List<RnPoint> rightWayPoints,
+            bool leftWayReverse, bool rightWayReverse)
+        {
+            // 反転を考慮したインデックスを求めます
+            int leftWayCount = leftWayPoints.Count;
+            int rightWayCount = rightWayPoints.Count;
+            int leftWayStart = leftWayReverse ? leftWayCount - 1 : 0;
+            int leftWayEnd = leftWayReverse ? 0 : leftWayCount - 1;
+            int rightWayStart = rightWayReverse ? rightWayCount - 1 : 0;
+            int rightWayEnd = rightWayReverse ? 0 : rightWayCount - 1;
+
+            var prevBorder = lane.PrevBorder;
+            var nextBorder = lane.NextBorder;
+
+            // prevBorderを設定します
+            if (prevBorder != null && prevBorder.Count > 1)
+            {
+                var left = leftWayPoints[leftWayStart].Vertex;
+                var right = rightWayPoints[rightWayStart].Vertex;
+                var v0 = prevBorder.GetPoint(0);
+                var v1 = prevBorder.GetPoint(prevBorder.Count - 1); // Borderの頂点数は2であることを仮定します。
+                v0.Vertex = left;
+                v1.Vertex = right;
+                
+            }
+            
+            // 下でnextBorderを設定しようと思いましたが、
+            // 理屈は不明ですが、nextBorderは設定しないほうがうまくいきます
+            
+            // if (nextBorder != null && nextBorder.Count > 1)
+            // {
+            //     var left = leftWayPoints[leftWayEnd].Vertex;
+            //     var right = rightWayPoints[rightWayEnd].Vertex;
+            //     var v0 = nextBorder.GetPoint(0);
+            //     var v1 = nextBorder.GetPoint(nextBorder.Count - 1); // Borderの頂点数は2であることを仮定します。
+            //     
+            //     v0.Vertex = left;
+            //     v1.Vertex = right;
+            // }
         }
 
         private void InitializeSplineComponents()
@@ -231,7 +280,52 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             this.spline = spline;
         }
 
-        private void ConvertSplineToLineStringPoints(Spline spline, ref List<RnPoint> destPoints, float offset, bool isReversed)
+        /// <summary>
+        /// SplineからLineStringへの変換について、スムーズ処理を行わずにノットをそのまま点として追加します。
+        /// 以前はスムーズ処理をしていましたが、編集するたびに点が増えていくことから取りやめました。
+        /// </summary>
+        private void ConvertSplineToLineStringPointsNonSmooth(Spline spline, ref List<RnPoint> destPoints, float offset,
+            bool isReversed)
+        {
+            destPoints.Clear();
+            float t = isReversed ? 1f : 0f;
+            
+            // 始点に頂点を追加
+            Vector3 prevPoint = spline.EvaluatePosition(t);
+            Vector3 prevTangent = spline.EvaluateTangent(t);
+            var firstPoint = new RnPoint { Vertex = GetOffsetPointToNormalDirection(prevPoint, prevTangent, offset) };
+            destPoints.Add(firstPoint);
+            
+            // 始点と終点を除くループ
+            for (int i = 1; i < spline.Count - 1; i++)
+            {
+                t = (float)i / (float)(spline.Count - 1);
+                if (isReversed) t = 1f - t;
+                // 30m以上離れているか1度以上角度が異なる場合に頂点として追加
+                spline.GetPointAtLinearDistance(t, isReversed ? -1f : 1f, out float newT);
+                var newPoint = spline.EvaluatePosition(newT);
+                var newTangent = spline.EvaluateTangent(newT);
+
+                if (Vector3.Distance(prevPoint, newPoint) > 30 || Vector3.Angle(prevTangent, newTangent) > 1)
+                {
+                    destPoints.Add(new RnPoint(GetOffsetPointToNormalDirection(newPoint, newTangent, offset)));
+                    prevPoint = newPoint;
+                    prevTangent = newTangent;
+                }
+            }
+            
+            // 終点を追加
+            var lastPoint = new RnPoint()
+            {
+                Vertex = GetOffsetPointToNormalDirection(
+                    spline.EvaluatePosition(isReversed ? 0f : 1f),
+                    spline.EvaluateTangent(isReversed ? 0f : 1f),
+                    offset)
+            };
+            destPoints.Add(lastPoint);
+        }
+
+        private void ConvertSplineToLineStringPointsSmooth(Spline spline, ref List<RnPoint> destPoints, float offset, bool isReversed)
         {
             var firstPoint = destPoints.First();
             var lastPoint = destPoints.Last();

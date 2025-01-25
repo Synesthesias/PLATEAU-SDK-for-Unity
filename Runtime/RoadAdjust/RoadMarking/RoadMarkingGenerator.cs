@@ -34,8 +34,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             this.crosswalkFrequency = crosswalkFrequency;
         }
 
-        /// <summary> 路面標示をメッシュとして生成します。 </summary>
-        public void Generate()
+        /// <summary>
+        /// 路面標示をメッシュとして生成します。
+        /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
+        /// </summary>
+        public void Generate(bool doSubdivide)
         {
             if (targetBeforeCopy == null)
             {
@@ -50,7 +53,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var target = targetBeforeCopy.Copy(); // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
             
             progressDisplay.SetProgress("道路標示生成", 10f, "道路ネットワークをスムージング中");
-            new RoadNetworkLineSmoother().Smooth(target);
+            new RoadNetworkLineSmoother().Smooth(target, doSubdivide);
 
             var dstParent = RoadReproducer.GenerateDstParent();
 

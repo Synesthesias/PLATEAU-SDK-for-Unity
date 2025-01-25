@@ -22,6 +22,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private Vector3 endLineStart;
         private Vector3 endLineEnd;
 
+        /// <summary> 始点・終点について、制約時のtangentの長さ </summary>
+        private const float ConstraintTangentLength = 1f;
+
         public Spline Spline { get => spline; set => spline = value; }
 
         public SplineEditorCore(Spline spline)
@@ -159,7 +162,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (count > 0 && startConstrainToLineSegment)
             {
                 Spline.SetTangentMode(0, TangentMode.Broken);
-                SetKnotPerpendicularTangents(0, startLineStart, startLineEnd);
+                SetKnotPerpendicularTangents(0, startLineStart, startLineEnd, ConstraintTangentLength);
             }
 
             // 終点ノット
@@ -167,14 +170,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 int lastIndex = count - 1;
                 Spline.SetTangentMode(lastIndex, TangentMode.Broken);
-                SetKnotPerpendicularTangents(lastIndex, endLineStart, endLineEnd);
+                SetKnotPerpendicularTangents(lastIndex, endLineStart, endLineEnd, ConstraintTangentLength);
             }
         }
 
         /// <summary>
         /// 指定ノットのタンジェントを、指定線分に対して垂直な方向に設定
         /// </summary>
-        private void SetKnotPerpendicularTangents(int index, Vector3 lineStart, Vector3 lineEnd)
+        private void SetKnotPerpendicularTangents(int index, Vector3 lineStart, Vector3 lineEnd, float tangentLength)
         {
             Vector3 lineDir = (lineEnd - lineStart).normalized;
             Vector3 perp = GetPerpendicular(lineDir);
@@ -184,8 +187,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             knot.Rotation.value.y = knotRotation.y;
             knot.Rotation.value.z = knotRotation.z;
             knot.Rotation.value.w = knotRotation.w;
-            knot.TangentIn = new float3(0f, 0f, -20f);
-            knot.TangentOut = new float3(0f, 0f, 20f);
+            knot.TangentIn = new float3(0f, 0f, -tangentLength);
+            knot.TangentOut = new float3(0f, 0f, tangentLength);
             Spline.SetKnot(index, knot);
         }
 
