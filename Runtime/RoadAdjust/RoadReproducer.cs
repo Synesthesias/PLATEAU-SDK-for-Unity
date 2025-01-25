@@ -14,15 +14,19 @@ namespace PLATEAU.RoadAdjust
     /// </summary>
     internal class RoadReproducer
     {
-        public void Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
+        /// <summary>
+        /// 生成します。
+        /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
+        /// </summary>
+        public void Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, bool doSubdivide)
         {
             // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
-            rnm.Generate();
+            rnm.Generate(doSubdivide);
 
             // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
-            rm.Generate();
+            rm.Generate(doSubdivide);
         }
 
         public static Transform GenerateDstParent()

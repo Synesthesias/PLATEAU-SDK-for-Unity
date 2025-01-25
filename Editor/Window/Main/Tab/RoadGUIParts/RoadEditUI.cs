@@ -74,22 +74,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         
         /// <summary>
         /// 道路ネットワークを元に道路メッシュや白線生成を行います
+        /// 引数<paramref name="doSubdivide"/>については<see cref="LineSmoother"/>を参照してください。
         /// </summary>
-        private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoad> changedRoads)
+        private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoad> changedRoads, bool doSubdivide)
         {
             if (network == null) return;
-            new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads), laneNumUI.CrosswalkFreq());
+            new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads), laneNumUI.CrosswalkFreq(), doSubdivide);
             
         }
 
         public void OnLaneNumChanged(RnModel network, IReadOnlyList<RnRoad> changedRoads)
         {
-            ReproduceRoad(network, changedRoads);
+            ReproduceRoad(network, changedRoads, true/*元の形状を尊重*/);
         }
 
         public void OnRoadShapeChanged(RnModel network, IReadOnlyList<RnRoad> changedRoads)
         {
-            ReproduceRoad(network, changedRoads);
+            ReproduceRoad(network, changedRoads, false/*ユーザーが作った線は忖度して滑らか度向上*/);
         }
         
         private SerializedScriptableRoadMdl CreateOrGetRoadGroupData(EditorData<RnRoadGroup> linkGroupEditorData)

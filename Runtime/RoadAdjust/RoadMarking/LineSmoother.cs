@@ -13,9 +13,13 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     /// </summary>
     internal class RoadNetworkLineSmoother
     {
-        public void Smooth(IRrTarget target)
+        /// <summary>
+        /// 線を滑らかにします。
+        /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
+        /// </summary>
+        public void Smooth(IRrTarget target, bool doSubdivide)
         {
-            var smoother = new LineSmoother();
+            var smoother = new LineSmoother(doSubdivide);
             foreach (var road in target.Roads())
             {
                 foreach (var sideWalk in road.SideWalks)
@@ -61,14 +65,33 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         private const float SubDivideDistance = 3f;
         private const float SmoothResolutionDistance = 0.5f;
         private const float OptimizeAngleThreshold = 2f; // 度数法
+        private readonly bool doSubDivide;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="doSubDivide">
+        /// 線を滑らかにする前に細分化するかどうかを指定します。
+        /// スプライン補間では、点が離れている場合に元の線からのズレが大きくなりがちです。
+        /// なので、trueの場合、点の間隔を細かくしてからスプライン補間を行うことで元の線からのズレを抑えます。
+        ///
+        /// 推奨設定値：
+        /// 道路ネットワークから道路メッシュを生成する用途では、線を滑らかにはしますが元の線からあまり逸脱してほしくないのでtrueにします。
+        /// ユーザー自身が指定した線から道路メッシュを生成する用途では、ユーザーが作った数少ない点から滑らかな道路を生成したいのでfalseにします。(点が少ないときにtrueだと直線的になる)
+        /// </param>
+        public LineSmoother(bool doSubDivide)
+        {
+            this.doSubDivide = doSubDivide;
+        }
 
 
         public Vector3[] Smooth(IEnumerable<Vector3> lineArg)
         {
             var line = lineArg.ToArray();
+            
             // スプライン補間だと点が離れている場合に元の線からのズレが大きくなりがちなので、
             // 点を細かくしてからスプライン補間を行います。
-            var lineA = SubDivide(line);
+            var lineA = doSubDivide ? SubDivide(line) : line;
+            
             var lineB = SmoothBySpline(lineA);
             var lineC = Optimize(lineB);
             return lineC;

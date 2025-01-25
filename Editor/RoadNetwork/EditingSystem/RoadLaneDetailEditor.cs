@@ -17,6 +17,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
         private LineSelectEdit lineSelectEdit;
         private RoadNetworkEditTarget editTarget;
+        private const bool DoSubdivide = false;
 
         public RoadLaneDetailEditor()
         {
@@ -41,7 +42,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             targetLine.Apply(targetLine.Road, createdSpline);
 
             var reproduceTarget = new RrTargetRoadBases(editTarget.RoadNetwork, new[] { targetLine.Road });
-            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All);
+            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, DoSubdivide);
         }
 
         
