@@ -91,67 +91,73 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             var leftSideWalkEdgeLength = leftSideWalkEdge == null ? 0f : leftSideWalkEdge.CalcLength();
             var rightSideWalkEdgeLength = rightSideWalkEdge == null ? 0f : rightSideWalkEdge.CalcLength();
 
-            //var nonBorderLength = 3f + Mathf.Sqrt(2f) * leftSideWalkEdgeLength;
-            //// edge.forwardの向きに８角形の頂点を追加
-            //points.Add(firstPoint);
-            //points.Add(new RnPoint(firstPoint.Vertex + (forward + right).normalized * nonBorderLength));
-            //points.Add(new RnPoint(points.Last().Vertex + forward * borderLength));
-            //points.Add(new RnPoint(points.Last().Vertex + (forward - right).normalized * nonBorderLength));
-            //points.Add(new RnPoint(points.Last().Vertex + -right * borderLength));
-            //points.Add(new RnPoint(points.Last().Vertex + (-forward - right).normalized * nonBorderLength));
-            //points.Add(new RnPoint(points.Last().Vertex + -forward * borderLength));
-            //points.Add(lastPoint);
-            //var way = new RnWay(new RnLineString(points));
-            //intersection.AddEdge(edge.road.Roads[0], way);
+            var leftSideWalkOuterPoint = newEdge.LeftSideWalkEdge.SideWalk == null
+                ? new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength)
+                : (newEdge.LeftSideWalkEdge.IsOutsidePrev
+                    ? leftSideWalkEdge.LineString.Points.First()
+                    : leftSideWalkEdge.LineString.Points.Last());
+            var rightSideWalkOuterPoint = newEdge.RightSideWalkEdge.SideWalk == null
+                ? new RnPoint(lastPoint.Vertex - right * rightSideWalkEdgeLength)
+                : (newEdge.RightSideWalkEdge.IsOutsidePrev
+                    ? rightSideWalkEdge.LineString.Points.First()
+                    : rightSideWalkEdge.LineString.Points.Last());
+            var longerSideWalkEdgeLength = Math.Max(leftSideWalkEdgeLength, rightSideWalkEdgeLength);
 
             var exteriorPoints = new List<RnPoint>();
             exteriorPoints.Add(firstPoint);
-            exteriorPoints.Add(new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength));
+            exteriorPoints.Add(leftSideWalkOuterPoint);
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (forward + right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * leftSideWalkEdgeLength));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * longerSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * borderLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * rightSideWalkEdgeLength));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * longerSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (forward - right) * 3f));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * rightSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * borderLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * leftSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward - right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * leftSideWalkEdgeLength));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * longerSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * borderLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * rightSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward + right) * 3f));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * longerSideWalkEdgeLength));
+            exteriorPoints.Add(rightSideWalkOuterPoint);
             exteriorPoints.Add(lastPoint);
 
+            // 歩道作成
             for (int i = 0; i < 15; i += 4)
             {
-                var startWay = new RnWay(new RnLineString(new[] { exteriorPoints[i], exteriorPoints[i + 1] }));
-                var endWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 2], exteriorPoints[i + 3] }));
-                var insideWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 3], exteriorPoints[i] }));
-                var outsideWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 1], exteriorPoints[i + 2] }));
+                var startWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i], exteriorPoints[i + 1] }));
+                var endWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 2], exteriorPoints[i + 3] }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 3], exteriorPoints[i] }));
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 1], exteriorPoints[i + 2] }));
                 var sideWalk = RnSideWalk.Create(intersection, outsideWay, insideWay, startWay, endWay);
                 intersection.AddSideWalk(sideWalk);
                 context.RoadNetwork.AddSideWalk(sideWalk);
             }
 
+            // 輪郭作成
             for (int i = 0; i < 15; i += 4)
             {
-                var borderWay = new RnWay(new RnLineString(new[] { exteriorPoints[i + 3], exteriorPoints[(i + 4) % 16] }));
-                var nonBorderWay = new RnWay(new RnLineString(new[] { exteriorPoints[i], exteriorPoints[i + 3] }));
-                if (i == 12)
-                    intersection.AddEdge(roadGroup.Roads[0], borderWay);
-                else
+                var borderWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 3], exteriorPoints[(i + 4) % 16] }));
+                var nonBorderWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i], exteriorPoints[i + 3] }));
+                // 隣接道路がある輪郭は別途追加
+                if (i != 12)
                     intersection.AddEdge(null, borderWay);
                 intersection.AddEdge(null, nonBorderWay);
+            }
+
+            // 隣接道路がある輪郭を追加
+            foreach (var roadBorder in road.MainLanes.Select(l => l.IsReverse ? l.PrevBorder : l.NextBorder))
+            {
+                intersection.AddEdge(road, roadBorder);
             }
 
             intersection.Align();
             context.RoadNetwork.AddIntersection(intersection);
 
+            // 隣接情報更新
             if (newEdge.Edge.isPrev)
                 road.SetPrevNext(intersection, road.Next);
             else
                 road.SetPrevNext(road.Prev, intersection);
-
             OnIntersectionAdded?.Invoke(intersection);
         }
 
