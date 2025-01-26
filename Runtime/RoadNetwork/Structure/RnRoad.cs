@@ -324,8 +324,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// dirで指定した側の全レーンのSideWayを統合した一つの大きなWayを返す
+        /// dirで指定した側の全レーンの左右のWayを返す
         /// dir==nullの時は全レーン共通で返す
+        /// 例) 左２車線でdir==RnDir.Leftの場合, 一番左の車線の左側のWayと左から２番目の車線の右側のWayを返す
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="leftWay"></param>
