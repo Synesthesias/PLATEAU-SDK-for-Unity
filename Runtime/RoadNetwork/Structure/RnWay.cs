@@ -386,7 +386,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public List<RnWay> Split(int num, bool insertNewPoint, Func<int, float> rateSelector = null)
         {
-            var ret = LineString.Split(num, insertNewPoint, rateSelector).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
+            var selector = rateSelector;
+            // IsReversedの時はrateSelectorを逆にする
+            if (IsReversed && rateSelector != null)
+                selector = i => rateSelector(num - 1 - i);
+            var ret = LineString.Split(num, insertNewPoint, selector).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
             if (IsReversed)
                 ret.Reverse();
             return ret;

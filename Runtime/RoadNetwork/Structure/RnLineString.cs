@@ -59,11 +59,10 @@ namespace PLATEAU.RoadNetwork.Structure
             // 1つの時は自分自身を返す(頂点のコピーはしない)
             if (num <= 1)
                 return new List<RnLineString> { Clone(false) };
-
             if (rateSelector == null)
                 rateSelector = i => 1f / num;
             var ret = new List<List<RnPoint>>();
-            var totalLength = LineUtil.GetLineSegmentLength(this);
+            var totalLength = CalcLength();
             var len = 0f;
             var subVertices = new List<RnPoint> { Points[0] };
 
