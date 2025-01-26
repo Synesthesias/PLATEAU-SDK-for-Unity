@@ -111,9 +111,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * borderLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * longerSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (forward - right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * rightSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * borderLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * leftSideWalkEdgeLength));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * borderLength));
+            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * rightSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward - right) * 3f));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * longerSideWalkEdgeLength));
             exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * borderLength));
