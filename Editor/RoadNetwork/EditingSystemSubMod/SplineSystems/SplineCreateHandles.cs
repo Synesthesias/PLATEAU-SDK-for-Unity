@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
@@ -40,13 +41,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             Event e = Event.current;
 
-            if ((e.type == EventType.MouseDown && e.button == 1) ||
-                (e.type == EventType.KeyDown &&
-                (e.keyCode == KeyCode.Escape || e.keyCode == KeyCode.Return)))
+            if (e.type == EventType.KeyDown)
             {
-                EndCreateSpline();
-                e.Use();
-                return;
+                if (e.keyCode == KeyCode.Return)
+                {
+                    EndCreateSpline();
+                    e.Use();
+                    return;
+                } else if (e.keyCode == KeyCode.Escape)
+                {
+                    CancelCreateSpline();
+                    e.Use();
+                    return;
+                }
+
             }
 
             HandleKnotMovement();
@@ -83,6 +91,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         {
             IsCreatingSpline = false;
             finishReceiver.OnSplineCreated(currentCore.Spline);
+        }
+
+        public void CancelCreateSpline()
+        {
+            IsCreatingSpline = false;
+            finishReceiver.OnSplineCreatCanceled();
         }
 
         private void AddKnot(Vector3 pos)
@@ -140,6 +154,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// <summary> <see cref="SplineCreateHandles"/>でスプラインの生成が完了した通知を受け取ります。 </summary>
     internal interface ICreatedSplineReceiver
     {
+        void OnSplineCreatCanceled();
         public void OnSplineCreated(Spline createdSpline);
     }
 }

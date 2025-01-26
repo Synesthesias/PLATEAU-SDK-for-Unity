@@ -22,9 +22,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private SplineCreateHandles splineCreateHandles;
 
-        // 前フレームで作図モード中かどうかのフラグ (作図完了判定に使用)
-        private bool wasCreatingSpline = false;
-
         private RnSkeletonHandles extensiblePointHandles;
 
         private RoadNetworkAddSystemContext context;
@@ -75,7 +72,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 return;
 
             // 1. 頂点をSphereで描画＆クリックしたらスプライン作図開始
-            if (!wasCreatingSpline)
+            if (!splineCreateHandles.IsCreatingSpline)
                 extensiblePointHandles.HandleSceneGUI(target, true, true);
 
             // 2. SplineCreateHandles でノット追加＆移動を処理
@@ -104,6 +101,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             OnRoadAdded?.Invoke(dirtyObjects);
         }
 
+        public void OnSplineCreatCanceled()
+        {
+            splineEditorCore.Reset();
+        }
+
         /// <summary>
         /// Splineに沿って道路を拡張する。
         /// </summary>
@@ -117,22 +119,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             foreach (var lane in road.AllLanesWithMedian)
             {
-                if (road.IsLeftLane(lane))
-                    Debug.Log("Process left");
-                else if (road.IsRightLane(lane))
-                    Debug.Log("Process right");
-                else
-                    Debug.Log("Process median");
-
                 var oldEdgePoints = new List<RnPoint>();
                 var newEdgePoints = new List<RnPoint>();
                 int i = 0;
                 foreach (var way in new[] { lane.LeftWay, lane.RightWay })
                 {
-                    if (i == 0)
-                        Debug.Log("Process left way");
-                    else
-                        Debug.Log("Process right way");
                     if (!scannedLineStrings.Contains(way.LineString))
                     {
                         ExtendPointsAlongSpline(way.LineString.Points, spline, edgeInfo.Edge.isPrev ^ lane.IsReverse ^ way.IsReversed);
@@ -290,62 +281,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <param name="isReversed">trueの場合末尾ではなく先頭から拡張する</param>
         private void ExtendPointsAlongSpline(List<RnPoint> points, Spline spline, bool isReversed)
         {
-            //bool shouldInsert = false;
-            //oldEdgePoint = null;
-            //// pointsの終点側でエッジ上に存在する点群を取得
-            //var pointsOnEdge = new List<RnPoint>();
-            //foreach (var point in new Stack<RnPoint>(points))
-            //{
-            //    Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
-            //    new GameObject("V1").transform.position = point.Vertex;
-            //    new GameObject("Sp").transform.position = spline.EvaluatePosition(0f);
-            //    if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
-            //    {
-            //        pointsOnEdge.Insert(0, point);
-            //    }
-            //    else
-            //        break;
-            //}
-
-            //// エッジ上の点がない場合は始点側をチェック
-            //if (pointsOnEdge.Count != 0)
-            //{
-            //    shouldInsert = false;
-            //    oldEdgePoint = points.Last();
-            //}
-            //else
-            //{
-            //    foreach (var point in points)
-            //    {
-            //        Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
-            //        if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
-            //        {
-            //            pointsOnEdge.Insert(0, point);
-            //        }
-            //        else
-            //            break;
-            //    }
-            //    shouldInsert = true;
-            //    oldEdgePoint = points.First();
-            //}
-
-            //if (pointsOnEdge.Count == 0)
-            //{
-            //    oldEdgePoint = null;
-            //    newEdgePoint = null;
-            //    return;
-            //}
-
-            //// エッジ上の最初の点以外pointsから削除（そこを根本として道路を生やすため）
-            //foreach (var point in pointsOnEdge)
-            //{
-            //    points.Remove(point);
-            //}
-            //if (shouldInsert)
-            //    points.Insert(0, pointsOnEdge.First());
-            //else
-            //    points.Add(pointsOnEdge.First());
-
             var startPoint = isReversed ? points.First() : points.Last();
             // スプラインからLineStringを生成する際のオフセット値を推定
             var offset = EstimateOffset(startPoint.Vertex, spline, 0f);
@@ -393,13 +328,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             Vector3 origin = spline.EvaluatePosition(t);
             point.y = origin.y;
             return origin + normal * Vector3.Dot(point - origin, normal);
-        }
-
-        private static float GetDistanceToSplineNormal(Vector3 point, Spline spline, float t)
-        {
-            var nearestPoint = GetNearestPointToSplineNormal(point, spline, t);
-            point.y = nearestPoint.y;
-            return Vector3.Distance(point, nearestPoint);
         }
     }
 }
