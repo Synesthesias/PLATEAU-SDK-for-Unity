@@ -231,19 +231,17 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 
             }
             
-            // 下でnextBorderを設定しようと思いましたが、
-            // 理屈は不明ですが、nextBorderは設定しないほうがうまくいきます
-            
-            // if (nextBorder != null && nextBorder.Count > 1)
-            // {
-            //     var left = leftWayPoints[leftWayEnd].Vertex;
-            //     var right = rightWayPoints[rightWayEnd].Vertex;
-            //     var v0 = nextBorder.GetPoint(0);
-            //     var v1 = nextBorder.GetPoint(nextBorder.Count - 1); // Borderの頂点数は2であることを仮定します。
-            //     
-            //     v0.Vertex = left;
-            //     v1.Vertex = right;
-            // }
+            // nextBorderを設定します
+            if (nextBorder != null && nextBorder.Count > 1)
+            {
+                var left = leftWayPoints[leftWayEnd].Vertex;
+                var right = rightWayPoints[rightWayEnd].Vertex;
+                var v0 = nextBorder.GetPoint(0);
+                var v1 = nextBorder.GetPoint(nextBorder.Count - 1); // Borderの頂点数は2であることを仮定します。
+
+                v0.Vertex = lane.IsReverse ? left : right; // next側だけlane.IsReverseのチェックをするとうまくいくが、理由は不明
+                v1.Vertex = lane.IsReverse ? right : left;
+            }
         }
 
         private void InitializeSplineComponents()
