@@ -100,8 +100,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
         public class DrawWork : DrawerModel.DrawFrameWork
         {
-            public RGraph graph;
-
             public PLATEAURGraphDrawerDebug Self { get; set; }
             public DrawWork(PLATEAURGraphDrawerDebug self, RGraph model)
                 : base(model)
@@ -457,7 +455,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 if (face.RoadTypes.HasAnyFlag(work.Self.removeFaceType))
                     return false;
 
-                FrameOutlineVertices = showCityObjectOutline ? work.graph.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
+                FrameOutlineVertices = showCityObjectOutline ? work.Model.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
                     : face.ComputeOutlineVertices();
                 normalDrawer.Parent = this;
                 terminateDrawer.Parent = this;
