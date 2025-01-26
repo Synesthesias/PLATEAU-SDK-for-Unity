@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
@@ -428,7 +429,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 // en0成分の移動量がdeltaになるように, vnの移動量を求める
                 var m = Vector3.Dot(vn, en0);
                 // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
-                // #TODO : 移動した結果頂点が重なる場合があるのでその対策が必要
                 var d = delta;
                 bool isZero = Mathf.Abs(m) < 1e-5f;
                 if (isZero == false)
@@ -445,6 +445,26 @@ namespace PLATEAU.RoadNetwork.Structure
                 // #TODO : vnが0ベクトルの時の対応
                 delta = d * Vector3.Dot(vn, en1);
             }
+            
+            // 凹凸のある線では、法線方向に移動すると線が交差することがあるので、交差を取り除く
+            RemoveIntersection();
+        }
+
+        /// <summary>
+        /// 線が自分自身の線と交差する場合、交差して輪になった部分をなかったことにして交差しないようにします
+        /// </summary>
+        public void RemoveIntersection()
+        {
+            var src = new List<Vector3>(Count);
+            for (int i = 0; i < Count; i++)
+            {
+                src.Add(GetPoint(i).Vertex);
+            }
+
+            var dst = new LineIntersectionRemover().Calc(src);
+            var dstStr = new RnLineString(dst.Select(p => new RnPoint(p)));
+            if (IsReversed) dstStr = new RnLineString(dstStr.Reverse().Select(v => new RnPoint(v)).ToList());
+            LineString = dstStr;
         }
 
         /// <summary>
@@ -526,6 +546,38 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 点の座標をまとめて設定する。
+        /// 引数<paramref name="nextPoints"/>の数は現在と同じにすることを推奨（参照が崩れるので。）
+        /// しかし、引数の数が現在と違う場合は、最初と最後のみ参照を保つ。
+        /// </summary>
+        public void SetPoints(IEnumerable<Vector3> nextPointsArg)
+        {
+            var nextPoints = nextPointsArg.ToArray();
+            if(nextPoints.Length == 0) LineString.Points.Clear();
+            if (Count == nextPoints.Length)
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    var p = GetPoint(i);
+                    p.Vertex = nextPoints[i];
+                    SetPoint(i, p);
+                }
+
+                return;
+            }
+            var firstRef = GetPoint(0);
+            var lastRef = GetPoint(-1);
+            firstRef.Vertex = nextPoints[0];
+            lastRef.Vertex = nextPoints[^1];
+            if(IsReversed) Array.Reverse(nextPoints);
+            LineString = RnLineString.Create(nextPoints.Select(p => new RnPoint(p)));
+            SetPoint(0, firstRef);
+            SetPoint(-1, lastRef);
+
+
         }
     }
 
