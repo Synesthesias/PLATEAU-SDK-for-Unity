@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
         private LineEditState state = LineEditState.LineNotSelected;
         private IEditTargetLine mouseHoveredLine;
         private IEditTargetLine selectedLine;
-        private SplineEditorHandles splineEditorHandles;
+        private SplineEditorHandles splineEditorHandles; // スプライン編集のUI
         private ICreatedLineReceiver createdLineReceiver;
         
         
