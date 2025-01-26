@@ -59,7 +59,6 @@ namespace PLATEAU.RoadNetwork.Util
         {
             intersection = Vector2.zero;
             
-            // ChatGPT o1に感謝
             // 線分をパラメータ形式で表したときの係数を求める
             // (p1 + t*(p2-p1)) と (p3 + u*(p4-p3)) が同じ点になる t,u を求める
             
