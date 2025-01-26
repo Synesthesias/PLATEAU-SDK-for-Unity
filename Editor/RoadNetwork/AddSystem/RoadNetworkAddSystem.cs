@@ -22,15 +22,23 @@ namespace PLATEAU.Editor.RoadNetwork
             Context = new RoadNetworkAddSystemContext(structureModel);
 
             RoadAddSystem = new RnRoadAddSystem(Context);
-            RoadAddSystem.OnRoadAdded = (roadGroup) =>
+            RoadAddSystem.OnRoadAdded = (dirtyObjects) =>
             {
-                // 道路モデル再生成
-                var road = new RoadReproduceSource(roadGroup.Roads[0]);
-                bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
-                new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, roadGroup.Roads), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
+                foreach (var obj in dirtyObjects)
+                {
+                    if (obj is RnIntersection)
+                    {
+                        ((RnIntersection)obj).BuildTracks();
+                    }
 
-                // スケルトン更新
-                Context.SkeletonData.ReconstructIncludeNeighbors(roadGroup.Roads[0]);
+                    // 道路モデル再生成
+                    var road = new RoadReproduceSource(obj);
+                    bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
+                    new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase> { obj }), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
+
+                    // スケルトン更新
+                    Context.SkeletonData.ReconstructIncludeNeighbors(obj);
+                }
             };
 
             IntersectionAddSystem = new IntersectionAddSystem(Context);

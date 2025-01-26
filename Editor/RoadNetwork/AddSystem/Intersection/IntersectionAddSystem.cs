@@ -158,6 +158,27 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                 road.SetPrevNext(intersection, road.Next);
             else
                 road.SetPrevNext(road.Prev, intersection);
+
+            // 横断歩道を追加するために道路側に拡張
+            // 逆側を拡張しないために一時的に隣接関係を削除
+            var oppositeIntersection = newEdge.Edge.isPrev ? road.Next : road.Prev;
+            if (newEdge.Edge.isPrev)
+                road.SetPrevNext(intersection, null);
+            else
+                road.SetPrevNext(null, intersection);
+            var option = new RnModelEx.CalibrateIntersectionBorderOption();
+            road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
+            if (newEdge.Edge.isPrev)
+                prevRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+            else
+                nextRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
+
+            // 隣接関係を復元
+            if (newEdge.Edge.isPrev)
+                road.SetPrevNext(intersection, oppositeIntersection);
+            else
+                road.SetPrevNext(oppositeIntersection, intersection);
+
             OnIntersectionAdded?.Invoke(intersection);
         }
 

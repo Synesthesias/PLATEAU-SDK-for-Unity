@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Editor.RoadNetwork.AddSystem;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.AddSystem;
 using PLATEAU.RoadNetwork.Structure;
@@ -17,7 +18,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <summary>
         /// 道路追加後のアクション
         /// </summary>
-        public Action<RnRoadGroup> OnRoadAdded { get; set; }
+        public Action<List<RnRoadBase>> OnRoadAdded { get; set; }
 
         private SplineCreateHandles splineCreateHandles;
 
@@ -88,21 +89,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         public void OnSplineCreated(Spline spline)
         {
-            RnRoadGroup newRoad = null;
+            var dirtyObjects = new List<RnRoadBase>();
             if (isRoadSelected)
             {
                 var edgeInfo = new RnRoadEdgeMaker(selectedRoad.road.Roads[0]).Execute(selectedRoad);
                 ExtendRoadAlongSpline(edgeInfo, spline);
-                newRoad = selectedRoad.road;
+                dirtyObjects.Add(selectedRoad.road.Roads[0]);
             }
             else
             {
-                newRoad = AddRoadAlongSpline(selectedIntersection, spline);
+                dirtyObjects = AddRoadAlongSpline(selectedIntersection, spline);
             }
-            //else
-            //    AddRoadAlongSpline(edge, newSpline);
             splineEditorCore.Reset();
-            OnRoadAdded?.Invoke(newRoad);
+            OnRoadAdded?.Invoke(dirtyObjects);
         }
 
         /// <summary>
@@ -198,7 +197,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <param name="edge"></param>
         /// <param name="spline"></param>
         /// <returns></returns>
-        private RnRoadGroup AddRoadAlongSpline(ExtensibleIntersectionEdge edge, Spline spline)
+        private List<RnRoadBase> AddRoadAlongSpline(ExtensibleIntersectionEdge edge, Spline spline)
         {
             var edgeMaker = new RnIntersectionEdgeMaker(edge.intersection);
             var edgeInfo = edgeMaker.Execute(edge.neighbor, edge.index);
@@ -272,10 +271,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             ExtendRoadAlongSpline(newEdgeInfo, spline);
 
-            // TODO: Callbackでやるべき？
-            ((RnIntersection)road.Prev).BuildTracks();
 
-            return roadGroup;
+            // 横断歩道を追加するために交差点を道路側に拡張
+            var option = new RnModelEx.CalibrateIntersectionBorderOption();
+            road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
+            var result = prevRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+            if (!result)
+                Debug.LogWarning("Failed to merge 2 neighbor intersections");
+
+            return new List<RnRoadBase>() { centerRoad.Prev, centerRoad };
         }
 
         /// <summary>

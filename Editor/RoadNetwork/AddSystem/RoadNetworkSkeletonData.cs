@@ -187,6 +187,18 @@ namespace PLATEAU.RoadNetwork
             Intersections = structureModel.RoadNetwork.Intersections.Select(x => new RnIntersectionSkeleton(x)).ToList();
         }
 
+        public void ReconstructIncludeNeighbors(RnRoadBase roadBase)
+        {
+            if (roadBase is RnRoad road)
+            {
+                ReconstructIncludeNeighbors(road);
+            }
+            else if (roadBase is RnIntersection intersection)
+            {
+                ReconstructIncludeNeighbors(intersection);
+            }
+        }
+
         /// <summary>
         /// 隣接交差点も含めて道路のスケルトンを再構築
         /// </summary>
