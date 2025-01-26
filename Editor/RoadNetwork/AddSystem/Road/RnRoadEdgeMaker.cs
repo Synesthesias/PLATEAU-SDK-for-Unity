@@ -12,6 +12,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
         public bool IsOutsidePrev;
         public RnSideWalk SideWalk;
         public RnWay Edge;
+        public bool IsStartEdge;
     }
 
     internal struct RoadEdgeInfo
@@ -40,10 +41,21 @@ namespace PLATEAU.RoadNetwork.AddSystem
             var scannedLineStrings = new Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)>();
             var edgeCenter = extensibleEdge.center;
             var edgeDirection = Vector3.Cross(extensibleEdge.forward, Vector3.up);
-            var oldEdgeCenter = road.GetLeftWayOfLanes().LineString.Points.First().Vertex;
-            var oldEdgeDirection = road.GetRightWayOfLanes().LineString.Points.Last().Vertex - oldEdgeCenter;
-            new GameObject("oldEdgeCenter").transform.position = road.GetLeftWayOfLanes().LineString.Points.First().Vertex;
-            new GameObject("oldEdgeNext").transform.position = road.GetRightWayOfLanes().LineString.Points.Last().Vertex;
+            // TODO: 端点取得の関数化
+            Vector3 oldEdgeCenter;
+            {
+                var way = road.GetLeftWayOfLanes();
+                oldEdgeCenter = extensibleEdge.isPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+            }
+            Vector3 oldEdgeDirection;
+            {
+                var way = road.GetRightWayOfLanes();
+                var secondPoint = extensibleEdge.isPrev ^ road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+                oldEdgeDirection = secondPoint - oldEdgeCenter;
+            }
+
+            new GameObject("oldEdgeCenter").transform.position = oldEdgeCenter;
+            new GameObject("oldEdgeNext").transform.position = oldEdgeCenter + oldEdgeDirection;
 
             var sideWalks = new List<RnSideWalk>();
             var leftSideWalk = FindLeftEdgeSideWalk(road, extensibleEdge.isPrev, out var isLeftInsidePrev, out var isLeftOutsidePrev, out var isLeftStartEdge);
@@ -116,7 +128,8 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     IsInsidePrev = isLeftInsidePrev,
                     IsOutsidePrev = isLeftOutsidePrev,
                     SideWalk = leftSideWalk,
-                    Edge = isLeftStartEdge ? leftSideWalk.StartEdgeWay : leftSideWalk.EndEdgeWay
+                    Edge = isLeftStartEdge ? leftSideWalk.StartEdgeWay : leftSideWalk.EndEdgeWay,
+                    IsStartEdge = isLeftStartEdge
                 };
 
             if (rightSideWalk != null)
@@ -125,7 +138,8 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     IsInsidePrev = isRightInsidePrev,
                     IsOutsidePrev = isRightOutsidePrev,
                     SideWalk = rightSideWalk,
-                    Edge = isRightStartEdge ? rightSideWalk.StartEdgeWay : rightSideWalk.EndEdgeWay
+                    Edge = isRightStartEdge ? rightSideWalk.StartEdgeWay : rightSideWalk.EndEdgeWay,
+                    IsStartEdge = isRightStartEdge
                 };
 
             return edgeInfo;

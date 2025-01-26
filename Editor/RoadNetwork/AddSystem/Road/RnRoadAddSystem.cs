@@ -91,8 +91,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             RnRoadGroup newRoad = null;
             if (isRoadSelected)
             {
-                new RnRoadEdgeMaker(selectedRoad.road.Roads[0]).Execute(selectedRoad);
-                ExtendRoadAlongSpline(selectedRoad.road, spline, selectedRoad.isPrev);
+                var edgeInfo = new RnRoadEdgeMaker(selectedRoad.road.Roads[0]).Execute(selectedRoad);
+                ExtendRoadAlongSpline(edgeInfo, spline);
                 newRoad = selectedRoad.road;
             }
             else
@@ -110,11 +110,11 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// </summary>
         /// <param name="targetRoad"></param>
         /// <param name="spline"></param>
-        private void ExtendRoadAlongSpline(RnRoadGroup targetRoad, Spline spline, bool isPrev, bool enableEdgeReplace = false)
+        private void ExtendRoadAlongSpline(RoadEdgeInfo edgeInfo, Spline spline)
         {
-            var road = targetRoad.Roads[0];
+            var road = edgeInfo.Edge.road.Roads[0];
 
-            var scannedLineStrings = new Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)>();
+            var scannedLineStrings = new HashSet<RnLineString>();
 
             foreach (var lane in road.AllLanesWithMedian)
             {
@@ -134,94 +134,62 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                         Debug.Log("Process left way");
                     else
                         Debug.Log("Process right way");
-                    RnPoint oldEdgePoint = null;
-                    RnPoint newEdgePoint = null;
-                    if (!scannedLineStrings.ContainsKey(way.LineString))
+                    if (!scannedLineStrings.Contains(way.LineString))
                     {
-                        ExtendPointsAlongSpline(way.LineString.Points, spline, out oldEdgePoint, out newEdgePoint);
-                        scannedLineStrings.Add(way.LineString, (oldEdgePoint, newEdgePoint));
+                        ExtendPointsAlongSpline(way.LineString.Points, spline, edgeInfo.Edge.isPrev ^ lane.IsReverse ^ way.IsReversed);
+                        scannedLineStrings.Add(way.LineString);
                     }
-                    else
-                    {
-                        Debug.Log("skip");
-                        (oldEdgePoint, newEdgePoint) = scannedLineStrings[way.LineString];
-                    }
-
-                    if (oldEdgePoint != null)
-                        oldEdgePoints.Add(oldEdgePoint);
-                    if (newEdgePoint != null)
-                        newEdgePoints.Add(newEdgePoint);
                 }
 
-                if (oldEdgePoints.Count == 0 || newEdgePoints.Count == 0)
-                {
-                    //Debug.LogWarning($"{laneBorderType}, {oldEdgePoints.Count}, {newEdgePoints.Count}, {lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last())}");
-                    Debug.LogWarning($"old edge count: {oldEdgePoints.Count}, new edge count: {newEdgePoints.Count}");
-                    continue;
-                }
-
+                var newEdge = new RnWay(new RnLineString(new List<RnPoint> {
+                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.LeftWay.IsReversed ? lane.LeftWay.Points.First() : lane.LeftWay.Points.Last(),
+                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.RightWay.IsReversed ? lane.RightWay.Points.First() : lane.RightWay.Points.Last(),
+                }));
                 // ボーダー再構築
-                foreach (var laneBorderType in new List<RnLaneBorderType> { RnLaneBorderType.Prev, RnLaneBorderType.Next })
-                {
-                    if (lane.GetBorder(laneBorderType) == null || !lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last()))
-                        continue;
-                    lane.SetBorder(laneBorderType, new RnWay(new RnLineString(newEdgePoints)));
-                }
+                if (edgeInfo.Edge.isPrev ^ lane.IsReverse)
+                    lane.SetBorder(RnLaneBorderType.Prev, newEdge);
+                else
+                    lane.SetBorder(RnLaneBorderType.Next, newEdge);
             }
 
-            foreach (var sideWalk in road.SideWalks)
-            {
-                var oldEdgePoints = new List<RnPoint>();
-                var newEdgePoints = new List<RnPoint>();
-                int i = 0;
-                foreach (var way in new[] { sideWalk.InsideWay, sideWalk.OutsideWay })
-                {
-                    if (i++ == 0)
-                        Debug.Log("Process inside way");
-                    else
-                        Debug.Log("Process outside way");
-                    RnPoint oldEdgePoint = null;
-                    RnPoint newEdgePoint = null;
-                    if (!scannedLineStrings.ContainsKey(way.LineString))
-                    {
-                        ExtendPointsAlongSpline(way.LineString.Points, spline, out oldEdgePoint, out newEdgePoint);
-                        scannedLineStrings.Add(way.LineString, (oldEdgePoint, newEdgePoint));
-                    }
-                    else
-                    {
-                        Debug.Log("skip");
-                        (oldEdgePoint, newEdgePoint) = scannedLineStrings[way.LineString];
-                    }
-
-                    if (oldEdgePoint != null)
-                        oldEdgePoints.Add(oldEdgePoint);
-                    if (newEdgePoint != null)
-                        newEdgePoints.Add(newEdgePoint);
-                }
-
-                if (oldEdgePoints.Count == 0 || newEdgePoints.Count == 0)
-                {
-                    Debug.LogWarning($"old edge count: {oldEdgePoints.Count}, new edge count: {newEdgePoints.Count}");
-                    continue;
-                }
-
-                // エッジ再構築
-                {
-                    var edge = sideWalk.StartEdgeWay;
-                    if (edge != null && edge.LineString.Points.Contains(oldEdgePoints.First()))
-                        sideWalk.SetStartEdgeWay(new RnWay(new RnLineString(newEdgePoints)));
-                }
-                {
-                    var edge = sideWalk.EndEdgeWay;
-                    if (edge != null && edge.LineString.Points.Contains(oldEdgePoints.First()))
-                        sideWalk.SetEndEdgeWay(new RnWay(new RnLineString(newEdgePoints)));
-                }
-            }
+            if (edgeInfo.LeftSideWalkEdge.SideWalk != null)
+                ExtendSideWalk(edgeInfo.LeftSideWalkEdge, spline, scannedLineStrings);
+            if (edgeInfo.RightSideWalkEdge.SideWalk != null)
+                ExtendSideWalk(edgeInfo.RightSideWalkEdge, spline, scannedLineStrings);
 
             //foreach (var way in GetAllWaysAlongRoad(road, isPrev))
             //{
             //    //ExtendPointsAlongSpline(way.Item2.LineString.Points, spline, way.Item1 ^ isPrev);
             //}
+        }
+
+        private void ExtendSideWalk(SideWalkEdgeInfo sideWalkEdgeInfo, Spline spline, HashSet<RnLineString> scannedLineStrings)
+        {
+            var insideWay = sideWalkEdgeInfo.SideWalk.InsideWay;
+            if (!scannedLineStrings.Contains(insideWay.LineString))
+            {
+                ExtendPointsAlongSpline(insideWay.LineString.Points, spline, sideWalkEdgeInfo.IsInsidePrev);
+                scannedLineStrings.Add(insideWay.LineString);
+            }
+
+            var outsideWay = sideWalkEdgeInfo.SideWalk.OutsideWay;
+            if (!scannedLineStrings.Contains(outsideWay.LineString))
+            {
+                ExtendPointsAlongSpline(outsideWay.LineString.Points, spline, sideWalkEdgeInfo.IsOutsidePrev);
+                scannedLineStrings.Add(outsideWay.LineString);
+            }
+
+            // エッジ再構築
+            {
+                var newEdge = new RnWay(new RnLineString(new List<RnPoint> {
+                    sideWalkEdgeInfo.IsInsidePrev ? insideWay.LineString.Points.First() : insideWay.LineString.Points.Last(),
+                    sideWalkEdgeInfo.IsOutsidePrev ? outsideWay.LineString.Points.First() : outsideWay.LineString.Points.Last()
+                }));
+                if (sideWalkEdgeInfo.IsStartEdge)
+                    sideWalkEdgeInfo.SideWalk.SetStartEdgeWay(newEdge);
+                else
+                    sideWalkEdgeInfo.SideWalk.SetEndEdgeWay(newEdge);
+            }
         }
 
         /// <summary>
@@ -238,9 +206,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             // 長さ0の道路を生成
             var road = new RnRoad();
             RnWay leftmostWay = null, rightmostWay = null;
+            RnSideWalk leftSideWalk = null, rightSideWalk = null;
             if (edgeInfo.LeftSideWalkEdge != null)
             {
-                var startEdge = new RnWay(new RnLineString(edgeInfo.LeftSideWalkEdge.LineString.Points));
+                var startEdge = new RnWay(new RnLineString(edgeInfo.LeftSideWalkEdge.LineString.Points.Reverse<RnPoint>()));
                 var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.Last() }));
                 var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.First() }));
                 var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
@@ -248,25 +217,27 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 context.RoadNetwork.AddSideWalk(sideWalk);
 
                 leftmostWay = insideWay;
+                leftSideWalk = sideWalk;
             }
             if (edgeInfo.RightSideWalkEdge != null)
             {
-                var endEdge = new RnWay(new RnLineString(edgeInfo.RightSideWalkEdge.LineString.Points));
+                var startEdge = new RnWay(new RnLineString(edgeInfo.RightSideWalkEdge.LineString.Points.Reverse<RnPoint>()));
                 var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.First() }));
                 var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.Last() }));
-                var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, null, endEdge);
+                var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
                 road.AddSideWalk(sideWalk);
                 context.RoadNetwork.AddSideWalk(sideWalk);
 
                 rightmostWay = insideWay;
+                rightSideWalk = sideWalk;
             }
+
             if (edgeInfo.Neighbor != null)
             {
                 var leftWay = leftmostWay ?? new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.First() }));
                 var rightWay = rightmostWay ?? new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.Neighbor.Border.Points.Last() }));
-                var prevBorder = new RnWay(new RnLineString(edgeInfo.Neighbor.Border.Points));
-                var nextBorder = new RnWay(new RnLineString(edgeInfo.Neighbor.Border.Points));
-                var lane = new RnLane(leftWay, rightWay, prevBorder, nextBorder);
+                var prevBorder = new RnWay(new RnLineString(edgeInfo.Neighbor.Border.Points.Reverse<RnPoint>()));
+                var lane = new RnLane(leftWay, rightWay, prevBorder, null);
                 road.AddMainLane(lane);
                 edgeInfo.Neighbor.Road = road;
                 road.SetPrevNext(edge.intersection, null);
@@ -275,7 +246,31 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             context.RoadNetwork.AddRoad(road);
 
             var roadGroup = road.CreateRoadGroup();
-            ExtendRoadAlongSpline(roadGroup, spline, true);
+
+            var newEdgeInfo = new RoadEdgeInfo();
+            newEdgeInfo.Edge = new ExtensibleRoadEdge(roadGroup, false, edge.center, edge.forward);
+
+            if (leftSideWalk != null)
+                newEdgeInfo.LeftSideWalkEdge = new SideWalkEdgeInfo
+                {
+                    IsInsidePrev = false,
+                    IsOutsidePrev = false,
+                    SideWalk = leftSideWalk,
+                    Edge = leftSideWalk.EndEdgeWay,
+                    IsStartEdge = false
+                };
+
+            if (rightSideWalk != null)
+                newEdgeInfo.RightSideWalkEdge = new SideWalkEdgeInfo
+                {
+                    IsInsidePrev = false,
+                    IsOutsidePrev = false,
+                    SideWalk = rightSideWalk,
+                    Edge = rightSideWalk.EndEdgeWay,
+                    IsStartEdge = false
+                };
+
+            ExtendRoadAlongSpline(newEdgeInfo, spline);
             return roadGroup;
         }
 
@@ -285,66 +280,67 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         /// <param name="points"></param>
         /// <param name="spline"></param>
         /// <param name="isReversed">trueの場合末尾ではなく先頭から拡張する</param>
-        private void ExtendPointsAlongSpline(List<RnPoint> points, Spline spline, out RnPoint oldEdgePoint, out RnPoint newEdgePoint, bool enableEdgeReplace = false)
+        private void ExtendPointsAlongSpline(List<RnPoint> points, Spline spline, bool isReversed)
         {
-            bool shouldInsert = false;
-            oldEdgePoint = null;
-            // pointsの終点側でエッジ上に存在する点群を取得
-            var pointsOnEdge = new List<RnPoint>();
-            foreach (var point in new Stack<RnPoint>(points))
-            {
-                Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
-                new GameObject("V1").transform.position = point.Vertex;
-                new GameObject("Sp").transform.position = spline.EvaluatePosition(0f);
-                if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
-                {
-                    pointsOnEdge.Insert(0, point);
-                }
-                else
-                    break;
-            }
+            //bool shouldInsert = false;
+            //oldEdgePoint = null;
+            //// pointsの終点側でエッジ上に存在する点群を取得
+            //var pointsOnEdge = new List<RnPoint>();
+            //foreach (var point in new Stack<RnPoint>(points))
+            //{
+            //    Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
+            //    new GameObject("V1").transform.position = point.Vertex;
+            //    new GameObject("Sp").transform.position = spline.EvaluatePosition(0f);
+            //    if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
+            //    {
+            //        pointsOnEdge.Insert(0, point);
+            //    }
+            //    else
+            //        break;
+            //}
 
-            // エッジ上の点がない場合は始点側をチェック
-            if (pointsOnEdge.Count != 0)
-            {
-                shouldInsert = false;
-                oldEdgePoint = points.Last();
-            }
-            else
-            {
-                foreach (var point in points)
-                {
-                    Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
-                    if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
-                    {
-                        pointsOnEdge.Insert(0, point);
-                    }
-                    else
-                        break;
-                }
-                shouldInsert = true;
-                oldEdgePoint = points.First();
-            }
+            //// エッジ上の点がない場合は始点側をチェック
+            //if (pointsOnEdge.Count != 0)
+            //{
+            //    shouldInsert = false;
+            //    oldEdgePoint = points.Last();
+            //}
+            //else
+            //{
+            //    foreach (var point in points)
+            //    {
+            //        Debug.Log($"{GetDistanceToSplineNormal(point.Vertex, spline, 0f)}, {point.DebugMyId}");
+            //        if (GetDistanceToSplineNormal(point.Vertex, spline, 0f) < 1f)
+            //        {
+            //            pointsOnEdge.Insert(0, point);
+            //        }
+            //        else
+            //            break;
+            //    }
+            //    shouldInsert = true;
+            //    oldEdgePoint = points.First();
+            //}
 
-            if (pointsOnEdge.Count == 0)
-            {
-                oldEdgePoint = null;
-                newEdgePoint = null;
-                return;
-            }
+            //if (pointsOnEdge.Count == 0)
+            //{
+            //    oldEdgePoint = null;
+            //    newEdgePoint = null;
+            //    return;
+            //}
 
-            // エッジ上の最初の点以外pointsから削除（そこを根本として道路を生やすため）
-            foreach (var point in pointsOnEdge)
-            {
-                points.Remove(point);
-            }
-            if (shouldInsert)
-                points.Insert(0, pointsOnEdge.First());
-            else
-                points.Add(pointsOnEdge.First());
+            //// エッジ上の最初の点以外pointsから削除（そこを根本として道路を生やすため）
+            //foreach (var point in pointsOnEdge)
+            //{
+            //    points.Remove(point);
+            //}
+            //if (shouldInsert)
+            //    points.Insert(0, pointsOnEdge.First());
+            //else
+            //    points.Add(pointsOnEdge.First());
 
+            var startPoint = isReversed ? points.First() : points.Last();
             // スプラインからLineStringを生成する際のオフセット値を推定
-            var offset = EstimateOffset(pointsOnEdge.First().Vertex, spline, 0f);
+            var offset = EstimateOffset(startPoint.Vertex, spline, 0f);
 
             var newPoints = ConvertSplineToLineStringPoints(spline, offset, false);
             newPoints.RemoveAt(0); // 先頭の点は重複するため削除
@@ -352,16 +348,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             // 新しい点を追加
             foreach (var point in newPoints)
             {
-                if (shouldInsert)
+                if (isReversed)
                     points.Insert(0, new RnPoint(point));
                 else
                     points.Add(new RnPoint(point));
             }
 
-            if (shouldInsert)
-                newEdgePoint = points.First();
-            else
-                newEdgePoint = points.Last();
+            //if (isReversed)
+            //    newEdgePoint = points.First();
+            //else
+            //    newEdgePoint = points.Last();
         }
 
         private static float EstimateOffset(Vector3 point, Spline spline, float t)

@@ -74,12 +74,18 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             RnPoint lastPoint;
             {
                 var way = road.GetRightWayOfLanes();
-                lastPoint = isRoadPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed
+                lastPoint = isRoadPrev ^ road.MainLanes.Last().IsReverse ^ way.IsReversed
                     ? way.LineString.Points.First() : way.LineString.Points.Last();
             }
 
+            if (!isRoadPrev)
+                (lastPoint, firstPoint) = (firstPoint, lastPoint);
+
             var leftSideWalkEdge = newEdge.LeftSideWalkEdge.Edge;
             var rightSideWalkEdge = newEdge.RightSideWalkEdge.Edge;
+
+            if (!isRoadPrev)
+                (leftSideWalkEdge, rightSideWalkEdge) = (rightSideWalkEdge, leftSideWalkEdge);
 
             var borderLength = Vector3.Distance(firstPoint.Vertex, lastPoint.Vertex);
             var leftSideWalkEdgeLength = leftSideWalkEdge == null ? 0f : leftSideWalkEdge.CalcLength();
