@@ -187,7 +187,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         
 
         /// <summary> 線が一致する、または逆順にしたら一致するものを排除します </summary>
-        private void RemoveDuplicateOrReverseLine()
+        public void RemoveDuplicateOrReverseLine()
         {
             var newLines = new List<RnmLine>(lines.Count);
             for (int i = 0; i < lines.Count; i++)
@@ -207,7 +207,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             lines = newLines;
         }
-        
-        
+
+        public int Count => lines.Count;
+
     }
 }
