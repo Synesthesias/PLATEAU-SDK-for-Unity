@@ -34,7 +34,9 @@ namespace PLATEAU.Editor.RoadNetwork
                     // 道路モデル再生成
                     var road = new RoadReproduceSource(obj);
                     bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
-                    new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase> { obj }), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
+                    var generatedObj = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase> { obj }), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
+                    obj.TargetTrans.Clear();
+                    obj.AddTargetTran(generatedObj);
 
                     // スケルトン更新
                     Context.SkeletonData.ReconstructIncludeNeighbors(obj);
@@ -42,13 +44,27 @@ namespace PLATEAU.Editor.RoadNetwork
             };
 
             IntersectionAddSystem = new IntersectionAddSystem(Context);
-            IntersectionAddSystem.OnIntersectionAdded = (intersection) =>
+            IntersectionAddSystem.OnIntersectionAdded = (intersection, removedRoad) =>
             {
-                // 交差点モデル再生成
-                var generatedObj = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All, true);
-                if (generatedObj != null)
+                // 旧道路削除
+                if (removedRoad != null)
                 {
-                    intersection.AddTargetTran(generatedObj);
+                    var road = new RoadReproduceSource(removedRoad);
+                    var meshObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, road, ReproducedRoadDirection.None);
+                    var crosswalkObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.None);
+                    var lineObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.LaneLineAndArrow, road, ReproducedRoadDirection.None);
+                    if (meshObj != null)
+                    {
+                        Object.DestroyImmediate(meshObj);
+                    }
+                    if (crosswalkObj != null)
+                    {
+                        Object.DestroyImmediate(crosswalkObj);
+                    }
+                    if (lineObj != null)
+                    {
+                        Object.DestroyImmediate(lineObj);
+                    }
                 }
 
                 // 隣接道路更新
@@ -56,11 +72,28 @@ namespace PLATEAU.Editor.RoadNetwork
                 foreach (var neighbor in intersection.Neighbors)
                 {
                     if (neighbor.Road != null)
-                        new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All, true);
+                    {
+                        var generatedObj = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All, true);
+                        if (generatedObj != null)
+                        {
+                            neighbor.Road.TargetTrans.Clear();
+                            neighbor.Road.AddTargetTran(generatedObj);
+                        }
+                    }
+                }
+
+                {
+                    // 交差点モデル再生成
+                    var generatedObj = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All, true);
+                    if (generatedObj != null)
+                    {
+                        intersection.AddTargetTran(generatedObj);
+                    }
                 }
 
                 // スケルトン更新
                 Context.SkeletonData.ReconstructIncludeNeighbors(intersection);
+                Context.SkeletonData.Roads.RemoveAll(s => s.Road == removedRoad);
             };
         }
 

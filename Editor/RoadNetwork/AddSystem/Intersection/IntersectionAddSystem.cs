@@ -9,14 +9,33 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.AddSystem
 {
+    enum IntersectionType
+    {
+        T = 0,
+        Cross = 1,
+    }
+
+    enum TIntersectionType
+    {
+        Left = 0,
+        Right = 1,
+        Front = 2,
+        None = 3,
+    }
+
     internal class IntersectionAddSystem
     {
         public bool IsActive { get; private set; } = false;
+        public IntersectionType IntersectionType { get; private set; } = IntersectionType.Cross;
+        public bool IsCreating { get; private set; } = false;
+
+        private RoadEdgeInfo edgeInfo;
+        private TIntersectionType tIntersectionType = TIntersectionType.Front;
 
         /// <summary>
         /// 交差点追加後のアクション
         /// </summary>
-        public Action<RnIntersection> OnIntersectionAdded { get; set; }
+        public Action<RnIntersection, RnRoad> OnIntersectionAdded { get; set; }
 
         private RnSkeletonHandles extensiblePointHandles;
         private RoadNetworkAddSystemContext context;
@@ -36,6 +55,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         public void Deactivate()
         {
             IsActive = false;
+            IsCreating = false;
         }
 
         public void HandleSceneGUI(SceneView sceneView)
@@ -43,24 +63,52 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             if (!IsActive)
                 return;
 
-            extensiblePointHandles.HandleSceneGUI(sceneView, true, false);
+
+            if (!IsCreating)
+            {
+                extensiblePointHandles.HandleSceneGUI(sceneView, true, false);
+                return;
+            }
+
+            // Rキーで交差点の種類を切り替え
+            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.R)
+            {
+                switch (tIntersectionType)
+                {
+                    case TIntersectionType.Left:
+                        tIntersectionType = TIntersectionType.Right;
+                        break;
+                    case TIntersectionType.Right:
+                        tIntersectionType = TIntersectionType.Front;
+                        break;
+                    case TIntersectionType.Front:
+                        tIntersectionType = TIntersectionType.Left;
+                        break;
+                }
+            }
+            // エンターキーで交差点を追加
+            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
+            {
+                AddIntersection();
+                IsCreating = false;
+            }
+            // Escキーで交差点追加をキャンセル
+            else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+            {
+                IsCreating = false;
+            }
+
+            DrawPreviewExterior();
         }
 
-        private void HandlePointPicked(ExtensibleRoadEdge edge)
+        private void DrawPreviewExterior()
         {
-            if (edge.road == null)
-                return;
-
-            var edgeMaker = new RnRoadEdgeMaker(edge.road.Roads[0]);
-            var newEdge = edgeMaker.Execute(edge);
-            var roadGroup = newEdge.Edge.road;
+            var roadGroup = edgeInfo.Edge.road;
             var road = roadGroup.Roads[0];
 
-            var intersection = new RnIntersection();
-
-            var isRoadPrev = newEdge.Edge.isPrev;
-            var center = newEdge.Edge.center;
-            var forward = newEdge.Edge.forward.normalized;
+            var isRoadPrev = edgeInfo.Edge.isPrev;
+            var center = edgeInfo.Edge.center;
+            var forward = edgeInfo.Edge.forward.normalized;
             var right = Quaternion.AngleAxis(90f, Vector3.up) * forward.normalized;
 
             var points = new List<RnPoint>();
@@ -81,8 +129,8 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             if (!isRoadPrev)
                 (lastPoint, firstPoint) = (firstPoint, lastPoint);
 
-            var leftSideWalkEdge = newEdge.LeftSideWalkEdge.Edge;
-            var rightSideWalkEdge = newEdge.RightSideWalkEdge.Edge;
+            var leftSideWalkEdge = edgeInfo.LeftSideWalkEdge.Edge;
+            var rightSideWalkEdge = edgeInfo.RightSideWalkEdge.Edge;
 
             if (!isRoadPrev)
                 (leftSideWalkEdge, rightSideWalkEdge) = (rightSideWalkEdge, leftSideWalkEdge);
@@ -90,36 +138,161 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             var borderLength = Vector3.Distance(firstPoint.Vertex, lastPoint.Vertex);
             var leftSideWalkEdgeLength = leftSideWalkEdge == null ? 0f : leftSideWalkEdge.CalcLength();
             var rightSideWalkEdgeLength = rightSideWalkEdge == null ? 0f : rightSideWalkEdge.CalcLength();
-
-            var leftSideWalkOuterPoint = newEdge.LeftSideWalkEdge.SideWalk == null
-                ? new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength)
-                : (newEdge.LeftSideWalkEdge.IsOutsidePrev
-                    ? leftSideWalkEdge.LineString.Points.First()
-                    : leftSideWalkEdge.LineString.Points.Last());
-            var rightSideWalkOuterPoint = newEdge.RightSideWalkEdge.SideWalk == null
-                ? new RnPoint(lastPoint.Vertex - right * rightSideWalkEdgeLength)
-                : (newEdge.RightSideWalkEdge.IsOutsidePrev
-                    ? rightSideWalkEdge.LineString.Points.First()
-                    : rightSideWalkEdge.LineString.Points.Last());
             var longerSideWalkEdgeLength = Math.Max(leftSideWalkEdgeLength, rightSideWalkEdgeLength);
 
-            var exteriorPoints = new List<RnPoint>();
-            exteriorPoints.Add(firstPoint);
-            exteriorPoints.Add(leftSideWalkOuterPoint);
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (forward + right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * longerSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * borderLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + forward * longerSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (forward - right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * leftSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * borderLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex - right * rightSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward - right) * 3f));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * longerSideWalkEdgeLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * borderLength));
-            exteriorPoints.Add(new RnPoint(exteriorPoints.Last().Vertex + (-forward) * longerSideWalkEdgeLength));
-            exteriorPoints.Add(rightSideWalkOuterPoint);
-            exteriorPoints.Add(lastPoint);
+            var leftSideWalkOuterPoint = edgeInfo.LeftSideWalkEdge.SideWalk == null
+                ? new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength)
+                : (edgeInfo.LeftSideWalkEdge.IsOutsidePrev
+                    ? edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
+                    : edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
+            var rightSideWalkOuterPoint = edgeInfo.RightSideWalkEdge.SideWalk == null
+                ? new RnPoint(lastPoint.Vertex - right * rightSideWalkEdgeLength)
+                : (edgeInfo.RightSideWalkEdge.IsOutsidePrev
+                    ? edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
+                    : edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
+
+            if (isRoadPrev)
+            {
+                (leftSideWalkOuterPoint, rightSideWalkOuterPoint) = (rightSideWalkOuterPoint, leftSideWalkOuterPoint);
+                (leftSideWalkEdgeLength, rightSideWalkEdgeLength) = (rightSideWalkEdgeLength, leftSideWalkEdgeLength);
+            }
+
+            // 外輪郭を描画
+            var intersectionType = IntersectionType == IntersectionType.Cross ? TIntersectionType.None : tIntersectionType;
+            var exteriorPoints = CalcExteriorPoints(forward, right, firstPoint, lastPoint, borderLength, leftSideWalkEdgeLength, rightSideWalkEdgeLength, longerSideWalkEdgeLength, leftSideWalkOuterPoint, rightSideWalkOuterPoint, intersectionType);
+            Handles.color = Color.green;
+            Handles.DrawAAPolyLine(exteriorPoints.Select(p => p.Vertex).ToArray());
+        }
+
+        private void HandlePointPicked(ExtensibleRoadEdge edge)
+        {
+            if (edge.road == null)
+                return;
+
+            var edgeMaker = new RnRoadEdgeMaker(edge.road.Roads[0]);
+            edgeInfo = edgeMaker.Execute(edge);
+            IsCreating = true;
+        }
+
+        private void AddIntersection()
+        {
+            var roadGroup = edgeInfo.Edge.road;
+            var road = roadGroup.Roads[0];
+
+            var isRoadPrev = edgeInfo.Edge.isPrev;
+            var center = edgeInfo.Edge.center;
+            var forward = edgeInfo.Edge.forward.normalized;
+            var right = Quaternion.AngleAxis(90f, Vector3.up) * forward.normalized;
+
+            var points = new List<RnPoint>();
+            RnPoint firstPoint;
+            {
+                var way = road.GetLeftWayOfLanes();
+                firstPoint = isRoadPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed
+                    ? way.LineString.Points.First() : way.LineString.Points.Last();
+            }
+
+            RnPoint lastPoint;
+            {
+                var way = road.GetRightWayOfLanes();
+                lastPoint = isRoadPrev ^ road.MainLanes.Last().IsReverse ^ way.IsReversed
+                    ? way.LineString.Points.First() : way.LineString.Points.Last();
+            }
+
+            if (!isRoadPrev)
+                (lastPoint, firstPoint) = (firstPoint, lastPoint);
+
+            var leftSideWalkEdge = edgeInfo.LeftSideWalkEdge.Edge;
+            var rightSideWalkEdge = edgeInfo.RightSideWalkEdge.Edge;
+
+            //if (!isRoadPrev)
+            //    (leftSideWalkEdge, rightSideWalkEdge) = (rightSideWalkEdge, leftSideWalkEdge);
+
+            var borderLength = Vector3.Distance(firstPoint.Vertex, lastPoint.Vertex);
+            var leftSideWalkEdgeLength = leftSideWalkEdge == null ? 0f : leftSideWalkEdge.CalcLength();
+            var rightSideWalkEdgeLength = rightSideWalkEdge == null ? 0f : rightSideWalkEdge.CalcLength();
+            var longerSideWalkEdgeLength = Math.Max(leftSideWalkEdgeLength, rightSideWalkEdgeLength);
+
+            var leftSideWalkOuterPoint = edgeInfo.LeftSideWalkEdge.SideWalk == null
+                ? new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength)
+                : (edgeInfo.LeftSideWalkEdge.IsOutsidePrev
+                    ? edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
+                    : edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
+            var rightSideWalkOuterPoint = edgeInfo.RightSideWalkEdge.SideWalk == null
+                ? new RnPoint(lastPoint.Vertex - right * rightSideWalkEdgeLength)
+                : (edgeInfo.RightSideWalkEdge.IsOutsidePrev
+                    ? edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
+                    : edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
+
+            if (isRoadPrev)
+            {
+                (leftSideWalkOuterPoint, rightSideWalkOuterPoint) = (rightSideWalkOuterPoint, leftSideWalkOuterPoint);
+                (leftSideWalkEdgeLength, rightSideWalkEdgeLength) = (rightSideWalkEdgeLength, leftSideWalkEdgeLength);
+            }
+
+            RnIntersection intersection;
+            if (IntersectionType == IntersectionType.Cross)
+                intersection = CreateCrossIntersection(road, forward, right, firstPoint, lastPoint, borderLength, leftSideWalkEdgeLength, rightSideWalkEdgeLength, longerSideWalkEdgeLength, leftSideWalkOuterPoint, rightSideWalkOuterPoint);
+            else
+                intersection = CreateTIntersection(road, forward, right, firstPoint, lastPoint, borderLength, leftSideWalkEdgeLength, rightSideWalkEdgeLength, longerSideWalkEdgeLength, leftSideWalkOuterPoint, rightSideWalkOuterPoint, tIntersectionType);
+
+            // 隣接道路がある輪郭を追加
+            foreach (var roadBorder in road.MainLanes.Select(l => isRoadPrev ^ l.IsReverse ? l.PrevBorder : l.NextBorder))
+            {
+                intersection.AddEdge(road, roadBorder);
+            }
+
+            intersection.Align();
+            context.RoadNetwork.AddIntersection(intersection);
+
+            // 隣接情報更新
+            if (edgeInfo.Edge.isPrev)
+                road.SetPrevNext(intersection, road.Next);
+            else
+                road.SetPrevNext(road.Prev, intersection);
+
+            // 横断歩道を追加するために道路側に拡張
+            // 逆側を拡張しないために一時的に隣接関係を削除
+            var oppositeIntersection = isRoadPrev ? road.Next : road.Prev;
+            if (edgeInfo.Edge.isPrev)
+                road.SetPrevNext(intersection, null);
+            else
+                road.SetPrevNext(null, intersection);
+            var option = new RnModelEx.CalibrateIntersectionBorderOption();
+            var sliceResult = road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
+            if (sliceResult && (prevRoad != null || nextRoad != null))
+            {
+                bool result;
+                if (edgeInfo.Edge.isPrev)
+                    result = prevRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+                else
+                    result = nextRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
+            }
+
+            // 隣接関係を復元
+            if (edgeInfo.Edge.isPrev)
+                road.SetPrevNext(intersection, oppositeIntersection);
+            else
+                road.SetPrevNext(oppositeIntersection, intersection);
+
+            intersection.TargetTrans.Clear();
+
+            if (sliceResult)
+                OnIntersectionAdded?.Invoke(intersection, road);
+            else
+                OnIntersectionAdded?.Invoke(intersection, null);
+        }
+
+        private RnIntersection CreateCrossIntersection(RnRoad road, Vector3 forward, Vector3 right, RnPoint firstPoint, RnPoint lastPoint, float borderLength, float leftSideWalkEdgeLength, float rightSideWalkEdgeLength, float longerSideWalkEdgeLength, RnPoint leftSideWalkOuterPoint, RnPoint rightSideWalkOuterPoint)
+        {
+            var intersection = new RnIntersection();
+
+            var exteriorPoints = CalcExteriorPoints(forward, right, firstPoint, lastPoint, borderLength, leftSideWalkEdgeLength, rightSideWalkEdgeLength, longerSideWalkEdgeLength, leftSideWalkOuterPoint, rightSideWalkOuterPoint, TIntersectionType.None);
+
+            foreach (var point in exteriorPoints)
+            {
+                new GameObject("Point").transform.position = point.Vertex;
+            }
 
             // 歩道作成
             for (int i = 0; i < 15; i += 4)
@@ -144,42 +317,90 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                 intersection.AddEdge(null, nonBorderWay);
             }
 
-            // 隣接道路がある輪郭を追加
-            foreach (var roadBorder in road.MainLanes.Select(l => l.IsReverse ? l.PrevBorder : l.NextBorder))
+            return intersection;
+        }
+
+        private static List<RnPoint> CalcExteriorPoints(Vector3 forward, Vector3 right, RnPoint firstPoint, RnPoint lastPoint, float borderLength, float leftSideWalkEdgeLength, float rightSideWalkEdgeLength, float longerSideWalkEdgeLength, RnPoint leftSideWalkOuterPoint, RnPoint rightSideWalkOuterPoint, TIntersectionType intersectionType)
+        {
+            var exteriorPoints = new List<RnPoint>();
+
+            exteriorPoints.Add(firstPoint);
+            exteriorPoints.Add(rightSideWalkOuterPoint);
+            var position = rightSideWalkOuterPoint.Vertex;
+            position += (forward + right) * 3f;
+            if (intersectionType != TIntersectionType.Right)
+                exteriorPoints.Add(new RnPoint(position));
+            position += forward * longerSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Right)
+                exteriorPoints.Add(new RnPoint(position));
+            position += forward * borderLength;
+            if (intersectionType != TIntersectionType.Right)
+                exteriorPoints.Add(new RnPoint(position));
+            position += forward * longerSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Right)
+                exteriorPoints.Add(new RnPoint(position));
+
+            position += (forward - right) * 3f;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(position));
+            position -= right * leftSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(position));
+            position -= right * borderLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(position));
+            position -= right * rightSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(position));
+
+            position += (-forward - right) * 3f;
+            if (intersectionType != TIntersectionType.Left)
+                exteriorPoints.Add(new RnPoint(position));
+            position += (-forward) * longerSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Left)
+                exteriorPoints.Add(new RnPoint(position));
+            position += (-forward) * borderLength;
+            if (intersectionType != TIntersectionType.Left)
+                exteriorPoints.Add(new RnPoint(position));
+            position += (-forward) * longerSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Left)
+                exteriorPoints.Add(new RnPoint(position));
+
+            exteriorPoints.Add(leftSideWalkOuterPoint);
+            exteriorPoints.Add(lastPoint);
+            return exteriorPoints;
+        }
+
+        private RnIntersection CreateTIntersection(RnRoad road, Vector3 forward, Vector3 right, RnPoint firstPoint, RnPoint lastPoint, float borderLength, float leftSideWalkEdgeLength, float rightSideWalkEdgeLength, float longerSideWalkEdgeLength, RnPoint leftSideWalkOuterPoint, RnPoint rightSideWalkOuterPoint, TIntersectionType intersectionType)
+        {
+            var intersection = new RnIntersection();
+
+            var exteriorPoints = CalcExteriorPoints(forward, right, firstPoint, lastPoint, borderLength, leftSideWalkEdgeLength, rightSideWalkEdgeLength, longerSideWalkEdgeLength, leftSideWalkOuterPoint, rightSideWalkOuterPoint, intersectionType);
+
+            // 歩道作成
+            for (int i = 0; i < 11; i += 4)
             {
-                intersection.AddEdge(road, roadBorder);
+                var startWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i], exteriorPoints[i + 1] }));
+                var endWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 2], exteriorPoints[i + 3] }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 3], exteriorPoints[i] }));
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 1], exteriorPoints[i + 2] }));
+                var sideWalk = RnSideWalk.Create(intersection, outsideWay, insideWay, startWay, endWay);
+                intersection.AddSideWalk(sideWalk);
+                context.RoadNetwork.AddSideWalk(sideWalk);
             }
 
-            intersection.Align();
-            context.RoadNetwork.AddIntersection(intersection);
+            // 輪郭作成
+            for (int i = 0; i < 11; i += 4)
+            {
+                var borderWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i + 3], exteriorPoints[(i + 4) % 12] }));
+                var nonBorderWay = new RnWay(new RnLineString(new List<RnPoint>() { exteriorPoints[i], exteriorPoints[i + 3] }));
+                // 隣接道路がある輪郭は別途追加
+                if (i != 8)
+                    intersection.AddEdge(null, borderWay);
+                intersection.AddEdge(null, nonBorderWay);
+            }
 
-            // 隣接情報更新
-            if (newEdge.Edge.isPrev)
-                road.SetPrevNext(intersection, road.Next);
-            else
-                road.SetPrevNext(road.Prev, intersection);
-
-            // 横断歩道を追加するために道路側に拡張
-            // 逆側を拡張しないために一時的に隣接関係を削除
-            var oppositeIntersection = newEdge.Edge.isPrev ? road.Next : road.Prev;
-            if (newEdge.Edge.isPrev)
-                road.SetPrevNext(intersection, null);
-            else
-                road.SetPrevNext(null, intersection);
-            var option = new RnModelEx.CalibrateIntersectionBorderOption();
-            road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
-            if (newEdge.Edge.isPrev)
-                prevRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
-            else
-                nextRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Next);
-
-            // 隣接関係を復元
-            if (newEdge.Edge.isPrev)
-                road.SetPrevNext(intersection, oppositeIntersection);
-            else
-                road.SetPrevNext(oppositeIntersection, intersection);
-
-            OnIntersectionAdded?.Invoke(intersection);
+            return intersection;
         }
 
         private static float GetDistanceToLine(Vector3 point, Vector3 origin, Vector3 direction)
@@ -305,6 +526,11 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             }
 
             return result;
+        }
+
+        internal void SetIntersectionType(IntersectionType t)
+        {
+            IntersectionType = t;
         }
     }
 }

@@ -116,8 +116,8 @@ namespace PLATEAU.RoadNetwork.AddSystem
             }
 
             var sideWalkEdgeAligner = new RnSideWalkEdgeAligner(oldEdgeCenter, oldEdgeDirection, edgeCenter, edgeDirection);
-            sideWalkEdgeAligner.Execute(road, leftSideWalk, scannedLineStrings, isLeftInsidePrev, isLeftOutsidePrev, isLeftStartEdge, true);
-            sideWalkEdgeAligner.Execute(road, rightSideWalk, scannedLineStrings, isRightInsidePrev, isRightOutsidePrev, isRightStartEdge, false);
+            sideWalkEdgeAligner.Execute(road, leftSideWalk, scannedLineStrings, isLeftInsidePrev, isLeftOutsidePrev, isLeftStartEdge, true, extensibleEdge.isPrev);
+            sideWalkEdgeAligner.Execute(road, rightSideWalk, scannedLineStrings, isRightInsidePrev, isRightOutsidePrev, isRightStartEdge, false, extensibleEdge.isPrev);
 
             var edgeInfo = new RoadEdgeInfo();
             edgeInfo.Edge = RnRoadSkeleton.FindExtensibleEdge(extensibleEdge.road, RnRoadSkeleton.CreateCenterSpline(extensibleEdge.road)).First();
@@ -145,50 +145,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return edgeInfo;
         }
 
-        ///// <summary>
-        ///// Lineに重なるエッジを作成する
-        ///// </summary>
-        ///// <param name="edgeLineOrigin"></param>
-        ///// <param name="edgeLineDirection"></param>
-        ///// <returns></returns>
-        //public IntersectionEdgeInfo Execute(Vector3 edgeLineOrigin, Vector3 edgeLineDirection)
-        //{
-        //    var neighbor = FindNeighborOnEdge(edgeLineOrigin, edgeLineDirection);
-
-        //    if (neighbor == null)
-        //    {
-        //        return new IntersectionEdgeInfo();
-        //    }
-
-        //    var leftSideWalkEdge = FindLeftSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
-        //    var rightSideWalkEdge = FindRightSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
-
-        //    return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
-        //}
-
-        //public IntersectionEdgeInfo Execute(RnNeighbor neighbor, int index)
-        //{
-        //    var edgeLineOrigin = neighbor.Border.Points.ElementAt(index);
-        //    var edgeLineDirection = neighbor.Border.Points.ElementAt(index + 1).Vertex - neighbor.Border.Points.ElementAt(index);
-        //    var leftSideWalkEdge = FindLeftSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
-        //    var rightSideWalkEdge = FindRightSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
-        //    if (index > 0)
-        //    {
-        //        var newWay = new RnWay(new RnLineString(neighbor.Border.Points.Take(index + 1)));
-        //        target.AddEdge(null, newWay);
-        //        neighbor.Border.Points = neighbor.Border.Points.Skip(index);
-        //    }
-        //    if (index < neighbor.Border.Points.Count() - 1)
-        //    {
-        //        var newWay = new RnWay(new RnLineString(neighbor.Border.Points.Skip(1)));
-        //        target.AddEdge(null, newWay);
-        //        neighbor.Border.Points = neighbor.Border.Points.Take(2);
-        //    }
-        //    target.Align();
-
-        //    return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
-        //}
-
         /// <summary>
         /// 左側の歩道のうち、端に存在するものを取得する
         /// </summary>
@@ -212,19 +168,21 @@ namespace PLATEAU.RoadNetwork.AddSystem
             // 内側Wayの端点はもっとも左のレーンのWayの端点と一致するはず
             isInsidePrev = sideWalk.InsideWay.LineString.Points.First() == edgePoint;
 
-            if (!sideWalk.EdgeWays.Any())
-                isStartEdge = true;
-            else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
-                isStartEdge = true;
-            else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
-                isStartEdge = false;
-            else
-            {
-                if (sideWalk.EdgeWays.Count() == 2)
-                    Debug.LogWarning("歩道端とレーンが離れています");
+            isStartEdge = isInsidePrev ^ sideWalk.InsideWay.IsReversed;
 
-                isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
-            }
+            //if (!sideWalk.EdgeWays.Any())
+            //    isStartEdge = true;
+            //else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
+            //    isStartEdge = true;
+            //else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
+            //    isStartEdge = false;
+            //else
+            //{
+            //    if (sideWalk.EdgeWays.Count() == 2)
+            //        Debug.LogWarning("歩道端とレーンが離れています");
+
+            //    isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
+            //}
 
             // HACK: 外側Wayの向きは無理やり判定
             var edge = isStartEdge ? sideWalk.StartEdgeWay : sideWalk.EndEdgeWay;
@@ -259,19 +217,21 @@ namespace PLATEAU.RoadNetwork.AddSystem
             // 内側Wayの端点はもっとも右のレーンのWayの端点と一致するはず
             isInsidePrev = sideWalk.InsideWay.LineString.Points.First() == edgePoint;
 
-            if (!sideWalk.EdgeWays.Any())
-                isStartEdge = true;
-            else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
-                isStartEdge = true;
-            else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
-                isStartEdge = false;
-            else
-            {
-                if (sideWalk.EdgeWays.Count() == 2)
-                    Debug.LogWarning("歩道端とレーンが離れています");
+            isStartEdge = isInsidePrev ^ sideWalk.InsideWay.IsReversed;
 
-                isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
-            }
+            //if (!sideWalk.EdgeWays.Any())
+            //    isStartEdge = true;
+            //else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
+            //    isStartEdge = true;
+            //else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
+            //    isStartEdge = false;
+            //else
+            //{
+            //    if (sideWalk.EdgeWays.Count() == 2)
+            //        Debug.LogWarning("歩道端とレーンが離れています");
+
+            //    isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
+            //}
 
             // HACK: 外側Wayの向きは無理やり判定
             var edge = isStartEdge ? sideWalk.StartEdgeWay : sideWalk.EndEdgeWay;

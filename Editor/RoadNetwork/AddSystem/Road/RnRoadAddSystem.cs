@@ -132,8 +132,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 }
 
                 var newEdge = new RnWay(new RnLineString(new List<RnPoint> {
-                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.RightWay.IsReversed ? lane.RightWay.Points.First() : lane.RightWay.Points.Last(),
-                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.LeftWay.IsReversed ? lane.LeftWay.Points.First() : lane.LeftWay.Points.Last()
+                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.RightWay.IsReversed ? lane.RightWay.LineString.Points.First() : lane.RightWay.LineString.Points.Last(),
+                    edgeInfo.Edge.isPrev ^ lane.IsReverse ^ lane.LeftWay.IsReversed ? lane.LeftWay.LineString.Points.First() : lane.LeftWay.LineString.Points.Last()
                 }));
                 // ボーダー再構築
                 if (edgeInfo.Edge.isPrev ^ lane.IsReverse)
@@ -143,9 +143,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
 
             if (edgeInfo.LeftSideWalkEdge.SideWalk != null)
-                ExtendSideWalk(edgeInfo.LeftSideWalkEdge, spline, scannedLineStrings);
+                ExtendSideWalk(edgeInfo.LeftSideWalkEdge, spline, scannedLineStrings, road, true, edgeInfo.Edge.isPrev);
             if (edgeInfo.RightSideWalkEdge.SideWalk != null)
-                ExtendSideWalk(edgeInfo.RightSideWalkEdge, spline, scannedLineStrings);
+                ExtendSideWalk(edgeInfo.RightSideWalkEdge, spline, scannedLineStrings, road, false, edgeInfo.Edge.isPrev);
 
             //foreach (var way in GetAllWaysAlongRoad(road, isPrev))
             //{
@@ -153,12 +153,43 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             //}
         }
 
-        private void ExtendSideWalk(SideWalkEdgeInfo sideWalkEdgeInfo, Spline spline, HashSet<RnLineString> scannedLineStrings)
+        private void ExtendSideWalk(SideWalkEdgeInfo sideWalkEdgeInfo, Spline spline, HashSet<RnLineString> scannedLineStrings, RnRoad road, bool isLeft, bool isPrev)
         {
             var insideWay = sideWalkEdgeInfo.SideWalk.InsideWay;
             if (!scannedLineStrings.Contains(insideWay.LineString))
             {
-                ExtendPointsAlongSpline(insideWay.LineString.Points, spline, sideWalkEdgeInfo.IsInsidePrev);
+                List<RnPoint> orderedLanePoints;
+                if (isLeft)
+                {
+                    var laneWay = road.GetLeftWayOfLanes();
+                    orderedLanePoints = new List<RnPoint>(laneWay.LineString.Points);
+                    if (isPrev ^ road.MainLanes[0].IsReverse ^ laneWay.IsReversed)
+                        orderedLanePoints.Reverse();
+                    var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
+                    for (; index < orderedLanePoints.Count; index++)
+                    {
+                        if (sideWalkEdgeInfo.IsInsidePrev)
+                            insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
+                        else
+                            insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                    }
+                }
+                else
+                {
+                    var laneWay = road.GetRightWayOfLanes();
+                    orderedLanePoints = new List<RnPoint>(laneWay.LineString.Points);
+                    if (isPrev ^ road.MainLanes[road.MainLanes.Count - 1].IsReverse ^ laneWay.IsReversed)
+                        orderedLanePoints.Reverse();
+                    var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
+                    for (; index < orderedLanePoints.Count; index++)
+                    {
+                        if (sideWalkEdgeInfo.IsInsidePrev)
+                            insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
+                        else
+                            insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                    }
+                }
+                //ExtendPointsAlongSpline(insideWay.LineString.Points, spline, sideWalkEdgeInfo.IsInsidePrev);
                 scannedLineStrings.Add(insideWay.LineString);
             }
 

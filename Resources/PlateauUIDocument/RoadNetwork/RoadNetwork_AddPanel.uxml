@@ -14,13 +14,13 @@
                         <ui:Label tabindex="-1" text="終了" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
                     </ui:Button>
                 </ui:VisualElement>
-                <ui:VisualElement name="AddRoadInstruction" style="flex-grow: 1; align-self: center; display: flex;">
+                <ui:VisualElement name="RoadAddInstruction" style="flex-grow: 1; align-self: center; display: flex;">
                     <ui:Label tabindex="-1" text="道路を追加します&#10;&#10;操作方法" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-center;" />
                     <ui:Label tabindex="-1" text="①クリックで端点を選択&#10;②道路中心線を編集&#10;　　点ドラッグ：点移動&#10;　　クリック：点追加&#10;　　Enter：確定して①に戻る&#10;　　Esc：キャンセルして①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: space-between; align-items: center; padding-top: 8px; padding-bottom: 8px;">
                     <ui:Label tabindex="-1" text="交差点" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 16px; flex-grow: 0; padding-right: 16px;" />
-                    <ui:DropdownField index="1" choices="T字路,十字路" tabindex="0" style="flex-shrink: 1; flex-grow: 1;" />
+                    <ui:DropdownField index="1" choices="T字路,十字路" tabindex="0" name="IntersectionTypeDropdown" style="flex-shrink: 1; flex-grow: 1;" />
                     <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionAddStartButton" class="ActionButton" style="width: 90px; border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px; align-items: center;">
                         <ui:Label tabindex="-1" text="開始" parse-escape-sequences="true" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
                     </ui:Button>
@@ -29,9 +29,9 @@
                     </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="AddIntersectionInstruction" style="flex-grow: 1; align-self: center; display: none;">
+            <ui:VisualElement name="IntersectionAddInstruction" style="flex-grow: 1; align-self: center; display: flex;">
                 <ui:Label tabindex="-1" text="交差点を追加します&#10;&#10;操作方法" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-center;" />
-                <ui:Label tabindex="-1" text="①クリックで端点を選択&#10;②道路中心線を編集&#10;　　点ドラッグ：点移動&#10;　　クリック：点追加&#10;　　Enter：確定して①に戻る&#10;　　Esc：キャンセルして①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
+                <ui:Label tabindex="-1" text="①クリックで端点を選択&#10;②交差点を編集&#10;　　R：T字路を回転&#10;　　Enter：確定して①に戻る&#10;　　Esc：キャンセルして①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
             </ui:VisualElement>
             <ui:VisualElement name="Divider" style="flex-grow: 1;" />
             <ui:VisualElement style="flex-grow: 1; padding-top: 16px; padding-bottom: 16px; align-items: center; display: none;">

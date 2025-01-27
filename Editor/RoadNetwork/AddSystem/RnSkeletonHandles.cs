@@ -54,7 +54,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
         private void PickIntersectionEdge(List<RnIntersectionSkeleton> intersectionSkeletons, Event e)
         {
-            foreach (var intersectionSkeleton in intersectionSkeletons)
+            // コピーしてループ中にリストが変更されるのを防ぐ
+            var copiedIntersectionSkeletons = new List<RnIntersectionSkeleton>(intersectionSkeletons);
+            foreach (var intersectionSkeleton in copiedIntersectionSkeletons)
             {
                 var edges = intersectionSkeleton.ExtensibleEdges;
 
@@ -85,7 +87,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
         private void PickRoadEdge(List<RnRoadSkeleton> roadSkeletons, Event e)
         {
-            foreach (var roadSleketon in roadSkeletons)
+            // コピーしてループ中にリストが変更されるのを防ぐ
+            var copiedRoadSkeletons = new List<RnRoadSkeleton>(roadSkeletons);
+            foreach (var roadSleketon in copiedRoadSkeletons)
             {
                 foreach (var edge in roadSleketon.ExtensibleEdges)
                 {

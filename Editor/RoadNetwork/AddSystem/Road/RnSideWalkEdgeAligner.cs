@@ -16,6 +16,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
         Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)> scannedLineStrings;
         RnRoad road;
         RnSideWalk target;
+        bool isRoadPrev;
         bool isLeftSideWalk;
         bool isInsidePrev;
         bool isOutsidePrev;
@@ -31,9 +32,10 @@ namespace PLATEAU.RoadNetwork.AddSystem
             this.newEdgeCenter = newEdgeCenter;
         }
 
-        public void Execute(RnRoad road, RnSideWalk target, Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)> scannedLineStrings, bool isInsidePrev, bool isOutsidePrev, bool isStartEdge, bool isLeftSideWalk)
+        public void Execute(RnRoad road, RnSideWalk target, Dictionary<RnLineString, (RnPoint oldEdgePoint, RnPoint newEdgePoint)> scannedLineStrings, bool isInsidePrev, bool isOutsidePrev, bool isStartEdge, bool isLeftSideWalk, bool isRoadPrev)
         {
             this.road = road;
+            this.isRoadPrev = isRoadPrev;
             this.target = target;
             this.scannedLineStrings = scannedLineStrings;
             this.isLeftSideWalk = isLeftSideWalk;
@@ -83,12 +85,12 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     if (isLeftSideWalk)
                     {
                         laneEdgeWay = road.GetLeftWayOfLanes();
-                        edgePoint = (isPrev ^ road.MainLanes.First().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
+                        edgePoint = (isRoadPrev ^ road.MainLanes.First().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
                     }
                     else
                     {
                         laneEdgeWay = road.GetRightWayOfLanes();
-                        edgePoint = (isPrev ^ road.MainLanes.Last().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
+                        edgePoint = (isRoadPrev ^ road.MainLanes.Last().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
                     }
 
                     // Laneの頂点と共有化
