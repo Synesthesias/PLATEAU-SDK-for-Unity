@@ -1,9 +1,12 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IRrTarget = PLATEAU.RoadAdjust.RoadNetworkToMesh.IRrTarget;
+using PLATEAUReproducedRoad = PLATEAU.RoadAdjust.RoadNetworkToMesh.PLATEAUReproducedRoad;
 using RnmLineSeparateType = PLATEAU.RoadAdjust.RoadNetworkToMesh.RnmLineSeparateType;
 
 namespace PLATEAU.RoadAdjust
@@ -18,18 +21,19 @@ namespace PLATEAU.RoadAdjust
         /// <summary>
         /// 生成します。
         /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
+        /// 生成された道路を返します。
         /// </summary>
-        public PLATEAUCityObjectGroup Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, bool doSubdivide)
+        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, bool doSubdivide)
         {
             // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
-            var generatedObj = rnm.Generate(doSubdivide);
+            var generatedRoads = rnm.Generate(doSubdivide);
 
             // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
-            rm.Generate(doSubdivide);
+            var generatedIntersections = rm.Generate(doSubdivide);
 
-            return generatedObj;
+            return generatedRoads.Concat(generatedIntersections).ToList();
         }
 
         public static Transform GenerateDstParent()

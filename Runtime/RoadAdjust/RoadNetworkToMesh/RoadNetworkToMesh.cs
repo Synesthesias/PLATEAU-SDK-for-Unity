@@ -46,8 +46,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         /// <summary>
         /// 道路ネットワークからメッシュを生成します。
         /// 引数<paramref name="doSubdivide"/>の説明については<see cref="LineSmoother"/>を参照してください。
+        /// 生成されたもののリストを返します。
         /// </summary>
-        public PLATEAUCityObjectGroup Generate(bool doSubdivide)
+        public List<PLATEAUReproducedRoad> Generate(bool doSubdivide)
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
@@ -94,7 +95,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
 
             var dstParent = RoadReproducer.GenerateDstParent();
-            PLATEAUCityObjectGroup returnObj = null;
+            var resultList = new List<PLATEAUReproducedRoad>();
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
@@ -108,13 +109,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                 // オブジェクトの生成
                 var dstObj = GenerateDstGameObj(dstParent, srcObjs);
+                resultList.Add(dstObj.GetComponent<PLATEAUReproducedRoad>());
 
                 if (DebugMode)
                 {
                     var comp = dstObj.GetOrAddComponent<PLATEAURoadNetworkToMeshDebug>();
                     comp.Init(contourMesh);
                 }
-                
                 
                 var renderer = dstObj.GetOrAddComponent<MeshRenderer>();
                 var filter = dstObj.GetOrAddComponent<MeshFilter>();
@@ -170,9 +171,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                                 });
                         componentCopier.Copy(srcObjs[0].Transform.gameObject, dstObj);
                     }
-
-                    if (returnObj == null)
-                        returnObj = dstObj.GetComponent<PLATEAUCityObjectGroup>();
+                    
                 }
             }
             
@@ -182,7 +181,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
 
-            return returnObj.GetComponent<PLATEAUCityObjectGroup>();
+            return resultList;
         }
 
         /// <summary>
