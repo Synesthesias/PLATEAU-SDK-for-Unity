@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {
     /// <summary>
-    /// 歩道の輪郭線を生成します。レーンは分割します。
+    /// 道路ネットワークから歩道の輪郭線を生成します。レーンは分割します。
     /// </summary>
     internal class RnmContourGeneratorSidewalk : IRnmContourGenerator
     {
@@ -40,8 +40,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 var inside = sideWalk.InsideWay;
                 var outside = sideWalk.OutsideWay;
                 if (inside == null || outside == null) continue;
-                var curbBoundary = new RnWay(inside);
-                new RnmModelAdjuster().MoveToward(curbBoundary, outside, CurbWidth, 0, 0);
+                var insideCurbBoundary = new RnWay(inside);
+                new RnmModelAdjuster().MoveToward(insideCurbBoundary, outside, CurbWidth, 0, 0);
                 
                 
 
@@ -53,7 +53,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 // 歩道部を生成
                 var calc = new RnmContourCalculator(RnmMaterialType.SideWalk);
                 calc.AddLine(outside, new Vector2(1, uvY1), new Vector2(1, uvY2));
-                calc.AddLine(curbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                calc.AddLine(insideCurbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                
+                // 外側の線と内側の線が重複していたら、幅0の歩道となるのでスキップ
+                calc.RemoveDuplicateOrReverseLine();
+                if (calc.Count <= 1) continue;
+                
                 var contour = calc.Calculate();
 
                 // 歩道の段差を作成
@@ -66,7 +71,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 
                 // 縁石部を生成
                 var calc2 = new RnmContourCalculator(RnmMaterialType.MedianLane);
-                calc2.AddLine(curbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
+                calc2.AddLine(insideCurbBoundary, new Vector2(0, uvY1), new Vector2(0, uvY2));
                 calc2.AddLine(inside , new Vector2(0, 0), new Vector2(0, 1));
                 var contour2 = calc2.Calculate();
                 // 段差

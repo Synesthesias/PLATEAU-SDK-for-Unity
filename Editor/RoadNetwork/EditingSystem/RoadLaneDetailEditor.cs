@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public void OnLineCreated(Spline createdSpline, IEditTargetLine targetLineBase)
         {
             var targetLine = targetLineBase as EditTargetRoadWay ;
-            targetLine.Apply(targetLine.Road, createdSpline);
+            targetLine.Apply(targetLine.Road, createdSpline); // スプラインを道路ネットワークに適用します
 
             var reproduceTarget = new RrTargetRoadBases(editTarget.RoadNetwork, new[] { targetLine.Road });
             new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, DoSubdivide);
