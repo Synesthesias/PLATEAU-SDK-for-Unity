@@ -549,11 +549,11 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 点の座標をまとめて設定する。
-        /// 引数<paramref name="nextPoints"/>の数は現在と同じにすることを推奨（参照が崩れるので。）
-        /// しかし、引数の数が現在と違う場合は、最初と最後のみ参照を保つ。
+        /// 点の座標をまとめて設定する。RnPointへの参照はなるべく保持する。Wayの向きを考慮する。
+        /// 引数<paramref name="nextPoints"/>の点の数が現在の点と同じであれば、すべてのRnPointへの参照を保つ。
+        /// しかし、引数の点の数が現在の点の数と違う場合は、最初と最後のみ参照を保つ。
         /// </summary>
-        public void SetPoints(IEnumerable<Vector3> nextPointsArg)
+        public void SetPointsKeepReference(IEnumerable<Vector3> nextPointsArg)
         {
             var nextPoints = nextPointsArg.ToArray();
             if(nextPoints.Length == 0) LineString.Points.Clear();
@@ -576,8 +576,20 @@ namespace PLATEAU.RoadNetwork.Structure
             LineString = RnLineString.Create(nextPoints.Select(p => new RnPoint(p)));
             SetPoint(0, firstRef);
             SetPoint(-1, lastRef);
+        }
 
-
+        /// <summary>
+        /// 点の座標をまとめて設定する。RnPointを新たに生成するため、既存のRnPointへの参照は途切れる。Wayの向きを考慮する。
+        /// </summary>
+        public void SetPointsUnkeepReference(IEnumerable<Vector3> nextPointsArg)
+        {
+            var nextPoints = nextPointsArg.ToArray();
+            if(IsReversed) Array.Reverse(nextPoints);
+            LineString.Points.Clear();
+            foreach(var p in nextPoints)
+            {
+                LineString.AddPoint(new RnPoint(p));
+            }
         }
     }
 

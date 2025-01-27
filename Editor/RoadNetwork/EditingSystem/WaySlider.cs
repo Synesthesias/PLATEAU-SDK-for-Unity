@@ -137,7 +137,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 var targetWay = WaySlideCalcCache.ClosestWay.Ref;
                 var points = slidingWay.Points.Select(p => p.Vertex).ToArray();
                 if (targetWay.IsReversed) Array.Reverse(points);
-                targetWay.SetPoints(points);
+                targetWay.SetPointsKeepReference(points);
                 // var points = WaySlideCalcCache.ClosestWay.Ref.Points;
                 // points = WaySlideCalcCache.ClosestWay.Ref.IsReversed ? points.Reverse() : points;
                 // var distWayPoints = points.ToArray();

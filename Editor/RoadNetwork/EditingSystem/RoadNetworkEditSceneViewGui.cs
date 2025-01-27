@@ -30,7 +30,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private RnModel roadNetwork;
         private RoadNetworkEditTargetSelectButton editTargetSelectButton;
         private RoadNetworkEditTarget editTarget;
-        private RoadLaneDetailEditor roadDetailEditor;
+        private RoadLaneDetailEditor roadDetailEditor; // 個別レーン編集
         private RoadNetworkEditorGizmos gizmosDrawer;  // 道路レーンの線を描画
         
         // 道路レーンの編集モード
@@ -44,7 +44,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             new EditorDataList<EditorData<RnRoadGroup>>();
         
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
-        private RnSplineEditor splineEditor;
+        private RnSplineEditor splineEditor; // 全車道編集
 
         private const bool DoSubdivide = false;
         
