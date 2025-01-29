@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.EditingSystem;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -12,12 +12,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
     /// <summary>
     /// 線が複数あり、その中から線を1つ選択して編集します。
     /// </summary>
-    internal class LineSelectEdit : ICreatedSplineReceiver
+    internal class LineSelectEdit
     {
         private LineEditState state = LineEditState.LineNotSelected;
         private IEditTargetLine mouseHoveredLine;
         private IEditTargetLine selectedLine;
-        private SplineEditorHandles splineEditorHandles;
+        private SplineEditorHandles splineEditorHandles; // スプライン編集のUI
         private ICreatedLineReceiver createdLineReceiver;
         
         

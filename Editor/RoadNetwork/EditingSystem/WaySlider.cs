@@ -1,5 +1,6 @@
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -133,15 +134,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 
 
                 //元のwayに適用
-                var points = WaySlideCalcCache.ClosestWay.Ref.Points;
-                points = WaySlideCalcCache.ClosestWay.Ref.IsReversed ? points.Reverse() : points;
-                var distWayPoints = points.ToArray();
-                var eRevDumWay = slidingWay.ToArray();
-                for (int i = 0; i < distWayPoints.Length; i++)
-                {
-                    var current = distWayPoints[i];
-                    current.Vertex = eRevDumWay[i];
-                }
+                var targetWay = WaySlideCalcCache.ClosestWay.Ref;
+                var points = slidingWay.Points.Select(p => p.Vertex).ToArray();
+                if (targetWay.IsReversed) Array.Reverse(points);
+                targetWay.SetPointsKeepReference(points);
+                // var points = WaySlideCalcCache.ClosestWay.Ref.Points;
+                // points = WaySlideCalcCache.ClosestWay.Ref.IsReversed ? points.Reverse() : points;
+                // var distWayPoints = points.ToArray();
+                // var eRevDumWay = slidingWay.ToArray();
+                // for (int i = 0; i < distWayPoints.Length; i++)
+                // {
+                //     var current = distWayPoints[i];
+                //     current.Vertex = eRevDumWay[i];
+                // }
             }
 
             WaySlideCalcCache = null;

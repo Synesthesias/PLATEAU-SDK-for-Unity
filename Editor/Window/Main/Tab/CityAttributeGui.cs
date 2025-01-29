@@ -16,7 +16,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityAttributeGui : ITabContent
     {
         private static readonly string GIZMO_GAMEOBJECT_NAME = "PLATEAUCityObjectGroup_GizmoGameObject";
-        private bool isActive = false;
         private readonly EditorWindow parentEditorWindow;
         private CityObject parent;
         private CityObject child;
@@ -27,6 +26,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private Vector2 scrollParent;
         private Vector2 scrollChild;
         private CityObjectGizmoDrawer gizmoDrawer;
+        
+        // 何かの拍子にDrawが呼ばれて意図しないタイミングで属性のGizmoが描画されることがあったので、複数の描画フレーム数があってから有効化
+        private bool isActive = false;
+        private int drawCount = 0;
+        private const int DrawThreshold = 3;
 
         public CityAttributeGui(EditorWindow parentEditorWindow)
         {
@@ -89,7 +93,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 }
             }
 
-            if(!isActive)
+            drawCount++;
+            if(!isActive && drawCount >= DrawThreshold)
             {
                 SceneView.duringSceneGui += OnSceneGUI;
                 isActive = true;
@@ -208,6 +213,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             parent = child = null;
             parentJson = childJson = targetObjectName = errorMessage = null;
             DestroyGizmoDrawer();
+            drawCount = 0;
         }
 
         private CityObjectGizmoDrawer GetGizmoDrawer()
