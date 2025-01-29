@@ -281,14 +281,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             }
 
-            RnWay way = null;
             if (IsLeftLane(lane) == false)
             {
                 borderType = borderType.GetOpposite();
                 borderDir = borderDir.GetOpposite();
             }
 
-            way = lane.GetBorder(borderType);
+            var way = lane.GetBorder(borderType);
             if (way == null)
                 return null;
             if (lane.GetBorderDir(borderType) != borderDir)
@@ -735,6 +734,9 @@ namespace PLATEAU.RoadNetwork.Structure
             var lane = MainLanes.Last();
             return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay;
         }
+
+
+        public override bool Check() { return true; }
 
         // ---------------
         // Static Methods
@@ -1284,6 +1286,31 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var d = (leftRes.v - ray.origin).normalized;
             segment = new LineSegment3D(leftRes.v + d * 20, rightRes.v - d * 20);
+            return true;
+        }
+
+        public static bool IsValidBorderAdjacentNeighbor(this RnRoad self, RnLaneBorderType borderType, bool noBorderIsTrue)
+        {
+            if (self == null)
+                return false;
+            var neighbor = self.GetNeighborRoad(borderType);
+            if (neighbor == null)
+                return noBorderIsTrue;
+            var ways = neighbor.GetBorders()?.ToList() ?? new List<RnWay>();
+            foreach (var lane in self.MainLanes)
+            {
+                var laneBorder = self.GetBorderWay(lane, borderType, Structure.RnLaneBorderDir.Left2Right);
+                if (laneBorder == null)
+                {
+                    if (noBorderIsTrue)
+                        continue;
+                    return false;
+                }
+
+                // 隣接する道路に共通の境界線を持たない場合はfalse
+                if (!ways.Any(w => w.IsSameLineReference(laneBorder)))
+                    return false;
+            }
             return true;
         }
     }

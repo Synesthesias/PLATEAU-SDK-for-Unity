@@ -131,6 +131,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         public virtual void ReplaceNeighbor(RnRoadBase from, RnRoadBase to) { }
+
+        public virtual bool Check() { return true; }
+
     }
 
     public static class RnRoadBaseEx
