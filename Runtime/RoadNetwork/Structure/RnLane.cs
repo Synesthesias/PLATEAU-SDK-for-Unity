@@ -516,22 +516,29 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             if (IsValidWay == false)
                 return null;
-            // borderの0番目の点がLeftWayの0番目の点と同じならLeft2Right
-            if (border.GetPoint(0) == LeftWay.GetPoint(0))
-                return RnLaneBorderDir.Left2Right;
-
-            if (border.GetPoint(0) == RightWay.GetPoint(0))
-                return RnLaneBorderDir.Right2Left;
 
             if (border.IsValid == false)
                 return null;
 
+            // とりあえず重なるかで判定
+            // LeftWay/RightWayの端点とボーダーの開始点が一致するかで判定
+            var Start = border.GetPoint(0);
+            foreach (var i in new[] { 0, -1 })
+            {
+                if (Start == LeftWay.GetPoint(i))
+                    return RnLaneBorderDir.Left2Right;
+
+                if (Start == RightWay.GetPoint(i))
+                    return RnLaneBorderDir.Right2Left;
+            }
+
             var d = border.GetPoint(1).Vertex - border.GetPoint(0).Vertex;
+            // Borderの方向と, LeftWay->RightWayの端点をつなぐベクトルと同じ方向かで判断する
             // #NOTE : Laneが複雑な形状をしているときのためPrevはPrev側, NextBorderだとNext側を見る
             var index = type == RnLaneBorderType.Prev ? 0 : -1;
             var d2 = RightWay.GetPoint(index).Vertex - LeftWay.GetPoint(index).Vertex;
 
-            if (Vector2.Dot(d.Xz(), d2.Xz()) > 0)
+            if (Vector2.Dot(RnDef.ToVec2(d), RnDef.ToVec2(d2)) > 0)
                 return RnLaneBorderDir.Left2Right;
             return RnLaneBorderDir.Right2Left;
         }
