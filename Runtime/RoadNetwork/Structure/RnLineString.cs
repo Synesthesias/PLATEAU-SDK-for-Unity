@@ -759,5 +759,35 @@ namespace PLATEAU.RoadNetwork.Structure
                 return distance;
             }).Average();
         }
+
+        /// <summary>
+        /// a,bが同じ線分かどうかを返す. ただし、順番が逆でも同じとみなす(逆の時はisReverseSequenceがtrueになる)
+        /// RnPointは参照一致で比較する
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isReverseSequence"></param>
+        /// <returns></returns>
+        public static bool IsSequenceEqual(RnLineString a, RnLineString b, out bool isReverseSequence)
+        {
+            isReverseSequence = false;
+            if (a.Count != b.Count)
+                return false;
+
+            // 参照一致
+            if (ReferenceEquals(a, b))
+                return true;
+
+            // 0番目が同じであればそのまま比較
+            if (a[0] == b[0])
+            {
+                isReverseSequence = false;
+                return a.SequenceEqual(b);
+            }
+
+            // そうじゃない時は逆順一致の可能性があるのでそれで比較
+            isReverseSequence = true;
+            return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
+        }
     }
 }
