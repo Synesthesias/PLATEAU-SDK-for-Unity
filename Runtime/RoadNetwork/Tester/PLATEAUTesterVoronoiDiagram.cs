@@ -12,7 +12,7 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PLATEAU.RoadNetwork.Tester
 {
-    public class PLATEAUTesterVoronoiDiagram : PLATEAURnTesterLineString
+    public class PLATEAUTesterVoronoiDiagram : PLATEAURnTesterLineStringHolder
     {
         [Serializable]
         public class BeachLineTestParam
