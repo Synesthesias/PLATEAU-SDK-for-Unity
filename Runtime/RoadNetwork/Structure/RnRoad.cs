@@ -736,7 +736,17 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        public override bool Check() { return true; }
+        public override bool Check()
+        {
+
+            foreach (var BorderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
+            {
+                if (!this.IsValidBorderAdjacentNeighbor(BorderType, true))
+                    return false;
+            }
+
+            return true;
+        }
 
         // ---------------
         // Static Methods
@@ -1297,6 +1307,8 @@ namespace PLATEAU.RoadNetwork.Structure
             if (neighbor == null)
                 return noBorderIsTrue;
             var ways = neighbor.GetBorders()?.ToList() ?? new List<RnWay>();
+
+            var oppositeBorderType = borderType.GetOpposite();
             foreach (var lane in self.MainLanes)
             {
                 var laneBorder = self.GetBorderWay(lane, borderType, Structure.RnLaneBorderDir.Left2Right);
@@ -1307,9 +1319,15 @@ namespace PLATEAU.RoadNetwork.Structure
                     return false;
                 }
 
+                var oppositeLaneBorder = self.GetBorderWay(lane, oppositeBorderType, RnLaneBorderDir.Left2Right);
                 // 隣接する道路に共通の境界線を持たない場合はfalse
                 if (!ways.Any(w => w.IsSameLineReference(laneBorder)))
-                    return false;
+                {
+                    // 反対側のボーダーが境界線だったらアウト
+                    var isRev = ways.Any(w => w.IsSameLineReference(oppositeLaneBorder));
+                    if (!noBorderIsTrue || isRev)
+                        return false;
+                }
             }
             return true;
         }
