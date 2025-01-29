@@ -1064,12 +1064,18 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// selfの輪郭線を歩道の内側, 外側, 境界線に分類する
+        /// selfの輪郭線を歩道の内側, 外側, 境界線に分類する.
+        /// NeighborCityObjectGroupsFilterが設定されている場合, 歩道の境界判定対象はこのリストに含まれるPLATEAUCityObjectGroupと繋がっているものに限定される.
         /// </summary>
         /// <param name="self"></param>
         /// <param name="edgeGroups"></param>
+        /// <param name="neighborCityObjectGroupsFilter"></param>
         /// <returns></returns>
-        public static bool TryGroupBySideWalkEdge(RFace self, out List<RnEx.KeyEdgeGroup<SideWalkEdgeKey, REdge>> edgeGroups)
+        public static bool TryGroupBySideWalkEdge(
+            RFace self
+            , out List<RnEx.KeyEdgeGroup<SideWalkEdgeKey, REdge>> edgeGroups
+            , HashSet<PLATEAUCityObjectGroup> neighborCityObjectGroupsFilter = null
+            )
         {
             edgeGroups = null;
             if (self == null)
@@ -1086,18 +1092,24 @@ namespace PLATEAU.RoadNetwork.Graph
             SideWalkEdgeKey Edge2WayType(REdge e)
             {
                 // 自身の歩道にしか所属しない場合は外側の辺
+
                 if (e.Faces.Count == 1)
                     return new(SideWalkEdgeKeyType.OutSide, null);
 
                 // 以下複数のFaceと所属する場合
 
                 var t = e.GetAllFaceTypeMaskOrDefault();
+
+                var neighborCityObjects = e.Faces
+                    .Select(f => f.CityObjectGroup)
+                    .Where(co => co != self.CityObjectGroup)
+                    .ToHashSet();
+                if (neighborCityObjectGroupsFilter != null)
+                    neighborCityObjects.IntersectWith(neighborCityObjectGroupsFilter);
                 // 複数の歩道に所属している場合は歩道との境界線
-                if (t.HasAnyFlag(RRoadTypeMask.SideWalk))
+                if (t.HasAnyFlag(RRoadTypeMask.SideWalk) && neighborCityObjects.Any())
                 {
-                    var key = e.Faces
-                        .Select(f => f.CityObjectGroup)
-                        .FirstOrDefault(x => x != self.CityObjectGroup);
+                    var key = neighborCityObjects.First();
                     return new(SideWalkEdgeKeyType.Border, key);
                 }
 
@@ -1129,15 +1141,22 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="insideEdges"></param>
         /// <param name="startEdges"></param>
         /// <param name="endEdges"></param>
+        /// <param name="neighborCityObjectGroupsFilter"></param>
         /// <returns></returns>
-        public static bool CreateSideWalk(this RFace self, out List<REdge> outsideEdges, out List<REdge> insideEdges, out List<REdge> startEdges, out List<REdge> endEdges)
+        public static bool CreateSideWalk(this RFace self
+            , out List<REdge> outsideEdges
+            , out List<REdge> insideEdges
+            , out List<REdge> startEdges
+            , out List<REdge> endEdges
+            , HashSet<PLATEAUCityObjectGroup> neighborCityObjectGroupsFilter = null
+            )
         {
             outsideEdges = new List<REdge>();
             insideEdges = new List<REdge>();
             startEdges = new List<REdge>();
             endEdges = new List<REdge>();
 
-            if (TryGroupBySideWalkEdge(self, out var ways) == false)
+            if (TryGroupBySideWalkEdge(self, out var ways, neighborCityObjectGroupsFilter) == false)
                 return false;
 
             // #TODO : このチェックはいらないかも(OutSideが無い歩道もあるため)
