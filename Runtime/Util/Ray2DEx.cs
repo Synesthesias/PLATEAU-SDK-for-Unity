@@ -25,5 +25,16 @@ namespace PLATEAU.Util
             var ret = LineUtil.LineIntersection(self, other, out intersection, out t1, out t2);
             return ret && t1 >= 0f && t2 >= 0f;
         }
+
+        /// <summary>
+        /// pointがselfの左側にあるかどうか
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static bool IsPointOnLeftSide(this Ray2D self, Vector2 point)
+        {
+            return Vector2Ex.Cross(self.direction, point - self.origin) > 0f;
+        }
     }
 }
