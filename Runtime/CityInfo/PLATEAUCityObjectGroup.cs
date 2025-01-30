@@ -92,7 +92,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         public CityObject GetPrimaryCityObject(RaycastHit hit)
         {
-            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
+            if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
                 CityObjectIndex index = new CityObjectIndex();
                 index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -107,7 +107,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         public CityObject GetAtomicCityObject(RaycastHit hit)
         {
-            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
+            if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
                 return GetCityObject(vec);
             }
@@ -168,7 +168,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         public async Task<CityObject> GetPrimaryCityObjectAsync(RaycastHit hit)
         {
-            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
+            if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
                 CityObjectIndex index = new CityObjectIndex();
                 index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -183,7 +183,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         public async Task<CityObject> GetAtomicCityObjectAsync(RaycastHit hit)
         {
-            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
+            if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
                 CityObjectIndex index = new CityObjectIndex();
                 index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -240,7 +240,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         public async Task<CityObject[]> GetPrimaryAndAtomicCityObjectsAsync(RaycastHit hit)
         {
-            if (GetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
+            if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
                 CityObjectIndex index = new CityObjectIndex();
                 index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -386,19 +386,22 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        private bool GetUV4FromTriangleIndex(int triangleIndex, out Vector2 vec)
+        private bool TryGetUV4FromTriangleIndex(int triangleIndex, out Vector2 vec)
         {
+            vec = Vector2.zero;
             try
             {
                 var mesh = CurrentMesh;
-                vec = mesh.uv4[mesh.triangles[triangleIndex * 3]];
+                if (mesh.triangles.Length <= triangleIndex * 3) return false;
+                var uv4Index = mesh.triangles[triangleIndex * 3];
+                if (mesh.uv4.Length <= uv4Index) return false;
+                vec = mesh.uv4[uv4Index];
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"{ex.Message} index:{triangleIndex}");
             }
-            vec = Vector2.zero;
             return false;
         }
     }
