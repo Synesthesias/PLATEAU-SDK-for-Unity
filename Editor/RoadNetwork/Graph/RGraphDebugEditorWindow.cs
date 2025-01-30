@@ -68,6 +68,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 {
                     f.RemoveIsolatedEdge();
                 }
+
+                if (f.RoadTypes.IsSideWalk() && GUILayout.Button("Modify SideWalk Shape"))
+                {
+                    RGraphEx.ModifySideWalkShape(f);
+                }
             }
         }
 
@@ -253,10 +258,11 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             EditorGUILayout.LabelField("=============== Face ==============");
             InstanceHelper.SelectedObjects.RemoveWhere(o =>
             {
-                if (o is RFace && graph.Faces.Contains(o as RFace) == false)
+                if (o is RFace face && graph.Faces.Contains(face) == false)
                     return true;
                 return false;
             });
+
 
             if (RnEditorUtil.Foldout($"Face[{graph.Faces.Count}]", FoldOuts, "Face"))
             {

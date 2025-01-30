@@ -1,6 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.CityObject;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph
 {
@@ -17,6 +18,8 @@ namespace PLATEAU.RoadNetwork.Graph
         // LOD1モデルは高さ情報がないため、高さの許容誤差を設定する
         public float lod1HeightTolerance = 1.5f;
         public bool useCityObjectOutline = true;
+
+        [Header("Optimize")] public bool modifySideWalkShape = true;
         // --------------------
         // end:フィールド
         // --------------------
@@ -26,13 +29,16 @@ namespace PLATEAU.RoadNetwork.Graph
             var graph = RGraphEx.Create(cityObjects, useCityObjectOutline);
 
             if (reductionOnCreate)
-                Reduction(graph);
-            return graph;
-        }
+            {
+                graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1HeightTolerance);
 
-        public void Reduction(RGraph graph)
-        {
-            graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1HeightTolerance);
+                if (modifySideWalkShape)
+                {
+                    graph.ModifySideWalkShape();
+                }
+            }
+
+            return graph;
         }
     }
 }

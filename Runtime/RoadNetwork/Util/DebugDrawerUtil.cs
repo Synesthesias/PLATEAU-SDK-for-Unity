@@ -46,6 +46,8 @@ namespace PLATEAU.RoadNetwork.Util
             Valid = 1 << 3,
             // 不正なもの
             InValid = 1 << 4,
+            // デバッグメモが表示されている
+            DebugMemo = 1 << 5,
             // 全て
             All = ~0
         }
@@ -89,6 +91,13 @@ namespace PLATEAU.RoadNetwork.Util
 
                 if (ret == VisibleType.Empty)
                     ret = VisibleType.NonSelected;
+
+                // デバッグメモが設定されている
+                if (obj is ARnPartsBase parts)
+                {
+                    if (string.IsNullOrEmpty(parts.DebugMemo) == false)
+                        ret |= VisibleType.DebugMemo;
+                }
                 return ret;
             }
 

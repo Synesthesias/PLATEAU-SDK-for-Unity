@@ -469,7 +469,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
         {
-            const float tangentLength = 10f;
             var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, RnModel.Plane);
 
             var track = CreateTrack(this, from, to, turnType);
