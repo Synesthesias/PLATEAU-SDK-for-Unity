@@ -705,7 +705,12 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override bool Check()
         {
-            return IsAligned();
+            if (IsAligned() == false)
+            {
+                DebugEx.LogError($"ループしていない輪郭の交差点 {this.GetTargetTransName()}");
+                return false;
+            }
+            return true;
         }
 #if false
         /// <summary>

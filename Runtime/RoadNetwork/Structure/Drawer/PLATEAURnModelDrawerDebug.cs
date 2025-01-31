@@ -50,6 +50,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
+        [SerializeField] public bool check = false;
         // 非表示オブジェクト
         public HashSet<object> InVisibleObjects { get; } = new();
 
@@ -1101,6 +1102,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 return;
             if (roadNetwork == null)
                 return;
+
+            if (check)
+                roadNetwork.Check();
 
             work = new DrawWork(this, roadNetwork);
             // 先に選択中のものから描画

@@ -582,6 +582,20 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
             }
         }
+
+        public void Check()
+        {
+            foreach (var road in roads)
+                road.Check();
+
+            foreach (var inter in intersections)
+                inter.Check();
+
+            foreach (var sw in sideWalks)
+            {
+                sw.Check();
+            }
+        }
     }
 
     public static class RnModelEx
