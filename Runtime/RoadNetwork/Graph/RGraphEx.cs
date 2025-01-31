@@ -493,7 +493,14 @@ namespace PLATEAU.RoadNetwork.Graph
                         }
                     }
 
-                    swFace.AddEdge(new REdge(newVertex, originVertex));
+                    // 両方の頂点が所属するFaceには今回作成されたEdgeも追加する(分離しないように)
+                    var commonFaces = newVertex.GetFaces().ToHashSet();
+                    commonFaces.IntersectWith(originVertex.GetFaces().ToHashSet());
+                    var newEdge = new REdge(newVertex, originVertex);
+                    foreach (var face in commonFaces)
+                    {
+                        face.AddEdge(newEdge);
+                    }
                     // デバッグ用
                     newVertex.DebugMemo = "SideWalkInsert";
                     break;
