@@ -24,7 +24,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 道路ネットワークをメッシュに変換します。
     /// </summary>
-    public class RoadNetworkToMesh
+    internal class RoadNetworkToMesh
     {
         private readonly IRrTarget srcTargetBeforeCopy;
         private readonly RnmLineSeparateType lineSeparateType;
@@ -45,10 +45,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         /// <summary>
         /// 道路ネットワークからメッシュを生成します。
-        /// 引数<paramref name="doSubdivide"/>の説明については<see cref="LineSmoother"/>を参照してください。
         /// 生成されたもののリストを返します。
         /// </summary>
-        public List<PLATEAUReproducedRoad> Generate(bool doSubdivide)
+        public List<PLATEAUReproducedRoad> Generate(ISmoothingStrategy smoothingStrategy)
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
@@ -59,7 +58,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var target = new RnmModelAdjuster().Adjust(targetBeforeAdjust);
             
             progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
-            new RoadNetworkLineSmoother().Smooth(target, doSubdivide);
+            new RoadNetworkLineSmoother().Smooth(target, smoothingStrategy);
             
             progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中", 30f, "");
             // 生成すべき輪郭線を定義します。

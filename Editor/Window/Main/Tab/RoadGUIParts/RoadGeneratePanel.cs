@@ -1,5 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Structure;
@@ -22,7 +23,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     /// </summary>
     public class RoadGeneratePanel : RoadAdjustGuiPartBase
     {
-        private const bool DoSubdivide = true;
         static readonly string name = "RoadNetwork_GeneratePanel";
 
         private Action setupMethod;
@@ -127,7 +127,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var model = factory.CreateRnModelAsync(factory.CreateRequest(objects, modelObject.gameObject)).ContinueWithErrorCatch().Result;
 
                 // 道路の白線、停止線、道路メッシュを生成します。
-                new RoadReproducer().Generate(new RrTargetModel(model), crosswalkFreq, DoSubdivide);
+                new RoadReproducer().Generate(new RrTargetModel(model), crosswalkFreq, new SmoothingStrategyRespectOriginal());
 
             };
         }

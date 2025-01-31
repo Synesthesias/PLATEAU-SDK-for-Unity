@@ -1,5 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -15,7 +16,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
         private RoadNetworkEditTarget target;
         private LineSelectEdit lineSelectEdit;
-        private const bool DoSubdivide = true; // 交差点の線は点が少なすぎず多すぎずなので細分化が効く
         
 
         public IntersectionLineEditor(RoadNetworkEditTarget target)
@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             targetLine.Apply(targetIntersection, createdSpline);
 
             var reproduceTarget = new RrTargetRoadBases(target.RoadNetwork, new[] { targetIntersection });
-            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, DoSubdivide);
+            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
             
         }
         

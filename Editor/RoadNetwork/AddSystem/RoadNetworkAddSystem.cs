@@ -6,6 +6,7 @@ using PLATEAU.RoadNetwork.Structure;
 using UnityEditor;
 using UnityEngine;
 using PLATEAU.Editor.RoadNetwork.AddSystem;
+using PLATEAU.RoadAdjust.RoadMarking;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace PLATEAU.Editor.RoadNetwork
                     // 道路モデル再生成
                     var road = new RoadReproduceSource(obj);
                     bool crosswalkExists = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.Next);
-                    var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase> { obj }), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, true);
+                    var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase> { obj }), crosswalkExists ? CrosswalkFrequency.All : CrosswalkFrequency.Delete, new SmoothingStrategyRespectOriginal());
                     UpdateTargetTrans(obj, generatedObjs);
 
                     // スケルトン更新
@@ -74,14 +75,14 @@ namespace PLATEAU.Editor.RoadNetwork
                 {
                     if (neighbor.Road != null)
                     {
-                        var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All, true);
+                        var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { neighbor.Road }), CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
                         UpdateTargetTrans(neighbor.Road, generatedObjs);
                     }
                 }
 
                 {
                     // 交差点モデル再生成
-                    var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All, true);
+                    var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(Context.RoadNetwork, new List<RnRoadBase>() { intersection }), CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
                     UpdateTargetTrans(intersection, generatedObjs);
                 }
 

@@ -1,5 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         private LineSelectEdit lineSelectEdit; // 線を選択して編集するUI
         
         private RoadNetworkEditTarget editTarget;
-        private const bool DoSubdivide = false;
 
         public RoadLaneDetailEditor()
         {
@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             targetLine.Apply(targetLine.Road, createdSpline); // スプラインを道路ネットワークに適用します
 
             var reproduceTarget = new RrTargetRoadBases(editTarget.RoadNetwork, new[] { targetLine.Road });
-            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, DoSubdivide);
+            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, new SmoothingStrategySmoothAll());
         }
 
         
