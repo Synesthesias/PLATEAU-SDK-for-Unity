@@ -297,7 +297,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             // 横断歩道を追加するために交差点を道路側に拡張
             var option = new RnModelEx.CalibrateIntersectionBorderOption();
             road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
-            var result = prevRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
+            
+            var result = prevRoad?.TryMerge2NeighborIntersection(RnLaneBorderType.Prev) ?? false;
             if (!result)
                 Debug.LogWarning("Failed to merge 2 neighbor intersections");
 

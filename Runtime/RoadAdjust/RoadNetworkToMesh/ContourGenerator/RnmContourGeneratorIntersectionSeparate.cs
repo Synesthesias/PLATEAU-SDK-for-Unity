@@ -40,10 +40,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
 
             // 外側
-            foreach (var outer in NonSidewalkOuters(inter))
-            {
-                yield return outer;
-            }
+            // 今までは交差点のOutsideSidewalkがないケースがあったために必要としていた処理ですが、
+            // 今は歩道がある場合はOutsideSidewalkが存在するため、不要となりました。
+            // foreach (var outer in NonSidewalkOuters(inter))
+            // {
+            //     yield return outer;
+            // }
         }
 
         /// <summary> 車道 </summary>
