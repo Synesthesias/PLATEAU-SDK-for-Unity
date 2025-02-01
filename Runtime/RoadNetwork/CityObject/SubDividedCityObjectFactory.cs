@@ -366,6 +366,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         /// <returns></returns>
         internal static ConvertCityObjectResult ConvertCityObjects(IEnumerable<PLATEAUCityObjectGroup> cityObjectGroups, bool useContourMesh = true)
         {
+            using var _ = new DebugTimer("ConvertCityObjects");
             // NOTE : CityGranularityConverterを参考
             var cityInfos = new List<CityObjectInfo>();
             foreach (var cityObjectGroup in cityObjectGroups)
@@ -402,6 +403,24 @@ namespace PLATEAU.RoadNetwork.CityObject
             var cco = new SubDividedCityObject(dstModel, attrHelper);
 
             var ret = new ConvertCityObjectResult();
+
+
+            // 高速化の為, 最初にテーブルを作っておく
+            Dictionary<string, SubDividedCityObject> nameToSubDividedCityObject = new Dictionary<string, SubDividedCityObject>();
+            foreach (var child in cco.GetAllChildren())
+            {
+                if (child == null)
+                    continue;
+                //// 最小の単位だけ使うので親ポリゴンは無視
+                //if (child.Children.Any())
+                //    continue;
+                //// メッシュないものも無視
+                //if (child.Meshes.Any() == false)
+                //    continue;
+                nameToSubDividedCityObject.TryAdd(child.Name, child);
+                ret.ConvertedCityObjects.Add(child);
+            }
+
             foreach (var co in cityInfos)
             {
                 if (co.Transform == null)
@@ -409,7 +428,8 @@ namespace PLATEAU.RoadNetwork.CityObject
                     Debug.Log("skipping deleted game object.");
                     continue;
                 }
-                var ccoChild = cco.GetAllChildren().FirstOrDefault(c => c != null && c.Name == co.Transform.name);
+
+                var ccoChild = nameToSubDividedCityObject.GetValueOrDefault(co.Transform.name);
                 if (ccoChild == null)
                     continue;
                 ccoChild.SetCityObjectGroup(co.CityObjectGroup);
