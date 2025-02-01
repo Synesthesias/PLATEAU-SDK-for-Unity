@@ -218,6 +218,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="midPointTolerance">aとcとしか接続していない点bに対して、a-cの直線との距離がこれ以下だとbをマージする</param>
         public static void VertexReduction(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
         {
+            using var _ = new DebugTimer("VertexReduction");
             while (true)
             {
                 var vertices = self.GetAllVertices().ToList();
@@ -333,6 +334,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void EdgeReduction(this RGraph self)
         {
+            using var _ = new DebugTimer("EdgeReduction");
             var edges = self.GetAllEdges().ToList();
             var edgeTable = new Dictionary<EdgeKey, HashSet<REdge>>();
 
@@ -363,6 +365,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void RemoveIsolatedEdgeFromFace(this RGraph self)
         {
+            using var _ = new DebugTimer("RemoveIsolatedEdgeFromFace");
             foreach (var f in self.Faces)
             {
                 f.RemoveIsolatedEdge();
@@ -490,7 +493,14 @@ namespace PLATEAU.RoadNetwork.Graph
                         }
                     }
 
-                    swFace.AddEdge(new REdge(newVertex, originVertex));
+                    // 両方の頂点が所属するFaceには今回作成されたEdgeも追加する(分離しないように)
+                    var commonFaces = newVertex.GetFaces().ToHashSet();
+                    commonFaces.IntersectWith(originVertex.GetFaces().ToHashSet());
+                    var newEdge = new REdge(newVertex, originVertex);
+                    foreach (var face in commonFaces)
+                    {
+                        face.AddEdge(newEdge);
+                    }
                     // デバッグ用
                     newVertex.DebugMemo = "SideWalkInsert";
                     break;
@@ -573,6 +583,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="tolerance"></param>
         public static void InsertVertexInNearEdge(this RGraph self, float tolerance)
         {
+            using var _ = new DebugTimer("InsertVertexInNearEdge");
             var vertices = self.GetAllVertices().ToList();
 
             var comp = Comparer<float>.Default;
@@ -770,6 +781,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void SeparateFaces(this RGraph self)
         {
+            using var _ = new DebugTimer("SeparateFaces");
             foreach (var p in self.Faces.ToList())
             {
                 p.Separate();
@@ -987,21 +999,28 @@ namespace PLATEAU.RoadNetwork.Graph
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="outlineEdges"></param>
+        /// <param name="keepEdgeOnFail">辺リストが作れない時にその場で打ち切るのではなくnullを入れて続きを行う</param>
         /// <returns></returns>
-        public static bool OutlineVertex2Edge(IReadOnlyList<RVertex> vertices, out List<REdge> outlineEdges)
+        public static bool OutlineVertex2Edge(IReadOnlyList<RVertex> vertices, out List<REdge> outlineEdges, bool keepEdgeOnFail = false)
         {
             outlineEdges = new List<REdge>(vertices.Count);
+            var ret = true;
             for (var i = 0; i < vertices.Count; i++)
             {
                 var v0 = vertices[i % vertices.Count];
                 var v1 = vertices[(i + 1) % vertices.Count];
                 var e = v0.Edges.FirstOrDefault(e => e.GetOppositeVertex(v0) == v1);
                 if (e == null)
-                    return false;
+                {
+                    if (keepEdgeOnFail == false)
+                        return false;
+                    ret = false;
+                }
+
                 outlineEdges.Add(e);
             }
 
-            return true;
+            return ret;
         }
 
         /// <summary>

@@ -264,6 +264,14 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 不正地チェック
+        /// </summary>
+        public bool Check()
+        {
+            return true;
+        }
+
+        /// <summary>
         /// 歩道作成
         /// </summary>
         /// <param name="parent"></param>
