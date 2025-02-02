@@ -281,14 +281,13 @@ namespace PLATEAU.RoadNetwork.Structure
                 return null;
             }
 
-            RnWay way = null;
             if (IsLeftLane(lane) == false)
             {
                 borderType = borderType.GetOpposite();
                 borderDir = borderDir.GetOpposite();
             }
 
-            way = lane.GetBorder(borderType);
+            var way = lane.GetBorder(borderType);
             if (way == null)
                 return null;
             if (lane.GetBorderDir(borderType) != borderDir)
@@ -324,8 +323,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// dirで指定した側の全レーンのSideWayを統合した一つの大きなWayを返す
+        /// dirで指定した側の全レーンの左右のWayを返す
         /// dir==nullの時は全レーン共通で返す
+        /// 例) 左２車線でdir==RnDir.Leftの場合, 一番左の車線の左側のWayと左から２番目の車線の右側のWayを返す
         /// </summary>
         /// <param name="dir"></param>
         /// <param name="leftWay"></param>
@@ -733,6 +733,19 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             var lane = MainLanes.Last();
             return IsLeftLane(lane) ? lane?.RightWay : lane?.LeftWay;
+        }
+
+
+        public override bool Check()
+        {
+
+            foreach (var BorderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
+            {
+                if (!this.IsValidBorderAdjacentNeighbor(BorderType, true))
+                    return false;
+            }
+
+            return true;
         }
 
         // ---------------
@@ -1283,6 +1296,39 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var d = (leftRes.v - ray.origin).normalized;
             segment = new LineSegment3D(leftRes.v + d * 20, rightRes.v - d * 20);
+            return true;
+        }
+
+        public static bool IsValidBorderAdjacentNeighbor(this RnRoad self, RnLaneBorderType borderType, bool noBorderIsTrue)
+        {
+            if (self == null)
+                return false;
+            var neighbor = self.GetNeighborRoad(borderType);
+            if (neighbor == null)
+                return noBorderIsTrue;
+            var ways = neighbor.GetBorders()?.ToList() ?? new List<RnWay>();
+
+            var oppositeBorderType = borderType.GetOpposite();
+            foreach (var lane in self.MainLanes)
+            {
+                var laneBorder = self.GetBorderWay(lane, borderType, Structure.RnLaneBorderDir.Left2Right);
+                if (laneBorder == null)
+                {
+                    if (noBorderIsTrue)
+                        continue;
+                    return false;
+                }
+
+                var oppositeLaneBorder = self.GetBorderWay(lane, oppositeBorderType, RnLaneBorderDir.Left2Right);
+                // 隣接する道路に共通の境界線を持たない場合はfalse
+                if (!ways.Any(w => w.IsSameLineReference(laneBorder)))
+                {
+                    // 反対側のボーダーが境界線だったらアウト
+                    var isRev = ways.Any(w => w.IsSameLineReference(oppositeLaneBorder));
+                    if (!noBorderIsTrue || isRev)
+                        return false;
+                }
+            }
             return true;
         }
     }

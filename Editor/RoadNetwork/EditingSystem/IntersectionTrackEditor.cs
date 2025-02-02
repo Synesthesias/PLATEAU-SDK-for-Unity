@@ -1,5 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         
         private RnNeighbor selectEntablePoint = null;
         private RnNeighbor selectExitablePoint = null;
-        private const bool DoSubdivide = true; // 交差点の線は点が少なすぎず多すぎずなので細分化が効く
         
         public bool IsSelectdEntablePoint
         {
@@ -178,7 +178,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             var neighborRoads = targetIntersection.Neighbors.Where(n => n.Road != null).Select(n => n.Road);
             var reproducer = new RoadReproducer();
             var updateTarget = new RrTargetRoadBases(editTarget.RoadNetwork, neighborRoads);
-            reproducer.Generate(updateTarget, CrosswalkFrequency.All, DoSubdivide);
+            reproducer.Generate(updateTarget, CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
             
 
             // 選択解除

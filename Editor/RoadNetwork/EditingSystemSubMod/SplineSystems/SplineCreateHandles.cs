@@ -1,20 +1,29 @@
-﻿using PLATEAU.Util.GeoGraph;
+﻿using NUnit.Framework;
+using PLATEAU.Util.GeoGraph;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.Splines;
 
 namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 {
+    internal struct SplineEndPoint
+    {
+        public Vector3 position;
+        public Vector3 tangent;
+    }
+
     internal class SplineCreateHandles
     {
         public bool IsCreatingSpline { get; private set; }
+        public bool IsEndPointCreated { get; private set; } = false;
 
         private SplineEditorCore currentCore;
         private float fixedY = 0f;
         private ICreatedSplineReceiver finishReceiver;
+        private List<SplineEndPoint> endPoints = new List<SplineEndPoint>();
 
         public SplineCreateHandles(SplineEditorCore core, ICreatedSplineReceiver finishReceiver)
         {
@@ -23,9 +32,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             this.finishReceiver = finishReceiver;
         }
 
+        public void SetEndPoints(List<SplineEndPoint> endPoints)
+        {
+            this.endPoints = endPoints;
+        }
+
         public void BeginCreateSpline(Vector3 startPoint, Vector3 startTangent)
         {
             if (IsCreatingSpline) return;
+
+            IsEndPointCreated = false;
 
             IsCreatingSpline = true;
             fixedY = startPoint.y;
@@ -48,16 +64,19 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     EndCreateSpline();
                     e.Use();
                     return;
-                } else if (e.keyCode == KeyCode.Escape)
+                }
+                else if (e.keyCode == KeyCode.Escape)
                 {
                     CancelCreateSpline();
                     e.Use();
                     return;
                 }
-
             }
 
             HandleKnotMovement();
+
+            // エンドポイントのスフィア表示とクリック検出
+            HandleEndPointSelection();
 
             if (LineUtil.IsMouseDown())
             {
@@ -87,6 +106,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             DrawPreviewLines();
         }
 
+        public void SetEndPoint(Vector3 pos, Vector3 tangent)
+        {
+            AddKnot(pos);
+            currentCore.SetEndPointConstraint(true, pos, pos + Vector3.Cross(Vector3.up, tangent).normalized * 0.01f);
+            IsEndPointCreated = true;
+        }
+
         public void EndCreateSpline()
         {
             IsCreatingSpline = false;
@@ -101,6 +127,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         private void AddKnot(Vector3 pos)
         {
+            if (IsEndPointCreated) return;
+
             currentCore.AddKnotAtT(pos, 1f);
         }
 
@@ -130,6 +158,21 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
+        private void HandleEndPointSelection()
+        {
+            if (endPoints == null || endPoints.Count == 0)
+                return;
+
+            foreach (var ep in endPoints)
+            {
+                float handleSize = HandleUtility.GetHandleSize(ep.position) * 0.1f;
+                if (Handles.Button(ep.position, Quaternion.identity, handleSize, handleSize, Handles.SphereHandleCap))
+                {
+                    SetEndPoint(ep.position, ep.tangent);
+                }
+            }
+        }
+
         private void DrawPreviewLines()
         {
             int knotCount = currentCore.GetKnotCount();
@@ -147,14 +190,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             Handles.DrawAAPolyLine(2f, points);
         }
-        
-
     }
 
     /// <summary> <see cref="SplineCreateHandles"/>でスプラインの生成が完了した通知を受け取ります。 </summary>
     internal interface ICreatedSplineReceiver
     {
         void OnSplineCreatCanceled();
-        public void OnSplineCreated(Spline createdSpline);
+        void OnSplineCreated(Spline createdSpline);
     }
 }

@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
@@ -15,18 +16,27 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         /// <summary>
         /// 線を滑らかにします。
-        /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
         /// </summary>
-        public void Smooth(IRrTarget target, bool doSubdivide)
+        public void Smooth(IRrTarget target, ISmoothingStrategy smoothingStrategy)
         {
-            var smoother = new LineSmoother(doSubdivide);
+            
+            var smoother = new LineSmoother(smoothingStrategy.ShouldSubdivide());
             foreach (var road in target.Roads())
             {
+                var roadSrc = road.TargetTrans.FirstOrDefault();
                 foreach (var sideWalk in road.SideWalks)
                 {
-                    foreach (var way in sideWalk.AllWays)
+                    
+                    var inside = sideWalk.InsideWay;
+                    if (inside != null && smoothingStrategy.ShouldSmoothRoadSidewalkInside(roadSrc))
                     {
-                        smoother.Smooth(way);
+                        smoother.Smooth(inside);
+                    }
+
+                    var outside = sideWalk.OutsideWay;
+                    if (outside != null && smoothingStrategy.ShouldSmoothSidewalkOutside())
+                    {
+                        smoother.Smooth(outside);
                     }
                 }
 
@@ -43,18 +53,69 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             {
                 foreach (var sideWalk in intersection.SideWalks)
                 {
-                    foreach (var way in sideWalk.AllWays)
+                    var inside = sideWalk.InsideWay;
+                    if (inside != null && smoothingStrategy.ShouldSmoothIntersectionSidewalkInside())
                     {
-                        smoother.Smooth(way);
+                        smoother.Smooth(inside);
+                    }
+
+                    var outside = sideWalk.OutsideWay;
+                    if (outside != null && smoothingStrategy.ShouldSmoothSidewalkOutside())
+                    {
+                        smoother.Smooth(outside);
                     }
                 }
 
-                foreach (var edge in intersection.Edges)
+                foreach (var edge in intersection.Edges.Where(e => !e.IsBorder))
                 {
                     smoother.Smooth(edge.Border);
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// どこの線を滑らかにし、どこを滑らかにしないかが道路生成の用途によって異なるため、サブクラスで設定するためのインターフェイスです。
+    /// </summary>
+    internal interface ISmoothingStrategy
+    {
+        bool ShouldSmoothSidewalkOutside();
+        bool ShouldSmoothRoadSidewalkInside(PLATEAUCityObjectGroup src);
+        bool ShouldSmoothIntersectionSidewalkInside();
+        
+        /// <summary> <see cref="LineSmoother"/>に渡す設定値です。"/> </summary>
+        bool ShouldSubdivide();
+    }
+
+    /// <summary>
+    /// 3D都市モデルの道路から道路ネットワークを生成する場合に使用する設定です。
+    /// 道路線を滑らかにするにあたって、外形線など3D都市モデルに直接由来する線は、元の形状を尊重したいというクライアント要望のために滑らかにしません。
+    /// 一方で、類推された線はは3D都市モデルに直接由来しないので滑らかにします。例えばLOD1の道路で類推された歩道の内側の線は滑らかにします。
+    /// </summary>
+    internal class SmoothingStrategyRespectOriginal : ISmoothingStrategy
+    {
+        public bool ShouldSmoothSidewalkOutside() => false;
+        public bool ShouldSmoothRoadSidewalkInside(PLATEAUCityObjectGroup src)
+        {
+            if (src == null) return true;
+            if (src.Lod < 2) return true;
+            return false;
+        }
+        
+        public bool ShouldSmoothIntersectionSidewalkInside() => true; // 交差点のカーブはカクカク感が目立つのでスムーズに
+        public bool ShouldSubdivide() => true;
+    }
+
+    /// <summary>
+    /// ユーザーが新しく道路を作成する場合に使用する設定です。
+    /// ユーザーが指定した形状が数少ない点からなる線であっても綺麗になるよう、すべて滑らかにします。
+    /// </summary>
+    internal class SmoothingStrategySmoothAll : ISmoothingStrategy
+    {
+        public bool ShouldSmoothSidewalkOutside() => true;
+        public bool ShouldSmoothRoadSidewalkInside(PLATEAUCityObjectGroup src) => true;
+        public bool ShouldSmoothIntersectionSidewalkInside() => true;
+        public bool ShouldSubdivide() => false;
     }
     
     /// <summary>

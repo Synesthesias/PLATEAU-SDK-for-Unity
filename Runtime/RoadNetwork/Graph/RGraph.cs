@@ -616,6 +616,26 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// edgeと共通する頂点がある場合, 反対側の頂点を返す.
+        /// 共有しない場合はnullを返す
+        /// edgeが同じ辺の場合はnullを返す
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public RVertex GetOppositeVertex(REdge edge)
+        {
+            if (edge == null)
+                return null;
+
+            if (IsSameVertex(edge.V0, edge.V1))
+                return null;
+
+            if (IsShareAnyVertex(edge, out var sharedVertex))
+                return GetOppositeVertex(sharedVertex);
+            return null;
+        }
+
+        /// <summary>
         /// 自身をdstにマージする
         /// </summary>
         /// <param name="dst"></param>

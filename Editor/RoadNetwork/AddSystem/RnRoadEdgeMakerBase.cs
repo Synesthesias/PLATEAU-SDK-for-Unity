@@ -15,11 +15,11 @@ namespace PLATEAU.RoadNetwork.AddSystem
         {
             isStartEdge = false;
             var points = sideWalk.OutsideWay.LineString.Points;
+            var shouldCreateEdgeToPrev = false;
             // pointsの終点側でエッジ上に存在する点群を取得
             var pointsOnEdge = new List<RnPoint>();
             foreach (var point in new Stack<RnPoint>(points))
             {
-                Debug.Log($"Distance: {GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection)}");
                 if (GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection) < 1f)
                 {
                     pointsOnEdge.Add(point);
@@ -33,7 +33,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
             {
                 foreach (var point in points)
                 {
-                    Debug.Log($"Distance: {GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection)}");
                     if (GetDistanceToLine(point, edgeLineOrigin, edgeLineDirection) < 1f)
                     {
                         pointsOnEdge.Add(point);
@@ -41,6 +40,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     else
                         break;
                 }
+                shouldCreateEdgeToPrev = true;
             }
 
             if (pointsOnEdge.Count == 0)
@@ -52,6 +52,10 @@ namespace PLATEAU.RoadNetwork.AddSystem
             foreach (var point in pointsOnEdge.GetRange(0, pointsOnEdge.Count - 1))
             {
                 points.Remove(point);
+            }
+            if (!shouldCreateEdgeToPrev)
+            {
+                pointsOnEdge.Reverse();
             }
 
             if (sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(pointsOnEdge.First()))
