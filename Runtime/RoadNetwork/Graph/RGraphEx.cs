@@ -46,13 +46,14 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        public static RGraph Create(List<SubDividedCityObject> cityObjects, bool useOutline)
+        public static RGraph Create(List<(SubDividedCityObject cityObjects, Matrix4x4 mat)> cityObjects, bool useOutline)
         {
             var graph = new RGraph();
             Dictionary<Vector3, RVertex> vertexMap = new Dictionary<Vector3, RVertex>();
             Dictionary<EdgeKey, REdge> edgeMap = new Dictionary<EdgeKey, REdge>();
-            foreach (var cityObject in cityObjects)
+            foreach (var item in cityObjects)
             {
+                var cityObject = item.cityObjects;
                 if (!cityObject.CityObjectGroup)
                 {
                     Debug.LogWarning($"[{cityObject.Name}] CityObjectGroupがない為. RFace生成はスキップされます.");
@@ -62,7 +63,7 @@ namespace PLATEAU.RoadNetwork.Graph
                 var lodLevel = cityObject.CityObjectGroup.GetLodLevel();
                 var roadType = cityObject.GetRoadType(true);
                 // transformを適用する
-                var mat = cityObject.CityObjectGroup.transform.localToWorldMatrix;
+                var mat = item.mat;
                 foreach (var mesh in cityObject.Meshes)
                 {
                     var face = new RFace(graph, cityObject.CityObjectGroup, roadType, lodLevel);
@@ -148,6 +149,7 @@ namespace PLATEAU.RoadNetwork.Graph
         public static HashSet<RVertex> AdjustSmallLodHeight(this RGraph self, float mergeCellSize, int mergeCellLength,
             float heightTolerance)
         {
+            using var _ = new DebugTimer("AdjustSmallLodHeight");
             HashSet<RVertex> removed = new();
             // 変換対象の頂点
             HashSet<RVertex> targetVertices = new();

@@ -1,6 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.CityObject;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph
@@ -25,6 +26,13 @@ namespace PLATEAU.RoadNetwork.Graph
         // --------------------
 
         public RGraph CreateGraph(List<SubDividedCityObject> cityObjects)
+        {
+            var tmp = cityObjects.Where(x => x.CityObjectGroup != null)
+                .Select(x => (x, x.CityObjectGroup.transform.localToWorldMatrix)).ToList();
+            return CreateGraph(tmp);
+        }
+
+        public RGraph CreateGraph(List<(SubDividedCityObject cityObjects, Matrix4x4 mat)> cityObjects)
         {
             var graph = RGraphEx.Create(cityObjects, useCityObjectOutline);
 
