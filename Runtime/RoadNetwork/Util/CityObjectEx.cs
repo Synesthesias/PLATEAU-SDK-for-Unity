@@ -29,7 +29,7 @@ namespace PLATEAU.RoadNetwork.Util
             var ret = RRoadTypeMask.Empty;
 
             // COT_Roadは強制的に対象にする
-            if (self.CityObjectType == CityObjectType.COT_Road)
+            if ((self.CityObjectType & CityObjectType.COT_Road) != 0)
                 ret |= RRoadTypeMask.Road;
 
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))
@@ -53,6 +53,11 @@ namespace PLATEAU.RoadNetwork.Util
                 if (str.Contains("高速"))
                 {
                     ret |= RRoadTypeMask.HighWay;
+                }
+
+                if (str.Contains("車線"))
+                {
+                    ret |= RRoadTypeMask.Lane;
                 }
             }
 
