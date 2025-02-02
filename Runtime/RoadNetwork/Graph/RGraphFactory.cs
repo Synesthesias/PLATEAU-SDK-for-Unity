@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph
@@ -20,7 +21,21 @@ namespace PLATEAU.RoadNetwork.Graph
         public float lod1HeightTolerance = 1.5f;
         public bool useCityObjectOutline = true;
 
-        [Header("Optimize")] public bool modifySideWalkShape = true;
+        [Header("Optimize")]
+
+        public bool adjustSmallLodHeight = true;
+
+        public bool edgeReduction = true;
+
+        public bool vertexReduction = true;
+
+        public bool insertVertexInNearEdge = true;
+
+        public bool removeIsolatedEdgeFromFace = true;
+
+        public bool separateFace = true;
+
+        public bool modifySideWalkShape = true;
         // --------------------
         // end:フィールド
         // --------------------
@@ -38,15 +53,58 @@ namespace PLATEAU.RoadNetwork.Graph
 
             if (reductionOnCreate)
             {
-                graph.Optimize(mergeCellSize, mergeCellLength, removeMidPointTolerance, lod1HeightTolerance);
-
-                if (modifySideWalkShape)
-                {
-                    graph.ModifySideWalkShape();
-                }
+                Optimize(graph);
             }
 
             return graph;
+        }
+
+        void Optimize(RGraph self)
+        {
+            if (adjustSmallLodHeight)
+            {
+                self.AdjustSmallLodHeight(mergeCellSize, mergeCellLength, lod1HeightTolerance);
+            }
+
+            if (edgeReduction)
+            {
+                self.EdgeReduction();
+            }
+
+            if (vertexReduction)
+            {
+                self.VertexReduction(mergeCellSize, mergeCellLength, removeMidPointTolerance);
+            }
+
+            if (removeIsolatedEdgeFromFace)
+            {
+                self.RemoveIsolatedEdgeFromFace();
+            }
+
+            if (edgeReduction)
+            {
+                self.EdgeReduction();
+            }
+
+            if (insertVertexInNearEdge)
+            {
+                self.InsertVertexInNearEdge(removeMidPointTolerance);
+            }
+
+            if (edgeReduction)
+            {
+                self.EdgeReduction();
+            }
+
+            if (separateFace)
+            {
+                self.SeparateFaces();
+            }
+
+            if (modifySideWalkShape)
+            {
+                self.ModifySideWalkShape();
+            }
         }
     }
 }
