@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static PLATEAU.RoadNetwork.Factory.RoadNetworkFactory;
 
 namespace PLATEAU.RoadNetwork.Graph.Drawer
 {
@@ -46,8 +47,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         public DrawMode drawMode = DrawMode.Normal;
 
 
-        public FaceOption faceOption = new FaceOption();
-        public EdgeOption edgeOption = new EdgeOption();
+        public FaceOption faceOption = new FaceOption { visible = true };
+        public EdgeOption edgeOption = new EdgeOption { visible = true };
 
         public VertexOption vertexOption = new VertexOption { visible = false };
 
@@ -101,15 +102,53 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         public class DrawWork : DrawerModel.DrawFrameWork
         {
             public PLATEAURGraphDrawerDebug Self { get; set; }
+
+
+            Dictionary<RRoadTypeMask, Color> roadTypeMaskColors = new();
+
             public DrawWork(PLATEAURGraphDrawerDebug self, RGraph model)
                 : base(model)
             {
                 Self = self;
+
+                foreach (var t in self.roadTypeMaskOptions)
+                {
+                    if (t.enable == false)
+                        continue;
+                    //if (Enum.TryParse<RRoadTypeMask>(t.type, true, out var type))
+                    {
+                        roadTypeMaskColors[t.type] = t.color;
+                    }
+                }
             }
 
             public override bool IsGuiSelected(object obj)
             {
                 return Self.SelectedObjects.Contains(obj);
+            }
+
+
+            public Color GetColor(RRoadTypeMask roadType)
+            {
+                Color ret = Color.black;
+                var n = 0;
+
+                // Roadはほぼすべてに入っているので除く
+                // ただしRoadしかない場合はそのまま
+                roadType = AdjustRoadTypeMask(roadType);
+
+                foreach (var item in roadTypeMaskColors)
+                {
+                    if (roadType.HasFlag(item.Key))
+                    {
+                        ret += item.Value;
+                        n++;
+                    }
+                }
+                if (n > 0)
+                    ret /= n;
+
+                return ret;
             }
         }
 
@@ -154,7 +193,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 if (showPos)
                     text += $"({vertex.Position.x:F2},{vertex.Position.z:F2})";
 
-                work.Self.DrawString(text, vertex.Position, fontSize: size, color: work.Self.GetColor(vertex.GetTypeMaskOrDefault(useAnyFaceVertexColor)));
+                work.Self.DrawString(text, vertex.Position, fontSize: size, color: work.GetColor(vertex.GetTypeMaskOrDefault(useAnyFaceVertexColor)));
                 //DebugEx.DrawSphere(vertex.Position, 0.3f, color: GetColor(vertex.GetTypeMaskOrDefault(useAnyFaceVertexColor)));
 
                 if (neighborOption.visible)
@@ -177,7 +216,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
             protected override bool DrawImpl(DrawWork work, REdge edge)
             {
-                var color = work.Self.GetColor(edge.GetTypeMaskOrDefault(useAnyFaceVertexColor));
+                var color = work.GetColor(edge.GetTypeMaskOrDefault(useAnyFaceVertexColor));
                 work.Self.DrawLine(edge.V0.Position, edge.V1.Position, color);
                 if (work.Self.showId.HasFlag(RPartsFlag.Edge))
                     work.Self.DrawString($"[{edge.DebugMyId}]", (edge.V0.Position + edge.V1.Position) / 2);
@@ -449,10 +488,11 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 if (face.Visible == false)
                     return false;
 
-                if (face.RoadTypes.HasAnyFlag(work.Self.showFaceType) == false)
+                var roadTypes = AdjustRoadTypeMask(face.RoadTypes);
+                if (roadTypes.HasAnyFlag(work.Self.showFaceType) == false)
                     return false;
 
-                if (face.RoadTypes.HasAnyFlag(work.Self.removeFaceType))
+                if (roadTypes.HasAnyFlag(work.Self.removeFaceType))
                     return false;
 
                 FrameOutlineVertices = showCityObjectOutline ? work.Model.ComputeOutlineVerticesByCityObjectGroup(face.CityObjectGroup, showOutlineMask, showOutlineRemoveMask)
@@ -463,6 +503,19 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 return true;
             }
         }
+
+        private static RRoadTypeMask AdjustRoadTypeMask(RRoadTypeMask roadType)
+        {
+            // Roadはほぼすべてに入っているので除く
+            // ただしRoadしかない場合はそのまま
+            if (roadType != RRoadTypeMask.Road)
+            {
+                roadType &= ~RRoadTypeMask.Road;
+            }
+
+            return roadType;
+        }
+
         private void DrawArrows(IEnumerable<Vector3> vertices
             , bool isLoop = false
             , float arrowSize = 0.5f
@@ -507,23 +560,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             DebugEx.DrawArrow(start, end, arrowSize, arrowUp, bodyColor, arrowColor, duration, depthTest);
         }
 
-        public Color GetColor(RRoadTypeMask roadType)
-        {
-            Color ret = Color.black;
-            var n = 0;
-            foreach (var t in roadTypeMaskOptions)
-            {
-                if (t.enable && roadType.HasFlag(t.type))
-                {
-                    ret += t.color;
-                    n++;
-                }
-            }
-            if (n > 0)
-                ret /= n;
-
-            return ret;
-        }
 
         private void DrawSideWalk(RGraph graph, DrawWork work)
         {
