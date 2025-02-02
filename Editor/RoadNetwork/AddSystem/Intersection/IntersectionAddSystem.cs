@@ -308,14 +308,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             var road = data.Road;
             bool isRoadPrev = data.IsRoadPrev;
 
-            // 隣接情報を更新
-            if (isRoadPrev)
-                road.SetPrevNext(intersection, road.Next);
-            else
-                road.SetPrevNext(road.Prev, intersection);
-
-            // 逆側は一時的に切り離して拡張処理を行う
-            var oppositeIntersection = isRoadPrev ? road.Next : road.Prev;
+            // 逆側交差点を一時的に切り離す
+            var oppositeIntersection = (RnIntersection)(isRoadPrev ? road.Next : road.Prev);
+            var oppositeIntersectionBorder = oppositeIntersection.Neighbors.FirstOrDefault(n => n.Road == road);
             if (isRoadPrev)
                 road.SetPrevNext(intersection, null);
             else
@@ -345,9 +340,12 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             // 隣接関係を復元
             if (isRoadPrev)
-                road.SetPrevNext(intersection, oppositeIntersection);
+                centerRoad.SetPrevNext(intersection, oppositeIntersection);
             else
-                road.SetPrevNext(oppositeIntersection, intersection);
+                centerRoad.SetPrevNext(oppositeIntersection, intersection);
+
+            if (oppositeIntersection != null)
+                oppositeIntersectionBorder.Road = centerRoad;
 
             intersection.TargetTrans.Clear();
         }

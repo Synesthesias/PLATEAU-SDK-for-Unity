@@ -332,7 +332,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             ExtendRoadAlongSpline(newEdgeInfo, spline);
 
-
             // 横断歩道を追加するために交差点を道路側に拡張
             var option = new RnModelEx.CalibrateIntersectionBorderOption();
             road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
