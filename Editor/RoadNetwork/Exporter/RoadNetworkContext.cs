@@ -3,6 +3,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -20,26 +21,27 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// ジオリファレンス
         /// </summary>
         public GeoReference GeoReference { get; private set; }
+        
+        public bool IsInitSucceed { get; }
 
         /// <summary>
         /// コンストラクタ
         /// 都市モデルと道路ネットワークから必要なデータを取得します。
         /// </summary>
-        public RoadNetworkContext()
+        public RoadNetworkContext(PLATEAURnStructureModel rnStructureModel)
         {
-            var rnStructureModel = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
-
-            if (rnStructureModel)
-            {
-                RoadNetworkGetter = rnStructureModel.GetRoadNetworkDataGetter();
-            }
+            RoadNetworkGetter = rnStructureModel.GetRoadNetworkDataGetter();
 
             var cityModelInstance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
 
-            if (cityModelInstance)
+            if (cityModelInstance == null)
             {
-                GeoReference = cityModelInstance.GeoReference;
+                Dialogue.Display("3D都市モデルの道路がシーン中に見つかりませんでした。", "OK");
+                return;
             }
+
+            GeoReference = cityModelInstance.GeoReference;
+            IsInitSucceed = true;
         }
     }
 }
