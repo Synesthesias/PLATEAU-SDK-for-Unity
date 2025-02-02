@@ -12,10 +12,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
     public class RoadExportPanel : RoadAdjustGuiPartBase
     {
         private static readonly string name = "RoadNetwork_ExportPanel";
-
-        private Action exportMethod;
-        private Action blowseMethod;
-
+        
         private string exportPath;
 
         /// <summary>
@@ -49,17 +46,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
 
             var exportPathField = self.Q<TextField>("ExportPathField");
-            if (exportButton == null)
-            {
-                Debug.LogError("Failed to load ButtonExport");
-                return;
-            }
 
-            blowseMethod = CreateBlowseMethod();
-            blowseButton.clicked += blowseMethod;
-
-            exportMethod = CreateExportMethod();
-            exportButton.clicked += exportMethod;
+            blowseButton.clicked += Browse;
+            exportButton.clicked += Export;
 
             exportPathField.SetEnabled(false);
         }
@@ -67,46 +56,40 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary>
         /// エクスポートボタンを押したときの挙動を定義します
         /// </summary>
-        private Action CreateExportMethod()
+        private void Export()
         {
-            return () =>
+            if (!Directory.Exists(exportPath))
             {
-                if (!Directory.Exists(exportPath))
-                {
-                    PLATEAU.Util.Dialogue.Display("有効な出力先フォルダを指定してください", "OK");
+                PLATEAU.Util.Dialogue.Display("有効な出力先フォルダを指定してください", "OK");
 
-                    return;
-                }
+                return;
+            }
 
-                var exporter = new PLATEAU.Editor.RoadNetwork.Exporter.RoadNetworkExporter();
+            var exporter = new PLATEAU.Editor.RoadNetwork.Exporter.RoadNetworkExporter();
 
-                exporter.ExportRoadNetwork(exportPath);
+            exporter.ExportRoadNetwork(exportPath);
 
-                EditorUtility.RevealInFinder(exportPath + "/");
-            };
+            EditorUtility.RevealInFinder(exportPath + "/");
         }
 
         /// <summary>
         /// 参照ボタンを押したときの挙動を定義します
         /// </summary>
         /// <returns></returns>
-        private Action CreateBlowseMethod()
+        private void Browse()
         {
-            return () =>
+            exportPath = UnityEditor.EditorUtility.OpenFolderPanel("Select Export Folder", exportPath, "");
+
+            var exportPathField = self.Q<TextField>("ExportPathField");
+
+            if (exportPathField == null)
             {
-                exportPath = UnityEditor.EditorUtility.OpenFolderPanel("Select Export Folder", exportPath, "");
+                Debug.LogError("Failed to load ExportPathField");
 
-                var exportPathField = self.Q<TextField>("ExportPathField");
+                return;
+            }
 
-                if (exportPathField == null)
-                {
-                    Debug.LogError("Failed to load ExportPathField");
-
-                    return;
-                }
-
-                exportPathField.value = exportPath;
-            };
+            exportPathField.value = exportPath;
         }
 
         /// <summary>
@@ -117,15 +100,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             var exportButton = self.Q<Button>("ButtonExport");
             if (exportButton != null)
             {
-                exportButton.clicked -= exportMethod;
-                exportMethod = null;
+                exportButton.clicked -= Export;
             }
 
             var blowseButton = self.Q<Button>("ButtonBrowse");
             if (blowseButton != null)
             {
-                blowseButton.clicked -= blowseMethod;
-                blowseMethod = null;
+                blowseButton.clicked -= Browse;
             }
 
             base.OnTabUnselected();
