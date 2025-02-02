@@ -54,20 +54,15 @@ namespace PLATEAU.RoadNetwork.AddSystem
                 oldEdgeDirection = secondPoint - oldEdgeCenter;
             }
 
-            new GameObject("oldEdgeCenter").transform.position = oldEdgeCenter;
-            new GameObject("oldEdgeNext").transform.position = oldEdgeCenter + oldEdgeDirection;
-
             var sideWalks = new List<RnSideWalk>();
             var leftSideWalk = FindLeftEdgeSideWalk(road, extensibleEdge.isPrev, out var isLeftInsidePrev, out var isLeftOutsidePrev, out var isLeftStartEdge);
             if (leftSideWalk != null)
             {
-                Debug.Log("Left side walk");
                 sideWalks.Add(leftSideWalk);
             }
             var rightSideWalk = FindRightEdgeSideWalk(road, extensibleEdge.isPrev, out var isRightInsidePrev, out var isRightOutsidePrev, out var isRightStartEdge);
             if (rightSideWalk != null)
             {
-                Debug.Log("Right side walk");
                 sideWalks.Add(rightSideWalk);
             }
 
@@ -89,7 +84,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     }
                     else
                     {
-                        Debug.Log("skip");
                         (oldEdgePoint, newEdgePoint) = scannedLineStrings[way.LineString];
                     }
 
@@ -101,8 +95,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
 
                 if (oldEdgePoints.Count == 0 || newEdgePoints.Count == 0)
                 {
-                    //Debug.LogWarning($"{laneBorderType}, {oldEdgePoints.Count}, {newEdgePoints.Count}, {lane.GetBorder(laneBorderType).Contains(oldEdgePoints.Last())}");
-                    Debug.LogWarning($"old edge count: {oldEdgePoints.Count}, new edge count: {newEdgePoints.Count}");
                     continue;
                 }
 
@@ -154,7 +146,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
             var sideWalks = road.SideWalks;
             var leftWay = road.GetLeftWayOfLanes();
             var edgePoint = (isPrev ^ road.MainLanes.First().IsReverse ^ leftWay.IsReversed) ? leftWay.LineString.Points.First() : leftWay.LineString.Points.Last();
-            new GameObject("leftEdgePoint").transform.position = edgePoint;
             var sideWalk = sideWalks.FirstOrDefault(sideWalk => sideWalk.InsideWay.Contains(edgePoint));
 
             if (sideWalk == null)
@@ -169,20 +160,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
             isInsidePrev = sideWalk.InsideWay.LineString.Points.First() == edgePoint;
 
             isStartEdge = isInsidePrev ^ sideWalk.InsideWay.IsReversed;
-
-            //if (!sideWalk.EdgeWays.Any())
-            //    isStartEdge = true;
-            //else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
-            //    isStartEdge = true;
-            //else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
-            //    isStartEdge = false;
-            //else
-            //{
-            //    if (sideWalk.EdgeWays.Count() == 2)
-            //        Debug.LogWarning("歩道端とレーンが離れています");
-
-            //    isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
-            //}
 
             // HACK: 外側Wayの向きは無理やり判定
             var edge = isStartEdge ? sideWalk.StartEdgeWay : sideWalk.EndEdgeWay;
@@ -203,7 +180,6 @@ namespace PLATEAU.RoadNetwork.AddSystem
             var sideWalks = road.SideWalks;
             var rightWay = road.GetRightWayOfLanes();
             var edgePoint = (isPrev ^ road.MainLanes.Last().IsReverse ^ rightWay.IsReversed) ? rightWay.LineString.Points.First() : rightWay.LineString.Points.Last();
-            new GameObject("rightEdgePoint").transform.position = edgePoint;
             var sideWalk = sideWalks.FirstOrDefault(sideWalk => sideWalk.InsideWay.Contains(edgePoint));
 
             if (sideWalk == null)
@@ -219,29 +195,12 @@ namespace PLATEAU.RoadNetwork.AddSystem
 
             isStartEdge = isInsidePrev ^ sideWalk.InsideWay.IsReversed;
 
-            //if (!sideWalk.EdgeWays.Any())
-            //    isStartEdge = true;
-            //else if (sideWalk.StartEdgeWay != null && sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint))
-            //    isStartEdge = true;
-            //else if (sideWalk.EndEdgeWay != null && sideWalk.EndEdgeWay.LineString.Points.Contains(edgePoint))
-            //    isStartEdge = false;
-            //else
-            //{
-            //    if (sideWalk.EdgeWays.Count() == 2)
-            //        Debug.LogWarning("歩道端とレーンが離れています");
-
-            //    isStartEdge = sideWalk.StartEdgeWay == null || sideWalk.StartEdgeWay.LineString.Points.Contains(edgePoint);
-            //}
-
             // HACK: 外側Wayの向きは無理やり判定
             var edge = isStartEdge ? sideWalk.StartEdgeWay : sideWalk.EndEdgeWay;
             isOutsidePrev =
                 sideWalk.OutsideWay.LineString.Points.First() == edgePoint ||
                 sideWalk.OutsideWay.LineString.Points.First() == (isInsidePrev ? sideWalk.InsideWay.LineString.Points.First() : sideWalk.InsideWay.LineString.Points.Last()) ||
                 (edge != null && edge.LineString.Points.Contains(sideWalk.OutsideWay.LineString.Points.First()));
-
-
-            Debug.Log($"isInsidePrev: {isInsidePrev}, isOutsidePrev: {isOutsidePrev}, isStartEdge: {isStartEdge}");
 
             return sideWalk;
         }

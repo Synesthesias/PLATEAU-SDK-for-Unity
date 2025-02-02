@@ -292,7 +292,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                 intersection.AddEdge(data.Road, roadBorder);
             }
 
-            // 座標合わせ
+            // エッジを時計回りに並び替え
             intersection.Align();
 
             // ネットワークに追加
@@ -566,6 +566,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             // 5. 最後に左歩道外側とLastPointを追加
             exteriorPoints.Add(leftSideWalkOuterPoint);
             exteriorPoints.Add(lastPoint);
+
+            // 頂点の順番を逆転させて時計回りにする
+            exteriorPoints.Reverse();
 
             return exteriorPoints;
         }
