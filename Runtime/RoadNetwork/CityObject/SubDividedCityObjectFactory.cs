@@ -418,7 +418,6 @@ namespace PLATEAU.RoadNetwork.CityObject
                 //if (child.Meshes.Any() == false)
                 //    continue;
                 nameToSubDividedCityObject.TryAdd(child.Name, child);
-                ret.ConvertedCityObjects.Add(child);
             }
 
             foreach (var co in cityInfos)
