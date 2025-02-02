@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.UIDocBind;
+﻿using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
@@ -171,13 +171,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             var offset = totalWidth / 2;
             foreach (var leftLane in road.GetLeftLanes())
             {
+                var leftStartPoint = leftLane.LeftWay.Points.First();
+                var leftEndPoint = leftLane.LeftWay.Points.Last();
+
                 var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReverse );
                 leftLane.LeftWay.SetPointsUnkeepReference(nextLeftWayPoints);
                 offset -= laneWidth;
 
+                // 端点のみ元の参照を保持
+                leftStartPoint.Vertex = nextLeftWayPoints.First();
+                leftLane.LeftWay.SetPoint(0, leftStartPoint);
+                leftEndPoint.Vertex = nextLeftWayPoints.Last();
+                leftLane.LeftWay.SetPoint(leftLane.LeftWay.Points.Count() - 1, leftEndPoint);
+
+                var rightStartPoint = leftLane.RightWay.Points.First();
+                var rightEndPoint = leftLane.RightWay.Points.Last();
+
                 var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReverse );
                 leftLane.RightWay.SetPointsUnkeepReference(nextRightWayPoints);
 
+                // 端点のみ元の参照を保持
+                rightStartPoint.Vertex = nextRightWayPoints.First();
+                leftLane.RightWay.SetPoint(0, rightStartPoint);
+                rightEndPoint.Vertex = nextRightWayPoints.Last();
+                leftLane.RightWay.SetPoint(leftLane.RightWay.Points.Count() - 1, rightEndPoint);
             }
 
             if (road.MedianLane != null)
@@ -187,14 +204,31 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             foreach (var rightLane in road.GetRightLanes())
             {
+                var rightStartPoint = rightLane.RightWay.Points.First();
+                var rightEndPoint = rightLane.RightWay.Points.Last();
+
                 var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReverse );
                 rightLane.RightWay.SetPointsUnkeepReference(nextRightWayPoints);
 
+                // 端点のみ元の参照を保持
+                rightStartPoint.Vertex = nextRightWayPoints.First();
+                rightLane.RightWay.SetPoint(0, rightStartPoint);
+                rightEndPoint.Vertex = nextRightWayPoints.Last();
+                rightLane.RightWay.SetPoint(rightLane.RightWay.Points.Count() - 1, rightEndPoint);
+
                 offset -= laneWidth;
+
+                var leftStartPoint = rightLane.LeftWay.Points.First();
+                var leftEndPoint = rightLane.LeftWay.Points.Last();
 
                 var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReverse );
                 rightLane.LeftWay.SetPointsUnkeepReference(nextLeftWayPoints);
 
+                // 端点のみ元の参照を保持
+                leftStartPoint.Vertex = nextLeftWayPoints.First();
+                rightLane.LeftWay.SetPoint(0, leftStartPoint);
+                leftEndPoint.Vertex = nextLeftWayPoints.Last();
+                rightLane.LeftWay.SetPoint(rightLane.LeftWay.Points.Count() - 1, leftEndPoint);
             }
 
             // 境界を設定します。
