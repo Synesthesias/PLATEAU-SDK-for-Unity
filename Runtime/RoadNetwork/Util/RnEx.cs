@@ -4,6 +4,7 @@ using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
@@ -193,7 +194,7 @@ namespace PLATEAU.RoadNetwork.Util
             // 自己交差があれば削除する
             var plane = RnModel.Plane;
             GeoGraph2D.RemoveSelfCrossing(line.Points
-                , t => t.Vertex.GetTangent(plane)
+                , t => t.Vertex.ToVector2(plane)
                 , (p1, p2, p3, p4, inter, f1, f2) => new RnPoint(Vector3.Lerp(p1, p2, f1)));
 
             return line;
@@ -527,5 +528,48 @@ namespace PLATEAU.RoadNetwork.Util
             return ret;
         }
 
+
+        public class KeyEdgeGroup<TKey, TEdge>
+        {
+            public TKey Key { get; set; }
+            public List<TEdge> Edges { get; } = new();
+
+            public KeyEdgeGroup() { }
+            public KeyEdgeGroup(TKey key)
+            {
+                Key = key;
+            }
+        }
+
+        // OutlineEdgesで表現される多角形の各辺をkeySelectorをキーとした連続した辺でグループ化
+        // 例: 各辺のキーが右のようになる場合 {A, A, B, B, A, A, C, C, A}
+        //   => {B, (2,3)}, {A, (4,5)}, {C, (6,7)}, {A, (8,0, 1)}のようにグループ化される
+        public static List<KeyEdgeGroup<TKey, TEdge>> GroupByOutlineEdges<TKey, TEdge>(
+            IEnumerable<TEdge> edges
+            , Func<TEdge, TKey> keySelector
+            , IEqualityComparer<TKey> comparer = null
+            )
+        {
+            List<KeyEdgeGroup<TKey, TEdge>> ret = new();
+            comparer ??= EqualityComparer<TKey>.Default;
+            foreach (var e in edges)
+            {
+                var key = keySelector(e);
+                if (!ret.Any() || comparer.Equals(ret[^1].Key, key) == false)
+                {
+                    ret.Add(new KeyEdgeGroup<TKey, TEdge>(key));
+                }
+                ret[^1].Edges.Add(e);
+            }
+
+            // 両端が同じキーの場合は結合する
+            if (ret.Count > 1 && comparer.Equals(ret[0].Key, ret[^1].Key))
+            {
+                ret[^1].Edges.AddRange(ret[0].Edges);
+                ret.RemoveAt(0);
+            }
+
+            return ret;
+        }
     }
 }

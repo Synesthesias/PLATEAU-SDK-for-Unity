@@ -780,8 +780,14 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         foreach (var sideWalkFace in fg.Faces.Where(f => f.RoadTypes.IsSideWalk()))
                         {
+                            var parent = work.TranMap.Values.FirstOrDefault(t =>
+                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+
+                            var neighborCityObjects
+                                = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
+
                             if (sideWalkFace.CreateSideWalk(out var outsideEdges, out var insideEdges,
-                                    out var startEdges, out var endEdges) == false)
+                                    out var startEdges, out var endEdges, neighborCityObjects) == false)
                                 continue;
 
                             RnWay AsWay(IReadOnlyList<REdge> edges, out bool isCached)
@@ -797,8 +803,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var insideWay = AsWay(insideEdges, out var insideCached);
                             var startWay = AsWay(startEdges, out var startCached);
                             var endWay = AsWay(endEdges, out var endCached);
-                            var parent = work.TranMap.Values.FirstOrDefault(t =>
-                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+
 
                             RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
                             if (parent?.Node is RnRoad road)

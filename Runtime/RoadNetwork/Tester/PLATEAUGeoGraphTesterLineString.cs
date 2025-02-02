@@ -166,7 +166,7 @@ namespace PLATEAU.RoadNetwork.Tester
             }
         }
 
-        public new void OnDrawGizmos()
+        public void OnDrawGizmos()
         {
             if (!gameObject.activeInHierarchy)
                 return;

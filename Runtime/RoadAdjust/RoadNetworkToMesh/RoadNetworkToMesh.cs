@@ -1,4 +1,4 @@
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
@@ -24,7 +24,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 道路ネットワークをメッシュに変換します。
     /// </summary>
-    public class RoadNetworkToMesh
+    internal class RoadNetworkToMesh
     {
         private readonly IRrTarget srcTargetBeforeCopy;
         private readonly RnmLineSeparateType lineSeparateType;
@@ -45,9 +45,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         /// <summary>
         /// 道路ネットワークからメッシュを生成します。
-        /// 引数<paramref name="doSubdivide"/>の説明については<see cref="LineSmoother"/>を参照してください。
+        /// 生成されたもののリストを返します。
         /// </summary>
-        public void Generate(bool doSubdivide)
+        public List<PLATEAUReproducedRoad> Generate(ISmoothingStrategy smoothingStrategy)
         {
             
             using var progressDisplay = new ProgressDisplayDialogue();
@@ -58,7 +58,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var target = new RnmModelAdjuster().Adjust(targetBeforeAdjust);
             
             progressDisplay.SetProgress("道路ネットワークをスムージング中", 20f, "");
-            new RoadNetworkLineSmoother().Smooth(target, doSubdivide);
+            new RoadNetworkLineSmoother().Smooth(target, smoothingStrategy);
             
             progressDisplay.SetProgress("道路ネットワークから輪郭線を生成中", 30f, "");
             // 生成すべき輪郭線を定義します。
@@ -87,20 +87,20 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             if (contourMeshList.Count == 0)
             {
                 Dialogue.Display("生成対象がありませんでした。", "OK");
-                return;
+                return null;
             }
             
             // 輪郭線からメッシュとゲームオブジェクトを生成します。
             progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中...", 0f, "");
 
             var dstParent = RoadReproducer.GenerateDstParent();
+            var resultList = new List<PLATEAUReproducedRoad>();
 
             for (int i = 0; i < contourMeshList.Count; i++)
             {
                 progressDisplay.SetProgress("輪郭線からゲームオブジェクトを生成中", (float)i * 100f / contourMeshList.Count, $"{i} / {contourMeshList.Count}");
                 var contourMesh = contourMeshList[i];
                 var srcObjs = contourMesh.SourceObjects;
-                if (srcObjs.Length == 0) continue;
                 
                 // 輪郭線をテッセレートしてメッシュ化
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
@@ -108,14 +108,13 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
                 // オブジェクトの生成
                 var dstObj = GenerateDstGameObj(dstParent, srcObjs);
-                
+                resultList.Add(dstObj.GetComponent<PLATEAUReproducedRoad>());
 
                 if (DebugMode)
                 {
                     var comp = dstObj.GetOrAddComponent<PLATEAURoadNetworkToMeshDebug>();
                     comp.Init(contourMesh);
                 }
-                
                 
                 var renderer = dstObj.GetOrAddComponent<MeshRenderer>();
                 var filter = dstObj.GetOrAddComponent<MeshFilter>();
@@ -151,8 +150,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         var dstAttr = dstObj.GetOrAddComponent<PLATEAUCityObjectGroup>();
                         dstAttr.CopyFrom(srcAttr);
                         dstObj.GetOrAddComponent<MeshCollider>();
+                    } else
+                    {
+                        dstObj.GetOrAddComponent<PLATEAUCityObjectGroup>();
+                        dstObj.GetOrAddComponent<MeshCollider>();
                     }
-                    
+
                     // 他のコンポーネントをコピーします。
                     // FIXME: srcObjsが複数のケースに未対応
                     if (srcObjs[0].Transform != null)
@@ -168,7 +171,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         componentCopier.Copy(srcObjs[0].Transform.gameObject, dstObj);
                     }
                     
-                    
                 }
             }
             
@@ -178,6 +180,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
 
+            return resultList;
         }
 
         /// <summary>

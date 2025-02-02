@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
@@ -67,12 +68,17 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         {
             exportPath = path;
 
-            roadNetworkContext = new RoadNetworkContext();
-            if (roadNetworkContext.GeoReference == null)
+            var rnStructureModel = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (rnStructureModel == null)
             {
-                Dialogue.Display("元ゲームオブジェクトが見つからないため、エクスポートに失敗しました。", "OK");
+                Dialogue.Display("道路ネットワークがシーン中に見つかりませんでした。", "OK");
                 return;
             }
+            rnStructureModel.Serialize();
+            
+            roadNetworkContext = new RoadNetworkContext(rnStructureModel);
+
+            if (!roadNetworkContext.IsInitSucceed) return;
 
             GenerateExpRoadNetwork(roadNetworkContext);
 

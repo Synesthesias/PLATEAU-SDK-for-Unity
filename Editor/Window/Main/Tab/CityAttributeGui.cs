@@ -16,7 +16,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityAttributeGui : ITabContent
     {
         private static readonly string GIZMO_GAMEOBJECT_NAME = "PLATEAUCityObjectGroup_GizmoGameObject";
-        private bool isActive = false;
         private readonly EditorWindow parentEditorWindow;
         private CityObject parent;
         private CityObject child;
@@ -27,6 +26,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private Vector2 scrollParent;
         private Vector2 scrollChild;
         private CityObjectGizmoDrawer gizmoDrawer;
+        
+        private bool isActive = false;
 
         public CityAttributeGui(EditorWindow parentEditorWindow)
         {
@@ -35,10 +36,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         
         public VisualElement CreateGui()
         {
+            DestroyGizmoDrawer();
             return new IMGUIContainer(Draw);
         }
         
-        public void Draw()
+        private void Draw()
         {
             PlateauEditorStyle.SubTitle("クリックした地物の情報を表示します。");
 
@@ -88,7 +90,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     }
                 }
             }
-
+            
             if(!isActive)
             {
                 SceneView.duringSceneGui += OnSceneGUI;
@@ -208,17 +210,22 @@ namespace PLATEAU.Editor.Window.Main.Tab
             parent = child = null;
             parentJson = childJson = targetObjectName = errorMessage = null;
             DestroyGizmoDrawer();
+            isActive = false;
         }
 
         private CityObjectGizmoDrawer GetGizmoDrawer()
         {
             if (gizmoDrawer == null)
             {
-                gizmoDrawer = GameObject.Find(GIZMO_GAMEOBJECT_NAME)?.GetComponent<CityObjectGizmoDrawer>();
+                var gizmoDrawerObj = GameObject.Find(GIZMO_GAMEOBJECT_NAME);
+                if (gizmoDrawerObj == null)
+                {
+                    gizmoDrawerObj = new GameObject(GIZMO_GAMEOBJECT_NAME);
+                }
+                gizmoDrawer = gizmoDrawerObj.GetComponent<CityObjectGizmoDrawer>();
                 if (gizmoDrawer == null)
                 {
-                    var obj = new GameObject(GIZMO_GAMEOBJECT_NAME);
-                    gizmoDrawer = obj.AddComponent<CityObjectGizmoDrawer>();
+                    gizmoDrawer = gizmoDrawerObj.AddComponent<CityObjectGizmoDrawer>();
                 }
             }
             return gizmoDrawer;
@@ -226,9 +233,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private void DestroyGizmoDrawer()
         {
-            if (gizmoDrawer != null)
+            gizmoDrawer = null;
+            var gizmoDrawers = GameObject.FindObjectsOfType<CityObjectGizmoDrawer>();
+            foreach (var g in gizmoDrawers)
             {
-                GameObject.DestroyImmediate(gizmoDrawer.gameObject);
+                Object.DestroyImmediate(g.gameObject);
             }
         }
 

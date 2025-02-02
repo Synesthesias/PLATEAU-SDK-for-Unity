@@ -12,6 +12,12 @@ namespace PLATEAU.RoadNetwork
         [SerializeField]
         private ulong debugId;
 
+#if UNITY_EDITOR
+        // とりあえず何でも入れられるメモ用(EDITORのみ)
+        [SerializeField]
+        private string debugMemo;
+#endif
+
         public ulong DebugMyId
         {
             get
@@ -21,6 +27,25 @@ namespace PLATEAU.RoadNetwork
             set
             {
                 debugId = value;
+            }
+        }
+
+        // とりあえず何でも入れられるメモ用(EDITORのみ)
+        public string DebugMemo
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return debugMemo;
+#else
+                return null;
+#endif
+            }
+            set
+            {
+#if UNITY_EDITOR
+                debugMemo = value;
+#endif
             }
         }
 
