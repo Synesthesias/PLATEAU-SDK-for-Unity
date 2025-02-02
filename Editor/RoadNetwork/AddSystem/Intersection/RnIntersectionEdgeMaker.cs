@@ -59,8 +59,8 @@ namespace PLATEAU.RoadNetwork.AddSystem
         {
             var edgeLineOrigin = neighbor.Border.Points.ElementAt(index);
             var edgeLineDirection = neighbor.Border.Points.ElementAt(index + 1).Vertex - neighbor.Border.Points.ElementAt(index);
-            var leftSideWalkEdge = FindLeftSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
-            var rightSideWalkEdge = FindRightSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
+
+            // ボーダーを分割し、拡張可能部分だけ切り出し
             if (index > 0)
             {
                 var newWay = new RnWay(new RnLineString(neighbor.Border.Points.Take(index + 1)));
@@ -73,6 +73,9 @@ namespace PLATEAU.RoadNetwork.AddSystem
                 target.AddEdge(null, newWay);
                 neighbor.Border.Points = neighbor.Border.Points.Take(2);
             }
+
+            var leftSideWalkEdge = FindLeftSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
+            var rightSideWalkEdge = FindRightSideWalkEdge(edgeLineOrigin, edgeLineDirection, neighbor);
             target.Align();
 
             return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
@@ -83,11 +86,13 @@ namespace PLATEAU.RoadNetwork.AddSystem
             RnWay rightSideWalkEdge = null;
             foreach (var sideWalk in target.SideWalks)
             {
+                // ボーダーと同一直線状にある歩道エッジを取得もしくは既存道路外縁から生成
                 var sideWalkEdge = GetOrCreateSideWalkEdge(sideWalk, edgeLineOrigin, edgeLineDirection, out bool isStartEdge);
 
                 if (sideWalkEdge == null)
                     continue;
 
+                // ボーダーから見て右側のエッジだけ使用。ボーダーは時計回りのはずなので、最後の点がエッジに含まれているかで判定
                 if (isStartEdge && sideWalk.StartEdgeWay.LineString.Points.Contains(neighbor.Border.Points.Last()))
                 {
                     rightSideWalkEdge = sideWalk.StartEdgeWay;
@@ -107,11 +112,13 @@ namespace PLATEAU.RoadNetwork.AddSystem
         {
             foreach (var sideWalk in target.SideWalks)
             {
+                // ボーダーと同一直線状にある歩道エッジを取得もしくは既存道路外縁から生成
                 var sideWalkEdge = GetOrCreateSideWalkEdge(sideWalk, edgeLineOrigin, edgeLineDirection, out bool isStartEdge);
 
                 if (sideWalkEdge == null)
                     continue;
 
+                // ボーダーから見て左側のエッジだけ使用。ボーダーは時計回りのはずなので、最初の点がエッジに含まれているかで判定
                 if (isStartEdge && sideWalk.StartEdgeWay.LineString.Points.Contains(neighbor.Border.Points.First()))
                 {
                     return sideWalk.StartEdgeWay;

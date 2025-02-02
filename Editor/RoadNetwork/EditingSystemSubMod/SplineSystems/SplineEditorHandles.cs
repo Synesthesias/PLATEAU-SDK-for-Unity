@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     public class SplineEditorHandles
     {
         private int hoveredKnotIndex = -1;
-        private static float hoverDistanceThreshold = 0.5f;
+        private static float hoverDistanceThreshold = 1f;
         public SplineEditorCore Core { get; }
         private Action onEditFinished;
         private Action onEditCanceled;
@@ -55,19 +55,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 DrawAllKnotsStaticExceptHovered(Core);
                 HandleAddition(Core);
             }
-            
+
             // Enterで決定
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
             {
                 onEditFinished.Invoke();
             }
-            
+
             // Escでキャンセル
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
             {
                 onEditCanceled.Invoke();
             }
-            
+
+            DrawPreviewLines();
         }
 
         private void DetermineHoveredKnot(SplineEditorCore core)
@@ -146,13 +147,31 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
+        private void DrawPreviewLines()
+        {
+            int knotCount = Core.GetKnotCount();
+            if (knotCount < 2) return;
+
+            Handles.color = Color.green;
+
+            // スプライン曲線を描画
+            Vector3[] points = new Vector3[100];
+            for (int i = 0; i < points.Length; i++)
+            {
+                float t = (float)i / (points.Length - 1);
+                points[i] = Core.EvaluateSplineAtT(t);
+            }
+
+            Handles.DrawAAPolyLine(2f, points);
+        }
+
         private static void HandleAddition(SplineEditorCore core)
         {
             Event e = Event.current;
 
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
             float outT;
-            Vector3 nearestPoint = GetNearestPointOnSpline(core, ray, out outT, 50);
+            Vector3 nearestPoint = GetNearestPointOnSpline(core, ray, out outT, 100);
             Vector3 closestOnRay = ClosestPointOnRay(ray, nearestPoint);
             float dist = Vector3.Distance(closestOnRay, nearestPoint);
 
@@ -170,7 +189,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private static Vector3 GetNearestPointOnSpline(SplineEditorCore core, Ray ray, out float outT, int sampleCount = 50)
+        private static Vector3 GetNearestPointOnSpline(SplineEditorCore core, Ray ray, out float outT, int sampleCount = 100)
         {
             var spline = core.Spline;
 
