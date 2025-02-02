@@ -84,13 +84,29 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             CreateSpline(target.Ref);
 
             var core = new SplineEditorCore(spline);
+
+
+            // TODO: 端点取得の関数化
+            var road = target.Ref.Roads[0];
+            Vector3 startLeftPoint, startRightPoint, endLeftPoint, endRightPoint;
+            {
+                var way = road.GetLeftWayOfLanes();
+                startLeftPoint = road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
+                endLeftPoint = road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+            }
+            {
+                var way = road.GetRightWayOfLanes();
+                startRightPoint = road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
+                endRightPoint = road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+            }
+
             core.SetStartPointConstraint(true,
-                target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[0].Vertex,
-                target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[^1].Vertex
+                startLeftPoint,
+                startRightPoint
                 );
             core.SetEndPointConstraint(true,
-                target.Ref.Roads[0].GetLeftWayOfLanes().LineString.Points[^1].Vertex,
-                target.Ref.Roads[0].GetRightWayOfLanes().LineString.Points[0].Vertex
+                endLeftPoint,
+                endRightPoint
             );
             splineEditHandles = new SplineEditorHandles(core, FinishSplineEdit, CancelSplineEdit);
         }
