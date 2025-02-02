@@ -18,6 +18,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         private RoadEditUI roadEditUI; // 道路選択時にPLATEAUウィンドウ上に表示されるUI
         private readonly VisualElement roadEditUIRoot;
+        private readonly VisualElement intersectionEditInstruction;
         
 
         // UI要素
@@ -43,6 +44,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             roadEditUIRoot = rootVisualElement.Q<VisualElement>("RoadEditPanel");
             roadEditUI = new RoadEditUI(roadEditUIRoot, EditingSystem);
             roadEditUI.Hide();
+            
+            intersectionEditInstruction = rootVisualElement.Q<VisualElement>("IntersectionEditInstruction");
+            intersectionEditInstruction.style.display = DisplayStyle.None;
 
         }
 
@@ -108,6 +112,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             
             RoadNetworkEditingSystem.TryTerminate(EditingSystem, rootVisualElement);
             if(editModeToggle != null) editModeToggle.value = false;
+            intersectionEditInstruction.style.display = DisplayStyle.None;
             SceneView.RepaintAll();
         }
 
@@ -123,6 +128,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             if (roadGroupEditorData != null)
             {
                 roadEditUI.OnRoadSelected(roadGroupEditorData);
+                intersectionEditInstruction.style.display = DisplayStyle.None;
             }
 
             // 選択されたものが交差点の場合
@@ -131,6 +137,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             {
                 EditingSystem.intersectionEditSceneViewGui?.SetupIntersection(intersectionData.Ref);
                 roadEditUI.Hide();
+                intersectionEditInstruction.style.display = DisplayStyle.Flex;
             }
         }
         
