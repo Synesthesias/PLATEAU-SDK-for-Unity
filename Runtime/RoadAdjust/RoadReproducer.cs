@@ -20,18 +20,17 @@ namespace PLATEAU.RoadAdjust
     {
         /// <summary>
         /// 生成します。
-        /// 引数<paramref name="doSubdivide"/>の説明は<see cref="LineSmoother"/>を参照してください。
         /// 生成された道路を返します。
         /// </summary>
-        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, bool doSubdivide)
+        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, ISmoothingStrategy smoothingStrategy)
         {
             // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
-            var generatedRoads = rnm.Generate(doSubdivide);
+            var generatedRoads = rnm.Generate(smoothingStrategy);
 
             // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
-            var generatedIntersections = rm.Generate(doSubdivide);
+            var generatedIntersections = rm.Generate(smoothingStrategy);
 
             return generatedRoads.Concat(generatedIntersections).ToList();
         }

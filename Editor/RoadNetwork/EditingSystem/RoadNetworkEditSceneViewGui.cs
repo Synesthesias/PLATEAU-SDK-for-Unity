@@ -1,6 +1,7 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
@@ -46,7 +47,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
         private RnSplineEditor splineEditor; // 全車道編集
 
-        private const bool DoSubdivide = false;
         
         /// <summary> 道路のレーンをドラッグで編集する機能です。 </summary>
         private WaySlider waySlider = new WaySlider();
@@ -287,7 +287,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             // 道路を生成
             var roads = roadGroupEditorData.Ref.Roads;
-            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()), CrosswalkFrequency.All, DoSubdivide);
+            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()), CrosswalkFrequency.All, new SmoothingStrategySmoothAll());
         }
 
         
