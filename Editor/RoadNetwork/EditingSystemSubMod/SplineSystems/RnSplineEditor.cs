@@ -14,8 +14,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// </summary>
     internal class RnSplineEditor
     {
-        private SplineInstantiate splineInstantiate;
-        private SplineContainer splineContainer;
         private Spline spline = new Spline();
         private GameObject roadNetworkObject;
         private SplineEditorHandles splineEditHandles;
@@ -144,7 +142,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (target != roadNetworkObject && target != null && target is MonoBehaviour monoBehaviour)
             {
                 roadNetworkObject = monoBehaviour.gameObject;
-                InitializeSplineComponents();
             }
 
             if (!IsEnabled)
@@ -282,15 +279,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private void InitializeSplineComponents()
-        {
-            splineContainer = roadNetworkObject.GetComponent<SplineContainer>();
-            splineContainer ??= roadNetworkObject.AddComponent<SplineContainer>();
-            splineInstantiate = roadNetworkObject.GetComponent<SplineInstantiate>();
-            splineInstantiate ??= roadNetworkObject.AddComponent<SplineInstantiate>();
-            splineInstantiate.Container = splineContainer;
-        }
-
         private void CreateSpline(RnRoadGroup roadGroup)
         {
             roadGroup.TryCreateSimpleSpline(out var spline, out var width);
@@ -312,7 +300,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             spline.Knots = knots.ToArray();
 
-            splineContainer.Splines = new Spline[] { spline };
             this.spline = spline;
         }
 
