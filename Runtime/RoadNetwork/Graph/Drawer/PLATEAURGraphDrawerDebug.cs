@@ -1,6 +1,4 @@
-﻿using PlasticPipe.PlasticProtocol.Messages;
-using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
