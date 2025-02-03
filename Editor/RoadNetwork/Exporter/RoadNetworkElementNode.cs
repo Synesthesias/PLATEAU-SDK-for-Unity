@@ -8,7 +8,7 @@ using PLATEAU.RoadNetwork.Data;
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
     /// <summary>
-    /// ノードを表すクラス
+    /// ノード（交差点）を表すクラス
     /// </summary>
     public class RoadNetworkElementNode : RoadNetworkElement
     {
