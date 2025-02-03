@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.RoadNetwork.Util;
+using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections;
@@ -386,7 +387,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public List<RnWay> Split(int num, bool insertNewPoint, Func<int, float> rateSelector = null)
         {
-            var ret = LineString.Split(num, insertNewPoint, rateSelector).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
+            var selector = rateSelector;
+            // IsReversedの時はrateSelectorを逆にする
+            if (IsReversed && rateSelector != null)
+                selector = i => rateSelector(num - 1 - i);
+            var ret = LineString.Split(num, insertNewPoint, selector).Select(s => new RnWay(s, IsReversed, IsReverseNormal)).ToList();
             if (IsReversed)
                 ret.Reverse();
             return ret;
@@ -428,7 +433,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 // en0成分の移動量がdeltaになるように, vnの移動量を求める
                 var m = Vector3.Dot(vn, en0);
                 // p0->p1->p2でp0 == p2だったりした場合に0除算が発生するのでチェック
-                // #TODO : 移動した結果頂点が重なる場合があるのでその対策が必要
                 var d = delta;
                 bool isZero = Mathf.Abs(m) < 1e-5f;
                 if (isZero == false)
@@ -445,6 +449,26 @@ namespace PLATEAU.RoadNetwork.Structure
                 // #TODO : vnが0ベクトルの時の対応
                 delta = d * Vector3.Dot(vn, en1);
             }
+            
+            // 凹凸のある線では、法線方向に移動すると線が交差することがあるので、交差を取り除く
+            RemoveIntersection();
+        }
+
+        /// <summary>
+        /// 線が自分自身の線と交差する場合、交差して輪になった部分をなかったことにして交差しないようにします
+        /// </summary>
+        public void RemoveIntersection()
+        {
+            var src = new List<Vector3>(Count);
+            for (int i = 0; i < Count; i++)
+            {
+                src.Add(GetPoint(i).Vertex);
+            }
+
+            var dst = new LineIntersectionRemover().Calc(src);
+            var dstStr = new RnLineString(dst.Select(p => new RnPoint(p)));
+            if (IsReversed) dstStr = new RnLineString(dstStr.Reverse().Select(v => new RnPoint(v)).ToList());
+            LineString = dstStr;
         }
 
         /// <summary>
@@ -526,6 +550,50 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 点の座標をまとめて設定する。RnPointへの参照はなるべく保持する。Wayの向きを考慮する。
+        /// 引数<paramref name="nextPoints"/>の点の数が現在の点と同じであれば、すべてのRnPointへの参照を保つ。
+        /// しかし、引数の点の数が現在の点の数と違う場合は、最初と最後のみ参照を保つ。
+        /// </summary>
+        public void SetPointsKeepReference(IEnumerable<Vector3> nextPointsArg)
+        {
+            var nextPoints = nextPointsArg.ToArray();
+            if(nextPoints.Length == 0) LineString.Points.Clear();
+            if (Count == nextPoints.Length)
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    var p = GetPoint(i);
+                    p.Vertex = nextPoints[i];
+                    SetPoint(i, p);
+                }
+
+                return;
+            }
+            var firstRef = GetPoint(0);
+            var lastRef = GetPoint(-1);
+            firstRef.Vertex = nextPoints[0];
+            lastRef.Vertex = nextPoints[^1];
+            if(IsReversed) Array.Reverse(nextPoints);
+            LineString = RnLineString.Create(nextPoints.Select(p => new RnPoint(p)));
+            SetPoint(0, firstRef);
+            SetPoint(-1, lastRef);
+        }
+
+        /// <summary>
+        /// 点の座標をまとめて設定する。RnPointを新たに生成するため、既存のRnPointへの参照は途切れる。Wayの向きを考慮する。
+        /// </summary>
+        public void SetPointsUnkeepReference(IEnumerable<Vector3> nextPointsArg)
+        {
+            var nextPoints = nextPointsArg.ToArray();
+            if(IsReversed) Array.Reverse(nextPoints);
+            LineString.Points.Clear();
+            foreach(var p in nextPoints)
+            {
+                LineString.AddPoint(new RnPoint(p));
+            }
         }
     }
 

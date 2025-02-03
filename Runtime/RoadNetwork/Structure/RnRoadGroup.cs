@@ -1097,23 +1097,24 @@ namespace PLATEAU.RoadNetwork.Structure
             var dstLanes = dstRoad.AllLanesWithMedian.ToList();
             var dstSideWalks = dstRoad.SideWalks.ToList();
 
+
+            // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
+            // SideWalksは統合されない場合もあるので一旦、SideWalksのLineStringはコピーを保持するようにする
+            // 最後にLane側のLineStringと比較して同じものがあれば統合する
+            foreach (var sw in dstRoad.SideWalks)
+            {
+                foreach (var way in sw.SideWays)
+                {
+                    way.LineString = way.LineString.Clone(false);
+                }
+            }
+
             for (var i = 1; i < Roads.Count; i++)
             {
                 // マージ元の道路. dstRoadに統合されて消える
                 var srcRoad = Roads[i];
                 var srcLanes = srcRoad.AllLanesWithMedian.ToList();
 
-                // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
-                // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので
-                // 元のLineStringをコピーして持っておく
-                var originalDstSideWalks = dstSideWalks.ToList();
-                var original = dstSideWalks
-                    .SelectMany(sw => sw.SideWays)
-                    .ToHashSet()
-                    .ToDictionary(x => x, x => x.Clone(false));
-
-                // SideWalksと共通のLineStringもあるので2回追加しないように記録しておく
-                HashSet<RnLineString> visited = new();
                 for (var j = 0; j < srcLanes.Count; ++j)
                 {
                     var srcLane = srcLanes[j];
@@ -1123,11 +1124,10 @@ namespace PLATEAU.RoadNetwork.Structure
                     if (srcRoad.IsLeftLane(srcLane))
                     {
                         dstLane.LeftWay?.AppendBack2LineString(srcLane.LeftWay);
-                        visited.Add(dstLane.LeftWay?.LineString);
+                        // 中間のレーンはつながっているので右車線に追加するのは最後だけで良い
                         if (j == srcLanes.Count - 1)
                         {
                             dstLane.RightWay?.AppendBack2LineString(srcLane.RightWay);
-                            visited.Add(dstLane.RightWay?.LineString);
                         }
 
                         dstLane.SetBorder(RnLaneBorderType.Next, srcLane.NextBorder);
@@ -1136,11 +1136,10 @@ namespace PLATEAU.RoadNetwork.Structure
                     else
                     {
                         dstLane.RightWay?.AppendFront2LineString(srcLane.RightWay);
-                        visited.Add(dstLane.RightWay?.LineString);
+                        // 中間のレーンはつながっているので右車線に追加するのは最後だけで良い
                         if (j == srcLanes.Count - 1)
                         {
                             dstLane.LeftWay?.AppendFront2LineString(srcLane.LeftWay);
-                            visited.Add(dstLane.LeftWay?.LineString);
                         }
 
                         dstLane.SetBorder(RnLaneBorderType.Prev, srcLane.PrevBorder);
@@ -1160,23 +1159,14 @@ namespace PLATEAU.RoadNetwork.Structure
                             var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
                             if (dstSw.InsideWay != null)
                             {
-                                if (visited.Contains(dstSw.InsideWay.LineString) == false)
-                                {
-                                    merger(dstSw.InsideWay, insideWay);
-                                    visited.Add(dstSw.InsideWay.LineString);
-                                }
+                                merger(dstSw.InsideWay, insideWay);
 
                                 insideWay = dstSw.InsideWay;
                             }
 
                             if (dstSw.OutsideWay != null)
                             {
-                                if (visited.Contains(dstSw.OutsideWay.LineString) == false)
-                                {
-                                    merger(dstSw.OutsideWay, outsideWay);
-                                    visited.Add(dstSw.OutsideWay.LineString);
-                                }
-
+                                merger(dstSw.OutsideWay, outsideWay);
                                 outsideWay = dstSw.OutsideWay;
                             }
 
@@ -1222,17 +1212,6 @@ namespace PLATEAU.RoadNetwork.Structure
                         dstSideWalks.Add(srcSw);
                     }
                 }
-
-                // dstSideWalksの中でマージされなかった(元の形状から変更されない)ものは
-                // レーンと共通のLineStringを持っている場合に勝手に形状変わっているかもしれないので明示的に元に戻す
-                foreach (var sw in originalDstSideWalks
-                             .Where(d => mergedDstSideWalks.Contains(d) == false))
-                {
-                    sw.SetSideWays(
-                        sw.OutsideWay == null ? null : original[sw.OutsideWay]
-                        , sw.InsideWay == null ? null : original[sw.InsideWay]);
-                }
-
                 dstRoad.AddTargetTrans(srcRoad.TargetTrans);
                 srcRoad.DisConnect(true);
             }
@@ -1243,6 +1222,40 @@ namespace PLATEAU.RoadNetwork.Structure
                 foreach (var l in dstLanes)
                 {
                     NextIntersection.AddEdge(dstRoad, dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right));
+                }
+            }
+
+            // 同じLineStringを持つSideWalkを統合する
+            HashSet<RnLineString> laneLineStrings = new();
+            foreach (var lane in dstRoad.AllLanesWithMedian)
+            {
+                if (lane.LeftWay?.LineString != null)
+                    laneLineStrings.Add(lane.LeftWay?.LineString);
+                if (lane.RightWay?.LineString != null)
+                    laneLineStrings.Add(lane.RightWay?.LineString);
+            }
+
+            foreach (var sw in dstSideWalks)
+            {
+                foreach (var way in sw.SideWays)
+                {
+                    bool found = false;
+                    foreach (var ls in laneLineStrings)
+                    {
+                        if (RnLineStringEx.IsSequenceEqual(way.LineString, ls, out var isReverseSequence))
+                        {
+                            way.LineString = ls;
+                            if (isReverseSequence)
+                                way.Reverse(false);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found == false)
+                    {
+                        DebugEx.Log($"道路の統合により, 歩道と車道のLineStringが分離された");
+                    }
                 }
             }
 

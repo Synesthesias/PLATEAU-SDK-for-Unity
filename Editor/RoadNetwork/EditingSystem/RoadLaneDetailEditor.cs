@@ -1,5 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class RoadLaneDetailEditor : LineSelectEdit.ICreatedLineReceiver
     {
-        private LineSelectEdit lineSelectEdit;
+        private LineSelectEdit lineSelectEdit; // 線を選択して編集するUI
+        
         private RoadNetworkEditTarget editTarget;
 
         public RoadLaneDetailEditor()
@@ -38,10 +40,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         public void OnLineCreated(Spline createdSpline, IEditTargetLine targetLineBase)
         {
             var targetLine = targetLineBase as EditTargetRoadWay ;
-            targetLine.Apply(targetLine.Road, createdSpline);
+            targetLine.Apply(targetLine.Road, createdSpline); // スプラインを道路ネットワークに適用します
 
             var reproduceTarget = new RrTargetRoadBases(editTarget.RoadNetwork, new[] { targetLine.Road });
-            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All);
+            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, new SmoothingStrategySmoothAll());
         }
 
         
@@ -86,8 +88,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                     .Select(f => new Vector3(f.x, f.y, f.z))
                     .Select(v => new RnPoint(v));
                 var lineString = new RnLineString(positions);
-                var reverse = lineString.Points;
-                reverse.Reverse();
+                var reverse = lineString.Points.ToArray().Reverse();
                 var lineStringReverse = new RnLineString(reverse);
                 
                 // 同じWayをすべて見つけます。
@@ -98,12 +99,20 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 // 適用します。
                 foreach (var w in correspondWays)
                 {
-                    w.LineString = lineString;
+                    w.LineString = new RnLineString(lineString.Count);
+                    for(int i=0; i<lineString.Count; i++)
+                    {
+                        w.SetPoint(i, lineString.Points[i]);
+                    }
                 }
 
                 foreach (var w in correspondWaysReverse)
                 {
-                    w.LineString = lineStringReverse;
+                    w.LineString = new RnLineString(lineStringReverse.Count);
+                    for (int i = 0; i < lineStringReverse.Count; i++)
+                    {
+                        w.SetPoint(i, lineStringReverse.Points[i]);
+                    }
                 }
             }
 

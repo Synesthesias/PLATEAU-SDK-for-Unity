@@ -1,5 +1,7 @@
 ﻿using PLATEAU.Editor.RoadNetwork;
+using PLATEAU.Editor.RoadNetwork.AddSystem;
 using PLATEAU.Editor.RoadNetwork.EditingSystem;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -15,6 +17,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private readonly Button roadAddStartButton;
         private readonly Button roadAddEndButton;
 
+        private readonly Button intersectionAddStartButton;
+        private readonly Button intersectionAddEndButton;
+
+        private readonly DropdownField intersectionTypeDropdown;
+
+        private readonly VisualElement roadAddInstruction;
+        private readonly VisualElement intersectionAddInstruction;
+
         public RoadAddPanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
             roadAddStartButton = rootVisualElement.Q<Button>("RoadAddStartButton");
@@ -23,6 +33,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             roadAddStartButton.clicked += OnRoadAddStartButtonClicked;
             roadAddEndButton.clicked += OnRoadAddEndButtonClicked;
 
+            intersectionAddStartButton = rootVisualElement.Q<Button>("IntersectionAddStartButton");
+            intersectionAddEndButton = rootVisualElement.Q<Button>("IntersectionAddEndButton");
+
+            intersectionAddStartButton.clicked += OnIntersectionAddStartButtonClicked;
+            intersectionAddEndButton.clicked += OnIntersectionAddEndButtonClicked;
+
+            intersectionTypeDropdown = rootVisualElement.Q<DropdownField>("IntersectionTypeDropdown");
+            intersectionTypeDropdown.RegisterValueChangedCallback(OnIntersectionTypeDropdownValueChanged);
+
+            roadAddInstruction = rootVisualElement.Q<VisualElement>("RoadAddInstruction");
+            intersectionAddInstruction = rootVisualElement.Q<VisualElement>("IntersectionAddInstruction");
+        }
+
+        private void OnIntersectionTypeDropdownValueChanged(ChangeEvent<string> evt)
+        {
+            ApplyIntersectionType();
+        }
+
+        private void ApplyIntersectionType()
+        {
+            var selectedIndex = intersectionTypeDropdown.index;
+            if (selectedIndex == 0)
+            {
+                RoadNetworkAddSystem.Active.IntersectionAddSystem.SetIntersectionType(IntersectionType.T);
+            }
+            else if (selectedIndex == 1)
+            {
+                RoadNetworkAddSystem.Active.IntersectionAddSystem.SetIntersectionType(IntersectionType.Cross);
+            }
         }
 
         protected override void OnTabSelected(VisualElement root)
@@ -36,6 +75,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             }
 
             UpdateRoadAddButtonVisual(false);
+            UpdateIntersectionAddButtonVisual(false);
+            ApplyIntersectionType();
         }
 
         protected override void OnTabUnselected()
@@ -50,13 +91,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             UpdateRoadAddButtonVisual(true);
 
             RoadNetworkAddSystem.Active.RoadAddSystem.Activate();
+
+            if (RoadNetworkAddSystem.Active.IntersectionAddSystem.IsActive)
+            {
+                RoadNetworkAddSystem.Active.IntersectionAddSystem.Deactivate();
+                UpdateIntersectionAddButtonVisual(false);
+            }
         }
 
         private void OnRoadAddEndButtonClicked()
         {
             UpdateRoadAddButtonVisual(false);
 
-            // var system = RoadNetworkEditingSystem.SingletonInstance;
             RoadNetworkAddSystem.Active.RoadAddSystem.Deactivate();
         }
 
@@ -64,6 +110,34 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             ToggleDisplay(!isActive, roadAddStartButton);
             ToggleDisplay(isActive, roadAddEndButton);
+            ToggleDisplay(isActive, roadAddInstruction);
+        }
+
+        private void OnIntersectionAddStartButtonClicked()
+        {
+            UpdateIntersectionAddButtonVisual(true);
+
+            RoadNetworkAddSystem.Active.IntersectionAddSystem.Activate();
+
+            if (RoadNetworkAddSystem.Active.RoadAddSystem.IsActive)
+            {
+                RoadNetworkAddSystem.Active.RoadAddSystem.Deactivate();
+                UpdateRoadAddButtonVisual(false);
+            }
+        }
+
+        private void OnIntersectionAddEndButtonClicked()
+        {
+            UpdateIntersectionAddButtonVisual(false);
+
+            RoadNetworkAddSystem.Active.IntersectionAddSystem.Deactivate();
+        }
+
+        private void UpdateIntersectionAddButtonVisual(bool isActive)
+        {
+            ToggleDisplay(!isActive, intersectionAddStartButton);
+            ToggleDisplay(isActive, intersectionAddEndButton);
+            ToggleDisplay(isActive, intersectionAddInstruction);
         }
 
         private static void ToggleDisplay(bool isActive, VisualElement element)

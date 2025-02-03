@@ -1,10 +1,13 @@
 ﻿using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Graph;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.RoadNetwork.Graph
 {
@@ -18,20 +21,13 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             // グラフ作成
             PLATEAURGraph CreateGraph();
 
-            HashSet<RFace> TargetFaces { get; }
+            // 非表示対象オブジェクト
+            HashSet<object> InVisibleObjects { get; }
 
-            HashSet<REdge> TargetEdges { get; }
-
-            HashSet<RVertex> TargetVertices { get; }
+            // 選択済みオブジェクト
+            HashSet<object> SelectedObjects { get; }
 
             bool IsTarget(RFace face);
-
-            //// モデル作成する
-            //void CreateRnModel();
-
-            //// PLATEAURGraphDrawerDebug GetDrawer();
-
-            //void CreateTranMesh();
         }
 
         private const string WindowName = "PLATEAU RGraph Editor";
@@ -49,6 +45,10 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         private int showVertexId = -1;
 
         public HashSet<RFace> TargetFaces { get; } = new();
+        EdgeEdit edgeEdit = new EdgeEdit();
+        FaceEdit faceEdit = new FaceEdit();
+        // FoldOutの状態を保持する
+        private HashSet<object> FoldOuts { get; } = new();
 
         private class FaceEdit
         {
@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 if (f == null)
                     return;
 
-                RnEditorUtil.TargetToggle($"ID[{f.DebugMyId}]", work.InstanceHelper.TargetFaces, f);
+                RnEditorUtil.TargetToggle($"ID[{f.DebugMyId}]", work.InstanceHelper.SelectedObjects, f);
                 EditorGUILayout.EnumFlagsField("RoadType", f.RoadTypes);
                 if (GUILayout.Button("Remove Inner Vertex"))
                 {
@@ -68,9 +68,13 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 {
                     f.RemoveIsolatedEdge();
                 }
+
+                if (f.RoadTypes.IsSideWalk() && GUILayout.Button("Modify SideWalk Shape"))
+                {
+                    RGraphEx.ModifySideWalkShape(f);
+                }
             }
         }
-        FaceEdit faceEdit = new FaceEdit();
 
         private class EdgeEdit
         {
@@ -78,7 +82,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             {
                 if (e == null)
                     return;
-                RnEditorUtil.TargetToggle($"ID[{e.DebugMyId}]", work.InstanceHelper.TargetEdges, e);
+                RnEditorUtil.TargetToggle($"ID[{e.DebugMyId}]", work.InstanceHelper.SelectedObjects, e);
                 using (new EditorGUI.DisabledScope(false))
                 {
                     EditorGUILayout.LabelField("Edge ID", e.DebugMyId.ToString());
@@ -87,7 +91,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 }
             }
         }
-        EdgeEdit edgeEdit = new EdgeEdit();
+
 
         private class VertexEdit
         {
@@ -97,7 +101,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                 if (v == null)
                     return;
 
-                RnEditorUtil.TargetToggle($"ID[{v.DebugMyId}]", work.InstanceHelper.TargetVertices, v);
+                RnEditorUtil.TargetToggle($"ID[{v.DebugMyId}]", work.InstanceHelper.SelectedObjects, v);
                 using (new EditorGUI.DisabledScope(false))
                 {
                     EditorGUILayout.Vector3Field("Pos", v.Position);
@@ -111,6 +115,18 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         }
         VertexEdit vertexEdit = new VertexEdit();
 
+
+        /// <summary>
+        /// 選択/非表示オブジェクトなどの情報を削除する
+        /// </summary>
+        public void ClearPickedObjects()
+        {
+            if (InstanceHelper == null)
+                return;
+            FoldOuts.Clear();
+            InstanceHelper.SelectedObjects?.Clear();
+            InstanceHelper.InVisibleObjects?.Clear();
+        }
 
         public void Reinitialize() { }
 
@@ -240,29 +256,23 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             RnEditorUtil.Separator();
             EditorGUILayout.LabelField("=============== Face ==============");
-            foreach (var face in graph.Faces)
+            InstanceHelper.SelectedObjects.RemoveWhere(o =>
             {
-                if (InstanceHelper.IsTarget(face) || InstanceHelper.TargetFaces.Contains(face))
+                if (o is RFace face && graph.Faces.Contains(face) == false)
+                    return true;
+                return false;
+            });
+
+
+            if (RnEditorUtil.Foldout($"Face[{graph.Faces.Count}]", FoldOuts, "Face"))
+            {
+                foreach (var face in graph.Faces)
                 {
+                    if (IsSceneSelected(face) == false && InstanceHelper.SelectedObjects.Contains(face) == false)
+                        continue;
                     RnEditorUtil.Separator();
                     faceEdit.Update(this, face);
                 }
-            }
-
-            RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("=============== Edge ==============");
-            foreach (var edge in InstanceHelper.TargetEdges)
-            {
-                RnEditorUtil.Separator();
-                edgeEdit.Update(this, edge);
-            }
-
-            RnEditorUtil.Separator();
-            EditorGUILayout.LabelField("=============== Vertex ==============");
-            foreach (var vertex in InstanceHelper.TargetVertices)
-            {
-                RnEditorUtil.Separator();
-                vertexEdit.Update(this, vertex);
             }
         }
 
@@ -289,5 +299,14 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
             return HasOpenInstances<RGraphDebugEditorWindow>();
         }
 
+        /// <summary>
+        /// Scene上で選択されているかどうか
+        /// </summary>
+        /// <param name="face"></param>
+        /// <returns></returns>
+        public static bool IsSceneSelected(RFace face)
+        {
+            return RnEx.IsEditorSceneSelected(face?.CityObjectGroup);
+        }
     }
 }

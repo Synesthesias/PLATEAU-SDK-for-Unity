@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.EditingSystem;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -12,12 +12,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
     /// <summary>
     /// 線が複数あり、その中から線を1つ選択して編集します。
     /// </summary>
-    internal class LineSelectEdit : ICreatedSplineReceiver
+    internal class LineSelectEdit
     {
         private LineEditState state = LineEditState.LineNotSelected;
         private IEditTargetLine mouseHoveredLine;
         private IEditTargetLine selectedLine;
-        private SplineEditorCore splineCore;
+        private SplineEditorHandles splineEditorHandles; // スプライン編集のUI
         private ICreatedLineReceiver createdLineReceiver;
         
         
@@ -48,11 +48,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
                     break;
                 case LineEditState.LineSelected:
                     DrawPreviewLine();
-                    SplineEditorHandles.HandleSceneGUI(splineCore);
-                    if (Event.current.keyCode == KeyCode.Return)
-                    {
-                        OnSplineCreated(splineCore.Spline);
-                    }
+                    splineEditorHandles.HandleSceneGUI();
 
                     break;
                 default:
@@ -69,7 +65,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
                 spline.Add(new BezierKnot(point));
             }
 
-            splineCore = new SplineEditorCore(spline);
+            var splineCore = new SplineEditorCore(spline);
+            splineEditorHandles = new SplineEditorHandles(splineCore, () =>
+                {
+                    OnSplineCreated(splineEditorHandles.Core.Spline);
+                },
+                OnLineEditCanceled
+            );
         }
         
         private void DrawLines(IEditTargetLine[] lines)
@@ -94,7 +96,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
         
         private void DrawPreviewLine()
         {
-            var line = splineCore.Spline.Knots.Select(k => k.Position).Select(f => new Vector3(f.x, f.y, f.z)).ToList();
+            var line = splineEditorHandles.Core.Spline.Knots.Select(k => k.Position).Select(f => new Vector3(f.x, f.y, f.z)).ToList();
             var drawer = new LaneLineDrawerSolid(line, new Color(1f, 0.4f, 0.3f), LaneLineDrawMethod.Handles);
             drawer.Draw();
         }
@@ -109,6 +111,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod{
         {
             state = LineEditState.LineNotSelected;
             createdLineReceiver.OnLineCreated(createdSpline, selectedLine);
+            selectedLine = null;
+        }
+
+        private void OnLineEditCanceled()
+        {
+            state = LineEditState.LineNotSelected;
             selectedLine = null;
         }
         

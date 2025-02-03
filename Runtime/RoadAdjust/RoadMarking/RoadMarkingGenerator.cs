@@ -34,13 +34,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             this.crosswalkFrequency = crosswalkFrequency;
         }
 
-        /// <summary> 路面標示をメッシュとして生成します。 </summary>
-        public void Generate()
+        /// <summary>
+        /// 路面標示をメッシュとして生成します。
+        /// 生成されたもののリストを返します。
+        /// </summary>
+        public List<PLATEAUReproducedRoad> Generate(ISmoothingStrategy smoothingStrategy)
         {
+            var resultList = new List<PLATEAUReproducedRoad>();
             if (targetBeforeCopy == null)
             {
                 Debug.LogError("道路ネットワークが見つかりませんでした。");
-                return;
+                return resultList;
             }
             
 
@@ -50,7 +54,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var target = targetBeforeCopy.Copy(); // 道路ネットワークを処理中だけ調整したいのでディープコピーを対象にします。
             
             progressDisplay.SetProgress("道路標示生成", 10f, "道路ネットワークをスムージング中");
-            new RoadNetworkLineSmoother().Smooth(target);
+            new RoadNetworkLineSmoother().Smooth(target, smoothingStrategy);
 
             var dstParent = RoadReproducer.GenerateDstParent();
 
@@ -77,7 +81,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 combiner.AddRange(arrowComposer.Compose());
 
                 var dstMesh = combiner.Combine(out var materials);
-                GenerateGameObj(dstMesh, materials, dstParent, roadSource, ReproducedRoadType.LaneLineAndArrow, ReproducedRoadDirection.None);
+                var gen = GenerateGameObj(dstMesh, materials, dstParent, roadSource, ReproducedRoadType.LaneLineAndArrow, ReproducedRoadDirection.None);
+                resultList.Add(gen);
             }
             
             // 交差点を生成します。
@@ -88,9 +93,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 crosswalkCombiner.Add(crosswalk.RoadMarkingInstance);
                 var crosswalkMesh = crosswalkCombiner.Combine(out var crosswalkMats);
                 var srcRoad = new RoadReproduceSource(crosswalk.SrcRoad);
-                GenerateGameObj(crosswalkMesh, crosswalkMats, dstParent, srcRoad, ReproducedRoadType.Crosswalk, crosswalk.Direction);
+                var gen = GenerateGameObj(crosswalkMesh, crosswalkMats, dstParent, srcRoad, ReproducedRoadType.Crosswalk, crosswalk.Direction);
+                resultList.Add(gen);
             }
-            
+
+            return resultList;
         }
 
         private IEnumerable<RoadMarkingInstance> GenerateRoadLines(IRrTarget innerTarget)
@@ -118,7 +125,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// 道路標示をゲームオブジェクトとして配置します。
         /// 引数の最初の2つを除くものをキーとし、シーン上に同じキーのものがあればそれを置き換えます。なければ新規作成します。
         /// </summary>
-        private void GenerateGameObj(Mesh mesh, Material[] materials, Transform dstParent, RoadReproduceSource srcRoad,
+        private PLATEAUReproducedRoad GenerateGameObj(Mesh mesh, Material[] materials, Transform dstParent, RoadReproduceSource srcRoad,
             ReproducedRoadType reproducedType, ReproducedRoadDirection direction)
         {
             var targetName = srcRoad.GetName();
@@ -150,6 +157,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             mesh.name = dstName;
             var comp = dstObj.GetOrAddComponent<PLATEAUReproducedRoad>();
             comp.Init(reproducedType, srcRoad, direction);
+            return comp;
         }
     }
 }

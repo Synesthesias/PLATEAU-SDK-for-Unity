@@ -570,6 +570,16 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// vertexを含むかどうか
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <returns></returns>
+        public bool Contains(RVertex vertex)
+        {
+            return V0 == vertex || V1 == vertex;
+        }
+
+        /// <summary>
         /// vertexと反対側の頂点を取得する. vertexが含まれていない場合はnullを返す
         /// </summary>
         /// <param name="vertex"></param>
@@ -602,6 +612,26 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             if (TryGetOppositeVertex(vertex, out var opposite))
                 return opposite;
+            return null;
+        }
+
+        /// <summary>
+        /// edgeと共通する頂点がある場合, 反対側の頂点を返す.
+        /// 共有しない場合はnullを返す
+        /// edgeが同じ辺の場合はnullを返す
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        public RVertex GetOppositeVertex(REdge edge)
+        {
+            if (edge == null)
+                return null;
+
+            if (IsSameVertex(edge.V0, edge.V1))
+                return null;
+
+            if (IsShareAnyVertex(edge, out var sharedVertex))
+                return GetOppositeVertex(sharedVertex);
             return null;
         }
 

@@ -114,7 +114,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             if (UpLink == null || DownLink == null)
             {
-                Debug.LogError("Link not found " + ID);
+                Debug.Log("Link not found. skipping. ID = " + ID);
 
                 return;
             }

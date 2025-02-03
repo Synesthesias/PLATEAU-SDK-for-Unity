@@ -6,7 +6,6 @@ using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 // Testerを使わず生成するようにする
-using PLATEAU.RoadNetwork.Tester;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -128,7 +127,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 var model = factory.CreateRnModelAsync(factory.CreateRequest(objects, modelObject.gameObject)).ContinueWithErrorCatch().Result;
 
                 // 道路の白線、停止線、道路メッシュを生成します。
-                new RoadReproducer().Generate(new RrTargetModel(model), crosswalkFreq);
+                new RoadReproducer().Generate(new RrTargetModel(model), crosswalkFreq, new SmoothingStrategyRespectOriginal());
 
             };
         }

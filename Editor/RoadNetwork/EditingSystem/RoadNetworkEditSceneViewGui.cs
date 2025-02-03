@@ -1,5 +1,7 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
@@ -18,19 +20,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     {
 
         public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
-            RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target)
+            RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target,
+            ISplineEditedReceiver splineEditedReceiver)
         {
             ReConstruct(root, rnModel, editTargetSelectButton, target);
+            splineEditor = new RnSplineEditor(splineEditedReceiver);
         }
 
         private GameObject roadNetworkEditingSystemObjRoot;
         private RnModel roadNetwork;
         private RoadNetworkEditTargetSelectButton editTargetSelectButton;
         private RoadNetworkEditTarget editTarget;
-        private RoadLaneDetailEditor roadDetailEditor;
+        private RoadLaneDetailEditor roadDetailEditor; // 個別レーン編集
+        private RoadNetworkEditorGizmos gizmosDrawer;  // 道路レーンの線を描画
         
-        // 詳細編集モードかどうか
-        private bool isEditingDetailMode = false;
+        // 道路レーンの編集モード
+        private RoadShapeEditState roadShapeEditState = RoadShapeEditState.Normal;
 
         private Dictionary<RnIntersection, EditorData<RnIntersection>> intersectionEditorData =
             new Dictionary<RnIntersection, EditorData<RnIntersection>>();
@@ -40,7 +45,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             new EditorDataList<EditorData<RnRoadGroup>>();
         
         public RnSplineEditor SplineEditorMod { get => splineEditor; }
-        private RnSplineEditor splineEditor = new();
+        private RnSplineEditor splineEditor; // 全車道編集
+
         
         /// <summary> 道路のレーンをドラッグで編集する機能です。 </summary>
         private WaySlider waySlider = new WaySlider();
@@ -66,7 +72,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// 計算や処理を行う初期化
         /// それらに必要な要素は初期化済みとする
         /// </summary>
-        public void Init(bool detailMode)
+        public void Init(RoadShapeEditState shapeEditState)
         {
             ClearCache();
 
@@ -149,20 +155,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             });
             //linkGroupEditorData.Select((d) => d.GetSubData<LinkGroupEditorData>()).ToList();
 
-            SetDetailMode(detailMode);   
+            SetRoadShapeEditState(shapeEditState);   
         }
         
 
 
 
-        /// <summary>
-        /// 詳細編集モードに移行する
-        /// </summary>
-        /// <param name="isDetailMode"></param>
-        public void SetDetailMode(bool isDetailMode)
+        public void SetRoadShapeEditState(RoadShapeEditState editState)
         {
-            isEditingDetailMode = isDetailMode;
-            if (isDetailMode)
+            roadShapeEditState = editState;
+            if (editState == RoadShapeEditState.IndividualLane)
             {
                 roadDetailEditor = new RoadLaneDetailEditor();
             }
@@ -184,10 +186,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
                 return;
 
             RefreshGUI();
+            
+            if(gizmosDrawer != null) gizmosDrawer.SetDrawingActive(roadShapeEditState == RoadShapeEditState.Normal);
 
-            if (isEditingDetailMode)
+            if (roadShapeEditState == RoadShapeEditState.IndividualLane)
             {
-                UpdateRoadOnDetailMode();
+                UpdateRoadOnIndividualLaneEditMode();
             }
             else
             {
@@ -234,28 +238,30 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             connections.Remove(null);
 
             // 道路レーンをドラッグでスライドする
-            var slidingWay = waySlider.Draw(this, editTarget, sceneView, out bool isRoadChanged);
-            if (isRoadChanged)
+            if (roadShapeEditState == RoadShapeEditState.Normal)
             {
-                OnRoadChanged(editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>);
-            }
+                var slidingWay = waySlider.Draw(this, editTarget, sceneView, out bool isRoadChanged);
+                if (isRoadChanged)
+                {
+                    OnRoadChanged(editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>);
+                }
             
 
-            // gizmos描画の更新
-            var gizmosdrawer = GetRoadNetworkEditorGizmos();
+                // gizmos描画の更新
+                gizmosDrawer = GetRoadNetworkEditorGizmos();
 
-            // gizmosの更新
-            var lines = new LaneLineGizmoGenerator().Generate(
-                editTarget.SelectedRoadNetworkElement,
-                waySlider.WaySlideCalcCache?.ClosestWay,
-                this.roadGroupEditorData,
-                slidingWay);
-            gizmosdrawer.SetLine(lines);
-
+                // gizmosの更新
+                var lines = new LaneLineGizmoGenerator().Generate(
+                    editTarget.SelectedRoadNetworkElement,
+                    waySlider.WaySlideCalcCache?.ClosestWay,
+                    this.roadGroupEditorData,
+                    slidingWay);
+                gizmosDrawer.SetLine(lines);
+            }
             
         }
 
-        private void UpdateRoadOnDetailMode()
+        private void UpdateRoadOnIndividualLaneEditMode()
         {
             var selectedRoadGroup = editTarget.SelectedRoadNetworkElement as EditorData<RnRoadGroup>;
             if (selectedRoadGroup == null) return;
@@ -281,7 +287,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         {
             // 道路を生成
             var roads = roadGroupEditorData.Ref.Roads;
-            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()), CrosswalkFrequency.All);
+            new RoadReproducer().Generate(new RrTargetRoadBases(roadNetwork, roads.ToArray()), CrosswalkFrequency.All, new SmoothingStrategySmoothAll());
         }
 
         

@@ -1,3 +1,4 @@
+﻿using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -8,24 +9,34 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// <summary>
     /// スプライン編集のハンドル描画部分
     /// </summary>
-    public static class SplineEditorHandles
+    public class SplineEditorHandles
     {
-        private static int hoveredKnotIndex = -1;
-        private static float hoverDistanceThreshold = 0.5f;
+        private int hoveredKnotIndex = -1;
+        private static float hoverDistanceThreshold = 1f;
+        public SplineEditorCore Core { get; }
+        private Action onEditFinished;
+        private Action onEditCanceled;
+
+        public SplineEditorHandles(SplineEditorCore core, Action onEditFinished, Action onEditCanceled)
+        {
+            this.Core = core;
+            this.onEditFinished = onEditFinished;
+            this.onEditCanceled = onEditCanceled;
+        }
 
         /// <summary>
         /// ハンドルの描画を行う。OnSceneGUIから呼び出すこと
         /// </summary>
         /// <param name="core"></param>
-        public static void HandleSceneGUI(SplineEditorCore core)
+        public void HandleSceneGUI()
         {
             Event e = Event.current;
 
             // 1. ホバー判定
-            DetermineHoveredKnot(core);
+            DetermineHoveredKnot(Core);
 
             // 2. Ctrl+クリックで削除
-            if (HandleDeletion(core))
+            if (HandleDeletion(Core))
             {
                 // 削除したらここで終了
                 return;
@@ -35,18 +46,32 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (hoveredKnotIndex != -1)
             {
                 // ノットがホバーされている：このノットのみ移動可能
-                HandleMovement(core);
-                DrawAllKnotsStaticExceptHovered(core);
+                HandleMovement(Core);
+                DrawAllKnotsStaticExceptHovered(Core);
             }
             else
             {
                 // ノットホバーなし：ノットは静的表示、スプライン上クリックで追加可能
-                DrawAllKnotsStaticExceptHovered(core);
-                HandleAddition(core);
+                DrawAllKnotsStaticExceptHovered(Core);
+                HandleAddition(Core);
             }
+
+            // Enterで決定
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
+            {
+                onEditFinished.Invoke();
+            }
+
+            // Escでキャンセル
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
+            {
+                onEditCanceled.Invoke();
+            }
+
+            DrawPreviewLines();
         }
 
-        private static void DetermineHoveredKnot(SplineEditorCore core)
+        private void DetermineHoveredKnot(SplineEditorCore core)
         {
             hoveredKnotIndex = -1;
             int knotCount = core.GetKnotCount();
@@ -66,7 +91,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private static bool HandleDeletion(SplineEditorCore core)
+        private bool HandleDeletion(SplineEditorCore core)
         {
             Event e = Event.current;
             if (hoveredKnotIndex >= 0 && e.type == EventType.MouseDown && e.button == 0 && e.control)
@@ -78,7 +103,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             return false;
         }
 
-        private static void HandleMovement(SplineEditorCore core)
+        private void HandleMovement(SplineEditorCore core)
         {
             int i = hoveredKnotIndex; // ホバー中ノットのみ移動
             Vector3 currentPos = core.GetKnotPosition(i);
@@ -109,7 +134,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private static void DrawAllKnotsStaticExceptHovered(SplineEditorCore core)
+        private void DrawAllKnotsStaticExceptHovered(SplineEditorCore core)
         {
             int knotCount = core.GetKnotCount();
             for (int i = 0; i < knotCount; i++)
@@ -122,13 +147,31 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
+        private void DrawPreviewLines()
+        {
+            int knotCount = Core.GetKnotCount();
+            if (knotCount < 2) return;
+
+            Handles.color = Color.green;
+
+            // スプライン曲線を描画
+            Vector3[] points = new Vector3[100];
+            for (int i = 0; i < points.Length; i++)
+            {
+                float t = (float)i / (points.Length - 1);
+                points[i] = Core.EvaluateSplineAtT(t);
+            }
+
+            Handles.DrawAAPolyLine(2f, points);
+        }
+
         private static void HandleAddition(SplineEditorCore core)
         {
             Event e = Event.current;
 
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
             float outT;
-            Vector3 nearestPoint = GetNearestPointOnSpline(core, ray, out outT, 50);
+            Vector3 nearestPoint = GetNearestPointOnSpline(core, ray, out outT, 100);
             Vector3 closestOnRay = ClosestPointOnRay(ray, nearestPoint);
             float dist = Vector3.Distance(closestOnRay, nearestPoint);
 
@@ -146,7 +189,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             }
         }
 
-        private static Vector3 GetNearestPointOnSpline(SplineEditorCore core, Ray ray, out float outT, int sampleCount = 50)
+        private static Vector3 GetNearestPointOnSpline(SplineEditorCore core, Ray ray, out float outT, int sampleCount = 100)
         {
             var spline = core.Spline;
 

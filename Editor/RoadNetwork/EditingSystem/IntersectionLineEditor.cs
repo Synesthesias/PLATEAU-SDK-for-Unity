@@ -1,5 +1,6 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             targetLine.Apply(targetIntersection, createdSpline);
 
             var reproduceTarget = new RrTargetRoadBases(target.RoadNetwork, new[] { targetIntersection });
-            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All);
+            new RoadReproducer().Generate(reproduceTarget, CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
             
         }
         

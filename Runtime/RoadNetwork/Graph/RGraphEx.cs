@@ -5,6 +5,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -217,6 +218,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="midPointTolerance">aとcとしか接続していない点bに対して、a-cの直線との距離がこれ以下だとbをマージする</param>
         public static void VertexReduction(this RGraph self, float mergeCellSize, int mergeCellLength, float midPointTolerance)
         {
+            using var _ = new DebugTimer("VertexReduction");
             while (true)
             {
                 var vertices = self.GetAllVertices().ToList();
@@ -332,6 +334,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void EdgeReduction(this RGraph self)
         {
+            using var _ = new DebugTimer("EdgeReduction");
             var edges = self.GetAllEdges().ToList();
             var edgeTable = new Dictionary<EdgeKey, HashSet<REdge>>();
 
@@ -362,6 +365,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void RemoveIsolatedEdgeFromFace(this RGraph self)
         {
+            using var _ = new DebugTimer("RemoveIsolatedEdgeFromFace");
             foreach (var f in self.Faces)
             {
                 f.RemoveIsolatedEdge();
@@ -436,6 +440,86 @@ namespace PLATEAU.RoadNetwork.Graph
             return disconnectedEdges;
         }
 
+        /// <summary>
+        /// Outsideの無い歩道に対して微小な辺を追加する
+        /// </summary>
+        /// <param name="swFace"></param>
+        /// <exception cref="InvalidDataException"></exception>
+        public static void ModifySideWalkShape(RFace swFace)
+        {
+            // 微小な量だけ移動する
+            float moveDeltaMeter = 1e-3f;
+
+            if (TryGroupBySideWalkEdge(swFace, out var edgeGroups) == false)
+                return;
+
+            // 外/内/境界線x2あればOK
+            if (edgeGroups.Count == 4)
+                return;
+            for (var i = 0; i < edgeGroups.Count; ++i)
+            {
+                var g0 = edgeGroups[i];
+                var g1 = edgeGroups[(i + 1) % edgeGroups.Count];
+
+                // 境界線が連続する場合(外側/内側の辺が存在しない)
+                // 微小な辺を挿入する
+                if (g0.Key.Type == g1.Key.Type && g0.Key.Type == SideWalkEdgeKeyType.Border)
+                {
+                    var e0 = g0.Edges[^1];
+                    var e1 = g1.Edges[0];
+                    if (e0.IsShareAnyVertex(e1, out var originVertex) == false)
+                        throw new InvalidDataException($"[{swFace.CityObjectGroup.name}] Invalid EdgeGroup");
+
+                    var v0 = e0.GetOppositeVertex(originVertex);
+                    var v1 = e1.GetOppositeVertex(originVertex);
+
+                    var ray0 = new Ray(originVertex.Position, v0.Position - originVertex.Position).To2D(RnDef.Plane);
+                    var ray1 = new Ray(originVertex.Position, v1.Position - originVertex.Position).To2D(RnDef.Plane);
+                    var ray = GeoGraph2D.LerpRay(ray0, ray1, 0.5f);
+
+                    var d = RnDef.ToVec3(Vector2Ex.Rotate(ray.direction, 90)).normalized;
+
+                    var newVertex = new RVertex(originVertex.Position + d * moveDeltaMeter);
+
+                    var isNewVertexLeftSide = ray.IsPointOnLeftSide(RnDef.ToVec2(newVertex.Position));
+
+                    foreach (var e in originVertex.Edges.ToList())
+                    {
+                        var v = e.GetOppositeVertex(originVertex);
+                        // 新しい頂点と同じ側にある辺はそっちにつなぐようにする
+                        if (ray.IsPointOnLeftSide(RnDef.ToVec2(v.Position)) == isNewVertexLeftSide)
+                        {
+                            e.ChangeVertex(originVertex, newVertex);
+                        }
+                    }
+
+                    // 両方の頂点が所属するFaceには今回作成されたEdgeも追加する(分離しないように)
+                    var commonFaces = newVertex.GetFaces().ToHashSet();
+                    commonFaces.IntersectWith(originVertex.GetFaces().ToHashSet());
+                    var newEdge = new REdge(newVertex, originVertex);
+                    foreach (var face in commonFaces)
+                    {
+                        face.AddEdge(newEdge);
+                    }
+                    // デバッグ用
+                    newVertex.DebugMemo = "SideWalkInsert";
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 歩道部分のうちOutSideWalk
+        /// </summary>
+        /// <param name="self"></param>
+        public static void ModifySideWalkShape(this RGraph self)
+        {
+            var sideWalkFaces = self.Faces.Where(f => f.RoadTypes.IsSideWalk()).ToList();
+            foreach (var swFace in sideWalkFaces)
+            {
+                ModifySideWalkShape(swFace);
+            }
+        }
 
         /// <summary>
         /// 同じPLATEAUCityObjectGroupのFaceをpredicateのルールに従って一つのRFaceGroupにする.
@@ -448,7 +532,6 @@ namespace PLATEAU.RoadNetwork.Graph
             foreach (var group in self.Faces.GroupBy(f => f.CityObjectGroup))
             {
                 var faces = group.ToHashSet();
-                var faceGroups = new List<RFaceGroup>();
                 while (faces.Any())
                 {
                     var queue = new Queue<RFace>();
@@ -461,21 +544,21 @@ namespace PLATEAU.RoadNetwork.Graph
                         g.Add(f0);
                         foreach (var f1 in faces)
                         {
+                            // 繋がっていないFaceは無視する
                             if (IsShareEdge(f0, f1) && isMatch(f0, f1))
                             {
                                 g.Add(f1);
                                 queue.Enqueue(f1);
+                                // ここではfacesから削除できない(イテレート中だから)
                             }
                         }
+
                         foreach (var f in queue)
                             faces.Remove(f);
                     }
 
-                    faceGroups.Add(new RFaceGroup(self, group.Key, g));
+                    ret.Add(new RFaceGroup(self, group.Key, g));
                 }
-
-                foreach (var f in faceGroups)
-                    ret.Add(f);
 
             }
             return ret;
@@ -500,6 +583,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="tolerance"></param>
         public static void InsertVertexInNearEdge(this RGraph self, float tolerance)
         {
+            using var _ = new DebugTimer("InsertVertexInNearEdge");
             var vertices = self.GetAllVertices().ToList();
 
             var comp = Comparer<float>.Default;
@@ -518,8 +602,6 @@ namespace PLATEAU.RoadNetwork.Graph
             var queue = new HashSet<REdge>();
 
             Dictionary<REdge, HashSet<RVertex>> edgeInsertMap = new();
-            Dictionary<Vector3, RVertex> vertexMap = new();
-
             var threshold = tolerance * tolerance;
             for (var i = 0; i < vertices.Count; i++)
             {
@@ -642,7 +724,7 @@ namespace PLATEAU.RoadNetwork.Graph
                             continue;
                         }
 
-                        if (s0.TrySegmentIntersectionBy2D(s1, AxisPlane.Xz, heightTolerance, out var intersection,
+                        if (s0.TrySegmentIntersectionBy2D(s1, RnDef.Plane, heightTolerance, out var intersection,
                                 out var t1, out var t2))
                         {
                             // お互いの端点で交差している場合は無視
@@ -699,6 +781,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="self"></param>
         public static void SeparateFaces(this RGraph self)
         {
+            using var _ = new DebugTimer("SeparateFaces");
             foreach (var p in self.Faces.ToList())
             {
                 p.Separate();
@@ -722,7 +805,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var res = GeoGraph2D.ComputeOutline(
                 vertices
                 , v => v.Position
-                , AxisPlane.Xz
+                , RnDef.Plane
                 , v => v.Edges.Where(e => edges.Contains(e)).Select(e => e.GetOppositeVertex(v)).Where(n => n != null));
             return res.Outline ?? new List<RVertex>();
         }
@@ -785,6 +868,7 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <returns></returns>
         public static bool IsShareEdge(RFace a, RFace b)
         {
+            // #TODO : 共通の辺ではなく共通の頂点になっているが正しいのかチェック
             return a.Edges.SelectMany(e => e.Vertices).Any(v => b.Edges.SelectMany(e => e.Vertices).Contains(v));
         }
 
@@ -810,6 +894,7 @@ namespace PLATEAU.RoadNetwork.Graph
                     subFace.Add(edge);
                     foreach (var e in edge.GetNeighborEdges())
                     {
+                        // すでに分離済み or 別のFaceに属している辺は無視
                         if (edges.Contains(e))
                         {
                             edges.Remove(e);
@@ -823,6 +908,10 @@ namespace PLATEAU.RoadNetwork.Graph
             if (separatedEdges.Count <= 1)
                 return;
 
+            // #TODO : この処理はここではいらないはず
+            //       : この次のfor文の中でRemoveすれば良いはず
+            //       : (Faceの全てのEdgeはseparatedEdgesに含まれているはずなので)
+            // selfは0番目のものだけ残す
             foreach (var e in self.Edges.Where(e => separatedEdges[0].Contains(e) == false).ToList())
                 self.RemoveEdge(e);
 
@@ -910,21 +999,28 @@ namespace PLATEAU.RoadNetwork.Graph
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="outlineEdges"></param>
+        /// <param name="keepEdgeOnFail">辺リストが作れない時にその場で打ち切るのではなくnullを入れて続きを行う</param>
         /// <returns></returns>
-        public static bool OutlineVertex2Edge(IReadOnlyList<RVertex> vertices, out List<REdge> outlineEdges)
+        public static bool OutlineVertex2Edge(IReadOnlyList<RVertex> vertices, out List<REdge> outlineEdges, bool keepEdgeOnFail = false)
         {
             outlineEdges = new List<REdge>(vertices.Count);
+            var ret = true;
             for (var i = 0; i < vertices.Count; i++)
             {
                 var v0 = vertices[i % vertices.Count];
                 var v1 = vertices[(i + 1) % vertices.Count];
                 var e = v0.Edges.FirstOrDefault(e => e.GetOppositeVertex(v0) == v1);
                 if (e == null)
-                    return false;
+                {
+                    if (keepEdgeOnFail == false)
+                        return false;
+                    ret = false;
+                }
+
                 outlineEdges.Add(e);
             }
 
-            return true;
+            return ret;
         }
 
         /// <summary>
@@ -966,20 +1062,41 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
-        /// 歩道を構築するREdgeを取得する.
+        /// 歩道の輪郭グルーピング用
+        /// </summary>
+        public enum SideWalkEdgeKeyType
+        {
+            OutSide,
+            InSide,
+            Border
+        }
+
+        public struct SideWalkEdgeKey
+        {
+            public SideWalkEdgeKeyType Type;
+            public PLATEAUCityObjectGroup CityObjectGroup;
+            public SideWalkEdgeKey(SideWalkEdgeKeyType type, PLATEAUCityObjectGroup cityObjectGroup)
+            {
+                Type = type;
+                CityObjectGroup = cityObjectGroup;
+            }
+        }
+
+        /// <summary>
+        /// selfの輪郭線を歩道の内側, 外側, 境界線に分類する.
+        /// NeighborCityObjectGroupsFilterが設定されている場合, 歩道の境界判定対象はこのリストに含まれるPLATEAUCityObjectGroupと繋がっているものに限定される.
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="outsideEdges"></param>
-        /// <param name="insideEdges"></param>
-        /// <param name="startEdges"></param>
-        /// <param name="endEdges"></param>
+        /// <param name="edgeGroups"></param>
+        /// <param name="neighborCityObjectGroupsFilter"></param>
         /// <returns></returns>
-        public static bool CreateSideWalk(this RFace self, out List<REdge> outsideEdges, out List<REdge> insideEdges, out List<REdge> startEdges, out List<REdge> endEdges)
+        public static bool TryGroupBySideWalkEdge(
+            RFace self
+            , out List<RnEx.KeyEdgeGroup<SideWalkEdgeKey, REdge>> edgeGroups
+            , HashSet<PLATEAUCityObjectGroup> neighborCityObjectGroupsFilter = null
+            )
         {
-            outsideEdges = new List<REdge>();
-            insideEdges = new List<REdge>();
-            startEdges = new List<REdge>();
-            endEdges = new List<REdge>();
+            edgeGroups = null;
             if (self == null)
                 return false;
 
@@ -991,25 +1108,36 @@ namespace PLATEAU.RoadNetwork.Graph
                 return false;
 
             // 0 : 外側の辺, 1:内側の辺, 2:境界線
-            static int Edge2WayType(REdge e)
+            SideWalkEdgeKey Edge2WayType(REdge e)
             {
                 // 自身の歩道にしか所属しない場合は外側の辺
+
                 if (e.Faces.Count == 1)
-                    return 0;
+                    return new(SideWalkEdgeKeyType.OutSide, null);
 
                 // 以下複数のFaceと所属する場合
 
                 var t = e.GetAllFaceTypeMaskOrDefault();
+
+                var neighborCityObjects = e.Faces
+                    .Select(f => f.CityObjectGroup)
+                    .Where(co => co != self.CityObjectGroup)
+                    .ToHashSet();
+                if (neighborCityObjectGroupsFilter != null)
+                    neighborCityObjects.IntersectWith(neighborCityObjectGroupsFilter);
                 // 複数の歩道に所属している場合は歩道との境界線
-                if (t.HasAnyFlag(RRoadTypeMask.SideWalk))
-                    return 2;
+                if (t.HasAnyFlag(RRoadTypeMask.SideWalk) && neighborCityObjects.Any())
+                {
+                    var key = neighborCityObjects.First();
+                    return new(SideWalkEdgeKeyType.Border, key);
+                }
 
                 // 歩道との境界線ではない and 他のtranメッシュとの境界線は外側の辺
                 if (e.Faces.GroupBy(f => f.CityObjectGroup).Count() > 1)
-                    return 0;
+                    return new(SideWalkEdgeKeyType.OutSide, null);
 
                 // 自身のtranメッシュの歩道以外に所属している場合は内側の辺
-                return 1;
+                return new(SideWalkEdgeKeyType.InSide, null);
             }
             var vertices = self.ComputeOutlineVertices();
             // 面ができない場合は無視
@@ -1020,33 +1148,38 @@ namespace PLATEAU.RoadNetwork.Graph
             if (OutlineVertex2Edge(vertices, out var outlineEdges) == false)
                 return false;
 
-            var lastType = -1;
-            List<REdge> way = new();
-            List<(int type, List<REdge> edges)> ways = new();
-            foreach (var e in outlineEdges)
-            {
-                var type = Edge2WayType(e);
-                if (type != lastType)
-                {
-                    if (way.Any())
-                        ways.Add((lastType, way));
+            edgeGroups = RnEx.GroupByOutlineEdges(outlineEdges, Edge2WayType);
+            return true;
+        }
 
-                    way = new();
-                    lastType = type;
-                }
-                way.Add(e);
-            }
+        /// <summary>
+        /// 歩道を構築するREdgeを取得する.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="outsideEdges"></param>
+        /// <param name="insideEdges"></param>
+        /// <param name="startEdges"></param>
+        /// <param name="endEdges"></param>
+        /// <param name="neighborCityObjectGroupsFilter"></param>
+        /// <returns></returns>
+        public static bool CreateSideWalk(this RFace self
+            , out List<REdge> outsideEdges
+            , out List<REdge> insideEdges
+            , out List<REdge> startEdges
+            , out List<REdge> endEdges
+            , HashSet<PLATEAUCityObjectGroup> neighborCityObjectGroupsFilter = null
+            )
+        {
+            outsideEdges = new List<REdge>();
+            insideEdges = new List<REdge>();
+            startEdges = new List<REdge>();
+            endEdges = new List<REdge>();
 
-            if (way.Any())
-                ways.Add((lastType, way));
+            if (TryGroupBySideWalkEdge(self, out var ways, neighborCityObjectGroupsFilter) == false)
+                return false;
 
-            if (ways.Count > 1 && ways[0].type == ways[^1].type)
-            {
-                ways[^1].edges.AddRange(ways[0].edges);
-                ways.RemoveAt(0);
-            }
-
-            var outsideIndex = ways.FindIndex(w => w.type == 0);
+            // #TODO : このチェックはいらないかも(OutSideが無い歩道もあるため)
+            var outsideIndex = ways.FindIndex(w => w.Key.Type == SideWalkEdgeKeyType.OutSide);
             if (outsideIndex < 0)
             {
                 Debug.LogWarning($"outside edge not found {(self.CityObjectGroup ? self.CityObjectGroup.name : "null")}");
@@ -1057,21 +1190,21 @@ namespace PLATEAU.RoadNetwork.Graph
             {
                 var index = (outsideIndex + i) % ways.Count;
                 var w = ways[index];
-                if (w.type == 0)
+                if (w.Key.Type == SideWalkEdgeKeyType.OutSide)
                 {
-                    outsideEdges = w.edges;
+                    outsideEdges = w.Edges;
                 }
-                else if (w.type == 1)
+                else if (w.Key.Type == SideWalkEdgeKeyType.InSide)
                 {
-                    insideEdges = w.edges;
+                    insideEdges = w.Edges;
                 }
                 else
                 {
                     var lastIndex = (index + ways.Count - 1) % ways.Count;
-                    if (ways[lastIndex].type == 0)
-                        endEdges = w.edges;
+                    if (ways[lastIndex].Key.Type == SideWalkEdgeKeyType.OutSide)
+                        endEdges = w.Edges;
                     else
-                        startEdges = w.edges;
+                        startEdges = w.Edges;
                 }
             }
 
@@ -1086,6 +1219,15 @@ namespace PLATEAU.RoadNetwork.Graph
         public static HashSet<RVertex> CreateVertexSet(this RFace self)
         {
             return self.Edges.SelectMany(e => e.Vertices).Where(v => v != null).ToHashSet();
+        }
+
+        public static List<RnEx.KeyEdgeGroup<T, REdge>> CreateOutlineBorderGroup<T>(
+            List<RVertex> outlineVertices
+            , Func<REdge, T> keySelector
+            , IEqualityComparer<T> comparer = null)
+        {
+            OutlineVertex2Edge(outlineVertices, out var outlineEdges);
+            return RnEx.GroupByOutlineEdges(outlineEdges, keySelector, comparer);
         }
     }
 

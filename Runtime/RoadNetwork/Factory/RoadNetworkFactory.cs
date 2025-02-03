@@ -539,9 +539,9 @@ namespace PLATEAU.RoadNetwork.Factory
                         return null;
                     }
 
-                    var vertices = line.Vertices.Select(v => v.Position.Xz()).ToList();
-                    var edgeIndices = GeoGraph2D.FindMidEdge(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
-
+                    var vertices = line.Vertices.Select(v => RnDef.ToVec2(v.Position)).ToList();
+                    var borderResult = RnEx.FindBorderEdges(vertices, Work.terminateAllowEdgeAngle, Work.terminateSkipAngleDeg);
+                    var edgeIndices = borderResult.BorderVertexIndices;
                     RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
                         var ls = Work.CreateWay(ind.Select(x => line.Vertices[x]).ToList());
@@ -585,7 +585,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                     if (leftLine == null && rightLine == null)
                     {
-                        Debug.LogError($"不正なーレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
                         return road;
                     }
 
@@ -780,8 +780,14 @@ namespace PLATEAU.RoadNetwork.Factory
                     {
                         foreach (var sideWalkFace in fg.Faces.Where(f => f.RoadTypes.IsSideWalk()))
                         {
+                            var parent = work.TranMap.Values.FirstOrDefault(t =>
+                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+
+                            var neighborCityObjects
+                                = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
+
                             if (sideWalkFace.CreateSideWalk(out var outsideEdges, out var insideEdges,
-                                    out var startEdges, out var endEdges) == false)
+                                    out var startEdges, out var endEdges, neighborCityObjects) == false)
                                 continue;
 
                             RnWay AsWay(IReadOnlyList<REdge> edges, out bool isCached)
@@ -797,8 +803,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var insideWay = AsWay(insideEdges, out var insideCached);
                             var startWay = AsWay(startEdges, out var startCached);
                             var endWay = AsWay(endEdges, out var endCached);
-                            var parent = work.TranMap.Values.FirstOrDefault(t =>
-                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
+
 
                             RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
                             if (parent?.Node is RnRoad road)
@@ -941,7 +946,7 @@ namespace PLATEAU.RoadNetwork.Factory
         public async Task<RnModel> CreateRnModelAsync(CreateRnModelRequest req)
         {
             var subDividedRes =
-                await SubDividedCityObjectFactory.ConvertCityObjectsAsync(req.CityObjectGroups, useContourMesh: UseContourMesh);
+                SubDividedCityObjectFactory.ConvertCityObjects(req.CityObjectGroups, useContourMesh: UseContourMesh);
             var subDividedCityObjects = subDividedRes.ConvertedCityObjects;
             var graph = GraphFactory.CreateGraph(subDividedCityObjects);
             var model = await CreateRnModelAsync(graph);

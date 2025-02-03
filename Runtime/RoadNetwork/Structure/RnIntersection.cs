@@ -1,6 +1,6 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Util;
-using PLATEAU.RoadNetwork.Voronoi;
+using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
@@ -469,7 +469,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
         {
-            const float tangentLength = 10f;
             var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, RnModel.Plane);
 
             var track = CreateTrack(this, from, to, turnType);
@@ -573,14 +572,27 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        
+
 
 
         public void BuildTracks(BuildTrackOption op = null)
         {
             new RnTracksBuilder().BuildTracks(this, op);
         }
-        
+
+        public bool IsAligned()
+        {
+            // 時計回りになっているかどうか
+            for (var i = 0; i < edges.Count; ++i)
+            {
+                var e0 = edges[i];
+                var e1 = edges[(i + 1) % edges.Count];
+                if (e0.Border.GetPoint(-1) != e1.Border.GetPoint(0))
+                    return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// edgesの順番を整列する. 各Edgeが連結かつ時計回りになるように整列する
@@ -691,6 +703,15 @@ namespace PLATEAU.RoadNetwork.Structure
             IsEmptyIntersection = val;
         }
 
+        public override bool Check()
+        {
+            if (IsAligned() == false)
+            {
+                DebugEx.LogError($"ループしていない輪郭の交差点 {this.GetTargetTransName()}");
+                return false;
+            }
+            return true;
+        }
 #if false
         /// <summary>
         /// a,bを繋ぐ経路を計算する
@@ -1091,7 +1112,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 dict[start] = (0, null);
                 while (dict.Any(x => visited.Contains(x.Key) == false))
                 {
-                    dict.Where(x => visited.Contains(x.Key) == false).TryFindMin(x => x.Value.len, out var e);
+                    dict.Where(x => visited.Contains(x.Key) == false).TryFindMinElement(x => x.Value.len, out var e);
                     visited.Add(e.Key);
                     foreach (var n in e.Key.Neighbors)
                     {

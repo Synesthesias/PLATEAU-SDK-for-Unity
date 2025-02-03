@@ -1,4 +1,5 @@
 using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using UnityEditor;
@@ -75,9 +76,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         }
 
 
-        public RoadNetworkEditingSystem()
+        public RoadNetworkEditingSystem(ISplineEditedReceiver splineEditedReceiver)
         {
-            TryInitialize();
+            TryInitialize(splineEditedReceiver);
         }
 
         
@@ -93,7 +94,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// 初期化を試みる
         /// 多重初期化はしないので複数回呼び出しても問題ない
         /// </summary>
-        private bool TryInitialize()
+        private bool TryInitialize(ISplineEditedReceiver splineEditedReceiver)
         {
             trafficSignalEditor = new TrafficSignalEditor();
             
@@ -177,7 +178,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
 
 
             roadEditSceneViewGui = new RoadNetworkEditSceneViewGui(roadNetworkEditingSystemObjRoot, roadNetwork, EditTargetSelectButton,
-                roadNetworkEditTarget);
+                roadNetworkEditTarget, splineEditedReceiver);
             intersectionEditSceneViewGui = new IntersectionEditSceneViewGui(roadNetworkEditTarget);
             //simpleEditSysModule.Init();
 
@@ -185,9 +186,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         }
 
         /// <summary> 「詳細編集モード」のチェックボックスが変わった時 </summary>
-        public void ChangeDetailEditMode(bool newValue)
+        public void SetRoadShapeEditState(RoadShapeEditState editState)
         {
-            roadEditSceneViewGui.SetDetailMode(newValue);
+            roadEditSceneViewGui.SetRoadShapeEditState(editState);
         }
         
     }

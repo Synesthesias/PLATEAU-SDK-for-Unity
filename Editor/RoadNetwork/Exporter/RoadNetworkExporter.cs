@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -66,7 +68,17 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         {
             exportPath = path;
 
-            roadNetworkContext = new RoadNetworkContext();
+            var rnStructureModel = GameObject.FindObjectOfType<PLATEAURnStructureModel>();
+            if (rnStructureModel == null)
+            {
+                Dialogue.Display("道路ネットワークがシーン中に見つかりませんでした。", "OK");
+                return;
+            }
+            rnStructureModel.Serialize();
+            
+            roadNetworkContext = new RoadNetworkContext(rnStructureModel);
+
+            if (!roadNetworkContext.IsInitSucceed) return;
 
             GenerateExpRoadNetwork(roadNetworkContext);
 
@@ -430,10 +442,13 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
         /// <summary>
         /// 信号制御器をエクスポートします。
+        /// この機能は未完成です。
         /// </summary>
         /// <param name="simSignalControllers">信号制御器のリスト</param>
         private void ExportSignalController(List<RoadNetworkElementSignalController> simSignalControllers)
         {
+            if (simSignalControllers.Count == 0) return;
+            
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalController in simSignalControllers)
@@ -465,10 +480,13 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
         /// <summary>
         /// 信号灯火気をエクスポートします
+        /// この機能は未完成です。
         /// </summary>
         /// <param name="simSignalLights">信号灯火器のリスト</param>
         private void ExportSignalLight(List<RoadNetworkElementSignalLight> simSignalLights)
         {
+            if (simSignalLights.Count == 0) return;
+            
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalLight in simSignalLights)
@@ -494,11 +512,14 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         }
 
         /// <summary>
-        /// 信号現示階梯をエクスポートします
+        /// 信号現示階梯をエクスポートします。
+        /// この機能は未完成です。
         /// </summary>
         /// <param name="simSignalSteps">信号現示階梯のリスト</param>
         private void ExportSignalStep(List<RoadNetworkElementSignalStep> simSignalSteps)
         {
+            if (simSignalSteps.Count == 0) return;
+            
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalStep in simSignalSteps)

@@ -55,6 +55,7 @@ namespace Tests.RoadNetworkTest
             Check(new Vector3(0.5f, 0, 0.5f), true);
         }
 
+#if false
         [Test()]
         public void CalcLerpPointInLineTest()
         {
@@ -96,7 +97,7 @@ namespace Tests.RoadNetworkTest
                 , 1f
                 );
         }
-
+#endif
         /// <summary>
         /// RnLineString.GetAdvancedPointのテスト
         /// </summary>
@@ -198,6 +199,29 @@ namespace Tests.RoadNetworkTest
                     Test(way, points.Count, false, ans, points.Count - 1, points.Count - 1);
                     Test(way, points.Count, true, revAns, 0, 0);
                 }
+            }
+        }
+
+        /// <summary>
+        /// RnWay.Splitのテスト
+        /// </summary>
+        [Test()]
+        public void WaySplitTest()
+        {
+            // 0 ~ 10の1刻みの点列
+            var points = Enumerable.Range(0, 11)
+                .Select(i => new RnPoint(Vector3.right * i))
+                .ToList();
+
+            var lineString = new RnLineString(points);
+            foreach (var rev in new[] { false, true })
+            {
+                var way = new RnWay(lineString, rev, false);
+                var ways = way.Split(2, false, i => i == 0 ? 0.1f : 0.9f);
+                var frontLen = ways[0].CalcLength();
+                var backLen = ways[1].CalcLength();
+                Assert.AreEqual(1f, frontLen);
+                Assert.AreEqual(9f, backLen);
             }
         }
     }

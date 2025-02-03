@@ -1,8 +1,12 @@
+﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IRrTarget = PLATEAU.RoadAdjust.RoadNetworkToMesh.IRrTarget;
+using PLATEAUReproducedRoad = PLATEAU.RoadAdjust.RoadNetworkToMesh.PLATEAUReproducedRoad;
 using RnmLineSeparateType = PLATEAU.RoadAdjust.RoadNetworkToMesh.RnmLineSeparateType;
 
 namespace PLATEAU.RoadAdjust
@@ -14,15 +18,21 @@ namespace PLATEAU.RoadAdjust
     /// </summary>
     internal class RoadReproducer
     {
-        public void Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
+        /// <summary>
+        /// 生成します。
+        /// 生成された道路を返します。
+        /// </summary>
+        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, ISmoothingStrategy smoothingStrategy)
         {
             // 道路ネットワークから道路メッシュを生成
             var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
-            rnm.Generate();
+            var generatedRoads = rnm.Generate(smoothingStrategy);
 
             // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
-            rm.Generate();
+            var generatedIntersections = rm.Generate(smoothingStrategy);
+
+            return generatedRoads.Concat(generatedIntersections).ToList();
         }
 
         public static Transform GenerateDstParent()

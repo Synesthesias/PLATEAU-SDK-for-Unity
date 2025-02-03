@@ -158,11 +158,11 @@ namespace PLATEAU.RoadAdjust
             var sidewalks = new Dictionary<RnSideWalk, RnSideWalk>();
             foreach(var srcSidewalk in roadBases.Keys.SelectMany(rb => rb.SideWalks))
             {
-                var dstParentRoad = srcSidewalk.ParentRoad == null ? null : roadBases[srcSidewalk.ParentRoad];
-                var dstOutside = srcSidewalk.OutsideWay == null ? null : ways[srcSidewalk.OutsideWay];
-                var dstInside = srcSidewalk.InsideWay == null ? null : ways[srcSidewalk.InsideWay];
-                var dstStartEdge = srcSidewalk.StartEdgeWay == null ? null : ways[srcSidewalk.StartEdgeWay];
-                var dstEndEdge = srcSidewalk.EndEdgeWay == null ? null : ways[srcSidewalk.EndEdgeWay];
+                var dstParentRoad = srcSidewalk.ParentRoad == null || !roadBases.ContainsKey(srcSidewalk.ParentRoad) ? null : roadBases[srcSidewalk.ParentRoad];
+                var dstOutside = srcSidewalk.OutsideWay == null  || !ways.ContainsKey(srcSidewalk.OutsideWay) ? null : ways[srcSidewalk.OutsideWay];
+                var dstInside = srcSidewalk.InsideWay == null || !ways.ContainsKey(srcSidewalk.InsideWay) ? null : ways[srcSidewalk.InsideWay];
+                var dstStartEdge = srcSidewalk.StartEdgeWay == null || !ways.ContainsKey(srcSidewalk.StartEdgeWay) ? null : ways[srcSidewalk.StartEdgeWay];
+                var dstEndEdge = srcSidewalk.EndEdgeWay == null || !ways.ContainsKey(srcSidewalk.EndEdgeWay) ? null : ways[srcSidewalk.EndEdgeWay];
                 var laneType = srcSidewalk.LaneType;
                 var dstSidewalk = new RnSideWalk();
                 dstSidewalk.SetParent(dstParentRoad);

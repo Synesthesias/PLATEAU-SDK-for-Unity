@@ -42,8 +42,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 srcUV4.AddRange(srcMesh.uv4);
                 srcTriangles.AddRange(srcMesh.triangles.Select(id => id + vertIDOffset));
             }
-            
 
+            if (srcUV4.Count == 0) return;
             
 
             // UV4コピーの方針:

@@ -9,6 +9,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     /// <summary>
     /// 複数の線を受け取り、それらの線をつないで多角形 <see cref="RnmContour"/> を形成します。
     /// RnmはRoadNetworkToMeshの略です。
+    /// 
+    /// 使い方：
+    /// 輪郭線の一部となる線を<see cref="AddLine"/>で追加していきます。（例: 歩道の外側の線をAddLine, 次に内側の線をAddLine）
+    /// <see cref="Calculate"/>することで、受け取った線をつないで1つの輪郭線を作ります。（例: AddLineされた歩道の内側と外側の線を繋いで1つの歩道の輪郭線を形成）
     /// </summary>
     internal class RnmContourCalculator
     {
@@ -183,7 +187,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         
 
         /// <summary> 線が一致する、または逆順にしたら一致するものを排除します </summary>
-        private void RemoveDuplicateOrReverseLine()
+        public void RemoveDuplicateOrReverseLine()
         {
             var newLines = new List<RnmLine>(lines.Count);
             for (int i = 0; i < lines.Count; i++)
@@ -203,7 +207,8 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             lines = newLines;
         }
-        
-        
+
+        public int Count => lines.Count;
+
     }
 }
