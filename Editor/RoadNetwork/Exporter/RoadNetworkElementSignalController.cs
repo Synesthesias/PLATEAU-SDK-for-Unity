@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.RoadNetwork.Data;
+using System.Collections.Generic;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -48,6 +49,27 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         public int PatternIndex;
 
         /// <summary>
+        /// 道路ネットワーク上のインデックス
+        /// </summary>
+        public int RoadNetworkIndex { get; private set; } = -1;
+
+        /// <summary>
+        /// 元となる道路ネットワーク上の交差点
+        /// </summary>
+        public RnDataTrafficLightController Origin
+        {
+            get
+            {
+                if (RoadNetworkIndex < 0)
+                {
+                    return null;
+                }
+
+                return roadNetworkContext.RoadNetworkGetter.GetTrafficLightController()[RoadNetworkIndex] as RnDataTrafficLightController;
+            }
+        }
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="context">道路ネットワークのコンテキスト</param>
@@ -55,6 +77,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <param name="index">インデックス</param>
         public RoadNetworkElementSignalController(RoadNetworkContext context, string id, int index) : base(context, CreateID(id))
         {
+            RoadNetworkIndex = index;
         }
 
         /// <summary>
@@ -137,7 +160,8 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         {
             int cycle = 0;
 
-            SignalPatterns[PatternIndex].SignalSteps.ForEach(x => cycle += x.Duration);
+            //TODO
+            //SignalPatterns[PatternIndex].SignalSteps.ForEach(x => cycle += x.Duration);
 
             return cycle;
         }
@@ -148,7 +172,9 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <returns>フェーズの数</returns>
         public int GetPhaseNum()
         {
-            return SignalPatterns[PatternIndex].SignalSteps.Count;
+            //TODO
+            return 0;
+            //return SignalPatterns[PatternIndex].SignalSteps.Count;
         }
 
         /// <summary>

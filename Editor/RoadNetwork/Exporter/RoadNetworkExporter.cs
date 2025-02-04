@@ -90,11 +90,17 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             ExportTrack(Nodes);
 
+#if PLATEAU_TOOLKIT
+
+            GenerateExpSignal(roadNetworkContext);
+
             ExportSignalController(SignalControllers);
 
             ExportSignalLight(SignalLights);
 
             ExportSignalStep(SignalSteps);
+
+#endif
         }
 
         /// <summary>
@@ -441,6 +447,70 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         }
 
         /// <summary>
+        /// 信号現示情報を生成します
+        /// </summary>
+        /// <param name="context"></param>
+        private void GenerateExpSignal(RoadNetworkContext context)
+        {
+#if PLATEAU_TOOLKIT
+
+            //var trafficIntersections = GameObject.FindObjectOfType<AWSIM.TrafficSimulation.TrafficIntersection>();
+
+            var roadNetworkSignalControllers = context.RoadNetworkGetter.GetTrafficLightController();
+
+            var roadNetworkSignalLights = context.RoadNetworkGetter.GetTrafficLights();
+
+            var roadNetworkSignalPatterns = context.RoadNetworkGetter.GetTrafficSignalPattern();
+
+            var roadNetworkSignalPhases = context.RoadNetworkGetter.GetTrafficSignalPhase();
+
+            var roadNetworkRoads = context.RoadNetworkGetter.GetRoadBases();
+
+            var simSignalControllers = new List<RoadNetworkElementSignalController>();
+
+            foreach (var signalController in roadNetworkSignalControllers.Select((value, index) => new { value, index }))
+            {
+                var simSignalController = new RoadNetworkElementSignalController(context, simSignalControllers.Count.ToString(), signalController.index);
+
+                simSignalController.Node = Nodes.Find(x => x.OriginNode == roadNetworkRoads[signalController.value.Parent.ID]);
+
+                simSignalControllers.Add(simSignalController);
+            }
+
+            SignalControllers = simSignalControllers;
+
+            var simSignalLights = new List<RoadNetworkElementSignalLight>();
+
+            foreach (var signalLight in roadNetworkSignalLights.Select((value, index) => new { value, index }))
+            {
+                var simSignalLight = new RoadNetworkElementSignalLight(context, simSignalLights.Count.ToString(), signalLight.index);
+
+                simSignalLight.Controller = SignalControllers.Find(x => x.Origin == roadNetworkSignalControllers[signalLight.value.Parent.ID]);
+
+                simSignalLight.Link = Links.Find(x => x.OriginLink == roadNetworkRoads[signalLight.value.RoadId.ID]);
+
+                simSignalLights.Add(simSignalLight);
+            }
+
+            SignalLights = simSignalLights;
+
+            var simSignalSteps = new List<RoadNetworkElementSignalStep>();
+
+            foreach (var signalPattern in roadNetworkSignalPatterns.Select((value, index) => new { value, index }))
+            {
+                var simSignalStep = new RoadNetworkElementSignalStep(context, simSignalSteps.Count.ToString(), signalPattern.index);
+
+                simSignalStep.Controller = SignalControllers.Find(x => x.Origin == roadNetworkSignalControllers[signalPattern.value.Parent.ID]);
+
+                simSignalSteps.Add(simSignalStep);
+            }
+
+            SignalSteps = simSignalSteps;
+
+#endif
+        }
+
+        /// <summary>
         /// 信号制御器をエクスポートします。
         /// この機能は未完成です。
         /// </summary>
@@ -498,8 +568,8 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 var propety = new GeoJsonFeaturePropertiesSignalLight
                 {
                     ID = simSignalLight.ID,
-                    SIGNALID = simSignalLight.Controller.ID,
-                    LINKID = simSignalLight.Link.ID,
+                    SIGNALID = simSignalLight.Controller?.ID,
+                    LINKID = simSignalLight.Link?.ID,
                     LANETYPE = simSignalLight.GetLaneType(),
                     LANEPOS = simSignalLight.GetLanePos(),
                     DISTANCE = simSignalLight.GetDistance(),
@@ -531,6 +601,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 var propety = new GeoJsonFeaturePropertiesSignalStep
                 {
                     ID = simSignalStep.ID,
+                    SIGNALID = simSignalStep.GetSignalController(),
                     PATTERNID = simSignalStep.PatternID,
                     ORDER = simSignalStep.Order,
                     DURATION = simSignalStep.Duration,
