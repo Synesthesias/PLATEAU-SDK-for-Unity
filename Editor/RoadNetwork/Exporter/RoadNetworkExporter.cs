@@ -119,12 +119,16 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             var simRoadNetworkNodes = new List<RoadNetworkElementNode>();
 
-            foreach (var node in roadNetworkRoads.Select((value, index) => new { value, index }))
+            foreach (var road in roadNetworkRoads.Select((value, index) => new { value, index }))
             {
-                if (node.value is RnDataIntersection)
+                var node = road.value as RnDataIntersection;
+
+                if (node == null)
                 {
-                    simRoadNetworkNodes.Add(new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), node.index));
+                    continue;
                 }
+
+                simRoadNetworkNodes.Add(new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), road.index));
             }
 
             Nodes = simRoadNetworkNodes;
@@ -135,65 +139,72 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             Dictionary<int, RoadNetworkElementNode> vNodes = new Dictionary<int, RoadNetworkElementNode>();
 
-            foreach (var link in roadNetworkLinks.Select((value, index) => new { value, index }))
+            foreach (var road in roadNetworkRoads.Select((value, index) => new { value, index }))
             {
+                var link = road.value as RnDataRoad;
+
+                if (link == null)
+                {
+                    continue;
+                }
+
                 // リンクが接続されていない場合はスキップ
-                if (!link.value.Next.IsValid && !link.value.Prev.IsValid)
+                if (!link.Next.IsValid && !link.Prev.IsValid)
                 {
                     Debug.LogWarning("Link is not connected to any node.");
 
                     continue;
                 }
 
-                var next = link.value.Next.IsValid ? roadNetworkRoads[link.value.Next.ID] as RnDataIntersection : null;
-                var prev = link.value.Prev.IsValid ? roadNetworkRoads[link.value.Prev.ID] as RnDataIntersection : null;
+                var next = link.Next.IsValid ? roadNetworkRoads[link.Next.ID] as RnDataIntersection : null;
+                var prev = link.Prev.IsValid ? roadNetworkRoads[link.Prev.ID] as RnDataIntersection : null;
 
                 //　仮想ノードが割り当てられている場合はそのノードを取得
-                RoadNetworkElementNode vNext = vNodes.ContainsKey(link.value.Next.ID) ? vNodes[link.value.Next.ID] : null;
-                RoadNetworkElementNode vPrev = vNodes.ContainsKey(link.value.Prev.ID) ? vNodes[link.value.Prev.ID] : null;
+                RoadNetworkElementNode vNext = vNodes.ContainsKey(link.Next.ID) ? vNodes[link.Next.ID] : null;
+                RoadNetworkElementNode vPrev = vNodes.ContainsKey(link.Prev.ID) ? vNodes[link.Prev.ID] : null;
 
                 // 接続先がリンクかつ仮想ノードが割り当てられていない場合は仮想ノードを生成
                 // 接続点ノードが割り当てられていない場合への対処
-                if (next == null && link.value.Next.IsValid && roadNetworkRoads[link.value.Next.ID] as RnDataRoad != null && vNext == null)
+                if (next == null && link.Next.IsValid && roadNetworkRoads[link.Next.ID] as RnDataRoad != null && vNext == null)
                 {
-                    vNext = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
+                    vNext = new RoadNetworkElementNode(context, Nodes.Count.ToString(), -1);
 
-                    simRoadNetworkNodes.Add(vNext);
+                    Nodes.Add(vNext);
 
-                    vNodes.Add(link.index, vNext);
+                    vNodes.Add(road.index, vNext);
                 }
-                if (prev == null && link.value.Prev.IsValid && roadNetworkRoads[link.value.Prev.ID] as RnDataRoad != null && vPrev == null)
+                if (prev == null && link.Prev.IsValid && roadNetworkRoads[link.Prev.ID] as RnDataRoad != null && vPrev == null)
                 {
-                    vPrev = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
+                    vPrev = new RoadNetworkElementNode(context, Nodes.Count.ToString(), -1);
 
-                    simRoadNetworkNodes.Add(vPrev);
+                    Nodes.Add(vPrev);
 
-                    vNodes.Add(link.index, vPrev);
+                    vNodes.Add(road.index, vPrev);
                 }
 
                 // 終端の仮想ノードを生成
                 if (next == null && vNext == null)
                 {
-                    vNext = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
+                    vNext = new RoadNetworkElementNode(context, Nodes.Count.ToString(), -1);
 
                     simRoadNetworkNodes.Add(vNext);
                 }
                 if (prev == null && vPrev == null)
                 {
-                    vPrev = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
+                    vPrev = new RoadNetworkElementNode(context, Nodes.Count.ToString(), -1);
 
                     simRoadNetworkNodes.Add(vPrev);
                 }
 
-                var simNodeNext = next != null ? simRoadNetworkNodes.Find(x => x.OriginNode == next) : vNext;
-                var simNodePrev = prev != null ? simRoadNetworkNodes.Find(x => x.OriginNode == prev) : vPrev;
+                var simNodeNext = next != null ? Nodes.Find(x => x.OriginNode == next) : vNext;
+                var simNodePrev = prev != null ? Nodes.Find(x => x.OriginNode == prev) : vPrev;
 
                 var simNodeNextID = simNodeNext.ID.Replace(RoadNetworkElementNode.IDPrefix, "");
                 var simNodePrevID = simNodePrev.ID.Replace(RoadNetworkElementNode.IDPrefix, "");
 
                 // リンクの生成
-                var simLinkL = new RoadNetworkElementLink(context, link.index + "_" + simNodePrevID + "_" + simNodeNextID, link.index);
-                var simLinkR = new RoadNetworkElementLink(context, link.index + "_" + simNodeNextID + "_" + simNodePrevID, link.index);
+                var simLinkL = new RoadNetworkElementLink(context, road.index + "_" + simNodePrevID + "_" + simNodeNextID, road.index);
+                var simLinkR = new RoadNetworkElementLink(context, road.index + "_" + simNodeNextID + "_" + simNodePrevID, road.index);
 
                 simLinkL.IsReverse = false;
                 simLinkR.IsReverse = true;
