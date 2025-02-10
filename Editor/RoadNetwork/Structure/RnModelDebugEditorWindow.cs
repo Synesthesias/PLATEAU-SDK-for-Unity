@@ -339,7 +339,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 using var indent = new EditorGUI.IndentLevelScope();
                 if (GUILayout.Button("DisConnect"))
                 {
-                    work.DelayExec.Add(() => road.DisConnect(false));
+                    work.DelayExec.Add(() => road.DisConnect(true));
                 }
                 if (GUILayout.Button("SeparateContinuousBorder"))
                 {
@@ -467,7 +467,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
                 if (GUILayout.Button("DisConnect"))
                 {
-                    work.DelayExec.Add(() => intersection.DisConnect(false));
+                    work.DelayExec.Add(() => intersection.DisConnect(true));
                 }
 
                 if (GUILayout.Button("SeparateContinuousBorder"))
