@@ -209,7 +209,8 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (roadBase == null)
                 return;
             ShowBase(roadBase);
-            if (RnEditorUtil.Foldout("TargetTrans", FoldOuts, roadBase))
+            EditorGUILayout.LabelField($"Check : {roadBase.Check()}");
+            if (RnEditorUtil.Foldout("TargetTrans", FoldOuts, (roadBase, "TargetTrans")))
             {
                 using var indent = new EditorGUI.IndentLevelScope();
                 foreach (var tran in roadBase.TargetTrans)
@@ -495,6 +496,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         go.transform.position = pos.Vertex;
                     }
                 }
+
+                if (GUILayout.Button("Align"))
+                    intersection.Align();
             }
 
         }

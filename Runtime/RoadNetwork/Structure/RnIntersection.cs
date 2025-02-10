@@ -395,14 +395,21 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
         /// <summary>
-        /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える
+        /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える.
+        /// 戻り値は差し替えが行われた数
         /// </summary>
         /// <param name="border"></param>
         /// <param name="afterRoad"></param>
-        public void ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
+        public int ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
         {
+            var ret = 0;
             foreach (var e in edges.Where(e => e.Border.IsSameLineReference(border)))
+            {
                 e.Road = afterRoad;
+                ret++;
+            }
+
+            return ret;
         }
 
 
