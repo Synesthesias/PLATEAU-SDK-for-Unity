@@ -1331,6 +1331,42 @@ namespace PLATEAU.RoadNetwork.Structure
             }
             return true;
         }
+
+        /// <summary>
+        /// 道路の全てのLane, SideWalkに含まれる<paramref name="src"/>を<paramref name="dest"/>に置き換える
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="src"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
+        public static void ReplacePoint(this RnRoad self, RnPoint src, RnPoint dest)
+        {
+            foreach (var lane in self.AllLanesWithMedian)
+            {
+                foreach (var way in lane.AllWays)
+                {
+                    var points = way.LineString.Points;
+                    for (var i = 0; i < points.Count; i++)
+                    {
+                        if (points[i].IsSamePoint(src))
+                            points[i] = dest;
+                    }
+                }
+            }
+
+            foreach (var sw in self.SideWalks)
+            {
+                foreach (var way in sw.AllWays)
+                {
+                    var points = way.LineString.Points;
+                    for (var i = 0; i < points.Count; i++)
+                    {
+                        if (points[i].IsSamePoint(src))
+                            points[i] = dest;
+                    }
+                }
+            }
+        }
     }
 
 }

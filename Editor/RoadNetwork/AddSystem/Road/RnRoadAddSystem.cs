@@ -1,5 +1,4 @@
 ﻿using PLATEAU.Editor.RoadNetwork.AddSystem;
-using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.AddSystem;
 using PLATEAU.RoadNetwork.Structure;
@@ -29,6 +28,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private ExtensibleIntersectionEdge selectedIntersection;
         private ExtensibleRoadEdge selectedRoad;
         private bool isRoadSelected = false;
+        private List<ExtensibleIntersectionEdge> endEdges = new List<ExtensibleIntersectionEdge>();
 
         public RnRoadAddSystem(RoadNetworkAddSystemContext context)
         {
@@ -41,20 +41,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 isRoadSelected = true;
 
                 // スプラインの終点候補の設定
-                //var endPoints = new List<SplineEndPoint>();
-                //foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
-                //{
-                //    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
-                //    {
-                //        endPoints.Add(new SplineEndPoint
-                //        {
-                //            position = e.center,
-                //            tangent = -e.forward
-                //        });
-                //    });
-                //}
+                var endPoints = new List<SplineEndPoint>();
+                endEdges.Clear();
+                foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
+                {
+                    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
+                    {
+                        endPoints.Add(new SplineEndPoint
+                        {
+                            position = e.center,
+                            tangent = -e.forward
+                        });
+                        endEdges.Add(e);
+                    });
+                }
 
-                //splineCreateHandles.SetEndPoints(endPoints);
+                splineCreateHandles.SetEndPoints(endPoints);
 
                 // 作図開始
                 splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
@@ -65,23 +67,25 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 isRoadSelected = false;
 
                 // スプラインの終点候補の設定(始点は外す)
-                //var endPoints = new List<SplineEndPoint>();
-                //foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
-                //{
-                //    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
-                //    {
-                //        if (e.intersection == edge.intersection)
-                //            return;
+                var endPoints = new List<SplineEndPoint>();
+                endEdges.Clear();
+                foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
+                {
+                    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
+                    {
+                        if (e.intersection == edge.intersection)
+                            return;
 
-                //        endPoints.Add(new SplineEndPoint
-                //        {
-                //            position = e.center,
-                //            tangent = -e.forward
-                //        });
-                //    });
-                //}
+                        endPoints.Add(new SplineEndPoint
+                        {
+                            position = e.center,
+                            tangent = -e.forward
+                        });
+                        endEdges.Add(e);
+                    });
+                }
 
-                //splineCreateHandles.SetEndPoints(endPoints);
+                splineCreateHandles.SetEndPoints(endPoints);
 
                 // 作図開始
                 splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
@@ -136,7 +140,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             OnRoadAdded?.Invoke(dirtyObjects);
         }
 
-        public void OnSplineCreatCanceled()
+        public void OnSplineCreateCanceled()
         {
             splineEditorCore.Reset();
         }
@@ -154,9 +158,6 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             foreach (var lane in road.AllLanesWithMedian)
             {
-                var oldEdgePoints = new List<RnPoint>();
-                var newEdgePoints = new List<RnPoint>();
-                int i = 0;
                 foreach (var way in new[] { lane.LeftWay, lane.RightWay })
                 {
                     if (!scannedLineStrings.Contains(way.LineString))
@@ -182,10 +183,32 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (edgeInfo.RightSideWalkEdge.SideWalk != null)
                 ExtendSideWalk(edgeInfo.RightSideWalkEdge, spline, scannedLineStrings, road, false, edgeInfo.Edge.isPrev);
 
-            //foreach (var way in GetAllWaysAlongRoad(road, isPrev))
-            //{
-            //    //ExtendPointsAlongSpline(way.Item2.LineString.Points, spline, way.Item1 ^ isPrev);
-            //}
+            // 終点側に交差点がある場合は連結させる
+            if (splineCreateHandles.IsEndPointCreated)
+            {
+                var endEdge = endEdges[splineCreateHandles.EndPointIndex];
+                var edgeMaker = new RnIntersectionEdgeMaker(endEdge.intersection);
+                var endEdgeInfo = edgeMaker.Execute(endEdge.neighbor, endEdge.index);
+                endEdgeInfo.Neighbor.Road = road;
+                if (edgeInfo.Edge.isPrev)
+                    road.SetPrevNext(endEdge.intersection, road.Next);
+                else
+                    road.SetPrevNext(road.Prev, endEdge.intersection);
+
+                //edgeInfo.Neighbor.Border.
+                RnPoint leftEdgePoint, rightEdgePoint, leftSideWalkEdgePoint, rightSideWalkEdgePoint;
+                {
+                    var way = road.GetLeftWayOfLanes();
+                    leftEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First() : way.LineString.Points.Last();
+                }
+                {
+                    var way = road.GetRightWayOfLanes();
+                    rightEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[^1].IsReverse ^ way.IsReversed ? way.LineString.Points.First() : way.LineString.Points.Last();
+                }
+
+                road.ReplacePoint(leftEdgePoint, endEdgeInfo.Neighbor.Border.Points.Last());
+                road.ReplacePoint(rightEdgePoint, endEdgeInfo.Neighbor.Border.Points.First());
+            }
         }
 
         private void ExtendSideWalk(SideWalkEdgeInfo sideWalkEdgeInfo, Spline spline, HashSet<RnLineString> scannedLineStrings, RnRoad road, bool isLeft, bool isPrev)

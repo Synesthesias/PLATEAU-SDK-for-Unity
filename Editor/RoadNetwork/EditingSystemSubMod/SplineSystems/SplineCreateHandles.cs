@@ -18,7 +18,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     internal class SplineCreateHandles
     {
         public bool IsCreatingSpline { get; private set; }
-        public bool IsEndPointCreated { get; private set; } = false;
+        public bool IsEndPointCreated { get => EndPointIndex != -1; }
+        public int EndPointIndex { get; private set; } = -1;
 
         private SplineEditorCore currentCore;
         private float fixedY = 0f;
@@ -41,13 +42,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         {
             if (IsCreatingSpline) return;
 
-            IsEndPointCreated = false;
+            EndPointIndex = -1;
 
             IsCreatingSpline = true;
             fixedY = startPoint.y;
 
             currentCore.AddKnotAtT(startPoint, 0f);
             currentCore.SetStartPointConstraint(true, startPoint, startPoint + Vector3.Cross(Vector3.up, startTangent).normalized * 0.01f);
+            currentCore.SetEndPointConstraint(false, Vector3.zero, Vector3.zero);
         }
 
         public void HandleSceneGUI()
@@ -106,11 +108,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             DrawPreviewLines();
         }
 
-        public void SetEndPoint(Vector3 pos, Vector3 tangent)
+        public void SetEndPoint(int index)
         {
+            var endPoint = endPoints[index];
+            var pos = endPoint.position;
+            var tangent = endPoint.tangent;
             AddKnot(pos);
             currentCore.SetEndPointConstraint(true, pos, pos + Vector3.Cross(Vector3.up, tangent).normalized * 0.01f);
-            IsEndPointCreated = true;
+            EndPointIndex = index;
         }
 
         public void EndCreateSpline()
@@ -122,7 +127,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         public void CancelCreateSpline()
         {
             IsCreatingSpline = false;
-            finishReceiver.OnSplineCreatCanceled();
+            finishReceiver.OnSplineCreateCanceled();
         }
 
         private void AddKnot(Vector3 pos)
@@ -163,13 +168,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (endPoints == null || endPoints.Count == 0)
                 return;
 
+            int index = 0;
             foreach (var ep in endPoints)
             {
                 float handleSize = HandleUtility.GetHandleSize(ep.position) * 0.1f;
                 if (Handles.Button(ep.position, Quaternion.identity, handleSize, handleSize, Handles.SphereHandleCap))
                 {
-                    SetEndPoint(ep.position, ep.tangent);
+                    SetEndPoint(index);
                 }
+                ++index;
             }
         }
 
@@ -195,7 +202,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
     /// <summary> <see cref="SplineCreateHandles"/>でスプラインの生成が完了した通知を受け取ります。 </summary>
     internal interface ICreatedSplineReceiver
     {
-        void OnSplineCreatCanceled();
+        void OnSplineCreateCanceled();
         void OnSplineCreated(Spline createdSpline);
     }
 }
