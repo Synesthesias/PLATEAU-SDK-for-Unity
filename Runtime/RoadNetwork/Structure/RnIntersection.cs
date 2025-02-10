@@ -535,7 +535,12 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="other"></param>
         public override void UnLink(RnRoadBase other)
         {
-            RemoveEdges(n => n.Road == other);
+            // リンクを削除する
+            foreach (var e in Edges)
+            {
+                if (e.Road == other)
+                    e.Road = null;
+            }
         }
 
         /// <summary>
