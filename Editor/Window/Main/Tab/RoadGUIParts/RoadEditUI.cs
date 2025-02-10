@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork;
+﻿using PLATEAU.Editor.RoadNetwork;
 using PLATEAU.Editor.RoadNetwork.EditingSystem;
 using PLATEAU.Editor.RoadNetwork.UIDocBind;
 using PLATEAU.RoadAdjust;
@@ -6,6 +6,7 @@ using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
@@ -18,6 +19,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         private RoadEditLaneNumUI laneNumUI; // 道路レーン数編集のUI
         public RoadEditShapeUI ShapeUI { get; } // 道路形状編集のUI
         private VisualElement roadEditUIRoot;
+        private Button removeRoadButton;
         
         private SerializedScriptableRoadMdl selectedRoad;
 
@@ -45,6 +47,41 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
             ShapeUI = new RoadEditShapeUI(roadEditUIRoot, this);
             
             EditingSystem = roadNetworkEditingSystem;
+
+            removeRoadButton = roadEditUIRoot.Q<Button>("RemoveRoadButton");
+            removeRoadButton.clicked += OnRemoveRoadButtonClicked;
+        }
+
+        private void OnRemoveRoadButtonClicked()
+        {
+            if (selectedRoad == null) return;
+
+            // モデル削除
+            var road = new RoadReproduceSource(selectedRoad.editorData.Ref.Roads[0]);
+            var meshObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.RoadMesh, road, ReproducedRoadDirection.None);
+            var crosswalkObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, road, ReproducedRoadDirection.None);
+            var lineObj = PLATEAUReproducedRoad.Find(ReproducedRoadType.LaneLineAndArrow, road, ReproducedRoadDirection.None);
+            if (meshObj != null)
+            {
+                Object.DestroyImmediate(meshObj);
+            }
+            if (crosswalkObj != null)
+            {
+                Object.DestroyImmediate(crosswalkObj);
+            }
+            if (lineObj != null)
+            {
+                Object.DestroyImmediate(lineObj);
+            }
+
+            selectedRoad.editorData.Ref.Roads[0].DisConnect(true);
+            selectedRoad = null;
+
+            // システムのキャッシュ削除
+            EditingSystem.roadNetworkEditTarget.SelectedRoadNetworkElement = null;
+            EditingSystem.roadEditSceneViewGui?.Init(RoadShapeEditState.Normal);
+
+            Hide();
         }
 
         /// <summary>

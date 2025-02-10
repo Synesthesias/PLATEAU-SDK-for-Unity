@@ -1,4 +1,4 @@
-using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
+﻿using PLATEAU.Editor.RoadNetwork.EditingSystemSubMod;
 using PLATEAU.Editor.Window.Main.Tab.RoadGuiParts;
 using PLATEAU.RoadAdjust;
 using PLATEAU.RoadAdjust.RoadMarking;
@@ -170,7 +170,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
         }
 
-        private void ClearCache()
+        public void ClearCache()
         {
             roadGroupEditorData.Clear();
             roadGroupEditorData.ClearCache();

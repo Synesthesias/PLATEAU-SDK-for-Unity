@@ -45,11 +45,19 @@
                 <ui:Label tabindex="-1" text="道路の各線を編集します&#10;&#10;操作方法" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-center;" />
                 <ui:Label tabindex="-1" text="①クリックで線を選択&#10;②線を編集&#10;　　点ドラッグ：点移動&#10;　　辺クリック：点追加&#10;　　Ctrl+点クリック：点削除&#10;　　Enter：確定して①に戻る&#10;　　Esc：キャンセルして①に戻る" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Instruction1" style="-unity-text-align: upper-left;" />
             </ui:VisualElement>
+            <ui:VisualElement name="Divider" style="flex-grow: 1;" />
+            <ui:VisualElement style="flex-grow: 1; padding-top: 8px; padding-bottom: 8px; align-items: center;">
+                <ui:Button text="削除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveRoadButton" class="ActionButton" style="width: 200px; background-color: rgb(106, 0, 0); border-left-color: rgb(106, 0, 0); border-right-color: rgb(106, 0, 0); border-top-color: rgb(106, 0, 0); border-bottom-color: rgb(106, 0, 0);" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="IntersectionEditInstruction" style="flex-grow: 1; align-self: center;">
             <ui:VisualElement name="Blank" style="flex-grow: 0; min-height: 40px;" />
             <ui:Label tabindex="-1" text="交差点編集" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionInst1" class="bold-font" style="-unity-text-align: upper-center;" />
             <ui:Label tabindex="-1" text="操作1：線の形状編集&#10;　　①トラック（黄色の経路）または交差点形状（水色の線）をクリック&#10;　　②線を編集&#10;　　　　点ドラッグ：点移動&#10;　　　　辺クリック：点追加&#10;　　　　Ctrl+点クリック：点削除&#10;　　　　Enter：確定して①に戻る&#10;　　　　Esc：キャンセルして①に戻る&#10;&#10;操作2：トラック（黄色の経路）の追加削除&#10;　　①流入点である赤い丸をクリックで選択&#10;　　②流出点である青い丸をクリックで選択&#10;　　③赤い丸から青い丸へのトラックの有無が切り替わります" parse-escape-sequences="true" display-tooltip-when-elided="true" name="IntersectionInst2" style="-unity-text-align: upper-left;" />
+            <ui:VisualElement name="Divider" style="flex-grow: 1;" />
+            <ui:VisualElement style="flex-grow: 1; padding-top: 8px; padding-bottom: 8px; align-items: center;">
+                <ui:Button text="削除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveIntersectionButton" class="ActionButton" style="width: 200px; background-color: rgb(106, 0, 0); border-left-color: rgb(106, 0, 0); border-right-color: rgb(106, 0, 0); border-top-color: rgb(106, 0, 0); border-bottom-color: rgb(106, 0, 0);" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
