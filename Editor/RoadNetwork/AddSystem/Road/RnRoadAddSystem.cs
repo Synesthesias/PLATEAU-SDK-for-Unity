@@ -199,15 +199,27 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 RnPoint leftEdgePoint, rightEdgePoint, leftSideWalkEdgePoint, rightSideWalkEdgePoint;
                 {
                     var way = road.GetLeftWayOfLanes();
-                    leftEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First() : way.LineString.Points.Last();
+                    leftEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed
+                        ? way.LineString.Points.First()
+                        : way.LineString.Points.Last();
                 }
                 {
                     var way = road.GetRightWayOfLanes();
-                    rightEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[^1].IsReverse ^ way.IsReversed ? way.LineString.Points.First() : way.LineString.Points.Last();
+                    rightEdgePoint = edgeInfo.Edge.isPrev ^ road.MainLanes[^1].IsReverse ^ way.IsReversed
+                        ? way.LineString.Points.First()
+                        : way.LineString.Points.Last();
                 }
 
-                road.ReplacePoint(leftEdgePoint, endEdgeInfo.Neighbor.Border.Points.Last());
-                road.ReplacePoint(rightEdgePoint, endEdgeInfo.Neighbor.Border.Points.First());
+                if (edgeInfo.Edge.isPrev)
+                {
+                    road.ReplacePoint(leftEdgePoint, endEdgeInfo.Neighbor.Border.Points.First());
+                    road.ReplacePoint(rightEdgePoint, endEdgeInfo.Neighbor.Border.Points.Last());
+                }
+                else
+                {
+                    road.ReplacePoint(leftEdgePoint, endEdgeInfo.Neighbor.Border.Points.Last());
+                    road.ReplacePoint(rightEdgePoint, endEdgeInfo.Neighbor.Border.Points.First());
+                }
             }
         }
 
@@ -224,12 +236,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     if (isPrev ^ road.MainLanes[0].IsReverse ^ laneWay.IsReversed)
                         orderedLanePoints.Reverse();
                     var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
-                    for (; index < orderedLanePoints.Count; index++)
+                    if (index > 0)
                     {
-                        if (sideWalkEdgeInfo.IsInsidePrev)
-                            insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
-                        else
-                            insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                        for (; index < orderedLanePoints.Count; index++)
+                        {
+                            if (sideWalkEdgeInfo.IsInsidePrev)
+                                insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
+                            else
+                                insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                        }
                     }
                 }
                 else
@@ -239,12 +254,15 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     if (isPrev ^ road.MainLanes[road.MainLanes.Count - 1].IsReverse ^ laneWay.IsReversed)
                         orderedLanePoints.Reverse();
                     var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
-                    for (; index < orderedLanePoints.Count; index++)
+                    if (index > 0)
                     {
-                        if (sideWalkEdgeInfo.IsInsidePrev)
-                            insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
-                        else
-                            insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                        for (; index < orderedLanePoints.Count; index++)
+                        {
+                            if (sideWalkEdgeInfo.IsInsidePrev)
+                                insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
+                            else
+                                insideWay.LineString.Points.Add(orderedLanePoints[index]);
+                        }
                     }
                 }
                 //ExtendPointsAlongSpline(insideWay.LineString.Points, spline, sideWalkEdgeInfo.IsInsidePrev);
