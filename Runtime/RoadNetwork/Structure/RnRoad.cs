@@ -938,7 +938,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rightWidth = float.MaxValue;
             foreach (var i in indices)
             {
-                var v = line.GetPoint(i);
+                var v = line.GetVertexByFloatIndex(i);
                 leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
                 leftWidth = Mathf.Min(leftWidth, wl);
                 rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);

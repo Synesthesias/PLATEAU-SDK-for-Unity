@@ -566,7 +566,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static Vector3 GetPoint(this RnLineString self, float index)
+        public static Vector3 GetVertexByFloatIndex(this RnLineString self, float index)
         {
             var i1 = (int)index;
             var i2 = i1 + 1;
