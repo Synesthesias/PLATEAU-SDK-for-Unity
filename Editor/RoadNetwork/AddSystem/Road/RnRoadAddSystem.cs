@@ -40,6 +40,22 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 selectedRoad = edge;
                 isRoadSelected = true;
 
+                // スプラインの終点候補の設定
+                //var endPoints = new List<SplineEndPoint>();
+                //foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
+                //{
+                //    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
+                //    {
+                //        endPoints.Add(new SplineEndPoint
+                //        {
+                //            position = e.center,
+                //            tangent = -e.forward
+                //        });
+                //    });
+                //}
+
+                //splineCreateHandles.SetEndPoints(endPoints);
+
                 // 作図開始
                 splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
             };
@@ -47,6 +63,25 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             {
                 selectedIntersection = edge;
                 isRoadSelected = false;
+
+                // スプラインの終点候補の設定(始点は外す)
+                //var endPoints = new List<SplineEndPoint>();
+                //foreach (var intersectionSkeleton in context.SkeletonData.Intersections)
+                //{
+                //    intersectionSkeleton.ExtensibleEdges.ForEach(e =>
+                //    {
+                //        if (e.intersection == edge.intersection)
+                //            return;
+
+                //        endPoints.Add(new SplineEndPoint
+                //        {
+                //            position = e.center,
+                //            tangent = -e.forward
+                //        });
+                //    });
+                //}
+
+                //splineCreateHandles.SetEndPoints(endPoints);
 
                 // 作図開始
                 splineCreateHandles.BeginCreateSpline(edge.center, edge.forward);
@@ -231,8 +266,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (edgeInfo.LeftSideWalkEdge != null)
             {
                 var startEdge = new RnWay(new RnLineString(edgeInfo.LeftSideWalkEdge.LineString.Points));
-                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.Last() }));
-                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.LineString.Points.First() }));
+                startEdge.IsReversed = true;
+                // 交差点の歩道エッジは時計回りのはず
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.Points.First() }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.LeftSideWalkEdge.Points.Last() }));
                 var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
                 road.AddSideWalk(sideWalk);
                 context.RoadNetwork.AddSideWalk(sideWalk);
@@ -243,8 +280,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             if (edgeInfo.RightSideWalkEdge != null)
             {
                 var startEdge = new RnWay(new RnLineString(edgeInfo.RightSideWalkEdge.LineString.Points));
-                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.First() }));
-                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.Last() }));
+                startEdge.IsReversed = true;
+                // 交差点の歩道エッジは時計回りのはず
+                var outsideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.Points.Last() }));
+                var insideWay = new RnWay(new RnLineString(new List<RnPoint>() { edgeInfo.RightSideWalkEdge.LineString.Points.First() }));
                 var sideWalk = RnSideWalk.Create(road, outsideWay, insideWay, startEdge, null);
                 road.AddSideWalk(sideWalk);
                 context.RoadNetwork.AddSideWalk(sideWalk);
@@ -293,11 +332,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             ExtendRoadAlongSpline(newEdgeInfo, spline);
 
-
             // 横断歩道を追加するために交差点を道路側に拡張
             var option = new RnModelEx.CalibrateIntersectionBorderOption();
             road.ParentModel.TrySliceRoadHorizontalNearByBorder(road, option, out var prevRoad, out var centerRoad, out var nextRoad);
-            
+
             var result = prevRoad?.TryMerge2NeighborIntersection(RnLaneBorderType.Prev) ?? false;
             if (!result)
                 Debug.LogWarning("Failed to merge 2 neighbor intersections");
