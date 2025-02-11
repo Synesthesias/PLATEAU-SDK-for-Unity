@@ -655,8 +655,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報を差し替える.
-        /// 隣り合うRoadBaseとの整合性を保つように変更する必要があるので注意
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// 隣接情報をfrom -> toに変更する.
+        /// (from/to側の隣接情報は変更しない)
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -668,18 +669,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 Prev = to;
             if (Next == from)
                 Next = to;
-        }
-
-        /// <summary>
-        /// 隣接情報からotherを削除する. other側の接続は消えない
-        /// </summary>
-        /// <param name="other"></param>
-        public override void UnLink(RnRoadBase other)
-        {
-            if (Prev == other)
-                Prev = null;
-            if (Next == other)
-                Next = null;
         }
 
         /// <summary>
@@ -1065,9 +1054,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 var leftEdge = edgeGroup.RightSide.Edges[^1];
                 Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendFront2LineString);
                 Merge(leftEdge?.Border, leftWay, RnWayEx.AppendBack2LineString);
-
-                // 隣接情報を置き換える
-                self.Next.ReplaceNeighbor(self, intersection);
             }
             else if (borderType == RnLaneBorderType.Next)
             {
@@ -1076,11 +1062,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 var leftEdge = edgeGroup.LeftSide.Edges[0];
                 Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendBack2LineString);
                 Merge(leftEdge?.Border, leftWay, RnWayEx.AppendFront2LineString);
-
             }
 
+            // intersectionの輪郭情報を差し替える
             intersection.ReplaceEdges(self, oppositeBorders, false);
-            // 隣接情報を置き換える
+
+            // selfの隣接道路に対して, selfに対する接続情報を置き換える
             intersection.ReplaceNeighbor(self, oppositeRoadBase);
             oppositeRoadBase?.ReplaceNeighbor(self, intersection);
 
@@ -1089,7 +1076,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
             var dstSideWalks = intersection.SideWalks.ToList();
             var srcSideWalks = self.SideWalks.ToList();
-
 
             // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
             // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので

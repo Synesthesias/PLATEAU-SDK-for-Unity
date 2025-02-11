@@ -103,12 +103,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// otherをつながりから削除する. other側の接続は消えない
-        /// </summary>
-        /// <param name="other"></param>
-        public virtual void UnLink(RnRoadBase other) { }
-
-        /// <summary>
         /// 自身の接続を切断する.
         /// removeFromModel=trueの場合、RnModelからも削除する
         /// </summary>
@@ -130,8 +124,29 @@ namespace PLATEAU.RoadNetwork.Structure
             return Vector3.zero;
         }
 
+
+        /// <summary>
+        /// 隣接情報otherをつながりから削除する. other側の接続は消えない
+        /// </summary>
+        /// <param name="other"></param>
+        public void UnLink(RnRoadBase other)
+        {
+            ReplaceNeighbor(other, null);
+        }
+
+        /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// 隣接情報をfrom -> toに変更する.
+        /// (from/to側の隣接情報は変更しない)
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         public virtual void ReplaceNeighbor(RnRoadBase from, RnRoadBase to) { }
 
+        /// <summary>
+        /// 不正チェック処理を行う
+        /// </summary>
+        /// <returns></returns>
         public virtual bool Check() { return true; }
 
     }
