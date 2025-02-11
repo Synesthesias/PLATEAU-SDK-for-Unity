@@ -1218,10 +1218,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
             if (NextIntersection != null)
             {
-                NextIntersection.RemoveEdges(r => r.Road == Roads[^1]);
+                // ↑のDisConnectですでに参照情報は消えているので, 再度dstRoadを再設定する
                 foreach (var l in dstLanes)
                 {
-                    NextIntersection.AddEdge(dstRoad, dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right));
+                    var border = dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right);
+                    var replaceCount = NextIntersection.ReplaceEdgeLink(border, dstRoad);
+                    if (replaceCount == 0)
+                        DebugEx.LogError($"共通辺情報が更新されませんでした. {NextIntersection.GetTargetTransName()}/{l.GetDebugLabelOrDefault()}");
                 }
             }
 
