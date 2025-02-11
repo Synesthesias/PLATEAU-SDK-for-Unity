@@ -1222,8 +1222,8 @@ namespace PLATEAU.RoadNetwork.Structure
                 foreach (var l in dstLanes)
                 {
                     var border = dstRoad.GetBorderWay(l, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right);
-                    var linkedNum = NextIntersection.ReplaceEdgeLink(border, dstRoad);
-                    if (linkedNum == 0)
+                    var replaceCount = NextIntersection.ReplaceEdgeLink(border, dstRoad);
+                    if (replaceCount == 0)
                         DebugEx.LogError($"共通辺情報が更新されませんでした. {NextIntersection.GetTargetTransName()}/{l.GetDebugLabelOrDefault()}");
                 }
             }

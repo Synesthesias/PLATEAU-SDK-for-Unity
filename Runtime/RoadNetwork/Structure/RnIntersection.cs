@@ -402,14 +402,14 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="afterRoad"></param>
         public int ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
         {
-            var ret = 0;
+            var replaceCount = 0;
             foreach (var e in edges.Where(e => e.Border.IsSameLineReference(border)))
             {
                 e.Road = afterRoad;
-                ret++;
+                replaceCount++;
             }
 
-            return ret;
+            return replaceCount;
         }
 
 
