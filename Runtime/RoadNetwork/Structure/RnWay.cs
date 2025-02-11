@@ -102,7 +102,7 @@ namespace PLATEAU.RoadNetwork.Structure
             set
             {
                 var points = value.ToArray();
-                LineString = RnLineString.Create(value, false);
+                LineString = RnLineString.Create(IsReversed ? value.Reverse() : value, false);
             }
         }
 

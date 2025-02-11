@@ -216,39 +216,39 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             var forward = edgeInfo.Edge.forward.normalized;
             var right = Quaternion.AngleAxis(90f, Vector3.up) * forward;
 
-            // 道路の左右端点を取得
-            var firstPoint = GetEdgePoint(road, useLeftWay: true, isRoadPrev);
-            var lastPoint = GetEdgePoint(road, useLeftWay: false, isRoadPrev);
+            // 道路の左右端点を取得(接続方向に対して左端が最初)
+            var leftPoint = GetEdgePoint(road, useLeftWay: true, isRoadPrev);
+            var rightPoint = GetEdgePoint(road, useLeftWay: false, isRoadPrev);
 
-            // 向きが逆なら順番を入れ替える
-            if (!isRoadPrev) (lastPoint, firstPoint) = (firstPoint, lastPoint);
+
 
             // 歩道のエッジとその長さを取得
             var leftSideWalkEdge = edgeInfo.LeftSideWalkEdge.Edge;
             var rightSideWalkEdge = edgeInfo.RightSideWalkEdge.Edge;
             float leftSideWalkEdgeLength = leftSideWalkEdge == null ? 0f : leftSideWalkEdge.CalcLength();
             float rightSideWalkEdgeLength = rightSideWalkEdge == null ? 0f : rightSideWalkEdge.CalcLength();
-            float borderLength = Vector3.Distance(firstPoint.Vertex, lastPoint.Vertex);
+            float borderLength = Vector3.Distance(leftPoint.Vertex, rightPoint.Vertex);
 
             // より長い歩道エッジ長
             float longerSideWalkEdgeLength = Math.Max(leftSideWalkEdgeLength, rightSideWalkEdgeLength);
 
             // 歩道の外側点を取得
             var leftSideWalkOuterPoint = edgeInfo.LeftSideWalkEdge.SideWalk == null
-                ? new RnPoint(firstPoint.Vertex + right * leftSideWalkEdgeLength)
+                ? new RnPoint(leftPoint.Vertex - right * leftSideWalkEdgeLength)
                 : (edgeInfo.LeftSideWalkEdge.IsOutsidePrev
                     ? edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
                     : edgeInfo.LeftSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
 
             var rightSideWalkOuterPoint = edgeInfo.RightSideWalkEdge.SideWalk == null
-                ? new RnPoint(lastPoint.Vertex - right * rightSideWalkEdgeLength)
+                ? new RnPoint(rightPoint.Vertex + right * rightSideWalkEdgeLength)
                 : (edgeInfo.RightSideWalkEdge.IsOutsidePrev
                     ? edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.First()
                     : edgeInfo.RightSideWalkEdge.SideWalk.OutsideWay.LineString.Points.Last());
 
-            // 逆向きの場合は再度スワップ
+            // 逆向きの場合はスワップ
             if (isRoadPrev)
             {
+                (leftPoint, rightPoint) = (rightPoint, leftPoint);
                 (leftSideWalkOuterPoint, rightSideWalkOuterPoint) = (rightSideWalkOuterPoint, leftSideWalkOuterPoint);
                 (leftSideWalkEdgeLength, rightSideWalkEdgeLength) = (rightSideWalkEdgeLength, leftSideWalkEdgeLength);
             }
@@ -258,8 +258,8 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                 Road = road,
                 Forward = forward,
                 Right = right,
-                FirstPoint = firstPoint,
-                LastPoint = lastPoint,
+                FirstPoint = leftPoint,
+                LastPoint = rightPoint,
                 BorderLength = borderLength,
                 LeftSideWalkEdgeLength = leftSideWalkEdgeLength,
                 RightSideWalkEdgeLength = rightSideWalkEdgeLength,
@@ -507,66 +507,70 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             // 1. Start (firstPoint)
             exteriorPoints.Add(firstPoint);
-            exteriorPoints.Add(rightSideWalkOuterPoint);
+            exteriorPoints.Add(leftSideWalkOuterPoint);
 
-            // 2. 前方/右側に歩道分・交差点分進んでいく (交互に座標を追加)
-            var pos = rightSideWalkOuterPoint.Vertex;
-            pos += (forward + right) * 3f;
-            if (intersectionType != TIntersectionType.Right)
+            // 2. 前方/左側に歩道分・交差点分進んでいく (交互に座標を追加)
+            var pos = leftSideWalkOuterPoint.Vertex;
+            pos += (forward - right) * 3f;
+            if (intersectionType != TIntersectionType.Left)
                 exteriorPoints.Add(new RnPoint(pos));
 
             pos += forward * longerSideWalkEdgeLength;
-            if (intersectionType != TIntersectionType.Right)
+            if (intersectionType != TIntersectionType.Left)
                 exteriorPoints.Add(new RnPoint(pos));
 
             pos += forward * borderLength;
-            if (intersectionType != TIntersectionType.Right)
+            if (intersectionType != TIntersectionType.Left)
                 exteriorPoints.Add(new RnPoint(pos));
 
             pos += forward * longerSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Left)
+                exteriorPoints.Add(new RnPoint(pos));
+
+            // 3. 前方から右へ折れる
+            pos += (forward + right) * 3f;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(pos));
+
+            pos += right * leftSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(pos));
+
+            pos += right * borderLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(pos));
+
+            pos += right * rightSideWalkEdgeLength;
+            if (intersectionType != TIntersectionType.Front)
+                exteriorPoints.Add(new RnPoint(pos));
+
+            // 4. 後方から右へ折れる
+            pos += (-forward + right) * 3f;
             if (intersectionType != TIntersectionType.Right)
                 exteriorPoints.Add(new RnPoint(pos));
 
-            // 3. 前方から左へ折れる
-            pos += (forward - right) * 3f;
-            if (intersectionType != TIntersectionType.Front)
-                exteriorPoints.Add(new RnPoint(pos));
-
-            pos -= right * leftSideWalkEdgeLength;
-            if (intersectionType != TIntersectionType.Front)
-                exteriorPoints.Add(new RnPoint(pos));
-
-            pos -= right * borderLength;
-            if (intersectionType != TIntersectionType.Front)
-                exteriorPoints.Add(new RnPoint(pos));
-
-            pos -= right * rightSideWalkEdgeLength;
-            if (intersectionType != TIntersectionType.Front)
-                exteriorPoints.Add(new RnPoint(pos));
-
-            // 4. 後方から左へ折れる
-            pos += (-forward - right) * 3f;
-            if (intersectionType != TIntersectionType.Left)
-                exteriorPoints.Add(new RnPoint(pos));
-
             pos += (-forward) * longerSideWalkEdgeLength;
-            if (intersectionType != TIntersectionType.Left)
+            if (intersectionType != TIntersectionType.Right)
                 exteriorPoints.Add(new RnPoint(pos));
 
             pos += (-forward) * borderLength;
-            if (intersectionType != TIntersectionType.Left)
+            if (intersectionType != TIntersectionType.Right)
                 exteriorPoints.Add(new RnPoint(pos));
 
             pos += (-forward) * longerSideWalkEdgeLength;
-            if (intersectionType != TIntersectionType.Left)
+            if (intersectionType != TIntersectionType.Right)
                 exteriorPoints.Add(new RnPoint(pos));
 
-            // 5. 最後に左歩道外側とLastPointを追加
-            exteriorPoints.Add(leftSideWalkOuterPoint);
+            // 5. 最後に右歩道外側とLastPointを追加
+            exteriorPoints.Add(rightSideWalkOuterPoint);
             exteriorPoints.Add(lastPoint);
 
-            // 頂点の順番を逆転させて時計回りにする
-            exteriorPoints.Reverse();
+            for (var i = 0; i < exteriorPoints.Count; i++)
+            {
+                new GameObject($"ExteriorPoint{i}").transform.position = exteriorPoints[i].Vertex;
+            }
+            new GameObject($"forward").transform.position = exteriorPoints[0].Vertex + forward;
+            new GameObject($"right").transform.position = exteriorPoints[0].Vertex + right;
 
             return exteriorPoints;
         }

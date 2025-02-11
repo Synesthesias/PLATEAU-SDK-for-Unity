@@ -89,7 +89,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 if (Physics.Raycast(ray, out RaycastHit hit, 10000f))
                 {
                     newKnotPos = hit.point;
-                    newKnotPos.y = fixedY;
+                    AddKnot(newKnotPos);
                     e.Use();
                 }
                 else
