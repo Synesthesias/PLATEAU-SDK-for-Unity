@@ -27,6 +27,11 @@ namespace PLATEAU.RoadNetwork.Factory
         /// </summary>
         public static readonly string FactoryVersion = "1.1";
 
+        /// <summary>
+        /// 一つの道路の内部に存在するRoadTypeMask.
+        /// </summary>
+        public static readonly RRoadTypeMask RoadPackTypes = RRoadTypeMask.Road | RRoadTypeMask.Median | RRoadTypeMask.Lane | RRoadTypeMask.Undefined;
+
         // --------------------
         // start:フィールド
         // --------------------
@@ -728,13 +733,13 @@ namespace PLATEAU.RoadNetwork.Factory
             try
             {
                 // 道路/中央分離帯は一つのfaceGroupとしてまとめる
-                var mask = ~(RRoadTypeMask.Road | RRoadTypeMask.Median);
+                var mask = ~RoadPackTypes;
                 var faceGroups = graph.GroupBy((f0, f1) =>
                 {
                     var m0 = f0.RoadTypes & mask;
                     var m1 = f1.RoadTypes & mask;
                     return m0 == m1;
-                }).ToList();
+                });
 
                 var ret = new RnModel { FactoryVersion = FactoryVersion, };
                 var work = new Work { terminateAllowEdgeAngle = TerminateAllowEdgeAngle, terminateSkipAngleDeg = TerminateSkipAngle };
@@ -883,6 +888,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 if (AddTrafficSignalLights)
                     ret.AddDefaultTrafficSignalLights();
 
+                ret.Check();
 
                 return Task.FromResult(ret);
             }
