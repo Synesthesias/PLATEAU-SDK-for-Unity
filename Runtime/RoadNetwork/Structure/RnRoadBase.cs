@@ -66,8 +66,25 @@ namespace PLATEAU.RoadNetwork.Structure
             sideWalks.Remove(sideWalk);
         }
 
-        // 境界線情報を取得
-        public virtual IEnumerable<RnWay> GetBorders() { yield break; }
+        /// <summary>
+        /// 隣接道路とその境界線情報
+        /// </summary>
+        public class NeighborBorder
+        {
+            // 隣接するRoad
+            public RnRoadBase NeighborRoad { get; set; }
+
+            // 境界線の線分
+            public RnWay BorderWay { get; set; }
+        }
+
+        /// <summary>
+        /// 隣接するRoadとその境界線情報を取得. 同じRoadに対して複数の境界線がある場合がある.
+        /// また、隣接するRoadはnullの場合もある
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<NeighborBorder> GetBorders() { yield break; }
+
 
         // 隣接するRoadを取得
         public virtual IEnumerable<RnRoadBase> GetNeighborRoads() { yield break; }

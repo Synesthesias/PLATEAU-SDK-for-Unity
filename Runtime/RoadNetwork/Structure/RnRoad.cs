@@ -171,14 +171,20 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // 境界線情報を取得
-        public override IEnumerable<RnWay> GetBorders()
+        public override IEnumerable<NeighborBorder> GetBorders()
         {
-            foreach (var lane in MainLanes)
+            foreach (var borderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
             {
-                if (lane.PrevBorder != null)
-                    yield return lane.PrevBorder;
-                if (lane.NextBorder != null)
-                    yield return lane.NextBorder;
+                var neighbor = this.GetNeighborRoad(borderType);
+
+                foreach (var b in GetBorderWays(borderType))
+                {
+                    yield return new NeighborBorder
+                    {
+                        NeighborRoad = neighbor,
+                        BorderWay = b
+                    };
+                }
             }
         }
 
@@ -1285,6 +1291,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return true;
         }
 
+        /// <summary>
+        /// 境界線情報が
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderType"></param>
+        /// <param name="noBorderIsTrue"></param>
+        /// <returns></returns>
         public static bool IsValidBorderAdjacentNeighbor(this RnRoad self, RnLaneBorderType borderType, bool noBorderIsTrue)
         {
             if (self == null)
@@ -1292,12 +1305,12 @@ namespace PLATEAU.RoadNetwork.Structure
             var neighbor = self.GetNeighborRoad(borderType);
             if (neighbor == null)
                 return noBorderIsTrue;
-            var ways = neighbor.GetBorders()?.ToList() ?? new List<RnWay>();
+            var ways = neighbor.GetBorders()?.Select(x => x.BorderWay)?.ToList() ?? new List<RnWay>();
 
             var oppositeBorderType = borderType.GetOpposite();
             foreach (var lane in self.MainLanes)
             {
-                var laneBorder = self.GetBorderWay(lane, borderType, Structure.RnLaneBorderDir.Left2Right);
+                var laneBorder = self.GetBorderWay(lane, borderType, RnLaneBorderDir.Left2Right);
                 if (laneBorder == null)
                 {
                     if (noBorderIsTrue)

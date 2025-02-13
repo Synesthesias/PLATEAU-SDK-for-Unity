@@ -302,7 +302,7 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
 
         /// <summary>
-        /// 他の道路との境界線Edge取得
+        /// 他の道路との境界線Edge取得. edges.Where(e => e.IsBorder)と同義
         /// </summary>
         public IEnumerable<RnNeighbor> Neighbors => edges.Where(e => e.IsBorder);
 
@@ -344,13 +344,19 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 隣接道路との境界線を取得
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<RnWay> GetBorders()
+        public override IEnumerable<NeighborBorder> GetBorders()
         {
-            foreach (var neighbor in Neighbors.Where(n => n.Road != null))
+            foreach (var edge in Neighbors)
             {
-                yield return neighbor.Border;
+                yield return new NeighborBorder
+                {
+                    BorderWay = edge.Border,
+                    NeighborRoad = edge.Road
+                };
             }
         }
+
+
 
         /// <summary>
         /// 隣接情報追加. borderがnullの場合は追加しない

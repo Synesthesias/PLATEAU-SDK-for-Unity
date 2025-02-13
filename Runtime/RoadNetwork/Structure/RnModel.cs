@@ -479,10 +479,17 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (visitedRoads.Contains(road))
                     continue;
 
-                var roadGroup = road.CreateRoadGroup();
-                foreach (var l in roadGroup.Roads)
-                    visitedRoads.Add(l);
-                roadGroup.MergeRoads();
+                try
+                {
+                    var roadGroup = road.CreateRoadGroup();
+                    foreach (var l in roadGroup.Roads)
+                        visitedRoads.Add(l);
+                    roadGroup.MergeRoads();
+                }
+                catch (Exception e)
+                {
+                    DebugEx.LogException(e);
+                }
             }
         }
 
@@ -585,11 +592,72 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public void Check()
         {
+            // 隣接情報のチェック
+            Dictionary<RnRoadBase, Dictionary<RnRoadBase, List<RnLineString>>> borderTable = new();
+
+            void AddBorderInfo(RnRoadBase road)
+            {
+                var table = new Dictionary<RnRoadBase, List<RnLineString>>();
+                foreach (var a in road.GetBorders())
+                {
+                    if (a.NeighborRoad == null)
+                        continue;
+                    table.GetValueOrCreate(a.NeighborRoad).Add(a.BorderWay.LineString);
+                }
+
+                borderTable[road] = table;
+            }
+
             foreach (var road in roads)
+            {
                 road.Check();
+                AddBorderInfo(road);
+            }
 
             foreach (var inter in intersections)
+            {
                 inter.Check();
+                AddBorderInfo(inter);
+            }
+
+            foreach (var item in borderTable)
+            {
+                var aKey = item.Key;
+                var aVal = item.Value;
+                foreach (var aToB in aVal)
+                {
+                    var bKey = aToB.Key;
+                    var bVal = borderTable.GetValueOrDefault(bKey);
+
+                    void ShowErrorLog(string label)
+                    {
+                        DebugEx.LogError($"{label}[{aKey.GetTargetTransName()}]-[{bKey.GetTargetTransName()}]");
+                    }
+
+                    if (bVal == null)
+                    {
+                        ShowErrorLog("bKey not found");
+                        continue;
+                    }
+
+                    var bToA = bVal.GetValueOrDefault(aKey) ?? new();
+
+                    if (aToB.Value.Count != bToA.Count)
+                    {
+                        ShowErrorLog("Border Count Error");
+                    }
+                    else
+                    {
+                        foreach (var aBorder in aToB.Value)
+                        {
+                            if (bToA.Contains(aBorder) == false)
+                            {
+                                ShowErrorLog("Border Count Error");
+                            }
+                        }
+                    }
+                }
+            }
 
             foreach (var sw in sideWalks)
             {
