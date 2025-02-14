@@ -495,9 +495,9 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
             {
-                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var t1, out var t2))
+                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var rayOffset, out var edgeT))
                 {
-                    yield return (p, item.i + t1);
+                    yield return (p, item.i + edgeT);
                 }
             }
         }
