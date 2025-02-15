@@ -1155,6 +1155,47 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="rayB"></param>
         /// <param name="p"></param>
         /// <returns></returns>
+        public static Ray2D LerpRay2(Ray2D rayA, Ray2D rayB, float p)
+        {
+            static Vector2 Get(Ray2D r1, Ray2D r2, Vector2 a, float p)
+            {
+                var b = r2.GetNearestPoint(a);
+                if ((a - b).sqrMagnitude < Epsilon)
+                {
+                    return a;
+                }
+                var c = r1.GetNearestPoint(b);
+
+                var ab = (b - a).magnitude;
+                var bc = (c - b).magnitude;
+
+                var x = ab * (1 - p);
+                var t = x / (x + bc * p);
+                return Vector2.Lerp(a, b, t);
+            }
+
+            p = 1 - Mathf.Clamp01(p);
+            var p1 = Get(rayA, rayB, rayA.origin, p);
+            var p2 = Get(rayA, rayB, rayA.origin + rayA.direction * 10, p);
+            var dir = (p2 - p1).normalized;
+            if (Vector2.Dot(dir, rayA.direction) < 0)
+                dir = -dir;
+            return new Ray2D(p1, dir);
+        }
+
+        /// <summary>
+        /// 直線l上の点から直線a,bへの距離がp : 1-pとなるような直線lを返す
+        /// 0.5だと中間の角度が返る
+        /// \ p  |1-p /
+        ///  \   |   /
+        ///   \  |  / 
+        ///  a \ | / b
+        ///     \ /
+        /// </summary>
+        /// <param name="rayA"></param>
+        /// <param name="rayB"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public static Ray2D LerpRay(Ray2D rayA, Ray2D rayB, float p)
         {
             // 2線が平行の時は交点が無いので特別処理
