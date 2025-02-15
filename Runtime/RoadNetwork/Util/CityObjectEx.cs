@@ -40,7 +40,8 @@ namespace PLATEAU.RoadNetwork.Util
                     ret |= RRoadTypeMask.Road;
                 }
 
-                if (str == "歩道部")
+                //if (str == "歩道部" || str == "自転車歩行者道" || str == "歩道" || str == "歩道部の段差")
+                if (str.Contains("歩道") || str == "自転車歩行者道")
                 {
                     ret |= RRoadTypeMask.SideWalk;
                 }
