@@ -534,7 +534,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="roadWidth"></param>
         /// <param name="rebuildTrack">レーン分割後に関連する交差点のトラックを再生成する</param>
         /// <param name="failedRoads"></param>
-        public void SplitLaneByWidth(float roadWidth, bool rebuildTrack, out List<ulong> failedRoads)
+        public void SplitLaneByWidth(float roadWidth, bool rebuildTrack, out List<ulong> failedRoads, Func<RnRoadGroup, bool> isTargetLaneSplit)
         {
             failedRoads = new List<ulong>();
             var visitedRoads = new HashSet<RnRoad>();
@@ -555,6 +555,10 @@ namespace PLATEAU.RoadNetwork.Structure
 
                     if (roadGroup.Roads.Any(l => l.MainLanes[0].HasBothBorder == false))
                         continue;
+
+                    if (isTargetLaneSplit(roadGroup) == false)
+                        continue;
+
                     var leftCount = roadGroup.GetLeftLaneCount();
                     var rightCount = roadGroup.GetRightLaneCount();
                     // すでにレーンが分かれている場合、左右で独立して分割を行う
@@ -1371,15 +1375,22 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             HashSet<RnRoad> prevs = new();
             HashSet<RnRoad> nexts = new();
+            var failNum = 0;
             foreach (var road in self.Roads.ToList())
             {
                 //self.CalibrateIntersectionBorder(road, option);
-                self.TrySliceRoadHorizontalNearByBorder(road, option, out var prev, out var center, out var next);
+                var success =
+                    self.TrySliceRoadHorizontalNearByBorder(road, option, out var prev, out var center, out var next);
                 if (prev != null)
                     prevs.Add(prev);
                 if (next != null)
                     nexts.Add(next);
+
+                if (success == false)
+                    failNum++;
             }
+
+            DebugEx.Log($"CalibrateIntersectionBorderForAllRoad: {failNum}/{self.Roads.Count}");
 
             foreach (var p in prevs)
                 p.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);

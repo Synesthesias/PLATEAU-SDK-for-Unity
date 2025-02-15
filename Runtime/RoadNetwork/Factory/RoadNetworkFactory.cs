@@ -71,6 +71,9 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool AddTrafficSignalLights { get; set; } = true;
 
+        // 道路のレーン分割を行うかどうか
+        [field: SerializeField]
+        public bool SplitByRoadSize { get; set; } = true;
 
         // RGraph作るときのファクトリパラメータ
         [field: SerializeField]
@@ -125,8 +128,6 @@ namespace PLATEAU.RoadNetwork.Factory
             public Dictionary<RFaceGroup, Tran> TranMap { get; } = new();
 
             public Dictionary<RVertex, RnPoint> PointMap { get; } = new();
-
-            public Dictionary<List<RVertex>, RnLineString> LineMap { get; } = new();
 
             // key   : RnLineString.PointsのDebugIdのxor(高速化用)
             // value : RnLineString
@@ -188,12 +189,18 @@ namespace PLATEAU.RoadNetwork.Factory
                 return CreateWay(points, out var _);
             }
 
-            public RnWay CreateWay(List<RnPoint> points, out bool isCached)
+            public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
             {
                 isCached = false;
-                if (points.Count <= 1)
+                if (points == null)
                     return null;
 
+                // キャッシュ使わない設定
+                if (useCache == false)
+                {
+                    var ls = RnLineString.Create(points, true);
+                    return new RnWay(ls, false);
+                }
                 var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
                 var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
                 foreach (var line in lines)
@@ -214,25 +221,17 @@ namespace PLATEAU.RoadNetwork.Factory
                 return CreateWay(vertices, out var _);
             }
 
-            public RnWay CreateWay(List<RVertex> vertices, out bool isCached)
+            public RnWay CreateWay(List<RVertex> vertices, out bool isCached, bool useCache = true)
             {
                 isCached = false;
+                if (vertices == null)
+                    return null;
                 // 頂点無い場合はnull
                 if (vertices.Any() == false)
                     return null;
-                foreach (var item in LineMap)
-                {
-                    if (IsEqual(item.Key, vertices, out var isReverse))
-                    {
-                        isCached = true;
-                        return new RnWay(item.Value, isReverse);
-                    }
-                }
 
-                // 元のリストが変わるかもしれないのでコピーで持つ
-                var key = vertices.ToList();
-                LineMap[key] = RnLineString.Create(key.Select(CreatePoint), true);
-                return new RnWay(LineMap[key], false);
+                var points = vertices.Select(CreatePoint).ToList();
+                return CreateWay(points, out isCached, useCache);
             }
 
             public List<RnSideWalk> CreateSideWalk(float minRoadSize, float lod1SideWalkSize)
@@ -481,6 +480,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     });
                 return ret.len;
             }
+
             // 中央分離帯の幅を求める
             public float GetMedianWidth()
             {
@@ -490,6 +490,56 @@ namespace PLATEAU.RoadNetwork.Factory
 
                 return lines.Min(GetMedianLength);
             }
+
+            public bool TryGetLaneNum(out int leftLaneNum, out int rightLaneNum)
+            {
+                leftLaneNum = 0;
+                rightLaneNum = 0;
+                if (Node is RnRoad road)
+                {
+                    var line = Lines.FirstOrDefault(l => l.IsBorder);
+                    if (line == null)
+                        return false;
+
+                    bool IsSame(HashSet<RFace> a, HashSet<RFace> b)
+                    {
+                        if (a == b)
+                            return true;
+                        if (a.Count != b.Count)
+                            return false;
+                        return a.All(f => b.Contains(f));
+                    }
+                    var lastLaneFaces = new HashSet<RFace>();
+                    List<int> laneCounts = new() { 0 };
+                    foreach (var edge in line.Edges)
+                    {
+                        var faces = edge.Faces.Where(f => f.RoadTypes.IsLane()).ToHashSet();
+
+                        var roadType = edge.GetAnyFaceTypeMaskOrDefault();
+                        if (roadType.IsMedian())
+                        {
+                            if (laneCounts.Count == 1)
+                                laneCounts.Add(0);
+                            continue;
+                        }
+
+                        if (IsSame(lastLaneFaces, faces))
+                        {
+                            continue;
+                        }
+
+                        laneCounts[^1]++;
+                        lastLaneFaces = faces;
+                    }
+
+                    leftLaneNum = laneCounts[0];
+                    rightLaneNum = laneCounts.Count > 1 ? laneCounts[^1] : 0;
+                    return true;
+                }
+
+                return false;
+            }
+
 
             public Tran(Work work, RGraph graph, RFaceGroup faceGroup)
             {
@@ -550,13 +600,15 @@ namespace PLATEAU.RoadNetwork.Factory
                     RnWay AsWay(IEnumerable<int> ind, bool isReverse, bool isRightSide)
                     {
                         var ls = Work.CreateWay(ind.Select(x => line.Vertices[x]).ToList());
+                        if (ls == null)
+                            return null;
                         return new RnWay(ls.LineString, ls.IsReversed ? !isReverse : isReverse, isRightSide);
                     }
 
                     var rWay = AsWay(Enumerable.Range(0, edgeIndices[0] + 1), true, true);
                     var lWay = AsWay(Enumerable.Range(edgeIndices.Last(), line.Vertices.Count - edgeIndices.Last()), false, false);
                     var prevBorderWay = AsWay(edgeIndices, true, false);
-                    var nextBorderWay = Work.CreateWay(border.Vertices);
+                    var nextBorderWay = Work.CreateWay(border?.Vertices);
                     var lane = new RnLane(lWay, rWay, prevBorderWay, nextBorderWay);
                     var road = RnRoad.CreateOneLaneRoad(cityObjectGroup, lane);
                     road.SetPrevNext(null, border.Neighbor?.Node);
@@ -795,19 +847,19 @@ namespace PLATEAU.RoadNetwork.Factory
                                     out var startEdges, out var endEdges, neighborCityObjects) == false)
                                 continue;
 
-                            RnWay AsWay(IReadOnlyList<REdge> edges, out bool isCached)
+                            RnWay AsWay(IReadOnlyList<REdge> edges, bool useCache = true)
                             {
-                                isCached = false;
                                 if (edges.Any() == false)
                                     return null;
                                 if (RGraphEx.SegmentEdge2Vertex(edges, out var vertices, out var isLoop))
-                                    return work.CreateWay(vertices, out isCached);
+                                    return work.CreateWay(vertices, out var _, useCache: useCache);
                                 return null;
                             }
-                            var outsideWay = AsWay(outsideEdges, out var outsideCached);
-                            var insideWay = AsWay(insideEdges, out var insideCached);
-                            var startWay = AsWay(startEdges, out var startCached);
-                            var endWay = AsWay(endEdges, out var endCached);
+                            // 歩道のアウトサイドはこの道路の完全なる外側なので, 他の道路とLineString共通にして影響が出ると困るので独立させる
+                            var outsideWay = AsWay(outsideEdges, false);
+                            var insideWay = AsWay(insideEdges);
+                            var startWay = AsWay(startEdges);
+                            var endWay = AsWay(endEdges);
 
 
                             RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
@@ -838,6 +890,8 @@ namespace PLATEAU.RoadNetwork.Factory
                     ret.SeparateContinuousBorder();
 
                 // 中央分離帯の幅で道路を分割する
+
+                var isLaneSplitRoads = new HashSet<RnRoad>();
                 {
                     var visited = new HashSet<RnRoad>();
                     foreach (var n in work.TranMap.Values)
@@ -846,25 +900,45 @@ namespace PLATEAU.RoadNetwork.Factory
                         {
                             if (visited.Contains(road))
                                 continue;
-                            var medianWidth = n.GetMedianWidth();
-                            if (medianWidth <= 0f)
-                                continue;
-                            var linkGroup = road.CreateRoadGroupOrDefault();
-                            if (linkGroup == null)
+
+                            n.TryGetLaneNum(out var leftLaneNum, out var rightLaneNum);
+
+                            DebugEx.Log($"LaneNum : {leftLaneNum}/{rightLaneNum} / {road.GetTargetTransName()}");
+
+                            var roadGroup = road.CreateRoadGroupOrDefault();
+                            if (roadGroup == null)
                                 continue;
 
-                            // 中央分離帯の幅が道路の幅を超えている場合は分割
-                            if (road.MainLanes.Count > 0)
+                            foreach (var r in roadGroup.Roads)
+                                visited.Add(r);
+
+                            if (road.MainLanes.Count == 0)
+                                continue;
+
+                            // 中央分離帯の幅が取得できるときは分割
+                            var medianWidth = n.GetMedianWidth();
+                            var borderWidth = road.MainLanes[0].CalcWidth();
+                            var hasLaneInfo = (leftLaneNum + rightLaneNum) >= 1;
+
+                            if (hasLaneInfo)
                             {
-                                var borderWidth = road.MainLanes[0].CalcWidth();
-                                if (CheckMedian && borderWidth > medianWidth)
+                                foreach (var r in roadGroup.Roads)
                                 {
-                                    linkGroup.SetLaneCountWithMedian(1, 1, medianWidth / borderWidth);
+                                    isLaneSplitRoads.Add(r);
                                 }
                             }
 
-                            foreach (var r in linkGroup.Roads)
-                                visited.Add(r);
+                            if (medianWidth > 0f && CheckMedian && borderWidth > medianWidth)
+                            {
+                                leftLaneNum = Mathf.Max(1, leftLaneNum);
+                                rightLaneNum = Mathf.Max(1, rightLaneNum);
+                                roadGroup.SetLaneCountWithMedian(leftLaneNum, rightLaneNum, medianWidth / borderWidth);
+                            }
+                            // レーン数が2以上になる場合だけ分割する
+                            else if ((leftLaneNum + rightLaneNum) > 1)
+                            {
+                                roadGroup.SetLaneCount(leftLaneNum, rightLaneNum);
+                            }
                         }
                     }
                 }
@@ -881,7 +955,14 @@ namespace PLATEAU.RoadNetwork.Factory
                 }
 
                 // 道路を分割する
-                ret.SplitLaneByWidth(RoadSize, false, out var failedLinks);
+                if (SplitByRoadSize)
+                {
+                    ret.SplitLaneByWidth(RoadSize, false, out var failedLinks, rg =>
+                    {
+                        return rg.Roads.Any(r => isLaneSplitRoads.Contains(r)) == false;
+                    });
+                }
+
                 ret.ReBuildIntersectionTracks();
 
                 // 信号制御器をデフォ値で配置する

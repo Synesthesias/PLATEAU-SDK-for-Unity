@@ -305,9 +305,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 境界線の一覧を取得する. left->rightの順番
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="includeMedian"></param>
         /// <returns></returns>
-        public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type, bool includeMedian = true)
+        public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type)
         {
             // 左 -> 中央分離帯 -> 右の順番
             foreach (var l in AllLanesWithMedian)
@@ -789,7 +788,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return self.Prev == other ? null : self.Prev;
             }
 
-            throw new InvalidDataException($"{self.DebugMyId} is not neighbor road {other.DebugMyId}");
+            throw new InvalidDataException($"{self.DebugMyId}/{self.GetTargetTransName()} is not neighbor road {other.DebugMyId}/{other.GetTargetTransName()}");
         }
 
         /// <summary>
@@ -984,19 +983,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 left2RightDir = -left2RightDir;
 
             // leftWayの方が手前にある
-            if (rightSeg2D.TryHalfLineIntersection(leftSeg2D.End, left2RightDir, out var rOut, out var rT1,
-                    out var lT1))
+            if (rightSeg2D.TryHalfLineIntersection(leftSeg2D.End, left2RightDir, out var rInter,
+                    out var lT1, out var rSegT1))
             {
                 adjustedBorderLeft2Right
-                    = new LineSegment3D(leftSeg.End, rightSeg.Lerp(rT1));
+                    = new LineSegment3D(leftSeg.End, rightSeg.Lerp(rSegT1));
                 return true;
             }
             // rightWayの方が手前にある
-            if (leftSeg2D.TryHalfLineIntersection(rightSeg2D.End, -left2RightDir, out var lOut, out var lT2,
-                         out var rT2))
+            if (leftSeg2D.TryHalfLineIntersection(rightSeg2D.End, -left2RightDir, out var lInter,
+                         out var rT2, out var lSegT2))
             {
                 adjustedBorderLeft2Right
-                    = new LineSegment3D(leftSeg.Lerp(lT2), rightSeg.End);
+                    = new LineSegment3D(leftSeg.Lerp(lSegT2), rightSeg.End);
                 return true;
             }
             return false;
@@ -1107,23 +1106,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         visited.Add(dst.LineString);
 
                         var tolerance = 0f;
-                        if (dst.GetPoint(0).IsSamePoint(src.GetPoint(0), tolerance))
-                        {
-                            dst.AppendFront2LineString(src.ReversedWay());
-                        }
-                        else if (dst.GetPoint(0).IsSamePoint(src.GetPoint(-1), tolerance))
-                        {
-                            dst.AppendFront2LineString(src);
-                        }
-                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(0), tolerance))
-                        {
-                            dst.AppendBack2LineString(src);
-                        }
-                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(-1), tolerance))
-                        {
-                            dst.AppendBack2LineString(src.ReversedWay());
-                        }
-                        else
+                        if (dst.TryMergePointsToLineString(src, tolerance) == false)
                         {
                             // #NOTE : もともとの歩道がきれいにつながっていない場合は仮で直接つなぐようにする
                             DebugEx.LogWarning($"共通頂点を持たないWayをマージしようとしました. {dst.GetDebugIdLabelOrDefault()} {src.GetDebugIdLabelOrDefault()}");

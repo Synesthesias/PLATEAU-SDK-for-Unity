@@ -90,6 +90,15 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// 車線
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static bool IsLane(this RRoadTypeMask self)
+        {
+            return (self & RRoadTypeMask.Lane) != 0;
+        }
+        /// <summary>
         /// selfがflagのどれかを持っているかどうか
         /// </summary>
         /// <param name="self"></param>

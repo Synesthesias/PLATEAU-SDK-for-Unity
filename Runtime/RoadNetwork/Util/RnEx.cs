@@ -317,7 +317,7 @@ namespace PLATEAU.RoadNetwork.Util
             for (var i = 0; i < edges.Count; ++i)
             {
                 var seg = edges[i];
-                if (seg.TryHalfLineIntersection(ray.origin, ray.direction, out var inter, out var t1, out var t2))
+                if (seg.TryHalfLineIntersection(ray.origin, ray.direction, out var inter, out var _, out var _))
                 {
                     var len = (mid - inter).sqrMagnitude;
                     if (len < minLen)
@@ -548,6 +548,7 @@ namespace PLATEAU.RoadNetwork.Util
             IEnumerable<TEdge> edges
             , Func<TEdge, TKey> keySelector
             , IEqualityComparer<TKey> comparer = null
+            , bool isLoop = true
             )
         {
             List<KeyEdgeGroup<TKey, TEdge>> ret = new();
@@ -563,10 +564,13 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             // 両端が同じキーの場合は結合する
-            if (ret.Count > 1 && comparer.Equals(ret[0].Key, ret[^1].Key))
+            if (isLoop)
             {
-                ret[^1].Edges.AddRange(ret[0].Edges);
-                ret.RemoveAt(0);
+                if (ret.Count > 1 && comparer.Equals(ret[0].Key, ret[^1].Key))
+                {
+                    ret[^1].Edges.AddRange(ret[0].Edges);
+                    ret.RemoveAt(0);
+                }
             }
 
             return ret;
