@@ -27,6 +27,8 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
 
         public IInstanceHelper InstanceHelper { get; set; }
 
+        private HashSet<object> Foldouts { get; } = new();
+
         public void EditSubDividedCityObject(SubDividedCityObject e)
         {
             if (e == null)
@@ -42,6 +44,11 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
                     EditorGUILayout.LabelField(root.GmlID);
                     EditorGUILayout.EnumFlagsField("Type", root.GetRoadType());
                 }
+
+                if (RnEditorUtil.Foldout("Json", Foldouts, (e, "Json")))
+                {
+                    EditorGUILayout.TextArea(e.SerializedCityObjects);
+                }
             }
 
             RnEditorUtil.Separator();
@@ -50,10 +57,13 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
             {
                 foreach (var child in e.Children)
                 {
-                    RnEditorUtil.Separator();
-                    using (new EditorGUI.IndentLevelScope())
+                    if (RnEditorUtil.Foldout(child.Name, Foldouts, child))
                     {
-                        EditSubDividedCityObject(child);
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            using var _ = new EditorGUI.IndentLevelScope();
+                            EditSubDividedCityObject(child);
+                        }
                     }
                 }
             }
@@ -87,8 +97,11 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
             {
                 if (InstanceHelper.IsTarget(cog) || InstanceHelper.TargetCityObjects.Contains(cog))
                 {
-                    RnEditorUtil.Separator();
-                    EditSubDividedCityObject(cog);
+                    if (RnEditorUtil.Foldout(cog.Name, Foldouts, cog))
+                    {
+                        using var _ = new EditorGUI.IndentLevelScope();
+                        EditSubDividedCityObject(cog);
+                    }
                 }
             }
         }
