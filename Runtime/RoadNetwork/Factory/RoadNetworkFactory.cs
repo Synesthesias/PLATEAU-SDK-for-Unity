@@ -568,7 +568,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         rightLaneNum = laneCounts.Count > 1 ? laneCounts[^1] : 0;
                         // Prev側のEdgeで見ている場合
                         // Edgeは時計回りになっているので最初が右車線側
-                        if (IsPrevSide(line.Edges[0]) == false)
+                        if (IsPrevSide(line.Edges[0]))
                             (leftLaneNum, rightLaneNum) = (rightLaneNum, leftLaneNum);
                     }
 
@@ -755,29 +755,6 @@ namespace PLATEAU.RoadNetwork.Factory
                 // index : アウトラインの辺に隣接するTran
                 var neighbors = new Tran[edges.Length];
                 var success = true;
-                //if (RGraphEx.OutlineVertex2Edge(Vertices, out var outlineEdges, true) == false)
-                //{
-                //    DebugEx.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup.name}");
-                //}
-
-                //var groups = RnEx.GroupByOutlineEdges(outlineEdges, e =>
-                //{
-                //    if (e == null)
-                //        return null;
-                //    return e.Faces.Select(f => Work.FindTranOrDefault(f)).FirstOrDefault(t => t != null && t != this);
-                //});
-
-                //foreach (var group in groups)
-                //{
-                //    var next = new Line { Neighbor = group.Key };
-                //    next.Edges.AddRange(group.Edges);
-                //    if (Lines.Count > 0)
-                //    {
-                //        next.Prev = Lines[^1];
-                //        Lines[^1].Next = next;
-                //    }
-                //    Lines.Add(next);
-                //}
 
                 for (var i = 0; i < Vertices.Count; i++)
                 {
