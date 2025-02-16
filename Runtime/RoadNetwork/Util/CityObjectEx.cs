@@ -23,10 +23,31 @@ namespace PLATEAU.RoadNetwork.Util
             return self.Lod;
         }
 
+        // CityGmlのAuxiliaryTrafficArea_function.xml(つくば市)から参照
+        private static readonly Dictionary<string, RRoadTypeMask> functionValue2RoadType = new()
+        {
+            ["車道部"] = RRoadTypeMask.Road,
+            ["車道交差部"] = RRoadTypeMask.Road,
+            ["非常駐車帯"] = RRoadTypeMask.Road,
+            ["側帯"] = RRoadTypeMask.Road,
+            ["路肩"] = RRoadTypeMask.Road,
+            ["停車帯"] = RRoadTypeMask.Road,
+            ["乗合自動車停車所"] = RRoadTypeMask.Road,
+            ["分離帯"] = RRoadTypeMask.Road,
+            ["路面電車停車所"] = RRoadTypeMask.Road,
+            ["自転車駐車場"] = RRoadTypeMask.Road,
+            ["自動車駐車場"] = RRoadTypeMask.Road,
 
-        private static readonly string[] sideWalkValues = new string[] { "自転車歩行者道", "植樹帯", "植樹ます", "植樹帯", "路肩", "側帯" };
+            ["島"] = RRoadTypeMask.Median,
+            ["交通島"] = RRoadTypeMask.Median,
+            ["中央帯"] = RRoadTypeMask.Median,
 
-        private static readonly string[] medianValues = new string[] { "島", "中央帯" };
+            ["自転車歩行者道"] = RRoadTypeMask.SideWalk,
+            ["植栽"] = RRoadTypeMask.SideWalk,
+            ["植樹帯"] = RRoadTypeMask.SideWalk,
+            ["植樹ます"] = RRoadTypeMask.SideWalk,
+            ["歩道部の段差"] = RRoadTypeMask.SideWalk,
+        };
 
         public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
         {
@@ -41,19 +62,15 @@ namespace PLATEAU.RoadNetwork.Util
             if (self.AttributesMap.TryGetValue("tran:function", out var tranFunction))
             {
                 var str = tranFunction.StringValue;
-                if (new[] { "車道部", "車道交差部" }.Contains(str))
+
+                if (functionValue2RoadType.TryGetValue(str, out var v))
                 {
-                    ret |= RRoadTypeMask.Road;
+                    ret |= v;
                 }
 
-                if (str.Contains("歩道") || sideWalkValues.Contains(str))
+                if (str.Contains("歩道"))
                 {
                     ret |= RRoadTypeMask.SideWalk;
-                }
-
-                if (medianValues.Contains(str))
-                {
-                    ret |= RRoadTypeMask.Median;
                 }
 
                 if (str.Contains("高速"))
