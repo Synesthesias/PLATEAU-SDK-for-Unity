@@ -261,7 +261,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             [Serializable]
             class NormalDrawer : FaceDrawer
             {
-                public Color color;
+                public Color color = Color.white;
                 public bool showOutline = true;
                 public bool showConvexVolume = false;
                 public bool showOutlineLoop = false;

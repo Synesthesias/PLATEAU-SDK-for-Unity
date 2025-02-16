@@ -4,6 +4,7 @@ using PLATEAU.RoadNetwork.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.CityObject
 {
@@ -86,8 +87,8 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
                 return;
             }
 
-
-            RnEditorUtil.Separator();
+            if (GUILayout.Button("Clear Selected"))
+                InstanceHelper.TargetCityObjects.Clear();
 
             using (new EditorGUI.DisabledScope(true))
             {
