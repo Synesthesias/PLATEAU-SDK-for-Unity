@@ -14,7 +14,7 @@ namespace PLATEAU.RoadNetwork.Graph
         // start:フィールド
         // --------------------
         public bool reductionOnCreate = true;
-        public float mergeCellSize = 0.5f;
+        public float mergeCellSize = 0.2f;
         public int mergeCellLength = 2;
         public float removeMidPointTolerance = 0.3f;
         // LOD1モデルは高さ情報がないため、高さの許容誤差を設定する
