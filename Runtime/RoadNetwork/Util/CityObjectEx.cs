@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.Graph;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -22,6 +23,11 @@ namespace PLATEAU.RoadNetwork.Util
             return self.Lod;
         }
 
+
+        private static readonly string[] sideWalkValues = new string[] { "自転車歩行者道", "植樹帯", "植樹ます", "植樹帯", "路肩", "側帯" };
+
+        private static readonly string[] medianValues = new string[] { "島", "中央帯" };
+
         public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
         {
             // 緊急輸送道路もはじく必要がある
@@ -40,13 +46,12 @@ namespace PLATEAU.RoadNetwork.Util
                     ret |= RRoadTypeMask.Road;
                 }
 
-                //if (str == "歩道部" || str == "自転車歩行者道" || str == "歩道" || str == "歩道部の段差")
-                if (str.Contains("歩道") || str == "自転車歩行者道")
+                if (str.Contains("歩道") || sideWalkValues.Contains(str))
                 {
                     ret |= RRoadTypeMask.SideWalk;
                 }
 
-                if (tranFunction.StringValue == "島")
+                if (medianValues.Contains(str))
                 {
                     ret |= RRoadTypeMask.Median;
                 }

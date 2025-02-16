@@ -15,7 +15,7 @@ namespace PLATEAU.RoadNetwork.Graph
         // --------------------
         public bool reductionOnCreate = true;
         public float mergeCellSize = 0.5f;
-        public int mergeCellLength = 4;
+        public int mergeCellLength = 2;
         public float removeMidPointTolerance = 0.3f;
         // LOD1モデルは高さ情報がないため、高さの許容誤差を設定する
         public float lod1HeightTolerance = 1.5f;
@@ -99,6 +99,12 @@ namespace PLATEAU.RoadNetwork.Graph
             if (separateFace)
             {
                 self.SeparateFaces();
+            }
+
+            // 非連結部分を削除した結果, 孤立した辺ができる可能性もあるのでここでも実行
+            if (removeIsolatedEdgeFromFace)
+            {
+                self.RemoveIsolatedEdgeFromFace();
             }
 
             if (modifySideWalkShape)

@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork.CityObject;
+using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Util;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
         public IInstanceHelper InstanceHelper { get; set; }
 
         private HashSet<object> Foldouts { get; } = new();
+        private RRoadTypeMask filterMask = RRoadTypeMask.All;
 
         public void EditSubDividedCityObject(SubDividedCityObject e)
         {
@@ -92,9 +94,12 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
                 EditorGUILayout.IntField("CityObjects", cityObjects.CityObjects.Count);
             }
 
+            filterMask = (RRoadTypeMask)EditorGUILayout.EnumPopup("Filter", filterMask);
             RnEditorUtil.Separator();
             foreach (var cog in cityObjects.CityObjects)
             {
+                if ((filterMask & cog.SelfRoadType) == 0)
+                    continue;
                 if (InstanceHelper.IsTarget(cog) || InstanceHelper.TargetCityObjects.Contains(cog))
                 {
                     if (RnEditorUtil.Foldout(cog.Name, Foldouts, cog))

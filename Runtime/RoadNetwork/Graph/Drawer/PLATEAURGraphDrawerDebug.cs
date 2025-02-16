@@ -265,7 +265,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                 public bool showOutline = true;
                 public bool showConvexVolume = false;
                 public bool showOutlineLoop = false;
-
+                public bool showEdgeCount = false;
                 public FaceOption Parent { get; set; }
 
                 protected override bool DrawImpl(DrawWork work, RFace face)
@@ -274,9 +274,17 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
                     if (work.Self.showId.HasFlag(RPartsFlag.Face))
                     {
-                        var center = vertices.Aggregate(Vector3.zero, (a, v) => v.Position + a) / vertices.Count;
+                        var center = Vector3Ex.Centroid(vertices.Select(v => v.Position));
                         work.Self.DrawString($"F[{face.DebugMyId}]", center);
                     }
+
+                    if (showEdgeCount)
+                    {
+                        var center = Vector3Ex.Centroid(vertices.Select(v => v.Position));
+                        work.Self.DrawString($"Edge={face.Edges.Count}", center);
+
+                    }
+
                     if (showConvexVolume)
                     {
                         work.Self.DrawArrows(face.ComputeConvexHullVertices().Select(v => v.Position), isLoop: true, color: color);
