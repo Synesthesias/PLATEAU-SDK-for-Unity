@@ -63,6 +63,10 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public bool CheckMedian { get; set; } = true;
 
+        // LOD3.1以上のLane情報を見る
+        [field: SerializeField]
+        public bool CheckLane { get; set; } = true;
+
         // 高速道路を無視するかのフラグ
         [field: SerializeField]
         public bool IgnoreHighway { get; set; } = true;
@@ -404,6 +408,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public RFaceGroup FaceGroup { get; }
 
+            // 構成頂点(Up方向から見て時計回り)
             public List<RVertex> Vertices { get; }
 
             /// <summary>
@@ -429,6 +434,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 public Line Prev { get; set; }
             }
 
+            // 構成線分(頂点は時計回りになっている)
             public List<Line> Lines { get; } = new List<Line>();
 
             // 隣接オブジェクトの数
@@ -497,43 +503,75 @@ namespace PLATEAU.RoadNetwork.Factory
                 rightLaneNum = 0;
                 if (Node is RnRoad road)
                 {
-                    var line = Lines.FirstOrDefault(l => l.IsBorder);
-                    if (line == null)
-                        return false;
+                    var prevBorder = road.GetMergedBorder(RnLaneBorderType.Prev);
+                    var nextBorder = road.GetMergedBorder(RnLaneBorderType.Next);
 
-                    bool IsSame(HashSet<RFace> a, HashSet<RFace> b)
+                    bool IsPrevSide(REdge e)
                     {
-                        if (a == b)
-                            return true;
-                        if (a.Count != b.Count)
+                        if (prevBorder == null)
                             return false;
-                        return a.All(f => b.Contains(f));
+
+                        if (nextBorder == null)
+                            return true;
+
+                        prevBorder.GetNearestPoint(e.V0.Position, out var _, out float _, out float prevDistance);
+                        nextBorder.GetNearestPoint(e.V0.Position, out var _, out float _, out float nextDistance);
+                        return prevDistance < nextDistance;
                     }
-                    var lastLaneFaces = new HashSet<RFace>();
-                    List<int> laneCounts = new() { 0 };
-                    foreach (var edge in line.Edges)
+
+                    foreach (var line in Lines)
                     {
-                        var faces = edge.Faces.Where(f => f.RoadTypes.IsLane()).ToHashSet();
-
-                        var roadType = edge.GetAnyFaceTypeMaskOrDefault();
-                        if (roadType.IsMedian())
-                        {
-                            if (laneCounts.Count == 1)
-                                laneCounts.Add(0);
+                        if (line.IsBorder == false)
                             continue;
+
+                        // 同じLaneのFaceかどうか判定
+                        bool IsSame(HashSet<RFace> a, HashSet<RFace> b)
+                        {
+                            if (a == b)
+                                return true;
+                            if (a.Count != b.Count)
+                                return false;
+                            return a.All(b.Contains);
+                        }
+                        var lastLaneFaces = new HashSet<RFace>();
+                        List<int> laneCounts = new() { 0 };
+
+                        if (line.Edges.Any() == false)
+                            continue;
+
+                        foreach (var edge in line.Edges)
+                        {
+                            var roadType = edge.GetAnyFaceTypeMaskOrDefault();
+                            if (roadType.IsMedian())
+                            {
+                                if (laneCounts.Count == 1)
+                                    laneCounts.Add(0);
+                                continue;
+                            }
+
+
+                            var faces = edge.Faces.Where(f => f.RoadTypes.IsLane()).ToHashSet();
+                            // 車線じゃない場合はスキップ
+                            if (faces.Any() == false)
+                                continue;
+                            // 同じ車線が複数Edge持っている場合に無駄にカウントしないようにする
+                            if (IsSame(lastLaneFaces, faces))
+                            {
+                                continue;
+                            }
+
+                            laneCounts[^1]++;
+                            lastLaneFaces = faces;
                         }
 
-                        if (IsSame(lastLaneFaces, faces))
-                        {
-                            continue;
-                        }
-
-                        laneCounts[^1]++;
-                        lastLaneFaces = faces;
+                        leftLaneNum = laneCounts[0];
+                        rightLaneNum = laneCounts.Count > 1 ? laneCounts[^1] : 0;
+                        // Prev側のEdgeで見ている場合
+                        // Edgeは時計回りになっているので最初が右車線側
+                        if (IsPrevSide(line.Edges[0]) == false)
+                            (leftLaneNum, rightLaneNum) = (rightLaneNum, leftLaneNum);
                     }
 
-                    leftLaneNum = laneCounts[0];
-                    rightLaneNum = laneCounts.Count > 1 ? laneCounts[^1] : 0;
                     return true;
                 }
 
@@ -717,6 +755,30 @@ namespace PLATEAU.RoadNetwork.Factory
                 // index : アウトラインの辺に隣接するTran
                 var neighbors = new Tran[edges.Length];
                 var success = true;
+                //if (RGraphEx.OutlineVertex2Edge(Vertices, out var outlineEdges, true) == false)
+                //{
+                //    DebugEx.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup.name}");
+                //}
+
+                //var groups = RnEx.GroupByOutlineEdges(outlineEdges, e =>
+                //{
+                //    if (e == null)
+                //        return null;
+                //    return e.Faces.Select(f => Work.FindTranOrDefault(f)).FirstOrDefault(t => t != null && t != this);
+                //});
+
+                //foreach (var group in groups)
+                //{
+                //    var next = new Line { Neighbor = group.Key };
+                //    next.Edges.AddRange(group.Edges);
+                //    if (Lines.Count > 0)
+                //    {
+                //        next.Prev = Lines[^1];
+                //        Lines[^1].Next = next;
+                //    }
+                //    Lines.Add(next);
+                //}
+
                 for (var i = 0; i < Vertices.Count; i++)
                 {
                     var v0 = Vertices[i];
@@ -882,55 +944,6 @@ namespace PLATEAU.RoadNetwork.Factory
 
                         var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay, laneType);
                         ret.AddSideWalk(sideWalk);
-#if false
-                        foreach (var sideWalkFace in fg.Faces.Where(f => f.RoadTypes.IsSideWalk()))
-                        {
-                            var parent = work.TranMap.Values.FirstOrDefault(t =>
-                                t.FaceGroup.CityObjectGroup == sideWalkFace.CityObjectGroup && t.Node != null);
-
-                            var neighborCityObjects
-                                = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
-
-                            if (sideWalkFace.CreateSideWalk(out var outsideEdges, out var insideEdges,
-                                    out var startEdges, out var endEdges, neighborCityObjects) == false)
-                                continue;
-
-                            RnWay AsWay(IReadOnlyList<REdge> edges, bool useCache = true)
-                            {
-                                if (edges.Any() == false)
-                                    return null;
-                                if (RGraphEx.SegmentEdge2Vertex(edges, out var vertices, out var isLoop))
-                                    return work.CreateWay(vertices, out var _, useCache: useCache);
-                                return null;
-                            }
-                            // 歩道のアウトサイドはこの道路の完全なる外側なので, 他の道路とLineString共通にして影響が出ると困るので独立させる
-                            var outsideWay = AsWay(outsideEdges, false);
-                            var insideWay = AsWay(insideEdges);
-                            var startWay = AsWay(startEdges);
-                            var endWay = AsWay(endEdges);
-
-
-                            RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
-                            if (parent?.Node is RnRoad road)
-                            {
-                                var way = road.GetMergedSideWay(RnDir.Left);
-                                if (insideWay != null)
-                                {
-                                    // #NOTE : 自動生成の段階だと線分共通なので同一判定でチェックする
-                                    // #TODO : 自動生成の段階で分かれているケースが存在するならは点や法線方向で判定するように変える
-                                    if (way == null)
-                                        laneType = RnSideWalkLaneType.Undefined;
-                                    else if (insideWay.IsSameLineReference(way))
-                                        laneType = RnSideWalkLaneType.LeftLane;
-                                    else
-                                        laneType = RnSideWalkLaneType.RightLane;
-                                }
-                            }
-
-                            var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay, laneType);
-                            ret.AddSideWalk(sideWalk);
-                        }
-#endif
                     }
                 }
 
@@ -950,13 +963,13 @@ namespace PLATEAU.RoadNetwork.Factory
                             if (visited.Contains(road))
                                 continue;
 
-                            n.TryGetLaneNum(out var leftLaneNum, out var rightLaneNum);
-
-                            DebugEx.Log($"LaneNum : {leftLaneNum}/{rightLaneNum} / {road.GetTargetTransName()}");
-
                             var roadGroup = road.CreateRoadGroupOrDefault();
                             if (roadGroup == null)
                                 continue;
+
+                            n.TryGetLaneNum(out var leftLaneNum, out var rightLaneNum);
+                            if (CheckLane == false)
+                                leftLaneNum = rightLaneNum = 0;
 
                             foreach (var r in roadGroup.Roads)
                                 visited.Add(r);
@@ -971,6 +984,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
                             if (hasLaneInfo)
                             {
+                                DebugEx.Log($"LaneNum : {leftLaneNum}/{rightLaneNum} / {road.GetTargetTransName()}");
                                 foreach (var r in roadGroup.Roads)
                                 {
                                     isLaneSplitRoads.Add(r);
