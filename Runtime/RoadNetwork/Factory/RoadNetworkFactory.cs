@@ -835,6 +835,54 @@ namespace PLATEAU.RoadNetwork.Factory
                 {
                     foreach (var fg in faceGroups)
                     {
+                        if (fg.RoadTypes.IsSideWalk() == false)
+                            continue;
+
+                        var parent = work.TranMap.Values.FirstOrDefault(t =>
+                            t.FaceGroup.CityObjectGroup == fg.CityObjectGroup && t.Node != null);
+
+                        var neighborCityObjects
+                            = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
+
+                        if (fg.CreateSideWalk(out var outsideEdges, out var insideEdges,
+                                out var startEdges, out var endEdges, neighborCityObjects) == false)
+                            continue;
+
+                        RnWay AsWay(IReadOnlyList<REdge> edges, bool useCache = true)
+                        {
+                            if (edges.Any() == false)
+                                return null;
+                            if (RGraphEx.SegmentEdge2Vertex(edges, out var vertices, out var isLoop))
+                                return work.CreateWay(vertices, out var _, useCache: useCache);
+                            return null;
+                        }
+                        // 歩道のアウトサイドはこの道路の完全なる外側なので, 他の道路とLineString共通にして影響が出ると困るので独立させる
+                        var outsideWay = AsWay(outsideEdges, false);
+                        var insideWay = AsWay(insideEdges);
+                        var startWay = AsWay(startEdges);
+                        var endWay = AsWay(endEdges);
+
+
+                        RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
+                        if (parent?.Node is RnRoad road)
+                        {
+                            var way = road.GetMergedSideWay(RnDir.Left);
+                            if (insideWay != null)
+                            {
+                                // #NOTE : 自動生成の段階だと線分共通なので同一判定でチェックする
+                                // #TODO : 自動生成の段階で分かれているケースが存在するならは点や法線方向で判定するように変える
+                                if (way == null)
+                                    laneType = RnSideWalkLaneType.Undefined;
+                                else if (insideWay.IsSameLineReference(way))
+                                    laneType = RnSideWalkLaneType.LeftLane;
+                                else
+                                    laneType = RnSideWalkLaneType.RightLane;
+                            }
+                        }
+
+                        var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay, laneType);
+                        ret.AddSideWalk(sideWalk);
+#if false
                         foreach (var sideWalkFace in fg.Faces.Where(f => f.RoadTypes.IsSideWalk()))
                         {
                             var parent = work.TranMap.Values.FirstOrDefault(t =>
@@ -882,6 +930,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             var sideWalk = RnSideWalk.Create(parent?.Node, outsideWay, insideWay, startWay, endWay, laneType);
                             ret.AddSideWalk(sideWalk);
                         }
+#endif
                     }
                 }
 

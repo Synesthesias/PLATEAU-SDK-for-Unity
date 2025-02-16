@@ -35,18 +35,36 @@ namespace PLATEAU.RoadNetwork.Util
             ["乗合自動車停車所"] = RRoadTypeMask.Road,
             ["分離帯"] = RRoadTypeMask.Road,
             ["路面電車停車所"] = RRoadTypeMask.Road,
-            ["自転車駐車場"] = RRoadTypeMask.Road,
             ["自動車駐車場"] = RRoadTypeMask.Road,
 
             ["島"] = RRoadTypeMask.Median,
             ["交通島"] = RRoadTypeMask.Median,
             ["中央帯"] = RRoadTypeMask.Median,
 
+            ["自転車道"] = RRoadTypeMask.SideWalk,
+            ["歩道"] = RRoadTypeMask.SideWalk,
+            ["歩道部"] = RRoadTypeMask.SideWalk,
             ["自転車歩行者道"] = RRoadTypeMask.SideWalk,
             ["植栽"] = RRoadTypeMask.SideWalk,
             ["植樹帯"] = RRoadTypeMask.SideWalk,
             ["植樹ます"] = RRoadTypeMask.SideWalk,
             ["歩道部の段差"] = RRoadTypeMask.SideWalk,
+            ["自転車駐車場"] = RRoadTypeMask.SideWalk,
+
+            ["車線"] = RRoadTypeMask.Lane,
+            ["すりつけ区間"] = RRoadTypeMask.Road,
+            ["踏切道"] = RRoadTypeMask.Road,
+            ["副道"] = RRoadTypeMask.Road,
+
+            // 不明なものは一旦Roadに
+            ["軌道敷"] = RRoadTypeMask.Road,
+            ["待避所"] = RRoadTypeMask.Road,
+            ["軌道中心線"] = RRoadTypeMask.Road,
+            ["軌道"] = RRoadTypeMask.Road,
+            ["軌きょう"] = RRoadTypeMask.Road,
+            ["軌間"] = RRoadTypeMask.Road,
+            ["レール"] = RRoadTypeMask.Road,
+            ["道床"] = RRoadTypeMask.Road,
         };
 
         public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
