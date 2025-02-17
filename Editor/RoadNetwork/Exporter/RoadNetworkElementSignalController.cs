@@ -1,5 +1,7 @@
-﻿using PLATEAU.RoadNetwork.Data;
+﻿using PLATEAU.Native;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -17,6 +19,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// 設置ノード
         /// </summary>
         public RoadNetworkElementNode Node;
+
+        /// <summary>
+        /// 信号制御器の座標
+        /// </summary>
+        public Vector3 Coord;
 
         /// <summary>
         /// 制御対象の信号灯器
@@ -41,7 +48,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <summary>
         /// 信号パターンのリスト
         /// </summary>
-        public List<(string StartTime, List<RoadNetworkElementSignalStep> SignalSteps)> SignalPatterns = new List<(string, List<RoadNetworkElementSignalStep>)>();
+        public Dictionary<string, List<RoadNetworkElementSignalStep>> SignalPatterns = new Dictionary<string, List<RoadNetworkElementSignalStep>>();
 
         /// <summary>
         /// パターンインデックス
@@ -54,22 +61,6 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         public int RoadNetworkIndex { get; private set; } = -1;
 
         /// <summary>
-        /// 元となる道路ネットワーク上の交差点
-        /// </summary>
-        public RnDataTrafficLightController Origin
-        {
-            get
-            {
-                if (RoadNetworkIndex < 0)
-                {
-                    return null;
-                }
-
-                return roadNetworkContext.RoadNetworkGetter.GetTrafficLightController()[RoadNetworkIndex] as RnDataTrafficLightController;
-            }
-        }
-
-        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="context">道路ネットワークのコンテキスト</param>
@@ -77,7 +68,6 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <param name="index">インデックス</param>
         public RoadNetworkElementSignalController(RoadNetworkContext context, string id, int index) : base(context, CreateID(id))
         {
-            RoadNetworkIndex = index;
         }
 
         /// <summary>
@@ -137,16 +127,13 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <returns>パターンIDの文字列</returns>
         public string GetPatternID()
         {
-            if (SignalPatterns.Count == 0 || SignalPatterns[PatternIndex].SignalSteps.Count == 0)
-            {
-                return "";
-            }
+            string ret = "";
 
-            var ret = SignalPatterns[PatternIndex].SignalSteps[0].PatternID;
-
-            for (int i = 1; i < SignalPatterns.Count; i++)
+            foreach (var pattern in SignalPatterns.Select((kvp, index) => new { kvp, index }))
             {
-                ret += ":" + SignalPatterns[PatternIndex].SignalSteps[i].PatternID;
+                if (pattern.kvp.Value.Count == 0) continue;
+
+                ret += pattern.index == 0 ? pattern.kvp.Value[0].PatternID : ":" + pattern.kvp.Value[0].PatternID;
             }
 
             return ret;
@@ -156,25 +143,37 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// サイクル長を取得します
         /// </summary>
         /// <returns>サイクルの長さ</returns>
-        public int GetCycleLen()
+        public string GetCycleLen()
         {
-            int cycle = 0;
+            string ret = "";
 
-            //TODO
-            //SignalPatterns[PatternIndex].SignalSteps.ForEach(x => cycle += x.Duration);
+            foreach (var pattern in SignalPatterns.Select((kvp, index) => new { kvp, index }))
+            {
+                int cycle = 0;
 
-            return cycle;
+                pattern.kvp.Value.ForEach(x => cycle += x.Duration);
+
+                ret += pattern.index == 0 ? cycle.ToString() : ":" + cycle.ToString();
+            }
+            return ret;
         }
 
         /// <summary>
         /// 現示数を取得します
         /// </summary>
         /// <returns>フェーズの数</returns>
-        public int GetPhaseNum()
+        public string GetPhaseNum()
         {
-            //TODO
-            return 0;
-            //return SignalPatterns[PatternIndex].SignalSteps.Count;
+            string ret = "";
+
+            foreach (var pattern in SignalPatterns.Select((kvp, index) => new { kvp, index }))
+            {
+                int phase = pattern.kvp.Value.Count;
+
+                ret += pattern.index == 0 ? phase.ToString() : ":" + phase.ToString();
+            }
+
+            return ret;
         }
 
         /// <summary>
@@ -183,16 +182,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <returns>開始時間の文字列</returns>
         public string GetStartTime()
         {
-            if (SignalPatterns.Count == 0)
-            {
-                return "";
-            }
+            string ret = "";
 
-            var ret = SignalPatterns[0].StartTime;
-
-            for (int i = 1; i < SignalPatterns.Count; i++)
+            foreach (var pattern in SignalPatterns.Select((kvp, index) => new { kvp, index }))
             {
-                ret += ":" + SignalPatterns[i].StartTime;
+                ret += pattern.index == 0 ? pattern.kvp.Key : ":" + pattern.kvp.Key;
             }
 
             return ret;
@@ -204,7 +198,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         /// <returns>ジオメトリの位置</returns>
         public GeoJSON.Net.Geometry.Position GetGeometory()
         {
-            return Node.GetGeometory();
+            Vector3 coord = Coord;
+
+            var geoCoord = roadNetworkContext.GeoReference.Unproject(new PlateauVector3d(coord.x, coord.y, coord.z));
+
+            return new GeoJSON.Net.Geometry.Position(geoCoord.Latitude, geoCoord.Longitude);
         }
     }
 }
