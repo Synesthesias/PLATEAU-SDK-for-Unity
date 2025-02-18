@@ -5,8 +5,6 @@ using UnityEngine;
 using PLATEAU.RoadNetwork.Data;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
-using AWSIM.TrafficSimulation;
-using AWSIM;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -469,7 +467,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             var roadNetworkRoads = context.RoadNetworkGetter.GetRoadBases();
 
-            var trafficIntersections = GameObject.FindObjectsOfType<TrafficIntersection>();
+            var trafficIntersections = GameObject.FindObjectsOfType<AWSIM.TrafficSimulation.TrafficIntersection>();
 
             foreach (var intersection in trafficIntersections)
             {
@@ -551,15 +549,15 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                             continue;
                         }
 
-                        if (bulb[0].Color == TrafficLightData.BulbColor.GREEN)
+                        if (bulb[0].Color == AWSIM.TrafficLightData.BulbColor.GREEN)
                         {
                             signalStep.LinkPairsGreen = linkGroups[group];
                         }
-                        else if (bulb[0].Color == TrafficLightData.BulbColor.YELLOW)
+                        else if (bulb[0].Color == AWSIM.TrafficLightData.BulbColor.YELLOW)
                         {
                             signalStep.LinkPairsYellow = linkGroups[group];
                         }
-                        else if (bulb[0].Color == TrafficLightData.BulbColor.RED)
+                        else if (bulb[0].Color == AWSIM.TrafficLightData.BulbColor.RED)
                         {
                             signalStep.LinkPairsRed = linkGroups[group];
                         }
