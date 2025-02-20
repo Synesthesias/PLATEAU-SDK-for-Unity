@@ -111,6 +111,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public RnLaneAttribute Attributes { get; set; }
 
+        // #TODO : IsReversedに変更予定.
         /// <summary>
         /// 親Roadと逆方向(右車線等)
         /// </summary>
@@ -280,7 +281,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (n is RnRoad road)
                 {
-                    foreach (var lane in road.AllLanes)
+                    foreach (var lane in road.MainLanes)
                     {
                         if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
                             yield return lane;

@@ -352,7 +352,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                             if (showConnectedRoadType)
                             {
-                                void Draw(float p, RnNeighbor e)
+                                void Draw(float p, RnIntersectionEdge e)
                                 {
                                     var i0 = Mathf.Floor(p);
                                     var i1 = Mathf.Ceil(p);
@@ -501,7 +501,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 if (showNoTrackBorder)
                 {
-                    foreach (var border in intersection.Neighbors)
+                    foreach (var border in intersection.Borders)
                     {
                         if (border.IsMedianBorder)
                             continue;
@@ -565,7 +565,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         var col = DebugEx.GetDebugColor(work.DrawRoadGroupCount++, 16);
                         foreach (var r in group.Roads)
                         {
-                            foreach (var lane in r.AllLanes)
+                            foreach (var lane in r.MainLanes)
                             {
                                 work.Self.DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: col);
                             }
@@ -621,7 +621,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     else
                     {
                         Vector3? last = null;
-                        foreach (var lane in road.AllLanes)
+                        foreach (var lane in road.MainLanes)
                         {
                             work.Self.DrawLane(lane, work.Self.laneOp, work.visibleType);
                             if (showLaneConnection)

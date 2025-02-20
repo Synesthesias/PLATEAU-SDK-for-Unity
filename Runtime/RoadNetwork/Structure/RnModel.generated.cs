@@ -140,7 +140,7 @@ namespace PLATEAU.RoadNetwork.Structure{
 			return true;
 		}
 	}
-	partial class RnNeighbor{
+	partial class RnIntersectionEdge{
 		// データシリアライズ用. メンバ変数から対象オブジェクトを抽出する
 		internal virtual  bool Collect(CollectRnModelWork collectWork){
 			if(collectWork.Visited.Add(this)== false) return false;

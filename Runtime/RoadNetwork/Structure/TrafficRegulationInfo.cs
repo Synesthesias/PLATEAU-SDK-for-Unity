@@ -280,7 +280,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             TrafficSignalLightController controller = intersection.SignalController;
             Dictionary<RnRoadBase, List<RnWay>> roads = new();
-            foreach (var item in intersection.Neighbors)
+            foreach (var item in intersection.Borders)
             {
                 List<RnWay> borderList = null;
                 if (roads.TryGetValue(item.Road, out borderList) == false)

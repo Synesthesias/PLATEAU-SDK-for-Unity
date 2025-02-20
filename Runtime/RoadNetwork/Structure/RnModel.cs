@@ -107,7 +107,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return Roads.SelectMany(l => l.AllLanesWithMedian);
         }
 
-        public IEnumerable<RnNeighbor> CollectAllEdges()
+        public IEnumerable<RnIntersectionEdge> CollectAllEdges()
         {
             return Intersections.SelectMany(i => i.Edges);
         }
@@ -179,7 +179,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public void Convert2Road(RnIntersection intersection, RnRoadBase prev, RnRoadBase next)
         {
             var neighbors = intersection
-                .Neighbors
+                .Borders
                 .Where(n => n.Road == prev || n.Road == next)
                 .ToList();
 
@@ -369,7 +369,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     continue;
                 visited.Add(inter);
 
-                foreach (var neighbor in inter.Neighbors)
+                foreach (var neighbor in inter.Borders)
                 {
                     if (neighbor.Border == null)
                         continue;
@@ -381,7 +381,7 @@ namespace PLATEAU.RoadNetwork.Structure
                         continue;
 
                     var otherNeighbor =
-                        other.Neighbors.FirstOrDefault(n => n.Border.IsSameLineReference(neighbor.Border) && n.Road == inter);
+                        other.Borders.FirstOrDefault(n => n.Border.IsSameLineReference(neighbor.Border) && n.Road == inter);
                     if (otherNeighbor == null)
                         continue;
 
@@ -411,9 +411,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 var inter1 = road.Next as RnIntersection;
                 var inter2 = road.Prev as RnIntersection;
-                foreach (var n in inter1.Neighbors.Where(n => n.Road == road))
+                foreach (var n in inter1.Borders.Where(n => n.Road == road))
                     n.Road = inter2;
-                foreach (var n in inter2.Neighbors.Where(n => n.Road == road))
+                foreach (var n in inter2.Borders.Where(n => n.Road == road))
                     n.Road = inter1;
                 road.SetPrevNext(null, null);
                 remove.Add(road);
@@ -1163,7 +1163,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var edgeGroups = inter.CreateEdgeGroup();
 
             // 境界線を分断するのは禁止
-            if (inter.Neighbors.Any(n => IsSliced(n.Border)))
+            if (inter.Borders.Any(n => IsSliced(n.Border)))
                 return RoadCutResult.IntersectionBorderSliced;
 
             RnIntersectionEx.EdgeGroup targetEdgeGroup = null;

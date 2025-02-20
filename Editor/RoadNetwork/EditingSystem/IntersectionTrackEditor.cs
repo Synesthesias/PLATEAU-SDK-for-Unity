@@ -17,8 +17,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     public class IntersectionTrackEditor
     {
         
-        private RnNeighbor selectEntablePoint = null;
-        private RnNeighbor selectExitablePoint = null;
+        private RnIntersectionEdge selectEntablePoint = null;
+        private RnIntersectionEdge selectExitablePoint = null;
         
         public bool IsSelectdEntablePoint
         {
@@ -86,21 +86,21 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             get => selectEntablePoint != null && selectExitablePoint != null;
         }
 
-        private IReadOnlyCollection<RnNeighbor> EnterablePoints(RnIntersection target)
+        private IReadOnlyCollection<RnIntersectionEdge> EnterablePoints(RnIntersection target)
         {
             return CollectEnterablePoints(target);
         }
 
 
-        private IReadOnlyCollection<RnNeighbor> ExitablePoints(RnIntersection target)
+        private IReadOnlyCollection<RnIntersectionEdge> ExitablePoints(RnIntersection target)
         {
             return CollectExitablePoints(target);
         }
         
-        private static IReadOnlyCollection<RnNeighbor> CollectEnterablePoints(RnIntersection data)
+        private static IReadOnlyCollection<RnIntersectionEdge> CollectEnterablePoints(RnIntersection data)
         {
-            var enterablePoints = new List<RnNeighbor>(data.Neighbors.Count());
-            foreach (var neighbor in data.Neighbors)
+            var enterablePoints = new List<RnIntersectionEdge>(data.Borders.Count());
+            foreach (var neighbor in data.Borders)
             {
                 if (CheckEnterablePoint(neighbor))
                     enterablePoints.Add(neighbor);
@@ -108,16 +108,16 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return enterablePoints;
         }
 
-        private static bool CheckEnterablePoint(RnNeighbor neighbor)
+        private static bool CheckEnterablePoint(RnIntersectionEdge neighbor)
         {
             var isInboud = (neighbor.GetFlowType() & RnFlowTypeMask.Inbound) > 0;
             return isInboud;
         }
         
-        private static IReadOnlyCollection<RnNeighbor> CollectExitablePoints(RnIntersection data)
+        private static IReadOnlyCollection<RnIntersectionEdge> CollectExitablePoints(RnIntersection data)
         {
-            var exitablePoints = new List<RnNeighbor>(data.Neighbors.Count());
-            foreach (var neighbor in data.Neighbors)
+            var exitablePoints = new List<RnIntersectionEdge>(data.Borders.Count());
+            foreach (var neighbor in data.Borders)
             {
                 if (CheckExitablePoint(neighbor))
                     exitablePoints.Add(neighbor);
@@ -125,7 +125,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             return exitablePoints;
         }
 
-        private static bool CheckExitablePoint(RnNeighbor neighbor)
+        private static bool CheckExitablePoint(RnIntersectionEdge neighbor)
         {
             var isOutbound = (neighbor.GetFlowType() & RnFlowTypeMask.Outbound) > 0;
             return isOutbound;
@@ -134,12 +134,12 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         /// <summary>
         /// 流入点と流出点を返す
         /// </summary>
-        public (RnNeighbor, RnNeighbor) SelectedPoints
+        public (RnIntersectionEdge, RnIntersectionEdge) SelectedPoints
         {
             get => (selectEntablePoint, selectExitablePoint);
         }
 
-        public void SetEntablePoint(RnNeighbor neighbor, RnIntersection targetIntersection)
+        public void SetEntablePoint(RnIntersectionEdge neighbor, RnIntersection targetIntersection)
         {
             Assert.IsNotNull(neighbor);
 
@@ -149,7 +149,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             selectEntablePoint = neighbor;
         }
 
-        public void SetExitablePoint(RnNeighbor neighbor, RnIntersection targetIntersection)
+        public void SetExitablePoint(RnIntersectionEdge neighbor, RnIntersection targetIntersection)
         {
             Assert.IsNotNull(neighbor);
 
@@ -175,7 +175,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
             
             // トラックの変更によって、周辺道路が標示すべき車線矢印が変わるかもしれないので、周辺道路を再生成します。
-            var neighborRoads = targetIntersection.Neighbors.Where(n => n.Road != null).Select(n => n.Road);
+            var neighborRoads = targetIntersection.Borders.Where(n => n.Road != null).Select(n => n.Road);
             var reproducer = new RoadReproducer();
             var updateTarget = new RrTargetRoadBases(editTarget.RoadNetwork, neighborRoads);
             reproducer.Generate(updateTarget, CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());

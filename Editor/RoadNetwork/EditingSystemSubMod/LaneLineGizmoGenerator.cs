@@ -169,7 +169,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
             if (intersectionEditorData != null)
             {
-                foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
+                foreach (var neighbor in intersectionEditorData.Ref.Borders)
                 {
                     if (neighbor.Border != null)
                         lineDrawers.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor, LaneLineDrawMethod.Gizmos));
