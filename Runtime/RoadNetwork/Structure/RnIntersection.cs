@@ -391,11 +391,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// roadとの境界線をbordersに置き換える
         /// </summary>
         /// <param name="road"></param>
+        /// <param name="borderType"></param>
         /// <param name="borders"></param>
         /// <param name="reBuildTrack"></param>
-        public void ReplaceEdges(RnRoad road, List<RnWay> borders, bool reBuildTrack = true)
+        public void ReplaceEdges(RnRoad road, RnLaneBorderType borderType, List<RnWay> borders, bool reBuildTrack = true)
         {
-            RemoveEdges(n => n.Road == road);
+            if (road == null)
+                return;
+            var borderWays = road.GetBorderWays(borderType);
+            RemoveEdges(n => n.Road == road && borderWays.Any(b => b.IsSameLineReference(n.Border)));
             edges.AddRange(borders.Select(b => new RnIntersectionEdge { Road = road, Border = b }));
         }
 

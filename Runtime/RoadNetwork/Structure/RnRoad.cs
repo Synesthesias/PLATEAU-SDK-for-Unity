@@ -1067,7 +1067,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // intersectionの輪郭情報を差し替える
-            intersection.ReplaceEdges(self, oppositeBorders, false);
+            intersection.ReplaceEdges(self, borderType, oppositeBorders, false);
 
             // selfの隣接道路に対して, selfに対する接続情報を置き換える
             intersection.ReplaceNeighbor(self, oppositeRoadBase);
