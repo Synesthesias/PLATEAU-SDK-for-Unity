@@ -280,7 +280,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (n is RnRoad road)
                 {
-                    foreach (var lane in road.AllLanes)
+                    foreach (var lane in road.MainLanes)
                     {
                         if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
                             yield return lane;
