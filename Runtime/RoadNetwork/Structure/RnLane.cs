@@ -111,6 +111,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public RnLaneAttribute Attributes { get; set; }
 
+        // #TODO : IsReversedに変更予定.
         /// <summary>
         /// 親Roadと逆方向(右車線等)
         /// </summary>
