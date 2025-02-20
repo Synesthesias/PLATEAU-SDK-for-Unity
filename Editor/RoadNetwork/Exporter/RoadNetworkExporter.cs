@@ -579,64 +579,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
                 SignalControllers.Add(signalController);
             }
-#else
-            var roadNetworkSignalControllers = context.RoadNetworkGetter.GetTrafficLightController();
-
-            var roadNetworkSignalLights = context.RoadNetworkGetter.GetTrafficLights();
-
-            var roadNetworkSignalPatterns = context.RoadNetworkGetter.GetTrafficSignalPattern();
-
-            var roadNetworkSignalPhases = context.RoadNetworkGetter.GetTrafficSignalPhase();
-
-            var roadNetworkRoads = context.RoadNetworkGetter.GetRoadBases();
-
-            var simSignalControllers = new List<RoadNetworkElementSignalController>();
-
-            foreach (var signalController in roadNetworkSignalControllers.Select((value, index) => new { value, index }))
-            {
-                var simSignalController = new RoadNetworkElementSignalController(context, simSignalControllers.Count.ToString(), signalController.index);
-
-                simSignalController.Node = Nodes.Find(x => x.OriginNode == roadNetworkRoads[signalController.value.Parent.ID]);
-
-                simSignalControllers.Add(simSignalController);
-            }
-
-            SignalControllers = simSignalControllers;
-
-            var simSignalLights = new List<RoadNetworkElementSignalLight>();
-
-            foreach (var signalLight in roadNetworkSignalLights.Select((value, index) => new { value, index }))
-            {
-                var simSignalLight = new RoadNetworkElementSignalLight(context, simSignalLights.Count.ToString(), signalLight.index);
-
-                simSignalLight.Controller = SignalControllers.Find(x => x.Origin == roadNetworkSignalControllers[signalLight.value.Parent.ID]);
-
-                simSignalLight.Link = Links.Find(x => x.OriginLink == roadNetworkRoads[signalLight.value.RoadId.ID]);
-
-                simSignalLights.Add(simSignalLight);
-            }
-
-            SignalLights = simSignalLights;
-
-            var simSignalSteps = new List<RoadNetworkElementSignalStep>();
-
-            foreach (var signalPattern in roadNetworkSignalPatterns.Select((value, index) => new { value, index }))
-            {
-                var simSignalStep = new RoadNetworkElementSignalStep(context, simSignalSteps.Count.ToString(), signalPattern.index);
-
-                simSignalStep.Controller = SignalControllers.Find(x => x.Origin == roadNetworkSignalControllers[signalPattern.value.Parent.ID]);
-
-                simSignalSteps.Add(simSignalStep);
-            }
-
-            SignalSteps = simSignalSteps;
-
 #endif
         }
 
         /// <summary>
         /// 信号制御器をエクスポートします。
-        /// この機能は未完成です。
         /// </summary>
         /// <param name="simSignalControllers">信号制御器のリスト</param>
         private void ExportSignalController(List<RoadNetworkElementSignalController> simSignalControllers)
@@ -674,7 +621,6 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
         /// <summary>
         /// 信号灯火気をエクスポートします
-        /// この機能は未完成です。
         /// </summary>
         /// <param name="simSignalLights">信号灯火器のリスト</param>
         private void ExportSignalLight(List<RoadNetworkElementSignalLight> simSignalLights)
@@ -706,8 +652,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         }
 
         /// <summary>
-        /// 信号現示階梯をエクスポートします。
-        /// この機能は未完成です。
+        /// 信号現示階梯をエクスポートします
         /// </summary>
         /// <param name="simSignalSteps">信号現示階梯のリスト</param>
         private void ExportSignalStep(List<RoadNetworkElementSignalStep> simSignalSteps)
