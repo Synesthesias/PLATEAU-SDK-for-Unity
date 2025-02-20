@@ -40,15 +40,15 @@ namespace PLATEAU.RoadNetwork.Data
         //----------------------------------
     }
 
-    [Serializable, RoadNetworkSerializeData(typeof(RnNeighbor))]
-    public class RnDataNeighbor
+    [Serializable, RoadNetworkSerializeData(typeof(RnIntersectionEdge))]
+    public class RnDataIntersectionEdge
     {
         //----------------------------------
         // start: フィールド
         //----------------------------------
         // 他レーンとの境界線
         [field: SerializeField]
-        [RoadNetworkSerializeMember(nameof(RnNeighbor.Border))]
+        [RoadNetworkSerializeMember(nameof(RnIntersectionEdge.Border))]
         public RnID<RnDataWay> Border { get; set; }
 
         // Road
@@ -67,7 +67,7 @@ namespace PLATEAU.RoadNetwork.Data
         // 隣接情報
         [field: SerializeField]
         [RoadNetworkSerializeMember("edges")]
-        public List<RnDataNeighbor> Edges { get; set; } = new List<RnDataNeighbor>();
+        public List<RnDataIntersectionEdge> Edges { get; set; } = new List<RnDataIntersectionEdge>();
 
         [field: SerializeField]
         [RoadNetworkSerializeMember]
@@ -78,7 +78,7 @@ namespace PLATEAU.RoadNetwork.Data
         public RnID<RnDataTrafficLightController> SignalController { get; set; }
 
 
-        public IEnumerable<RnDataNeighbor> Neighbors => Edges.Where(e => e.Road.IsValid);
+        public IEnumerable<RnDataIntersectionEdge> Neighbors => Edges.Where(e => e.Road.IsValid);
 
         // 車線
         [field: SerializeField, RoadNetworkSerializeMember("tracks")]

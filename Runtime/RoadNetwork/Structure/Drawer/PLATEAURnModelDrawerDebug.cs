@@ -352,7 +352,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                             if (showConnectedRoadType)
                             {
-                                void Draw(float p, RnNeighbor e)
+                                void Draw(float p, RnIntersectionEdge e)
                                 {
                                     var i0 = Mathf.Floor(p);
                                     var i1 = Mathf.Ceil(p);

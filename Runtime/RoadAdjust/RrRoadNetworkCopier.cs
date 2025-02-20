@@ -105,10 +105,10 @@ namespace PLATEAU.RoadAdjust
             }
             
             // Intersection Edgeのコピー
-            var neighbors = new Dictionary<RnNeighbor, RnNeighbor>();
+            var neighbors = new Dictionary<RnIntersectionEdge, RnIntersectionEdge>();
             foreach (var srcEdge in src.Intersections.SelectMany(i => i.Edges))
             {
-                var dstEdge = new RnNeighbor();
+                var dstEdge = new RnIntersectionEdge();
                 dstEdge.Border = ways[srcEdge.Border];
                 dstEdge.Road = srcEdge.Road == null || !roadBases.ContainsKey(srcEdge.Road) ? null : roadBases[srcEdge.Road];
                 dstEdge.DebugMyId = srcEdge.DebugMyId;
@@ -131,7 +131,7 @@ namespace PLATEAU.RoadAdjust
             foreach (var (srcInter, dstInter) in inters)
             {
                 // edges
-                List<RnNeighbor> dstEdges = new();
+                List<RnIntersectionEdge> dstEdges = new();
                 foreach (var srcEdge in srcInter.Edges)
                 {
                     dstEdges.Add(neighbors[srcEdge]);

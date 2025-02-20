@@ -107,7 +107,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return Roads.SelectMany(l => l.AllLanesWithMedian);
         }
 
-        public IEnumerable<RnNeighbor> CollectAllEdges()
+        public IEnumerable<RnIntersectionEdge> CollectAllEdges()
         {
             return Intersections.SelectMany(i => i.Edges);
         }
