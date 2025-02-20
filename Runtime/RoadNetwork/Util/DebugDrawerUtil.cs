@@ -145,6 +145,9 @@ namespace PLATEAU.RoadNetwork.Util
                         if (drawer.visible == false)
                             return false;
 
+                        if (drawer.IsShowTarget(work, obj) == false)
+                            return false;
+
                         var visibleType = work.visibleType;
                         if (drawer.IsValid(obj))
                         {
