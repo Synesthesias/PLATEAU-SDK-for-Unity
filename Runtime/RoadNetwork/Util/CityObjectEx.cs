@@ -95,11 +95,6 @@ namespace PLATEAU.RoadNetwork.Util
                 {
                     ret |= RRoadTypeMask.HighWay;
                 }
-
-                if (str.Contains("車線"))
-                {
-                    ret |= RRoadTypeMask.Lane;
-                }
             }
 
             // LOD1
