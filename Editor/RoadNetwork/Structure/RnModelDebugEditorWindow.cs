@@ -397,7 +397,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             {
                 if (RnEditorUtil.Foldout("Borders", p.Foldouts, ("Borders", intersection)))
                 {
-                    foreach (var b in intersection.Neighbors)
+                    foreach (var b in intersection.Borders)
                     {
                         using var _ = new EditorGUI.IndentLevelScope();
                         EditorGUILayout.LabelField($"{b.Road.GetDebugLabelOrDefault()}/{b.Border.GetDebugIdLabelOrDefault()}");
@@ -466,9 +466,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                     p.convertPrevRoadId = EditorGUILayout.LongField("PrevRoadId", p.convertPrevRoadId);
                     p.convertNextRoadId = EditorGUILayout.LongField("NextRoadId", p.convertNextRoadId);
 
-                    var prev = intersection.Neighbors.Select(n => n.Road)
+                    var prev = intersection.Borders.Select(n => n.Road)
                         .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertPrevRoadId);
-                    var next = intersection.Neighbors.Select(n => n.Road)
+                    var next = intersection.Borders.Select(n => n.Road)
                         .FirstOrDefault(r => r != null && r.DebugMyId == (ulong)p.convertNextRoadId);
 
                     if (GUILayout.Button("Convert2Road"))

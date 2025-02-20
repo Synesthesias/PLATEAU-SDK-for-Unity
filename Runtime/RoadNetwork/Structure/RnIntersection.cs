@@ -304,7 +304,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 他の道路との境界線Edge取得. edges.Where(e => e.IsBorder)と同義
         /// </summary>
-        public IEnumerable<RnIntersectionEdge> Neighbors => edges.Where(e => e.IsBorder);
+        public IEnumerable<RnIntersectionEdge> Borders => edges.Where(e => e.IsBorder);
 
         /// <summary>
         /// 輪郭のEdge取得
@@ -333,7 +333,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public override IEnumerable<RnRoadBase> GetNeighborRoads()
         {
-            foreach (var neighbor in Neighbors)
+            foreach (var neighbor in Borders)
             {
                 if (neighbor.Road != null)
                     yield return neighbor.Road;
@@ -346,7 +346,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public override IEnumerable<NeighborBorder> GetBorders()
         {
-            foreach (var edge in Neighbors)
+            foreach (var edge in Borders)
             {
                 yield return new NeighborBorder
                 {
@@ -382,8 +382,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public Vector3 GetCenterPoint()
         {
-            var ret = Neighbors.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
-            var cnt = Neighbors.Sum(n => n.Border.Count);
+            var ret = Borders.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
+            var cnt = Borders.Sum(n => n.Border.Count);
             return ret / cnt;
         }
 
@@ -697,7 +697,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public override Vector3 GetCentralVertex()
         {
             // 全エッジの中心点の重心を返す
-            return Vector3Ex.Centroid(Neighbors
+            return Vector3Ex.Centroid(Borders
                 .Select(n => n.Border)
                 .Where(b => b != null)
                 .Select(b => b.GetLerpPoint(0.5f)));
@@ -728,8 +728,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (from == to)
                 return null;
-            var nFrom = Neighbors.FirstOrDefault(n => n.Road == from);
-            var nTo = Neighbors.FirstOrDefault(n => n.Road == to);
+            var nFrom = Borders.FirstOrDefault(n => n.Road == from);
+            var nTo = Borders.FirstOrDefault(n => n.Road == to);
             if (nFrom == null || nTo == null)
                 return null;
             if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
@@ -1545,8 +1545,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (fromBorder == toBorder)
                 return null;
-            var nFrom = self.Neighbors.FirstOrDefault(n => n.Border == fromBorder);
-            var nTo = self.Neighbors.FirstOrDefault(n => n.Border == toBorder);
+            var nFrom = self.Borders.FirstOrDefault(n => n.Border == fromBorder);
+            var nTo = self.Borders.FirstOrDefault(n => n.Border == toBorder);
             if (nFrom == null || nTo == null)
                 return null;
             if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)

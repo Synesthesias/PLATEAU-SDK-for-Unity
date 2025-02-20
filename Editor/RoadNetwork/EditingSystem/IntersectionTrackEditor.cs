@@ -99,8 +99,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         
         private static IReadOnlyCollection<RnIntersectionEdge> CollectEnterablePoints(RnIntersection data)
         {
-            var enterablePoints = new List<RnIntersectionEdge>(data.Neighbors.Count());
-            foreach (var neighbor in data.Neighbors)
+            var enterablePoints = new List<RnIntersectionEdge>(data.Borders.Count());
+            foreach (var neighbor in data.Borders)
             {
                 if (CheckEnterablePoint(neighbor))
                     enterablePoints.Add(neighbor);
@@ -116,8 +116,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
         
         private static IReadOnlyCollection<RnIntersectionEdge> CollectExitablePoints(RnIntersection data)
         {
-            var exitablePoints = new List<RnIntersectionEdge>(data.Neighbors.Count());
-            foreach (var neighbor in data.Neighbors)
+            var exitablePoints = new List<RnIntersectionEdge>(data.Borders.Count());
+            foreach (var neighbor in data.Borders)
             {
                 if (CheckExitablePoint(neighbor))
                     exitablePoints.Add(neighbor);
@@ -175,7 +175,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             }
             
             // トラックの変更によって、周辺道路が標示すべき車線矢印が変わるかもしれないので、周辺道路を再生成します。
-            var neighborRoads = targetIntersection.Neighbors.Where(n => n.Road != null).Select(n => n.Road);
+            var neighborRoads = targetIntersection.Borders.Where(n => n.Road != null).Select(n => n.Road);
             var reproducer = new RoadReproducer();
             var updateTarget = new RrTargetRoadBases(editTarget.RoadNetwork, neighborRoads);
             reproducer.Generate(updateTarget, CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());

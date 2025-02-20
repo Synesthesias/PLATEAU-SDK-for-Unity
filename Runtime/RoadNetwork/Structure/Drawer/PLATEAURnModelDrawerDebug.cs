@@ -501,7 +501,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 if (showNoTrackBorder)
                 {
-                    foreach (var border in intersection.Neighbors)
+                    foreach (var border in intersection.Borders)
                     {
                         if (border.IsMedianBorder)
                             continue;
