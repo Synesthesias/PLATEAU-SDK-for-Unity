@@ -241,6 +241,7 @@ namespace PLATEAU.RoadNetwork.Graph
                 if (vertices.Count == afterCount)
                     break;
             }
+
             // a-b-cのような直線状の頂点を削除する
             while (true)
             {
@@ -1160,10 +1161,6 @@ namespace PLATEAU.RoadNetwork.Graph
             if (self.Edges.Count < 3)
                 return false;
 
-            var vertices = self.ComputeOutlineVertices();
-            // 面ができない場合は無視
-            if (vertices.Count < 3)
-                return false;
             var faceGroup = new RFaceGroup(self.Graph, self.CityObjectGroup, new[] { self });
             return TryGroupBySideWalkEdge(faceGroup, out edgeGroups, neighborCityObjectGroupsFilter);
         }
