@@ -380,6 +380,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             public long convertPrevRoadId = -1;
             public long convertNextRoadId = -1;
 
+            public bool devTrackAllowCenterLine = true;
             public HashSet<object> Foldouts { get; } = new HashSet<object>();
 
             // Trackのスクロール位置
@@ -409,9 +410,17 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (RnEditorUtil.Foldout("Tracks", p.Foldouts, ("Tracks", intersection)))
             {
                 using var indent = new EditorGUI.IndentLevelScope();
-                if (GUILayout.Button("Build Track"))
+
+                using (var _ = new EditorGUILayout.HorizontalScope())
                 {
-                    intersection.BuildTracks();
+                    if (GUILayout.Button("Build Track"))
+                    {
+                        intersection.BuildTracks(new BuildTrackOption
+                        {
+                            DevAllowCenterLine = p.devTrackAllowCenterLine
+                        });
+                    }
+                    p.devTrackAllowCenterLine = EditorGUILayout.Toggle("Allow Center Line", p.devTrackAllowCenterLine);
                 }
 
                 using var scope = new EditorGUILayout.ScrollViewScope(p.trackScrollPosition);
