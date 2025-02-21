@@ -468,6 +468,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             // 輪郭線の法線を表示する
             public bool showEdgeNormal = false;
 
+            // 繋がっていないエッジ場所を表示する
+            public bool showDisConnectEdgePoint = false;
+
             protected override IEnumerable<RnDebugDrawerModel<RnModel>.Drawer<DrawWork, RnIntersection>> GetChildDrawers()
             {
                 yield return showTrack;
@@ -498,32 +501,42 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 for (var i = 0; i < intersection.Edges.Count; i++)
                 {
-                    var n = intersection.Edges[i];
+                    var edge = intersection.Edges[i];
+                    var nextEdge = intersection.Edges[(i + 1) % intersection.Edges.Count];
+
+                    // ループしていない時にエラー表示を行う
+                    if (showDisConnectEdgePoint && edge.Border.GetPoint(-1) != nextEdge.Border.GetPoint(0))
+                    {
+                        DebugEx.DrawArrow(edge.Border.GetPoint(-1).Vertex, nextEdge.Border.GetPoint(0).Vertex, bodyColor: Color.red);
+                    }
 
                     void DrawEdge(IntersectionEdgeDrawer p)
                     {
                         if (p.visible == false)
                             return;
-                        p.Draw(work, n);
+                        p.Draw(work, edge);
                         if (showEdgeIndex)
                         {
-                            var pos = n.Border.GetLerpPoint(0.5f);
+                            var pos = edge.Border.GetLerpPoint(0.5f);
                             work.Self.DrawString($"B[{i}]", pos);
                         }
                     }
 
-                    if (n.IsBorder)
+                    if (edge.IsBorder)
                     {
-                        DrawEdge(n.IsMedianBorder ? showMedianBorderEdge : showBorderEdge);
+                        DrawEdge(edge.IsMedianBorder ? showMedianBorderEdge : showBorderEdge);
                     }
                     else
                     {
                         DrawEdge(showNonBorderEdge);
                     }
+
+
+
                     if (showEdgeNormal)
                     {
-                        var normal = RnIntersection.GetEdgeNormal(n);
-                        var center = RnIntersection.GetEdgeCenter(n);
+                        var normal = RnIntersection.GetEdgeNormal(edge);
+                        var center = RnIntersection.GetEdgeCenter(edge);
                         work.Self.DrawLine(center, center - 50 * normal);
                     }
 
