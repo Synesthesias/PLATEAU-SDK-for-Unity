@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
-using static UnityEditor.PlayerSettings;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
