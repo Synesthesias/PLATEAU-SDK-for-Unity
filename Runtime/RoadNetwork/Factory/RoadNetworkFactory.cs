@@ -158,34 +158,22 @@ namespace PLATEAU.RoadNetwork.Factory
                 return PointMap.GetValueOrCreate(v, x => new RnPoint(x.Position));
             }
 
-            private static bool IsEqual(List<RVertex> a, List<RVertex> b, out bool isReverse)
-            {
-                isReverse = false;
-                if (a.Count != b.Count)
-                    return false;
-                if (a[0] == b[0])
-                {
-                    isReverse = false;
-                    return a.SequenceEqual(b);
-                }
-
-                isReverse = true;
-                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
-            }
-
             private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
             {
                 isReverse = false;
                 if (a.Count != b.Count)
                     return false;
-                if (a[0] == b[0])
+
+                isReverse = a[0] != b[0];
+                for (var i = 0; i < a.Count; ++i)
                 {
-                    isReverse = false;
-                    return a.SequenceEqual(b);
+                    var aIndex = i;
+                    var bIndex = isReverse ? a.Count - 1 - i : i;
+                    if (a[aIndex] != b[bIndex])
+                        return false;
                 }
 
-                isReverse = true;
-                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
+                return true;
             }
 
             public RnWay CreateWay(List<RnPoint> points)
@@ -193,16 +181,24 @@ namespace PLATEAU.RoadNetwork.Factory
                 return CreateWay(points, out var _);
             }
 
+
             public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
             {
                 isCached = false;
                 if (points == null)
                     return null;
 
+
+                static RnLineString CreateLineString(List<RnPoint> points)
+                {
+                    // #NOTE : 削除処理を入れるとpointsとずれて他の線分との同値判定がバグる場合があるのでfalse
+                    return RnLineString.Create(points, false);
+                }
+
                 // キャッシュ使わない設定
                 if (useCache == false)
                 {
-                    var ls = RnLineString.Create(points, true);
+                    var ls = CreateLineString(points);
                     return new RnWay(ls, false);
                 }
                 var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
@@ -215,7 +211,7 @@ namespace PLATEAU.RoadNetwork.Factory
                         return new RnWay(line, false);
                     }
                 }
-                var newLine = RnLineString.Create(points, true);
+                var newLine = CreateLineString(points);
                 lines.Add(newLine);
                 return new RnWay(newLine, false);
             }
@@ -457,7 +453,8 @@ namespace PLATEAU.RoadNetwork.Factory
                         case 2: return RoadType.Road;
                         // 3つ以上の隣接オブジェクトを持つかどうか
                         default: return RoadType.Intersection;
-                    };
+                    }
+                    ;
                 }
             }
 

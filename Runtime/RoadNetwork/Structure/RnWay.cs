@@ -101,7 +101,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
             set
             {
-                var points = value.ToArray();
                 LineString = RnLineString.Create(value, false);
             }
         }
@@ -512,7 +511,6 @@ namespace PLATEAU.RoadNetwork.Structure
             if (other == null)
                 return false;
             return LineString == other.LineString;
-
         }
 
         /// <summary>
@@ -990,5 +988,27 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return true;
         }
+
+        /// <summary>
+        /// 内部のポイントが同じかどうか.
+        /// ただし、リストが逆順でもtrueとなる(その時はisReverseSequenceはtrue)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isReverseSequence"></param>
+        /// <returns></returns>
+        public static bool IsSequentialEqual(RnWay a, RnWay b, out bool isReverseSequence)
+        {
+            isReverseSequence = false;
+            // 参照一致チェック
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            return RnLineStringEx.IsSequenceEqual(a.LineString, b.LineString, out isReverseSequence);
+        }
+
     }
 }

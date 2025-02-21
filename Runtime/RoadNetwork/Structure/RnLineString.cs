@@ -399,11 +399,24 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
-        public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate = true)
+        /// <summary>
+        /// 頂点リストから線分を生成する
+        /// removeDuplicate : 重複する頂点を取り除くかのフラグ
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="removeDuplicate"></param>
+        /// <returns></returns>
+        public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate)
         {
             if (removeDuplicate)
                 return Create(vertices, DefaultDistanceEpsilon, DefaultDegEpsilon, DefaultMidPointTolerance);
-            return Create(vertices, -1, -1, -1f);
+
+            return new RnLineString(vertices);
+        }
+
+        public static RnLineString Create(IEnumerable<RnPoint> vertices)
+        {
+            return Create(vertices, true);
         }
 
         public static RnLineString Create(IEnumerable<Vector3> vertices, bool removeDuplicate = true)
@@ -771,12 +784,18 @@ namespace PLATEAU.RoadNetwork.Structure
         public static bool IsSequenceEqual(RnLineString a, RnLineString b, out bool isReverseSequence)
         {
             isReverseSequence = false;
-            if (a.Count != b.Count)
-                return false;
 
             // 参照一致
             if (ReferenceEquals(a, b))
                 return true;
+
+            // どっちかがnullならfalse
+            if (a == null || b == null)
+                return false;
+
+            // 個数が違ったら無視
+            if (a.Count != b.Count)
+                return false;
 
             // 0番目が同じであればそのまま比較
             if (a[0] == b[0])
