@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
-using Object = System.Object;
+using static UnityEditor.PlayerSettings;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -175,6 +175,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
+        [Serializable]
+        public class IntersectionEdgeDrawer : Drawer<RnIntersectionEdge>
+        {
+
+        }
+
         public class RoadDrawer : Drawer<RnRoad>
         {
             public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnRoad self)
@@ -190,7 +196,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class LaneDrawer : Drawer<RnLane>
         {
-
             public override bool IsValid(RnLane self)
             {
                 return self.IsValidWay;
@@ -218,7 +223,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
+        [Serializable]
+        public class IntersectionEdgeOption : IntersectionEdgeDrawer
+        {
+            // 境界線表示オプション
+            public WayOption showWay;
 
+            protected override bool DrawImpl(DrawWork work, RnIntersectionEdge self)
+            {
+                if (work.Self.showPartsType.HasFlag(RnPartsTypeMask.Neighbor))
+                    DebugEx.DrawString($"{self.GetDebugLabelOrDefault()}", RnIntersection.GetEdgeCenter(self));
+                return showWay.Draw(work, self.Border);
+            }
+        }
 
         [Serializable]
         public class IntersectionOption : IntersectionDrawer
@@ -227,6 +244,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             private class TrackDrawCenterLine : IntersectionDrawer
             {
                 public float showTrackCenterLineRefineInterval = 5f;
+
+                public bool showWidthLine = true;
 
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
@@ -419,13 +438,25 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawTrackOption showTrack = new() { visible = true };
 
             // 非境界線の表示オプション
-            public WayOption showNonBorderEdge = new(true, Color.magenta * 0.7f);
+            public IntersectionEdgeOption showNonBorderEdge = new()
+            {
+                visible = true,
+                showWay = new WayOption(true, Color.magenta * 0.7f)
+            };
 
             // 境界線表示オプション
-            public WayOption showBorderEdge = new(true, Color.cyan * 0.7f);
+            public IntersectionEdgeOption showBorderEdge = new()
+            {
+                visible = true,
+                showWay = new(true, Color.cyan * 0.7f)
+            };
 
             // 中央分離帯との境界線オプション
-            public WayOption showMedianBorderEdge = new(true, Color.yellow * 0.7f);
+            public IntersectionEdgeOption showMedianBorderEdge = new()
+            {
+                visible = true,
+                showWay = new(true, Color.yellow * 0.7f)
+            };
 
             public bool showEdgeIndex = false;
 
@@ -469,14 +500,16 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                 {
                     var n = intersection.Edges[i];
 
-                    void DrawEdge(WayOption p)
+                    void DrawEdge(IntersectionEdgeDrawer p)
                     {
                         if (p.visible == false)
                             return;
-                        work.Self.DrawWay(n.Border, p);
-                        var pos = n.Border.GetLerpPoint(0.5f);
+                        p.Draw(work, n);
                         if (showEdgeIndex)
+                        {
+                            var pos = n.Border.GetLerpPoint(0.5f);
                             work.Self.DrawString($"B[{i}]", pos);
+                        }
                     }
 
                     if (n.IsBorder)
@@ -494,8 +527,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         work.Self.DrawLine(center, center - 50 * normal);
                     }
 
-                    if (work.Self.showPartsType.HasFlag(RnPartsTypeMask.Neighbor))
-                        DebugEx.DrawString($"{n.GetDebugLabelOrDefault()}", RnIntersection.GetEdgeCenter(n));
 
                 }
 
@@ -1033,7 +1064,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             op ??= wayOp;
             if (op == null)
                 return;
-            op.Draw(work, way, work.visibleType);
+            op.Draw(work, way);
         }
 
         public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p, RnDebugDrawerBase.VisibleType visibleType)
