@@ -388,7 +388,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// roadとの境界線をbordersに置き換える
+        /// roadのborderTypeで指定した境界線を削除し, bordersを追加する
         /// </summary>
         /// <param name="road"></param>
         /// <param name="borderType"></param>
@@ -398,11 +398,29 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (road == null)
                 return;
-            var borderWays = road.GetBorderWays(borderType);
-            RemoveEdges(n => n.Road == road && borderWays.Any(b => b.IsSameLineReference(n.Border)));
+            var borderWays = road.GetBorderWays(borderType).ToList();
+            foreach (var way in borderWays)
+            {
+                var removeCount = RemoveEdges(way);
+                if (removeCount != 1)
+                {
+                    DebugEx.LogError($"削除しようとしたエッジが交差点に存在しませんでした. {road.GetTargetTransName()}/{this.GetTargetTransName()}");
+                }
+            }
             edges.AddRange(borders.Select(b => new RnIntersectionEdge { Road = road, Border = b }));
         }
 
+        /// <summary>
+        /// roadとの境界線をbordersに置き換える
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="borders"></param>
+        /// <param name="reBuildTrack"></param>
+        public void ReplaceEdges(RnRoad road, List<RnWay> borders, bool reBuildTrack = true)
+        {
+            RemoveEdges(n => n.Road == road);
+            edges.AddRange(borders.Select(b => new RnIntersectionEdge { Road = road, Border = b }));
+        }
 
         /// <summary>
         /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える.
@@ -424,22 +442,42 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
         /// <summary>
-        /// predicateで指定した隣接情報を削除する
+        /// predicateで指定した隣接情報を削除する.
+        /// 戻り値は削除された個数
         /// </summary>
         /// <param name="predicate"></param>
-        public void RemoveEdges(Func<RnIntersectionEdge, bool> predicate)
+        public int RemoveEdges(Func<RnIntersectionEdge, bool> predicate)
         {
-            for (var i = 0; i < edges.Count; i++)
-            {
-                var n = edges[i];
-                if (predicate(n))
-                {
-                    edges.RemoveAt(i);
-                    i--;
-                    // トラックからも削除する
-                    tracks.RemoveAll(x => x.FromBorder == n.Border || x.ToBorder == n.Border);
-                }
-            }
+            var targets = Edges.Where(predicate).ToList();
+            foreach (var e in targets)
+                RemoveEdge(e);
+
+            return targets.Count;
+        }
+
+        /// <summary>
+        /// 指定した境界線をエッジから削除する
+        /// </summary>
+        /// <param name="way"></param>
+        /// <returns></returns>
+        public int RemoveEdges(RnWay way)
+        {
+            return RemoveEdges(e => e.Border.IsSameLineReference(way));
+        }
+
+        /// <summary>
+        /// 指定したエッジを削除する. 関係するTrackも削除する
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        private bool RemoveEdge(RnIntersectionEdge edge)
+        {
+            if (edges.Remove(edge) == false)
+                return false;
+
+            // 関係するトラックも削除する
+            tracks.RemoveAll(track => track.ContainsBorder(edge.Border));
+            return true;
         }
 
         public RnTrack FindTrack(RnIntersectionEdge from, RnIntersectionEdge to)
@@ -581,7 +619,32 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
+        /// </summary>
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public override void ReplaceNeighbor(RnWay borderWay, RnRoadBase to)
+        {
+            if (borderWay == null)
+                return;
 
+            var found = false;
+            foreach (var e in Edges)
+            {
+                if (e.Border.IsSameLineReference(borderWay))
+                {
+                    e.Road = to;
+                    found = true;
+                }
+            }
+
+            if (found == false)
+            {
+                DebugEx.LogError($"境界線{borderWay.GetDebugIdLabelOrDefault()}が{this.GetDebugLabelOrDefault()}に存在しませんでした");
+            }
+        }
 
 
         public void BuildTracks(BuildTrackOption op = null)
@@ -714,6 +777,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override bool Check()
         {
+            Align();
             if (IsAligned() == false)
             {
                 DebugEx.LogError($"ループしていない輪郭の交差点 {this.GetTargetTransName()}");

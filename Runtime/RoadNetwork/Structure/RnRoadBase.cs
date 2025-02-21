@@ -161,6 +161,14 @@ namespace PLATEAU.RoadNetwork.Structure
         public virtual void ReplaceNeighbor(RnRoadBase from, RnRoadBase to) { }
 
         /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
+        /// </summary>
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public virtual void ReplaceNeighbor(RnWay borderWay, RnRoadBase to) { }
+
+        /// <summary>
         /// 不正チェック処理を行う
         /// </summary>
         /// <returns></returns>

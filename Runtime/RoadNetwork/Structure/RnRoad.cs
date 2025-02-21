@@ -674,6 +674,34 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
+        /// </summary>
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public override void ReplaceNeighbor(RnWay borderWay, RnRoadBase to)
+        {
+            if (borderWay == null)
+                return;
+
+            foreach (var lane in AllLanesWithMedian)
+            {
+                var prev = GetBorderWay(lane, RnLaneBorderType.Prev, RnLaneBorderDir.Left2Right);
+                if (prev != null && prev.IsSameLineReference(borderWay))
+                {
+                    Prev = to;
+                    return;
+                }
+
+                var next = GetBorderWay(lane, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right);
+                if (next != null && next.IsSameLineReference(borderWay))
+                {
+                    Next = to;
+                    return;
+                }
+            }
+        }
+        /// <summary>
         /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
         /// <returns></returns>

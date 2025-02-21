@@ -333,13 +333,13 @@ namespace PLATEAU.RoadNetwork.Structure
 
                 if (i == Roads.Count - 1 && NextIntersection != null)
                 {
-                    NextIntersection.ReplaceEdges(Roads[^1], RnLaneBorderType.Next, lanes.Select(l => l.NextBorder).ToList());
+                    NextIntersection.ReplaceEdges(road, RnLaneBorderType.Next, lanes.Select(l => l.NextBorder).ToList());
                     newNextBorders.AddRange(lanes.Select(l => l.NextBorder.LineString));
                 }
 
                 if (i == 0 && PrevIntersection != null)
                 {
-                    PrevIntersection.ReplaceEdges(Roads[0], RnLaneBorderType.Prev, lanes.Select(l => l.PrevBorder).ToList());
+                    PrevIntersection.ReplaceEdges(road, RnLaneBorderType.Prev, lanes.Select(l => l.PrevBorder).ToList());
                     newPrevBorders.AddRange(lanes.Select(l => l.PrevBorder.LineString));
                 }
 
@@ -395,9 +395,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var lanes = afterLanes[road];
                 if (i == Roads.Count - 1 && NextIntersection != null)
                 {
-                    var oldBorders = road.GetBorderWays(RnLaneBorderType.Next);
                     NextIntersection.ReplaceEdges(road, RnLaneBorderType.Next, lanes.Select(l => l.NextBorder).ToList());
-
                     newNextBorders.AddRange(lanes.Select(l => l.NextBorder.LineString));
                 }
 
