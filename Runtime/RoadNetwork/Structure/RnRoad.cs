@@ -1207,15 +1207,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfのborderSide側からborderOffsetMeterだけ離れた位置に道路を垂直に分割する線分を計算する
+        /// selfのborderSide側からborderOffsetだけ離れた位置に道路を垂直に分割する線分を計算する
         /// </summary>
         /// <param name="self"></param>
         /// <param name="borderSide"></param>
-        /// <param name="borderOffsetMeter"></param>
+        /// <param name="borderOffset"></param>
         /// <param name="segment"></param>
         /// <returns></returns>
         public static bool TryGetVerticalSliceSegment(this RnRoad self, RnLaneBorderType borderSide,
-            float borderOffsetMeter, out LineSegment3D segment)
+            float borderOffset, out LineSegment3D segment)
         {
             segment = new LineSegment3D();
             if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
@@ -1237,26 +1237,31 @@ namespace PLATEAU.RoadNetwork.Structure
             var centerWay = new RnWay(RnLineString.Create(vertices));
             var startIndex = 0;
             var endIndex = 0;
-            var v = Vector3.zero;
 
             var border = borderSide == RnLaneBorderType.Prev ? prevBorder : nextBorder;
 
             // 道路の両隣
             // 境界線の斜めがきつい時のため
             // 垂直線と境界線が交わらないように多めにborderOffsetMeterを取る
+            var maxBorderAdvanceLength = 10;
             List<Vector3> checkBorderPoints = new() { border[0], border[^1] };
             var neighborRoad = self.GetNeighborRoad(borderSide);
             if (neighborRoad != null)
             {
                 foreach (var sw in self.SideWalks)
                 {
-                    foreach (var w in sw.AllWays)
+                    foreach (var w in sw.EdgeWays)
                     {
-                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLineReference(w))))
-                        {
-                            checkBorderPoints.Add(w[0]);
-                            checkBorderPoints.Add(w[^1]);
-                        }
+                        // neighborRoadと繋がっている境界線のみを対象
+                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLineReference(w))) == false)
+                            continue;
+                        // borderとの距離が一定以上離れている場合, 全然違うところにある歩道の可能性が高いので無視
+                        // (交差点に同じ道路をPrev/Next両方でつながっている場合に起こりえる)
+                        var distance = border.GetDistance2D(w);
+                        if (distance > maxBorderAdvanceLength)
+                            continue;
+                        checkBorderPoints.Add(w[0]);
+                        checkBorderPoints.Add(w[^1]);
                     }
                 }
             }
@@ -1269,17 +1274,23 @@ namespace PLATEAU.RoadNetwork.Structure
                     ? centerWay.CalcLength(0, index)
                     : centerWay.CalcLength(index, centerWay.Count - 1);
 
+                // 余りにも長くとりすぎる場合は, 境界線関係ない歩道の可能性が高いので無視する
+                // 交差点に同じ道路かNext/Prev両方でつながっている場合に起こりえる
+                if (len > borderOffset + maxBorderAdvanceLength)
+                    continue;
+
                 // 0.5mは余白分として入れる
-                borderOffsetMeter = Mathf.Max(borderOffsetMeter, len + 2.5f);
+                borderOffset = Mathf.Max(borderOffset, len + 2.5f);
             }
 
+            var v = Vector3.zero;
             if (borderSide == RnLaneBorderType.Next)
             {
-                v = centerWay.GetAdvancedPointFromBack(borderOffsetMeter, out startIndex, out endIndex);
+                v = centerWay.GetAdvancedPointFromBack(borderOffset, out startIndex, out endIndex);
             }
             else if (borderSide == RnLaneBorderType.Prev)
             {
-                v = centerWay.GetAdvancedPointFromFront(borderOffsetMeter, out startIndex, out endIndex);
+                v = centerWay.GetAdvancedPointFromFront(borderOffset, out startIndex, out endIndex);
             }
             else
             {
