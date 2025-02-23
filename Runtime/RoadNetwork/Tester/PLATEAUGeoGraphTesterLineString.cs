@@ -79,28 +79,28 @@ namespace PLATEAU.RoadNetwork.Tester
             if (p.enable == false)
                 return;
             var vertices = GetVertices().Skip(1).ToList();
-            var indices = GeoGraph2D.SplitByCollinearSegment(vertices, p.allowAngle, p.midPointTolerance, p.checkAdjustSegAngleOnly);
-
-            for (var i = 0; i < indices.Count - 1; i++)
-            {
-                var start = indices[i];
-                var end = indices[i + 1];
-                var color = DebugEx.GetDebugColor(i % 2, 2);
-
-                DebugEx.DrawLines(Enumerable.Range(start, end - start + 1).Select(i => vertices[i].ToVector3(plane)), false, color: color);
-            }
-            var afterVerts = indices.Select(i => vertices[i]).ToList();
-
-            var ind = GeoGraph2D.FindMidEdge(afterVerts, edgeBorderTest.allowAngle, edgeBorderTest.skipAngle);
-
+            var indices = GeoGraph2D.SplitByCollinearSegment(vertices, p.allowAngle, p.midPointTolerance);
+            var simpleVertices = indices.Select(i => vertices[i]).ToList();
             DebugEx.DrawLines(
-                ind.Select(i =>
-                {
-                    return vertices[indices[i]].ToVector3(plane);
-                })
+                simpleVertices.Select(v => v.ToVector3(plane)),
+                false,
+                Color.blue
+            );
 
-                , false, color: Color.green
+            var terminateIndex = GeoGraph2D.FindTerminateEdgeIndex(simpleVertices);
+            if (terminateIndex >= 0 && terminateIndex < indices.Count - 1)
+            {
+                var edgeStartIndex = indices[terminateIndex];
+                var edgeEndIndex = indices[terminateIndex + 1];
+                DebugEx.DrawLines(
+                    Enumerable.Range(edgeStartIndex, edgeEndIndex - edgeStartIndex + 1)
+                        .Select(i => vertices[i].ToVector3(plane))
+
+                    , false, color: Color.green
                 );
+
+            }
+
 
         }
         private void EdgeBorderTest(EdgeBorderTestParam p)
