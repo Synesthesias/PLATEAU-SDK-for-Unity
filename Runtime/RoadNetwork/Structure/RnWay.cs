@@ -731,10 +731,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
+        /// <param name="removeDuplicate"></param>
         /// <returns></returns>
-        public static RnWay CreateMergedWay(RnWay a, RnWay b)
+        public static RnWay CreateMergedWay(RnWay a, RnWay b, bool removeDuplicate = true)
         {
-            var ls = RnLineString.Create(a.Points.Concat(b.Points));
+            var ls = RnLineString.Create((a?.Points ?? new List<RnPoint>()).Concat(b?.Points ?? new List<RnPoint>()), removeDuplicate);
             return new RnWay(ls);
         }
 
@@ -911,7 +912,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 2D平面におけるRnway同士の距離を返す
+        /// 2D平面におけるRnWay同士の距離を返す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="other"></param>
