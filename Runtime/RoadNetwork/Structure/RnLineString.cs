@@ -37,7 +37,6 @@ namespace PLATEAU.RoadNetwork.Structure
             Points = new RnPoint[initialSize].ToList();
         }
 
-
         public RnLineString(IEnumerable<RnPoint> points)
         {
             Points = points.ToList();
@@ -406,19 +405,21 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="vertices"></param>
         /// <param name="removeDuplicate"></param>
         /// <returns></returns>
-        public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate)
+        public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate = true)
         {
             if (removeDuplicate)
                 return Create(vertices, DefaultDistanceEpsilon, DefaultDegEpsilon, DefaultMidPointTolerance);
 
-            return new RnLineString(vertices);
+            return Create(vertices, -1, -1, -1);
         }
 
-        public static RnLineString Create(IEnumerable<RnPoint> vertices)
-        {
-            return Create(vertices, true);
-        }
-
+        /// <summary>
+        /// 頂点リストから線分を生成する
+        /// removeDuplicate : 重複する頂点を取り除くかのフラグ
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="removeDuplicate"></param>
+        /// <returns></returns>
         public static RnLineString Create(IEnumerable<Vector3> vertices, bool removeDuplicate = true)
         {
             return Create(vertices.Select(v => new RnPoint(v)), removeDuplicate);
