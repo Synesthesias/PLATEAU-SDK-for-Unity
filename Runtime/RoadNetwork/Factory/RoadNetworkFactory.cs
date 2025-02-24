@@ -37,19 +37,23 @@ namespace PLATEAU.RoadNetwork.Factory
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        /// <param name="isReverse"></param>
+        /// <param name="isReversed"></param>
         /// <returns></returns>
-        public static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
+        public static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReversed)
         {
-            isReverse = false;
+            isReversed = false;
             if (a.Count != b.Count)
                 return false;
 
-            isReverse = a[0] != b[0];
+            // 空LineStringで一致判定にすると全く異なる場所がつながる可能性があるためfalse
+            if (a.Count == 0)
+                return false;
+
+            isReversed = a[0] != b[0];
             for (var i = 0; i < a.Count; ++i)
             {
                 var aIndex = i;
-                var bIndex = isReverse ? a.Count - 1 - i : i;
+                var bIndex = isReversed ? a.Count - 1 - i : i;
                 if (a[aIndex] != b[bIndex])
                     return false;
             }
@@ -70,16 +74,16 @@ namespace PLATEAU.RoadNetwork.Factory
         public RnLineString CreateLineString(List<RnPoint> points, out bool isCached, out bool isReversed, bool useCache = true, Func<List<RnPoint>, RnLineString> createLineStringFunc = null)
         {
             isCached = false;
-            isReversed = false;
             if (points == null)
+            {
+                isReversed = false;
                 return null;
+            }
 
             static RnLineString Impl(List<RnPoint> points)
             {
-                // #NOTE : 削除処理を入れるとpointsとずれて他の線分との同値判定がバグる場合があるのでfalse
                 return RnLineString.Create(points, false);
             }
-
 
             createLineStringFunc ??= Impl;
 
@@ -87,18 +91,25 @@ namespace PLATEAU.RoadNetwork.Factory
             if (useCache == false)
             {
                 var ls = createLineStringFunc(points);
+                isReversed = false;
                 return ls;
             }
             var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
             var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
             foreach (var line in lines)
             {
-                if (IsEqual(line.Points, points, out isReversed))
+                // ここでout isReversedで渡すと, キャッシュヒットしなかった時にisReversedに何が入るかは未定義になり
+                // その下で入れ忘れるとバグるので一応変数分けておく
+                if (IsEqual(line.Points, points, out var isRev))
                 {
                     isCached = true;
+                    isReversed = isRev;
                     return line.LineString;
                 }
             }
+
+            // 新規で作るときはfalse
+            isReversed = false;
             var newLine = createLineStringFunc(points);
             lines.Add(new PointCache
             {
