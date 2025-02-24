@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Graph
@@ -36,6 +35,9 @@ namespace PLATEAU.RoadNetwork.Graph
         public bool separateFace = true;
 
         public bool modifySideWalkShape = true;
+
+        // 全く同じ辺(CityObjectGroup)を持つFaceを統合する
+        public bool faceReduction = true;
         // --------------------
         // end:フィールド
         // --------------------
@@ -111,6 +113,9 @@ namespace PLATEAU.RoadNetwork.Graph
             {
                 self.ModifySideWalkShape();
             }
+
+            if (faceReduction)
+                self.FaceReduction();
         }
     }
 }

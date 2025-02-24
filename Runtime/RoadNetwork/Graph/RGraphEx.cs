@@ -381,6 +381,50 @@ namespace PLATEAU.RoadNetwork.Graph
         }
 
         /// <summary>
+        /// 同じFaceは統合する
+        /// </summary>
+        /// <param name="self"></param>
+        public static int FaceReduction(this RGraph self)
+        {
+            var removedFaceCount = 0;
+            // key  : Edgeの数
+            // face : Faceのリスト
+            Dictionary<int, List<RFace>> faceMap = new();
+            foreach (var x in self.Faces)
+            {
+                faceMap.GetValueOrCreate(x.Edges.Count, k => new List<RFace>()).Add(x);
+            }
+
+            foreach (var item in faceMap)
+            {
+                var faces = item.Value;
+
+                for (var i = 0; i < faces.Count; i++)
+                {
+                    var f1 = faces[i];
+                    for (var j = i + 1; j < faces.Count; ++j)
+                    {
+                        var f2 = faces[j];
+
+                        if (f1.Edges.All(e => f2.Edges.Contains(e)))
+                        {
+                            if (f2.TryMergeTo(f1))
+                            {
+                                faces.RemoveAt(j);
+                                j--;
+                                removedFaceCount++;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            Debug.Log($"MergeFaces: {removedFaceCount}");
+            return removedFaceCount;
+        }
+
+        /// <summary>
         /// o-o
         /// | |
         /// o-o---o ←の様な飛び出た辺をFaceから削除する.
@@ -1294,6 +1338,218 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             OutlineVertex2Edge(outlineVertices, out var outlineEdges);
             return RnEx.GroupByOutlineEdges(outlineEdges, keySelector, comparer);
+        }
+
+        /// <summary>
+        /// selfのコピーを作成
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static RGraph DeepCopy(this RGraph self)
+        {
+            // 元の頂点/辺/面
+            var srcVertices = self.GetAllVertices().ToHashSet();
+            var srcEdges = self.GetAllEdges().ToHashSet();
+            var srcFaces = self.Faces.ToHashSet();
+
+            // 頂点の対応表を作成
+            var vertexMap = srcVertices
+                .ToDictionary(a => a, a => new RVertex(a.Position));
+
+            // 辺の対応表作成
+            var edgeMap = srcEdges.ToDictionary(
+                e => e,
+                e => new REdge(vertexMap[e.V0], vertexMap[e.V1])
+            );
+
+            var newGraph = new RGraph();
+            foreach (var face in srcFaces)
+            {
+                var newFace = new RFace(newGraph, face.CityObjectGroup, face.RoadTypes, face.LodLevel);
+
+                foreach (var srcEdge in face.Edges)
+                    newFace.AddEdge(edgeMap[srcEdge]);
+                newGraph.AddFace(newFace);
+            }
+            return newGraph;
+        }
+
+        /// <summary>
+        /// a/bが同じ頂点/辺/面を持つグラフか判定する
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsEqual(RGraph a, RGraph b)
+        {
+            void Split(RGraph graph
+                , out Dictionary<Vector3, RVertex> vertexMap
+                , out Dictionary<Tuple<Vector3, Vector3>, REdge> edgeMap
+                , out Dictionary<string, RFace> faceMap
+                )
+            {
+                var comp = Comparer<Vector3>.Create((v0, v1) =>
+                {
+                    var x = v0.x.CompareTo(v1.x);
+                    if (x != 0)
+                        return x;
+                    var y = v0.y.CompareTo(v1.y);
+                    if (y != 0)
+                        return y;
+                    var z = v0.z.CompareTo(v1.z);
+                    return z;
+                });
+                vertexMap = graph.GetAllVertices().ToHashSet().ToDictionary(x => x.Position, x => x);
+                edgeMap = graph.GetAllEdges().ToHashSet().ToDictionary(
+                    e => Tuple.Create(e.V0.Position, e.V1.Position),
+                    e => e
+                );
+
+                var edgeComp = Comparer<REdge>.Create((e0, e1) =>
+                {
+                    var v0 = comp.Compare(e0.V0.Position, e1.V0.Position);
+                    if (v0 != 0)
+                        return v0;
+
+                    return comp.Compare(e0.V1.Position, e1.V1.Position);
+                });
+
+                faceMap = new Dictionary<string, RFace>();
+                foreach (var f in graph.Faces)
+                {
+
+                    var edges = f.Edges.ToList();
+                    edges.Sort(edgeComp);
+                    var key = edges.Select(e => $"[{e.V0.Position},{e.V1.Position}]").Join2String();
+
+                    if (faceMap.ContainsKey(key))
+                    {
+                        DebugEx.LogError($"{key} is already exist {f.CityObjectGroup.name}/{faceMap[key].CityObjectGroup.name}");
+                        continue;
+                    }
+
+                    faceMap[key] = f;
+                }
+            }
+            Split(a, out var aVertexMap, out var aEdgeMap, out var aFaceMap);
+            Split(b, out var bVertexMap, out var bEdgeMap, out var bFaceMap);
+            if (aVertexMap.Count != bVertexMap.Count)
+            {
+                DebugEx.LogError($"Vertex Count. {aVertexMap.Count} != {bVertexMap.Count}");
+                return false;
+            }
+
+            foreach (var k in aVertexMap)
+            {
+                if (bVertexMap.ContainsKey(k.Key) == false)
+                {
+                    DebugEx.LogError($"VertexMap {k.Key} not found");
+                    return false;
+                }
+            }
+
+            if (aEdgeMap.Count != bEdgeMap.Count)
+            {
+                DebugEx.LogError($"Edge Count. {aEdgeMap.Count} != {bEdgeMap.Count}");
+                return false;
+            }
+
+            foreach (var k in aEdgeMap)
+            {
+                if (bEdgeMap.ContainsKey(k.Key) == false)
+                {
+                    DebugEx.LogError($"EdgeMp {k.Key} not found");
+                    return false;
+                }
+            }
+
+            if (aFaceMap.Count != bFaceMap.Count)
+            {
+                DebugEx.LogError($"Face Count. {aFaceMap.Count} != {bFaceMap.Count}");
+                return false;
+            }
+
+            foreach (var k in aFaceMap)
+            {
+                if (bFaceMap.ContainsKey(k.Key) == false)
+                {
+                    DebugEx.LogError($"FaceMap {k.Key} not found");
+                    return false;
+                }
+
+                var aFace = aFaceMap[k.Key];
+                var bFace = bFaceMap[k.Key];
+
+                if (aFace.CityObjectGroup != bFace.CityObjectGroup)
+                {
+                    DebugEx.LogError($"CityObjectGroup");
+                    return false;
+                }
+                if (aFace.LodLevel != bFace.LodLevel)
+                {
+                    DebugEx.LogError($"LodLevel");
+                    return false;
+                }
+
+                if (aFace.RoadTypes != bFace.RoadTypes)
+                {
+                    DebugEx.LogError($"RoadTypes");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        public static RGraph ConvertRnModelGraph(
+            this RGraph self
+            , RRoadTypeMask roadPackTypes
+            , bool ignoreHighWay
+            )
+        {
+            // 道路/中央分離帯は一つのfaceGroupとしてまとめる
+            var mask = ~roadPackTypes;
+            var faceGroups = self.GroupBy((f0, f1) =>
+            {
+                var m0 = f0.RoadTypes & mask;
+                var m1 = f1.RoadTypes & mask;
+                return m0 == m1;
+            });
+
+            Dictionary<Vector3, RVertex> vertexMap = new();
+            Dictionary<EdgeKey, REdge> edgeMap = new Dictionary<EdgeKey, REdge>();
+
+            RVertex GetVertex(Vector3 pos)
+            {
+                return vertexMap.GetValueOrCreate(pos, k => new RVertex(k));
+            }
+
+            REdge GetEdge(RVertex v0, RVertex v1)
+            {
+                return edgeMap.GetValueOrCreate(new EdgeKey(v0, v1), k => new REdge(k.V0, k.V1));
+            }
+
+            var newGraph = new RGraph();
+            foreach (var fg in faceGroups)
+            {
+                if (ignoreHighWay && fg.RoadTypes.IsHighWay())
+                    continue;
+                var face = new RFace(newGraph, fg.CityObjectGroup, fg.RoadTypes, fg.MaxLodLevel);
+                var vertices = fg.ComputeOutlineVertices(f => true);
+
+                for (var i = 0; i < vertices.Count; ++i)
+                {
+                    var v0 = GetVertex(vertices[i].Position);
+                    var v1 = GetVertex(vertices[(i + 1) % vertices.Count].Position);
+                    var e = GetEdge(v0, v1);
+                    face.AddEdge(e);
+                }
+
+                newGraph.AddFace(face);
+            }
+
+            return newGraph;
         }
     }
 

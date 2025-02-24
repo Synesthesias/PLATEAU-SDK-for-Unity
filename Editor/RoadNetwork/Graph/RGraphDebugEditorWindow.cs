@@ -1,4 +1,5 @@
 ﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PLATEAU.Editor.RoadNetwork.Graph
 {
@@ -278,6 +280,17 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
                         faceEdit.Update(this, face);
                     }
                 }
+            }
+
+            if (GUILayout.Button("Copy Check"))
+            {
+                var copy = graph.DeepCopy();
+                Assert.IsTrue(RGraphEx.IsEqual(graph, copy));
+            }
+
+            if (GUILayout.Button("Convert To RoadNetwork Graph"))
+            {
+                target.Graph = graph.ConvertRnModelGraph(RoadNetworkFactory.RoadPackTypes, true);
             }
         }
 
