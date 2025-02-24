@@ -1063,36 +1063,12 @@ namespace PLATEAU.RoadNetwork.Structure
             if (edgeGroup == null)
                 return false;
 
-            var visited = new HashSet<RnLineString>();
-
-            void Merge(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
-            {
-                if (dst == null || src == null)
-                    return;
-                if (visited.Contains(dst.LineString))
-                    return;
-                visited.Add(dst.LineString);
-                merger(dst, src);
-            }
-
             var oppositeBorders = self.GetBorderWays(borderType.GetOpposite()).ToList();
             var oppositeRoadBase = self.GetNeighborRoad(borderType.GetOpposite());
-            if (borderType == RnLaneBorderType.Prev)
-            {
-                // 前方の交差点を取得
-                var rightEdge = edgeGroup.LeftSide.Edges[0];
-                var leftEdge = edgeGroup.RightSide.Edges[^1];
-                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendFront2LineString);
-                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendBack2LineString);
-            }
-            else if (borderType == RnLaneBorderType.Next)
-            {
-                // 後方の交差点を取得
-                var rightEdge = edgeGroup.RightSide.Edges[^1];
-                var leftEdge = edgeGroup.LeftSide.Edges[0];
-                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendBack2LineString);
-                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendFront2LineString);
-            }
+
+            // 外形線部分を追加
+            intersection.AddEdge(null, leftWay);
+            intersection.AddEdge(null, rightWay);
 
             // intersectionの輪郭情報を差し替える
             intersection.ReplaceEdges(self, borderType, oppositeBorders, false);
@@ -1101,105 +1077,18 @@ namespace PLATEAU.RoadNetwork.Structure
             intersection.ReplaceNeighbor(self, oppositeRoadBase);
             oppositeRoadBase?.ReplaceNeighbor(self, intersection);
 
+            // 外形のEdgeがEdge分かれるので一つにまとめる
+            intersection.MergeContinuousNonBorderEdge();
+
+            // 歩道を一つに統合する
+            var srcSideWalks = self.SideWalks.ToList();
+            intersection.MergeSideWalks(srcSideWalks);
+
+            // 全部終わった後, 共通のポイントを持つLineStringは統合する
+            intersection.MergeSamePointLineStrings();
+
             // トラックを生成しなおす
             intersection.BuildTracks(BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
-
-            var dstSideWalks = intersection.SideWalks.ToList();
-            var srcSideWalks = self.SideWalks.ToList();
-
-            // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
-            // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので
-            // 元のLineStringをコピーして持っておく
-            var originalDstSideWalks = dstSideWalks.ToList();
-            var original = dstSideWalks
-                .SelectMany(sw => sw.SideWays)
-                .ToHashSet()
-                .ToDictionary(x => x, x => x.Clone(false));
-
-            HashSet<RnSideWalk> mergedDstSideWalks = new();
-            foreach (var srcSw in srcSideWalks)
-            {
-                var found = false;
-                foreach (var dstSw in dstSideWalks)
-                {
-                    void Merge2(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
-                    {
-                        if (dst == null || src == null)
-                            return;
-                        if (visited.Contains(dst.LineString))
-                            return;
-                        visited.Add(dst.LineString);
-
-                        var tolerance = 0f;
-                        if (dst.TryMergePointsToLineString(src, tolerance) == false)
-                        {
-                            // #NOTE : もともとの歩道がきれいにつながっていない場合は仮で直接つなぐようにする
-                            DebugEx.LogWarning($"共通頂点を持たないWayをマージしようとしました. {dst.GetDebugIdLabelOrDefault()} {src.GetDebugIdLabelOrDefault()}");
-                            //DebugEx.DrawArrows(dst, false, color: Color.red, duration: 100);
-                            //DebugEx.DrawArrows(src, false, color: Color.blue, duration: 100);
-                            merger(dst, src);
-                        }
-                    }
-
-                    void MergeSideWalk(bool reverse, Action<RnWay, RnWay> merger)
-                    {
-                        var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
-                        var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
-
-                        Merge2(dstSw.InsideWay, insideWay, merger);
-                        Merge2(dstSw.OutsideWay, outsideWay, merger);
-                        // もともとnullだった場合は置き換える
-                        dstSw.SetSideWays(dstSw.OutsideWay ?? outsideWay, dstSw.InsideWay ?? insideWay);
-                        mergedDstSideWalks.Add(dstSw);
-                        found = true;
-                    }
-
-                    // start - startで重なっている場合
-                    if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(true, RnWayEx.AppendFront2LineString);
-                        dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
-                    }
-                    // start - endで重なっている場合
-                    else if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(false, RnWayEx.AppendFront2LineString);
-                        dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
-                    }
-                    // end - endで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(true, RnWayEx.AppendBack2LineString);
-                        dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
-                    }
-                    // end - startで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(false, RnWayEx.AppendBack2LineString);
-                        dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
-                    }
-
-                    if (found)
-                        break;
-                }
-
-                // マージできなかった歩道は直接追加
-                if (found == false)
-                {
-                    intersection.AddSideWalk(srcSw);
-                    dstSideWalks.Add(srcSw);
-                }
-            }
-
-            // dstSideWalksの中でマージされなかった(元の形状から変更されない)ものは
-            // レーンと共通のLineStringを持っている場合に勝手に形状変わっているかもしれないので明示的に元に戻す
-            foreach (var sw in originalDstSideWalks
-                         .Where(d => mergedDstSideWalks.Contains(d) == false))
-            {
-                sw.SetSideWays(
-                    sw.OutsideWay == null ? null : original[sw.OutsideWay]
-                    , sw.InsideWay == null ? null : original[sw.InsideWay]);
-            }
 
             intersection.AddTargetTrans(self.TargetTrans);
             self.DisConnect(true);

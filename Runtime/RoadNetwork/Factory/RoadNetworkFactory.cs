@@ -39,7 +39,7 @@ namespace PLATEAU.RoadNetwork.Factory
         /// <param name="b"></param>
         /// <param name="isReverse"></param>
         /// <returns></returns>
-        private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
+        public static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
         {
             isReverse = false;
             if (a.Count != b.Count)
@@ -65,8 +65,9 @@ namespace PLATEAU.RoadNetwork.Factory
         /// <param name="isCached"></param>
         /// <param name="isReversed"></param>
         /// <param name="useCache"></param>
+        /// <param name="createLineStringFunc"></param>
         /// <returns></returns>
-        public RnLineString CreateLineString(List<RnPoint> points, out bool isCached, out bool isReversed, bool useCache = true)
+        public RnLineString CreateLineString(List<RnPoint> points, out bool isCached, out bool isReversed, bool useCache = true, Func<List<RnPoint>, RnLineString> createLineStringFunc = null)
         {
             isCached = false;
             isReversed = false;
@@ -79,10 +80,13 @@ namespace PLATEAU.RoadNetwork.Factory
                 return RnLineString.Create(points, false);
             }
 
+
+            createLineStringFunc ??= Impl;
+
             // キャッシュ使わない設定
             if (useCache == false)
             {
-                var ls = Impl(points);
+                var ls = createLineStringFunc(points);
                 return ls;
             }
             var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
@@ -95,7 +99,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     return line.LineString;
                 }
             }
-            var newLine = Impl(points);
+            var newLine = createLineStringFunc(points);
             lines.Add(new PointCache
             {
                 // リスト書き換えられないようにコピーして持っておく
@@ -211,7 +215,7 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public RnModelEx.CalibrateIntersectionBorderOption CalibrateIntersectionOption { get; set; } = new();
 
-        // 道路や交差点で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
+        // 道路で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
         [field: SerializeField]
         public bool SeparateContinuousBorder { get; set; } = true;
 
@@ -982,7 +986,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
-                // 交差点の
+                // 道路で境界線が直接つながっているような場合に微小な線を追加する
                 if (SeparateContinuousBorder)
                     ret.SeparateContinuousBorder();
 

@@ -381,6 +381,15 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                 }
             }
 
+            if (GUILayout.Button("SideWalk Reduction"))
+            {
+                roadBase.MergeConnectedSideWalks();
+            }
+
+            if (GUILayout.Button("Merge Same LineString"))
+            {
+                roadBase.MergeSamePointLineStrings();
+            }
         }
 
         /// <summary>
@@ -786,6 +795,12 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         Check(work1.TrafficSignalLightControllers, work2.TrafficSignalLightControllers);
                         if (success)
                             DebugEx.Log("Collect Check Success");
+                    }
+
+                    if (GUILayout.Button("Edge Reduction"))
+                    {
+                        foreach (var inter in model.Intersections)
+                            inter.MergeContinuousNonBorderEdge();
                     }
                 }
             }

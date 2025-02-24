@@ -1,4 +1,6 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,16 +56,28 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 歩道sideWalkを削除する.
-        /// sideWalkの親情報は変更しない
+        /// 歩道sideWalkを削除する.(元から存在しない時は何もせずfalseが返る)
+        /// sideWalkの親情報も変更する.
+        /// removeFromModel = trueの時はRnModelからも削除する(後方互換のためにdefaultはfalse)
         /// </summary>
         /// <param name="sideWalk"></param>
-        public void RemoveSideWalk(RnSideWalk sideWalk)
+        /// <param name="removeFromModel"></param>
+        public bool RemoveSideWalk(RnSideWalk sideWalk, bool removeFromModel = false)
         {
             if (sideWalk == null)
-                return;
+                return false;
+
+            if (sideWalks.Contains(sideWalk) == false)
+                return false;
+
             sideWalk.SetParent(null);
             sideWalks.Remove(sideWalk);
+            if (removeFromModel)
+            {
+                ParentModel?.RemoveSideWalk(sideWalk);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -174,6 +188,38 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public virtual bool Check() { return true; }
 
+        /// <summary>
+        /// 連結されたSideWalkを統合する
+        /// </summary>
+        public void MergeConnectedSideWalks()
+        {
+            for (var i = 0; i < sideWalks.Count; ++i)
+            {
+                var dstSideWalk = sideWalks[i];
+
+                while (true)
+                {
+                    var found = false;
+                    for (var j = i + 1; j < sideWalks.Count; j++)
+                    {
+                        var srcSideWalk = sideWalks[j];
+                        if (dstSideWalk.TryMergeNeighborSideWalk(srcSideWalk))
+                        {
+                            // マージされたらそのSideWalkは削除する(Modelからも削除する)
+                            RemoveSideWalk(srcSideWalk, true);
+                            // 見つかったらさらにマージされるかもしれないので最初から探す
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found == false)
+                        break;
+                }
+
+
+            }
+        }
+
     }
 
     public static class RnRoadBaseEx
@@ -213,6 +259,54 @@ namespace PLATEAU.RoadNetwork.Structure
             if (self == null)
                 return new HashSet<RnLineString>();
             return self.AllWays().Select(w => w.LineString).Where(ls => ls != null).ToHashSet();
+        }
+
+        /// <summary>
+        /// selfにaddSideWalksを追加しようとする.境界線で繋がっている場合はLineStringが統合される
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="addSideWalks"></param>
+        public static void MergeSideWalks(this RnRoadBase self, List<RnSideWalk> addSideWalks)
+        {
+            foreach (var sw in addSideWalks)
+                self.AddSideWalk(sw);
+
+            // 連結した
+            self.MergeConnectedSideWalks();
+        }
+
+        /// <summary>
+        /// self内で全く同じPointsを持つLineStringがあった場合統合する.
+        /// </summary>
+        /// <param name="self"></param>
+        public static void MergeSamePointLineStrings(this RnRoadBase self)
+        {
+            var ways = self.AllWays().ToHashSet();
+
+            Dictionary<int, List<LineStringFactoryWork.PointCache>> cache = new();
+
+
+            LineStringFactoryWork lineStringFactory = new();
+
+            foreach (var way in ways)
+            {
+                var points = way.Points.ToList();
+                var ls = lineStringFactory.CreateLineString(
+                    points
+                    , out var isCached
+                    , out var isReversed
+                    , true
+                    // キャッシュが無い時は今のLineStringをそのまま使いたいので生成関数を差し替える
+                    , p => way.LineString);
+
+                // キャッシュに差し替え処理
+                if (isCached)
+                {
+                    way.LineString = ls;
+                    if (way.IsReversed != isReversed)
+                        way.Reverse(true);
+                }
+            }
         }
     }
 }

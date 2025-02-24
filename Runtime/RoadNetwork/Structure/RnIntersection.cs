@@ -363,11 +363,12 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="road"></param>
         /// <param name="border"></param>
-        public void AddEdge(RnRoadBase road, RnWay border)
+        public bool AddEdge(RnRoadBase road, RnWay border)
         {
             if (border == null)
-                return;
+                return false;
             edges.Add(new RnIntersectionEdge { Road = road, Border = border });
+            return true;
         }
 
         /// <summary>
@@ -585,6 +586,31 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 境界線以外のEdgeが連続している場合一つのEdgeにまとめる
+        /// </summary>
+        public void MergeContinuousNonBorderEdge()
+        {
+            Align();
+            for (var i = 0; i < Edges.Count; ++i)
+            {
+                var edge = edges[i];
+                if (edge.IsBorder)
+                    continue;
+
+                while (edges.Count > 1 && edges[(i + 1) % edges.Count].IsBorder == false)
+                {
+                    var nextEdge = edges[(i + 1) % edges.Count];
+                    edge.Border = RnWayEx.CreateMergedWay(edge.Border.Clone(false), nextEdge.Border.Clone(false), false);
+                    edges.Remove(nextEdge);
+                    DebugEx.Log($"Merge NonBorder Edge {this.GetTargetTransName()}");
+                    // i == edges.Count - 1で削除が走った場合iがedges.Count以上になる場合がある.
+                    // そうなるとnextEdgeがうまく次にならない場合があるのでMinを取る
+                    i = Mathf.Min(i, edges.Count - 1);
+                }
+            }
+        }
+
+        /// <summary>
         /// 自身を切断する
         /// </summary>
         public override void DisConnect(bool removeFromModel)
@@ -706,9 +732,13 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        // #NOTE : RnRoad.TryMerge2NeighborIntersectionで, 交差点の境界線が連続していると
+        //       : LineStringへのポイント追加がバグることがあったので用意したが, RnRoad側で対応したので必要なくなった
+        //       : そもそも、3つ以上の交差点に所属する頂点がある場合にバグるので使用禁止(今後必要になる可能性があるので残してはおく)
         /// <summary>
         /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
         /// </summary>
+        [Obsolete("使われていない")]
         public void SeparateContinuousBorder()
         {
             Align();

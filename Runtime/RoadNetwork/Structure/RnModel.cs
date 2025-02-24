@@ -500,12 +500,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public void SeparateContinuousBorder()
         {
-            foreach (var inter in intersections)
-            {
-                // 連続した境界線を分離する
-                inter.SeparateContinuousBorder();
-            }
-
             foreach (var road in roads)
             {
                 road.SeparateContinuousBorder();
