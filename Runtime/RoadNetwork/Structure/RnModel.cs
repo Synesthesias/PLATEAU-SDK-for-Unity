@@ -27,10 +27,13 @@ namespace PLATEAU.RoadNetwork.Structure
         public string FactoryVersion { get; set; } = "";
 
         // #NOTE : Editorが重いのでSerialize対象にしない
+        // 道路リスト
         private List<RnRoad> roads = new List<RnRoad>();
 
+        // 交差点リスト
         private List<RnIntersection> intersections = new List<RnIntersection>();
 
+        // 歩道リスト(道路/交差点に依存しない歩道があるかもしれないので別に持つ)
         private List<RnSideWalk> sideWalks = new List<RnSideWalk>();
 
         //----------------------------------
@@ -1507,6 +1510,5 @@ namespace PLATEAU.RoadNetwork.Structure
             if (prevSideRoad?.Prev is RnIntersection)
                 prevSideRoad.TryMerge2NeighborIntersection(RnLaneBorderType.Prev);
         }
-
     }
 }
