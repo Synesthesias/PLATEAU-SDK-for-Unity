@@ -18,6 +18,116 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
+    public class LineStringFactoryWork
+    {
+        public class PointCache
+        {
+            public List<RnPoint> Points { get; set; } = new();
+
+            // Pointsから生成されたLineString(最適化で必ずしもPointsと一致するとは限らない)
+            public RnLineString LineString { get; set; }
+        }
+
+        // key   : RnLineString.PointsのDebugIdのxor(高速化用)
+        // value : PointCache
+        public Dictionary<ulong, List<PointCache>> RnPointList2LineStringMap { get; } = new();
+
+        /// <summary>
+        /// pointsのリストの同値判定
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isReverse"></param>
+        /// <returns></returns>
+        private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
+        {
+            isReverse = false;
+            if (a.Count != b.Count)
+                return false;
+
+            isReverse = a[0] != b[0];
+            for (var i = 0; i < a.Count; ++i)
+            {
+                var aIndex = i;
+                var bIndex = isReverse ? a.Count - 1 - i : i;
+                if (a[aIndex] != b[bIndex])
+                    return false;
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// pointsからRnLineStringを作成する. キャッシュがある場合はそれを使う
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="isCached"></param>
+        /// <param name="isReversed"></param>
+        /// <param name="useCache"></param>
+        /// <returns></returns>
+        public RnLineString CreateLineString(List<RnPoint> points, out bool isCached, out bool isReversed, bool useCache = true)
+        {
+            isCached = false;
+            isReversed = false;
+            if (points == null)
+                return null;
+
+            static RnLineString Impl(List<RnPoint> points)
+            {
+                // #NOTE : 削除処理を入れるとpointsとずれて他の線分との同値判定がバグる場合があるのでfalse
+                return RnLineString.Create(points, false);
+            }
+
+            // キャッシュ使わない設定
+            if (useCache == false)
+            {
+                var ls = Impl(points);
+                return ls;
+            }
+            var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
+            var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
+            foreach (var line in lines)
+            {
+                if (IsEqual(line.Points, points, out isReversed))
+                {
+                    isCached = true;
+                    return line.LineString;
+                }
+            }
+            var newLine = Impl(points);
+            lines.Add(new PointCache
+            {
+                // リスト書き換えられないようにコピーして持っておく
+                Points = points.ToList(),
+                LineString = newLine
+            });
+            return newLine;
+        }
+
+        /// <summary>
+        /// pointsからRnWayを作成する. キャッシュがある場合はそれを使う
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="isCached"></param>
+        /// <param name="useCache"></param>
+        /// <returns></returns>
+        public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
+        {
+            isCached = false;
+            if (points == null)
+                return null;
+
+            var ls = CreateLineString(points, out isCached, out var isReversed, useCache);
+            return new RnWay(ls, isReversed);
+        }
+
+        public RnWay CreateWay(List<RnPoint> points)
+        {
+            return CreateWay(points, out var _);
+        }
+    }
+
     [Serializable]
     public partial class RoadNetworkFactory
     {
@@ -133,9 +243,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public Dictionary<RVertex, RnPoint> PointMap { get; } = new();
 
-            // key   : RnLineString.PointsのDebugIdのxor(高速化用)
-            // value : RnLineString
-            public Dictionary<ulong, List<RnLineString>> RnPointList2LineStringMap { get; } = new();
+            public LineStringFactoryWork RnLIneStringCache { get; } = new();
 
             // 行き止まり検出用. 角度がこの値以下の場合は同一直線と判断
             public float terminateAllowEdgeAngle = 20f;
@@ -158,62 +266,15 @@ namespace PLATEAU.RoadNetwork.Factory
                 return PointMap.GetValueOrCreate(v, x => new RnPoint(x.Position));
             }
 
-            private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
-            {
-                isReverse = false;
-                if (a.Count != b.Count)
-                    return false;
-
-                isReverse = a[0] != b[0];
-                for (var i = 0; i < a.Count; ++i)
-                {
-                    var aIndex = i;
-                    var bIndex = isReverse ? a.Count - 1 - i : i;
-                    if (a[aIndex] != b[bIndex])
-                        return false;
-                }
-
-                return true;
-            }
-
             public RnWay CreateWay(List<RnPoint> points)
             {
-                return CreateWay(points, out var _);
+                return RnLIneStringCache.CreateWay(points, out var _);
             }
 
 
             public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
             {
-                isCached = false;
-                if (points == null)
-                    return null;
-
-
-                static RnLineString CreateLineString(List<RnPoint> points)
-                {
-                    // #NOTE : 削除処理を入れるとpointsとずれて他の線分との同値判定がバグる場合があるのでfalse
-                    return RnLineString.Create(points, false);
-                }
-
-                // キャッシュ使わない設定
-                if (useCache == false)
-                {
-                    var ls = CreateLineString(points);
-                    return new RnWay(ls, false);
-                }
-                var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
-                var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
-                foreach (var line in lines)
-                {
-                    if (IsEqual(line.Points, points, out var isReverse))
-                    {
-                        isCached = true;
-                        return new RnWay(line, false);
-                    }
-                }
-                var newLine = CreateLineString(points);
-                lines.Add(newLine);
-                return new RnWay(newLine, false);
+                return RnLIneStringCache.CreateWay(points, out isCached, useCache);
             }
 
             public RnWay CreateWay(List<RVertex> vertices)
