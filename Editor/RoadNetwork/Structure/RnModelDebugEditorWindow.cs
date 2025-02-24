@@ -533,7 +533,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
 
                     if (GUILayout.Button("SeparateContinuousBorder"))
                     {
-                        work.DelayExec.Add(() => intersection.SeparateContinuousBorder());
+                        work.DelayExec.Add(intersection.SeparateContinuousBorder);
                     }
 
                     if (GUILayout.Button("Create Inside Objects"))

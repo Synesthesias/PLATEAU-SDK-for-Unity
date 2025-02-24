@@ -43,16 +43,18 @@ namespace PLATEAU.RoadNetwork.Structure
         /// sideWalkの親情報も書き換える
         /// </summary>
         /// <param name="sideWalk"></param>
-        public void AddSideWalk(RnSideWalk sideWalk)
+        public bool AddSideWalk(RnSideWalk sideWalk)
         {
             if (sideWalk == null)
-                return;
+                return false;
+            // すでに存在する場合は無視
             if (sideWalks.Contains(sideWalk))
-                return;
+                return false;
             // 以前の親からは削除
             sideWalk?.ParentRoad?.RemoveSideWalk(sideWalk);
             sideWalk.SetParent(this);
             sideWalks.Add(sideWalk);
+            return true;
         }
 
         /// <summary>
