@@ -608,7 +608,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             }
 
-            static void Check(RnLane lane)
+            static void SeparateLane(RnLane lane)
             {
                 // 境界線がない場合は何もしない
                 if (lane.PrevBorder == null || lane.NextBorder == null)
@@ -634,7 +634,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             foreach (var lane in AllLanesWithMedian)
-                Check(lane);
+                SeparateLane(lane);
         }
         /// <summary>
         /// 接続を解除する
@@ -757,10 +757,15 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public override bool Check()
         {
-
             foreach (var BorderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
             {
                 if (!this.IsValidBorderAdjacentNeighbor(BorderType, true))
+                    return false;
+            }
+
+            foreach (var lane in AllLanesWithMedian)
+            {
+                if (lane.Check() == false)
                     return false;
             }
 
