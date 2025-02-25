@@ -285,6 +285,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             static void MergeSideWays(RnSideWalk srcSw, RnSideWalk dstSw)
             {
+                // #TODO : 現状の使い方だと問題ないが, 今後OutsideWay同士, InsideWay同士が繋がっているかの保証が無いのでポイント単位でチェックすべき
                 dstSw.SetSideWays(
                     RnWayEx.CreateMergedWay(srcSw.OutsideWay, dstSw.OutsideWay, false)
                     , RnWayEx.CreateMergedWay(srcSw.InsideWay, dstSw.InsideWay, false)
