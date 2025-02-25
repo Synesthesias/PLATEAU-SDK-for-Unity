@@ -85,7 +85,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 resultList.Add(gen);
             }
             
-            // 交差点を生成します。
+            // 横断歩道を生成します。
             var crosswalkInstances = new CrosswalkComposer().Compose(target, crosswalkFrequency);
             foreach (var crosswalk in crosswalkInstances)
             {
