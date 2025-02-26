@@ -85,12 +85,12 @@ namespace PLATEAU.RoadNetwork.AddSystem
                     if (isLeftSideWalk)
                     {
                         laneEdgeWay = road.GetLeftWayOfLanes();
-                        edgePoint = (isRoadPrev ^ road.MainLanes.First().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
+                        edgePoint = (isRoadPrev ^ road.MainLanes.First().IsReversed ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
                     }
                     else
                     {
                         laneEdgeWay = road.GetRightWayOfLanes();
-                        edgePoint = (isRoadPrev ^ road.MainLanes.Last().IsReverse ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
+                        edgePoint = (isRoadPrev ^ road.MainLanes.Last().IsReversed ^ laneEdgeWay.IsReversed) ? laneEdgeWay.LineString.Points.First() : laneEdgeWay.LineString.Points.Last();
                     }
 
                     // Laneの頂点と共有化

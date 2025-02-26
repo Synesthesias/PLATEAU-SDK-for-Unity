@@ -144,7 +144,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsLeftLane(RnLane lane)
         {
-            return lane.IsReverse == false;
+            return lane.IsReversed == false;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsRightLane(RnLane lane)
         {
-            return lane.IsReverse == true;
+            return lane.IsReversed == true;
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 各レーンのWayの向きは変えずにIsRevereだけ変える
             // 左車線/右車線の関係が変わるので配列の並びも逆にする
             foreach (var lane in AllLanesWithMedian)
-                lane.IsReverse = !lane.IsReverse;
+                lane.IsReversed = !lane.IsReversed;
             mainLanes.Reverse();
 
             // 歩道の設定も逆にする(左車線/右車線の関係が変わるので)

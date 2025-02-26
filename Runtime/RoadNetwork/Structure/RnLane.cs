@@ -115,7 +115,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 親Roadと逆方向(右車線等)
         /// </summary>
-        public bool IsReverse { get; set; }
+        public bool IsReversed { get; set; }
 
         /// <summary>
         /// 内部的に持つだけ. 中心線
@@ -385,7 +385,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
-            IsReverse = !IsReverse;
+            IsReversed = !IsReversed;
         }
 
         /// <summary>

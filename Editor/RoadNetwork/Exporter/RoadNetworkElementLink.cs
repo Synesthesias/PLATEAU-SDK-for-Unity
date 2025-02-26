@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.Native;
+using PLATEAU.RoadNetwork.Data;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using PLATEAU.Native;
-using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -177,7 +177,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             {
                 if (!lane.IsValid) continue;
 
-                if (IsReverse == laneAll[lane.ID].IsReverse)
+                if (IsReverse == laneAll[lane.ID].IsReversed)
                 {
                     lanes.Add(lane);
                 }
