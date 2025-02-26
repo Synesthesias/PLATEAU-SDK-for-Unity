@@ -115,14 +115,14 @@ namespace PLATEAU.RoadNetwork.Util
             // 子Drawer
             protected virtual IEnumerable<Drawer<TWork, T>> GetChildDrawers() => Enumerable.Empty<Drawer<TWork, T>>();
 
-            public bool Draw(TWork work, T self, VisibleType visibleType)
+            public bool Draw(TWork work, T self, VisibleType? overrideVisibleType = null)
             {
                 if (visible == false)
                     return false;
 
                 if (self == null)
                     return false;
-
+                var visibleType = overrideVisibleType ?? work.visibleType;
                 var lastVisibleType = visibleType;
                 try
                 {
@@ -138,6 +138,9 @@ namespace PLATEAU.RoadNetwork.Util
                     static bool Exec(Drawer<TWork, T> drawer, TWork work, T obj)
                     {
                         if (drawer.visible == false)
+                            return false;
+
+                        if (drawer.IsShowTarget(work, obj) == false)
                             return false;
 
                         var visibleType = work.visibleType;

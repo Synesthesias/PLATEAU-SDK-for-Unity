@@ -240,7 +240,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return track;
 
             // 中央テーブル作れない時は諦める
-            if (widthTable == null)
+            if (widthTable == null || op.DevAllowCenterLine == false)
                 return null;
 
             List<BezierKnot> knots = new()
@@ -394,6 +394,8 @@ namespace PLATEAU.RoadNetwork.Structure
             Vector3 toPos, Vector3 toNormal, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             var offset = 0.01f;
+            var curveOffset = 3;
+
             var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
             var toRay = new Ray(toPos - toNormal * offset, -toNormal);
 
@@ -416,7 +418,6 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsCollide(cp1, from, to) || IsCollide(cp2, from, to))
                 return null;
 
-            var curveOffset = 3;
             var spline = new Spline();
             spline.Add(new BezierKnot(fromPos), TangentMode.AutoSmooth);
 
@@ -503,6 +504,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 空の場合は全てのトラックが対象となる
         /// </summary>
         public HashSet<RnLineString> TargetBorderLineStrings { get; set; } = new();
+
+        /// <summary>
+        /// デバッグ用) 中央パスを用いるかどうか
+        /// </summary>
+        public bool DevAllowCenterLine { get; set; } = false;
 
         /// <summary>
         /// ビルド対象のトラックかどうか

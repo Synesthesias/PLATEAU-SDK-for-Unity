@@ -18,6 +18,131 @@ using UnityEngine;
 
 namespace PLATEAU.RoadNetwork.Factory
 {
+    public class LineStringFactoryWork
+    {
+        public class PointCache
+        {
+            public List<RnPoint> Points { get; set; } = new();
+
+            // Pointsから生成されたLineString(最適化で必ずしもPointsと一致するとは限らない)
+            public RnLineString LineString { get; set; }
+        }
+
+        // key   : RnLineString.PointsのDebugIdのxor(高速化用)
+        // value : PointCache
+        public Dictionary<ulong, List<PointCache>> RnPointList2LineStringMap { get; } = new();
+
+        /// <summary>
+        /// pointsのリストの同値判定
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isReversed"></param>
+        /// <returns></returns>
+        public static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReversed)
+        {
+            isReversed = false;
+            if (a.Count != b.Count)
+                return false;
+
+            // 空LineStringで一致判定にすると全く異なる場所がつながる可能性があるためfalse
+            if (a.Count == 0)
+                return false;
+
+            isReversed = a[0] != b[0];
+            for (var i = 0; i < a.Count; ++i)
+            {
+                var aIndex = i;
+                var bIndex = isReversed ? a.Count - 1 - i : i;
+                if (a[aIndex] != b[bIndex])
+                    return false;
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// pointsからRnLineStringを作成する. キャッシュがある場合はそれを使う
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="isCached"></param>
+        /// <param name="isReversed"></param>
+        /// <param name="useCache"></param>
+        /// <param name="createLineStringFunc"></param>
+        /// <returns></returns>
+        public RnLineString CreateLineString(List<RnPoint> points, out bool isCached, out bool isReversed, bool useCache = true, Func<List<RnPoint>, RnLineString> createLineStringFunc = null)
+        {
+            isCached = false;
+            if (points == null)
+            {
+                isReversed = false;
+                return null;
+            }
+
+            static RnLineString Impl(List<RnPoint> points)
+            {
+                return RnLineString.Create(points, false);
+            }
+
+            createLineStringFunc ??= Impl;
+
+            // キャッシュ使わない設定
+            if (useCache == false)
+            {
+                var ls = createLineStringFunc(points);
+                isReversed = false;
+                return ls;
+            }
+            var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
+            var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
+            foreach (var line in lines)
+            {
+                // ここでout isReversedで渡すと, キャッシュヒットしなかった時にisReversedに何が入るかは未定義になり
+                // その下で入れ忘れるとバグるので一応変数分けておく
+                if (IsEqual(line.Points, points, out var isRev))
+                {
+                    isCached = true;
+                    isReversed = isRev;
+                    return line.LineString;
+                }
+            }
+
+            // 新規で作るときはfalse
+            isReversed = false;
+            var newLine = createLineStringFunc(points);
+            lines.Add(new PointCache
+            {
+                // リスト書き換えられないようにコピーして持っておく
+                Points = points.ToList(),
+                LineString = newLine
+            });
+            return newLine;
+        }
+
+        /// <summary>
+        /// pointsからRnWayを作成する. キャッシュがある場合はそれを使う
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="isCached"></param>
+        /// <param name="useCache"></param>
+        /// <returns></returns>
+        public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
+        {
+            isCached = false;
+            if (points == null)
+                return null;
+
+            var ls = CreateLineString(points, out isCached, out var isReversed, useCache);
+            return new RnWay(ls, isReversed);
+        }
+
+        public RnWay CreateWay(List<RnPoint> points)
+        {
+            return CreateWay(points, out var _);
+        }
+    }
+
     [Serializable]
     public partial class RoadNetworkFactory
     {
@@ -101,7 +226,7 @@ namespace PLATEAU.RoadNetwork.Factory
         [field: SerializeField]
         public RnModelEx.CalibrateIntersectionBorderOption CalibrateIntersectionOption { get; set; } = new();
 
-        // 道路や交差点で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
+        // 道路で別の道路との境界線が繋がっている場合(間に輪郭線が入っていない)場合に少しずらして挿入する
         [field: SerializeField]
         public bool SeparateContinuousBorder { get; set; } = true;
 
@@ -133,9 +258,7 @@ namespace PLATEAU.RoadNetwork.Factory
 
             public Dictionary<RVertex, RnPoint> PointMap { get; } = new();
 
-            // key   : RnLineString.PointsのDebugIdのxor(高速化用)
-            // value : RnLineString
-            public Dictionary<ulong, List<RnLineString>> RnPointList2LineStringMap { get; } = new();
+            public LineStringFactoryWork RnLIneStringCache { get; } = new();
 
             // 行き止まり検出用. 角度がこの値以下の場合は同一直線と判断
             public float terminateAllowEdgeAngle = 20f;
@@ -158,66 +281,15 @@ namespace PLATEAU.RoadNetwork.Factory
                 return PointMap.GetValueOrCreate(v, x => new RnPoint(x.Position));
             }
 
-            private static bool IsEqual(List<RVertex> a, List<RVertex> b, out bool isReverse)
-            {
-                isReverse = false;
-                if (a.Count != b.Count)
-                    return false;
-                if (a[0] == b[0])
-                {
-                    isReverse = false;
-                    return a.SequenceEqual(b);
-                }
-
-                isReverse = true;
-                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
-            }
-
-            private static bool IsEqual(List<RnPoint> a, List<RnPoint> b, out bool isReverse)
-            {
-                isReverse = false;
-                if (a.Count != b.Count)
-                    return false;
-                if (a[0] == b[0])
-                {
-                    isReverse = false;
-                    return a.SequenceEqual(b);
-                }
-
-                isReverse = true;
-                return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
-            }
-
             public RnWay CreateWay(List<RnPoint> points)
             {
-                return CreateWay(points, out var _);
+                return RnLIneStringCache.CreateWay(points, out var _);
             }
+
 
             public RnWay CreateWay(List<RnPoint> points, out bool isCached, bool useCache = true)
             {
-                isCached = false;
-                if (points == null)
-                    return null;
-
-                // キャッシュ使わない設定
-                if (useCache == false)
-                {
-                    var ls = RnLineString.Create(points, true);
-                    return new RnWay(ls, false);
-                }
-                var key = points.Aggregate(0Lu, (a, p) => a ^ p.DebugMyId);
-                var lines = RnPointList2LineStringMap.GetValueOrCreate(key);
-                foreach (var line in lines)
-                {
-                    if (IsEqual(line.Points, points, out var isReverse))
-                    {
-                        isCached = true;
-                        return new RnWay(line, false);
-                    }
-                }
-                var newLine = RnLineString.Create(points, true);
-                lines.Add(newLine);
-                return new RnWay(newLine, false);
+                return RnLIneStringCache.CreateWay(points, out isCached, useCache);
             }
 
             public RnWay CreateWay(List<RVertex> vertices)
@@ -457,7 +529,8 @@ namespace PLATEAU.RoadNetwork.Factory
                         case 2: return RoadType.Road;
                         // 3つ以上の隣接オブジェクトを持つかどうか
                         default: return RoadType.Intersection;
-                    };
+                    }
+                    ;
                 }
             }
 
@@ -924,7 +997,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     }
                 }
 
-                // 交差点の
+                // 道路で境界線が直接つながっているような場合に微小な線を追加する
                 if (SeparateContinuousBorder)
                     ret.SeparateContinuousBorder();
 

@@ -278,6 +278,14 @@ namespace PLATEAU.RoadNetwork.Util
             public IEnumerable<Vector2> BorderVertices => BorderVertexIndices.Select(i => SrcVertices[i]);
         }
 
+        /// <summary>
+        /// verticesで表される線分を両端から見ていき, 終端点となる線分を求める
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="toleranceAngleDegForMidEdge"></param>
+        /// <param name="skipAngleDeg"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
         public static FindBorderEdgesResult FindBorderEdges(IReadOnlyList<Vector2> vertices, float toleranceAngleDegForMidEdge = 20f, float skipAngleDeg = 20f, AxisPlane plane = RnDef.Plane)
         {
             var verts = vertices.ToList();

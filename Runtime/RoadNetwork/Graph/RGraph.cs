@@ -140,22 +140,6 @@ namespace PLATEAU.RoadNetwork.Graph
         /// </summary>
         public IReadOnlyCollection<REdge> Edges => edges;
 
-        public RRoadTypeMask TypeMask
-        {
-            get
-            {
-                var ret = RRoadTypeMask.Empty;
-                foreach (var edge in Edges)
-                {
-                    foreach (var face in edge.Faces)
-                        ret |= face.RoadTypes;
-                }
-
-                return ret;
-            }
-        }
-
-
         public IEnumerable<RFace> GetFaces()
         {
             foreach (var edge in Edges)
@@ -697,11 +681,6 @@ namespace PLATEAU.RoadNetwork.Graph
         //----------------------------------
         // start: フィールド
         //----------------------------------
-        /// <summary>
-        /// 表示非表示
-        /// </summary>
-        [field: SerializeField]
-        public bool Visible { get; set; } = true;
 
         /// <summary>
         /// 対応するCityObjectGroup
@@ -854,7 +833,6 @@ namespace PLATEAU.RoadNetwork.Graph
         /// moveEdge = falseの時は自身のEdgesは移動しない.
         /// </summary>
         /// <param name="dst"></param>
-        /// <param name="moveEdge"></param>
         public bool TryMergeTo(RFace dst)
         {
             if (dst.CityObjectGroup && CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
@@ -957,11 +935,25 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public HashSet<RFace> Faces { get; } = new HashSet<RFace>();
 
+        /// <summary>
+        /// 道路タイプ
+        /// </summary>
         public RRoadTypeMask RoadTypes
         {
             get
             {
                 return Faces.Aggregate((RRoadTypeMask)0, (a, f) => a | f.RoadTypes);
+            }
+        }
+
+        /// <summary>
+        /// 最大LODレベル
+        /// </summary>
+        public int MaxLodLevel
+        {
+            get
+            {
+                return Faces.Any() ? Faces.Max(f => f.LodLevel) : 0;
             }
         }
 

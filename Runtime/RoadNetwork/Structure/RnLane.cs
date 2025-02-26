@@ -544,6 +544,42 @@ namespace PLATEAU.RoadNetwork.Structure
             return RnLaneBorderDir.Right2Left;
         }
 
+
+        /// <summary>
+        /// 不正値チェック
+        /// </summary>
+        public bool Check()
+        {
+            // 
+            if (LeftWay != null && RightWay != null && PrevBorder != null && NextBorder != null)
+            {
+                if (PrevBorder.Points.Contains(LeftWay.GetPoint(0)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにLeftWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+                if (PrevBorder.Points.Contains(RightWay.GetPoint(0)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにRightWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+
+                if (NextBorder.Points.Contains(LeftWay.GetPoint(-1)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにLeftWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+
+                if (NextBorder.Points.Contains(RightWay.GetPoint(-1)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにRightWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         // ---------------
         // Static Methods
         // ---------------

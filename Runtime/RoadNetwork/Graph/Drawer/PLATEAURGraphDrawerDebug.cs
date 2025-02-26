@@ -511,9 +511,6 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             }
             protected override bool DrawImpl(DrawWork work, RFace face)
             {
-                if (face.Visible == false)
-                    return false;
-
                 var roadTypes = AdjustRoadTypeMask(face.RoadTypes);
                 if (roadTypes.HasAnyFlag(work.Self.showFaceType) == false)
                     return false;

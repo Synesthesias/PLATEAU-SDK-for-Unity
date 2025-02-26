@@ -101,7 +101,6 @@ namespace PLATEAU.RoadNetwork.Structure
 
             set
             {
-                var points = value.ToArray();
                 LineString = RnLineString.Create(value, false);
             }
         }
@@ -512,7 +511,6 @@ namespace PLATEAU.RoadNetwork.Structure
             if (other == null)
                 return false;
             return LineString == other.LineString;
-
         }
 
         /// <summary>
@@ -733,10 +731,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
+        /// <param name="removeDuplicate"></param>
         /// <returns></returns>
-        public static RnWay CreateMergedWay(RnWay a, RnWay b)
+        public static RnWay CreateMergedWay(RnWay a, RnWay b, bool removeDuplicate = true)
         {
-            var ls = RnLineString.Create(a.Points.Concat(b.Points));
+            var ls = RnLineString.Create((a?.Points ?? new List<RnPoint>()).Concat(b?.Points ?? new List<RnPoint>()), removeDuplicate);
             return new RnWay(ls);
         }
 
@@ -913,7 +912,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 2D平面におけるRnway同士の距離を返す
+        /// 2D平面におけるRnWay同士の距離を返す
         /// </summary>
         /// <param name="self"></param>
         /// <param name="other"></param>
@@ -990,5 +989,27 @@ namespace PLATEAU.RoadNetwork.Structure
 
             return true;
         }
+
+        /// <summary>
+        /// 内部のポイントが同じかどうか.
+        /// ただし、リストが逆順でもtrueとなる(その時はisReverseSequenceはtrue)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="isReverseSequence"></param>
+        /// <returns></returns>
+        public static bool IsSequentialEqual(RnWay a, RnWay b, out bool isReverseSequence)
+        {
+            isReverseSequence = false;
+            // 参照一致チェック
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            return RnLineStringEx.IsSequenceEqual(a.LineString, b.LineString, out isReverseSequence);
+        }
+
     }
 }

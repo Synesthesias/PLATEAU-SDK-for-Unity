@@ -1572,16 +1572,16 @@ namespace PLATEAU.Util.GeoGraph
         /// verticesで表される線分を, toleranceAngleDeg/midPointToleranceを使った同一直線判定でグルーピングする
         /// 戻り値はグループの始点インデックス
         /// 例) (v0, v1, v2, v3, v4, v5)
-        /// v0~v1, v1~v5が同一直線なら[0, 2]が返る
-        /// v0~v5が同一直線なら[0]が返る
+        /// v0~v1, v1~v5が同一直線なら[0, 2, 5]が返る
+        /// v0~v5が同一直線なら[0, 5]が返る
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="toleranceAngleDeg"></param>
         /// <param name="midPointTolerance"></param>
-        /// <returns></returns>
+        /// <param name="checkAdjustSegmentAngleOnly"></param>
         public static List<int> SplitByCollinearSegment(IReadOnlyList<Vector2> vertices, float toleranceAngleDeg = 0f, float midPointTolerance = 0f, bool checkAdjustSegmentAngleOnly = false)
         {
-            return GeoGraphEx.SplitByCollinearSegment(vertices, v => (Vector3)v, toleranceAngleDeg, midPointTolerance);
+            return GeoGraphEx.SplitByCollinearSegment(vertices, v => (Vector3)v, toleranceAngleDeg, midPointTolerance, checkAdjustSegmentAngleOnly);
         }
 
         [Serializable]
@@ -1598,6 +1598,8 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="edgeBaseIndex"></param>
         /// <param name="edges"></param>
         /// <param name="toleranceAngleDegForMidEdge"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
         /// <returns></returns>
         public static List<int> FindCollinearRange(
             int edgeBaseIndex
@@ -1624,7 +1626,7 @@ namespace PLATEAU.Util.GeoGraph
                 // 差が小さいほうから見る
                 var es = Enumerable.Range(0, 2)
                     // すでに停止している or 最後まで進んだら無視
-                    .Where(i => stop[i] == false && startIndex <= infos[i].now + infos[i].d && infos[i].now + infos[i].d <= endIndex)
+                    .Where(i => stop[i] == false && startIndex <= (infos[i].now + infos[i].d) && (infos[i].now + infos[i].d) <= endIndex)
                     .Select(j =>
                     {
                         var info = infos[j];
@@ -1752,6 +1754,112 @@ namespace PLATEAU.Util.GeoGraph
             // edge -> 頂点の配列に戻すために最後のインデックスを足す
             ret.Add(ret.Last() + 1);
             return ret;
+        }
+
+        /// <summary>
+        /// verticesを始点終点から見ていき,中央を表す頂点のインデックスを返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="edgeStartIndex">中央線分の開始インデックス</param>
+        /// <param name="edgeEndIndex">中央線分の終了インデックス</param>
+        /// <param name="toleranceAngleDegForMidEdge">中心線と同一直線と判断する線分の角度[deg]</param>
+        /// <param name="skipAngleDeg">開始線分との角度がこれ以下の間は絶対に中心線にならない</param>
+        /// <param name="op"></param>
+        /// <returns></returns>
+        public static bool TryFindMidEdge2(
+            IReadOnlyList<Vector2> vertices
+            , out int edgeStartIndex
+            , out int edgeEndIndex
+            , float toleranceAngleDegForMidEdge = 20f
+            , float skipAngleDeg = 20f
+            , DebugFindOppositeOption op = null)
+        {
+            edgeStartIndex = edgeEndIndex = -1;
+            var indices = SplitByCollinearSegment(vertices, toleranceAngleDegForMidEdge, skipAngleDeg);
+            var simpleVertices = indices.Select(i => vertices[i]).ToList();
+
+            var terminateIndex = FindTerminateEdgeIndex(simpleVertices);
+            if (terminateIndex < 0 || terminateIndex >= indices.Count - 1)
+                return false;
+
+            edgeStartIndex = indices[terminateIndex];
+            edgeEndIndex = indices[terminateIndex + 1];
+            return true;
+        }
+
+        /// <summary>
+        /// verticesを始点終点から見ていき, 中間地点となる辺を表すインデックスを返す
+        /// vertices[index], vertices[index + 1]が中間地点となる
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static int FindTerminateEdgeIndex(
+            IReadOnlyList<Vector2> vertices)
+        {
+            var edges = GeoGraphEx.GetEdges(vertices, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
+
+            // 線分数が3以下の時は中間点そのまま
+            if (edges.Count <= 3)
+            {
+                return edges.Count / 2;
+            }
+
+            var startSideIndex = 0;
+            var endSideIndex = edges.Count - 1;
+
+            // left ~ rightの間にエッジが1つしかなくなるまで続ける
+            //   -> その残った一つがエッジ
+            while (startSideIndex < endSideIndex - 2)
+            {
+                var startSideEdge = edges[startSideIndex];
+                // 0 ~ edge.Countまでつながっているような線なので逆順の線分の方向を逆にする
+                var endSideEdge = edges[endSideIndex].Reversed();
+
+                // 中心線を計算
+                var centerRay = LerpRay(startSideEdge.Ray, endSideEdge.Ray, 0.5f);
+                var startSideNormalDir = new Vector2(startSideEdge.Direction.y, -startSideEdge.Direction.x);
+                var endSideNormalDir = new Vector2(endSideEdge.Direction.y, -endSideEdge.Direction.x);
+                var checkPoints = new[]
+                {
+                    new { ray = new Ray2D(startSideEdge.Start, startSideNormalDir), isStartSide = true },
+                    new { ray = new Ray2D(startSideEdge.End, startSideNormalDir), isStartSide = true },
+                    new { ray = new Ray2D(endSideEdge.Start, endSideNormalDir), isStartSide = false },
+                    new { ray = new Ray2D(endSideEdge.End, endSideNormalDir), isStartSide = false }
+                };
+
+                var maxCenterRayOffset = float.MinValue;
+                bool? maxCenterRayIsStartSide = null;
+                foreach (var cp in checkPoints)
+                {
+                    var hit = LineUtil.LineIntersection(centerRay, cp.ray, out var inter, out var centerRayOffset, out var rayBOffset);
+                    if (hit)
+                        continue;
+
+                    if (maxCenterRayOffset < centerRayOffset || maxCenterRayIsStartSide == null)
+                    {
+                        maxCenterRayOffset = centerRayOffset;
+                        maxCenterRayIsStartSide = cp.isStartSide;
+                    }
+                }
+
+                if (maxCenterRayIsStartSide.HasValue == false)
+                    maxCenterRayIsStartSide = startSideEdge.Magnitude > endSideEdge.Magnitude;
+
+                // より遠いのが左の場合右の線分を進める
+                if (maxCenterRayIsStartSide.Value)
+                {
+                    endSideIndex--;
+                }
+                else
+                {
+                    startSideIndex++;
+                }
+            }
+
+            // ここに来る段階でleftIndex == rightIndex - 2のはず
+            // 開始/終了線分が終端位置にはならないように1, N-2でClampする
+            var edgeBaseIndex = Mathf.Clamp((startSideIndex + endSideIndex) / 2, 1, edges.Count - 2);
+            return edgeBaseIndex;
         }
 
 

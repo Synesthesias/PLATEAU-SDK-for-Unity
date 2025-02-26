@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using PLATEAU.RoadNetwork.CityObject;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.RoadNetwork.Structure;
@@ -16,6 +17,7 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
     public class PLATEAURoadNetworkTesterEditor : UnityEditor.Editor
     {
         private HashSet<object> foldouts = new();
+
         public override void OnInspectorGUI()
         {
             var obj = target as PLATEAURoadNetworkTester;
@@ -29,6 +31,19 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
             if (GUILayout.Button("Check Lod"))
                 obj.RemoveSameNameCityObjectGroup();
 
+            if (GUILayout.Button("Add SceneSelected CityObject To Test Preset"))
+            {
+                var targets = Selection.gameObjects
+                    .Select(go => go.GetComponent<PLATEAUCityObjectGroup>())
+                    .Where(cog => cog)
+                    .ToList();
+                if (targets.Any())
+                    obj.TargetPresets.Add(new PLATEAURoadNetworkTester.TestTargetPresets
+                    {
+                        targets = targets
+                    });
+            }
+
             if (RnEditorUtil.Foldout("Option", foldouts, "Option"))
             {
                 var cityObjects = obj.GetComponent<PLATEAUSubDividedCityObjectGroup>();
@@ -39,9 +54,16 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                 if (GUILayout.Button("Create SubDivided City Object"))
                 {
                     cityObjects = obj.gameObject.GetOrAddComponent<PLATEAUSubDividedCityObjectGroup>();
+
+                    var targets = obj.GetTargetCityObjects();
+                    //var subDivideTask = Task.Run(() =>
+                    //{
                     var subDividedRes =
-                        SubDividedCityObjectFactory.ConvertCityObjects(obj.GetTargetCityObjects(), useContourMesh: obj.Factory.UseContourMesh);
+                        SubDividedCityObjectFactory.ConvertCityObjects(targets,
+                            useContourMesh: obj.Factory.UseContourMesh);
                     cityObjects.CityObjects = subDividedRes.ConvertedCityObjects;
+                    //});
+                    //subDivideTask.ContinueWithErrorCatch();
                 }
 
                 if (cityObjects && cityObjects.CityObjects.Any() && GUILayout.Button("Create RGraph"))
