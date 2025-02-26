@@ -1,14 +1,9 @@
-﻿using NetTopologySuite.IO;
-using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.RoadNetwork.Structure.Drawer;
+﻿using PLATEAU.CityInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static PLATEAU.RoadNetwork.Structure.Drawer.PLATEAURnModelDrawerDebug;
 using static PLATEAU.RoadNetwork.Util.RnDebugDrawerBase;
-using Object = UnityEngine.Object;
 
 namespace PLATEAU.RoadNetwork.Util
 {

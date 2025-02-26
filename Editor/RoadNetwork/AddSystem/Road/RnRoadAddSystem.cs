@@ -154,9 +154,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
             foreach (var lane in road.AllLanesWithMedian)
             {
-                var oldEdgePoints = new List<RnPoint>();
-                var newEdgePoints = new List<RnPoint>();
-                int i = 0;
+                // var oldEdgePoints = new List<RnPoint>();
+                // var newEdgePoints = new List<RnPoint>();
+                // int i = 0;
                 foreach (var way in new[] { lane.LeftWay, lane.RightWay })
                 {
                     if (!scannedLineStrings.Contains(way.LineString))
