@@ -95,7 +95,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             var prevColor = method switch
             {
                 LaneLineDrawMethod.Gizmos => Gizmos.color,
-                LaneLineDrawMethod.Handles => Handles.color
+                LaneLineDrawMethod.Handles => Handles.color,
+                _ => throw new ArgumentOutOfRangeException()
             };
             
             switch (method)

@@ -9,7 +9,6 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
-using static PLATEAU.RoadNetwork.Tester.PLATEAURnTesterLineString;
 
 namespace PLATEAU.RoadNetwork.Tester
 {

@@ -1,7 +1,6 @@
 using PLATEAU.RoadAdjust.RoadMarking.Crosswalk;
 using PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;

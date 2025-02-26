@@ -1,6 +1,4 @@
-﻿using PLATEAU.CityGML;
-using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Factory;
+﻿using PLATEAU.RoadNetwork.Factory;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure.Drawer;
 using PLATEAU.RoadNetwork.Util;
