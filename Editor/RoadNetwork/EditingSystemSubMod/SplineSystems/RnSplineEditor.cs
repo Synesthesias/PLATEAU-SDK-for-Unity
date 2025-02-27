@@ -91,13 +91,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             Vector3 startLeftPoint, startRightPoint, endLeftPoint, endRightPoint;
             {
                 var way = road.GetLeftWayOfLanes();
-                startLeftPoint = road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
-                endLeftPoint = road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+                startLeftPoint = road.MainLanes[0].IsReversed ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
+                endLeftPoint = road.MainLanes[0].IsReversed ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
             }
             {
                 var way = road.GetRightWayOfLanes();
-                startRightPoint = road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
-                endRightPoint = road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+                startRightPoint = road.MainLanes.Last().IsReversed ^ way.IsReversed ? way.LineString.Points.Last().Vertex : way.LineString.Points.First().Vertex;
+                endRightPoint = road.MainLanes.Last().IsReversed ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
             }
 
             core.SetStartPointConstraint(true,
@@ -187,7 +187,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var leftStartPoint = leftLane.LeftWay.Points.First();
                 var leftEndPoint = leftLane.LeftWay.Points.Last();
 
-                var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReverse);
+                var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReversed);
                 leftLane.LeftWay.SetPointsUnkeepReference(nextLeftWayPoints);
                 offset -= laneWidth;
 
@@ -200,7 +200,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var rightStartPoint = leftLane.RightWay.Points.First();
                 var rightEndPoint = leftLane.RightWay.Points.Last();
 
-                var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReverse);
+                var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, leftLane.IsReversed);
                 leftLane.RightWay.SetPointsUnkeepReference(nextRightWayPoints);
 
                 // 端点のみ元の参照を保持
@@ -220,7 +220,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var rightStartPoint = rightLane.RightWay.Points.First();
                 var rightEndPoint = rightLane.RightWay.Points.Last();
 
-                var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReverse);
+                var nextRightWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReversed);
                 rightLane.RightWay.SetPointsUnkeepReference(nextRightWayPoints);
 
                 // 端点のみ元の参照を保持
@@ -234,7 +234,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 var leftStartPoint = rightLane.LeftWay.Points.First();
                 var leftEndPoint = rightLane.LeftWay.Points.Last();
 
-                var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReverse);
+                var nextLeftWayPoints = ConvertSplineToLineStringPointsNonSmooth(spline, offset, rightLane.IsReversed);
                 rightLane.LeftWay.SetPointsUnkeepReference(nextLeftWayPoints);
 
                 // 端点のみ元の参照を保持

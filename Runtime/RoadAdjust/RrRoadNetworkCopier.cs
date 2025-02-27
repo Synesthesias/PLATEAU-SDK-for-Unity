@@ -18,7 +18,7 @@ namespace PLATEAU.RoadAdjust
         public RnModel Copy(RnModel src, out Dictionary<RnRoadBase, RnRoadBase> outRoadSrcToDst)
         {
             // src→dstの辞書を構築しながら、srcをdstに置き換えてコピーします。
-            
+
             // Pointsのコピー
             var points = new Dictionary<RnPoint, RnPoint>();
             foreach (var srcPoint in src.CollectAllLineStrings().SelectMany(ls => ls.Points).Distinct())
@@ -27,7 +27,7 @@ namespace PLATEAU.RoadAdjust
                 dstPoint.DebugMyId = srcPoint.DebugMyId;
                 points.Add(srcPoint, dstPoint);
             }
-            
+
             // LineStringsのコピー
             var lineStrings = new Dictionary<RnLineString, RnLineString>();
             foreach (var srcLineStr in src.CollectAllLineStrings())
@@ -36,9 +36,9 @@ namespace PLATEAU.RoadAdjust
                 dstLineStr.DebugMyId = srcLineStr.DebugMyId;
                 lineStrings.Add(srcLineStr, dstLineStr);
             }
-                
+
             // Wayのコピー
-            var ways = new Dictionary<RnWay, RnWay>(); 
+            var ways = new Dictionary<RnWay, RnWay>();
             foreach (var srcWay in src.CollectAllWays())
             {
                 var lineStr = lineStrings[srcWay.LineString];
@@ -46,7 +46,7 @@ namespace PLATEAU.RoadAdjust
                 dstWay.DebugMyId = srcWay.DebugMyId;
                 ways.Add(srcWay, dstWay);
             }
-            
+
             // Laneのコピー
             var lanes = new Dictionary<RnLane, RnLane>();
             foreach (var srcLane in src.CollectAllLanes())
@@ -55,11 +55,11 @@ namespace PLATEAU.RoadAdjust
                 var dstRightWay = srcLane.RightWay == null ? null : ways[srcLane.RightWay];
                 var dstPrevBorder = srcLane.PrevBorder == null ? null : ways[srcLane.PrevBorder];
                 var dstNextBorder = srcLane.NextBorder == null ? null : ways[srcLane.NextBorder];
-                
+
                 var dstLane = new RnLane(dstLeftWay, dstRightWay, dstPrevBorder, dstNextBorder);
-                dstLane.IsReverse = srcLane.IsReverse;
+                dstLane.IsReversed = srcLane.IsReversed;
                 dstLane.DebugMyId = srcLane.DebugMyId;
-                
+
                 lanes.Add(srcLane, dstLane);
             }
 
@@ -84,26 +84,26 @@ namespace PLATEAU.RoadAdjust
                 roads.Add(srcRoad, dstRoad);
                 roadBases.Add(srcRoad, dstRoad);
             }
-            
+
             // LaneのParentをコピー
-            foreach(var (srcLane, dstLane) in lanes)
+            foreach (var (srcLane, dstLane) in lanes)
             {
                 dstLane.Parent = roads[srcLane.Parent];
             }
-            
-            
+
+
             // Intersectionのうち接続でない部分をコピー
             var inters = new Dictionary<RnIntersection, RnIntersection>();
-            foreach(var srcInter in src.Intersections)
+            foreach (var srcInter in src.Intersections)
             {
                 var dstInter = new RnIntersection(srcInter.TargetTrans);
                 dstInter.DebugMyId = srcInter.DebugMyId;
                 dstInter.SetIsEmptyIntersection(srcInter.IsEmptyIntersection);
-                
+
                 inters.Add(srcInter, dstInter);
                 roadBases.Add(srcInter, dstInter);
             }
-            
+
             // Intersection Edgeのコピー
             var neighbors = new Dictionary<RnIntersectionEdge, RnIntersectionEdge>();
             foreach (var srcEdge in src.Intersections.SelectMany(i => i.Edges))
@@ -137,15 +137,15 @@ namespace PLATEAU.RoadAdjust
                     dstEdges.Add(neighbors[srcEdge]);
                 }
                 dstInter.ReplaceEdges(dstEdges);
-                
+
                 //tracks
                 foreach (var srcTrack in srcInter.Tracks)
                 {
                     dstInter.TryAddOrUpdateTrack(tracks[srcTrack]);
                 }
-                
+
             }
-            
+
             // Roadのうち接続部分をコピー
             foreach (var (srcRoad, dstRoad) in roads)
             {
@@ -153,13 +153,13 @@ namespace PLATEAU.RoadAdjust
                 var next = srcRoad.Next == null ? null : roadBases[srcRoad.Next];
                 dstRoad.SetPrevNext(prev, next);
             }
-            
+
             // Sidewalkのコピー
             var sidewalks = new Dictionary<RnSideWalk, RnSideWalk>();
-            foreach(var srcSidewalk in roadBases.Keys.SelectMany(rb => rb.SideWalks))
+            foreach (var srcSidewalk in roadBases.Keys.SelectMany(rb => rb.SideWalks))
             {
                 var dstParentRoad = srcSidewalk.ParentRoad == null || !roadBases.ContainsKey(srcSidewalk.ParentRoad) ? null : roadBases[srcSidewalk.ParentRoad];
-                var dstOutside = srcSidewalk.OutsideWay == null  || !ways.ContainsKey(srcSidewalk.OutsideWay) ? null : ways[srcSidewalk.OutsideWay];
+                var dstOutside = srcSidewalk.OutsideWay == null || !ways.ContainsKey(srcSidewalk.OutsideWay) ? null : ways[srcSidewalk.OutsideWay];
                 var dstInside = srcSidewalk.InsideWay == null || !ways.ContainsKey(srcSidewalk.InsideWay) ? null : ways[srcSidewalk.InsideWay];
                 var dstStartEdge = srcSidewalk.StartEdgeWay == null || !ways.ContainsKey(srcSidewalk.StartEdgeWay) ? null : ways[srcSidewalk.StartEdgeWay];
                 var dstEndEdge = srcSidewalk.EndEdgeWay == null || !ways.ContainsKey(srcSidewalk.EndEdgeWay) ? null : ways[srcSidewalk.EndEdgeWay];
@@ -173,17 +173,17 @@ namespace PLATEAU.RoadAdjust
                 dstSidewalk.DebugMyId = srcSidewalk.DebugMyId;
                 sidewalks.Add(srcSidewalk, dstSidewalk);
             }
-            
+
             // Sidewalkの代入
-            foreach(var (srcRoadBase, dstRoadBase) in roadBases)
+            foreach (var (srcRoadBase, dstRoadBase) in roadBases)
             {
                 foreach (var srcSidewalk in srcRoadBase.SideWalks)
                 {
                     dstRoadBase.AddSideWalk(sidewalks[srcSidewalk]);
                 }
             }
-            
-            
+
+
             // 道路ネットワークのコピー
             var dst = new RnModel();
             foreach (var dstRoadBase in roadBases.Values)

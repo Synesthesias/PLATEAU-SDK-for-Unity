@@ -31,19 +31,19 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 {
                     var lane = carLanes[i];
                     // 隣のレーンと進行方向が異なる場合、Rightwayはセンターラインです。
-                    bool isCenterLane = i < carLanes.Count - 1 && lane.IsReverse != carLanes[i + 1].IsReverse;
+                    bool isCenterLane = i < carLanes.Count - 1 && lane.IsReversed != carLanes[i + 1].IsReversed;
                     // 中央分離帯がある場合、センターラインは2つになるので、隣チェックを両方向で行います。
                     if (medianLaneExist)
                     {
-                        isCenterLane |= i >= 1 && lane.IsReverse != carLanes[i - 1].IsReverse;
+                        isCenterLane |= i >= 1 && lane.IsReversed != carLanes[i - 1].IsReversed;
                     }
-                    
-                    
+
+
                     if (!isCenterLane)
                     {
                         continue;
                     }
-                    
+
                     // センターラインの場合
 
                     var srcWay = WayWithMiddlePoint(lane.RightWay);
@@ -72,12 +72,12 @@ namespace PLATEAU.RoadAdjust.RoadMarking
 
 
                             var lerpedPoint = Vector3.Lerp(srcWay.GetPoint(j - 1), srcWay.GetPoint(j), t);
-                            
+
                             lineString.AddPoint(new RnPoint(lerpedPoint));
 
                             // 線を追加
                             var dstLine = new MWLine(lineString.Points.Select(p => p.Vertex));
-                            ret.Add(new MarkedWay(dstLine, prevInterType, lane.IsReverse));
+                            ret.Add(new MarkedWay(dstLine, prevInterType, lane.IsReversed));
                             lineString = new RnLineString(); // リセット
                             lineString.AddPoint(new RnPoint(lerpedPoint)); // 次の始点
                         }
@@ -87,7 +87,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                     }
 
                     if (lineString.Count > 0)
-                        ret.Add(new MarkedWay(new MWLine(lineString.Points.Select(p => p.Vertex)), prevInterType, lane.IsReverse));
+                        ret.Add(new MarkedWay(new MWLine(lineString.Points.Select(p => p.Vertex)), prevInterType, lane.IsReversed));
 
                     // センターラインの数は、中央分離帯がなければ最大1個、あれば最大2個です。
                     if ((ret.Count == 1 && !medianLaneExist) || (ret.Count == 2 && medianLaneExist))
@@ -115,8 +115,8 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var carLanes = road.MainLanes;
             // 片側の道路幅からタイプを判定します
             bool isOver6M =
-                carLanes.Where(l => l.IsReverse).Sum(l => l.CalcWidth()) > WidthThreshold ||
-                carLanes.Where(l => !l.IsReverse).Sum(l => l.CalcWidth()) > WidthThreshold;
+                carLanes.Where(l => l.IsReversed).Sum(l => l.CalcWidth()) > WidthThreshold ||
+                carLanes.Where(l => !l.IsReversed).Sum(l => l.CalcWidth()) > WidthThreshold;
             var type = isOver6M ? MarkedWayType.CenterLineOver6MWidth : MarkedWayType.CenterLineUnder6MWidth;
             return type;
         }
@@ -163,7 +163,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         /// <summary> 道路のNext方向の交差点までの距離（対象道路を含まない距離） </summary>
         private float NextLength { get; }
         public float LengthBetweenCenterLine { get; }
-        
+
 
         /// <summary>
         /// 交差点を探し、その距離を計算します。
@@ -219,7 +219,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             float nextSum = nextLen + NextLength;
             return Math.Min(prevSum, nextSum);
         }
-        
+
         private float RoadLength(RnRoad r)
         {
             if (r.MainLanes.Count > 0 && r.MainLanes[0].RightWay != null)

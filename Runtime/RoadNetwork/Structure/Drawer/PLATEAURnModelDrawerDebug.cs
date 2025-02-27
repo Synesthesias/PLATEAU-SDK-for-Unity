@@ -863,7 +863,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             /// <returns></returns>
             public float GetLaneAlpha(RnLane self)
             {
-                if (self.IsReverse)
+                if (self.IsReversed)
                     return reverseWayAlpha;
                 if (self.IsBothConnectedLane)
                     return bothConnectedLaneAlpha;

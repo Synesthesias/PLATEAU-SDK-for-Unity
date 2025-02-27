@@ -1066,7 +1066,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var prevLeftWay = CopyWay(left.prev, lane.LeftWay);
                 var prevRightWay = CopyWay(right.prev, lane.RightWay);
 
-                var isReverseLane = lane.IsReverse;
+                var isReverseLane = lane.IsReversed;
 
                 // 分割個所の境界線
                 var midBorderWay = new RnWay(RnLineString.Create(new[] { left.midPoint, right.midPoint }));
@@ -1078,7 +1078,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var newLaneBorder = lane.GetBorder(laneMidBorderType);
                 lane.SetBorder(laneMidBorderType, midBorderWay);
 
-                var newLane = new RnLane(nextLeftWay, nextRightWay, null, null) { IsReverse = isReverseLane };
+                var newLane = new RnLane(nextLeftWay, nextRightWay, null, null) { IsReversed = isReverseLane };
                 newLane.SetBorder(laneMidBorderType, newLaneBorder);
                 newLane.SetBorder(laneMidBorderType.GetOpposite(), midBorderWay);
                 if (lane.IsMedianLane)

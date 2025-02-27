@@ -1,6 +1,7 @@
 ﻿using PLATEAU.RoadNetwork.Structure;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.Data
 {
@@ -39,13 +40,12 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember("centerWay")]
         public RnID<RnDataWay> CenterWay { get; set; }
 
-        // #TODO : IsReversedに変更予定.
-        //       : 既存のデータの後方互換の為以下を入れるがそのテストを行った後にする
-        //       : [field : FormerlySerializedAs("IsReverse")]
         // 親Roadと逆方向(右車線等)
         [field: SerializeField]
+        //       : 既存のデータとの後方互換の為に入れている.
+        [field: FormerlySerializedAs("<IsReverse>k__BackingField")]
         [RoadNetworkSerializeMember]
-        public bool IsReverse { get; set; }
+        public bool IsReversed { get; set; }
 
     }
 

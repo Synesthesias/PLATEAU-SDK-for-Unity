@@ -721,7 +721,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 var mainLanes = road.MainLanes;
                 var lane = RnDir.Left == dir ? mainLanes.FirstOrDefault() : mainLanes.LastOrDefault();
                 var wayDir = RnDir.Left;
-                wayDir = !lane.IsReverse ? wayDir : wayDir.GetOpposite();
+                wayDir = !lane.IsReversed ? wayDir : wayDir.GetOpposite();
                 wayDir = dir == RnDir.Left ? wayDir : wayDir.GetOpposite();
                 var way = lane.GetSideWay(wayDir);
                 if (way != null)
@@ -1027,7 +1027,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     var nowLane = nowLanes[j];
                     var prevLane = prevLanes[j];
                     // 親の方向と一致している場合はprevLane -> nextLaneの方向になっているかチェックする
-                    if (prevLane.IsReverse == false)
+                    if (prevLane.IsReversed == false)
                     {
                         if (nowLane.PrevBorder.IsSameLineReference(prevLane.NextBorder) == false)
                         {
@@ -1209,7 +1209,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
                     void AdjustWay(RnLane lane, RnWay way)
                     {
-                        if (lane.IsReverse)
+                        if (lane.IsReversed)
                             way = way.ReversedWay();
                         var p = way.GetPoint(lastPointIndex);
                         var n = borderLeft2Right.GetNearestPoint(p.Vertex);

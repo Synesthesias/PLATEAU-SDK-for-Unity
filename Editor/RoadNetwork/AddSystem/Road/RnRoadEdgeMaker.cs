@@ -45,12 +45,12 @@ namespace PLATEAU.RoadNetwork.AddSystem
             Vector3 oldEdgeCenter;
             {
                 var way = road.GetLeftWayOfLanes();
-                oldEdgeCenter = extensibleEdge.isPrev ^ road.MainLanes[0].IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+                oldEdgeCenter = extensibleEdge.isPrev ^ road.MainLanes[0].IsReversed ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
             }
             Vector3 oldEdgeDirection;
             {
                 var way = road.GetRightWayOfLanes();
-                var secondPoint = extensibleEdge.isPrev ^ road.MainLanes.Last().IsReverse ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
+                var secondPoint = extensibleEdge.isPrev ^ road.MainLanes.Last().IsReversed ^ way.IsReversed ? way.LineString.Points.First().Vertex : way.LineString.Points.Last().Vertex;
                 oldEdgeDirection = secondPoint - oldEdgeCenter;
             }
 
@@ -73,7 +73,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
 
                 foreach (var way in new[] { lane.LeftWay, lane.RightWay })
                 {
-                    var isPrev = extensibleEdge.isPrev ^ way.IsReversed ^ lane.IsReverse;
+                    var isPrev = extensibleEdge.isPrev ^ way.IsReversed ^ lane.IsReversed;
 
                     RnPoint oldEdgePoint = null;
                     RnPoint newEdgePoint = null;
@@ -145,7 +145,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
         {
             var sideWalks = road.SideWalks;
             var leftWay = road.GetLeftWayOfLanes();
-            var edgePoint = (isPrev ^ road.MainLanes.First().IsReverse ^ leftWay.IsReversed) ? leftWay.LineString.Points.First() : leftWay.LineString.Points.Last();
+            var edgePoint = (isPrev ^ road.MainLanes.First().IsReversed ^ leftWay.IsReversed) ? leftWay.LineString.Points.First() : leftWay.LineString.Points.Last();
             var sideWalk = sideWalks.FirstOrDefault(sideWalk => sideWalk.InsideWay.Contains(edgePoint));
 
             if (sideWalk == null)
@@ -179,7 +179,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
         {
             var sideWalks = road.SideWalks;
             var rightWay = road.GetRightWayOfLanes();
-            var edgePoint = (isPrev ^ road.MainLanes.Last().IsReverse ^ rightWay.IsReversed) ? rightWay.LineString.Points.First() : rightWay.LineString.Points.Last();
+            var edgePoint = (isPrev ^ road.MainLanes.Last().IsReversed ^ rightWay.IsReversed) ? rightWay.LineString.Points.First() : rightWay.LineString.Points.Last();
             var sideWalk = sideWalks.FirstOrDefault(sideWalk => sideWalk.InsideWay.Contains(edgePoint));
 
             if (sideWalk == null)

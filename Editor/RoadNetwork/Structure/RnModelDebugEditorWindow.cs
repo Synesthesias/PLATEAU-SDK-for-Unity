@@ -118,7 +118,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                         }
                     }
 
-                    lane.IsReverse = EditorGUILayout.Toggle("IsReverse", lane.IsReverse);
+                    lane.IsReversed = EditorGUILayout.Toggle("IsReverse", lane.IsReversed);
                     lane.Attributes = (RnLaneAttribute)EditorGUILayout.EnumFlagsField("Attribute", lane.Attributes);
                     Draw(RnLaneBorderType.Prev);
                     Draw(RnLaneBorderType.Next);
