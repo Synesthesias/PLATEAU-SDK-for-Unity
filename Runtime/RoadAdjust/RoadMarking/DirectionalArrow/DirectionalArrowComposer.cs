@@ -174,7 +174,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 containStraight |= turnT == RnTurnType.Straight;
             }
 
-            if (containStraight && containLeft && containRight) return DirectionalArrowType.None;
+            if (containLeft && containRight) return DirectionalArrowType.None;
             if (containStraight && containLeft) return DirectionalArrowType.StraightAndLeft;
             if (containStraight && containRight) return DirectionalArrowType.StraightAndRight;
             if (containStraight) return DirectionalArrowType.Straight;
