@@ -201,7 +201,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     if (isPrev ^ road.MainLanes[0].IsReversed ^ laneWay.IsReversed)
                         orderedLanePoints.Reverse();
                     var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
-                    for (; index < orderedLanePoints.Count; index++)
+                    for (; index < orderedLanePoints.Count && index >= 0; index++)
                     {
                         if (sideWalkEdgeInfo.IsInsidePrev)
                             insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
@@ -216,7 +216,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     if (isPrev ^ road.MainLanes[road.MainLanes.Count - 1].IsReversed ^ laneWay.IsReversed)
                         orderedLanePoints.Reverse();
                     var index = orderedLanePoints.FindIndex(p => p.Vertex == (sideWalkEdgeInfo.IsInsidePrev ? sideWalkEdgeInfo.Edge.LineString.Points.First().Vertex : sideWalkEdgeInfo.Edge.LineString.Points.Last().Vertex));
-                    for (; index < orderedLanePoints.Count; index++)
+                    for (; index < orderedLanePoints.Count && index >= 0; index++)
                     {
                         if (sideWalkEdgeInfo.IsInsidePrev)
                             insideWay.LineString.Points.Insert(0, orderedLanePoints[index]);
