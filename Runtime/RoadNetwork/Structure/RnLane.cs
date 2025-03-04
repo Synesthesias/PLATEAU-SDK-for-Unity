@@ -111,10 +111,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public RnLaneAttribute Attributes { get; set; }
 
+        // #TODO : IsReversedに変更予定.
         /// <summary>
         /// 親Roadと逆方向(右車線等)
         /// </summary>
-        public bool IsReverse { get; set; }
+        public bool IsReversed { get; set; }
 
         /// <summary>
         /// 内部的に持つだけ. 中心線
@@ -280,7 +281,7 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (n is RnRoad road)
                 {
-                    foreach (var lane in road.AllLanes)
+                    foreach (var lane in road.MainLanes)
                     {
                         if (lane.AllBorders.Any(b => b.IsSameLineReference(border)))
                             yield return lane;
@@ -297,7 +298,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var n in Parent.GetNeighborRoads())
             {
-                if (n.GetBorders().Any(border.IsSameLineReference))
+                if (n.GetBorders().Select(x => x.BorderWay).Any(border.IsSameLineReference))
                     yield return n;
             }
         }
@@ -384,7 +385,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             (PrevBorder, NextBorder) = (NextBorder?.ReversedWay(), PrevBorder?.ReversedWay());
             (LeftWay, RightWay) = (RightWay?.ReversedWay(), LeftWay?.ReversedWay());
-            IsReverse = !IsReverse;
+            IsReversed = !IsReversed;
         }
 
         /// <summary>
@@ -541,6 +542,42 @@ namespace PLATEAU.RoadNetwork.Structure
             if (Vector2.Dot(RnDef.ToVec2(d), RnDef.ToVec2(d2)) > 0)
                 return RnLaneBorderDir.Left2Right;
             return RnLaneBorderDir.Right2Left;
+        }
+
+
+        /// <summary>
+        /// 不正値チェック
+        /// </summary>
+        public bool Check()
+        {
+            // 
+            if (LeftWay != null && RightWay != null && PrevBorder != null && NextBorder != null)
+            {
+                if (PrevBorder.Points.Contains(LeftWay.GetPoint(0)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにLeftWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+                if (PrevBorder.Points.Contains(RightWay.GetPoint(0)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにRightWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+
+                if (NextBorder.Points.Contains(LeftWay.GetPoint(-1)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにLeftWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+
+                if (NextBorder.Points.Contains(RightWay.GetPoint(-1)) == false)
+                {
+                    DebugEx.LogError($"PrevBorderにRightWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // ---------------

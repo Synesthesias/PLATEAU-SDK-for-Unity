@@ -3,7 +3,6 @@ using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -25,6 +24,15 @@ namespace PLATEAU.RoadNetwork.Tester
         }
         public EdgeBorderTestParam edgeBorderTest = new EdgeBorderTestParam();
 
+        [Serializable]
+        public class SplitCollinearTestParam
+        {
+            public bool enable = false;
+            public float allowAngle = 20f;
+            public float midPointTolerance = 1f;
+            public bool checkAdjustSegAngleOnly = false;
+        }
+        public SplitCollinearTestParam splitCollinearTest = new SplitCollinearTestParam();
         [Serializable]
         public class TunTypeTestParam
         {
@@ -65,7 +73,35 @@ namespace PLATEAU.RoadNetwork.Tester
             DebugEx.DrawString($"{isInside}", target.transform.position);
         }
 
+        private void SplitCollinearTest(SplitCollinearTestParam p)
+        {
+            if (p.enable == false)
+                return;
+            var vertices = GetVertices().Skip(1).ToList();
+            var indices = GeoGraph2D.SplitByCollinearSegment(vertices, p.allowAngle, p.midPointTolerance);
+            var simpleVertices = indices.Select(i => vertices[i]).ToList();
+            DebugEx.DrawLines(
+                simpleVertices.Select(v => v.ToVector3(plane)),
+                false,
+                Color.blue
+            );
 
+            var terminateIndex = GeoGraph2D.FindTerminateEdgeIndex(simpleVertices);
+            if (terminateIndex >= 0 && terminateIndex < indices.Count - 1)
+            {
+                var edgeStartIndex = indices[terminateIndex];
+                var edgeEndIndex = indices[terminateIndex + 1];
+                DebugEx.DrawLines(
+                    Enumerable.Range(edgeStartIndex, edgeEndIndex - edgeStartIndex + 1)
+                        .Select(i => vertices[i].ToVector3(plane))
+
+                    , false, color: Color.green
+                );
+
+            }
+
+
+        }
         private void EdgeBorderTest(EdgeBorderTestParam p)
         {
             if (p.enable == false)
@@ -175,6 +211,7 @@ namespace PLATEAU.RoadNetwork.Tester
             TurnTypeTest(turnTypeTest);
             RoadSliceTest(roadIntersectionTest);
             InsideTest(insideTest);
+            SplitCollinearTest(splitCollinearTest);
         }
 
     }

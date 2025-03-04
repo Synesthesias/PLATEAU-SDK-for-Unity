@@ -26,12 +26,12 @@ namespace PLATEAU.RoadNetwork
     internal struct ExtensibleIntersectionEdge
     {
         public RnIntersection intersection;
-        public RnNeighbor neighbor;
+        public RnIntersectionEdge neighbor;
         public int index;
         public Vector3 center;
         public Vector3 forward;
 
-        public ExtensibleIntersectionEdge(RnIntersection intersection, RnNeighbor neighbor, int index, Vector3 center, Vector3 forward)
+        public ExtensibleIntersectionEdge(RnIntersection intersection, RnIntersectionEdge neighbor, int index, Vector3 center, Vector3 forward)
         {
             this.intersection = intersection;
             this.neighbor = neighbor;

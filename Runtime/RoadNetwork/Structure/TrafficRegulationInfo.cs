@@ -216,7 +216,7 @@ namespace PLATEAU.RoadNetwork.Structure
             foreach (var intersectionBorder in intersectionNeighborBorder)
             {
                 // bool wasFound = false;
-                foreach (var border in road.GetBorders())
+                foreach (var border in road.GetBorders().Select(x => x.BorderWay))
                 {
                     if (intersectionBorder == border)
                     {
@@ -280,7 +280,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             TrafficSignalLightController controller = intersection.SignalController;
             Dictionary<RnRoadBase, List<RnWay>> roads = new();
-            foreach (var item in intersection.Neighbors)
+            foreach (var item in intersection.Borders)
             {
                 List<RnWay> borderList = null;
                 if (roads.TryGetValue(item.Road, out borderList) == false)

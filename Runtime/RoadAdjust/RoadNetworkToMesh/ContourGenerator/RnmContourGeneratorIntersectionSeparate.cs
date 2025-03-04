@@ -214,7 +214,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             public IEnumerable<RnWay> Collect()
             {
                 // 隣接する道路について
-                foreach (var neighbor in inter.Neighbors.Where(n => n.Road != null))
+                foreach (var neighbor in inter.Borders.Where(n => n.Road != null))
                 {
                     // 隣の道路のもっとも近く、十分な近さである StartEdgeWay, EndEdgeWay を選択
                     var carBoarders = new CarBorder(inter).Collect().ToArray();

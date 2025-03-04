@@ -1,4 +1,3 @@
-using PLATEAU.RoadNetwork.Structure;
 using System.Linq;
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh

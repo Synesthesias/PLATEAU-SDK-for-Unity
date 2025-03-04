@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Splines;
-using Object = System.Object;
 
 namespace PLATEAU.RoadNetwork.Structure.Drawer
 {
@@ -175,6 +174,12 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
+        [Serializable]
+        public class IntersectionEdgeDrawer : Drawer<RnIntersectionEdge>
+        {
+
+        }
+
         public class RoadDrawer : Drawer<RnRoad>
         {
             public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnRoad self)
@@ -190,7 +195,6 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class LaneDrawer : Drawer<RnLane>
         {
-
             public override bool IsValid(RnLane self)
             {
                 return self.IsValidWay;
@@ -218,7 +222,19 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             }
         }
 
+        [Serializable]
+        public class IntersectionEdgeOption : IntersectionEdgeDrawer
+        {
+            // 境界線表示オプション
+            public WayOption showWay;
 
+            protected override bool DrawImpl(DrawWork work, RnIntersectionEdge self)
+            {
+                if (work.Self.showPartsType.HasFlag(RnPartsTypeMask.Neighbor))
+                    DebugEx.DrawString($"{self.GetDebugLabelOrDefault()}", RnIntersection.GetEdgeCenter(self));
+                return showWay.Draw(work, self.Border);
+            }
+        }
 
         [Serializable]
         public class IntersectionOption : IntersectionDrawer
@@ -227,6 +243,8 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             private class TrackDrawCenterLine : IntersectionDrawer
             {
                 public float showTrackCenterLineRefineInterval = 5f;
+
+                public bool showWidthLine = true;
 
                 protected override bool DrawImpl(DrawWork work, RnIntersection intersection)
                 {
@@ -352,7 +370,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                             if (showConnectedRoadType)
                             {
-                                void Draw(float p, RnNeighbor e)
+                                void Draw(float p, RnIntersectionEdge e)
                                 {
                                     var i0 = Mathf.Floor(p);
                                     var i1 = Mathf.Ceil(p);
@@ -419,13 +437,25 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             public DrawTrackOption showTrack = new() { visible = true };
 
             // 非境界線の表示オプション
-            public WayOption showNonBorderEdge = new(true, Color.magenta * 0.7f);
+            public IntersectionEdgeOption showNonBorderEdge = new()
+            {
+                visible = true,
+                showWay = new WayOption(true, Color.magenta * 0.7f)
+            };
 
             // 境界線表示オプション
-            public WayOption showBorderEdge = new(true, Color.cyan * 0.7f);
+            public IntersectionEdgeOption showBorderEdge = new()
+            {
+                visible = true,
+                showWay = new(true, Color.cyan * 0.7f)
+            };
 
             // 中央分離帯との境界線オプション
-            public WayOption showMedianBorderEdge = new(true, Color.yellow * 0.7f);
+            public IntersectionEdgeOption showMedianBorderEdge = new()
+            {
+                visible = true,
+                showWay = new(true, Color.yellow * 0.7f)
+            };
 
             public bool showEdgeIndex = false;
 
@@ -436,6 +466,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
             // 輪郭線の法線を表示する
             public bool showEdgeNormal = false;
+
+            // 繋がっていないエッジ場所を表示する
+            public bool showDisConnectEdgePoint = false;
 
             protected override IEnumerable<RnDebugDrawerModel<RnModel>.Drawer<DrawWork, RnIntersection>> GetChildDrawers()
             {
@@ -467,41 +500,51 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
                 for (var i = 0; i < intersection.Edges.Count; i++)
                 {
-                    var n = intersection.Edges[i];
+                    var edge = intersection.Edges[i];
+                    var nextEdge = intersection.Edges[(i + 1) % intersection.Edges.Count];
 
-                    void DrawEdge(WayOption p)
+                    // ループしていない時にエラー表示を行う
+                    if (showDisConnectEdgePoint && edge.Border.GetPoint(-1) != nextEdge.Border.GetPoint(0))
+                    {
+                        DebugEx.DrawArrow(edge.Border.GetPoint(-1).Vertex, nextEdge.Border.GetPoint(0).Vertex, bodyColor: Color.red);
+                    }
+
+                    void DrawEdge(IntersectionEdgeDrawer p)
                     {
                         if (p.visible == false)
                             return;
-                        work.Self.DrawWay(n.Border, p);
-                        var pos = n.Border.GetLerpPoint(0.5f);
+                        p.Draw(work, edge);
                         if (showEdgeIndex)
+                        {
+                            var pos = edge.Border.GetLerpPoint(0.5f);
                             work.Self.DrawString($"B[{i}]", pos);
+                        }
                     }
 
-                    if (n.IsBorder)
+                    if (edge.IsBorder)
                     {
-                        DrawEdge(n.IsMedianBorder ? showMedianBorderEdge : showBorderEdge);
+                        DrawEdge(edge.IsMedianBorder ? showMedianBorderEdge : showBorderEdge);
                     }
                     else
                     {
                         DrawEdge(showNonBorderEdge);
                     }
+
+
+
                     if (showEdgeNormal)
                     {
-                        var normal = RnIntersection.GetEdgeNormal(n);
-                        var center = RnIntersection.GetEdgeCenter(n);
+                        var normal = RnIntersection.GetEdgeNormal(edge);
+                        var center = RnIntersection.GetEdgeCenter(edge);
                         work.Self.DrawLine(center, center - 50 * normal);
                     }
 
-                    if (work.Self.showPartsType.HasFlag(RnPartsTypeMask.Neighbor))
-                        DebugEx.DrawString($"{n.GetDebugLabelOrDefault()}", RnIntersection.GetEdgeCenter(n));
 
                 }
 
                 if (showNoTrackBorder)
                 {
-                    foreach (var border in intersection.Neighbors)
+                    foreach (var border in intersection.Borders)
                     {
                         if (border.IsMedianBorder)
                             continue;
@@ -565,7 +608,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         var col = DebugEx.GetDebugColor(work.DrawRoadGroupCount++, 16);
                         foreach (var r in group.Roads)
                         {
-                            foreach (var lane in r.AllLanes)
+                            foreach (var lane in r.MainLanes)
                             {
                                 work.Self.DrawArrows(lane.GetVertices().Select(p => p.Vertex), false, color: col);
                             }
@@ -621,7 +664,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                     else
                     {
                         Vector3? last = null;
-                        foreach (var lane in road.AllLanes)
+                        foreach (var lane in road.MainLanes)
                         {
                             work.Self.DrawLane(lane, work.Self.laneOp, work.visibleType);
                             if (showLaneConnection)
@@ -820,7 +863,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             /// <returns></returns>
             public float GetLaneAlpha(RnLane self)
             {
-                if (self.IsReverse)
+                if (self.IsReversed)
                     return reverseWayAlpha;
                 if (self.IsBothConnectedLane)
                     return bothConnectedLaneAlpha;
@@ -1033,7 +1076,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
             op ??= wayOp;
             if (op == null)
                 return;
-            op.Draw(work, way, work.visibleType);
+            op.Draw(work, way);
         }
 
         public void DrawSideWalk(RnSideWalk sideWalk, SideWalkOption p, RnDebugDrawerBase.VisibleType visibleType)

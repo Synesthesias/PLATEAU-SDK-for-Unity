@@ -16,10 +16,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         private readonly bool reversedLane;
         private readonly RnWay nextBorder;
         private readonly RnWay prevBorder;
-        
+
         public RnmLaneUV1Calc(RnLane lane, int laneCount, int laneIndex, RnWay nextBorder, RnWay prevBorder)
         {
-            reversedLane = lane.IsReverse;
+            reversedLane = lane.IsReversed;
             laneUvLeft = ((float)laneIndex) / laneCount;
             laneUvRight = (((float)laneIndex) + 1) / laneCount;
             nextUvY = reversedLane ? 0 : 1;
@@ -76,7 +76,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var uvX = reversedLane ? laneUvRight : laneUvLeft;
             return new Vector2(uvX, prevUvY);
         }
-        
+
         /// <summary> 道路の左側Wayの終了地点のUVです。 </summary>
         public Vector2 LeftWayEnd()
         {

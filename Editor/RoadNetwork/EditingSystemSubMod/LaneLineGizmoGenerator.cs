@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
         private static readonly Color intersectionOutlineColor = new Color(0.2f, 0.6f, 0.5f);
         private static readonly Color intersectionBorderColor = new Color(0.2f, 1f, 0.2f);
         private static readonly Color mainLaneCenterWayColor = Color.cyan + new Color(0, -0.4f, -0.4f, 0);
-        
+
         /// <summary>
         /// 編集用のギズモの線を生成します。
         /// </summary>
@@ -38,14 +38,14 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             RnWay slideDummyWay)
         {
             List<ILaneLineDrawer> lineDrawers = new();
-            
+
             if (linkGroupEditorData.TryGetCache("linkGroup", out IEnumerable<RoadGroupEditorData> eConn) == false)
             {
                 Assert.IsTrue(false);
                 return lineDrawers;
             }
-            
-            
+
+
             // RoadGroupが選択されている
             if (selectingElement is EditorData<RnRoadGroup> roadGroupEditorData)
             {
@@ -76,10 +76,10 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     {
                         way.Add(p);
                     }
-                        
+
                     var parent = wayEditorData.ParentLane;
                     Debug.Assert(parent != null);
-                    if (parent.IsReverse == false)
+                    if (parent.IsReversed == false)
                     {
                         lineDrawers.Add(new LaneLineDrawerSolid(way, leftSideWayColor, LaneLineDrawMethod.Gizmos));
                     }
@@ -151,7 +151,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 }
 
             }
-            
+
             // 選択中の線を追加
             if (highLightWay != null)
             {
@@ -160,7 +160,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                     lineDrawers.Add(new LaneLineDrawerSolid(selectingWayData.Ref.ToList(), selectingWayColor, LaneLineDrawMethod.Gizmos));
                 }
             }
-            
+
             if (slideDummyWay != null)
             {
                 lineDrawers.Add(new LaneLineDrawerSolid(slideDummyWay.ToList(), slideDummyWayColor, LaneLineDrawMethod.Gizmos));
@@ -169,13 +169,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             var intersectionEditorData = selectingElement as EditorData<RnIntersection>;
             if (intersectionEditorData != null)
             {
-                foreach (var neighbor in intersectionEditorData.Ref.Neighbors)
+                foreach (var neighbor in intersectionEditorData.Ref.Borders)
                 {
                     if (neighbor.Border != null)
                         lineDrawers.Add(new LaneLineDrawerSolid(neighbor.Border.ToList(), intersectionBorderColor, LaneLineDrawMethod.Gizmos));
                 }
             }
-            
+
             if (intersectionEditorData != null)
             {
                 foreach (var edge in intersectionEditorData.Ref.Edges.Where(e => e.Road == null))

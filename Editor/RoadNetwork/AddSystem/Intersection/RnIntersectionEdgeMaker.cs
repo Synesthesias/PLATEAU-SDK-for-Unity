@@ -10,9 +10,9 @@ namespace PLATEAU.RoadNetwork.AddSystem
         public Vector3 Direction;
         public RnWay LeftSideWalkEdge;
         public RnWay RightSideWalkEdge;
-        public RnNeighbor Neighbor;
+        public RnIntersectionEdge Neighbor;
 
-        public IntersectionEdgeInfo(Vector3 origin, Vector3 direction, RnWay leftSideWalkEdge, RnWay rightSideWalkEdge, RnNeighbor neighbor)
+        public IntersectionEdgeInfo(Vector3 origin, Vector3 direction, RnWay leftSideWalkEdge, RnWay rightSideWalkEdge, RnIntersectionEdge neighbor)
         {
             Origin = origin;
             Direction = direction;
@@ -55,7 +55,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
         }
 
-        public IntersectionEdgeInfo Execute(RnNeighbor neighbor, int index)
+        public IntersectionEdgeInfo Execute(RnIntersectionEdge neighbor, int index)
         {
             var edgeLineOrigin = neighbor.Border.Points.ElementAt(index);
             var edgeLineDirection = neighbor.Border.Points.ElementAt(index + 1).Vertex - neighbor.Border.Points.ElementAt(index);
@@ -81,7 +81,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return new IntersectionEdgeInfo(edgeLineOrigin, edgeLineDirection, leftSideWalkEdge, rightSideWalkEdge, neighbor);
         }
 
-        private RnWay FindRightSideWalkEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection, RnNeighbor neighbor)
+        private RnWay FindRightSideWalkEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection, RnIntersectionEdge neighbor)
         {
             RnWay rightSideWalkEdge = null;
             foreach (var sideWalk in target.SideWalks)
@@ -108,7 +108,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return rightSideWalkEdge;
         }
 
-        private RnWay FindLeftSideWalkEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection, RnNeighbor neighbor)
+        private RnWay FindLeftSideWalkEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection, RnIntersectionEdge neighbor)
         {
             foreach (var sideWalk in target.SideWalks)
             {
@@ -144,7 +144,7 @@ namespace PLATEAU.RoadNetwork.AddSystem
             return true;
         }
 
-        private RnNeighbor FindNeighborOnEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection)
+        private RnIntersectionEdge FindNeighborOnEdge(Vector3 edgeLineOrigin, Vector3 edgeLineDirection)
         {
             foreach (var neighbor in target.Edges)
             {
