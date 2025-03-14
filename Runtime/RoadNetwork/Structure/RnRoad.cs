@@ -458,12 +458,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// laneを追加する. ParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
-        public void AddMainLane(RnLane lane)
+        public bool AddMainLane(RnLane lane)
         {
             if (mainLanes.Contains(lane))
-                return;
+                return false;
             OnAddLane(lane);
             mainLanes.Add(lane);
+            return true;
         }
 
         /// <summary>
@@ -471,24 +472,28 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <param name="index"></param>
-        public void AddMainLane(RnLane lane, int index)
+        public bool AddMainLane(RnLane lane, int index)
         {
             if (mainLanes.Contains(lane))
-                return;
+                return false;
             OnAddLane(lane);
             mainLanes.Insert(index, lane);
+            return true;
         }
 
         /// <summary>
-        /// laneを削除するParentRoad情報も更新する
+        /// MainLaneのみ削除. laneを削除するParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
-        public void RemoveLane(RnLane lane)
+        public bool RemoveMainLane(RnLane lane)
         {
             if (mainLanes.Remove(lane))
             {
                 OnRemoveLane(lane);
+                return true;
             }
+
+            return false;
         }
 
         public void ReplaceLane(RnLane before, RnLane after)
@@ -499,7 +504,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public void ReplaceLanes(IEnumerable<RnLane> newLanes)
         {
             while (mainLanes.Count > 0)
-                RemoveLane(mainLanes[0]);
+                RemoveMainLane(mainLanes[0]);
 
             foreach (var lane in newLanes)
                 AddMainLane(lane);
@@ -509,7 +514,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var l in GetLanes(dir).ToList())
             {
-                RemoveLane(l);
+                RemoveMainLane(l);
             }
             // Leftは先頭に追加
             if (dir == RnDir.Left)
@@ -531,17 +536,6 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        /// <summary>
-        /// 中央分離帯を入れ替える
-        /// </summary>
-        /// <param name="lane"></param>
-        public void ReplaceMedianLane(RnLane lane)
-        {
-            RemoveLane(lane);
-            medianLane = lane;
-            OnAddLane(lane);
-        }
-
         public void ReplaceLane(RnLane before, IEnumerable<RnLane> newLanes)
         {
             var index = mainLanes.IndexOf(before);
@@ -551,7 +545,7 @@ namespace PLATEAU.RoadNetwork.Structure
             mainLanes.InsertRange(index, lanes);
             foreach (var lane in lanes)
                 OnRemoveLane(lane);
-            RemoveLane(before);
+            RemoveMainLane(before);
         }
 
         private void OnAddLane(RnLane lane)
@@ -755,7 +749,7 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        public override bool Check()
+        public override bool Check(bool showLog = true)
         {
             foreach (var BorderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
             {
@@ -769,7 +763,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     return false;
             }
 
-            return true;
+            return base.Check(showLog);
         }
 
         // ---------------

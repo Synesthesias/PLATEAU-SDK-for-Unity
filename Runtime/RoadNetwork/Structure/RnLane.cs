@@ -446,6 +446,12 @@ namespace PLATEAU.RoadNetwork.Structure
                 RightWay = way;
         }
 
+        public void SetSideWays(RnWay leftWay, RnWay rightWay)
+        {
+            LeftWay = leftWay;
+            RightWay = rightWay;
+        }
+
         /// <summary>
         /// dir側のWayを取得
         /// </summary>
@@ -555,24 +561,24 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 if (PrevBorder.Points.Contains(LeftWay.GetPoint(0)) == false)
                 {
-                    DebugEx.LogError($"PrevBorderにLeftWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    DebugEx.LogError($"{this.GetDebugLabelOrDefault()}PrevBorderにLeftWay[0]が含まれていません. {Parent.GetTargetTransName()}");
                     return false;
                 }
                 if (PrevBorder.Points.Contains(RightWay.GetPoint(0)) == false)
                 {
-                    DebugEx.LogError($"PrevBorderにRightWay[0]が含まれていません. {Parent.GetTargetTransName()}");
+                    DebugEx.LogError($"{this.GetDebugLabelOrDefault()}PrevBorderにRightWay[0]が含まれていません. {Parent.GetTargetTransName()}");
                     return false;
                 }
 
                 if (NextBorder.Points.Contains(LeftWay.GetPoint(-1)) == false)
                 {
-                    DebugEx.LogError($"PrevBorderにLeftWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    DebugEx.LogError($"{this.GetDebugLabelOrDefault()}PrevBorderにLeftWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
                     return false;
                 }
 
                 if (NextBorder.Points.Contains(RightWay.GetPoint(-1)) == false)
                 {
-                    DebugEx.LogError($"PrevBorderにRightWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
+                    DebugEx.LogError($"{this.GetDebugLabelOrDefault()}PrevBorderにRightWay[^1]が含まれていません. {Parent.GetTargetTransName()}");
                     return false;
                 }
             }

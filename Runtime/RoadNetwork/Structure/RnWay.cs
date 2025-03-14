@@ -176,6 +176,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
+        /// 自身の浅いコピーを返す(LineStringの参照などはそのまま
+        /// </summary>
+        /// <returns></returns>
+        public RnWay ShallowClone()
+        {
+            return new RnWay(LineString, IsReversed, IsReverseNormal);
+        }
+
+        /// <summary>
         /// 線の向きを反転させる
         /// </summary>
         /// <param name="keepNormalDir">法線の向きは保持する</param>

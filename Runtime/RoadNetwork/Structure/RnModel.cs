@@ -77,18 +77,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// レーンの削除
-        /// </summary>
-        /// <param name="lane"></param>
-        public void RemoveLane(RnLane lane)
-        {
-            foreach (var l in roads)
-            {
-                l.RemoveLane(lane);
-            }
-        }
-
-        /// <summary>
         /// レーンの入れ替え
         /// </summary>
         /// <param name="before"></param>
@@ -662,7 +650,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var sw in sideWalks)
             {
-                sw.Check();
+                // 親がいる場合は親側でチェック済みなので無視
+                if (sw.ParentRoad == null)
+                    sw.Check(true);
             }
         }
     }
@@ -1108,7 +1098,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 歩道周りを処理する
 
-            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad, sw => sw.CalcRoadProximityScore(road) < sw.CalcRoadProximityScore(newNextRoad));
+            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad
+                , sw => sw.CalcRoadProximityScore(road) < sw.CalcRoadProximityScore(newNextRoad));
 
             return new SliceRoadHorizontalResult { Result = RoadCutResult.Success, PrevRoad = road, NextRoad = newNextRoad, };
         }
