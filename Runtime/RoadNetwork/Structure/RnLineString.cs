@@ -809,5 +809,23 @@ namespace PLATEAU.RoadNetwork.Structure
             isReverseSequence = true;
             return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
         }
+
+        /// <summary>
+        /// aとbが同じRnPointを共有しているかを返す
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsPointShared(RnLineString a, RnLineString b)
+        {
+            if (a == null || b == null)
+                return false;
+
+            // どっちかがPoints持っていないとダメ
+            if (!a.Points.Any() || !b.Points.Any())
+                return false;
+
+            return a.Points.Any(b.Points.Contains);
+        }
     }
 }

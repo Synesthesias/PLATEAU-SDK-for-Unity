@@ -1113,25 +1113,19 @@ namespace PLATEAU.RoadNetwork.Structure
                     // 順方向(左車線)
                     if (srcRoad.IsLeftLane(srcLane))
                     {
-                        dstLane.LeftWay?.AppendBack2LineString(srcLane.LeftWay);
-                        // 中間のレーンはつながっているので右車線に追加するのは最後だけで良い
-                        if (j == srcLanes.Count - 1)
-                        {
-                            dstLane.RightWay?.AppendBack2LineString(srcLane.RightWay);
-                        }
-
+                        // 順方向はdst側が先
+                        var mergedLeft = RnWayEx.CreateMergedWay(dstLane.LeftWay, srcLane.LeftWay);
+                        var mergedRight = RnWayEx.CreateMergedWay(dstLane.RightWay, srcLane.RightWay);
+                        dstLane.SetSideWays(mergedLeft, mergedRight);
                         dstLane.SetBorder(RnLaneBorderType.Next, srcLane.NextBorder);
                     }
                     // 逆方向(右車線)
                     else
                     {
-                        dstLane.RightWay?.AppendFront2LineString(srcLane.RightWay);
-                        // 中間のレーンはつながっているので右車線に追加するのは最後だけで良い
-                        if (j == srcLanes.Count - 1)
-                        {
-                            dstLane.LeftWay?.AppendFront2LineString(srcLane.LeftWay);
-                        }
-
+                        // 逆方向はsrc側が先
+                        var mergedLeft = RnWayEx.CreateMergedWay(srcLane.LeftWay, dstLane.LeftWay);
+                        var mergedRight = RnWayEx.CreateMergedWay(srcLane.RightWay, dstLane.RightWay);
+                        dstLane.SetSideWays(mergedLeft, mergedRight);
                         dstLane.SetBorder(RnLaneBorderType.Prev, srcLane.PrevBorder);
                     }
                 }

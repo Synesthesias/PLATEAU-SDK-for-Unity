@@ -116,6 +116,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool IsValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault();
 
+        public bool IsAllWayValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault() && StartEdgeWay.IsValidOrDefault() && EndEdgeWay.IsValidOrDefault();
         public RnSideWalk() { }
 
         private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType)
@@ -257,11 +258,63 @@ namespace PLATEAU.RoadNetwork.Structure
             Impl(OutsideWay);
         }
 
+        private static bool IsContinuousWay(RnWay a, RnWay b)
+        {
+            // nullに関しては繋がっていなくてもOK
+            if (a == null || b == null)
+                return true;
+            if (a.IsValidOrDefault() == false || b.IsValidOrDefault() == false)
+                return true;
+            var aV0 = a.GetPoint(0);
+            var aV1 = a.GetPoint(-1);
+            var bV0 = b.GetPoint(0);
+            var bV1 = b.GetPoint(-1);
+            return (aV0 == bV0 || aV0 == bV1) || (aV1 == bV0 || aV1 == bV1);
+
+        }
+
+        public bool CheckAligned(bool showLog)
+        {
+            if (IsContinuousWay(InsideWay, StartEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"InsideWayとStartEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+            if (IsContinuousWay(InsideWay, EndEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"InsideWayとEndEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+
+            }
+            if (IsContinuousWay(OutsideWay, StartEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"OutsideWayとStartEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+            if (IsContinuousWay(OutsideWay, EndEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"OutsideWayとEndEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// 不正地チェック
         /// </summary>
-        public bool Check()
+        public bool Check(bool showLog)
         {
+            if (IsAllWayValid)
+            {
+                if (CheckAligned(showLog) == false)
+                    return false;
+            }
+
             return true;
         }
 
@@ -276,6 +329,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             Align();
             srcSideWalk.Align();
+
+            if (!CheckAligned(false) || !srcSideWalk.CheckAligned(false))
+                return false;
 
             bool IsMatch(RnWay a, RnWay b)
             {
@@ -356,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
-            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay, laneType);
+            var sideWalk = new RnSideWalk(parent, outsideWay?.ShallowClone(), insideWay?.ShallowClone(), startEdgeWay?.ShallowClone(), endEdgeWay?.ShallowClone(), laneType);
             parent?.AddSideWalk(sideWalk);
             return sideWalk;
         }

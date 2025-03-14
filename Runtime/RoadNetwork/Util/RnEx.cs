@@ -176,20 +176,20 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             var line = new RnLineString();
-            void AddPoint(RnPoint p)
+            void AddPoint(RnPoint p, bool noSkip)
             {
                 if (p == null)
                     return;
-                line.AddPointOrSkip(p, pointSkipDistance);
+                line.AddPointOrSkip(p, noSkip ? -1 : pointSkipDistance);
             }
 
-            AddPoint(start);
+            AddPoint(start, true);
             var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, RnModel.Plane, t);
             // 1つ目の点はボーダーと重複するのでスキップ
             // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
             foreach (var s in segments.Skip(1))
-                AddPoint(new RnPoint(s));
-            AddPoint(end);
+                AddPoint(new RnPoint(s), false);
+            AddPoint(end, true);
             // 自己交差があれば削除する
             var plane = RnModel.Plane;
             GeoGraph2D.RemoveSelfCrossing(line.Points

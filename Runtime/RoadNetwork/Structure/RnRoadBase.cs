@@ -188,7 +188,15 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 不正チェック処理を行う
         /// </summary>
         /// <returns></returns>
-        public virtual bool Check() { return true; }
+        public virtual bool Check(bool showLog = true)
+        {
+            foreach (var sw in SideWalks)
+            {
+                if (sw != null && sw.Check(showLog) == false)
+                    return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// 連結されたSideWalkを統合する
@@ -292,7 +300,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var way in ways)
             {
-                var points = way.Points.ToList();
+                // LineStringの差し替えなのでLineStringのPointsをキーにする
+                var points = way.LineString.Points.ToList();
                 var ls = lineStringFactory.CreateLineString(
                     points
                     , out var isCached
@@ -305,7 +314,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 if (isCached)
                 {
                     way.LineString = ls;
-                    if (way.IsReversed != isReversed)
+                    if (isReversed)
                         way.Reverse(true);
                 }
             }
