@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -75,7 +75,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 return;
             }
             rnStructureModel.Serialize();
-            
+
             roadNetworkContext = new RoadNetworkContext(rnStructureModel);
 
             if (!roadNetworkContext.IsInitSucceed) return;
@@ -129,40 +129,46 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             Dictionary<int, RoadNetworkElementNode> vNodes = new Dictionary<int, RoadNetworkElementNode>();
 
-            foreach (var link in roadNetworkLinks.Select((value, index) => new { value, index }))
+            foreach (var item in roadNetworkRoads.Select((value, index) => new { value, index }))
             {
+                var link = item.value as RnDataRoad;
+                if (link == null)
+                    continue;
+
+                var index = item.index;
+
                 // リンクが接続されていない場合はスキップ
-                if (!link.value.Next.IsValid && !link.value.Prev.IsValid)
+                if (!link.Next.IsValid && !link.Prev.IsValid)
                 {
                     Debug.LogWarning("Link is not connected to any node.");
 
                     continue;
                 }
 
-                var next = link.value.Next.IsValid ? roadNetworkRoads[link.value.Next.ID] as RnDataIntersection : null;
-                var prev = link.value.Prev.IsValid ? roadNetworkRoads[link.value.Prev.ID] as RnDataIntersection : null;
+                var next = link.Next.IsValid ? roadNetworkRoads[link.Next.ID] as RnDataIntersection : null;
+                var prev = link.Prev.IsValid ? roadNetworkRoads[link.Prev.ID] as RnDataIntersection : null;
 
                 //　仮想ノードが割り当てられている場合はそのノードを取得
-                RoadNetworkElementNode vNext = vNodes.ContainsKey(link.value.Next.ID) ? vNodes[link.value.Next.ID] : null;
-                RoadNetworkElementNode vPrev = vNodes.ContainsKey(link.value.Prev.ID) ? vNodes[link.value.Prev.ID] : null;
+                RoadNetworkElementNode vNext = vNodes.ContainsKey(link.Next.ID) ? vNodes[link.Next.ID] : null;
+                RoadNetworkElementNode vPrev = vNodes.ContainsKey(link.Prev.ID) ? vNodes[link.Prev.ID] : null;
 
                 // 接続先がリンクかつ仮想ノードが割り当てられていない場合は仮想ノードを生成
                 // 接続点ノードが割り当てられていない場合への対処
-                if (next == null && link.value.Next.IsValid && roadNetworkRoads[link.value.Next.ID] as RnDataRoad != null && vNext == null)
+                if (next == null && link.Next.IsValid && roadNetworkRoads[link.Next.ID] as RnDataRoad != null && vNext == null)
                 {
                     vNext = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
 
                     simRoadNetworkNodes.Add(vNext);
 
-                    vNodes.Add(link.index, vNext);
+                    vNodes.Add(index, vNext);
                 }
-                if (prev == null && link.value.Prev.IsValid && roadNetworkRoads[link.value.Prev.ID] as RnDataRoad != null && vPrev == null)
+                if (prev == null && link.Prev.IsValid && roadNetworkRoads[link.Prev.ID] as RnDataRoad != null && vPrev == null)
                 {
                     vPrev = new RoadNetworkElementNode(context, simRoadNetworkNodes.Count.ToString(), -1);
 
                     simRoadNetworkNodes.Add(vPrev);
 
-                    vNodes.Add(link.index, vPrev);
+                    vNodes.Add(index, vPrev);
                 }
 
                 // 終端の仮想ノードを生成
@@ -186,8 +192,8 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 var simNodePrevID = simNodePrev.ID.Replace(RoadNetworkElementNode.IDPrefix, "");
 
                 // リンクの生成
-                var simLinkL = new RoadNetworkElementLink(context, link.index + "_" + simNodePrevID + "_" + simNodeNextID, link.index);
-                var simLinkR = new RoadNetworkElementLink(context, link.index + "_" + simNodeNextID + "_" + simNodePrevID, link.index);
+                var simLinkL = new RoadNetworkElementLink(context, index + "_" + simNodePrevID + "_" + simNodeNextID, index);
+                var simLinkR = new RoadNetworkElementLink(context, index + "_" + simNodeNextID + "_" + simNodePrevID, index);
 
                 simLinkL.IsReverse = false;
                 simLinkR.IsReverse = true;
@@ -359,6 +365,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             {
                 foreach (var simLane in simLink.Lanes)
                 {
+                    // 空の道路のレーンは出力しない
+                    if (simLane.OriginLane.LeftWay.IsValid == false && simLane.OriginLane.RightWay.IsValid == false)
+                        continue;
+
+
                     var geom = simLane.GetGeometory();
 
                     var lineString = new GeoJSON.Net.Geometry.LineString(geom);
@@ -448,7 +459,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         private void ExportSignalController(List<RoadNetworkElementSignalController> simSignalControllers)
         {
             if (simSignalControllers.Count == 0) return;
-            
+
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalController in simSignalControllers)
@@ -486,7 +497,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         private void ExportSignalLight(List<RoadNetworkElementSignalLight> simSignalLights)
         {
             if (simSignalLights.Count == 0) return;
-            
+
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalLight in simSignalLights)
@@ -519,7 +530,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
         private void ExportSignalStep(List<RoadNetworkElementSignalStep> simSignalSteps)
         {
             if (simSignalSteps.Count == 0) return;
-            
+
             var geoJsonFeature = new List<GeoJsonFeature>();
 
             foreach (var simSignalStep in simSignalSteps)

@@ -77,18 +77,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// レーンの削除
-        /// </summary>
-        /// <param name="lane"></param>
-        public void RemoveLane(RnLane lane)
-        {
-            foreach (var l in roads)
-            {
-                l.RemoveLane(lane);
-            }
-        }
-
-        /// <summary>
         /// レーンの入れ替え
         /// </summary>
         /// <param name="before"></param>
@@ -662,7 +650,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var sw in sideWalks)
             {
-                sw.Check();
+                // 親がいる場合は親側でチェック済みなので無視
+                if (sw.ParentRoad == null)
+                    sw.Check(true);
             }
         }
     }
@@ -906,30 +896,34 @@ namespace PLATEAU.RoadNetwork.Structure
                 var prevInsideWay = CopyWay(inside.prev, sideWalk.InsideWay);
                 var prevOutsideWay = CopyWay(outside.prev, sideWalk.OutsideWay);
 
+
+                bool IsPointShared(RnWay way, IEnumerable<RnWay> targetWays)
+                {
+                    if (way == null)
+                        return false;
+                    foreach (var w in targetWays)
+                    {
+                        if (RnLineStringEx.IsPointShared(way.LineString, w.LineString))
+                            return true;
+                    }
+
+                    return false;
+                }
+
+                // 元のSideWay -> Prev側
+                // 新しいSideWay -> Next側
+                // となるようにする
                 var (startEdgeWay, endEdgeWay) = (sideWalk.StartEdgeWay, sideWalk.EndEdgeWay);
 
-                // LineStringのfront側がlineSegmentのどっち側にあるか
-                if (startEdgeWay != null)
+                // EndEdgeWayがPrev側のSideWayとポイント共有していたら逆
+                if (IsPointShared(endEdgeWay, new[] { prevInsideWay, prevOutsideWay }))
                 {
-                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.prev[0], inside.prev[1], 0.5f).Xz());
-                    // selfのprev側がlineSegmentのどっち側にあるか
-                    var startSign = lineSegment2D.Sign(startEdgeWay[0].Xz());
-                    // startがprevと逆なら入れ替える
-                    if (prevSign != startSign)
-                    {
-                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
-                    }
+                    (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
                 }
-                else if (endEdgeWay != null)
+                // StartEdgeWayがNext側のSideWayとポイント共有していたら逆
+                else if (IsPointShared(startEdgeWay, new[] { nextInsideWay, nextOutsideWay }))
                 {
-                    var prevSign = lineSegment2D.Sign(Vector3.Lerp(inside.next[0], inside.next[1], 0.5f).Xz());
-                    // selfのprev側がlineSegmentのどっち側にあるか
-                    var startSign = lineSegment2D.Sign(endEdgeWay[0].Xz());
-                    // startがprevと逆なら入れ替える
-                    if (prevSign != startSign)
-                    {
-                        (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
-                    }
+                    (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
                 }
 
                 // 切断線の境界
@@ -1108,7 +1102,8 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 歩道周りを処理する
 
-            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad, sw => sw.CalcRoadProximityScore(road) < sw.CalcRoadProximityScore(newNextRoad));
+            SliceSideWalks(self, road.SideWalks, lineSegment2D, lineTable, newNextRoad
+                , sw => sw.CalcRoadProximityScore(road) < sw.CalcRoadProximityScore(newNextRoad));
 
             return new SliceRoadHorizontalResult { Result = RoadCutResult.Success, PrevRoad = road, NextRoad = newNextRoad, };
         }

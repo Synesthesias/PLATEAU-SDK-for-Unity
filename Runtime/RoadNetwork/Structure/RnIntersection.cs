@@ -803,7 +803,7 @@ namespace PLATEAU.RoadNetwork.Structure
             IsEmptyIntersection = val;
         }
 
-        public override bool Check()
+        public override bool Check(bool showLog = true)
         {
             Align();
             if (IsAligned() == false)
@@ -811,7 +811,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 DebugEx.LogError($"ループしていない輪郭の交差点 {this.GetTargetTransName()}");
                 return false;
             }
-            return true;
+            return base.Check(showLog);
         }
 #if false
         /// <summary>
