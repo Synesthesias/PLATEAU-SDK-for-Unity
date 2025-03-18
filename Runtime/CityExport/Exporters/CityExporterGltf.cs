@@ -24,7 +24,7 @@ namespace PLATEAU.CityExport.Exporters
             string dirPath = Path.Combine(destDir, fileNameWithoutExtension);
             Directory.CreateDirectory(dirPath);
             string gltfFilePath = Path.Combine(dirPath, fileNameWithoutExtension + fileExtension);
-            string textureDir = Path.Combine(dirPath, "textures");
+            string textureDir = "./textures";
                         
             gltfWriter.Write(gltfFilePath, model, new GltfWriteOptions(GltfFileFormat, textureDir));
         }
