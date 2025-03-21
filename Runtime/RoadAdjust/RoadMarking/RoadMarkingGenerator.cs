@@ -1,7 +1,6 @@
 using PLATEAU.RoadAdjust.RoadMarking.Crosswalk;
 using PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
-using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,7 +84,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 resultList.Add(gen);
             }
             
-            // 交差点を生成します。
+            // 横断歩道を生成します。
             var crosswalkInstances = new CrosswalkComposer().Compose(target, crosswalkFrequency);
             foreach (var crosswalk in crosswalkInstances)
             {

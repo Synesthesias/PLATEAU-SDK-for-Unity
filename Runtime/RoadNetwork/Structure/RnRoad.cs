@@ -38,9 +38,6 @@ namespace PLATEAU.RoadNetwork.Structure
         // 追加/削除はAddMainLane/RemoveMainLaneを使うこと
         public IReadOnlyList<RnLane> MainLanes => mainLanes;
 
-        // 全レーン
-        public IEnumerable<RnLane> AllLanes => MainLanes;
-
         /// <summary>
         /// 中央分離帯を含めた全てのレーン。
         /// 左車線 -> 中央分離帯 -> 右車線の順番になっている
@@ -126,7 +123,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             get
             {
-                return Prev is RnIntersection && Next is RnIntersection && AllLanes.All(l => l.IsEmptyLane);
+                return Prev is RnIntersection && Next is RnIntersection && MainLanes.All(l => l.IsEmptyLane);
             }
         }
 
@@ -147,7 +144,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsLeftLane(RnLane lane)
         {
-            return lane.IsReverse == false;
+            return lane.IsReversed == false;
         }
 
         /// <summary>
@@ -157,7 +154,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public bool IsRightLane(RnLane lane)
         {
-            return lane.IsReverse == true;
+            return lane.IsReversed == true;
         }
 
         /// <summary>
@@ -171,14 +168,20 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         // 境界線情報を取得
-        public override IEnumerable<RnWay> GetBorders()
+        public override IEnumerable<NeighborBorder> GetBorders()
         {
-            foreach (var lane in MainLanes)
+            foreach (var borderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
             {
-                if (lane.PrevBorder != null)
-                    yield return lane.PrevBorder;
-                if (lane.NextBorder != null)
-                    yield return lane.NextBorder;
+                var neighbor = this.GetNeighborRoad(borderType);
+
+                foreach (var b in GetBorderWays(borderType))
+                {
+                    yield return new NeighborBorder
+                    {
+                        NeighborRoad = neighbor,
+                        BorderWay = b
+                    };
+                }
             }
         }
 
@@ -299,9 +302,8 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 境界線の一覧を取得する. left->rightの順番
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="includeMedian"></param>
         /// <returns></returns>
-        public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type, bool includeMedian = true)
+        public IEnumerable<RnWay> GetBorderWays(RnLaneBorderType type)
         {
             // 左 -> 中央分離帯 -> 右の順番
             foreach (var l in AllLanesWithMedian)
@@ -410,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // 各レーンのWayの向きは変えずにIsRevereだけ変える
             // 左車線/右車線の関係が変わるので配列の並びも逆にする
             foreach (var lane in AllLanesWithMedian)
-                lane.IsReverse = !lane.IsReverse;
+                lane.IsReversed = !lane.IsReversed;
             mainLanes.Reverse();
 
             // 歩道の設定も逆にする(左車線/右車線の関係が変わるので)
@@ -456,12 +458,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// laneを追加する. ParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
-        public void AddMainLane(RnLane lane)
+        public bool AddMainLane(RnLane lane)
         {
             if (mainLanes.Contains(lane))
-                return;
+                return false;
             OnAddLane(lane);
             mainLanes.Add(lane);
+            return true;
         }
 
         /// <summary>
@@ -469,24 +472,28 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="lane"></param>
         /// <param name="index"></param>
-        public void AddMainLane(RnLane lane, int index)
+        public bool AddMainLane(RnLane lane, int index)
         {
             if (mainLanes.Contains(lane))
-                return;
+                return false;
             OnAddLane(lane);
             mainLanes.Insert(index, lane);
+            return true;
         }
 
         /// <summary>
-        /// laneを削除するParentRoad情報も更新する
+        /// MainLaneのみ削除. laneを削除するParentRoad情報も更新する
         /// </summary>
         /// <param name="lane"></param>
-        public void RemoveLane(RnLane lane)
+        public bool RemoveMainLane(RnLane lane)
         {
             if (mainLanes.Remove(lane))
             {
                 OnRemoveLane(lane);
+                return true;
             }
+
+            return false;
         }
 
         public void ReplaceLane(RnLane before, RnLane after)
@@ -497,7 +504,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public void ReplaceLanes(IEnumerable<RnLane> newLanes)
         {
             while (mainLanes.Count > 0)
-                RemoveLane(mainLanes[0]);
+                RemoveMainLane(mainLanes[0]);
 
             foreach (var lane in newLanes)
                 AddMainLane(lane);
@@ -507,7 +514,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var l in GetLanes(dir).ToList())
             {
-                RemoveLane(l);
+                RemoveMainLane(l);
             }
             // Leftは先頭に追加
             if (dir == RnDir.Left)
@@ -529,17 +536,6 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        /// <summary>
-        /// 中央分離帯を入れ替える
-        /// </summary>
-        /// <param name="lane"></param>
-        public void ReplaceMedianLane(RnLane lane)
-        {
-            RemoveLane(lane);
-            medianLane = lane;
-            OnAddLane(lane);
-        }
-
         public void ReplaceLane(RnLane before, IEnumerable<RnLane> newLanes)
         {
             var index = mainLanes.IndexOf(before);
@@ -549,7 +545,7 @@ namespace PLATEAU.RoadNetwork.Structure
             mainLanes.InsertRange(index, lanes);
             foreach (var lane in lanes)
                 OnRemoveLane(lane);
-            RemoveLane(before);
+            RemoveMainLane(before);
         }
 
         private void OnAddLane(RnLane lane)
@@ -606,7 +602,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return false;
             }
 
-            static void Check(RnLane lane)
+            static void SeparateLane(RnLane lane)
             {
                 // 境界線がない場合は何もしない
                 if (lane.PrevBorder == null || lane.NextBorder == null)
@@ -632,7 +628,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             foreach (var lane in AllLanesWithMedian)
-                Check(lane);
+                SeparateLane(lane);
         }
         /// <summary>
         /// 接続を解除する
@@ -655,8 +651,9 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報を差し替える.
-        /// 隣り合うRoadBaseとの整合性を保つように変更する必要があるので注意
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// 隣接情報をfrom -> toに変更する.
+        /// (from/to側の隣接情報は変更しない)
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -671,17 +668,33 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報からotherを削除する. other側の接続は消えない
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
         /// </summary>
-        /// <param name="other"></param>
-        public override void UnLink(RnRoadBase other)
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public override void ReplaceNeighbor(RnWay borderWay, RnRoadBase to)
         {
-            if (Prev == other)
-                Prev = null;
-            if (Next == other)
-                Next = null;
-        }
+            if (borderWay == null)
+                return;
 
+            foreach (var lane in AllLanesWithMedian)
+            {
+                var prev = GetBorderWay(lane, RnLaneBorderType.Prev, RnLaneBorderDir.Left2Right);
+                if (prev != null && prev.IsSameLineReference(borderWay))
+                {
+                    Prev = to;
+                    return;
+                }
+
+                var next = GetBorderWay(lane, RnLaneBorderType.Next, RnLaneBorderDir.Left2Right);
+                if (next != null && next.IsSameLineReference(borderWay))
+                {
+                    Next = to;
+                    return;
+                }
+            }
+        }
         /// <summary>
         /// デバッグ用) その道路の中心を表す代表頂点を返す
         /// </summary>
@@ -736,16 +749,21 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
 
-        public override bool Check()
+        public override bool Check(bool showLog = true)
         {
-
             foreach (var BorderType in new[] { RnLaneBorderType.Prev, RnLaneBorderType.Next })
             {
                 if (!this.IsValidBorderAdjacentNeighbor(BorderType, true))
                     return false;
             }
 
-            return true;
+            foreach (var lane in AllLanesWithMedian)
+            {
+                if (lane.Check() == false)
+                    return false;
+            }
+
+            return base.Check(showLog);
         }
 
         // ---------------
@@ -794,7 +812,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return self.Prev == other ? null : self.Prev;
             }
 
-            throw new InvalidDataException($"{self.DebugMyId} is not neighbor road {other.DebugMyId}");
+            throw new InvalidDataException($"{self.DebugMyId}/{self.GetTargetTransName()} is not neighbor road {other.DebugMyId}/{other.GetTargetTransName()}");
         }
 
         /// <summary>
@@ -938,7 +956,7 @@ namespace PLATEAU.RoadNetwork.Structure
             var rightWidth = float.MaxValue;
             foreach (var i in indices)
             {
-                var v = line.GetPoint(i);
+                var v = line.GetVertexByFloatIndex(i);
                 leftWay.LineString.GetNearestPoint(v, out var nl, out var il, out var wl);
                 leftWidth = Mathf.Min(leftWidth, wl);
                 rightWay.LineString.GetNearestPoint(v, out var nr, out var ir, out var wr);
@@ -989,19 +1007,19 @@ namespace PLATEAU.RoadNetwork.Structure
                 left2RightDir = -left2RightDir;
 
             // leftWayの方が手前にある
-            if (rightSeg2D.TryHalfLineIntersection(leftSeg2D.End, left2RightDir, out var rOut, out var rT1,
-                    out var lT1))
+            if (rightSeg2D.TryHalfLineIntersection(leftSeg2D.End, left2RightDir, out var rInter,
+                    out var lT1, out var rSegT1))
             {
                 adjustedBorderLeft2Right
-                    = new LineSegment3D(leftSeg.End, rightSeg.Lerp(rT1));
+                    = new LineSegment3D(leftSeg.End, rightSeg.Lerp(rSegT1));
                 return true;
             }
             // rightWayの方が手前にある
-            if (leftSeg2D.TryHalfLineIntersection(rightSeg2D.End, -left2RightDir, out var lOut, out var lT2,
-                         out var rT2))
+            if (leftSeg2D.TryHalfLineIntersection(rightSeg2D.End, -left2RightDir, out var lInter,
+                         out var rT2, out var lSegT2))
             {
                 adjustedBorderLeft2Right
-                    = new LineSegment3D(leftSeg.Lerp(lT2), rightSeg.End);
+                    = new LineSegment3D(leftSeg.Lerp(lSegT2), rightSeg.End);
                 return true;
             }
             return false;
@@ -1044,162 +1062,32 @@ namespace PLATEAU.RoadNetwork.Structure
             if (edgeGroup == null)
                 return false;
 
-            var visited = new HashSet<RnLineString>();
-
-            void Merge(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
-            {
-                if (dst == null || src == null)
-                    return;
-                if (visited.Contains(dst.LineString))
-                    return;
-                visited.Add(dst.LineString);
-                merger(dst, src);
-            }
-
             var oppositeBorders = self.GetBorderWays(borderType.GetOpposite()).ToList();
             var oppositeRoadBase = self.GetNeighborRoad(borderType.GetOpposite());
-            if (borderType == RnLaneBorderType.Prev)
-            {
-                // 前方の交差点を取得
-                var rightEdge = edgeGroup.LeftSide.Edges[0];
-                var leftEdge = edgeGroup.RightSide.Edges[^1];
-                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendFront2LineString);
-                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendBack2LineString);
 
-                // 隣接情報を置き換える
-                self.Next.ReplaceNeighbor(self, intersection);
-            }
-            else if (borderType == RnLaneBorderType.Next)
-            {
-                // 後方の交差点を取得
-                var rightEdge = edgeGroup.RightSide.Edges[^1];
-                var leftEdge = edgeGroup.LeftSide.Edges[0];
-                Merge(rightEdge?.Border, rightWay?.ReversedWay(), RnWayEx.AppendBack2LineString);
-                Merge(leftEdge?.Border, leftWay, RnWayEx.AppendFront2LineString);
+            // 外形線部分を追加
+            intersection.AddEdge(null, leftWay);
+            intersection.AddEdge(null, rightWay);
 
-            }
+            // intersectionの輪郭情報を差し替える
+            intersection.ReplaceEdges(self, borderType, oppositeBorders, false);
 
-            intersection.ReplaceEdges(self, oppositeBorders, false);
-            // 隣接情報を置き換える
+            // selfの隣接道路に対して, selfに対する接続情報を置き換える
             intersection.ReplaceNeighbor(self, oppositeRoadBase);
             oppositeRoadBase?.ReplaceNeighbor(self, intersection);
 
+            // 外形のEdgeがEdge分かれるので一つにまとめる
+            intersection.MergeContinuousNonBorderEdge();
+
+            // 歩道を一つに統合する
+            var srcSideWalks = self.SideWalks.ToList();
+            intersection.MergeSideWalks(srcSideWalks);
+
+            // 全部終わった後, 共通のポイントを持つLineStringは統合する
+            intersection.MergeSamePointLineStrings();
+
             // トラックを生成しなおす
             intersection.BuildTracks(BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
-
-            var dstSideWalks = intersection.SideWalks.ToList();
-            var srcSideWalks = self.SideWalks.ToList();
-
-
-            // SideWalksと共通のLineStringがあるとき, レーン側は統合されるけど
-            // SideWalksは統合されない場合もある. その時はLineStringを分離する必要があるので
-            // 元のLineStringをコピーして持っておく
-            var originalDstSideWalks = dstSideWalks.ToList();
-            var original = dstSideWalks
-                .SelectMany(sw => sw.SideWays)
-                .ToHashSet()
-                .ToDictionary(x => x, x => x.Clone(false));
-
-            HashSet<RnSideWalk> mergedDstSideWalks = new();
-            foreach (var srcSw in srcSideWalks)
-            {
-                var found = false;
-                foreach (var dstSw in dstSideWalks)
-                {
-                    void Merge2(RnWay dst, RnWay src, Action<RnWay, RnWay> merger)
-                    {
-                        if (dst == null || src == null)
-                            return;
-                        if (visited.Contains(dst.LineString))
-                            return;
-                        visited.Add(dst.LineString);
-
-                        var tolerance = 0f;
-                        if (dst.GetPoint(0).IsSamePoint(src.GetPoint(0), tolerance))
-                        {
-                            dst.AppendFront2LineString(src.ReversedWay());
-                        }
-                        else if (dst.GetPoint(0).IsSamePoint(src.GetPoint(-1), tolerance))
-                        {
-                            dst.AppendFront2LineString(src);
-                        }
-                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(0), tolerance))
-                        {
-                            dst.AppendBack2LineString(src);
-                        }
-                        else if (dst.GetPoint(-1).IsSamePoint(src.GetPoint(-1), tolerance))
-                        {
-                            dst.AppendBack2LineString(src.ReversedWay());
-                        }
-                        else
-                        {
-                            // #NOTE : もともとの歩道がきれいにつながっていない場合は仮で直接つなぐようにする
-                            DebugEx.LogWarning($"共通頂点を持たないWayをマージしようとしました. {dst.GetDebugIdLabelOrDefault()} {src.GetDebugIdLabelOrDefault()}");
-                            //DebugEx.DrawArrows(dst, false, color: Color.red, duration: 100);
-                            //DebugEx.DrawArrows(src, false, color: Color.blue, duration: 100);
-                            merger(dst, src);
-                        }
-                    }
-
-                    void MergeSideWalk(bool reverse, Action<RnWay, RnWay> merger)
-                    {
-                        var insideWay = reverse ? srcSw.InsideWay?.ReversedWay() : srcSw.InsideWay;
-                        var outsideWay = reverse ? srcSw.OutsideWay?.ReversedWay() : srcSw.OutsideWay;
-
-                        Merge2(dstSw.InsideWay, insideWay, merger);
-                        Merge2(dstSw.OutsideWay, outsideWay, merger);
-                        // もともとnullだった場合は置き換える
-                        dstSw.SetSideWays(dstSw.OutsideWay ?? outsideWay, dstSw.InsideWay ?? insideWay);
-                        mergedDstSideWalks.Add(dstSw);
-                        found = true;
-                    }
-
-                    // start - startで重なっている場合
-                    if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(true, RnWayEx.AppendFront2LineString);
-                        dstSw.SetStartEdgeWay(srcSw.EndEdgeWay);
-                    }
-                    // start - endで重なっている場合
-                    else if (dstSw.StartEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(false, RnWayEx.AppendFront2LineString);
-                        dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
-                    }
-                    // end - endで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.EndEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(true, RnWayEx.AppendBack2LineString);
-                        dstSw.SetEndEdgeWay(srcSw.StartEdgeWay);
-                    }
-                    // end - startで重なっている場合
-                    else if (dstSw.EndEdgeWay?.IsSameLineReference(srcSw.StartEdgeWay) ?? false)
-                    {
-                        MergeSideWalk(false, RnWayEx.AppendBack2LineString);
-                        dstSw.SetEndEdgeWay(srcSw.EndEdgeWay);
-                    }
-
-                    if (found)
-                        break;
-                }
-
-                // マージできなかった歩道は直接追加
-                if (found == false)
-                {
-                    intersection.AddSideWalk(srcSw);
-                    dstSideWalks.Add(srcSw);
-                }
-            }
-
-            // dstSideWalksの中でマージされなかった(元の形状から変更されない)ものは
-            // レーンと共通のLineStringを持っている場合に勝手に形状変わっているかもしれないので明示的に元に戻す
-            foreach (var sw in originalDstSideWalks
-                         .Where(d => mergedDstSideWalks.Contains(d) == false))
-            {
-                sw.SetSideWays(
-                    sw.OutsideWay == null ? null : original[sw.OutsideWay]
-                    , sw.InsideWay == null ? null : original[sw.InsideWay]);
-            }
 
             intersection.AddTargetTrans(self.TargetTrans);
             self.DisConnect(true);
@@ -1207,15 +1095,15 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// selfのborderSide側からborderOffsetMeterだけ離れた位置に道路を垂直に分割する線分を計算する
+        /// selfのborderSide側からborderOffsetだけ離れた位置に道路を垂直に分割する線分を計算する
         /// </summary>
         /// <param name="self"></param>
         /// <param name="borderSide"></param>
-        /// <param name="borderOffsetMeter"></param>
+        /// <param name="borderOffset"></param>
         /// <param name="segment"></param>
         /// <returns></returns>
         public static bool TryGetVerticalSliceSegment(this RnRoad self, RnLaneBorderType borderSide,
-            float borderOffsetMeter, out LineSegment3D segment)
+            float borderOffset, out LineSegment3D segment)
         {
             segment = new LineSegment3D();
             if (self.TryGetMergedSideWay(null, out var leftWay, out var rightWay) == false)
@@ -1237,26 +1125,31 @@ namespace PLATEAU.RoadNetwork.Structure
             var centerWay = new RnWay(RnLineString.Create(vertices));
             var startIndex = 0;
             var endIndex = 0;
-            var v = Vector3.zero;
 
             var border = borderSide == RnLaneBorderType.Prev ? prevBorder : nextBorder;
 
             // 道路の両隣
             // 境界線の斜めがきつい時のため
             // 垂直線と境界線が交わらないように多めにborderOffsetMeterを取る
+            var maxBorderAdvanceLength = 10;
             List<Vector3> checkBorderPoints = new() { border[0], border[^1] };
             var neighborRoad = self.GetNeighborRoad(borderSide);
             if (neighborRoad != null)
             {
                 foreach (var sw in self.SideWalks)
                 {
-                    foreach (var w in sw.AllWays)
+                    foreach (var w in sw.EdgeWays)
                     {
-                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLineReference(w))))
-                        {
-                            checkBorderPoints.Add(w[0]);
-                            checkBorderPoints.Add(w[^1]);
-                        }
+                        // neighborRoadと繋がっている境界線のみを対象
+                        if (neighborRoad.SideWalks.Any(x => x.AllWays.Any(y => y.IsSameLineReference(w))) == false)
+                            continue;
+                        // borderとの距離が一定以上離れている場合, 全然違うところにある歩道の可能性が高いので無視
+                        // (交差点に同じ道路をPrev/Next両方でつながっている場合に起こりえる)
+                        var distance = border.GetDistance2D(w);
+                        if (distance > maxBorderAdvanceLength)
+                            continue;
+                        checkBorderPoints.Add(w[0]);
+                        checkBorderPoints.Add(w[^1]);
                     }
                 }
             }
@@ -1269,17 +1162,23 @@ namespace PLATEAU.RoadNetwork.Structure
                     ? centerWay.CalcLength(0, index)
                     : centerWay.CalcLength(index, centerWay.Count - 1);
 
+                // 余りにも長くとりすぎる場合は, 境界線関係ない歩道の可能性が高いので無視する
+                // 交差点に同じ道路かNext/Prev両方でつながっている場合に起こりえる
+                if (len > borderOffset + maxBorderAdvanceLength)
+                    continue;
+
                 // 0.5mは余白分として入れる
-                borderOffsetMeter = Mathf.Max(borderOffsetMeter, len + 2.5f);
+                borderOffset = Mathf.Max(borderOffset, len + 2.5f);
             }
 
+            var v = Vector3.zero;
             if (borderSide == RnLaneBorderType.Next)
             {
-                v = centerWay.GetAdvancedPointFromBack(borderOffsetMeter, out startIndex, out endIndex);
+                v = centerWay.GetAdvancedPointFromBack(borderOffset, out startIndex, out endIndex);
             }
             else if (borderSide == RnLaneBorderType.Prev)
             {
-                v = centerWay.GetAdvancedPointFromFront(borderOffsetMeter, out startIndex, out endIndex);
+                v = centerWay.GetAdvancedPointFromFront(borderOffset, out startIndex, out endIndex);
             }
             else
             {
@@ -1299,6 +1198,13 @@ namespace PLATEAU.RoadNetwork.Structure
             return true;
         }
 
+        /// <summary>
+        /// 境界線情報が
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="borderType"></param>
+        /// <param name="noBorderIsTrue"></param>
+        /// <returns></returns>
         public static bool IsValidBorderAdjacentNeighbor(this RnRoad self, RnLaneBorderType borderType, bool noBorderIsTrue)
         {
             if (self == null)
@@ -1306,12 +1212,12 @@ namespace PLATEAU.RoadNetwork.Structure
             var neighbor = self.GetNeighborRoad(borderType);
             if (neighbor == null)
                 return noBorderIsTrue;
-            var ways = neighbor.GetBorders()?.ToList() ?? new List<RnWay>();
+            var ways = neighbor.GetBorders()?.Select(x => x.BorderWay)?.ToList() ?? new List<RnWay>();
 
             var oppositeBorderType = borderType.GetOpposite();
             foreach (var lane in self.MainLanes)
             {
-                var laneBorder = self.GetBorderWay(lane, borderType, Structure.RnLaneBorderDir.Left2Right);
+                var laneBorder = self.GetBorderWay(lane, borderType, RnLaneBorderDir.Left2Right);
                 if (laneBorder == null)
                 {
                     if (noBorderIsTrue)

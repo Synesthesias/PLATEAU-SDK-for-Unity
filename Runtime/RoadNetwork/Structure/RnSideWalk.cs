@@ -1,5 +1,4 @@
 ﻿using PLATEAU.Util;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -54,6 +53,9 @@ namespace PLATEAU.RoadNetwork.Structure
         // シリアライズ化の為にフィールドに
         private RnWay endEdgeWay;
 
+        /// <summary>
+        /// 親道路に対して左側にあるか右側にあるか(自動生成時だけに存在するので編集すると壊れる可能性あり)
+        /// </summary>
         private RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined;
 
         //----------------------------------
@@ -114,6 +116,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         public bool IsValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault();
 
+        public bool IsAllWayValid => InsideWay.IsValidOrDefault() && OutsideWay.IsValidOrDefault() && StartEdgeWay.IsValidOrDefault() && EndEdgeWay.IsValidOrDefault();
         public RnSideWalk() { }
 
         private RnSideWalk(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType)
@@ -124,7 +127,7 @@ namespace PLATEAU.RoadNetwork.Structure
             this.startEdgeWay = startEdgeWay;
             this.endEdgeWay = endEdgeWay;
             this.laneType = laneType;
-            TryAlign();
+            Align();
         }
 
         public RnSideWalkWayTypeMask GetValidWayTypeMask()
@@ -152,14 +155,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 親からのリンク解除
-        /// </summary>
-        public void UnLinkFromParent()
-        {
-            ParentRoad?.RemoveSideWalk(this);
-        }
-
-        /// <summary>
         /// 左右のWayを再設定(使い方によっては構造壊れるので注意)
         /// </summary>
         /// <param name="outsideWay"></param>
@@ -168,7 +163,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.outsideWay = outsideWay;
             this.insideWay = insideWay;
-            TryAlign();
+            Align();
         }
 
         /// <summary>
@@ -180,7 +175,7 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             this.startEdgeWay = startWay;
             this.endEdgeWay = endWay;
-            TryAlign();
+            Align();
         }
 
         /// <summary>
@@ -218,7 +213,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// これらのWayがない場合は何もしない
         /// </summary>
         /// <returns></returns>
-        public void TryAlign()
+        public void Align()
         {
             void Impl(RnWay way)
             {
@@ -263,16 +258,150 @@ namespace PLATEAU.RoadNetwork.Structure
             Impl(OutsideWay);
         }
 
-        /// <summary>
-        /// 不正地チェック
-        /// </summary>
-        public bool Check()
+        private static bool IsContinuousWay(RnWay a, RnWay b)
         {
+            // nullに関しては繋がっていなくてもOK
+            if (a == null || b == null)
+                return true;
+            if (a.IsValidOrDefault() == false || b.IsValidOrDefault() == false)
+                return true;
+            var aV0 = a.GetPoint(0);
+            var aV1 = a.GetPoint(-1);
+            var bV0 = b.GetPoint(0);
+            var bV1 = b.GetPoint(-1);
+            return (aV0 == bV0 || aV0 == bV1) || (aV1 == bV0 || aV1 == bV1);
+
+        }
+
+        public bool CheckAligned(bool showLog)
+        {
+            if (IsContinuousWay(InsideWay, StartEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"InsideWayとStartEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+            if (IsContinuousWay(InsideWay, EndEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"InsideWayとEndEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+
+            }
+            if (IsContinuousWay(OutsideWay, StartEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"OutsideWayとStartEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+            if (IsContinuousWay(OutsideWay, EndEdgeWay) == false)
+            {
+                if (showLog)
+                    DebugEx.LogError($"OutsideWayとEndEdgeWayが端点で繋がっていません. {this.GetDebugLabelOrDefault()}/{this.ParentRoad?.GetTargetTransName()}");
+                return false;
+            }
+
             return true;
         }
 
         /// <summary>
-        /// 歩道作成
+        /// 不正地チェック
+        /// </summary>
+        public bool Check(bool showLog)
+        {
+            if (IsAllWayValid)
+            {
+                if (CheckAligned(showLog) == false)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 自身とsrcSideWalkが連結している場合に結合する
+        /// </summary>
+        /// <param name="srcSideWalk"></param>
+        /// <returns></returns>
+        public bool TryMergeNeighborSideWalk(RnSideWalk srcSideWalk)
+        {
+            if (srcSideWalk == null)
+                return false;
+            Align();
+            srcSideWalk.Align();
+
+            if (!CheckAligned(false) || !srcSideWalk.CheckAligned(false))
+                return false;
+
+            bool IsMatch(RnWay a, RnWay b)
+            {
+                return a != null && b != null && a.IsSameLineReference(b);
+            }
+
+            static void MergeSideWays(RnSideWalk srcSw, RnSideWalk dstSw)
+            {
+                // #TODO : 現状の使い方だと問題ないが, 今後OutsideWay同士, InsideWay同士が繋がっているかの保証が無いのでポイント単位でチェックすべき
+                dstSw.SetSideWays(
+                    RnWayEx.CreateMergedWay(srcSw.OutsideWay, dstSw.OutsideWay, false)
+                    , RnWayEx.CreateMergedWay(srcSw.InsideWay, dstSw.InsideWay, false)
+                );
+                dstSw.SetStartEdgeWay(srcSw.StartEdgeWay);
+            }
+
+            //  Dst  -  Src
+            // Start - Startで繋がっている場合
+            if (IsMatch(StartEdgeWay, srcSideWalk.StartEdgeWay))
+            {
+                // src側を反転させる
+                MergeSideWays(srcSideWalk.ReversedSideWalk(), this);
+                return true;
+            }
+            // Start - Endで繋がっている場合
+            else if (IsMatch(StartEdgeWay, srcSideWalk.EndEdgeWay))
+            {
+                MergeSideWays(srcSideWalk, this);
+                return true;
+            }
+            // End - Endで繋がっている場合
+            else if (IsMatch(EndEdgeWay, srcSideWalk.EndEdgeWay))
+            {
+                Reverse();
+                MergeSideWays(srcSideWalk, this);
+                Reverse();
+                return true;
+            }
+            // End - Startで繋がっている場合
+            else if (IsMatch(EndEdgeWay, srcSideWalk.StartEdgeWay))
+            {
+                Reverse();
+                // src側を反転させる
+                MergeSideWays(srcSideWalk.ReversedSideWalk(), this);
+                Reverse();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Start-Endを反転させる
+        /// </summary>
+        /// <returns></returns>
+        public void Reverse()
+        {
+            (startEdgeWay, endEdgeWay) = (endEdgeWay, startEdgeWay);
+            Align();
+        }
+
+        public RnSideWalk ReversedSideWalk()
+        {
+            var ret = new RnSideWalk(ParentRoad, OutsideWay, InsideWay, StartEdgeWay, EndEdgeWay, LaneType);
+            ret.Reverse();
+            return ret;
+        }
+
+        /// <summary>
+        /// 歩道作成 ParentRoadへの追加も行う
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="outsideWay"></param>
@@ -283,7 +412,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static RnSideWalk Create(RnRoadBase parent, RnWay outsideWay, RnWay insideWay, RnWay startEdgeWay, RnWay endEdgeWay, RnSideWalkLaneType laneType = RnSideWalkLaneType.Undefined)
         {
-            var sideWalk = new RnSideWalk(parent, outsideWay, insideWay, startEdgeWay, endEdgeWay, laneType);
+            var sideWalk = new RnSideWalk(parent, outsideWay?.ShallowClone(), insideWay?.ShallowClone(), startEdgeWay?.ShallowClone(), endEdgeWay?.ShallowClone(), laneType);
             parent?.AddSideWalk(sideWalk);
             return sideWalk;
         }

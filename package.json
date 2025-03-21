@@ -1,6 +1,6 @@
 {
     "name": "com.synesthesias.plateau-unity-sdk",
-    "version": "3.3.0",
+    "version": "3.4.1",
     "displayName": "PLATEAU SDK for Unity",
     "description": "このパッケージには、PLATEAUの3D都市モデルデータを利用するためのAPI、サンプルが含まれます。PLATEAU SDK for Unityを利用することで、実世界を舞台にしたゲームの開発や、PLATEAUの豊富なデータを活用したシミュレーションを簡単に行うことができます。",
     "unity": "2022.3",

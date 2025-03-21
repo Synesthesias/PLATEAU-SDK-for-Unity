@@ -6,6 +6,7 @@ using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.RoadAdjust.RoadNetworkToMesh;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
@@ -76,7 +77,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         /// <summary>
         /// 道路ネットワークを元に道路メッシュや白線生成を行います
         /// </summary>
-        private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoad> changedRoads, ISmoothingStrategy smoothingStrategy)
+        private void ReproduceRoad(RnModel network, IReadOnlyList<RnRoadBase> changedRoads, ISmoothingStrategy smoothingStrategy)
         {
             if (network == null) return;
             new RoadReproducer().Generate(new RrTargetRoadBases(network, changedRoads), laneNumUI.CrosswalkFreq(), smoothingStrategy);
@@ -85,7 +86,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         public void OnLaneNumChanged(RnModel network, IReadOnlyList<RnRoad> changedRoads)
         {
-            ReproduceRoad(network, changedRoads, new SmoothingStrategyRespectOriginal()/*元の形状を尊重*/);
+            // レーン数の変更により、隣接交差点のトラックが変わるかもしれません。その場合、隣接交差点に隣接する道路の矢印の変更が必要です。
+            var intersections = changedRoads
+                .Select(r => r.Next as RnIntersection)
+                .Concat(changedRoads.Select(r => r.Prev as RnIntersection))
+                .Where(i => i != null)
+                .Distinct();
+
+            var adjRoads = intersections
+                .SelectMany(i => i.GetNeighborRoads())
+                .OfType<RnRoad>()
+                .Where(r => !changedRoads.Contains(r));
+
+            var targetRoads = changedRoads.Concat(adjRoads).ToList();
+            
+            // 道路を再生成します。
+            ReproduceRoad(network, targetRoads, new SmoothingStrategyRespectOriginal()/*元の形状を尊重*/);
         }
 
         public void OnRoadShapeChanged(RnModel network, IReadOnlyList<RnRoad> changedRoads)

@@ -287,7 +287,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             // 隣接道路がある輪郭を追加
             var isRoadPrev = data.IsRoadPrev;
-            foreach (var roadBorder in data.Road.MainLanes.Select(l => isRoadPrev ^ l.IsReverse ? l.PrevBorder : l.NextBorder))
+            foreach (var roadBorder in data.Road.MainLanes.Select(l => isRoadPrev ^ l.IsReversed ? l.PrevBorder : l.NextBorder))
             {
                 intersection.AddEdge(data.Road, roadBorder);
             }
@@ -310,7 +310,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             // 逆側交差点を一時的に切り離す
             var oppositeIntersection = (RnIntersection)(isRoadPrev ? road.Next : road.Prev);
-            var oppositeIntersectionBorder = oppositeIntersection.Neighbors.FirstOrDefault(n => n.Road == road);
+            var oppositeIntersectionBorder = oppositeIntersection.Borders.FirstOrDefault(n => n.Road == road);
             if (isRoadPrev)
                 road.SetPrevNext(intersection, null);
             else
@@ -468,7 +468,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         private RnPoint GetEdgePoint(RnRoad road, bool useLeftWay, bool isRoadPrev)
         {
             var way = useLeftWay ? road.GetLeftWayOfLanes() : road.GetRightWayOfLanes();
-            return isRoadPrev ^ (useLeftWay ? road.MainLanes[0].IsReverse : road.MainLanes.Last().IsReverse) ^ way.IsReversed
+            return isRoadPrev ^ (useLeftWay ? road.MainLanes[0].IsReversed : road.MainLanes.Last().IsReversed) ^ way.IsReversed
                 ? way.LineString.Points.First()
                 : way.LineString.Points.Last();
         }

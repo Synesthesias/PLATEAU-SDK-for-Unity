@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PLATEAU.Native;
+using PLATEAU.RoadNetwork.Data;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using PLATEAU.Native;
-using PLATEAU.RoadNetwork.Data;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -73,7 +73,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             var points = roadNetworkContext.RoadNetworkGetter.GetPoints();
 
-            var isReverse = OriginLane.IsReverse;
+            var isReverse = OriginLane.IsReversed;
 
             var way = isCenter ? OriginLane.CenterWay : OriginLane.RightWay;
 

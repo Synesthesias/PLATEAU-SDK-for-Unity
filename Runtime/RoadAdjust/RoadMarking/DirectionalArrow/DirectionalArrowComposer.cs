@@ -14,7 +14,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
     {
         private IRrTarget target;
         private const float ArrowMeshHeightOffset = 0.07f; // 経験的に道路に埋まらないくらいの高さ
-        
+
         /// <summary> 矢印を停止線からどの距離に置くか </summary>
         private const float ArrowPositionOffset = 4.5f;
 
@@ -45,16 +45,16 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
 
                     if (lane.NextBorder != null)
                     {
-                        var inter = lane.IsReverse ? prevIntersection : nextIntersection;
+                        var inter = lane.IsReversed ? prevIntersection : nextIntersection;
                         var nextArrow = GenerateArrow(lane.NextBorder, inter, ArrowPosition(lane, true, out var isSucceedP), ArrowAngle(lane, true, out bool isSucceedA));
-                        if(isSucceedP && isSucceedA) ret.Add(nextArrow);
+                        if (isSucceedP && isSucceedA) ret.Add(nextArrow);
                     }
 
                     if (lane.PrevBorder != null)
                     {
-                        var inter = lane.IsReverse ? nextIntersection : prevIntersection;
+                        var inter = lane.IsReversed ? nextIntersection : prevIntersection;
                         var prevArrow = GenerateArrow(lane.PrevBorder, inter, ArrowPosition(lane, false, out var isSucceedP), ArrowAngle(lane, false, out var isSucceedA));
-                        if(isSucceedP && isSucceedA) ret.Add(prevArrow);
+                        if (isSucceedP && isSucceedA) ret.Add(prevArrow);
                     }
 
 
@@ -101,7 +101,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 posSum += rightWay.PositionAtDistance(ArrowPositionOffset, isNext ^ rightWay.IsReversed);
                 wayCount++;
             }
-            
+
             if (wayCount == 0)
             {
                 Debug.Log("Skipping because way count is 0.");
@@ -136,14 +136,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 angleSum += ArrowAngleOneWay(rightWay, isNext);
                 wayCount++;
             }
-            
+
             if (wayCount == 0)
             {
                 Debug.Log("Skipping Angle because way count is 0.");
                 isSucceed = false;
                 return 0;
             }
-            
+
             isSucceed = true;
             return angleSum / wayCount;
 
@@ -174,7 +174,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.DirectionalArrow
                 containStraight |= turnT == RnTurnType.Straight;
             }
 
-            if (containStraight && containLeft && containRight) return DirectionalArrowType.None;
+            if (containLeft && containRight) return DirectionalArrowType.None;
             if (containStraight && containLeft) return DirectionalArrowType.StraightAndLeft;
             if (containStraight && containRight) return DirectionalArrowType.StraightAndRight;
             if (containStraight) return DirectionalArrowType.Straight;

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.RoadNetwork.Data;
+using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.Util;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.Util;
 
 namespace PLATEAU.Editor.RoadNetwork.Exporter
 {
@@ -139,14 +139,13 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
             Dictionary<int, RoadNetworkElementNode> vNodes = new Dictionary<int, RoadNetworkElementNode>();
 
-            foreach (var road in roadNetworkRoads.Select((value, index) => new { value, index }))
+            foreach (var item in roadNetworkRoads.Select((value, index) => new { value, index }))
             {
-                var link = road.value as RnDataRoad;
-
+                var link = item.value as RnDataRoad;
                 if (link == null)
-                {
                     continue;
-                }
+
+                var index = item.index;
 
                 // リンクが接続されていない場合はスキップ
                 if (!link.Next.IsValid && !link.Prev.IsValid)
@@ -171,7 +170,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
                     Nodes.Add(vNext);
 
-                    vNodes.Add(road.index, vNext);
+                    vNodes.Add(index, vNext);
                 }
                 if (prev == null && link.Prev.IsValid && roadNetworkRoads[link.Prev.ID] as RnDataRoad != null && vPrev == null)
                 {
@@ -179,7 +178,7 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
 
                     Nodes.Add(vPrev);
 
-                    vNodes.Add(road.index, vPrev);
+                    vNodes.Add(index, vPrev);
                 }
 
                 // 終端の仮想ノードを生成
@@ -203,8 +202,8 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
                 var simNodePrevID = simNodePrev.ID.Replace(RoadNetworkElementNode.IDPrefix, "");
 
                 // リンクの生成
-                var simLinkL = new RoadNetworkElementLink(context, road.index + "_" + simNodePrevID + "_" + simNodeNextID, road.index);
-                var simLinkR = new RoadNetworkElementLink(context, road.index + "_" + simNodeNextID + "_" + simNodePrevID, road.index);
+                var simLinkL = new RoadNetworkElementLink(context, index + "_" + simNodePrevID + "_" + simNodeNextID, index);
+                var simLinkR = new RoadNetworkElementLink(context, index + "_" + simNodeNextID + "_" + simNodePrevID, index);
 
                 simLinkL.IsReverse = false;
                 simLinkR.IsReverse = true;
@@ -376,6 +375,11 @@ namespace PLATEAU.Editor.RoadNetwork.Exporter
             {
                 foreach (var simLane in simLink.Lanes)
                 {
+                    // 空の道路のレーンは出力しない
+                    if (simLane.OriginLane.LeftWay.IsValid == false && simLane.OriginLane.RightWay.IsValid == false)
+                        continue;
+
+
                     var geom = simLane.GetGeometory();
 
                     var lineString = new GeoJSON.Net.Geometry.LineString(geom);

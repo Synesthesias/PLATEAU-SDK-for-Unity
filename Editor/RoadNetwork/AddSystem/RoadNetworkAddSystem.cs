@@ -71,7 +71,7 @@ namespace PLATEAU.Editor.RoadNetwork
 
                 // 隣接道路更新
                 // TODO: 道路が更新された場合のみ更新するようにする
-                foreach (var neighbor in intersection.Neighbors)
+                foreach (var neighbor in intersection.Borders)
                 {
                     if (neighbor.Road != null)
                     {

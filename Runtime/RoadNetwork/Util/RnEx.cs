@@ -4,7 +4,6 @@ using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
@@ -177,20 +176,20 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             var line = new RnLineString();
-            void AddPoint(RnPoint p)
+            void AddPoint(RnPoint p, bool noSkip)
             {
                 if (p == null)
                     return;
-                line.AddPointOrSkip(p, pointSkipDistance);
+                line.AddPointOrSkip(p, noSkip ? -1 : pointSkipDistance);
             }
 
-            AddPoint(start);
+            AddPoint(start, true);
             var segments = GeoGraphEx.GetInnerLerpSegments(leftVertices, rightVertices, RnModel.Plane, t);
             // 1つ目の点はボーダーと重複するのでスキップ
             // #TODO : 実際はボーダーよりも外側にあるのはすべてスキップすべき
             foreach (var s in segments.Skip(1))
-                AddPoint(new RnPoint(s));
-            AddPoint(end);
+                AddPoint(new RnPoint(s), false);
+            AddPoint(end, true);
             // 自己交差があれば削除する
             var plane = RnModel.Plane;
             GeoGraph2D.RemoveSelfCrossing(line.Points
@@ -279,6 +278,14 @@ namespace PLATEAU.RoadNetwork.Util
             public IEnumerable<Vector2> BorderVertices => BorderVertexIndices.Select(i => SrcVertices[i]);
         }
 
+        /// <summary>
+        /// verticesで表される線分を両端から見ていき, 終端点となる線分を求める
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="toleranceAngleDegForMidEdge"></param>
+        /// <param name="skipAngleDeg"></param>
+        /// <param name="plane"></param>
+        /// <returns></returns>
         public static FindBorderEdgesResult FindBorderEdges(IReadOnlyList<Vector2> vertices, float toleranceAngleDegForMidEdge = 20f, float skipAngleDeg = 20f, AxisPlane plane = RnDef.Plane)
         {
             var verts = vertices.ToList();
@@ -292,11 +299,12 @@ namespace PLATEAU.RoadNetwork.Util
                     return true;
                 var area1 = GeoGraph2D.CalcPolygonArea(list);
                 var area2 = GeoGraph2D.CalcPolygonArea(verts);
-                return area1 / area2 < 0.7f;
+                return area1 / area2 < 0.6f;
             });
             ret.ReducedVertices = afterVerts;
 
             var indices = GeoGraph2D.FindMidEdge(afterVerts, toleranceAngleDegForMidEdge, skipAngleDeg);
+
             ret.ReducedBorderVertexIndices = indices;
             var x = (indices.Count - 1) / 2;
             var ind0 = indices[x];
@@ -310,6 +318,7 @@ namespace PLATEAU.RoadNetwork.Util
             var mid = (st + en) * 0.5f;
             var ray = new Ray2D(mid, n);
 
+            // midからray方向に最も近い位置にあるvertsの辺のインデックス
             var minLen = float.MaxValue;
             var minIndex = -1;
             var edges = GeoGraphEx.GetEdges(verts, false).Select(v => new LineSegment2D(v.Item1, v.Item2)).ToList();
@@ -317,7 +326,7 @@ namespace PLATEAU.RoadNetwork.Util
             for (var i = 0; i < edges.Count; ++i)
             {
                 var seg = edges[i];
-                if (seg.TryHalfLineIntersection(ray.origin, ray.direction, out var inter, out var t1, out var t2))
+                if (seg.TryHalfLineIntersection(ray.origin, ray.direction, out var inter, out var _, out var _))
                 {
                     var len = (mid - inter).sqrMagnitude;
                     if (len < minLen)
@@ -336,8 +345,22 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             ret.Success = true;
-            var res = FindCollinearRange(minIndex, edges, toleranceAngleDegForMidEdge);
+            // 開始線分が中心線扱いにならないようにskipAngleDegを使ってスキップする
+            var (startIndex, endIndex) = (0, edges.Count - 1);
+            if (skipAngleDeg > 0f)
+            {
+                while (startIndex < edges.Count - 1 && Mathf.Abs(Vector2.Angle(edges[startIndex].Direction, edges[startIndex + 1].Direction)) < skipAngleDeg)
+                    startIndex++;
+                while (endIndex > 0 && Mathf.Abs(Vector2.Angle(edges[endIndex].Direction, edges[endIndex - 1].Direction)) < skipAngleDeg)
+                    endIndex--;
+            }
+            var res = GeoGraph2D.FindCollinearRange(minIndex, edges, toleranceAngleDegForMidEdge, startIndex, endIndex);
             res.Add(res[^1] + 1);
+
+            if (RnDebugDef.ShowDetailLog)
+            {
+                DebugEx.DrawLines(res.Select(i => verts[i].Xay(0)), color: Color.red, duration: 10);
+            }
             ret.BorderVertexIndices = res;
 
             return ret;
@@ -468,67 +491,6 @@ namespace PLATEAU.RoadNetwork.Util
             return vertices;
         }
 
-        /// <summary>
-        /// edgesで定義された線分リストのedgeBaseIndex番の辺を基準に, 同一直線となる辺を探す.(許容誤差はtoleranceAngleDegForMidEdge)
-        /// </summary>
-        /// <param name="edgeBaseIndex"></param>
-        /// <param name="edges"></param>
-        /// <param name="toleranceAngleDegForMidEdge"></param>
-        /// <returns></returns>
-        public static List<int> FindCollinearRange(
-            int edgeBaseIndex
-            , IReadOnlyList<LineSegment2D> edges
-            , float toleranceAngleDegForMidEdge = 20f)
-        {
-            var ret = new List<int> { edgeBaseIndex };
-            var stop = new[] { false, false };
-            while (stop.Contains(false) && ret.Count < edges.Count - 1)
-            {
-                // 0 : left用
-                // 1 : right用
-                var infos = new[]
-                {
-                    new {now=ret.First(), d = -1 },
-                    new {now=ret.Last() , d = +1 }
-                };
-                // 差が小さいほうから見る
-                var es = Enumerable.Range(0, 2)
-                    // すでに停止している or 最後まで進んだら無視
-                    .Where(i => stop[i] == false && 0 <= infos[i].now + infos[i].d && infos[i].now + infos[i].d <= edges.Count - 1)
-                    .Select(j =>
-                    {
-                        var info = infos[j];
-                        var e0 = edges[edgeBaseIndex];
-                        var e1 = edges[info.now + info.d];
-                        return new { i = j, index = info.now + info.d, ang = Vector2.Angle(e0.Direction, e1.Direction) };
-                    })
-                    .OrderBy(x => x.ang)
-                    .ToList();
-                if (es.Count == 0)
-                    break;
-                foreach (var e in es)
-                {
-                    if (e.ang > toleranceAngleDegForMidEdge)
-                    {
-                        stop[e.i] = true;
-                        continue;
-                    }
-
-                    if (e.i == 0)
-                    {
-                        ret.Insert(0, e.index);
-                    }
-                    else
-                    {
-                        ret.Add(e.index);
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-
         public class KeyEdgeGroup<TKey, TEdge>
         {
             public TKey Key { get; set; }
@@ -548,6 +510,7 @@ namespace PLATEAU.RoadNetwork.Util
             IEnumerable<TEdge> edges
             , Func<TEdge, TKey> keySelector
             , IEqualityComparer<TKey> comparer = null
+            , bool isLoop = true
             )
         {
             List<KeyEdgeGroup<TKey, TEdge>> ret = new();
@@ -563,10 +526,13 @@ namespace PLATEAU.RoadNetwork.Util
             }
 
             // 両端が同じキーの場合は結合する
-            if (ret.Count > 1 && comparer.Equals(ret[0].Key, ret[^1].Key))
+            if (isLoop)
             {
-                ret[^1].Edges.AddRange(ret[0].Edges);
-                ret.RemoveAt(0);
+                if (ret.Count > 1 && comparer.Equals(ret[0].Key, ret[^1].Key))
+                {
+                    ret[^1].Edges.AddRange(ret[0].Edges);
+                    ret.RemoveAt(0);
+                }
             }
 
             return ret;

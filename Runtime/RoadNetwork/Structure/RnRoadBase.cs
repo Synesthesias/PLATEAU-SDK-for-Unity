@@ -1,4 +1,6 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,33 +43,64 @@ namespace PLATEAU.RoadNetwork.Structure
         /// sideWalkの親情報も書き換える
         /// </summary>
         /// <param name="sideWalk"></param>
-        public void AddSideWalk(RnSideWalk sideWalk)
+        public bool AddSideWalk(RnSideWalk sideWalk)
         {
             if (sideWalk == null)
-                return;
+                return false;
+            // すでに存在する場合は無視
             if (sideWalks.Contains(sideWalk))
-                return;
+                return false;
             // 以前の親からは削除
             sideWalk?.ParentRoad?.RemoveSideWalk(sideWalk);
             sideWalk.SetParent(this);
             sideWalks.Add(sideWalk);
+            return true;
         }
 
         /// <summary>
-        /// 歩道sideWalkを削除する.
-        /// sideWalkの親情報は変更しない
+        /// 歩道sideWalkを削除する.(元から存在しない時は何もせずfalseが返る)
+        /// sideWalkの親情報も変更する.
+        /// removeFromModel = trueの時はRnModelからも削除する(後方互換のためにdefaultはfalse)
         /// </summary>
         /// <param name="sideWalk"></param>
-        public void RemoveSideWalk(RnSideWalk sideWalk)
+        /// <param name="removeFromModel"></param>
+        public bool RemoveSideWalk(RnSideWalk sideWalk, bool removeFromModel = false)
         {
             if (sideWalk == null)
-                return;
+                return false;
+
+            if (sideWalks.Contains(sideWalk) == false)
+                return false;
+
             sideWalk.SetParent(null);
             sideWalks.Remove(sideWalk);
+            if (removeFromModel)
+            {
+                ParentModel?.RemoveSideWalk(sideWalk);
+            }
+
+            return true;
         }
 
-        // 境界線情報を取得
-        public virtual IEnumerable<RnWay> GetBorders() { yield break; }
+        /// <summary>
+        /// 隣接道路とその境界線情報
+        /// </summary>
+        public class NeighborBorder
+        {
+            // 隣接するRoad
+            public RnRoadBase NeighborRoad { get; set; }
+
+            // 境界線の線分
+            public RnWay BorderWay { get; set; }
+        }
+
+        /// <summary>
+        /// 隣接するRoadとその境界線情報を取得. 同じRoadに対して複数の境界線がある場合がある.
+        /// また、隣接するRoadはnullの場合もある
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<NeighborBorder> GetBorders() { yield break; }
+
 
         // 隣接するRoadを取得
         public virtual IEnumerable<RnRoadBase> GetNeighborRoads() { yield break; }
@@ -103,12 +136,6 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// otherをつながりから削除する. other側の接続は消えない
-        /// </summary>
-        /// <param name="other"></param>
-        public virtual void UnLink(RnRoadBase other) { }
-
-        /// <summary>
         /// 自身の接続を切断する.
         /// removeFromModel=trueの場合、RnModelからも削除する
         /// </summary>
@@ -130,9 +157,78 @@ namespace PLATEAU.RoadNetwork.Structure
             return Vector3.zero;
         }
 
+
+        /// <summary>
+        /// 隣接情報otherをつながりから削除する. other側の接続は消えない
+        /// </summary>
+        /// <param name="other"></param>
+        public void UnLink(RnRoadBase other)
+        {
+            ReplaceNeighbor(other, null);
+        }
+
+        /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// 隣接情報をfrom -> toに変更する.
+        /// (from/to側の隣接情報は変更しない)
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         public virtual void ReplaceNeighbor(RnRoadBase from, RnRoadBase to) { }
 
-        public virtual bool Check() { return true; }
+        /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
+        /// </summary>
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public virtual void ReplaceNeighbor(RnWay borderWay, RnRoadBase to) { }
+
+        /// <summary>
+        /// 不正チェック処理を行う
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool Check(bool showLog = true)
+        {
+            foreach (var sw in SideWalks)
+            {
+                if (sw != null && sw.Check(showLog) == false)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 連結されたSideWalkを統合する
+        /// </summary>
+        public void MergeConnectedSideWalks()
+        {
+            for (var i = 0; i < sideWalks.Count; ++i)
+            {
+                var dstSideWalk = sideWalks[i];
+
+                while (true)
+                {
+                    var found = false;
+                    for (var j = i + 1; j < sideWalks.Count; j++)
+                    {
+                        var srcSideWalk = sideWalks[j];
+                        if (dstSideWalk.TryMergeNeighborSideWalk(srcSideWalk))
+                        {
+                            // マージされたらそのSideWalkは削除する(Modelからも削除する)
+                            RemoveSideWalk(srcSideWalk, true);
+                            // 見つかったらさらにマージされるかもしれないので最初から探す
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found == false)
+                        break;
+                }
+
+
+            }
+        }
 
     }
 
@@ -173,6 +269,55 @@ namespace PLATEAU.RoadNetwork.Structure
             if (self == null)
                 return new HashSet<RnLineString>();
             return self.AllWays().Select(w => w.LineString).Where(ls => ls != null).ToHashSet();
+        }
+
+        /// <summary>
+        /// selfにaddSideWalksを追加しようとする.境界線で繋がっている場合はLineStringが統合される
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="addSideWalks"></param>
+        public static void MergeSideWalks(this RnRoadBase self, List<RnSideWalk> addSideWalks)
+        {
+            foreach (var sw in addSideWalks)
+                self.AddSideWalk(sw);
+
+            // 連結した
+            self.MergeConnectedSideWalks();
+        }
+
+        /// <summary>
+        /// self内で全く同じPointsを持つLineStringがあった場合統合する.
+        /// </summary>
+        /// <param name="self"></param>
+        public static void MergeSamePointLineStrings(this RnRoadBase self)
+        {
+            var ways = self.AllWays().ToHashSet();
+
+            Dictionary<int, List<LineStringFactoryWork.PointCache>> cache = new();
+
+
+            LineStringFactoryWork lineStringFactory = new();
+
+            foreach (var way in ways)
+            {
+                // LineStringの差し替えなのでLineStringのPointsをキーにする
+                var points = way.LineString.Points.ToList();
+                var ls = lineStringFactory.CreateLineString(
+                    points
+                    , out var isCached
+                    , out var isReversed
+                    , true
+                    // キャッシュが無い時は今のLineStringをそのまま使いたいので生成関数を差し替える
+                    , p => way.LineString);
+
+                // キャッシュに差し替え処理
+                if (isCached)
+                {
+                    way.LineString = ls;
+                    if (isReversed)
+                        way.Reverse(true);
+                }
+            }
         }
     }
 }

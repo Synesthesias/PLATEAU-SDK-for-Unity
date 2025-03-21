@@ -23,14 +23,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
                 var lastLeft = lastLane.LeftWay;
                 if (firstLeft != null)
                 {
-                    ret.Add(new MarkedWay(new MWLine(firstLane.LeftWay), MarkedWayType.ShoulderLine, firstLane.IsReverse));
+                    ret.Add(new MarkedWay(new MWLine(firstLane.LeftWay), MarkedWayType.ShoulderLine, firstLane.IsReversed));
                 }
 
                 if (lastLeft != null)
                 {
-                    ret.Add(new MarkedWay(new MWLine(lastLane.LeftWay), MarkedWayType.ShoulderLine, lastLane.IsReverse));
+                    ret.Add(new MarkedWay(new MWLine(lastLane.LeftWay), MarkedWayType.ShoulderLine, lastLane.IsReversed));
                 }
-                
+
             }
             return ret;
         }

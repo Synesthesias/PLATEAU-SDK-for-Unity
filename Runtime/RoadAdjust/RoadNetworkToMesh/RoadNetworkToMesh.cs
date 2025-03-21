@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.RoadAdjust.RoadMarking;
-using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -8,16 +7,12 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 {

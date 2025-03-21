@@ -130,7 +130,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
-        public RnTrack MakeTrack(RnIntersection intersection, RnNeighbor from, BuildTrackOption op,
+        public RnTrack MakeTrack(RnIntersection intersection, RnIntersectionEdge from, BuildTrackOption op,
             RnIntersectionEx.EdgeGroup fromEg, ThickCenterLineTables thickCenterLinTables, OutBound outBound)
         {
 
@@ -220,7 +220,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// from/toを繋ぐトラックを作成する
         /// </summary>
         public RnTrack CreateTrackOrDefault(RnIntersection intersection, BuildTrackOption op, RnWay way,
-            List<float> widthTable, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            List<float> widthTable, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             var fromNormal = RnIntersection.GetEdgeNormal(from);
             var toNormal = RnIntersection.GetEdgeNormal(to);
@@ -240,7 +240,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 return track;
 
             // 中央テーブル作れない時は諦める
-            if (widthTable == null)
+            if (widthTable == null || op.DevAllowCenterLine == false)
                 return null;
 
             List<BezierKnot> knots = new()
@@ -359,7 +359,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラックを直線とするにふさわしいかチェックし、そうなら生成して返します。そうでないならnullを返します。
         /// </summary>
         private RnTrack TryCreateOneLineTrack(RnIntersection intersection, Vector3 fromPos, Vector3 fromNormal,
-            Vector3 toPos, Vector3 toNormal, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            Vector3 toPos, Vector3 toNormal, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             // 直進で繋がるとき
             var segment = new LineSegment3D(fromPos - fromNormal * 0.1f,
@@ -391,9 +391,11 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラックが1回のカーブとするにふさわしいかチェックし、そうならトラックを生成して返します。そうでないならnullを返します。
         /// </summary>
         private RnTrack TryCreateTwoLineTrack(RnIntersection intersection, Vector3 fromPos, Vector3 fromNormal,
-            Vector3 toPos, Vector3 toNormal, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            Vector3 toPos, Vector3 toNormal, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
         {
             var offset = 0.01f;
+            var curveOffset = 3;
+
             var fromRay = new Ray(fromPos - fromNormal * offset, -fromNormal);
             var toRay = new Ray(toPos - toNormal * offset, -toNormal);
 
@@ -416,7 +418,6 @@ namespace PLATEAU.RoadNetwork.Structure
             if (IsCollide(cp1, from, to) || IsCollide(cp2, from, to))
                 return null;
 
-            var curveOffset = 3;
             var spline = new Spline();
             spline.Add(new BezierKnot(fromPos), TangentMode.AutoSmooth);
 
@@ -445,7 +446,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return new RnTrack(from.Border, to.Border, spline, edgeTurnType);
         }
 
-        private bool IsCollide(LineCrossPointResult lcp, RnNeighbor from, RnNeighbor to)
+        private bool IsCollide(LineCrossPointResult lcp, RnIntersectionEdge from, RnIntersectionEdge to)
         {
             return lcp.CrossingLines.Any(t =>
                 t.LineString != from.Border.LineString && t.LineString != to.Border.LineString);
@@ -455,9 +456,9 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             public RnTurnType TurnType { get; set; }
             public RnIntersectionEx.EdgeGroup ToEg { get; set; }
-            public RnNeighbor To { get; set; }
+            public RnIntersectionEdge To { get; set; }
 
-            public OutBound(RnTurnType turnType, RnIntersectionEx.EdgeGroup toEg, RnNeighbor to)
+            public OutBound(RnTurnType turnType, RnIntersectionEx.EdgeGroup toEg, RnIntersectionEdge to)
             {
                 TurnType = turnType;
                 ToEg = toEg;
@@ -505,9 +506,14 @@ namespace PLATEAU.RoadNetwork.Structure
         public HashSet<RnLineString> TargetBorderLineStrings { get; set; } = new();
 
         /// <summary>
+        /// デバッグ用) 中央パスを用いるかどうか
+        /// </summary>
+        public bool DevAllowCenterLine { get; set; } = false;
+
+        /// <summary>
         /// ビルド対象のトラックかどうか
         /// </summary>
-        public bool IsBuildTarget(RnIntersection intersection, RnNeighbor from, RnNeighbor to)
+        public bool IsBuildTarget(RnIntersection intersection, RnIntersectionEdge from, RnIntersectionEdge to)
         {
             if (intersection == null)
                 return false;

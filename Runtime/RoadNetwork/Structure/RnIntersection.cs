@@ -4,10 +4,8 @@ using PLATEAU.RoadNetwork.Util.Voronoi;
 using PLATEAU.Util;
 using PLATEAU.Util.GeoGraph;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Splines;
@@ -168,7 +166,7 @@ namespace PLATEAU.RoadNetwork.Structure
     }
 
     [Serializable]
-    public partial class RnNeighbor : ARnParts<RnNeighbor>
+    public partial class RnIntersectionEdge : ARnParts<RnIntersectionEdge>
     {
         //----------------------------------
         // start: フィールド
@@ -285,7 +283,7 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
 
         // 交差点の外形情報. 時計回り/反時計回りかは保証されていないが, 連結はしている
-        private List<RnNeighbor> edges = new List<RnNeighbor>();
+        private List<RnIntersectionEdge> edges = new List<RnIntersectionEdge>();
 
         // 信号制御器
         public TrafficSignalLightController SignalController { get; set; } = null;
@@ -302,14 +300,14 @@ namespace PLATEAU.RoadNetwork.Structure
         //----------------------------------
 
         /// <summary>
-        /// 他の道路との境界線Edge取得
+        /// 他の道路との境界線Edge取得. edges.Where(e => e.IsBorder)と同義
         /// </summary>
-        public IEnumerable<RnNeighbor> Neighbors => edges.Where(e => e.IsBorder);
+        public IEnumerable<RnIntersectionEdge> Borders => edges.Where(e => e.IsBorder);
 
         /// <summary>
         /// 輪郭のEdge取得
         /// </summary>
-        public IReadOnlyList<RnNeighbor> Edges => edges;
+        public IReadOnlyList<RnIntersectionEdge> Edges => edges;
 
         // 交差点内のトラック
         public IReadOnlyList<RnTrack> Tracks => tracks;
@@ -333,7 +331,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public override IEnumerable<RnRoadBase> GetNeighborRoads()
         {
-            foreach (var neighbor in Neighbors)
+            foreach (var neighbor in Borders)
             {
                 if (neighbor.Road != null)
                     yield return neighbor.Road;
@@ -344,24 +342,31 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 隣接道路との境界線を取得
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<RnWay> GetBorders()
+        public override IEnumerable<NeighborBorder> GetBorders()
         {
-            foreach (var neighbor in Neighbors.Where(n => n.Road != null))
+            foreach (var edge in Borders)
             {
-                yield return neighbor.Border;
+                yield return new NeighborBorder
+                {
+                    BorderWay = edge.Border,
+                    NeighborRoad = edge.Road
+                };
             }
         }
+
+
 
         /// <summary>
         /// 隣接情報追加. borderがnullの場合は追加しない
         /// </summary>
         /// <param name="road"></param>
         /// <param name="border"></param>
-        public void AddEdge(RnRoadBase road, RnWay border)
+        public bool AddEdge(RnRoadBase road, RnWay border)
         {
             if (border == null)
-                return;
-            edges.Add(new RnNeighbor { Road = road, Border = border });
+                return false;
+            edges.Add(new RnIntersectionEdge { Road = road, Border = border });
+            return true;
         }
 
         /// <summary>
@@ -369,16 +374,39 @@ namespace PLATEAU.RoadNetwork.Structure
         /// afterEdgesは必ず連結している者とする
         /// </summary>
         /// <param name="afterEdges"></param>
-        public void ReplaceEdges(List<RnNeighbor> afterEdges)
+        public void ReplaceEdges(List<RnIntersectionEdge> afterEdges)
         {
             this.edges = afterEdges;
         }
 
         public Vector3 GetCenterPoint()
         {
-            var ret = Neighbors.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
-            var cnt = Neighbors.Sum(n => n.Border.Count);
+            var ret = Borders.SelectMany(n => n.Border.Vertices).Aggregate(Vector3.zero, (a, b) => a + b);
+            var cnt = Borders.Sum(n => n.Border.Count);
             return ret / cnt;
+        }
+
+        /// <summary>
+        /// roadのborderTypeで指定した境界線を削除し, bordersを追加する
+        /// </summary>
+        /// <param name="road"></param>
+        /// <param name="borderType"></param>
+        /// <param name="borders"></param>
+        /// <param name="reBuildTrack"></param>
+        public void ReplaceEdges(RnRoad road, RnLaneBorderType borderType, List<RnWay> borders, bool reBuildTrack = true)
+        {
+            if (road == null)
+                return;
+            var borderWays = road.GetBorderWays(borderType).ToList();
+            foreach (var way in borderWays)
+            {
+                var removeCount = RemoveEdges(way);
+                if (removeCount != 1)
+                {
+                    DebugEx.LogError($"削除しようとしたエッジが交差点に存在しませんでした. {road.GetTargetTransName()}/{this.GetTargetTransName()}");
+                }
+            }
+            edges.AddRange(borders.Select(b => new RnIntersectionEdge { Road = road, Border = b }));
         }
 
         /// <summary>
@@ -390,42 +418,68 @@ namespace PLATEAU.RoadNetwork.Structure
         public void ReplaceEdges(RnRoad road, List<RnWay> borders, bool reBuildTrack = true)
         {
             RemoveEdges(n => n.Road == road);
-            edges.AddRange(borders.Select(b => new RnNeighbor { Road = road, Border = b }));
+            edges.AddRange(borders.Select(b => new RnIntersectionEdge { Road = road, Border = b }));
         }
 
-
         /// <summary>
-        /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える
+        /// borderを持つEdgeの隣接道路情報をafterRoadに差し替える.
+        /// 戻り値は差し替えが行われた数
         /// </summary>
         /// <param name="border"></param>
         /// <param name="afterRoad"></param>
-        public void ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
+        public int ReplaceEdgeLink(RnWay border, RnRoadBase afterRoad)
         {
+            var replaceCount = 0;
             foreach (var e in edges.Where(e => e.Border.IsSameLineReference(border)))
+            {
                 e.Road = afterRoad;
+                replaceCount++;
+            }
+
+            return replaceCount;
         }
 
 
         /// <summary>
-        /// predicateで指定した隣接情報を削除する
+        /// predicateで指定した隣接情報を削除する.
+        /// 戻り値は削除された個数
         /// </summary>
         /// <param name="predicate"></param>
-        public void RemoveEdges(Func<RnNeighbor, bool> predicate)
+        public int RemoveEdges(Func<RnIntersectionEdge, bool> predicate)
         {
-            for (var i = 0; i < edges.Count; i++)
-            {
-                var n = edges[i];
-                if (predicate(n))
-                {
-                    edges.RemoveAt(i);
-                    i--;
-                    // トラックからも削除する
-                    tracks.RemoveAll(x => x.FromBorder == n.Border || x.ToBorder == n.Border);
-                }
-            }
+            var targets = Edges.Where(predicate).ToList();
+            foreach (var e in targets)
+                RemoveEdge(e);
+
+            return targets.Count;
         }
 
-        public RnTrack FindTrack(RnNeighbor from, RnNeighbor to)
+        /// <summary>
+        /// 指定した境界線をエッジから削除する
+        /// </summary>
+        /// <param name="way"></param>
+        /// <returns></returns>
+        public int RemoveEdges(RnWay way)
+        {
+            return RemoveEdges(e => e.Border.IsSameLineReference(way));
+        }
+
+        /// <summary>
+        /// 指定したエッジを削除する. 関係するTrackも削除する
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <returns></returns>
+        private bool RemoveEdge(RnIntersectionEdge edge)
+        {
+            if (edges.Remove(edge) == false)
+                return false;
+
+            // 関係するトラックも削除する
+            tracks.RemoveAll(track => track.ContainsBorder(edge.Border));
+            return true;
+        }
+
+        public RnTrack FindTrack(RnIntersectionEdge from, RnIntersectionEdge to)
         {
             var c = tracks.FindAll(t => t.FromBorder == from.Border);
             var res = c.FindAll(t => t.ToBorder == to.Border);
@@ -433,7 +487,7 @@ namespace PLATEAU.RoadNetwork.Structure
             return res.Count == 0 ? null : res.First();
         }
 
-        public bool ContainTrack(RnNeighbor from, RnNeighbor to)
+        public bool ContainTrack(RnIntersectionEdge from, RnIntersectionEdge to)
         {
             return FindTrack(from, to) != null;
         }
@@ -467,7 +521,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// トラック情報を追加/更新する.
         /// 同じfrom/toのトラックがすでにある場合は上書きする. そうでない場合は追加する
         /// </summary>
-        public bool TryAddOrUpdateTrack(RnNeighbor from, RnNeighbor to)
+        public bool TryAddOrUpdateTrack(RnIntersectionEdge from, RnIntersectionEdge to)
         {
             var turnType = RnTurnTypeEx.GetTurnType(-from.Border.GetEdgeNormal(0).normalized, to.Border.GetEdgeNormal(0).normalized, RnModel.Plane);
 
@@ -475,7 +529,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (track == null) return false;
             return TryAddOrUpdateTrack(track);
 
-            static RnTrack CreateTrack(RnIntersection inters, RnNeighbor from, RnNeighbor to, RnTurnType edgeTurnType)
+            static RnTrack CreateTrack(RnIntersection inters, RnIntersectionEdge from, RnIntersectionEdge to, RnTurnType edgeTurnType)
             {
                 var borderEdgeGroups = inters.CreateEdgeGroup().Where(e => e.IsBorder).ToList();
                 var fromEg = borderEdgeGroups.FirstOrDefault(eg => eg.Key == from.Road);
@@ -493,7 +547,7 @@ namespace PLATEAU.RoadNetwork.Structure
             tracks.Remove(track);
         }
 
-        public void RemoveTrack(RnNeighbor from, RnNeighbor to)
+        public void RemoveTrack(RnIntersectionEdge from, RnIntersectionEdge to)
         {
             var track = FindTrack(from, to);
             if (track == null)
@@ -530,12 +584,28 @@ namespace PLATEAU.RoadNetwork.Structure
         }
 
         /// <summary>
-        /// 隣接情報からotherを削除する. other側の接続は消えない
+        /// 境界線以外のEdgeが連続している場合一つのEdgeにまとめる
         /// </summary>
-        /// <param name="other"></param>
-        public override void UnLink(RnRoadBase other)
+        public void MergeContinuousNonBorderEdge()
         {
-            RemoveEdges(n => n.Road == other);
+            Align();
+            for (var i = 0; i < Edges.Count; ++i)
+            {
+                var edge = edges[i];
+                if (edge.IsBorder)
+                    continue;
+
+                while (edges.Count > 1 && edges[(i + 1) % edges.Count].IsBorder == false)
+                {
+                    var nextEdge = edges[(i + 1) % edges.Count];
+                    edge.Border = RnWayEx.CreateMergedWay(edge.Border.Clone(false), nextEdge.Border.Clone(false), false);
+                    edges.Remove(nextEdge);
+                    DebugEx.Log($"Merge NonBorder Edge {this.GetTargetTransName()}");
+                    // i == edges.Count - 1で削除が走った場合iがedges.Count以上になる場合がある.
+                    // そうなるとnextEdgeがうまく次にならない場合があるのでMinを取る
+                    i = Mathf.Min(i, edges.Count - 1);
+                }
+            }
         }
 
         /// <summary>
@@ -555,9 +625,10 @@ namespace PLATEAU.RoadNetwork.Structure
                 ParentModel?.RemoveIntersection(this);
         }
 
-
         /// <summary>
-        ///  隣接情報を差し替える(呼び出し注意)
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// 隣接情報をfrom -> toに変更する.
+        /// (from/to側の隣接情報は変更しない)
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -572,7 +643,32 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        /// <summary>
+        /// 情報を直接書き換えるので呼び出し注意(相互に隣接情報を維持するように書き換える必要がある)
+        /// borderWayで指定される境界線の隣接道路情報をtoに置き換える
+        /// </summary>
+        /// <param name="borderWay"></param>
+        /// <param name="to"></param>
+        public override void ReplaceNeighbor(RnWay borderWay, RnRoadBase to)
+        {
+            if (borderWay == null)
+                return;
 
+            var found = false;
+            foreach (var e in Edges)
+            {
+                if (e.Border.IsSameLineReference(borderWay))
+                {
+                    e.Road = to;
+                    found = true;
+                }
+            }
+
+            if (found == false)
+            {
+                DebugEx.LogError($"境界線{borderWay.GetDebugIdLabelOrDefault()}が{this.GetDebugLabelOrDefault()}に存在しませんでした");
+            }
+        }
 
 
         public void BuildTracks(BuildTrackOption op = null)
@@ -634,9 +730,13 @@ namespace PLATEAU.RoadNetwork.Structure
             }
         }
 
+        // #NOTE : RnRoad.TryMerge2NeighborIntersectionで, 交差点の境界線が連続していると
+        //       : LineStringへのポイント追加がバグることがあったので用意したが, RnRoad側で対応したので必要なくなった
+        //       : そもそも、3つ以上の交差点に所属する頂点がある場合にバグるので使用禁止(今後必要になる可能性があるので残してはおく)
         /// <summary>
         /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
         /// </summary>
+        [Obsolete("使われていない")]
         public void SeparateContinuousBorder()
         {
             Align();
@@ -661,7 +761,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     var newP1 = new RnPoint(e1.Border.GetAdvancedPoint(offset, false));
                     var ls = new RnLineString(new[] { newP0, p0, newP1 });
 
-                    static void AdjustPoint(RnNeighbor e, RnPoint oldPoint, RnPoint newPoint)
+                    static void AdjustPoint(RnIntersectionEdge e, RnPoint oldPoint, RnPoint newPoint)
                     {
                         e.Border.LineString.ReplacePoint(oldPoint, newPoint);
                         foreach (var ls in e.Road?.GetAllLineStringsDistinct() ?? new HashSet<RnLineString>())
@@ -672,7 +772,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
 
                     var way = new RnWay(ls, false, true);
-                    edges.Insert(i + 1, new RnNeighbor { Road = null, Border = way });
+                    edges.Insert(i + 1, new RnIntersectionEdge { Road = null, Border = way });
                     i++;
                 }
             }
@@ -692,7 +792,7 @@ namespace PLATEAU.RoadNetwork.Structure
         public override Vector3 GetCentralVertex()
         {
             // 全エッジの中心点の重心を返す
-            return Vector3Ex.Centroid(Neighbors
+            return Vector3Ex.Centroid(Borders
                 .Select(n => n.Border)
                 .Where(b => b != null)
                 .Select(b => b.GetLerpPoint(0.5f)));
@@ -703,14 +803,15 @@ namespace PLATEAU.RoadNetwork.Structure
             IsEmptyIntersection = val;
         }
 
-        public override bool Check()
+        public override bool Check(bool showLog = true)
         {
+            Align();
             if (IsAligned() == false)
             {
                 DebugEx.LogError($"ループしていない輪郭の交差点 {this.GetTargetTransName()}");
                 return false;
             }
-            return true;
+            return base.Check(showLog);
         }
 #if false
         /// <summary>
@@ -723,8 +824,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (from == to)
                 return null;
-            var nFrom = Neighbors.FirstOrDefault(n => n.Road == from);
-            var nTo = Neighbors.FirstOrDefault(n => n.Road == to);
+            var nFrom = Borders.FirstOrDefault(n => n.Road == from);
+            var nTo = Borders.FirstOrDefault(n => n.Road == to);
             if (nFrom == null || nTo == null)
                 return null;
             if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)
@@ -776,12 +877,12 @@ namespace PLATEAU.RoadNetwork.Structure
             var ret = new RnIntersection
             {
                 IsEmptyIntersection = true,
-                edges = new List<RnNeighbor>(borderLeft2Right.Count * 2)
+                edges = new List<RnIntersectionEdge>(borderLeft2Right.Count * 2)
             };
 
             foreach (var border in borderLeft2Right)
             {
-                var neighbor = new RnNeighbor { Road = prev, Border = border };
+                var neighbor = new RnIntersectionEdge { Road = prev, Border = border };
                 ret.edges.Add(neighbor);
 
                 var pos = border.GetLerpPoint(0.5f);
@@ -803,7 +904,7 @@ namespace PLATEAU.RoadNetwork.Structure
 
             foreach (var border in borderLeft2Right.Reversed())
             {
-                ret.edges.Add(new RnNeighbor { Road = next, Border = border.ReversedWay() });
+                ret.edges.Add(new RnIntersectionEdge { Road = next, Border = border.ReversedWay() });
             }
             return ret;
         }
@@ -812,7 +913,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// 輪郭線の法線方向を外側向くように整える
         /// </summary>
         /// <param name="edge"></param>
-        private static void AlignEdgeNormal(RnNeighbor edge)
+        private static void AlignEdgeNormal(RnIntersectionEdge edge)
         {
             if (edge.Border.IsReverseNormal)
                 edge.Border.IsReverseNormal = false;
@@ -823,7 +924,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="edge"></param>
         /// <returns></returns>
-        public static Vector3 GetEdgeNormal(RnNeighbor edge)
+        public static Vector3 GetEdgeNormal(RnIntersectionEdge edge)
         {
             // 一応向きを整える
             AlignEdgeNormal(edge);
@@ -835,7 +936,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="edge"></param>
         /// <returns></returns>
-        public static Vector2 GetEdgeNormal2D(RnNeighbor edge)
+        public static Vector2 GetEdgeNormal2D(RnIntersectionEdge edge)
         {
             return GetEdgeNormal(edge).GetTangent(RnDef.Plane);
         }
@@ -845,7 +946,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="edge"></param>
         /// <returns></returns>
-        public static Vector3 GetEdgeCenter(RnNeighbor edge)
+        public static Vector3 GetEdgeCenter(RnIntersectionEdge edge)
         {
             return edge.Border.GetLerpPoint(0.5f);
         }
@@ -855,7 +956,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// </summary>
         /// <param name="edge"></param>
         /// <returns></returns>
-        public static Vector2 GetEdgeCenter2D(RnNeighbor edge)
+        public static Vector2 GetEdgeCenter2D(RnIntersectionEdge edge)
         {
             return GetEdgeCenter(edge).ToVector2(RnDef.Plane);
         }
@@ -870,15 +971,15 @@ namespace PLATEAU.RoadNetwork.Structure
 
             // 時計回りになるように入っている
             // =(交差点の外から見て0が右側)
-            public List<RnNeighbor> Edges { get; } = new();
+            public List<RnIntersectionEdge> Edges { get; } = new();
 
             public bool IsBorder => Key != null;
 
             // 流入してくるボーダー
-            public IEnumerable<RnNeighbor> InBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Inbound) != 0);
+            public IEnumerable<RnIntersectionEdge> InBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Inbound) != 0);
 
             // 流出するボーダー
-            public IEnumerable<RnNeighbor> OutBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Outbound) != 0);
+            public IEnumerable<RnIntersectionEdge> OutBoundEdges => Edges.Where(n => (n.GetFlowType() & RnFlowTypeMask.Outbound) != 0);
 
             // 右側
             public EdgeGroup RightSide { get; set; }
@@ -945,10 +1046,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="borderWay"></param>
         /// <returns></returns>
-        public static IEnumerable<RnNeighbor> FindEdges(this RnIntersection self, RnWay borderWay)
+        public static IEnumerable<RnIntersectionEdge> FindEdges(this RnIntersection self, RnWay borderWay)
         {
             if (self == null || borderWay == null)
-                return Enumerable.Empty<RnNeighbor>();
+                return Enumerable.Empty<RnIntersectionEdge>();
 
             return self.Edges.Where(e => e.Border?.IsSameLineReference(borderWay) ?? false);
         }
@@ -964,7 +1065,7 @@ namespace PLATEAU.RoadNetwork.Structure
             /// </summary>
             public class SitePoint
             {
-                public RnNeighbor Edge { get; set; }
+                public RnIntersectionEdge Edge { get; set; }
 
                 public RnPoint Point { get; set; }
             }
@@ -1540,8 +1641,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (fromBorder == toBorder)
                 return null;
-            var nFrom = self.Neighbors.FirstOrDefault(n => n.Border == fromBorder);
-            var nTo = self.Neighbors.FirstOrDefault(n => n.Border == toBorder);
+            var nFrom = self.Borders.FirstOrDefault(n => n.Border == fromBorder);
+            var nTo = self.Borders.FirstOrDefault(n => n.Border == toBorder);
             if (nFrom == null || nTo == null)
                 return null;
             if (nFrom.Border.Count < 2 || nTo.Border.Count < 2)

@@ -301,7 +301,7 @@ namespace PLATEAU.Util.GeoGraph
                     return true;
             }
 
-            // 中間点があってもほぼ直線だった場合は中間点は削除する
+            // 中間点による同一チェック
             if (midPointTolerance >= 0f)
             {
                 var segment = new LineSegment3D(a, c);
@@ -312,6 +312,90 @@ namespace PLATEAU.Util.GeoGraph
             return false;
         }
 
+        /// <summary>
+        /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="cellSize"></param>
+        /// <returns></returns>
+        public static Dictionary<Vector3, Vector3> MergeVertices2(IEnumerable<Vector3> vertices, float cellSize = 0.1f)
+        {
+            var len = cellSize / Mathf.Sqrt(3);
+
+            // HashSetだと全く同じ値が来たときに消えないのでListにする
+            var cells = new SortedDictionary<Vector3Int, List<Vector3>>();
+            var min = Vector3Int.one * int.MaxValue;
+            foreach (var v in vertices)
+            {
+                var c = (v / len).ToVector3Int();
+                cells.GetValueOrCreate(c).Add(v);
+                min = Vector3Int.Min(min, c);
+            }
+
+            // z,y,xの順でソート
+            var keys = cells.Keys.ToList();
+            keys.Sort((a, b) =>
+            {
+                var d = a.z - b.z;
+                if (d != 0)
+                    return d;
+                d = a.y - b.y;
+                if (d != 0)
+                    return d;
+                return a.x - b.x;
+            });
+
+            var del1 = GetNeighborDistance3D(1);
+            //foreach (var k in keys)
+            if (cells.Any())
+            {
+                var k = cells.Keys.First();
+                var queue = new Queue<Vector3Int>();
+                queue.Enqueue(k);
+
+                List<Vector3> subGroup = new();
+
+                while (queue.Any())
+                {
+                    var c = queue.Dequeue();
+                    foreach (var d in del1)
+                    {
+                        var n = c + d;
+                        if (cells.ContainsKey(n) == false)
+                            continue;
+                        if (n == k)
+                            continue;
+
+                        // 指定した距離以上は無視
+                        if ((k - n).Abs().Max() > 1)
+                            continue;
+
+                        // 重複があった場合はそっちに近づけるため単純にAddRangeする
+                        subGroup.AddRange(cells[n]);
+                        cells[k].AddRange(cells[n]);
+
+
+                        cells.Remove(n);
+                        queue.Enqueue(n);
+                    }
+                }
+            }
+
+            var ret = new Dictionary<Vector3, Vector3>();
+
+            foreach (var c in cells)
+            {
+                // #NOTE : 1セルに1つの頂点しかない場合は無視でよい(メモリ最適化)
+                if (c.Value.Count == 1)
+                    continue;
+
+                var center = c.Value.Aggregate(Vector3.zero, (v, a) => v + a) / c.Value.Count;
+                foreach (var v in c.Value)
+                    ret[v] = center;
+            }
+
+            return ret;
+        }
         /// <summary>
         /// 点群verticesをセルサイズcellSizeでグリッド化し、頂点をまとめた結果を返す
         /// </summary>
@@ -592,5 +676,83 @@ namespace PLATEAU.Util.GeoGraph
 
             return ret;
         }
+
+        /// <summary>
+        /// verticesで表される線分を, isCollinearを使った同一直線判定でグルーピングする
+        /// 戻り値はグループの始点インデックス
+        /// 例) (v0, v1, v2, v3, v4, v5)
+        /// v0~v1, v1~v5が同一直線なら[0, 2, 5]が返る
+        /// v0~v5が同一直線なら[0, 5]が返る
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="isCollinear">頂点v0, v1, v2が同一直線となるか</param>
+        /// <returns></returns>
+        public static List<int> SplitByCollinearSegment<T>(IReadOnlyList<T> vertices, Func<T, T, T, List<int>, bool> isCollinear)
+        {
+            if (vertices.Count <= 2)
+            {
+                return new List<int> { 0 };
+            }
+
+            var indices = new List<int> { 0, 1 };
+            var ret = new List<int> { };
+            for (var i = 2; i < vertices.Count; ++i)
+            {
+                indices.Add(i);
+                // 中間地点の削除扱い(Vector3でもz成分が0なら同じなのでキャストして使う)
+                if (isCollinear(vertices[indices[0]], vertices[indices[1]], vertices[indices[2]], indices))
+                {
+                    indices.RemoveAt(1);
+                    continue;
+                }
+
+                ret.Add(indices[0]);
+                indices = new List<int> { i - 1, i };
+            }
+
+            // 最後の要素は必ず追加(最後の要素は削除されないため
+            ret.Add(indices[0]);
+            ret.Add(vertices.Count - 1);
+            return ret;
+        }
+
+        /// <summary>
+        /// verticesで表される線分を, toleranceAngleDeg/midPointToleranceを使った同一直線判定でグルーピングする
+        /// 戻り値はグループの始点インデックス
+        /// 例) (v0, v1, v2, v3, v4, v5)
+        /// v0~v1, v1~v5が同一直線なら[0, 2, 5]が返る
+        /// v0~v5が同一直線なら[0, 5]が返る
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="toVec3"></param>
+        /// <param name="toleranceAngleDeg"></param>
+        /// <param name="midPointTolerance"></param>
+        /// <param name="checkAdjustSegmentAngleOnly"></param>
+        /// <returns></returns>
+        public static List<int> SplitByCollinearSegment<T>(IReadOnlyList<T> vertices, Func<T, Vector3> toVec3,
+            float toleranceAngleDeg, float midPointTolerance, bool checkAdjustSegmentAngleOnly = false)
+        {
+            return SplitByCollinearSegment(vertices,
+                (v0, v1, v2, indices) =>
+                {
+                    if (checkAdjustSegmentAngleOnly == false)
+                        return IsCollinear(toVec3(v0), toVec3(v1), toVec3(v2), toleranceAngleDeg, midPointTolerance);
+
+                    var i2 = indices[2];
+                    var a = toVec3(vertices[i2]);
+                    var b = toVec3(vertices[i2 - 1]);
+                    var c = toVec3(vertices[i2 - 2]);
+                    // 角度による同一直線チェック
+                    if (toleranceAngleDeg >= 0f)
+                    {
+                        var deg = Vector3.Angle(a - b, c - b);
+                        if (Mathf.Abs(180f - deg) <= toleranceAngleDeg)
+                            return true;
+                    }
+
+                    return false;
+                });
+        }
+
     }
 }

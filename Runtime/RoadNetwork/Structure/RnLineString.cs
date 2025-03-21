@@ -37,7 +37,6 @@ namespace PLATEAU.RoadNetwork.Structure
             Points = new RnPoint[initialSize].ToList();
         }
 
-
         public RnLineString(IEnumerable<RnPoint> points)
         {
             Points = points.ToList();
@@ -399,13 +398,28 @@ namespace PLATEAU.RoadNetwork.Structure
             return ret;
         }
 
+        /// <summary>
+        /// 頂点リストから線分を生成する
+        /// removeDuplicate : 重複する頂点を取り除くかのフラグ
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="removeDuplicate"></param>
+        /// <returns></returns>
         public static RnLineString Create(IEnumerable<RnPoint> vertices, bool removeDuplicate = true)
         {
             if (removeDuplicate)
                 return Create(vertices, DefaultDistanceEpsilon, DefaultDegEpsilon, DefaultMidPointTolerance);
-            return Create(vertices, -1, -1, -1f);
+
+            return Create(vertices, -1, -1, -1);
         }
 
+        /// <summary>
+        /// 頂点リストから線分を生成する
+        /// removeDuplicate : 重複する頂点を取り除くかのフラグ
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="removeDuplicate"></param>
+        /// <returns></returns>
         public static RnLineString Create(IEnumerable<Vector3> vertices, bool removeDuplicate = true)
         {
             return Create(vertices.Select(v => new RnPoint(v)), removeDuplicate);
@@ -495,9 +509,9 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             foreach (var item in self.GetEdges().Select((edge, i) => new { edge, i }))
             {
-                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var t1, out var t2))
+                if (item.edge.TryLineIntersectionBy2D(ray.origin, ray.direction, axis, -1f, out var p, out var rayOffset, out var edgeT))
                 {
-                    yield return (p, item.i + t1);
+                    yield return (p, item.i + edgeT);
                 }
             }
         }
@@ -566,7 +580,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="self"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public static Vector3 GetPoint(this RnLineString self, float index)
+        public static Vector3 GetVertexByFloatIndex(this RnLineString self, float index)
         {
             var i1 = (int)index;
             var i2 = i1 + 1;
@@ -771,12 +785,18 @@ namespace PLATEAU.RoadNetwork.Structure
         public static bool IsSequenceEqual(RnLineString a, RnLineString b, out bool isReverseSequence)
         {
             isReverseSequence = false;
-            if (a.Count != b.Count)
-                return false;
 
             // 参照一致
             if (ReferenceEquals(a, b))
                 return true;
+
+            // どっちかがnullならfalse
+            if (a == null || b == null)
+                return false;
+
+            // 個数が違ったら無視
+            if (a.Count != b.Count)
+                return false;
 
             // 0番目が同じであればそのまま比較
             if (a[0] == b[0])
@@ -788,6 +808,24 @@ namespace PLATEAU.RoadNetwork.Structure
             // そうじゃない時は逆順一致の可能性があるのでそれで比較
             isReverseSequence = true;
             return a.SequenceEqual(Enumerable.Range(0, a.Count).Select(i => b[b.Count - 1 - i]));
+        }
+
+        /// <summary>
+        /// aとbが同じRnPointを共有しているかを返す
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool IsPointShared(RnLineString a, RnLineString b)
+        {
+            if (a == null || b == null)
+                return false;
+
+            // どっちかがPoints持っていないとダメ
+            if (!a.Points.Any() || !b.Points.Any())
+                return false;
+
+            return a.Points.Any(b.Points.Contains);
         }
     }
 }

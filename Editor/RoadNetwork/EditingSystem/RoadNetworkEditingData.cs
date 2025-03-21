@@ -1,5 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Structure;
-using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadNetwork;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -530,7 +530,7 @@ namespace PLATEAU.Editor.RoadNetwork
             Dictionary<RnLane, HashSet<RnWay>> laneWays = new();
             foreach (var road in roadGroupEditorData.Ref.Roads)
             {
-                foreach (var lane in road.AllLanes)
+                foreach (var lane in road.MainLanes)
                 {
                     var ways = NewOrGetWays(laneWays, lane);
                     if (lane.LeftWay != null)
