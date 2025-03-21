@@ -7,6 +7,7 @@ using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -18,6 +19,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
     /// </summary>
     internal class RoadNetworkEditSceneViewGui
     {
+        
+        private static readonly string NodePrefabPath = $"{PathUtil.SdkBasePath}/Resources/RoadNetwork/Node.prefab";
 
         public RoadNetworkEditSceneViewGui(GameObject root, RnModel rnModel,
             RoadNetworkEditTargetSelectButton editTargetSelectButton, RoadNetworkEditTarget target,
@@ -79,9 +82,9 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystem
             SplineEditorMod.Initialize();
             
             // ノードに紐づくオブジェクトを作成 editor用のデータを作成
-            var nodePrefabPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/RoadNetwork/Node.prefab";
+            
             // プレハブをResourcesフォルダからロード
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(nodePrefabPath);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(NodePrefabPath);
             Assert.IsNotNull(prefab);
 
             foreach (var intersection in roadNetwork.Intersections)

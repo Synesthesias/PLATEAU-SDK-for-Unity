@@ -15,7 +15,7 @@ namespace PLATEAU.Util
 
         public static readonly string PLATEAUSrcFetchDir = Path.GetFullPath(Application.streamingAssetsPath + "/.PLATEAU");
         public const string UdxFolderName = "udx";
-        public static readonly string packageFormalName = "com.synesthesias.plateau-unity-sdk";
+        private static readonly string packageFormalName = "com.synesthesias.plateau-unity-sdk"; // 外部から使う時はSdkBasePathを使ってください
         private static readonly string packageDirName = "PLATEAU-SDK-for-Unity";
 
         /// <summary>

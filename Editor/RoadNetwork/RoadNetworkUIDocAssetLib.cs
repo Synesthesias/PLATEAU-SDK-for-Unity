@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -18,7 +19,7 @@ namespace PLATEAU.Editor.RoadNetwork
             LoadAsset();
         }
 
-        private static readonly string UIAssetDirPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/";
+        private static readonly string UIAssetDirPath = $"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/RoadNetwork/";
 
         // エディタ
         public static readonly string EditorAssetName = "RoadNetworkEditor.uxml";

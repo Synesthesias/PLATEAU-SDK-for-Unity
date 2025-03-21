@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <ui:Template name="RoadNetworkRadioButton" src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/RoadNetworkRadioButton.uxml?fileID=9197481963319205126&amp;guid=d18b928bddcc6494fa0ee7dee955a70c&amp;type=3#RoadNetworkRadioButton" />
+    <ui:Template name="RoadNetworkRadioButton" src="./RoadNetworkRadioButton.uxml?fileID=9197481963319205126&amp;guid=d18b928bddcc6494fa0ee7dee955a70c&amp;type=3#RoadNetworkRadioButton" />
     <ui:DropdownField label="配置オブジェクト" choices="信号制御器,信号灯器,一時停止線,交通イベント（工事、事故など）" name="DeploObjectSelecter" index="0" />
     <ui:VisualElement name="VisualElement" style="flex-grow: 1;">
         <ui:Label tabindex="-1" text="選択中の信号制御器" parse-escape-sequences="true" display-tooltip-when-elided="true" />

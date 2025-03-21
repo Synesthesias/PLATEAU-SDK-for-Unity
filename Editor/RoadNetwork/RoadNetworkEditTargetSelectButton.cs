@@ -3,6 +3,7 @@ using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -14,14 +15,14 @@ namespace PLATEAU.Editor.RoadNetwork
     /// </summary>
     internal class RoadNetworkEditTargetSelectButton
     {
-        private const string LaneTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_lane.png";
-        private const string NodeTexPath = "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_node.png";
+        private static readonly string LaneTexPath = $"{PathUtil.SdkBasePath}/Resources/Icon/Icon_lane.png";
+        private static readonly string NodeTexPath = $"{PathUtil.SdkBasePath}/Resources/Icon/Icon_node.png";
 
-        private const string TrafficLightControllerPath =
-            "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/Icon_trafficLightController.png";
+        private static readonly string TrafficLightControllerPath =
+            $"{PathUtil.SdkBasePath}/Resources/Icon/Icon_trafficLightController.png";
 
-        private const string TrafficLightBlueTexPath =
-            "Packages/com.synesthesias.plateau-unity-sdk/Resources/Icon/trafficLight_blue.png";
+        private static readonly string TrafficLightBlueTexPath =
+            $"{PathUtil.SdkBasePath}/Resources/Icon/trafficLight_blue.png";
 
         Texture2D laneTex;
         Texture2D nodeTex;
