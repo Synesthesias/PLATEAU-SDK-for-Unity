@@ -12,6 +12,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
         public RoadTrafficRulePanel(VisualElement rootVisualElement) : base(name, rootVisualElement)
         {
+            abcd = efgh;
+            copilot 自動reviewのテストです。copilotさん、ここはふさわしくないので指摘してね
         }
 
         protected override void OnTabSelected(VisualElement root)
