@@ -5,7 +5,7 @@
 
 ## 交差点
 **ファイル名: roadnetwork_node.geojson**  
-![](../resources/manual/roadnetwork/exported_nodes.png)  
+![交差点を示す図](../resources/manual/roadnetwork/exported_nodes.png)  
 上図は交差点の位置がエクスポートされたものです。  
 道路ネットワーク内の交差点をノード情報として格納します。
 
@@ -14,7 +14,7 @@
 
 ## 道路
 **ファイル名: roadnetwork_link.geojson**  
-![](../resources/manual/roadnetwork/exported_link.png)  
+![道路を示す図](../resources/manual/roadnetwork/exported_link.png)  
 上図の紫色の線に相当します。交差点（黄色い点）を接続します。  
 道路を、ノード（交差点）間を接続するリンク情報として格納します。
 
@@ -34,7 +34,7 @@
 
 ## レーン
 **ファイル名: roadnetwork_lane.geojson**  
-![](../resources/manual/roadnetwork/exported_lanes.png)  
+![レーンを示す図](../resources/manual/roadnetwork/exported_lanes.png)  
 上図のオレンジ色の線に相当します。  
 各リンクに属する車線情報をレーン情報として格納します。
 
@@ -48,7 +48,7 @@
 
 ## トラック
 **ファイル名: roadnetwork_track.geojson**
-![](../resources/manual/roadnetwork/exported_tracks.png)  
+![トラックを示す図](../resources/manual/roadnetwork/exported_tracks.png)  
 上図の交差点（黄色い点）の周りにある茶色の線に相当します。  
 各交差点の通行可能な経路をトラック情報として格納します。
 
@@ -70,7 +70,7 @@
 
 [PLATEAU SDK-Toolkits for Unity](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity) の交通シミュレーション機能が有効な場合に生成されます。利用方法は[こちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity/tree/main/PlateauToolkit.Sandbox#10-%E4%BA%A4%E9%80%9A%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E6%A9%9F%E8%83%BD)を参照してください。
 
-![](../resources/manual/roadnetwork/exported_signalcontroler.png)  
+![信号制御器を示す図](../resources/manual/roadnetwork/exported_signalcontroler.png)  
 上図は交通シミュレーション機能により車両用交通信号機が設置された交差点の位置がエクスポートされたものです。 
 所属する信号灯火器を制御する情報を格納します。
 
@@ -92,7 +92,7 @@
 
 [PLATEAU SDK-Toolkits for Unity](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity) の交通シミュレーション機能が有効な場合に生成されます。利用方法は[こちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity/tree/main/PlateauToolkit.Sandbox#10-%E4%BA%A4%E9%80%9A%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E6%A9%9F%E8%83%BD)を参照してください。
 
-![](../resources/manual/roadnetwork/exported_signallight.png)  
+![信号灯火器を示す図](../resources/manual/roadnetwork/exported_signallight.png)  
 上図は交通シミュレーション機能により設置された車両用交通信号機の位置がエクスポートされたものです。 
 車両用交通信号機についての情報を格納します。
 
@@ -109,7 +109,7 @@
 
 [PLATEAU SDK-Toolkits for Unity](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity) の交通シミュレーション機能が有効な場合に生成されます。利用方法は[こちら](https://github.com/Project-PLATEAU/PLATEAU-SDK-Toolkits-for-Unity/tree/main/PlateauToolkit.Sandbox#10-%E4%BA%A4%E9%80%9A%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E6%A9%9F%E8%83%BD)を参照してください。
 
-![](../resources/manual/roadnetwork/exported_signalstep.png)  
+![信号現示階梯を示す図](../resources/manual/roadnetwork/exported_signalstep.png)  
 上図は信号現示階梯がエクスポートされたものです。位置は対象となる信号制御器と同じになります。
 信号制御器が制御する信号の切り替え順序やパターン（現示階梯）に関する情報が格納されます。
 
