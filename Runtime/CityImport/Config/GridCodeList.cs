@@ -10,49 +10,58 @@ using PLATEAU.Util;
 namespace PLATEAU.CityImport.Config
 {
     /// <summary>
-    /// メッシュコードのリストによって範囲を表現したクラスです。
+    /// グリッドコードのリストによって範囲を表現したクラスです。
     /// </summary>
-    public class MeshCodeList
+    public class GridCodeList
     {
-        private List<MeshCode> data;
-        public List<MeshCode> Data => data;
+        private NativeVectorGridCode gridCodes;
+        public NativeVectorGridCode GridCodes => gridCodes;
 
-        private MeshCodeList(IEnumerable<MeshCode> data)
+        private GridCodeList(NativeVectorGridCode gridCodes)
         {
-            this.data = data.ToList();
+            this.gridCodes = gridCodes;
         }
 
         /// <summary>
         /// 範囲選択画面の<see cref="MeshCodeGizmoDrawer"/>から選択範囲を生成します。
         /// </summary>
-        internal static MeshCodeList CreateFromMeshCodeDrawers(IEnumerable<MeshCodeGizmoDrawer> drawers)
+        internal static GridCodeList CreateFromMeshCodeDrawers(IEnumerable<MeshCodeGizmoDrawer> drawers)
         {
-            var meshCodes = new List<MeshCode>();
+            var gridCodes = NativeVectorGridCode.Create();
             foreach (var drawer in drawers)
             {
-                meshCodes.AddRange(drawer.GetSelectedMeshIds().Select(MeshCode.Parse).ToList());
+                foreach (var meshID in drawer.GetSelectedMeshIds())
+                {
+                    gridCodes.Add(GridCode.Create(meshID, false));
+                }
             }
 
-            return new MeshCodeList(meshCodes);
+            return new GridCodeList(gridCodes);
         }
 
         /// <summary>
-        /// メッシュコード番号の文字列としての配列から範囲を生成します。
+        /// グリッド番号の文字列としての配列から範囲を生成します。
         /// </summary>
-        public static MeshCodeList CreateFromMeshCodesStr(IEnumerable<string> meshCodesStr)
+        public static GridCodeList CreateFromGridCodesStr(IEnumerable<string> gridCodesStr)
         {
-            return new MeshCodeList(meshCodesStr.Select(MeshCode.Parse).Where(code => code.IsValid));
+            var gridCodes = NativeVectorGridCode.Create();
+            foreach (var gridStr in gridCodesStr)
+            {
+                gridCodes.Add(GridCode.Create(gridStr, false));
+            }
+
+            return new GridCodeList(gridCodes);
         }
 
         /// <summary>
         /// 空の範囲を生成します。
         /// </summary>
-        internal static MeshCodeList Empty => new MeshCodeList(new List<MeshCode>{});
+        internal static GridCodeList Empty => new GridCodeList(NativeVectorGridCode.Create());
 
         /// <summary>
         /// メッシュコードの数を返します。
         /// </summary>
-        public int Count => data.Count;
+        public int Count => gridCodes.Length;
         
         
         /// <summary>
@@ -62,7 +71,7 @@ namespace PLATEAU.CityImport.Config
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;
-            using var accessor = accessorAll.FilterByMeshCodes(data);
+            using var accessor = accessorAll.FilterByGridCodes(gridCodes);
             using var gmlFiles = accessor.GetAllGmlFiles();
             var ret = new PackageToLodDict();
             int gmlCount = gmlFiles.Length;
@@ -81,11 +90,11 @@ namespace PLATEAU.CityImport.Config
         }
 
         /// <summary>
-        /// インデックス指定でメッシュコードを取得します。
+        /// インデックス指定でグリッドコードを取得します。
         /// </summary>
-        public MeshCode At(int index)
+        public GridCode At(int index)
         {
-            return data[index];
+            return GridCode.Create(gridCodes.At(index).StringCode);
         }
 
         /// <summary>
@@ -99,12 +108,14 @@ namespace PLATEAU.CityImport.Config
             // 選択エリアを囲むExtentを計算
             var extent = new Extent
             {
-                Min = new GeoCoordinate(180.0, 180.0, 0.0),
-                Max = new GeoCoordinate(-180.0, -180.0, 0.0)
+                Min = new GeoCoordinate(999999999, 999999999, 0.0),
+                Max = new GeoCoordinate(-999999999, -999999999, 0.0)
             };
-            foreach (var meshCode in data)
+            for (int i = 0; i < gridCodes.Length; i++)
             {
-                var partialExtent = meshCode.Extent;
+                var gridCode = gridCodes.At(i);
+                if (!gridCode.IsValid) continue;
+                var partialExtent = gridCode.Extent;
                 extent.Min.Latitude = Math.Min(partialExtent.Min.Latitude, extent.Min.Latitude);
                 extent.Min.Longitude = Math.Min(partialExtent.Min.Longitude, extent.Min.Longitude);
                 extent.Max.Latitude = Math.Max(partialExtent.Max.Latitude, extent.Max.Latitude);

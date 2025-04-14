@@ -37,7 +37,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
         private bool isLeftMouseAndShiftButtonMoved;
         
         public void Init(
-            ReadOnlyCollection<MeshCode> meshCodes, IDatasetSourceConfig datasetSourceConfig,
+            NativeVectorGridCode gridCodes, IDatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
             using var progressBar = new ProgressBar();
@@ -47,39 +47,61 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             using var geoReferenceTmp = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
             // 中心を計算し、そこを基準点として geoReference を再設定します。
             var referencePoint = new PlateauVector3d(0, 0, 0);
-            
-            foreach (var meshCode in meshCodes)
+
+            for (int i = 0; i < gridCodes.Length; i++)
             {
-                var geoMin = meshCode.Extent.Min;
-                var geoMax = meshCode.Extent.Max;
+                var gridCode = gridCodes.At(i);
+                var geoMin = gridCode.Extent.Min;
+                var geoMax = gridCode.Extent.Max;
                 var min = geoReferenceTmp.Project(geoMin);
                 var max = geoReferenceTmp.Project(geoMax);
                 var center = (min + max) * 0.5;
                 referencePoint += center;
             }
-            referencePoint /= meshCodes.Count;
+            
+            referencePoint /= gridCodes.Length;
             referencePoint.Y = 0;
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
-            foreach (var meshCode in meshCodes)
+            for (int i = 0; i < gridCodes.Length; i++)
             {
-                // Level4以上のMeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
-                if (meshCode.Level >= 4 && meshCodes.Any(other => other.Level == 3 && other.Level3() == meshCode.Level3()))
+                var gridCode = gridCodes.At(i);
+                // Level4以上の(細かい)MeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
+                if (gridCode.IsSmallerThanNormalGml)
                 {
+                    for (int j = 0; j < gridCodes.Length; j++)
+                    {
+                        var other = gridCodes.At(j);
+                        if (other.IsNormalGmlLevel && other.IsValid)
+                        {
+                            var upper = gridCode.Upper();
+                            while (upper.IsValid && !upper.IsNormalGmlLevel)
+                            {
+                                if (upper.StringCode == other.StringCode)
+                                {
+                                    continue;// 重複しているので除外
+                                }
+
+                                upper.Dispose();
+                                upper = upper.Upper();
+                            }
+                            upper.Dispose();
+                        }
+                    }
                     continue;
                 }
                 
                 var drawer = new MeshCodeGizmoDrawer();
-                drawer.SetUp(meshCode, outGeoReference);
+                drawer.SetUp(gridCode, outGeoReference);
                 this.meshCodeDrawers.Add(drawer);
             }
 
-            this.areaLod = new AreaLodController(datasetSourceConfig, outGeoReference, meshCodes);
+            this.areaLod = new AreaLodController(datasetSourceConfig, outGeoReference, gridCodes);
             this.geoReference = outGeoReference;
             this.areaSelectionGizmoDrawer = new AreaSelectionGizmoDrawer();
             this.areaSelectionGizmoDrawer.SetUp();
         }
         
-        public MeshCodeList SelectedMeshCodes => MeshCodeList.CreateFromMeshCodeDrawers(this.meshCodeDrawers);
+        public GridCodeList SelectedGridCodes => GridCodeList.CreateFromMeshCodeDrawers(this.meshCodeDrawers);
 
         public void ResetSelectedArea()
         {
@@ -121,7 +143,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
             {
                 // 大きな粒度の線は優先して表示されるようにします。
-                meshCodeGizmoDrawer.Priority = 999 - meshCodeGizmoDrawer.MeshCode.Level;
+                meshCodeGizmoDrawer.Priority = 999 - 
+                                               (meshCodeGizmoDrawer.GridCode.IsSmallerThanNormalGml ? 1 : 0) -
+                                               (meshCodeGizmoDrawer.GridCode.IsNormalGmlLevel ? 1 : 0);
             }
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();

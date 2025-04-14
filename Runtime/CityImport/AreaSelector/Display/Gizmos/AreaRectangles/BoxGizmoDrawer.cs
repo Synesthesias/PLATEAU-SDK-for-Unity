@@ -16,13 +16,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         protected Color BoxColor { get; set; } = Color.white;
         protected float LineWidth { get; set; } = 1f;
         public int Priority { get; set; }
-
-        MeshCode meshCode;
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode meshCodeArg)
+        private GridCode gridCode;
+        public GridCode GridCode { get; protected set; }
+        
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, GridCode gridCodeArg)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
-            this.meshCode = meshCodeArg;
+            this.gridCode = gridCodeArg;
             
         }
 

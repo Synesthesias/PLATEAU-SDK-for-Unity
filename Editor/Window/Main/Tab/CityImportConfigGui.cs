@@ -52,7 +52,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
-            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaMeshCodes,
+            bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaGridCodes,
                 this.config.ConfBeforeAreaSelect,
                 this);
 

@@ -17,14 +17,14 @@ namespace PLATEAU.CityImport.AreaSelector
     public class AreaSelectResult
     {
         public ConfigBeforeAreaSelect ConfBeforeAreaSelect { get; }
-        public MeshCodeList AreaMeshCodes { get; }
+        public GridCodeList AreaGridCodes { get; }
         public PackageToLodDict PackageToLodDict { get; }
 
-        public AreaSelectResult(ConfigBeforeAreaSelect confBeforeAreaSelect, MeshCodeList areaMeshCodes)
+        public AreaSelectResult(ConfigBeforeAreaSelect confBeforeAreaSelect, GridCodeList areaGridCodes)
         {
             ConfBeforeAreaSelect = confBeforeAreaSelect;
-            AreaMeshCodes = areaMeshCodes;
-            PackageToLodDict = areaMeshCodes.CalcAvailablePackageLodInMeshCodes(ConfBeforeAreaSelect.DatasetSourceConfig);
+            AreaGridCodes = areaGridCodes;
+            PackageToLodDict = areaGridCodes.CalcAvailablePackageLodInMeshCodes(ConfBeforeAreaSelect.DatasetSourceConfig);
         }
 
     }

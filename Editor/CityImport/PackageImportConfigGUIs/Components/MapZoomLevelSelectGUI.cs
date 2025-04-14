@@ -20,10 +20,10 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
         private readonly GeoCoordinate geoCoord;
         private MapZoomLevelSearchResult zoomLevelSearchResult = new MapZoomLevelSearchResult{AvailableZoomLevelMax = -1, AvailableZoomLevelMin = -1, IsValid = false};
         private string mapTileUrl;
-        public MapZoomLevelSelectGUI(ReliefImportConfig conf, string mapTileUrl, MeshCode firstMeshCode)
+        public MapZoomLevelSelectGUI(ReliefImportConfig conf, string mapTileUrl, GridCode firstGridCode)
         {
             config = conf;
-            geoCoord = firstMeshCode.Extent.Center;
+            geoCoord = firstGridCode.Extent.Center;
             OnMapTileUrlChanged(mapTileUrl);
         }
 

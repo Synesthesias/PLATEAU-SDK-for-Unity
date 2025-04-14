@@ -69,9 +69,9 @@ namespace PLATEAU.GranularityConvert
         }
         
         /// <summary>
-        /// 非推奨:引数が MeshGranularity であるこのメソッドよりも、引数が CovnertGranularity であるほうのメソッドを使ってください。 
         /// 後方互換性のために古い型の引数のコンストラクタを残しておきます。
         /// </summary>
+        [Obsolete("Please use ConvertGranularity instead of MeshGranularity.")]
         public GranularityConvertOption(MeshGranularity meshGranularity, int gridCount) : this(
             meshGranularity.ToConvertGranularity(), gridCount)
         { }

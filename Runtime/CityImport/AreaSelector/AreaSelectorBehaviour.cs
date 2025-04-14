@@ -59,10 +59,10 @@ namespace PLATEAU.CityImport.AreaSelector
             LodLegendGUI.Enable(this);
             using var progressBar = new ProgressBar();
             progressBar.Display("データファイルを検索中です...", 0f);
-            ReadOnlyCollection<MeshCode> meshCodes;
+            NativeVectorGridCode gridCodes;
             try
             {
-                GatherMeshCodes(this.confBeforeAreaSelect.DatasetSourceConfig, out meshCodes);
+                gridCodes = GatherMeshCodes(this.confBeforeAreaSelect.DatasetSourceConfig);
             }
             catch (Exception e)
             {
@@ -73,7 +73,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 return;
             }
 
-            if (meshCodes.Count == 0)
+            if (gridCodes.Length == 0)
             {
                 Dialogue.Display("PLATEAU", "該当のデータがありません。", "OK");
                 
@@ -83,8 +83,8 @@ namespace PLATEAU.CityImport.AreaSelector
 
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
-            this.gizmosDrawer.Init(meshCodes, this.confBeforeAreaSelect.DatasetSourceConfig, this.confBeforeAreaSelect.CoordinateZoneID, out this.geoReference);
-            entireExtent = CalcExtentCoversAllMeshCodes(meshCodes);
+            this.gizmosDrawer.Init(gridCodes, this.confBeforeAreaSelect.DatasetSourceConfig, this.confBeforeAreaSelect.CoordinateZoneID, out this.geoReference);
+            entireExtent = CalcExtentCoversAllMeshCodes(gridCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
@@ -141,11 +141,11 @@ namespace PLATEAU.CityImport.AreaSelector
             this.mapLoader?.Dispose();
         }
 
-        private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<MeshCode> meshCodes)
+        private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<GridCode> gridCodes)
         {
             var entireMin = new GeoCoordinate(90, 180, 9999);
             var entireMax = new GeoCoordinate(-90, -180, -9999);
-            foreach (var meshCode in meshCodes)
+            foreach (var meshCode in gridCodes)
             {
                 var areaMin = meshCode.Extent.Min;
                 var areaMax = meshCode.Extent.Max;
@@ -157,11 +157,11 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static void GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig, out ReadOnlyCollection<MeshCode> meshCodes)
+        private static NativeVectorGridCode GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
-            meshCodes = new ReadOnlyCollection<MeshCode>(accessor.MeshCodes.Where(code => code.IsValid).ToArray());
+            return accessor.GridCodes;
         }
 
         internal void ResetSelectedArea()
@@ -180,7 +180,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorMenuWindow.Disable();
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
-            var selectedMeshCodes = this.gizmosDrawer.SelectedMeshCodes;
+            var selectedMeshCodes = this.gizmosDrawer.SelectedGridCodes;
             var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedMeshCodes);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
@@ -195,7 +195,7 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
             IsAreaSelectEnabled = false;
-            var emptyAreaSelectResult = new AreaSelectResult(confBeforeAreaSelect, MeshCodeList.Empty);
+            var emptyAreaSelectResult = new AreaSelectResult(confBeforeAreaSelect, GridCodeList.Empty);
             #if UNITY_EDITOR
             AreaSelectorDataPass.Exec(this.prevScenePath, emptyAreaSelectResult, this.areaSelectResultReceiver, this.prevEditorWindow);
             #endif
@@ -229,8 +229,8 @@ namespace PLATEAU.CityImport.AreaSelector
             #if UNITY_EDITOR
             try
             {
-                MeshCode meshCode = MeshCode.Parse(code);
-                var extent = meshCode.Extent;
+                var gridCode = GridCode.Create(code);
+                var extent = gridCode.Extent;
                 var min = geoReference.Project(extent.Min);
                 var max = geoReference.Project(extent.Max);
                 var center = geoReference.Project(extent.Center);
