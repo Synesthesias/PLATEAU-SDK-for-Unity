@@ -151,7 +151,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             try
             {
                 gmlTrans.parent = rootTrans;
-                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package);
+                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
             }
             catch (Exception e)
             {

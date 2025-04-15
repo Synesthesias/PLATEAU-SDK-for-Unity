@@ -36,9 +36,17 @@ namespace PLATEAU.CityImport.Import.Convert
             unityUV1 = new Vector2[numVerts];
             unityUV4 = new Vector2[numVerts];
 
+            UnityEngine.Debug.Log($"first vert {plateauMesh.GetVertexAt(0).X} {plateauMesh.GetVertexAt(0).Y} {plateauMesh.GetVertexAt(0).Z}");
+            //254997.949343757 109.6597 - 138305.753173197
+
             for (int i = 0; i < numVerts; i++)
             {
                 var vert = plateauMesh.GetVertexAt(i);
+
+                //debug offset
+                //vert.X -= 254997.949343757;
+                //vert.Z -= -138305.753173197;
+
                 unityVerts[i] = new Vector3((float)vert.X, (float)vert.Y, (float)vert.Z);
                 unityUV1[i] = new Vector2(plateauUv1[i].X, plateauUv1[i].Y);
                 unityUV4[i] = new Vector2(plateauUv4[i].X, plateauUv4[i].Y);

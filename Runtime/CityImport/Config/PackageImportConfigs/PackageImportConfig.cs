@@ -133,8 +133,18 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
-        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID)
+        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, GmlFile gml = null)
         {
+            Debug.Log($"MeshExtractOptions::ConvertToNativeOption referencePoint:{referencePoint}");
+            Debug.Log($"MeshExtractOptions::ConvertToNativeOption isPolarCoordinateSystem:{gml?.isPolarCoordinateSystem}");
+
+            if (gml?.isPolarCoordinateSystem == true)
+            {
+                GeoReference geoRef = GeoReference.Create(new PlateauVector3d(), 1.0f, CoordinateSystem.EUN, coordinateZoneID);
+                GeoCoordinate coord = new GeoCoordinate(36, 138.5, 0);
+                referencePoint = geoRef.Project(coord);
+            }
+
             return new MeshExtractOptions(
                 referencePoint: referencePoint,
                 meshAxes: MeshAxes,
@@ -151,7 +161,10 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
                 texturePackingResolution: (uint)ConfExtendable.TexturePackingResolution.ToPixelCount(),
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
                 mapTileZoomLevel: 15, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
-                mapTileURL: ReliefImportConfig.DefaultMapTileUrl); // 土地専用の設定
+                mapTileURL: ReliefImportConfig.DefaultMapTileUrl, // 土地専用の設定
+                isPolarCoordinateSystem: gml?.isPolarCoordinateSystem ?? true, //極座標系・平面座標系
+                epsgCode: gml?.Epsg ?? 6697 // 平面座標系の場合の基準座標取得用
+                ); 
         }
 
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
