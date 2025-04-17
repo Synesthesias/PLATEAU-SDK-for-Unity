@@ -56,7 +56,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 
             for (int i = 0; i < numGrids; i++)
             {
-                var gridCode = gridCodes.At(i);
+                using var gridCode = gridCodes.At(i);
                 var geoMin = gridCode.Extent.Min;
                 var geoMax = gridCode.Extent.Max;
                 var min = geoReferenceTmp.Project(geoMin);
@@ -70,14 +70,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
             for (int i = 0; i < numGrids; i++)
             {
-                var gridCode = gridCodes.At(i);
+                using var gridCode = gridCodes.At(i);
                 // Level4以上の(細かい)MeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
                 bool isDuplicate = false;
                 if (gridCode.IsSmallerThanNormalGml)
                 {
                     for (int j = 0; j < gridCodes.Length; j++)
                     {
-                        var other = gridCodes.At(j);
+                        using var other = gridCodes.At(j);
                         if (other.IsNormalGmlLevel && other.IsValid)
                         {
                             var upper = gridCode.Upper();
@@ -94,7 +94,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                                 upper.Dispose();
                                 upper = next;
                             }
-                            upper.Dispose();
                         }
 
                         if (isDuplicate) break;
@@ -103,7 +102,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 
                 if (isDuplicate) continue;
                 var drawer = new GridCodeGizmoDrawer();
-                drawer.SetUp(gridCode, outGeoReference);
+                drawer.SetUp(GridCode.CopyFrom(gridCode.Handle), outGeoReference);
                 this.gridCodeDrawers.Add(drawer);
             }
 

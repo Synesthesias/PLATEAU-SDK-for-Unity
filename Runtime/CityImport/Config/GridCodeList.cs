@@ -16,6 +16,7 @@ namespace PLATEAU.CityImport.Config
     {
         private NativeVectorGridCode gridCodes;
         public NativeVectorGridCode GridCodes => gridCodes;
+        private bool disposed;
 
         private GridCodeList(NativeVectorGridCode gridCodes)
         {
@@ -77,6 +78,10 @@ namespace PLATEAU.CityImport.Config
             using var gmlFiles = accessor.GetAllGmlFiles();
             var ret = new PackageToLodDict();
             int gmlCount = gmlFiles.Length;
+            if (gmlCount == 0)
+            {
+                throw new Exception("GMLがありません。");
+            }
             using var progressBar = new ProgressBar();
             for (int i = 0; i < gmlCount; i++)
             {
@@ -85,7 +90,7 @@ namespace PLATEAU.CityImport.Config
                 ret.MergePackage(gml.Package, maxLod);
 
                 //Progress表示
-                float progress = (float)i / gmlCount;
+                float progress = (float)(i+1) / gmlCount;
                 progressBar.Display("利用可能なデータを検索中です...", progress);
             }
             return ret;
@@ -105,6 +110,10 @@ namespace PLATEAU.CityImport.Config
         /// </summary>
         public PlateauVector3d ExtentCenter(int coordinateZoneID)
         {
+            if (gridCodes.Length == 0)
+            {
+                throw new Exception("グリッドコードがありません");
+            }
             using var geoReference = CoordinatesConvertUtil.UnityStandardGeoReference(coordinateZoneID);
 
             // 選択エリアを囲むExtentを計算
@@ -128,9 +137,19 @@ namespace PLATEAU.CityImport.Config
             return center;
         }
 
+        ~GridCodeList() => Dispose(false);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            gridCodes?.Dispose();
+            gridCodes = null;
+            disposed = true;
+        }
+
         public void Dispose()
         {
-            gridCodes?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

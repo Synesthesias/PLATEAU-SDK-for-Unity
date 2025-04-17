@@ -35,7 +35,7 @@ namespace PLATEAU.CityImport.AreaSelector
         private Extent entireExtent;
         #if UNITY_EDITOR
         private EditorWindow prevEditorWindow;
-        private MeshCodeSearchWindow meshSearchWindow;
+        private GridCodeSearchWindow gridSearchWindow;
         #endif
 
         public static bool IsAreaSelectEnabled { get; set; }
@@ -66,7 +66,7 @@ namespace PLATEAU.CityImport.AreaSelector
             }
             catch (Exception e)
             {
-                const string ErrorMessage = "メッシュコードの取得に失敗しました。";
+                const string ErrorMessage = "範囲の取得に失敗しました。";
                 Debug.LogError($"{ErrorMessage}\n{e}");
                 Dialogue.Display(ErrorMessage, "OK");
                 CancelAreaSelection();
@@ -84,13 +84,12 @@ namespace PLATEAU.CityImport.AreaSelector
             var drawerObj = new GameObject($"{nameof(AreaSelectGizmosDrawer)}");
             this.gizmosDrawer = drawerObj.AddComponent<AreaSelectGizmosDrawer>();
             this.gizmosDrawer.Init(gridCodes, this.confBeforeAreaSelect.DatasetSourceConfig, this.confBeforeAreaSelect.CoordinateZoneID, out this.geoReference);
-            entireExtent = CalcExtentCoversAllMeshCodes(gridCodes);
+            entireExtent = CalcExtentCoversAllGridCodes(gridCodes);
             this.mapLoader = new GSIMapLoaderZoomSwitch(this.geoReference, entireExtent);
             SetInitialCamera(entireExtent);
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
             SceneVisibilityManager.instance.DisableAllPicking();
 #endif
-            gridCodes.Dispose();
         }
 
         private void SetInitialCamera(Extent entireExtentArg)
@@ -134,15 +133,15 @@ namespace PLATEAU.CityImport.AreaSelector
         {
 #if UNITY_EDITOR
             SceneView.lastActiveSceneView.isRotationLocked = this.prevSceneCameraRotationLocked;
-            if (meshSearchWindow != null)
+            if (gridSearchWindow != null)
             {
-                meshSearchWindow.Close();
+                gridSearchWindow.Close();
             }
 #endif
             this.mapLoader?.Dispose();
         }
 
-        private static Extent CalcExtentCoversAllMeshCodes(NativeVectorGridCode gridCodes)
+        private static Extent CalcExtentCoversAllGridCodes(NativeVectorGridCode gridCodes)
         {
             var entireMin = new GeoCoordinate(90, 180, 9999);
             var entireMax = new GeoCoordinate(-90, -180, -9999);
@@ -174,7 +173,18 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;
-            return accessor.GridCodes;
+            
+            // グリッドコードをコピーして返します
+            var dstGridCodes = NativeVectorGridCode.Create();
+            var srcGridCodes = accessor.GridCodes;
+            for (int i = 0; i < srcGridCodes.Length; i++)
+            {
+                using var gridCode = srcGridCodes.At(i);
+                if (!gridCode.IsValid) continue;
+                dstGridCodes.AddCopyOf(gridCode);
+            }
+            
+            return dstGridCodes;
         }
 
         internal void ResetSelectedArea()
@@ -193,8 +203,8 @@ namespace PLATEAU.CityImport.AreaSelector
             AreaSelectorMenuWindow.Disable();
             AreaSelectorGuideWindow.Disable();
             LodLegendGUI.Disable();
-            var selectedMeshCodes = this.gizmosDrawer.SelectedGridCodes;
-            var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedMeshCodes);
+            var selectedGridCodes = this.gizmosDrawer.SelectedGridCodes;
+            var areaSelectResult = new AreaSelectResult(confBeforeAreaSelect, selectedGridCodes);
 
             // 無名関数のキャプチャを利用して、シーン終了後も必要なデータが渡るようにします。
             #if UNITY_EDITOR
@@ -229,15 +239,15 @@ namespace PLATEAU.CityImport.AreaSelector
             #endif
         }
 
-        internal void ShowMeshCodeSearchWindow()
+        internal void ShowGridCodeSearchWindow()
         {
             #if UNITY_EDITOR
-            meshSearchWindow = MeshCodeSearchWindow.ShowWindow();
-            meshSearchWindow.Init(this);
+            gridSearchWindow = GridCodeSearchWindow.ShowWindow();
+            gridSearchWindow.Init(this);
             #endif
         }
 
-        internal bool SearchByMeshCode(string code)
+        internal bool SearchByGridCode(string code)
         {
             #if UNITY_EDITOR
             try
@@ -268,11 +278,11 @@ namespace PLATEAU.CityImport.AreaSelector
                 return false;
             }
 
-            if (meshSearchWindow != null)
+            if (gridSearchWindow != null)
             {
-                meshSearchWindow.Close();
+                gridSearchWindow.Close();
             }
-            meshSearchWindow = null;
+            gridSearchWindow = null;
             #endif
             return true;
         }

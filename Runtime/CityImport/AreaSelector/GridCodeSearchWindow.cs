@@ -4,16 +4,16 @@ using UnityEngine;
 namespace PLATEAU.CityImport.AreaSelector
 {
 #if UNITY_EDITOR
-    internal class MeshCodeSearchWindow : UnityEditor.EditorWindow
+    internal class GridCodeSearchWindow : UnityEditor.EditorWindow
     {
         private AreaSelectorBehaviour areaSelector;
 
         string code = "";
         string errorText = "";
 
-        internal static MeshCodeSearchWindow ShowWindow()
+        internal static GridCodeSearchWindow ShowWindow()
         {
-            MeshCodeSearchWindow wnd = GetWindow<MeshCodeSearchWindow>();
+            GridCodeSearchWindow wnd = GetWindow<GridCodeSearchWindow>();
             wnd.titleContent = new GUIContent("メッシュコード入力");
             wnd.minSize = wnd.maxSize = new Vector2(380, 140); 
             return wnd;
@@ -67,7 +67,7 @@ namespace PLATEAU.CityImport.AreaSelector
                 {
                     errorText = "6桁または８桁の数字を入力してください";
                 }   
-                else if(!areaSelector.SearchByMeshCode(code))
+                else if(!areaSelector.SearchByGridCode(code))
                 {
                     errorText = "メッシュコードが範囲外です";
                 }
