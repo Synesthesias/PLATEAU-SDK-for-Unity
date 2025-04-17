@@ -112,7 +112,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         public bool IsSelectedArea()
         {
-            return 0 < selectedAreaList.Where(selectedArea => selectedArea).ToList().Count;
+            return selectedAreaList.Any(selected => selected);
         }
         
         private void ApplyStyle()
@@ -143,7 +143,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         public List<string> GetSelectedGridIds()
         {
-            List<string> meshIds = new();
+            List<string> strGridCodes = new();
             if (GridCode.IsNormalGmlLevel)
             {
                 for (var col = 0; col < divideNumColumn; col++)
@@ -152,17 +152,18 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                     {
                         if (selectedAreaList[row + col * divideNumColumn])
                         {
-                            meshIds.Add($"{GridCode.StringCode}{SuffixMeshIds[row + col * divideNumColumn]}");
+                            strGridCodes.Add($"{GridCode.StringCode}{SuffixMeshIds[row + col * divideNumColumn]}");
                         }
                     }
                 }
             }else if (GridCode.IsSmallerThanNormalGml)
             {
+                // strGridCodes.Add(GridCode.StringCode);
                 for (int i = 0; i < GridCodeDivideNum; i++)
                 {
                     if (selectedAreaList[i])
                     {
-                        meshIds.Add($"{GridCode.StringCode}{(i+1).ToString()}");
+                        strGridCodes.Add($"{GridCode.StringCode}{(i+1).ToString()}");
                     }
                 }
             }
@@ -171,7 +172,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 // 上の処理で十分
             }
 
-            return meshIds;
+            return strGridCodes;
         }
 
 #if UNITY_EDITOR
@@ -233,7 +234,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         }
         
         /// <summary>
-        /// メッシュコードを描画
+        /// グリッドコードを描画
         /// </summary>
         public override void DrawSceneGUI()
         {
@@ -339,7 +340,16 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         private float CalcGridCodeScreenWidth()
         {
-            var camera = SceneView.currentDrawingSceneView.camera;
+            var sceneView = SceneView.currentDrawingSceneView;
+            if (sceneView == null)
+            {
+                throw new Exception("シーンビューがありません。");
+            }
+            var camera = sceneView.camera;
+            if (camera == null)
+            {
+                throw new Exception("カメラがありません。");
+            }
             var extent = GridCode.Extent;
             // geoReference is passed in constructor.
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();

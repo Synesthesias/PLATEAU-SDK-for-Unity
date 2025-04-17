@@ -146,9 +146,20 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             var entireMin = new GeoCoordinate(90, 180, 9999);
             var entireMax = new GeoCoordinate(-90, -180, -9999);
+            var japanExtent = new Extent(new GeoCoordinate(20, 122, -9999), new GeoCoordinate(46, 154, 9999));
             for(int i=0; i<gridCodes.Length; i++)
             {
                 using var gridCode = gridCodes.At(i); // 廃棄を明示
+                if (!gridCode.IsValid) continue;
+                
+                // 日本の範囲外のデータは異常値として無視する
+                var gridExtent = gridCode.Extent;
+                var intersection = Extent.Intersection(gridExtent, japanExtent, true);
+                if (intersection.Min.Latitude < -90 && intersection.Max.Latitude < -90) // intersectionが失敗値を返したとき
+                {
+                    continue; // 日本の範囲外のデータは無視する
+                }
+                
                 var areaMin = gridCode.Extent.Min;
                 var areaMax = gridCode.Extent.Max;
                 entireMin = GeoCoordinate.Min(entireMin, areaMin);

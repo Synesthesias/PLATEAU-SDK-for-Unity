@@ -12,7 +12,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
     /// </summary>
     public class AreaLodSearcher
     {
-        // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
+        // GridCode <- (1対多) <- [ Package種, (多)LODs ]
         private readonly ConcurrentDictionary<string, PackageToLodDict> gridCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
@@ -26,7 +26,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         /// <summary>
         /// 与えられたグリッドコードと、その上位に含まれるパッケージとLODを返します。
         /// </summary>
-        public PackageToLodDict LoadLodsInMeshCode(string gridCodeStr)
+        public PackageToLodDict LoadLodsInGridCode(string gridCodeStr)
         {
 
             SearchLodsInGridCode(gridCodeStr);
@@ -83,7 +83,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
                     {
                         using var gmlGridCode = gml.GridCode;
                         if (!gmlGridCode.IsValid) continue;
-                        if (gmlGridCode.ToString() != currentGridCode) continue;
+                        if (gmlGridCode.StringCode != currentGridCode) continue;
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。

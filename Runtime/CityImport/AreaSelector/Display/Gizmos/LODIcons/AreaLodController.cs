@@ -89,7 +89,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         /// </summary>
         private void Load(GridCode gridCode)
         {
-            var packageLods = this.searcher.LoadLodsInMeshCode(gridCode.StringCode);
+            var packageLods = this.searcher.LoadLodsInGridCode(gridCode.StringCode);
             var extent = gridCode.Extent;
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference

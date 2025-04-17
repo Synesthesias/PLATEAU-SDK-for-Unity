@@ -12,7 +12,7 @@ namespace PLATEAU.CityImport.Config
     /// <summary>
     /// グリッドコードのリストによって範囲を表現したクラスです。
     /// </summary>
-    public class GridCodeList
+    public class GridCodeList : IDisposable
     {
         private NativeVectorGridCode gridCodes;
         public NativeVectorGridCode GridCodes => gridCodes;
@@ -126,6 +126,11 @@ namespace PLATEAU.CityImport.Config
 
             var center = geoReference.Project(extent.Center);
             return center;
+        }
+
+        public void Dispose()
+        {
+            gridCodes?.Dispose();
         }
     }
 }

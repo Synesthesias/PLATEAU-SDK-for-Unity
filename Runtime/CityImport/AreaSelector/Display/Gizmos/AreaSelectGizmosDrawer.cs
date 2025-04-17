@@ -23,7 +23,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
     {
         private const int MouseLeftButton = 0;
         /// <summary> 地域メッシュの範囲表示です。 </summary>
-        private readonly List<GridCodeGizmoDrawer> meshCodeDrawers = new();
+        private readonly List<GridCodeGizmoDrawer> gridCodeDrawers = new();
         /// <summary> 地域メッシュごとの利用可能LOD表示です。 </summary>
         private AreaLodController areaLod;
         private GeoReference geoReference;
@@ -41,7 +41,8 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             NativeVectorGridCode gridCodes, IDatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
-            if (gridCodes.Length == 0)
+            int numGrids = gridCodes.Length;
+            if (numGrids == 0)
             {
                 throw new ArgumentException("グリッドコードの数が0です。");
             }
@@ -53,7 +54,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             // 中心を計算し、そこを基準点として geoReference を再設定します。
             var referencePoint = new PlateauVector3d(0, 0, 0);
 
-            for (int i = 0; i < gridCodes.Length; i++)
+            for (int i = 0; i < numGrids; i++)
             {
                 var gridCode = gridCodes.At(i);
                 var geoMin = gridCode.Extent.Min;
@@ -64,10 +65,10 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                 referencePoint += center;
             }
             
-            referencePoint /= gridCodes.Length;
+            referencePoint /= numGrids;
             referencePoint.Y = 0;
             outGeoReference = GeoReference.Create(referencePoint, 1f, CoordinateSystem.EUN, coordinateZoneID);
-            for (int i = 0; i < gridCodes.Length; i++)
+            for (int i = 0; i < numGrids; i++)
             {
                 var gridCode = gridCodes.At(i);
                 // Level4以上の(細かい)MeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
@@ -89,8 +90,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                                     break;
                                 }
 
+                                var next = upper.Upper();
                                 upper.Dispose();
-                                upper = upper.Upper();
+                                upper = next;
                             }
                             upper.Dispose();
                         }
@@ -102,7 +104,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                 if (isDuplicate) continue;
                 var drawer = new GridCodeGizmoDrawer();
                 drawer.SetUp(gridCode, outGeoReference);
-                this.meshCodeDrawers.Add(drawer);
+                this.gridCodeDrawers.Add(drawer);
             }
 
             this.areaLod = new AreaLodController(datasetSourceConfig, outGeoReference, gridCodes);
@@ -111,11 +113,11 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             this.areaSelectionGizmoDrawer.SetUp();
         }
         
-        public GridCodeList SelectedGridCodes => GridCodeList.CreateFromGridCodeDrawers(this.meshCodeDrawers);
+        public GridCodeList SelectedGridCodes => GridCodeList.CreateFromGridCodeDrawers(this.gridCodeDrawers);
 
         public void ResetSelectedArea()
         {
-            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+            foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers)
             {
                 meshCodeGizmoDrawer.ResetSelectedArea();
             }
@@ -123,7 +125,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 
         public bool IsSelectedArea()
         {
-            return 0 < this.meshCodeDrawers.Where(meshCodeDrawer => meshCodeDrawer.IsSelectedArea()).ToList().Count;
+            return 0 < this.gridCodeDrawers.Where(meshCodeDrawer => meshCodeDrawer.IsSelectedArea()).ToList().Count;
         }
 
         public void SwitchLodIcon(int lod, bool isCheck)
@@ -141,7 +143,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             this.areaLod.Update(GSIMapLoaderZoomSwitch.CalcCameraExtent(sceneView.camera, this.geoReference));
             this.areaLod.DrawSceneGUI(sceneView.camera);
 
-            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+            foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers)
             {
                 meshCodeGizmoDrawer.DrawSceneGUI();
             }
@@ -150,7 +152,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
 
         private void OnDrawGizmos()
         {
-            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers)
+            foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers)
             {
                 // 大きな粒度の線は優先して表示されるようにします。
                 meshCodeGizmoDrawer.Priority = 999 - 
@@ -159,7 +161,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             }
 
             var gizmosToDraw = new List<BoxGizmoDrawer>();
-            gizmosToDraw.AddRange(this.meshCodeDrawers);
+            gizmosToDraw.AddRange(this.gridCodeDrawers);
             gizmosToDraw.Add(this.areaSelectionGizmoDrawer);
             BoxGizmoDrawer.DrawWithPriority(gizmosToDraw);
         }
@@ -201,7 +203,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                     {
                         if (this.isLeftMouseButtonPressed)
                         {
-                            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers) 
+                            foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
                                 #if UNITY_EDITOR
                                 meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition);
@@ -210,7 +212,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                         }
                         else if (this.isLeftMouseButtonMoved || this.isLeftMouseAndShiftButtonMoved)
                         {
-                            foreach (var meshCodeGizmoDrawer in this.meshCodeDrawers) 
+                            foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
                                 #if UNITY_EDITOR
                                 meshCodeGizmoDrawer.SetSelectArea(this.areaSelectionGizmoDrawer.AreaSelectionMin, this.areaSelectionGizmoDrawer.AreaSelectionMax, this.isLeftMouseButtonMoved);
