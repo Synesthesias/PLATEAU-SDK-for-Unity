@@ -23,16 +23,17 @@ namespace PLATEAU.CityImport.Config
         }
 
         /// <summary>
-        /// 範囲選択画面の<see cref="MeshCodeGizmoDrawer"/>から選択範囲を生成します。
+        /// 範囲選択画面の<see cref="GridCodeGizmoDrawer"/>から選択範囲を生成します。
         /// </summary>
-        internal static GridCodeList CreateFromMeshCodeDrawers(IEnumerable<MeshCodeGizmoDrawer> drawers)
+        internal static GridCodeList CreateFromGridCodeDrawers(IEnumerable<GridCodeGizmoDrawer> drawers)
         {
             var gridCodes = NativeVectorGridCode.Create();
             foreach (var drawer in drawers)
             {
-                foreach (var meshID in drawer.GetSelectedMeshIds())
+                foreach (var gridID in drawer.GetSelectedGridIds())
                 {
-                    gridCodes.Add(GridCode.Create(meshID, false));
+                    using var gridCode = GridCode.Create(gridID);
+                    gridCodes.AddCopyOf(gridCode);
                 }
             }
 
@@ -47,7 +48,8 @@ namespace PLATEAU.CityImport.Config
             var gridCodes = NativeVectorGridCode.Create();
             foreach (var gridStr in gridCodesStr)
             {
-                gridCodes.Add(GridCode.Create(gridStr, false));
+                using var gridCode = GridCode.Create(gridStr);
+                gridCodes.AddCopyOf(gridCode);
             }
 
             return new GridCodeList(gridCodes);
@@ -67,7 +69,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// データセットのうち範囲を取り出したとき、利用可能なパッケージとそのLODを求めます。
         /// </summary>
-        public PackageToLodDict CalcAvailablePackageLodInMeshCodes(IDatasetSourceConfig datasetSourceConfig)
+        public PackageToLodDict CalcAvailablePackageLodInGridCodes(IDatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessorAll = datasetSource.Accessor;
@@ -94,7 +96,7 @@ namespace PLATEAU.CityImport.Config
         /// </summary>
         public GridCode At(int index)
         {
-            return GridCode.Create(gridCodes.At(index).StringCode);
+            return gridCodes.At(index);
         }
 
         /// <summary>
@@ -108,8 +110,8 @@ namespace PLATEAU.CityImport.Config
             // 選択エリアを囲むExtentを計算
             var extent = new Extent
             {
-                Min = new GeoCoordinate(999999999, 999999999, 0.0),
-                Max = new GeoCoordinate(-999999999, -999999999, 0.0)
+                Min = new GeoCoordinate(double.MaxValue, double.MaxValue, 0.0),
+                Max = new GeoCoordinate(double.MinValue, double.MinValue, 0.0)
             };
             for (int i = 0; i < gridCodes.Length; i++)
             {

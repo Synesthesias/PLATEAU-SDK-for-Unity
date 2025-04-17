@@ -81,6 +81,7 @@ namespace PLATEAU.Dataset
         /// GMLファイルのGridCodeを返します。
         /// ただし、誤った形式のGMLファイル名である等の理由でGridCodeを読み取れなかった場合は
         /// 戻り値の isValid が false になります。
+        /// 戻り値が解放されるためにusingを付けてください。
         /// </summary>
         public GridCode GridCode
         {
@@ -89,6 +90,7 @@ namespace PLATEAU.Dataset
                 ThrowIfDisposed();
                 var gridCodePtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
                     NativeMethods.plateau_gml_file_get_grid_code);
+                // gridCodePtrの寿命管理はC++側に任せるのでここでは解放しませんが、copiedはC#から解放する必要があります。
                 var copied =  GridCode.CopyFrom(gridCodePtr);
                 return copied;
             }

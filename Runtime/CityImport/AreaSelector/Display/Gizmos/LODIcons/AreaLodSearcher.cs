@@ -13,32 +13,32 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
     public class AreaLodSearcher
     {
         // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
-        private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
+        private readonly ConcurrentDictionary<string, PackageToLodDict> gridCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
         public AreaLodSearcher(IDatasetSourceConfig datasetSourceConfig)
         {
-            this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
+            this.gridCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
             this.datasetSource = DatasetSource.Create(datasetSourceConfig);
         }
         
         
         /// <summary>
-        /// 与えられたメッシュコードと、その上位に含まれるパッケージとLODを返します。
+        /// 与えられたグリッドコードと、その上位に含まれるパッケージとLODを返します。
         /// </summary>
         public PackageToLodDict LoadLodsInMeshCode(string gridCodeStr)
         {
 
-            SearchLodsInMeshCode(gridCodeStr);
+            SearchLodsInGridCode(gridCodeStr);
             
-            if (this.meshCodeToPackageLodDict.TryGetValue(gridCodeStr, out var packageToLodDict))
+            if (this.gridCodeToPackageLodDict.TryGetValue(gridCodeStr, out var packageToLodDict))
             {
-                // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
+                // 上位のグリッドコードがあれば、そのパッケージとLODも戻り値に加えます。
                 var gridCode = GridCode.Create(gridCodeStr);
                 if (gridCode.IsNormalGmlLevel)
                 {
                     using var upperGridCode = gridCode.Upper();
-                    if (this.meshCodeToPackageLodDict.TryGetValue(upperGridCode.StringCode, out var packageToLodDictLevel2))
+                    if (this.gridCodeToPackageLodDict.TryGetValue(upperGridCode.StringCode, out var packageToLodDictLevel2))
                     {
                         packageToLodDict.MargeDict(packageToLodDictLevel2);
                     }
@@ -50,9 +50,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
 
         /// <summary>
         /// グリッドコードと、その上位のグリッドコードに含まれるパッケージとLODを検索します。
-        /// <see cref="meshCodeToPackageLodDict"/> に格納されます。
+        /// <see cref="gridCodeToPackageLodDict"/> に格納されます。
         /// </summary>
-        private void SearchLodsInMeshCode(string gridCodeStr)
+        private void SearchLodsInGridCode(string gridCodeStr)
         {
             
             var gridCodes = new List<string> { gridCodeStr };
@@ -64,10 +64,10 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
                 gridCodes.Add(upper.StringCode);
             }
 
-            foreach (string currentMeshCode in gridCodes)
+            foreach (string currentGridCode in gridCodes)
             {
                 // すでに検索済みデータがあればそれを利用します。
-                this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing);
+                this.gridCodeToPackageLodDict.TryGetValue(currentGridCode, out var existing);
                 if (existing != null) continue;
                 
                 // LODを検索します。
@@ -81,16 +81,16 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
                     int maxLod = -1;
                     foreach (var gml in gmls)
                     {
-                        var gmlGridCode = gml.GridCode;
+                        using var gmlGridCode = gml.GridCode;
                         if (!gmlGridCode.IsValid) continue;
-                        if (gmlGridCode.ToString() != currentMeshCode) continue;
+                        if (gmlGridCode.ToString() != currentGridCode) continue;
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。
                         maxLod = gml.GetMaxLod();
                     }
                     // 検索結果を追加します。
-                    this.meshCodeToPackageLodDict.AddOrUpdate(currentMeshCode,
+                    this.gridCodeToPackageLodDict.AddOrUpdate(currentGridCode,
                         _ =>
                         {
                             var d = new PackageToLodDict();

@@ -9,6 +9,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Util;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
     {
         private const int MouseLeftButton = 0;
         /// <summary> 地域メッシュの範囲表示です。 </summary>
-        private readonly List<MeshCodeGizmoDrawer> meshCodeDrawers = new();
+        private readonly List<GridCodeGizmoDrawer> meshCodeDrawers = new();
         /// <summary> 地域メッシュごとの利用可能LOD表示です。 </summary>
         private AreaLodController areaLod;
         private GeoReference geoReference;
@@ -40,6 +41,10 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             NativeVectorGridCode gridCodes, IDatasetSourceConfig datasetSourceConfig,
             int coordinateZoneID, out GeoReference outGeoReference)
         {
+            if (gridCodes.Length == 0)
+            {
+                throw new ArgumentException("グリッドコードの数が0です。");
+            }
             using var progressBar = new ProgressBar();
             progressBar.Display("範囲座標を計算中です...", 0.5f);
             
@@ -66,6 +71,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             {
                 var gridCode = gridCodes.At(i);
                 // Level4以上の(細かい)MeshCodeであって、別のLevel3の範囲に含まれているものは重複のため除外します。
+                bool isDuplicate = false;
                 if (gridCode.IsSmallerThanNormalGml)
                 {
                     for (int j = 0; j < gridCodes.Length; j++)
@@ -78,7 +84,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                             {
                                 if (upper.StringCode == other.StringCode)
                                 {
-                                    continue;// 重複しているので除外
+                                    isDuplicate = true;
+                                    upper.Dispose();
+                                    break;
                                 }
 
                                 upper.Dispose();
@@ -86,11 +94,13 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                             }
                             upper.Dispose();
                         }
+
+                        if (isDuplicate) break;
                     }
-                    continue;
                 }
-                
-                var drawer = new MeshCodeGizmoDrawer();
+
+                if (isDuplicate) continue;
+                var drawer = new GridCodeGizmoDrawer();
                 drawer.SetUp(gridCode, outGeoReference);
                 this.meshCodeDrawers.Add(drawer);
             }
@@ -101,7 +111,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             this.areaSelectionGizmoDrawer.SetUp();
         }
         
-        public GridCodeList SelectedGridCodes => GridCodeList.CreateFromMeshCodeDrawers(this.meshCodeDrawers);
+        public GridCodeList SelectedGridCodes => GridCodeList.CreateFromGridCodeDrawers(this.meshCodeDrawers);
 
         public void ResetSelectedArea()
         {

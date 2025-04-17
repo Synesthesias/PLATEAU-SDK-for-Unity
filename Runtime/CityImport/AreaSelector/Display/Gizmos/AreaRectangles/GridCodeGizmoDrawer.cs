@@ -11,9 +11,9 @@ using UnityEngine;
 namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 {
     /// <summary>
-    /// <see cref="MeshCode"/> に応じた四角形のギズモを表示します。
+    /// <see cref="GridCode"/> に応じた四角形のギズモを表示します。
     /// </summary>
-    internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
+    internal class GridCodeGizmoDrawer : BoxGizmoDrawer
     {
         
         private int divideNumColumn;
@@ -39,6 +39,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         
         private GeoReference geoReference;
         private List<bool> selectedAreaList;
+        private const int GridCodeDivideNum = 4;
         
         
         // FIXME RowがXでColumnがZって直感に反する気がする。逆では？
@@ -122,25 +123,25 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 BoxColor = BoxColorNormalLevel3;
                 divideNumColumn = 4;
                 divideNumRow = 4;
-            }else if (GridCode.IsSmallerThanNormalGml) // 小さいメッシュコード
+                return;
+            }
+            if (GridCode.IsSmallerThanNormalGml) // 小さいメッシュコード
             {
                 LineWidth = LineWidthLevel4;
                 BoxColor = BoxColorNormalLevel4;
                 divideNumColumn = 2;
                 divideNumRow = 2;
-                
-                
-            }else // 大きいメッシュコード
-            {
-                LineWidth = LineWidthLevel2;
-                BoxColor = BoxColorNormalLevel2;
-                divideNumColumn = 4;
-                divideNumRow = 4;
+                return;
             }
-            
+
+            // 大きいメッシュコード
+            LineWidth = LineWidthLevel2;
+            BoxColor = BoxColorNormalLevel2;
+            divideNumColumn = 4;
+            divideNumRow = 4;
         }
 
-        public List<string> GetSelectedMeshIds()
+        public List<string> GetSelectedGridIds()
         {
             List<string> meshIds = new();
             if (GridCode.IsNormalGmlLevel)
@@ -157,7 +158,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 }
             }else if (GridCode.IsSmallerThanNormalGml)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < GridCodeDivideNum; i++)
                 {
                     if (selectedAreaList[i])
                     {
@@ -236,23 +237,23 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         /// </summary>
         public override void DrawSceneGUI()
         {
-            DrawMeshCodeId();
+            DrawGridCodeId();
         }
         
-        private void DrawMeshCodeId()
+        private void DrawGridCodeId()
         {
             if (!GridCode.IsValid) return;
-            var meshCodeScreenWidth = CalcMeshCodeScreenWidth();
+            var gridCodeScreenWidth = CalcGridCodeScreenWidth();
 
             // LODアイコンと被らないように、下:上=3:7 の位置にします。
             var textPosWorld = new Vector3(this.CenterPos.x , this.CenterPos.y, AreaMin.z * 0.7f + AreaMax.z * 0.3f);
             
             
-            if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && meshCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
+            if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && gridCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
                 DrawString(GridCode.StringCode, textPosWorld, BoxColorNormalLevel2, ReturnFontSize());
             }
-            else if(GridCode.IsNormalGmlLevel && meshCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
+            else if(GridCode.IsNormalGmlLevel && gridCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
                 DrawString(GridCode.StringCode, textPosWorld , BoxColorNormalLevel3, ReturnFontSizeBlue());
             }
@@ -329,14 +330,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         
         int ReturnFontSize()
         {
-            return (int)(Mathf.Clamp(CalcMeshCodeScreenWidth(), 15f, 30f));
+            return (int)(Mathf.Clamp(CalcGridCodeScreenWidth(), 15f, 30f));
         }
         int ReturnFontSizeBlue()
         {
-            return (int)(Mathf.Clamp(8f+8f*(CalcMeshCodeScreenWidth() - 45f)/100f, 8f, 16f));
+            return (int)(Mathf.Clamp(8f+8f*(CalcGridCodeScreenWidth() - 45f)/100f, 8f, 16f));
         }
 
-        private float CalcMeshCodeScreenWidth()
+        private float CalcGridCodeScreenWidth()
         {
             var camera = SceneView.currentDrawingSceneView.camera;
             var extent = GridCode.Extent;

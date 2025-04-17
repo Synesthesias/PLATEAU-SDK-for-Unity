@@ -41,6 +41,10 @@ namespace PLATEAU.Dataset
             return GetGmlFiles((PredefinedCityModelPackage)allPackages);
         }
 
+        /// <summary>
+        /// C++側のvectorとしてのGridCodeを返します。
+        /// 注意：受け取る側でusingを付けるなど、廃棄されるようにしてください。
+        /// </summary>
         public NativeVectorGridCode GridCodes
         {
             get
@@ -79,7 +83,7 @@ namespace PLATEAU.Dataset
             var nativeGridCodes = NativeVectorGridCode.Create();
             foreach (var gridCode in gridCodes)
             {
-                nativeGridCodes.Add(gridCode);
+                nativeGridCodes.AddCopyOf(gridCode);
             }
 
             var result = NativeMethods.plateau_i_dataset_accessor_filter_by_grid_codes(

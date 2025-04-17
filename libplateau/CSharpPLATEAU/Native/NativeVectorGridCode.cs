@@ -7,7 +7,8 @@ namespace PLATEAU.Native
 {
     /// <summary>
     /// GridCodeのC++ Vectorです。
-    /// 中身はVectorの廃棄時の削除するので、それまでは中身が削除されないよう注意してください。
+    /// 中身はVectorの廃棄時に削除されます。
+    /// ダングリングを防ぐため、vectorへの追加・参照時はコピーを渡します。
     /// </summary>
     public class NativeVectorGridCode : NativeVectorDisposableBase<GridCode>
     {
@@ -21,6 +22,9 @@ namespace PLATEAU.Native
             return new NativeVectorGridCode(ptr);
         }
 
+        /// <summary>
+        /// インデックスでアクセスし、そのコピーを返します。
+        /// </summary>
         public override GridCode At(int index)
         {
             ThrowIfDisposed();
@@ -40,11 +44,18 @@ namespace PLATEAU.Native
             }
         }
 
-        public void Add(GridCode gridCode)
+        /// <summary>
+        /// 追加します。ただし、無効なGridCodeの場合は何もしません。
+        /// </summary>
+        public void AddCopyOf(GridCode gridCode)
         {
-            gridCode.PreventAutoDispose();
+            if (!gridCode.IsValid) return;
+            // ダングリングを防ぐためコピーを追加します。
+            var copied = GridCode.CopyFrom(gridCode.Handle);
+            // vectorが廃棄されるまでGridCodeが廃棄されないようにします。
+            copied.PreventAutoDispose();
             var result = NativeMethods.plateau_vector_grid_code_push_back_value(
-                Handle, gridCode.Handle);
+                Handle, copied.Handle);
             DLLUtil.CheckDllError(result);
         }
 

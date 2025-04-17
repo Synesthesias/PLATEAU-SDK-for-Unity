@@ -62,7 +62,7 @@ namespace PLATEAU.CityImport.AreaSelector
             NativeVectorGridCode gridCodes;
             try
             {
-                gridCodes = GatherMeshCodes(this.confBeforeAreaSelect.DatasetSourceConfig);
+                gridCodes = GatherGridCodes(this.confBeforeAreaSelect.DatasetSourceConfig);
             }
             catch (Exception e)
             {
@@ -90,6 +90,7 @@ namespace PLATEAU.CityImport.AreaSelector
 #if (UNITY_EDITOR && UNITY_2019_2_OR_NEWER)
             SceneVisibilityManager.instance.DisableAllPicking();
 #endif
+            gridCodes.Dispose();
         }
 
         private void SetInitialCamera(Extent entireExtentArg)
@@ -141,14 +142,15 @@ namespace PLATEAU.CityImport.AreaSelector
             this.mapLoader?.Dispose();
         }
 
-        private static Extent CalcExtentCoversAllMeshCodes(IEnumerable<GridCode> gridCodes)
+        private static Extent CalcExtentCoversAllMeshCodes(NativeVectorGridCode gridCodes)
         {
             var entireMin = new GeoCoordinate(90, 180, 9999);
             var entireMax = new GeoCoordinate(-90, -180, -9999);
-            foreach (var meshCode in gridCodes)
+            for(int i=0; i<gridCodes.Length; i++)
             {
-                var areaMin = meshCode.Extent.Min;
-                var areaMax = meshCode.Extent.Max;
+                using var gridCode = gridCodes.At(i); // 廃棄を明示
+                var areaMin = gridCode.Extent.Min;
+                var areaMax = gridCode.Extent.Max;
                 entireMin = GeoCoordinate.Min(entireMin, areaMin);
                 entireMax = GeoCoordinate.Max(entireMax, areaMax);
             }
@@ -157,7 +159,7 @@ namespace PLATEAU.CityImport.AreaSelector
             return entireExtent;
         }
 
-        private static NativeVectorGridCode GatherMeshCodes(IDatasetSourceConfig datasetSourceConfig)
+        private static NativeVectorGridCode GatherGridCodes(IDatasetSourceConfig datasetSourceConfig)
         {
             using var datasetSource = DatasetSource.Create(datasetSourceConfig);
             using var accessor = datasetSource.Accessor;

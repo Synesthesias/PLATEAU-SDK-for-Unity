@@ -86,7 +86,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
-        protected bool IsBoxIntersectXZ(MeshCodeGizmoDrawer other)
+        protected bool IsBoxIntersectXZ(GridCodeGizmoDrawer other)
         {
             var otherPos = other.CenterPos;
             var otherSize = other.Size;

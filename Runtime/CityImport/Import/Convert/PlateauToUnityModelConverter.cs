@@ -143,6 +143,7 @@ namespace PLATEAU.CityImport.Import.Convert
                 var extent = code.Extent;
                 extent.Min.Height = -999999.0;
                 extent.Max.Height = 999999.0;
+                code.Dispose(); // 廃棄を明示
                 return extent;
             }).ToList();
             MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);

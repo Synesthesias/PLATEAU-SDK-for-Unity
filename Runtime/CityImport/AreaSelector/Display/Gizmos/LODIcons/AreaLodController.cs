@@ -62,7 +62,8 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
             GridCode nearestGridCode = null;
             foreach (var gridCode in this.viewDict.Keys)
             {
-                if (!gridCode.IsNormalGmlLevel && gridCode.IsSmallerThanNormalGml) continue;
+                // 広域は飛ばします
+                if (!gridCode.IsNormalGmlLevel && !gridCode.IsSmallerThanNormalGml) continue;
                 // 読込済みのものは飛ばします
                 if (this.viewDict.TryGetValue(gridCode, out var areaLodView) && areaLodView != null) continue;
 

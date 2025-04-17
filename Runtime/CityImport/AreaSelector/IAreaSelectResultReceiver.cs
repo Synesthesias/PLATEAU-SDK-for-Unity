@@ -24,7 +24,7 @@ namespace PLATEAU.CityImport.AreaSelector
         {
             ConfBeforeAreaSelect = confBeforeAreaSelect;
             AreaGridCodes = areaGridCodes;
-            PackageToLodDict = areaGridCodes.CalcAvailablePackageLodInMeshCodes(ConfBeforeAreaSelect.DatasetSourceConfig);
+            PackageToLodDict = areaGridCodes.CalcAvailablePackageLodInGridCodes(ConfBeforeAreaSelect.DatasetSourceConfig);
         }
 
     }
