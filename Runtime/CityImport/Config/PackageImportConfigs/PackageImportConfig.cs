@@ -133,7 +133,7 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
-        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID)
+        public virtual MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, GmlFile gml = null)
         {
             return new MeshExtractOptions(
                 referencePoint: referencePoint,
@@ -151,7 +151,9 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
                 texturePackingResolution: (uint)ConfExtendable.TexturePackingResolution.ToPixelCount(),
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
                 mapTileZoomLevel: 15, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
-                mapTileURL: ReliefImportConfig.DefaultMapTileUrl); // 土地専用の設定
+                mapTileURL: ReliefImportConfig.DefaultMapTileUrl, // 土地専用の設定
+                epsgCode: gml?.Epsg ?? 6697 // 平面座標系の場合の基準座標取得用
+                ); 
         }
 
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)

@@ -115,6 +115,24 @@ namespace PLATEAU.Geometries
             return outXyz;
         }
 
+        public PlateauVector3d Project(PlateauVector3d point)
+        {
+            var result = NativeMethods.plateau_geo_reference_project_point(
+                Handle, out var outXyz,
+                point);
+            DLLUtil.CheckDllError(result);
+            return outXyz;
+        }
+
+        public PlateauVector3d ProjectWithoutAxisConvert(PlateauVector3d point)
+        {
+            var result = NativeMethods.plateau_geo_reference_project_without_axis_convert(
+                Handle, out var outXyz,
+                point);
+            DLLUtil.CheckDllError(result);
+            return outXyz;
+        }
+
         public GeoCoordinate Unproject(PlateauVector3d point)
         {
             var result = NativeMethods.plateau_geo_reference_unproject(
@@ -122,6 +140,15 @@ namespace PLATEAU.Geometries
                 point);
             DLLUtil.CheckDllError(result);
             return outLatLon;
+        }
+
+        public PlateauVector3d Convert(PlateauVector3d point, bool convertAxis, double epsg)
+        {
+            var result = NativeMethods.plateau_geo_reference_convert(
+                Handle, out var outXyz,
+                point, convertAxis, epsg);
+            DLLUtil.CheckDllError(result);
+            return outXyz;
         }
 
         public static PlateauVector3d ConvertAxisToENU(CoordinateSystem axis, PlateauVector3d vertex)
@@ -212,6 +239,24 @@ namespace PLATEAU.Geometries
                 [In] IntPtr geoReferencePtr,
                 out GeoCoordinate outLatLon,
                 PlateauVector3d point);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_project_point(
+                [In] IntPtr geoReferencePtr,
+                out PlateauVector3d outXyz,
+                PlateauVector3d point);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_project_without_axis_convert(
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outXyz,
+            PlateauVector3d point);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_geo_reference_convert(
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outXyz,
+            PlateauVector3d point, [MarshalAs(UnmanagedType.U1)] bool convertAxis, double epsg);
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_geo_reference_get_reference_point(

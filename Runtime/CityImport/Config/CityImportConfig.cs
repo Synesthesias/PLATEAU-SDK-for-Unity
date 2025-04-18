@@ -112,10 +112,10 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// インポート設定について、C++のstructに変換します。
         /// </summary>
-        internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package)
+        internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package, GmlFile gml)
         {
             var packageConf = GetConfigForPackage(package);
-            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID);
+            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID, gml);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
