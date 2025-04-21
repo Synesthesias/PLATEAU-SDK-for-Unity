@@ -29,7 +29,7 @@ namespace PLATEAU.CityImport.AreaSelector
             areaSelectResult = areaSelectResultArg;
             areaSelectResultReceiver = areaSelectResultReceiverArg;
             
-            EditorSceneManager.sceneOpened += OnBackToPrevScene;
+            EditorSceneManager.sceneOpened += OnBackToPrevScene; // 元のシーンに戻るときに一度だけ実行する処理
             EditorSceneManager.OpenScene(prevScenePath);
             // MacOSだと、範囲選択のときに PlateauWindow が背面に回ってしまい見失いがちなので再表示します。
             prevEditorWindow.Focus();
@@ -37,6 +37,9 @@ namespace PLATEAU.CityImport.AreaSelector
 #endif
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// 範囲選択画面を終了して元のシーンに戻るときに実行される処理です。
+        /// </summary>
         private static void OnBackToPrevScene(Scene scene, OpenSceneMode __)
         {
             EditorSceneManager.sceneOpened -= OnBackToPrevScene;
@@ -51,9 +54,15 @@ namespace PLATEAU.CityImport.AreaSelector
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
+            if (areaSelectResult.Reason == AreaSelectResult.ResultReason.Cancel)
+            {
+                Debug.Log("範囲選択はキャンセルされました。");
+                return;
+            }
             if (areaSelectResult.AreaGridCodes.Count == 0)
             {
                 Debug.Log("地域は選択されませんでした。");
+                return;
             }
             areaSelectResultReceiver.ReceiveResult(areaSelectResult);
         }

@@ -80,7 +80,7 @@ namespace PLATEAU.CityImport.Config
             int gmlCount = gmlFiles.Length;
             if (gmlCount == 0)
             {
-                throw new Exception("GMLがありません。");
+                return ret;
             }
             using var progressBar = new ProgressBar();
             for (int i = 0; i < gmlCount; i++)

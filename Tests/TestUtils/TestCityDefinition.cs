@@ -91,7 +91,7 @@ namespace PLATEAU.Tests.TestUtils
                     ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
                     : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
             
-            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, CoordinateZoneId), AreaGridCodes);
+            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, CoordinateZoneId), AreaGridCodes, AreaSelectResult.ResultReason.Confirm);
             var conf = CityImportConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
             
             
