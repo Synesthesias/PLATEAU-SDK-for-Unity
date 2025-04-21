@@ -51,7 +51,7 @@ namespace PLATEAU.CityImport.AreaSelector
         /// </summary>
         private static void PassAreaSelectDataToBehaviour()
         {
-            if (areaSelectResult.AreaMeshCodes.Count == 0)
+            if (areaSelectResult.AreaGridCodes.Count == 0)
             {
                 Debug.Log("地域は選択されませんでした。");
             }

@@ -12,31 +12,33 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
     /// </summary>
     public class AreaLodSearcher
     {
-        // MeshCode <- (1対多) <- [ Package種, (多)LODs ]
-        private readonly ConcurrentDictionary<string, PackageToLodDict> meshCodeToPackageLodDict;
+        // GridCode <- (1対多) <- [ Package種, (多)LODs ]
+        private readonly ConcurrentDictionary<string, PackageToLodDict> gridCodeToPackageLodDict;
         private readonly DatasetSource datasetSource;
 
         public AreaLodSearcher(IDatasetSourceConfig datasetSourceConfig)
         {
-            this.meshCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
+            this.gridCodeToPackageLodDict = new ConcurrentDictionary<string, PackageToLodDict>();
             this.datasetSource = DatasetSource.Create(datasetSourceConfig);
         }
         
         
         /// <summary>
-        /// 与えられたメッシュコードと、その上位に含まれるパッケージとLODを返します。
+        /// 与えられたグリッドコードと、その上位に含まれるパッケージとLODを返します。
         /// </summary>
-        public PackageToLodDict LoadLodsInMeshCode(string meshCode)
+        public PackageToLodDict LoadLodsInGridCode(string gridCodeStr)
         {
 
-            SearchLodsInMeshCode(meshCode);
+            SearchLodsInGridCode(gridCodeStr);
             
-            if (this.meshCodeToPackageLodDict.TryGetValue(meshCode, out var packageToLodDict))
+            if (this.gridCodeToPackageLodDict.TryGetValue(gridCodeStr, out var packageToLodDict))
             {
-                // 上位のメッシュコードがあれば、そのパッケージとLODも戻り値に加えます。
-                if (MeshCode.Parse(meshCode).Level == 3)
+                // 上位のグリッドコードがあれば、そのパッケージとLODも戻り値に加えます。
+                var gridCode = GridCode.Create(gridCodeStr);
+                if (gridCode.IsNormalGmlLevel)
                 {
-                    if (this.meshCodeToPackageLodDict.TryGetValue(MeshCode.Parse(meshCode).Level2(), out var packageToLodDictLevel2))
+                    using var upperGridCode = gridCode.Upper();
+                    if (this.gridCodeToPackageLodDict.TryGetValue(upperGridCode.StringCode, out var packageToLodDictLevel2))
                     {
                         packageToLodDict.MargeDict(packageToLodDictLevel2);
                     }
@@ -47,21 +49,25 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         }
 
         /// <summary>
-        /// メッシュコードと、その上位のメッシュコードに含まれるパッケージとLODを検索します。
-        /// <see cref="meshCodeToPackageLodDict"/> に格納されます。
+        /// グリッドコードと、その上位のグリッドコードに含まれるパッケージとLODを検索します。
+        /// <see cref="gridCodeToPackageLodDict"/> に格納されます。
         /// </summary>
-        private void SearchLodsInMeshCode(string meshCodeStr)
+        private void SearchLodsInGridCode(string gridCodeStr)
         {
             
-            var meshCodes = new List<string> { meshCodeStr };
-            // 上位のメッシュコードも対象とします。
-            var parsedMeshCode = MeshCode.Parse(meshCodeStr);
-            if(parsedMeshCode.Level == 3) meshCodes.Add(parsedMeshCode.Level2());
+            var gridCodes = new List<string> { gridCodeStr };
+            // 上位のグリッドコードも対象とします。
+            var gridCode = GridCode.Create(gridCodeStr);
+            if (gridCode.IsNormalGmlLevel)
+            {
+                using var upper = gridCode.Upper();
+                gridCodes.Add(upper.StringCode);
+            }
 
-            foreach (string currentMeshCode in meshCodes)
+            foreach (string currentGridCode in gridCodes)
             {
                 // すでに検索済みデータがあればそれを利用します。
-                this.meshCodeToPackageLodDict.TryGetValue(currentMeshCode, out var existing);
+                this.gridCodeToPackageLodDict.TryGetValue(currentGridCode, out var existing);
                 if (existing != null) continue;
                 
                 // LODを検索します。
@@ -75,16 +81,16 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
                     int maxLod = -1;
                     foreach (var gml in gmls)
                     {
-                        var gmlMeshCode = gml.MeshCode;
-                        if (!gmlMeshCode.IsValid) continue;
-                        if (gmlMeshCode.ToString() != currentMeshCode) continue;
+                        using var gmlGridCode = gml.GridCode;
+                        if (!gmlGridCode.IsValid) continue;
+                        if (gmlGridCode.StringCode != currentGridCode) continue;
                         
                         // ローカルの場合、ファイルの中身を検索するので時間がかかります。
                         // サーバーの場合、APIサーバーに問い合わせます。
                         maxLod = gml.GetMaxLod();
                     }
                     // 検索結果を追加します。
-                    this.meshCodeToPackageLodDict.AddOrUpdate(currentMeshCode,
+                    this.gridCodeToPackageLodDict.AddOrUpdate(currentGridCode,
                         _ =>
                         {
                             var d = new PackageToLodDict();

@@ -21,7 +21,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// 範囲選択で選択された範囲です。
         /// </summary>
-        public MeshCodeList AreaMeshCodes { get; private set; }
+        public GridCodeList AreaGridCodes { get; private set; }
         
         
         /// <summary>
@@ -56,8 +56,8 @@ namespace PLATEAU.CityImport.Config
             var ret = CityImportConfig.CreateDefault();
             ret.ConfBeforeAreaSelect = result.ConfBeforeAreaSelect;
             ret.InitWithPackageLodsDict(result.PackageToLodDict);
-            ret.AreaMeshCodes = result.AreaMeshCodes;
-            ret.ReferencePoint = ret.AreaMeshCodes.ExtentCenter(ret.ConfBeforeAreaSelect.CoordinateZoneID);
+            ret.AreaGridCodes = result.AreaGridCodes;
+            ret.ReferencePoint = ret.AreaGridCodes.ExtentCenter(ret.ConfBeforeAreaSelect.CoordinateZoneID);
             return ret;
         }
 
@@ -79,7 +79,7 @@ namespace PLATEAU.CityImport.Config
             // 地域ID(メッシュコード)で絞り込みます。
 
             using var datasetSource = DatasetSource.Create(ConfBeforeAreaSelect.DatasetSourceConfig);
-            using var datasetAccessor = datasetSource.Accessor.FilterByMeshCodes(AreaMeshCodes.Data);
+            using var datasetAccessor = datasetSource.Accessor.FilterByGridCodes(AreaGridCodes.GridCodes);
 
             // パッケージ種ごとの設定で「ロードする」にチェックが入っているパッケージ種で絞り込みます。
             var targetPackages = PackageImportConfigDict.PackagesToLoad();

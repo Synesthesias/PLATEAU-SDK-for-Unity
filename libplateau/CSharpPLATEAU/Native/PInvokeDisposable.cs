@@ -12,20 +12,36 @@ namespace PLATEAU.Native
     {
         public IntPtr Handle { get; }
         private bool isDisposed;
+        private bool autoDispose;
 
         protected abstract void DisposeNative();
 
-        protected PInvokeDisposable(IntPtr handle)
+        /// <summary>
+        /// <paramref name="handle"/>のポインタ位置にC++の実体インスタンスがあるとしてC#と結びつけます。
+        /// autoDisposeについては<see cref="PreventAutoDispose"/>のコメントを参照してください。
+        /// </summary>
+        protected PInvokeDisposable(IntPtr handle, bool autoDispose = true)
         {
             Handle = handle;
+            this.autoDispose = autoDispose;
         }
         
         public void Dispose()
         {
+            if (!this.autoDispose) return;
             if (this.isDisposed) return;
             DisposeNative();
             GC.SuppressFinalize(this);
             this.isDisposed = true;
+        }
+        
+        /// <summary>
+        /// 自身ではのC++リソース廃棄を行わないようにします。
+        /// 用途は別のタイミングで廃棄したいとき――例えば自身を保持するコンテナクラスにメモリ管理を任せている時などに使います。
+        /// </summary>
+        public void PreventAutoDispose()
+        {
+            this.autoDispose = false;
         }
 
         protected void ThrowIfDisposed()

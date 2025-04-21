@@ -11,9 +11,9 @@ using UnityEngine;
 namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 {
     /// <summary>
-    /// <see cref="MeshCode"/> に応じた四角形のギズモを表示します。
+    /// <see cref="GridCode"/> に応じた四角形のギズモを表示します。
     /// </summary>
-    internal class MeshCodeGizmoDrawer : BoxGizmoDrawer
+    internal class GridCodeGizmoDrawer : BoxGizmoDrawer
     {
         
         private int divideNumColumn;
@@ -37,9 +37,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             "33", "34", "43", "44",
         };
         
-        public MeshCode MeshCode { get; private set; }
         private GeoReference geoReference;
         private List<bool> selectedAreaList;
+        private const int GridCodeDivideNum = 4;
         
         
         // FIXME RowがXでColumnがZって直感に反する気がする。逆では？
@@ -74,9 +74,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         /// <summary>
         /// メッシュコードに対応したギズモを表示するようにします。
         /// </summary>
-        public void SetUp(MeshCode meshCode, GeoReference geoReferenceArg)
+        public void SetUp(GridCode gridCode, GeoReference geoReferenceArg)
         {
-            var extent = meshCode.Extent; // extent は緯度,経度,高さ
+            var extent = gridCode.Extent; // extent は緯度,経度,高さ
 
             this.geoReference = geoReferenceArg;
 
@@ -91,8 +91,8 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 (float)Math.Abs(max.X - min.X),
                 1,
                 (float)Math.Abs(max.Z - min.Z));
-            Init(centerPosTmp, sizeTmp, meshCode);
-            MeshCode = meshCode;
+            Init(centerPosTmp, sizeTmp, gridCode);
+            GridCode = gridCode;
             
             ApplyStyle();
 
@@ -112,70 +112,67 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         public bool IsSelectedArea()
         {
-            return 0 < selectedAreaList.Where(selectedArea => selectedArea).ToList().Count;
+            return selectedAreaList.Any(selected => selected);
         }
         
         private void ApplyStyle()
         {
-            switch (MeshCode.Level)
+            if (GridCode.IsNormalGmlLevel) // 通常のメッシュコード
             {
-                case 2:
-                    LineWidth = LineWidthLevel2;
-                    BoxColor = BoxColorNormalLevel2;
-                    divideNumColumn = 4;
-                    divideNumRow = 4;
-                    break;
-                case 3:
-                    LineWidth = LineWidthLevel3;
-                    BoxColor = BoxColorNormalLevel3;
-                    divideNumColumn = 4;
-                    divideNumRow = 4;
-                    break;
-                default:
-                    LineWidth = LineWidthLevel4;
-                    BoxColor = BoxColorNormalLevel4;
-                    divideNumColumn = 2;
-                    divideNumRow = 2;
-                    break;
+                LineWidth = LineWidthLevel3;
+                BoxColor = BoxColorNormalLevel3;
+                divideNumColumn = 4;
+                divideNumRow = 4;
+                return;
             }
+            if (GridCode.IsSmallerThanNormalGml) // 小さいメッシュコード
+            {
+                LineWidth = LineWidthLevel4;
+                BoxColor = BoxColorNormalLevel4;
+                divideNumColumn = 2;
+                divideNumRow = 2;
+                return;
+            }
+
+            // 大きいメッシュコード
+            LineWidth = LineWidthLevel2;
+            BoxColor = BoxColorNormalLevel2;
+            divideNumColumn = 4;
+            divideNumRow = 4;
         }
 
-        public List<string> GetSelectedMeshIds()
+        public List<string> GetSelectedGridIds()
         {
-            List<string> meshIds = new();
-            switch (MeshCode.Level)
+            List<string> strGridCodes = new();
+            if (GridCode.IsNormalGmlLevel)
             {
-                case 3:
-                    for (var col = 0; col < divideNumColumn; col++)
+                for (var col = 0; col < divideNumColumn; col++)
+                {
+                    for (var row = 0; row < divideNumRow; row++)
                     {
-                        for (var row = 0; row < divideNumRow; row++)
+                        if (selectedAreaList[row + col * divideNumColumn])
                         {
-                            if (selectedAreaList[row + col * divideNumColumn])
-                            {
-                                meshIds.Add($"{MeshCode.ToString()}{SuffixMeshIds[row + col * divideNumColumn]}");
-                            }
+                            strGridCodes.Add($"{GridCode.StringCode}{SuffixMeshIds[row + col * divideNumColumn]}");
                         }
                     }
-                    break;
-                case 4:
-                    for (int i = 0; i < 4; i++)
+                }
+            }else if (GridCode.IsSmallerThanNormalGml)
+            {
+                // strGridCodes.Add(GridCode.StringCode);
+                for (int i = 0; i < GridCodeDivideNum; i++)
+                {
+                    if (selectedAreaList[i])
                     {
-                        if (selectedAreaList[i])
-                        {
-                            meshIds.Add($"{MeshCode.ToString()}{(i+1).ToString()}");
-                        }
+                        strGridCodes.Add($"{GridCode.StringCode}{(i+1).ToString()}");
                     }
-                    break;
-                case 2:
-                    // 上の処理で十分
-                    break;
-                default:
-                    Debug.LogError($"Not implemented for this mesh code level {MeshCode.Level}");
-                    break;
+                }
             }
-            
+            else
+            {
+                // 上の処理で十分
+            }
 
-            return meshIds;
+            return strGridCodes;
         }
 
 #if UNITY_EDITOR
@@ -237,29 +234,29 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         }
         
         /// <summary>
-        /// メッシュコードを描画
+        /// グリッドコードを描画
         /// </summary>
         public override void DrawSceneGUI()
         {
-            DrawMeshCodeId();
+            DrawGridCodeId();
         }
         
-        private void DrawMeshCodeId()
+        private void DrawGridCodeId()
         {
-            if (!MeshCode.IsValid) return;
-            var meshCodeScreenWidth = CalcMeshCodeScreenWidth();
+            if (!GridCode.IsValid) return;
+            var gridCodeScreenWidth = CalcGridCodeScreenWidth();
 
             // LODアイコンと被らないように、下:上=3:7 の位置にします。
             var textPosWorld = new Vector3(this.CenterPos.x , this.CenterPos.y, AreaMin.z * 0.7f + AreaMax.z * 0.3f);
             
             
-            if(MeshCode.Level == 2 && meshCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
+            if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && gridCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
-                DrawString(MeshCode.ToString(), textPosWorld, BoxColorNormalLevel2, ReturnFontSize());
+                DrawString(GridCode.StringCode, textPosWorld, BoxColorNormalLevel2, ReturnFontSize());
             }
-            else if(MeshCode.Level == 3 && meshCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
+            else if(GridCode.IsNormalGmlLevel && gridCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
-                DrawString(MeshCode.ToString(), textPosWorld , BoxColorNormalLevel3, ReturnFontSizeBlue());
+                DrawString(GridCode.StringCode, textPosWorld , BoxColorNormalLevel3, ReturnFontSizeBlue());
             }
         }
 
@@ -286,8 +283,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         private bool IsSelectable()
         {
-            if (MeshCode.Level <= 2) return false;
-            return true;
+            return GridCode.IsNormalGmlLevel || GridCode.IsSmallerThanNormalGml;
         }
 
         public void ToggleSelectArea(Vector2 mousePos)
@@ -335,17 +331,26 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         
         int ReturnFontSize()
         {
-            return (int)(Mathf.Clamp(CalcMeshCodeScreenWidth(), 15f, 30f));
+            return (int)(Mathf.Clamp(CalcGridCodeScreenWidth(), 15f, 30f));
         }
         int ReturnFontSizeBlue()
         {
-            return (int)(Mathf.Clamp(8f+8f*(CalcMeshCodeScreenWidth() - 45f)/100f, 8f, 16f));
+            return (int)(Mathf.Clamp(8f+8f*(CalcGridCodeScreenWidth() - 45f)/100f, 8f, 16f));
         }
 
-        private float CalcMeshCodeScreenWidth()
+        private float CalcGridCodeScreenWidth()
         {
-            var camera = SceneView.currentDrawingSceneView.camera;
-            var extent = MeshCode.Extent;
+            var sceneView = SceneView.currentDrawingSceneView;
+            if (sceneView == null)
+            {
+                throw new Exception("シーンビューがありません。");
+            }
+            var camera = sceneView.camera;
+            if (camera == null)
+            {
+                throw new Exception("カメラがありません。");
+            }
+            var extent = GridCode.Extent;
             // geoReference is passed in constructor.
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference.Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
