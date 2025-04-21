@@ -111,22 +111,6 @@ namespace PLATEAU.Dataset
             }
         }
 
-        /// <summary>
-        /// 平面直角座標系への変換が必要なGMLファイルかどうかを返します。
-        /// 取得失敗時のデフォルト値はtrueです。
-        /// </summary>
-        public bool isPolarCoordinateSystem
-        {
-            get
-            {
-                ThrowIfDisposed();
-                var result = NativeMethods.plateau_geometry_utils_is_polar_coordinate_system(Epsg, out var isPolar);
-                DLLUtil.CheckDllError(result);
-                return isPolar;
-            }
-        }
-
-
         public string[] SearchAllCodelistPathsInGml()
         {
             var nativePaths = NativeVectorString.Create();
@@ -250,11 +234,6 @@ namespace PLATEAU.Dataset
             internal static extern APIResult plateau_gml_file_get_epsg(
                 [In] IntPtr gmlFilePtr,
                 out int outEpsg);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_geometry_utils_is_polar_coordinate_system(
-                int epsg,
-                [MarshalAs(UnmanagedType.U1)] out bool outBool);
 
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(

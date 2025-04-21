@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -65,7 +66,7 @@ namespace PLATEAU.CityImport.Config
             nativeOption.MapTileZoomLevel = MapTileZoomLevel;
             nativeOption.MapTileURL = MapTileURL;
             nativeOption.TexturePackingResolution = GetTexturePackingResolution();
-            nativeOption.epsgCode = gml?.Epsg ?? 6697;
+            nativeOption.epsgCode = gml?.Epsg ?? CoordinateReferenceFactory.DEFAULT_EPSG;
             return nativeOption;
         }
 

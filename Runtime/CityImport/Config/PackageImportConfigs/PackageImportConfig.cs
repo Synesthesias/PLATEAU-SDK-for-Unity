@@ -152,7 +152,7 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
                 attachMapTile: false, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは false に固定します。
                 mapTileZoomLevel: 15, // 土地専用の設定は ReliefLoadSetting で行うので、ここでは仮の値にします。
                 mapTileURL: ReliefImportConfig.DefaultMapTileUrl, // 土地専用の設定
-                epsgCode: gml?.Epsg ?? 6697 // 平面座標系の場合の基準座標取得用
+                epsgCode: gml?.Epsg ?? CoordinateReferenceFactory.DEFAULT_EPSG // 平面座標系の場合の基準座標取得用
                 ); 
         }
 
