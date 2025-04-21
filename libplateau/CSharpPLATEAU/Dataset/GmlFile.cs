@@ -81,6 +81,7 @@ namespace PLATEAU.Dataset
         /// GMLファイルのGridCodeを返します。
         /// ただし、誤った形式のGMLファイル名である等の理由でGridCodeを読み取れなかった場合は
         /// 戻り値の isValid が false になります。
+        /// 戻り値が解放されるためにusingを付けてください。
         /// </summary>
         public GridCode GridCode
         {
@@ -89,41 +90,11 @@ namespace PLATEAU.Dataset
                 ThrowIfDisposed();
                 var gridCodePtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
                     NativeMethods.plateau_gml_file_get_grid_code);
+                // gridCodePtrの寿命管理はC++側に任せるのでここでは解放しませんが、copiedはC#から解放する必要があります。
                 var copied =  GridCode.CopyFrom(gridCodePtr);
                 return copied;
             }
         }
-
-        /// <summary>
-        /// GMLファイルのEPSGコードを返します。
-        /// 取得失敗時のデフォルト値はEPSG:6697です。
-        /// </summary>
-        public double Epsg
-        {
-            get
-            {
-                ThrowIfDisposed();
-                var epsg = DLLUtil.GetNativeValue<double>(Handle,
-                    NativeMethods.plateau_gml_file_get_epsg);
-                return epsg;
-            }
-        }
-
-        /// <summary>
-        /// 平面直角座標系への変換が必要なGMLファイルかどうかを返します。
-        /// 取得失敗時のデフォルト値はtrueです。
-        /// </summary>
-        public bool isPolarCoordinateSystem
-        {
-            get
-            {
-                ThrowIfDisposed();
-                var result = NativeMethods.plateau_geometry_utils_is_polar_coordinate_system(Epsg, out var isPolar);
-                DLLUtil.CheckDllError(result);
-                return isPolar;
-            }
-        }
-
 
         public string[] SearchAllCodelistPathsInGml()
         {
@@ -243,17 +214,7 @@ namespace PLATEAU.Dataset
             internal static extern APIResult plateau_gml_file_get_grid_code(
                 [In] IntPtr gmlFilePtr,
                 out IntPtr outGridCodePtr);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_gml_file_get_epsg(
-                [In] IntPtr gmlFilePtr,
-                out double outEpsg);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_geometry_utils_is_polar_coordinate_system(
-                double epsg,
-                [MarshalAs(UnmanagedType.U1)] out bool outBool);
-
+        
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(
                 [In] IntPtr gmlFilePtr,
