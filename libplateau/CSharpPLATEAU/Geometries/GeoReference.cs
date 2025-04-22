@@ -142,7 +142,7 @@ namespace PLATEAU.Geometries
             return outLatLon;
         }
 
-        public PlateauVector3d Convert(PlateauVector3d point, bool convertAxis, int epsg)
+        public PlateauVector3d Convert(PlateauVector3d point, bool convertAxis, int epsg = CoordinateReferenceFactory.DEFAULT_EPSG)
         {
             var result = NativeMethods.plateau_geo_reference_convert(
                 Handle, out var outXyz,

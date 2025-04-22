@@ -9,7 +9,7 @@ namespace PLATEAU.Geometries
     public static class CoordinateReferenceFactory
     {
 
-        public static readonly int DEFAULT_EPSG = 6697;
+        public const int DEFAULT_EPSG = 6697;
 
         /// <summary>
         /// 平面直角座標系への変換が必要なGMLファイルかどうかを返します。
