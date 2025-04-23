@@ -20,6 +20,6 @@ namespace PLATEAU.Dataset
         private readonly int FifthCol;
         public readonly int Level;
         [MarshalAs(UnmanagedType.U1)] private readonly bool isValid;
-        
+
     }
 }

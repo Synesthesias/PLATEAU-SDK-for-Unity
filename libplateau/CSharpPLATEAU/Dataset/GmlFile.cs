@@ -81,7 +81,7 @@ namespace PLATEAU.Dataset
         /// GMLファイルのGridCodeを返します。
         /// ただし、誤った形式のGMLファイル名である等の理由でGridCodeを読み取れなかった場合は
         /// 戻り値の isValid が false になります。
-        /// 戻り値が解放されるためにusingを付けてください。
+        /// 戻り値が解放されるようにするためにusingを付けてください。
         /// </summary>
         public GridCode GridCode
         {
