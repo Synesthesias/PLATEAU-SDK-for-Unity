@@ -271,7 +271,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && gridCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
                 var color = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel2;
-                DrawString(GridCode.StringCode, textPosWorld, BoxColorNormalLevel2, ReturnFontSize());
+                DrawString(GridCode.StringCode, textPosWorld, color, ReturnFontSize());
             }
             else if(GridCode.IsNormalGmlLevel && gridCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
