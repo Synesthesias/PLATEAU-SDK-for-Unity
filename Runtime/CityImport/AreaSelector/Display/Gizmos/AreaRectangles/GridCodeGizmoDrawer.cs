@@ -26,6 +26,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private static readonly Color BoxColorNormalLevel2 = Color.black;
         private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
         private static readonly Color BoxColorNormalLevel4 = new(0f, 84f / 255f, 1f);
+        private static readonly Color BoxColorStandardMap = new(0f, 0.7f, 0f);
         private static readonly Color HandleColor = new(1f, 72f / 255f, 0f);
         private static readonly Color SelectedFaceColor = new(1f, 204f / 255f, 153f / 255f, 0.5f);
         private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);
@@ -41,6 +42,8 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private List<bool> selectedAreaList;
         private const int GridCodeDivideNum = 4;
         
+        // 国土基本図郭フラグ
+        private bool isStandardMapGrid;
         
         // FIXME RowがXでColumnがZって直感に反する気がする。逆では？
         private int GetRowIndex(double minX, double maxX, int numGrid, double value)
@@ -93,6 +96,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 (float)Math.Abs(max.Z - min.Z));
             Init(centerPosTmp, sizeTmp, gridCode);
             GridCode = gridCode;
+            isStandardMapGrid = gridCode.StringCode.Any(char.IsLetter);
             
             ApplyStyle();
 
@@ -120,25 +124,25 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             if (GridCode.IsNormalGmlLevel) // 通常のメッシュコード
             {
                 LineWidth = LineWidthLevel3;
-                BoxColor = BoxColorNormalLevel3;
-                divideNumColumn = 4;
-                divideNumRow = 4;
+                BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel3;
+                divideNumColumn = isStandardMapGrid ? 1 : 4;
+                divideNumRow = isStandardMapGrid ? 1 : 4;
                 return;
             }
             if (GridCode.IsSmallerThanNormalGml) // 小さいメッシュコード
             {
                 LineWidth = LineWidthLevel4;
-                BoxColor = BoxColorNormalLevel4;
-                divideNumColumn = 2;
-                divideNumRow = 2;
+                BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel4;
+                divideNumColumn = isStandardMapGrid ? 1 : 2;
+                divideNumRow = isStandardMapGrid ? 1 : 2;
                 return;
             }
 
             // 大きいメッシュコード
             LineWidth = LineWidthLevel2;
-            BoxColor = BoxColorNormalLevel2;
-            divideNumColumn = 4;
-            divideNumRow = 4;
+            BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel2;
+            divideNumColumn = isStandardMapGrid ? 1 : 4;
+            divideNumRow = isStandardMapGrid ? 1 : 4;
         }
 
         public List<string> GetSelectedGridIds()
@@ -152,18 +156,32 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                     {
                         if (selectedAreaList[row + col * divideNumColumn])
                         {
-                            strGridCodes.Add($"{GridCode.StringCode}{SuffixMeshIds[row + col * divideNumColumn]}");
+                            if (isStandardMapGrid)
+                            {
+                                strGridCodes.Add($"{GridCode.StringCode}");
+                            }
+                            else
+                            {
+                                strGridCodes.Add($"{GridCode.StringCode}{SuffixMeshIds[row + col * divideNumColumn]}");
+                            }
                         }
                     }
                 }
-            }else if (GridCode.IsSmallerThanNormalGml)
+            }
+            else if (GridCode.IsSmallerThanNormalGml)
             {
-                // strGridCodes.Add(GridCode.StringCode);
                 for (int i = 0; i < GridCodeDivideNum; i++)
                 {
                     if (selectedAreaList[i])
                     {
-                        strGridCodes.Add($"{GridCode.StringCode}{(i+1).ToString()}");
+                        if (isStandardMapGrid)
+                        {
+                            strGridCodes.Add($"{GridCode.StringCode}");
+                        }
+                        else
+                        {
+                            strGridCodes.Add($"{GridCode.StringCode}{(i+1).ToString()}");
+                        }
                     }
                 }
             }
@@ -252,11 +270,13 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             
             if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && gridCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
+                var color = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel2;
                 DrawString(GridCode.StringCode, textPosWorld, BoxColorNormalLevel2, ReturnFontSize());
             }
             else if(GridCode.IsNormalGmlLevel && gridCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
-                DrawString(GridCode.StringCode, textPosWorld , BoxColorNormalLevel3, ReturnFontSizeBlue());
+                var color = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel3;
+                DrawString(GridCode.StringCode, textPosWorld , color, ReturnFontSizeBlue());
             }
         }
 
