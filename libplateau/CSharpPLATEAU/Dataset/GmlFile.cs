@@ -96,6 +96,21 @@ namespace PLATEAU.Dataset
             }
         }
 
+        /// <summary>
+        /// GMLファイルのEPSGコードを返します。
+        /// 取得失敗時のデフォルト値はEPSG:6697です。
+        /// </summary>
+        public int Epsg
+        {
+            get
+            {
+                ThrowIfDisposed();
+                var epsg = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_gml_file_get_epsg);
+                return epsg;
+            }
+        }
+
         public string[] SearchAllCodelistPathsInGml()
         {
             var nativePaths = NativeVectorString.Create();
@@ -214,7 +229,12 @@ namespace PLATEAU.Dataset
             internal static extern APIResult plateau_gml_file_get_grid_code(
                 [In] IntPtr gmlFilePtr,
                 out IntPtr outGridCodePtr);
-        
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_get_epsg(
+                [In] IntPtr gmlFilePtr,
+                out int outEpsg);
+
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(
                 [In] IntPtr gmlFilePtr,
