@@ -41,7 +41,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             divideNumRow = 1;
         }
         
-        public void SetSelectArea(string meshCode, bool isSelected)
+        public void SetMeshCodeSelection(string meshCode, bool isSelected)
         {
             if (isSelected)
             {

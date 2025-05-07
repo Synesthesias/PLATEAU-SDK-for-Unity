@@ -365,13 +365,13 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 // 1つでも選択されていれば選択状態に
                 if (intersectedIndices.Any(idx => selectedAreaList[idx]))
                 {
-                    standardMapDrawer.SetSelectArea(GridCode.StringCode, true);
+                    standardMapDrawer.SetMeshCodeSelection(GridCode.StringCode, true);
                 }
 
                 // 全て未選択なら解除
                 if (intersectedIndices.All(idx => !selectedAreaList[idx]))
                 {
-                    standardMapDrawer.SetSelectArea(GridCode.StringCode, false);
+                    standardMapDrawer.SetMeshCodeSelection(GridCode.StringCode, false);
                 }
             }
         }
