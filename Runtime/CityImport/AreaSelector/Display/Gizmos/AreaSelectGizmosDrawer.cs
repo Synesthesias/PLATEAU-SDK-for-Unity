@@ -101,7 +101,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                 }
 
                 if (isDuplicate) continue;
-                var drawer = new GridCodeGizmoDrawer();
+                var drawer = gridCode.StringCode.Any(char.IsLetter) 
+                    ? new StandardMapGizmoDrawer() 
+                    : new GridCodeGizmoDrawer();
                 drawer.SetUp(GridCode.CopyFrom(gridCode.Handle), outGeoReference);
                 this.gridCodeDrawers.Add(drawer);
             }
@@ -204,13 +206,15 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                         {
                             foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
-                                if (meshCodeGizmoDrawer.IsStandardMapGrid) 
+                                if (meshCodeGizmoDrawer is StandardMapGizmoDrawer) 
                                 {
                                     continue;
                                 }
                                 #if UNITY_EDITOR
                                 meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition,
-                                    gridCodeDrawers.Where(d => d.IsStandardMapGrid).ToList());
+                                    gridCodeDrawers
+                                        .OfType<StandardMapGizmoDrawer>()
+                                        .ToList());
                                 #endif
                             }
                         }
@@ -218,7 +222,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                         {
                             foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
-                                if (meshCodeGizmoDrawer.IsStandardMapGrid) 
+                                if (meshCodeGizmoDrawer is StandardMapGizmoDrawer) 
                                 {
                                     continue;
                                 }
@@ -227,7 +231,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                                     this.areaSelectionGizmoDrawer.AreaSelectionMin,
                                     this.areaSelectionGizmoDrawer.AreaSelectionMax,
                                     this.isLeftMouseButtonMoved,
-                                    gridCodeDrawers.Where(d => d.IsStandardMapGrid).ToList());
+                                    gridCodeDrawers
+                                        .OfType<StandardMapGizmoDrawer>()
+                                        .ToList());
                                 #endif
                             }
                         }
