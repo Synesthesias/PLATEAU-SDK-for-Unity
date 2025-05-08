@@ -309,7 +309,10 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, divideNumRow, hit.point.x);
                 var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, divideNumColumn, hit.point.z);
                 var selectAreaIndex = rowIndex + columnIndex * divideNumColumn;
-                selectedAreaList[selectAreaIndex] = !selectedAreaList[selectAreaIndex];
+                if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+                {
+                    selectedAreaList[selectAreaIndex] = !selectedAreaList[selectAreaIndex];
+                }
 
                 TrySelectStandardMapGrid(standardMapGridDrawers);
             }
@@ -336,7 +339,11 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                         continue;
                     }
 
-                    selectedAreaList[row + col * divideNumColumn] = selectValue;
+                    var selectAreaIndex = row + col * divideNumColumn;
+                    if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+                    {
+                        selectedAreaList[selectAreaIndex] = selectValue;
+                    }
                     TrySelectStandardMapGrid(standardMapGridDrawers);
                 }
             }
