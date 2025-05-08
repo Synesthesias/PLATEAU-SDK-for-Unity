@@ -118,7 +118,10 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
 
         protected void SetSelectArea(int selectAreaIndex, bool isSelect)
         {
-            selectedAreaList[selectAreaIndex] = isSelect;
+            if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+            {
+                selectedAreaList[selectAreaIndex] = isSelect;
+            }
         }
 
         protected virtual void ApplyStyle()
@@ -306,8 +309,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, divideNumRow, hit.point.x);
                 var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, divideNumColumn, hit.point.z);
                 var selectAreaIndex = rowIndex + columnIndex * divideNumColumn;
-
-                // FIXME 同じ式の繰り返し
                 selectedAreaList[selectAreaIndex] = !selectedAreaList[selectAreaIndex];
 
                 TrySelectStandardMapGrid(standardMapGridDrawers);

@@ -178,6 +178,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             if (currentEvent == null)
                 return;
             
+            var standardMapDrawers = gridCodeDrawers.OfType<StandardMapGizmoDrawer>().ToList();
             switch (currentEvent.type)
             {
                 case EventType.MouseDown:
@@ -211,10 +212,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                                     continue;
                                 }
                                 #if UNITY_EDITOR
-                                meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition,
-                                    gridCodeDrawers
-                                        .OfType<StandardMapGizmoDrawer>()
-                                        .ToList());
+                                meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition, standardMapDrawers);
                                 #endif
                             }
                         }
@@ -231,9 +229,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                                     this.areaSelectionGizmoDrawer.AreaSelectionMin,
                                     this.areaSelectionGizmoDrawer.AreaSelectionMax,
                                     this.isLeftMouseButtonMoved,
-                                    gridCodeDrawers
-                                        .OfType<StandardMapGizmoDrawer>()
-                                        .ToList());
+                                    standardMapDrawers);
                                 #endif
                             }
                         }

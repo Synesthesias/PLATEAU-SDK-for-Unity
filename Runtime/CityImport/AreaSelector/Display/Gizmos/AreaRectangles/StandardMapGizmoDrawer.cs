@@ -13,7 +13,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         protected override Color BoxColorNormalLevel3 => BoxColorStandardMap;
         protected override Color HandleColor => new(1f, 250f / 255f, 203f / 255f);
         
-        private readonly List<string> selectedMeshCodes = new ();
+        private readonly HashSet<string> selectedMeshCodes = new ();
         
         protected override void ApplyStyle()
         {
