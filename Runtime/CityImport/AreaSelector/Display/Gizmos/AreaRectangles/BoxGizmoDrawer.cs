@@ -95,6 +95,15 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 Math.Abs(this.CenterPos.x - otherPos.x) <= (Math.Abs(this.Size.x) + Math.Abs(otherSize.x)) * 0.5 &&
                 Math.Abs(this.CenterPos.z - otherPos.z) <= (Math.Abs(this.Size.z) + Math.Abs(otherSize.z)) * 0.5;
         }
+        
+        /// <summary>
+        /// 矩形(areaMin, areaMax)がXZ平面上で重なっているかどうかを判定します。
+        /// </summary>
+        protected bool IsBoxIntersectXZ(Vector3 areaMin, Vector3 areaMax)
+        {
+            return (this.AreaMin.x <= areaMax.x && this.AreaMax.x >= areaMin.x) &&
+                   (this.AreaMin.z <= areaMax.z && this.AreaMax.z >= areaMin.z);
+        }
 
 
         /// <summary>
