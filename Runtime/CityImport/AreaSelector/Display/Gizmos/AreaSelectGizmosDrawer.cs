@@ -101,7 +101,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                 }
 
                 if (isDuplicate) continue;
-                var drawer = new GridCodeGizmoDrawer();
+                var drawer = gridCode.StringCode.Any(char.IsLetter) 
+                    ? new StandardMapGizmoDrawer() 
+                    : new GridCodeGizmoDrawer();
                 drawer.SetUp(GridCode.CopyFrom(gridCode.Handle), outGeoReference);
                 this.gridCodeDrawers.Add(drawer);
             }
@@ -176,6 +178,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
             if (currentEvent == null)
                 return;
             
+            var standardMapDrawers = gridCodeDrawers.OfType<StandardMapGizmoDrawer>().ToList();
             switch (currentEvent.type)
             {
                 case EventType.MouseDown:
@@ -204,8 +207,12 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                         {
                             foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
+                                if (meshCodeGizmoDrawer is StandardMapGizmoDrawer) 
+                                {
+                                    continue;
+                                }
                                 #if UNITY_EDITOR
-                                meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition);
+                                meshCodeGizmoDrawer.ToggleSelectArea(currentEvent.mousePosition, standardMapDrawers);
                                 #endif
                             }
                         }
@@ -213,8 +220,16 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos
                         {
                             foreach (var meshCodeGizmoDrawer in this.gridCodeDrawers) 
                             {
+                                if (meshCodeGizmoDrawer is StandardMapGizmoDrawer) 
+                                {
+                                    continue;
+                                }
                                 #if UNITY_EDITOR
-                                meshCodeGizmoDrawer.SetSelectArea(this.areaSelectionGizmoDrawer.AreaSelectionMin, this.areaSelectionGizmoDrawer.AreaSelectionMax, this.isLeftMouseButtonMoved);
+                                meshCodeGizmoDrawer.SetSelectArea(
+                                    this.areaSelectionGizmoDrawer.AreaSelectionMin,
+                                    this.areaSelectionGizmoDrawer.AreaSelectionMax,
+                                    this.isLeftMouseButtonMoved,
+                                    standardMapDrawers);
                                 #endif
                             }
                         }

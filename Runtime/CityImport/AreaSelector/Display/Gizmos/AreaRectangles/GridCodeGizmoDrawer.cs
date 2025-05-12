@@ -16,18 +16,17 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
     internal class GridCodeGizmoDrawer : BoxGizmoDrawer
     {
         
-        private int divideNumColumn;
-        private int divideNumRow;
-        private const int LineWidthLevel2 = 3;
-        private const int LineWidthLevel3 = 2;
-        private const int LineWidthLevel4 = 1;
+        protected int divideNumColumn;
+        protected int divideNumRow;
+        protected const int LineWidthLevel2 = 3;
+        protected const int LineWidthLevel3 = 2;
+        protected const int LineWidthLevel4 = 1;
         private const float CenterPosY = 15f;
         private const float RayCastMaxDistance = 100000.0f;
-        private static readonly Color BoxColorNormalLevel2 = Color.black;
-        private static readonly Color BoxColorNormalLevel3 = new(0f, 84f / 255f, 1f);
+        protected virtual Color BoxColorNormalLevel2 => Color.black;
+        protected virtual Color BoxColorNormalLevel3 => new(0f, 84f / 255f, 1f);
         private static readonly Color BoxColorNormalLevel4 = new(0f, 84f / 255f, 1f);
-        private static readonly Color BoxColorStandardMap = new(0f, 0.7f, 0f);
-        private static readonly Color HandleColor = new(1f, 72f / 255f, 0f);
+        protected virtual Color HandleColor => new(1f, 72f / 255f, 0f);
         private static readonly Color SelectedFaceColor = new(1f, 204f / 255f, 153f / 255f, 0.5f);
         private static readonly Color TransparentColor = new(0f, 0f, 0f, 0f);
         private static readonly List<string> SuffixMeshIds = new()
@@ -42,8 +41,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         private List<bool> selectedAreaList;
         private const int GridCodeDivideNum = 4;
         
-        // 国土基本図郭フラグ
-        private bool isStandardMapGrid;
+        private List<Vector3[]> allRectVerts = new();
         
         // FIXME RowがXでColumnがZって直感に反する気がする。逆では？
         private int GetRowIndex(double minX, double maxX, int numGrid, double value)
@@ -96,16 +94,15 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 (float)Math.Abs(max.Z - min.Z));
             Init(centerPosTmp, sizeTmp, gridCode);
             GridCode = gridCode;
-            isStandardMapGrid = gridCode.StringCode.Any(char.IsLetter);
             
             ApplyStyle();
+            CalculateAllRectVerts();
 
             // デフォルトの選択状態を設定
             ResetSelectedArea();
-            
         }
 
-        public void ResetSelectedArea()
+        public virtual void ResetSelectedArea()
         {
             selectedAreaList = new List<bool>();
             for (var i = 0; i < divideNumRow * divideNumColumn; i++)
@@ -118,31 +115,39 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         {
             return selectedAreaList.Any(selected => selected);
         }
-        
-        private void ApplyStyle()
+
+        protected void SetSelectArea(int selectAreaIndex, bool isSelect)
+        {
+            if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+            {
+                selectedAreaList[selectAreaIndex] = isSelect;
+            }
+        }
+
+        protected virtual void ApplyStyle()
         {
             if (GridCode.IsNormalGmlLevel) // 通常のメッシュコード
             {
                 LineWidth = LineWidthLevel3;
-                BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel3;
-                divideNumColumn = isStandardMapGrid ? 1 : 4;
-                divideNumRow = isStandardMapGrid ? 1 : 4;
+                BoxColor = BoxColorNormalLevel3;
+                divideNumColumn = 4;
+                divideNumRow = 4;
                 return;
             }
             if (GridCode.IsSmallerThanNormalGml) // 小さいメッシュコード
             {
                 LineWidth = LineWidthLevel4;
-                BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel4;
-                divideNumColumn = isStandardMapGrid ? 1 : 2;
-                divideNumRow = isStandardMapGrid ? 1 : 2;
+                BoxColor = BoxColorNormalLevel4;
+                divideNumColumn = 2;
+                divideNumRow = 2;
                 return;
             }
 
             // 大きいメッシュコード
             LineWidth = LineWidthLevel2;
-            BoxColor = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel2;
-            divideNumColumn = isStandardMapGrid ? 1 : 4;
-            divideNumRow = isStandardMapGrid ? 1 : 4;
+            BoxColor = BoxColorNormalLevel2;
+            divideNumColumn = 4;
+            divideNumRow = 4;
         }
 
         public List<string> GetSelectedGridIds()
@@ -156,7 +161,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                     {
                         if (selectedAreaList[row + col * divideNumColumn])
                         {
-                            if (isStandardMapGrid)
+                            if (this is StandardMapGizmoDrawer)
                             {
                                 strGridCodes.Add($"{GridCode.StringCode}");
                             }
@@ -174,7 +179,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 {
                     if (selectedAreaList[i])
                     {
-                        if (isStandardMapGrid)
+                        if (this is StandardMapGizmoDrawer)
                         {
                             strGridCodes.Add($"{GridCode.StringCode}");
                         }
@@ -226,27 +231,12 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             }
 
             // エリア塗りつぶし
-            var cellWidth = (max.x - min.x) / divideNumColumn;
-            var cellHeight = (max.z - min.z) / divideNumRow;
-            for (var col = 0; col < divideNumColumn; col++)
-            {
-                for (var row = 0; row < divideNumRow; row++)
+            allRectVerts.Where((rect, index) => selectedAreaList[index])
+                .ToList()
+                .ForEach(rect =>
                 {
-                    if (selectedAreaList[row + col * divideNumColumn])
-                    {
-                        var rectVerts = new[]
-                        {
-                            new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight * col),
-                            new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
-                            new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
-                            new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight * col)
-                        };
-
-                        // 四角の中を塗りつぶしますが、輪郭線は完全に透明にします。なぜなら、四角の輪郭線の表示は親クラスが行うためです。
-                        Handles.DrawSolidRectangleWithOutline(rectVerts, SelectedFaceColor, TransparentColor);
-                    }
-                }
-            }
+                    Handles.DrawSolidRectangleWithOutline(rect, SelectedFaceColor, TransparentColor);
+                });
             
             Handles.color = prevColor;
         }
@@ -270,12 +260,12 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             
             if(!GridCode.IsNormalGmlLevel && !GridCode.IsSmallerThanNormalGml && gridCodeScreenWidth >= 160 * EditorGUIUtility.pixelsPerPoint) // 2次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
-                var color = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel2;
+                var color = BoxColorNormalLevel2;
                 DrawString(GridCode.StringCode, textPosWorld, color, ReturnFontSize());
             }
             else if(GridCode.IsNormalGmlLevel && gridCodeScreenWidth >= 80f) // 3次メッシュコードのとき、画面上の幅が大きいときだけ描画します。
             {
-                var color = isStandardMapGrid ? BoxColorStandardMap : BoxColorNormalLevel3;
+                var color = BoxColorNormalLevel3;
                 DrawString(GridCode.StringCode, textPosWorld , color, ReturnFontSizeBlue());
             }
         }
@@ -306,7 +296,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             return GridCode.IsNormalGmlLevel || GridCode.IsSmallerThanNormalGml;
         }
 
-        public void ToggleSelectArea(Vector2 mousePos)
+        public void ToggleSelectArea(Vector2 mousePos, List<StandardMapGizmoDrawer> standardMapGridDrawers)
         {
             if (!IsSelectable()) return;
             
@@ -318,12 +308,17 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 
                 var rowIndex = GetRowIndex(AreaMin.x, AreaMax.x, divideNumRow, hit.point.x);
                 var columnIndex = GetColumnIndex(AreaMin.z, AreaMax.z, divideNumColumn, hit.point.z);
-                // FIXME 同じ式の繰り返し
-                selectedAreaList[rowIndex + columnIndex * divideNumColumn] = !selectedAreaList[rowIndex + columnIndex * divideNumColumn];
+                var selectAreaIndex = rowIndex + columnIndex * divideNumColumn;
+                if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+                {
+                    selectedAreaList[selectAreaIndex] = !selectedAreaList[selectAreaIndex];
+                }
+
+                TrySelectStandardMapGrid(standardMapGridDrawers);
             }
         }
 
-        public void SetSelectArea(Vector3 areaSelectionMin, Vector3 areaSelectionMax, bool selectValue)
+        public void SetSelectArea(Vector3 areaSelectionMin, Vector3 areaSelectionMax, bool selectValue, List<StandardMapGizmoDrawer> standardMapGridDrawers)
         {
             if (!IsSelectable()) return;
             
@@ -344,7 +339,47 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                         continue;
                     }
 
-                    selectedAreaList[row + col * divideNumColumn] = selectValue;
+                    var selectAreaIndex = row + col * divideNumColumn;
+                    if (0 <= selectAreaIndex && selectAreaIndex < selectedAreaList.Count)
+                    {
+                        selectedAreaList[selectAreaIndex] = selectValue;
+                    }
+                    TrySelectStandardMapGrid(standardMapGridDrawers);
+                }
+            }
+        }
+
+        private void TrySelectStandardMapGrid(List<StandardMapGizmoDrawer> standardMapDrawers)
+        {
+            foreach (var standardMapDrawer in standardMapDrawers)
+            {
+                if (!IsBoxIntersectXZ(standardMapDrawer))
+                {
+                    continue;
+                }
+                
+                // 分割した矩形の頂点から、国土基本図郭と交差しているかどうか取得
+                var intersectedIndices = allRectVerts
+                    .Select((rect, idx) => new { rect, idx })
+                    .Where(x =>
+                    {
+                        var min = x.rect[0]; // 左下
+                        var max = x.rect[2]; // 右上
+                        return standardMapDrawer.IsBoxIntersectXZ(min, max);
+                    })
+                    .Select(x => x.idx)
+                    .ToList();
+
+                // 1つでも選択されていれば選択状態に
+                if (intersectedIndices.Any(idx => selectedAreaList[idx]))
+                {
+                    standardMapDrawer.SetMeshCodeSelection(GridCode.StringCode, true);
+                }
+
+                // 全て未選択なら解除
+                if (intersectedIndices.All(idx => !selectedAreaList[idx]))
+                {
+                    standardMapDrawer.SetMeshCodeSelection(GridCode.StringCode, false);
                 }
             }
         }
@@ -375,6 +410,30 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference.Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
             return (camera.WorldToScreenPoint(positionLowerRight) - camera.WorldToScreenPoint(positionUpperLeft)).x;
+        }
+
+        private void CalculateAllRectVerts()
+        {
+            var min = AreaMin;
+            var max = AreaMax;
+            var cellWidth = (max.x - min.x) / divideNumColumn;
+            var cellHeight = (max.z - min.z) / divideNumRow;
+            allRectVerts = new List<Vector3[]>();
+
+            for (var col = 0; col < divideNumColumn; col++)
+            {
+                for (var row = 0; row < divideNumRow; row++)
+                {
+                    var rectVerts = new[]
+                    {
+                        new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight * col),
+                        new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
+                        new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
+                        new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight * col)
+                    };
+                    allRectVerts.Add(rectVerts);
+                }
+            }
         }
 #endif
     }
