@@ -86,8 +86,7 @@ namespace PLATEAU.CityExport.ModelConvert
             // ノード生成します。
             var node = Node.Create(trans.name);
             node.IsActive = trans.gameObject.activeInHierarchy;
-            // TOPノードのみ平行移動変換(オフセット値追加）を行います。
-            var localPos = (trans.name.StartsWith("LOD")) ? vertexConverter.Convert(trans.localPosition).ToPlateauVector() : vertexConverter.ConvertOnlyCoordinateSystem(trans.localPosition).ToPlateauVector();
+            var localPos = vertexConverter.ConvertOnlyCoordinateSystem(trans.localPosition).ToPlateauVector();
             node.LocalPosition = localPos;
             
             // スケールの座標変換の考え方
@@ -179,7 +178,7 @@ namespace PLATEAU.CityExport.ModelConvert
 
         private static PolygonMesh.Mesh ConvertMesh(Mesh unityMesh, MeshRenderer meshRenderer,
             IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter,
-            AdderAndCoordinateSystemConverter vertexConverter, bool invertMesh)
+            VertexConverterBase vertexConverter, bool invertMesh)
         {
             // 頂点
             var vertCount = unityMesh.vertexCount;
@@ -187,7 +186,7 @@ namespace PLATEAU.CityExport.ModelConvert
             var plateauVertices = new PlateauVector3d[vertCount];
             for (int i = 0; i < vertCount; i++)
             {
-                plateauVertices[i] = vertexConverter.ConvertOnlyCoordinateSystem(unityVertices[i]).ToPlateauVector();
+                plateauVertices[i] = vertexConverter.Convert(unityVertices[i]).ToPlateauVector();
             }
             
             // indices
