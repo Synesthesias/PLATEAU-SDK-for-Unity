@@ -9,15 +9,17 @@
         <ui:VisualElement name="ObjectFieldLine" style="flex-direction: row; align-items: flex-start; justify-content: space-between;">
             <ui:Label text="低解像度化しないオブジェクト" style="min-width: 180px;" />
             <ui:VisualElement name="ObjectFieldList" style="flex-direction: column; margin-left: 8px;">
-                <uie:ObjectField name="ExcludeObjectField" allow-scene-objects="true" style="margin-right: 10px;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Button name="AddObjectFieldButton" text="追加" style="margin-top: 4px; align-self: flex-end;" />
+        <ui:VisualElement name="ObjectFieldButtonRow" style="flex-direction: row; align-self: flex-end; margin-top: 4px;">
+            <ui:Button name="AddObjectFieldButton" text="追加" />
+            <ui:Button name="RemoveObjectFieldButton" text="削除" style="margin-left: 8px; display: none;" />
+        </ui:VisualElement>
     </ui:VisualElement>
     <ui:DropdownField name="SaveLocationDropdown" label="保存先" index="0" choices="Streaming Assetsへ保存,任意のフォルダに保存" />
-    <ui:VisualElement name="FolderSelectRow" style="flex-direction: column; align-items: flex-end;">
+    <ui:VisualElement name="FolderSelectRow" style="flex-direction: column; align-items: flex-end; display: none;">
         <ui:Button name="SelectFolderButton" text="フォルダ選択" style="margin-left: 8px;" />
-        <ui:Label name="FolderPathLabel" style="min-width: 300px; border-bottom: 1px solid rgb(136, 136, 136); -unity-text-align: upper-right;" />
+        <ui:Label name="FolderPathLabel" style="min-width: 300px; border-bottom: 1px solid rgb(136, 136, 136); -unity-text-align: upper-right; margin-right: 10px;" />
     </ui:VisualElement>
     <ui:Button text="実行" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExecButton" class="ActionButton" style="margin-top: 15px;" />
 </ui:UXML>
