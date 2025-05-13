@@ -4,10 +4,20 @@
     <ui:DropdownField label="最大解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="0" />
     <ui:DropdownField label="最小解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="4" />
     <ui:Toggle label="LOD1の建物にテクスチャを貼る　" />
-    <ui:DropdownField label="グリッド分割" choices="1x1,2x2,3x3" index="0" />
-    <ui:Label tabindex="-1" text="低解像度化しないオブジェクト" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-    <ui:Label tabindex="-1" text="（ここにオブジェクト選択）" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-    <ui:DropdownField label="保存先" index="0" choices="Streaming Assetsへ保存,任意のフォルダに保存" />
-    <ui:Label tabindex="-1" text="（ここに任意のフォルダ保存先選択UI）" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-    <ui:Button text="実行" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExecButton" class="ActionButton" />
+    <ui:DropdownField label="グリッド分割" choices="1x1,2x2,3x3" index="0" name="DropdownField" />
+    <ui:VisualElement name="ObjectFieldRow" style="flex-direction: column; align-self: stretch;">
+        <ui:VisualElement name="ObjectFieldLine" style="flex-direction: row; align-items: flex-start; justify-content: space-between;">
+            <ui:Label text="低解像度化しないオブジェクト" style="min-width: 180px;" />
+            <ui:VisualElement name="ObjectFieldList" style="flex-direction: column; margin-left: 8px;">
+                <uie:ObjectField name="ExcludeObjectField" allow-scene-objects="true" style="margin-right: 10px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button name="AddObjectFieldButton" text="追加" style="margin-top: 4px; align-self: flex-end;" />
+    </ui:VisualElement>
+    <ui:DropdownField name="SaveLocationDropdown" label="保存先" index="0" choices="Streaming Assetsへ保存,任意のフォルダに保存" />
+    <ui:VisualElement name="FolderSelectRow" style="flex-direction: column; align-items: flex-end;">
+        <ui:Button name="SelectFolderButton" text="フォルダ選択" style="margin-left: 8px;" />
+        <ui:Label name="FolderPathLabel" style="min-width: 300px; border-bottom: 1px solid rgb(136, 136, 136); -unity-text-align: upper-right;" />
+    </ui:VisualElement>
+    <ui:Button text="実行" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExecButton" class="ActionButton" style="margin-top: 15px;" />
 </ui:UXML>
