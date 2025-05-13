@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.Addressables
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings == null)
             {
-                Debug.LogError("AddressableAssetSettingsが見つかりません。");
+                Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
                 return null;
             }
 
@@ -49,7 +49,10 @@ namespace PLATEAU.Editor.Addressables
             }
 
             var group = GetOrCreateGroup(groupName);
-            if (group == null) return;
+            if (group == null)
+            {
+                return;
+            }
 
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
             if (string.IsNullOrEmpty(guid))
@@ -58,13 +61,12 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            // 既にエントリがある場合はスキップ
             var entry = settings.FindAssetEntry(guid);
             if (entry == null)
             {
                 entry = settings.CreateOrMoveEntry(guid, group);
-                entry.address = address;
             }
+            entry.SetAddress(address);
         }
     }
 } 

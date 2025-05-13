@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.Addressables
             var type = System.Type.GetType("UnityEditor.AddressableAssets.Settings.AddressableAssetSettings, Unity.Addressables.Editor");
             if (type == null)
             {
-                Debug.LogError(
+                Debug.LogWarning(
                     "PLATEAU SDKの一部機能にはAddressablesパッケージが必要です。Package Managerからインストールしてください。"
                 );
                 return;
@@ -36,21 +36,28 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            // 設定アセットがなければ自動生成
-            if (!AssetDatabase.IsValidFolder(AddressablesDataPath))
+            try
             {
-                AssetDatabase.CreateFolder("Assets", AddressablesDataFolderName);
-                AssetDatabase.Refresh();
-            }
+                if (!AssetDatabase.IsValidFolder(AddressablesDataPath))
+                {
+                    AssetDatabase.CreateFolder("Assets", AddressablesDataFolderName);
+                }
 
-            var settings = AddressableAssetSettings.Create(
-                AddressablesDataPath,
-                AddressablesSettingsName,
-                true,
-                true
-            );
-            AddressableAssetSettingsDefaultObject.Settings = settings;
-            AssetDatabase.Refresh();
+                var settings = AddressableAssetSettings.Create(
+                    AddressablesDataPath,
+                    AddressablesSettingsName,
+                    true,
+                    true
+                );
+                AddressableAssetSettingsDefaultObject.Settings = settings;
+                AssetDatabase.Refresh();
+
+                Debug.Log("Addressablesの設定が正常に初期化されました。");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Addressables初期化中にエラーが発生しました: {e.Message}");
+            }
         }
     }
 }
