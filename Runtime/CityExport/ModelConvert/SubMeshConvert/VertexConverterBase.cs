@@ -22,7 +22,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
                 return dst;
             }
 
-            return Next.Convert(src);
+            return Next.Convert(dst);
         }
         protected abstract Vector3 ConvertInner(Vector3 src);
     }
