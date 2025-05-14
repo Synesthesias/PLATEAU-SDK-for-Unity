@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace PLATEAU.Editor.Addressables
 {
@@ -39,7 +40,11 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// 指定したアセットを指定グループにAddressableとして登録
         /// </summary>
-        public static void RegisterAssetAsAddressable(string assetPath, string address, string groupName)
+        public static void RegisterAssetAsAddressable(
+            string assetPath,
+            string address,
+            string groupName,
+            List<string> labels)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings == null)
@@ -67,6 +72,15 @@ namespace PLATEAU.Editor.Addressables
                 entry = settings.CreateOrMoveEntry(guid, group);
             }
             entry.SetAddress(address);
+            
+            foreach (var label in labels)
+            {
+                if (!settings.GetLabels().Contains(label))
+                {
+                    settings.AddLabel(label, true);
+                }
+                entry.SetLabel(label, true);
+            }
         }
     }
 } 
