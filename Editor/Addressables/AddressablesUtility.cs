@@ -28,10 +28,10 @@ namespace PLATEAU.Editor.Addressables
             {
                 group = settings.CreateGroup(
                     groupName,
-                    false, // readOnly
                     false, // setAsDefaultGroup
-                    true,  // createDefaultSchema
-                    null   // schemas
+                    false, // readOnly
+                    true,  // postEvent
+                    null   // schemasToCopy
                 );
             }
             return group;
