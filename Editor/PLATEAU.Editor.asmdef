@@ -10,7 +10,9 @@
         "Unity.Mathematics",
         "GeoJSON.NetAssemblyDefinition",
         "NetTopologySuiteAssemblyDefinition",
-        "PlateauToolkit.Sandbox"
+        "PlateauToolkit.Sandbox",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"
