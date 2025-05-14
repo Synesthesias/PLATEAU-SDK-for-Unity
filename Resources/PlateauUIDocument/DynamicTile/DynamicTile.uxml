@@ -16,7 +16,7 @@
             <ui:Button name="RemoveObjectFieldButton" text="削除" style="margin-left: 8px; display: none;" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:DropdownField name="SaveLocationDropdown" label="保存先" index="0" choices="Streaming Assetsへ保存,任意のフォルダに保存" />
+    <ui:DropdownField name="SaveLocationDropdown" label="保存先" index="0" choices="ビルドに含める,任意のフォルダに保存" />
     <ui:VisualElement name="FolderSelectRow" style="flex-direction: column; align-items: flex-end; display: none;">
         <ui:Button name="SelectFolderButton" text="フォルダ選択" style="margin-left: 8px;" />
         <ui:Label name="FolderPathLabel" style="min-width: 300px; border-bottom: 1px solid rgb(136, 136, 136); -unity-text-align: upper-right; margin-right: 10px;" />

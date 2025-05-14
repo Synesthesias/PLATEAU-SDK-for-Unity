@@ -1,105 +1,114 @@
+using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI;
 using PLATEAU.Util;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor.UIElements;
 
 namespace PLATEAU.Editor.Window.Main
 {
     /// <summary>
-    /// PLATEAUウィンドウの動的タイルタブです。
+    /// PLATEAUウィンドウの動的タイルタブ（DynamicTile）UI
     /// </summary>
     public class DynamicTileGui : ITabContent
     {
         private TemplateContainer container;
+        private ConvertToAssetConfig assetConfig;
+        private List<PLATEAUCityObjectGroup> excludeObjects;
+
+        // UI要素
+        private Button addObjectFieldButton, removeObjectFieldButton, selectFolderButton, execButton;
+        private VisualElement objectFieldList, folderSelectRow;
+        private Label folderPathLabel;
+        private DropdownField saveLocationDropdown;
+        
+        private const string prefabsSavePath = "Assets/PLATEAUPrefabs";
 
         public VisualElement CreateGui()
         {
             container = LoadMainUxml();
+            InitializeState();
+            FindUIElements();
             RegisterEvents();
             return container;
         }
 
-        public void OnTabUnselect()
-        {
-        }
-        
-        public void Dispose()
-        {
-        }
-        
         private TemplateContainer LoadMainUxml()
         {
-            var visualTree =
-                AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    $"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/DynamicTile/DynamicTile.uxml"
-                );
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                $"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/DynamicTile/DynamicTile.uxml");
             if (visualTree == null)
             {
                 Debug.LogError("Failed to load gui.");
             }
+            return visualTree.CloneTree();
+        }
 
-            var loadedContainer = visualTree.CloneTree();
-            return loadedContainer;
+        private void InitializeState()
+        {
+            assetConfig = ConvertToAssetConfig.DefaultValue;
+            assetConfig.CheckEmptyAssetPathDir = false;
+            assetConfig.AssetPath = prefabsSavePath;
+            excludeObjects = new List<PLATEAUCityObjectGroup>();
+        }
+
+        private void FindUIElements()
+        {
+            addObjectFieldButton = container.Q<Button>("AddObjectFieldButton");
+            removeObjectFieldButton = container.Q<Button>("RemoveObjectFieldButton");
+            selectFolderButton = container.Q<Button>("SelectFolderButton");
+            execButton = container.Q<Button>("ExecButton");
+            objectFieldList = container.Q<VisualElement>("ObjectFieldList");
+            folderSelectRow = container.Q<VisualElement>("FolderSelectRow");
+            folderPathLabel = container.Q<Label>("FolderPathLabel");
+            saveLocationDropdown = container.Q<DropdownField>("SaveLocationDropdown");
         }
 
         private void RegisterEvents()
         {
-            var addObjectFieldButton = container.Q<Button>("AddObjectFieldButton");
-            var objectFieldList = container.Q<VisualElement>("ObjectFieldList");
-            var removeObjectFieldButton = container.Q<Button>("RemoveObjectFieldButton");
-            var selectFolderButton = container.Q<Button>("SelectFolderButton");
-            var folderPathLabel = container.Q<Label>("FolderPathLabel");
-            var saveLocationDropdown = container.Q<DropdownField>("SaveLocationDropdown");
-            var folderSelectRow = container.Q<VisualElement>("FolderSelectRow");
-            var execButton = container.Q<Button>("ExecButton");
+            // 除外ObjectFieldの追加・削除
+            addObjectFieldButton.clicked += AddExcludeObjectField;
+            removeObjectFieldButton.clicked += RemoveExcludeObjectField;
 
             // 最初のObjectFieldを追加
-            AddObjectField(objectFieldList, removeObjectFieldButton);
+            AddExcludeObjectField();
 
-            addObjectFieldButton.clicked += () =>
-            {
-                AddObjectField(objectFieldList, removeObjectFieldButton);
-            };
-
-            removeObjectFieldButton.clicked += () =>
-            {
-                if (objectFieldList.childCount > 0)
-                {
-                    objectFieldList.RemoveAt(objectFieldList.childCount - 1);
-                }
-
-                // 1つ以下なら削除ボタン非表示
-                if (objectFieldList.childCount <= 1)
-                {
-                    removeObjectFieldButton.style.display = DisplayStyle.None;
-                }
-            };
-
+            // フォルダ選択
             selectFolderButton.clicked += () =>
             {
-                string path = EditorUtility.OpenFolderPanel("保存先フォルダを選択", "", "");
+                string path = EditorUtility.OpenFolderPanel("保存先フォルダを選択", assetConfig.AssetPath, "");
                 if (!string.IsNullOrEmpty(path))
                 {
                     folderPathLabel.text = path;
+                    folderPathLabel.style.color = Color.white;
+                    assetConfig.SetByFullPath(path);
+
+                    if (!assetConfig.ValidateAssetPath(out var errorMessage))
+                    {
+                        folderPathLabel.text = errorMessage;
+                        folderPathLabel.style.color = Color.red;
+                    }
                 }
             };
 
+            // 保存先ドロップダウン
             saveLocationDropdown.RegisterValueChangedCallback(evt =>
             {
-                bool show = evt.newValue == "任意のフォルダに保存";
-                folderSelectRow.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+                bool isFolderShow = evt.newValue == "任意のフォルダに保存";
+                folderSelectRow.style.display = isFolderShow ? DisplayStyle.Flex : DisplayStyle.None;
+                assetConfig.AssetPath = isFolderShow ? folderPathLabel.text : prefabsSavePath;
             });
 
-            execButton.clicked += () =>
-            {
-                Debug.Log("実行ボタンが押されました");
-            };
+            // 実行
+            execButton.clicked += Exec;
         }
-        
-        private void AddObjectField(VisualElement objectFieldList, Button removeObjectFieldButton)
+
+        private void AddExcludeObjectField()
         {
             var objectField = new ObjectField
             {
@@ -107,13 +116,51 @@ namespace PLATEAU.Editor.Window.Main
                 allowSceneObjects = true,
                 style = { marginTop = 4, marginRight = 10 }
             };
+            int index = objectFieldList.childCount;
+            objectField.RegisterValueChangedCallback(evt =>
+            {
+                if (excludeObjects.Count > index)
+                {
+                    excludeObjects[index] = evt.newValue as PLATEAUCityObjectGroup;
+                }
+                else
+                {
+                    excludeObjects.Add(evt.newValue as PLATEAUCityObjectGroup);
+                }
+            });
             objectFieldList.Add(objectField);
 
-            // 2つ以上になったら削除ボタン表示
-            if (objectFieldList.childCount > 1)
+            // 削除ボタン表示制御
+            removeObjectFieldButton.style.display = objectFieldList.childCount > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void RemoveExcludeObjectField()
+        {
+            if (objectFieldList.childCount > 0)
             {
-                removeObjectFieldButton.style.display = DisplayStyle.Flex;
+                objectFieldList.RemoveAt(objectFieldList.childCount - 1);
+                if (excludeObjects.Count > 0)
+                {
+                    excludeObjects.RemoveAt(excludeObjects.Count - 1);
+                }
             }
+            removeObjectFieldButton.style.display = objectFieldList.childCount > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void Exec()
+        {
+            if (!assetConfig.ValidateAssetPath(out var errorMessage))
+            {
+                Dialogue.Display(errorMessage, "OK");
+                return;
+            }
+            DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
+        }
+
+        public void OnTabUnselect() { }
+        public void Dispose()
+        {
+            InitializeState();
         }
     }
 }

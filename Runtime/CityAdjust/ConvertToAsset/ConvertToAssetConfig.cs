@@ -15,10 +15,14 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// <summary> 設定値: FBXの出力先であるAssetsパスです。 </summary>
         public string AssetPath { get; set; }
 
+        /// <summary>AssetPathが空のディレクトリかどうかをチェックするかどうか</summary>
+        public bool CheckEmptyAssetPathDir { get; set; }
+
         public ConvertToAssetConfig(GameObject srcGameObj, string assetPath)
         {
             SrcGameObj = srcGameObj;
             AssetPath = assetPath;
+            CheckEmptyAssetPathDir = true;
         }
 
         public static ConvertToAssetConfig DefaultValue
@@ -86,7 +90,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 return false;
             }
 
-            if (Directory.GetFileSystemEntries(Path.GetFullPath(AssetPath)).Length > 0)
+            if (CheckEmptyAssetPathDir && Directory.GetFileSystemEntries(Path.GetFullPath(AssetPath)).Length > 0)
             {
                 errorMessage = "出力先は空のフォルダを指定してください。現在、空でないフォルダが指定されています。";
                 return false;
