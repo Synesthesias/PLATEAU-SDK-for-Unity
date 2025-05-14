@@ -28,6 +28,12 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         public void Convert(ConvertToAssetConfig conf)
         {
 #if UNITY_EDITOR
+            if (Directory.GetFileSystemEntries(Path.GetFullPath(conf.AssetPath)).Length > 0)
+            {
+                Debug.LogError("失敗：出力先は空のディレクトリを指定してください");
+                return;
+            }
+
             ConvertCore(conf);
             Dialogue.Display("Assetsへの保存が完了しました！", "OK");
 #else
