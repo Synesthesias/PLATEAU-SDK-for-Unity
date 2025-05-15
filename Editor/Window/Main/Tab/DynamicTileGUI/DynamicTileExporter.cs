@@ -48,25 +48,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var convertedObject = PrepareAndConvert(assetConfig, onError);
                 if (convertedObject == null)
                 {
-                    continue;
-                }
-                if (convertedObject != null)
-                {
-                    string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
-                    PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
-
-                    // プレハブをAddressableに登録
-                    AddressablesUtility.RegisterAssetAsAddressable(
-                        prefabPath,
-                        prefabPath,
-                        AddressableGroupName,
-                        new List<string> { AddressableLabel });
-                }
-                else
-                {
                     onError?.Invoke("変換に失敗しました。");
                     return;
                 }
+                
+                string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
+                PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+
+                // プレハブをAddressableに登録
+                AddressablesUtility.RegisterAssetAsAddressable(
+                    prefabPath,
+                    prefabPath,
+                    AddressableGroupName,
+                    new List<string> { AddressableLabel });
             }
             
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
@@ -76,22 +70,32 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         {
             var assetPath = config.AssetPath;
             string subFolderName = config.SrcGameObj.name;
-
             string subFolderFullPath = Path.Combine(assetPath, subFolderName);
-            if (!Directory.Exists(subFolderFullPath))
+            List<GameObject> convertObjects = null;
+            
+            try
             {
-                Directory.CreateDirectory(subFolderFullPath);
+                if (!Directory.Exists(subFolderFullPath))
+                {
+                    Directory.CreateDirectory(subFolderFullPath);
+                }
+                
+                // AssetDatabase用のパスに変換
+                config.SetByFullPath(subFolderFullPath);
+
+                // 変換
+                convertObjects = new ConvertToAsset().ConvertCore(config);
+                
+                // アセットパスを戻す
+                config.AssetPath = assetPath;
             }
-
-            // AssetDatabase用のパスに変換
-            config.SetByFullPath(subFolderFullPath);
-
-            // 変換
-            var convertObjects = new ConvertToAsset().ConvertCore(config);
-
-            // アセットパスを戻す
-            config.AssetPath = assetPath;
-
+            catch (Exception ex)
+            {
+                onError?.Invoke($"変換処理中にエラーが発生しました: {ex.Message}");
+                config.AssetPath = assetPath; // エラー時もパスを元に戻す
+                return null;
+            }
+            
             if (convertObjects != null && convertObjects.Count > 0)
             {
                 return convertObjects[0];

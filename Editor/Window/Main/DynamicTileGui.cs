@@ -85,14 +85,7 @@ namespace PLATEAU.Editor.Window.Main
                 if (!string.IsNullOrEmpty(path))
                 {
                     folderPathLabel.text = path;
-                    folderPathLabel.style.color = Color.white;
                     assetConfig.SetByFullPath(path);
-
-                    if (!assetConfig.ValidateAssetPath(out var errorMessage))
-                    {
-                        folderPathLabel.text = errorMessage;
-                        folderPathLabel.style.color = Color.red;
-                    }
                 }
             };
 
@@ -105,7 +98,10 @@ namespace PLATEAU.Editor.Window.Main
             });
 
             // 実行
-            execButton.clicked += Exec;
+            execButton.clicked += () =>
+            {
+                DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
+            };
         }
 
         private void AddExcludeObjectField()
@@ -149,16 +145,6 @@ namespace PLATEAU.Editor.Window.Main
                 }
             }
             removeObjectFieldButton.style.display = objectFieldList.childCount > 1 ? DisplayStyle.Flex : DisplayStyle.None;
-        }
-
-        private void Exec()
-        {
-            if (!assetConfig.ValidateAssetPath(out var errorMessage))
-            {
-                Dialogue.Display(errorMessage, "OK");
-                return;
-            }
-            DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
         }
 
         public void OnTabUnselect() { }
