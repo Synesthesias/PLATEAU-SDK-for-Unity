@@ -3,6 +3,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI;
 using PLATEAU.Util;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -84,7 +85,7 @@ namespace PLATEAU.Editor.Window.Main
                 if (!string.IsNullOrEmpty(path))
                 {
                     folderPathLabel.text = path;
-                    assetConfig.SetByFullPath(path);
+                    assetConfig.AssetPath = path;
                 }
             };
 
@@ -97,10 +98,7 @@ namespace PLATEAU.Editor.Window.Main
             });
 
             // 実行
-            execButton.clicked += () =>
-            {
-                DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
-            };
+            execButton.clicked += Export;
         }
 
         private void AddExcludeObjectField()
@@ -111,20 +109,29 @@ namespace PLATEAU.Editor.Window.Main
                 allowSceneObjects = true,
                 style = { marginTop = 4, marginRight = 10 }
             };
-            int index = objectFieldList.childCount;
+
+            objectField.userData = objectFieldList.childCount;
             objectField.RegisterValueChangedCallback(evt =>
             {
                 var newValue = evt.newValue as PLATEAUCityObjectGroup;
-                if (excludeObjects.Count > index)
+                int currentIndex = (int)objectField.userData;
+
+                if (newValue == null)
                 {
-                    excludeObjects[index] = newValue;
+                    if (excludeObjects.Count > currentIndex)
+                    {
+                        excludeObjects.RemoveAt(currentIndex);
+                    }
+                    return;
+                }
+
+                if (excludeObjects.Count > currentIndex)
+                {
+                    excludeObjects[currentIndex] = newValue;
                 }
                 else
                 {
-                    if (newValue != null)
-                    {
-                        excludeObjects.Add(evt.newValue as PLATEAUCityObjectGroup);
-                    }
+                    excludeObjects.Add(evt.newValue as PLATEAUCityObjectGroup);
                 }
             });
             objectFieldList.Add(objectField);
@@ -144,6 +151,16 @@ namespace PLATEAU.Editor.Window.Main
                 }
             }
             removeObjectFieldButton.style.display = objectFieldList.childCount > 1 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void Export()
+        {
+            if (string.IsNullOrEmpty(assetConfig.AssetPath))
+            {
+                Dialogue.Display("保存先フォルダを指定してください。", "OK");
+                return;
+            }
+            DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
         }
 
         public void OnTabUnselect() { }
