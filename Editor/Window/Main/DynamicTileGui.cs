@@ -119,13 +119,17 @@ namespace PLATEAU.Editor.Window.Main
             int index = objectFieldList.childCount;
             objectField.RegisterValueChangedCallback(evt =>
             {
+                var newValue = evt.newValue as PLATEAUCityObjectGroup;
                 if (excludeObjects.Count > index)
                 {
-                    excludeObjects[index] = evt.newValue as PLATEAUCityObjectGroup;
+                    excludeObjects[index] = newValue;
                 }
                 else
                 {
-                    excludeObjects.Add(evt.newValue as PLATEAUCityObjectGroup);
+                    if (newValue != null)
+                    {
+                        excludeObjects.Add(evt.newValue as PLATEAUCityObjectGroup);
+                    }
                 }
             });
             objectFieldList.Add(objectField);

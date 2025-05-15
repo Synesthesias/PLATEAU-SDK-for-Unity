@@ -39,6 +39,10 @@ namespace PLATEAU.Editor.Addressables
 
         /// <summary>
         /// 指定したアセットを指定グループにAddressableとして登録
+        /// <param name="assetPath">登録するアセットのパス</param>
+        /// <param name="address">設定するアドレス</param>
+        /// <param name="groupName">所属させるグループ名</param>
+        /// <param name="labels">アセットに設定するラベルのリスト</param>
         /// </summary>
         public static void RegisterAssetAsAddressable(
             string assetPath,
@@ -72,14 +76,20 @@ namespace PLATEAU.Editor.Addressables
                 entry = settings.CreateOrMoveEntry(guid, group);
             }
             entry.SetAddress(address);
-            
-            foreach (var label in labels)
+
+            if (labels != null)
             {
-                if (!settings.GetLabels().Contains(label))
+                foreach (var label in labels)
                 {
-                    settings.AddLabel(label, true);
+                    if (string.IsNullOrEmpty(label)) continue;
+                    
+                    if (!settings.GetLabels().Contains(label))
+                    {
+                        settings.AddLabel(label, true);
+                    }
+
+                    entry.SetLabel(label, true);
                 }
-                entry.SetLabel(label, true);
             }
         }
     }

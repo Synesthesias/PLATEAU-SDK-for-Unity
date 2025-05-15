@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
     <ui:Label tabindex="-1" text="テクスチャ解像度" parse-escape-sequences="true" display-tooltip-when-elided="true" />
-    <ui:DropdownField label="最大解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="0" />
-    <ui:DropdownField label="最小解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="4" />
-    <ui:Toggle label="LOD1の建物にテクスチャを貼る　" />
-    <ui:DropdownField label="グリッド分割" choices="1x1,2x2,3x3" index="0" name="DropdownField" />
+    <ui:DropdownField name="MaxResolutionDropdown" label="最大解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="0" />
+    <ui:DropdownField name="MinResolutionDropdown" label="最小解像度" choices="オリジナル, 1/2, 1/4, 1/8, 1/16" index="4" />
+    <ui:Toggle name="LOD1TextureToggle" label="LOD1の建物にテクスチャを貼る　" />
+    <ui:DropdownField label="グリッド分割" choices="1x1,2x2,3x3" index="0" name="GridDivisionDropdown" />
     <ui:VisualElement name="ObjectFieldRow" style="flex-direction: column; align-self: stretch;">
         <ui:VisualElement name="ObjectFieldLine" style="flex-direction: row; align-items: flex-start; justify-content: space-between;">
             <ui:Label text="低解像度化しないオブジェクト" style="min-width: 180px;" />

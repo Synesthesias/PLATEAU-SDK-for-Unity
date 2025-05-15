@@ -45,18 +45,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 assetConfig.SrcGameObj = group.gameObject;
 
                 // 変換実行
-                PrepareAndConvert(assetConfig, onError);
-
-                if (Selection.objects.Length == 0)
+                var convertedObject = PrepareAndConvert(assetConfig, onError);
+                if (convertedObject == null)
                 {
                     continue;
                 }
-
-                var selectObject = Selection.objects[0];
-                if (selectObject is GameObject selectedGameObject)
+                if (convertedObject != null)
                 {
-                    string prefabPath = $"{assetConfig.AssetPath}/{selectedGameObject.name}.prefab";
-                    PrefabUtility.SaveAsPrefabAsset(selectedGameObject, prefabPath);
+                    string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
+                    PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
 
                     // プレハブをAddressableに登録
                     AddressablesUtility.RegisterAssetAsAddressable(
@@ -75,7 +72,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
 
-        private static void PrepareAndConvert(ConvertToAssetConfig config, Action<string> onError)
+        private static GameObject PrepareAndConvert(ConvertToAssetConfig config, Action<string> onError)
         {
             var assetPath = config.AssetPath;
             string subFolderName = config.SrcGameObj.name;
@@ -90,10 +87,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             config.SetByFullPath(subFolderFullPath);
 
             // 変換
-            new ConvertToAsset().ConvertCore(config);
+            var convertObjects = new ConvertToAsset().ConvertCore(config);
 
             // アセットパスを戻す
             config.AssetPath = assetPath;
+
+            if (convertObjects != null && convertObjects.Count > 0)
+            {
+                return convertObjects[0];
+            }
+            return null;
         }
     }
 } 
