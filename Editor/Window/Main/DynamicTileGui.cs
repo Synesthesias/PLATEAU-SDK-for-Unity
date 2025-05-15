@@ -52,7 +52,6 @@ namespace PLATEAU.Editor.Window.Main
         private void InitializeState()
         {
             assetConfig = ConvertToAssetConfig.DefaultValue;
-            assetConfig.CheckEmptyAssetPathDir = false;
             assetConfig.AssetPath = prefabsSavePath;
             excludeObjects = new List<PLATEAUCityObjectGroup>();
         }
