@@ -86,7 +86,7 @@ namespace PLATEAU.CityExport.ModelConvert
             // ノード生成します。
             var node = Node.Create(trans.name);
             node.IsActive = trans.gameObject.activeInHierarchy;
-            var localPos = vertexConverter.Convert(trans.localPosition).ToPlateauVector();
+            var localPos = vertexConverter.ConvertOnlyCoordinateSystem(trans.localPosition).ToPlateauVector();
             node.LocalPosition = localPos;
             
             // スケールの座標変換の考え方
