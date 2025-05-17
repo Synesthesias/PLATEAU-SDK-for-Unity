@@ -139,7 +139,7 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            string customPath = "CustomPath_" + groupName;
+            string customPathName = "CustomPath_" + groupName;
             string profileName = "CustomProfile_" + groupName;
             if (!AddressablesUtility.TryCreateProfile(profileName, out var profileId))
             {
@@ -149,20 +149,20 @@ namespace PLATEAU.Editor.Addressables
             var profileSettings = settings.profileSettings;
             
             // プロファイル変数がなければ作成
-            if (!profileSettings.GetVariableNames().Contains(customPath))
+            if (!profileSettings.GetVariableNames().Contains(customPathName))
             {
-                profileSettings.CreateValue(customPath, path);
+                profileSettings.CreateValue(customPathName, path);
             }
 
             // そのプロファイルIDにのみ値をセット
-            profileSettings.SetValue(profileId, customPath, path);
+            profileSettings.SetValue(profileId, customPathName, path);
 
             // アクティブプロファイルをこのプロファイルに切り替え
             settings.activeProfileId = profileId;
 
             // グループのBuildPathとLoadPathに変数名をセット
-            bundledSchema.BuildPath.SetVariableByName(settings, path);
-            bundledSchema.LoadPath.SetVariableByName(settings, path);
+            bundledSchema.BuildPath.SetVariableByName(settings, customPathName);
+            bundledSchema.LoadPath.SetVariableByName(settings, customPathName);
 
             Debug.Log($"{groupName} の BuildPath/LoadPath を {path} に設定しました。");
         }

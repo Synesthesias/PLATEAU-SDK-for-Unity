@@ -59,8 +59,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var convertedObject = PrepareAndConvert(assetConfig, onError);
                 if (convertedObject == null)
                 {
-                    onError?.Invoke("変換に失敗しました。");
-                    return;
+                    Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
+                    continue;
                 }
                 
                 string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
@@ -73,9 +73,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     groupName,
                     new List<string> { AddressableLabel });
             }
-            
+
             if (!string.IsNullOrEmpty(buildFolderPath))
             {
+                if (!Directory.Exists(buildFolderPath))
+                {
+                    onError?.Invoke("指定されたビルドフォルダが存在しません。");
+                    return;
+                }
+
                 // ビルドパスを指定
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
 
