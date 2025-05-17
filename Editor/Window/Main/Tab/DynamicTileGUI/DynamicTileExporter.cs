@@ -64,7 +64,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
                 
                 string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
-                PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+                var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+                if (prefabAsset == null)
+                {
+                    Debug.LogWarning($"{cityObject.gameObject.name} プレハブの保存に失敗しました。");
+                    continue;
+                }
 
                 // プレハブをAddressableに登録
                 AddressablesUtility.RegisterAssetAsAddressable(
