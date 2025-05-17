@@ -23,10 +23,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         /// </summary>
         /// <param name="assetConfig">変換設定</param>
         /// <param name="excludeObjects">除外するオブジェクト</param>
+        /// <param name="buildFolderPath"></param>
         /// <param name="onError">エラー時のコールバック</param>
         public static void Export(
             ConvertToAssetConfig assetConfig,
             List<PLATEAUCityObjectGroup> excludeObjects,
+            string buildFolderPath,
             Action<string> onError = null)
         {
             var cityObjects = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>();
@@ -36,13 +38,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return;
             }
 
-            foreach (var group in cityObjects)
+            var groupName = AddressableGroupName;
+            if (!string.IsNullOrEmpty(buildFolderPath))
             {
-                if (excludeObjects.Contains(group))
+                // ビルドフォルダパスを指定する場合はグループを分ける
+                var directoryName = Path.GetFileName(
+                    buildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+                groupName += "_" + directoryName;
+            }
+
+            foreach (var cityObject in cityObjects)
+            {
+                if (excludeObjects.Contains(cityObject))
                 {
                     continue;
                 }
-                assetConfig.SrcGameObj = group.gameObject;
+                assetConfig.SrcGameObj = cityObject.gameObject;
 
                 // 変換実行
                 var convertedObject = PrepareAndConvert(assetConfig, onError);
@@ -59,8 +70,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 AddressablesUtility.RegisterAssetAsAddressable(
                     prefabPath,
                     prefabPath,
-                    AddressableGroupName,
+                    groupName,
                     new List<string> { AddressableLabel });
+            }
+            
+            if (!string.IsNullOrEmpty(buildFolderPath))
+            {
+                // ビルドパスを指定
+                AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
+
+                // ビルド対象外にする
+                AddressablesUtility.SetGroupIncludeInBuild(groupName, false);
             }
             
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");

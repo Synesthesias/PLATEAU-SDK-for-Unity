@@ -28,7 +28,8 @@ namespace PLATEAU.Editor.Window.Main
         private Label folderPathLabel;
         private DropdownField saveLocationDropdown;
         
-        private const string prefabsSavePath = "Assets/PLATEAUPrefabs";
+        private const string PrefabsSavePath = "Assets/PLATEAUPrefabs";
+        private const string CustomFolderLabel = "任意のフォルダに保存";
 
         public VisualElement CreateGui()
         {
@@ -53,7 +54,7 @@ namespace PLATEAU.Editor.Window.Main
         private void InitializeState()
         {
             assetConfig = ConvertToAssetConfig.DefaultValue;
-            assetConfig.AssetPath = prefabsSavePath;
+            assetConfig.AssetPath = PrefabsSavePath;
             excludeObjects = new List<PLATEAUCityObjectGroup>();
         }
 
@@ -85,16 +86,15 @@ namespace PLATEAU.Editor.Window.Main
                 if (!string.IsNullOrEmpty(path))
                 {
                     folderPathLabel.text = path;
-                    assetConfig.AssetPath = path;
                 }
             };
 
             // 保存先ドロップダウン
             saveLocationDropdown.RegisterValueChangedCallback(evt =>
             {
-                bool isFolderShow = evt.newValue == "任意のフォルダに保存";
+                bool isFolderShow = evt.newValue == CustomFolderLabel;
+                folderPathLabel.text = "";
                 folderSelectRow.style.display = isFolderShow ? DisplayStyle.Flex : DisplayStyle.None;
-                assetConfig.AssetPath = isFolderShow ? folderPathLabel.text : prefabsSavePath;
             });
 
             // 実行
@@ -160,7 +160,11 @@ namespace PLATEAU.Editor.Window.Main
                 Dialogue.Display("保存先フォルダを指定してください。", "OK");
                 return;
             }
-            DynamicTileExporter.Export(assetConfig, excludeObjects, msg => Dialogue.Display(msg, "OK"));
+            DynamicTileExporter.Export(
+                assetConfig,
+                excludeObjects,
+                folderPathLabel.text, 
+                msg => Dialogue.Display(msg, "OK"));
         }
 
         public void OnTabUnselect() { }
