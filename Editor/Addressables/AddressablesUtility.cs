@@ -168,48 +168,6 @@ namespace PLATEAU.Editor.Addressables
         }
 
         /// <summary>
-        /// 指定したグループの指定スキーマのIncludeInBuildフラグを設定します。
-        /// </summary>
-        /// <param name="groupName">グループ名</param>
-        /// <param name="includeInBuild">ビルドに含める場合はtrue、含めない場合はfalse</param>
-        public static void SetGroupIncludeInBuild(string groupName, bool includeInBuild)
-        {
-            var settings = RequireAddressableSettings();
-            if (settings == null)
-            {
-                return;
-            }
-
-            var group = settings.FindGroup(groupName);
-            if (group == null)
-            {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
-                return;
-            }
-
-            // スキーマIDでスキーマを取得
-            var schema = group.GetSchema<AddressableAssetGroupSchema>();
-            if (schema == null)
-            {
-                Debug.LogWarning($"スキーマが見つかりません");
-                return;
-            }
-
-            // IncludeInBuildプロパティをリフレクションでセット
-            var prop = schema.GetType().GetProperty("IncludeInBuild");
-            if (prop != null && prop.CanWrite)
-            {
-                prop.SetValue(schema, includeInBuild);
-                UnityEditor.EditorUtility.SetDirty(group);
-                Debug.Log($"{groupName} の IncludeInBuild を {includeInBuild} に設定しました。");
-            }
-            else
-            {
-                Debug.LogWarning($"IncludeInBuild プロパティがありません。");
-            }
-        }
-
-        /// <summary>
         /// 新しいAddressablesプロファイルを作成します。
         /// </summary>
         /// <param name="profileName">新しいプロファイル名</param>

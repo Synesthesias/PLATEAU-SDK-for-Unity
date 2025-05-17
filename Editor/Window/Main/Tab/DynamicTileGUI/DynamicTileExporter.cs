@@ -84,9 +84,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 // ビルドパスを指定
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
-
-                // ビルド対象外にする
-                AddressablesUtility.SetGroupIncludeInBuild(groupName, false);
             }
             
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
