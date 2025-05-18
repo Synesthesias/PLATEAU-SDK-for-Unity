@@ -28,15 +28,24 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         public void Convert(ConvertToAssetConfig conf)
         {
 #if UNITY_EDITOR
-            
             if (Directory.GetFileSystemEntries(Path.GetFullPath(conf.AssetPath)).Length > 0)
             {
                 Debug.LogError("失敗：出力先は空のディレクトリを指定してください");
                 return;
             }
 
+            ConvertCore(conf);
+            Dialogue.Display("Assetsへの保存が完了しました！", "OK");
+#else
+            throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
+#endif
+        }
+        
+        public List<GameObject> ConvertCore(ConvertToAssetConfig conf)
+        {
+#if UNITY_EDITOR
             using var progress = new ProgressBar();
-            
+
             var srcTransforms = new UniqueParentTransformList(conf.SrcGameObj.transform);
             var srcTrans = conf.SrcGameObj.transform;
             
@@ -98,7 +107,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             if (fbxs.Length == 0)
             {
                 Debug.LogError("失敗： fbxファイルが生成されませんでした。");
-                return;
+                return new List<GameObject>();
             }
 
             var dstParent = srcTrans.parent;
@@ -139,10 +148,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             Selection.objects = newTransforms.Get.Select(t => (Object)t.gameObject).ToArray();
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-
-            Dialogue.Display("Assetsへの保存が完了しました！", "OK");
             
-#else
+            return newTransforms.Get.Select(t => t.gameObject).ToList();
+#else 
             throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
 #endif
         }
