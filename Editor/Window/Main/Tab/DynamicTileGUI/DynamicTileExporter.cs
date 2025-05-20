@@ -156,7 +156,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         
         private static GameObject ReplaceWithDynamicTile(string objectName, string originalAddress, int downSampleLevel, Transform parent)
         {
-            // シーン内でobjectNameに一致するGameObjectを検索して削除
             GameObject oldObj = GameObject.Find(objectName);
             if (oldObj != null)
             {
@@ -169,7 +168,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             var dynamicTileComp = newObj.AddComponent<PLATEAU.DynamicTile.PLATEAUDynamicTile>();
             dynamicTileComp.OriginalAddress = originalAddress;
             newObj.transform.SetParent(parent, false);
-
+            
+            // 画面の表示上、DynamicTileをロードする
+            dynamicTileComp.LoadTile();
+            
             return newObj;
         }
     }

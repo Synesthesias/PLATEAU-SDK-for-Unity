@@ -19,6 +19,12 @@ namespace PLATEAU.DynamicTile
             PLATEAUDynamicTile[] dynamicTiles = GameObject.FindObjectsOfType<PLATEAUDynamicTile>();
             foreach (var tile in dynamicTiles)
             {
+                // 子要素をすべて削除
+                for (int i = tile.transform.childCount - 1; i >= 0; i--)
+                {
+                    DestroyImmediate(tile.transform.GetChild(i).gameObject);
+                }
+                
                 Load(tile, downSampleLevel);
             }
         }
