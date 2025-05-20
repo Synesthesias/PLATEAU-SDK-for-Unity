@@ -1,5 +1,6 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Addressables;
 using PLATEAU.Util;
 using UnityEditor;
@@ -53,6 +54,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 {
                     continue;
                 }
+                if (cityObject == null || cityObject.gameObject == null)
+                {
+                    Debug.LogWarning($"GameObjectがnullです。");
+                    continue;
+                }
+    
                 assetConfig.SrcGameObj = cityObject.gameObject;
 
                 // 変換実行
@@ -67,16 +74,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
                 if (prefabAsset == null)
                 {
-                    Debug.LogWarning($"{cityObject.gameObject.name} プレハブの保存に失敗しました。");
+                    Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
                     continue;
                 }
 
                 // プレハブをAddressableに登録
+                var downSampleLevel = 0; // TODO: ダウンサンプルレベルごとに登録
+                var address = convertedObject.name + "_down_" + downSampleLevel; // TODO : タイルごとにAddressを設定する
                 AddressablesUtility.RegisterAssetAsAddressable(
                     prefabPath,
-                    prefabPath,
+                    address,
                     groupName,
                     new List<string> { AddressableLabel });
+
+                ReplaceWithDynamicTile(
+                    convertedObject.name,
+                    convertedObject.name,
+                    downSampleLevel,
+                    convertedObject.transform.parent);
             }
 
             if (!string.IsNullOrEmpty(buildFolderPath))
@@ -89,6 +104,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 // ビルドパスを指定
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
+            }
+
+            // DynamicTile管理用GameObjectを生成
+            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (manager == null)
+            {
+                GameObject managerObj = new GameObject("DynamicTileManager");
+                manager = managerObj.AddComponent<PLATEAUTileManager>();
             }
             
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
@@ -129,6 +152,25 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return convertObjects[0];
             }
             return null;
+        }
+        
+        private static GameObject ReplaceWithDynamicTile(string objectName, string originalAddress, int downSampleLevel, Transform parent)
+        {
+            // シーン内でobjectNameに一致するGameObjectを検索して削除
+            GameObject oldObj = GameObject.Find(objectName);
+            if (oldObj != null)
+            {
+                GameObject.DestroyImmediate(oldObj);
+            }
+
+            GameObject newObj = new GameObject(objectName);
+            
+            // PLATEAUDynamicTileコンポーネントを付与し、Addressをセット
+            var dynamicTileComp = newObj.AddComponent<PLATEAU.DynamicTile.PLATEAUDynamicTile>();
+            dynamicTileComp.OriginalAddress = originalAddress;
+            newObj.transform.SetParent(parent, false);
+
+            return newObj;
         }
     }
 } 
