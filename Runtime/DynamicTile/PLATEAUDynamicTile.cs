@@ -38,7 +38,7 @@ namespace PLATEAU.DynamicTile
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (manager != null)
             {
-                manager.Load(this, 0); // ここで tile を渡す
+                manager.Load(this, 0);
                 Debug.Log($"{this.name} のタイルをロードしました");
             }
             else
@@ -53,7 +53,7 @@ namespace PLATEAU.DynamicTile
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (manager != null)
             {
-                manager.Unload(this, 0); // ここで tile を渡す
+                manager.Unload(this, 0);
                 Debug.Log($"{this.name} のタイルをアンロードしました");
             }
             else

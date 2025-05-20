@@ -24,7 +24,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 指定したDynamicTile（アドレス名・親情報）をもとにAddressablesからロードする
+        /// 指定したDynamicTileをもとにAddressablesからロードする
         /// </summary>
         public void Load(PLATEAUDynamicTile tile, int downSampleLevel)
         {
@@ -47,7 +47,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// Addressとダウンサンプルレベル・親Transformを指定してAddressablesからロードする
+        /// Addressを指定してAddressablesからロードする
         /// </summary>
         private void LoadByAddress(string address, Transform parent = null)
         {
@@ -66,7 +66,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 指定したDynamicTile（アドレス名）に対応するAddressablesインスタンスをアンロードする
+        /// 指定したDynamicTileに対応するAddressablesインスタンスをアンロードする
         /// </summary>
         public void Unload(PLATEAUDynamicTile tile, int downSampleLevel)
         {
