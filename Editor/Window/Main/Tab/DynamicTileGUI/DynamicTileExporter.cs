@@ -48,6 +48,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 groupName += "_" + directoryName;
             }
 
+            // DynamicTile管理用GameObjectを生成
+            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (manager == null)
+            {
+                GameObject managerObj = new GameObject("DynamicTileManager");
+                manager = managerObj.AddComponent<PLATEAUTileManager>();
+            }
+
             foreach (var cityObject in cityObjects)
             {
                 if (excludeObjects.Contains(cityObject))
@@ -106,14 +114,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
             }
 
-            // DynamicTile管理用GameObjectを生成
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (manager == null)
-            {
-                GameObject managerObj = new GameObject("DynamicTileManager");
-                manager = managerObj.AddComponent<PLATEAUTileManager>();
-            }
-            
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
 
