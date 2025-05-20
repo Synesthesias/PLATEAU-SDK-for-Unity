@@ -16,6 +16,17 @@ namespace PLATEAU.DynamicTile
             set => originalAddress = value;
         }
 
+        private PLATEAUTileManager _cachedManager;
+        
+        private PLATEAUTileManager GetTileManager()
+        {
+            if (_cachedManager == null)
+            {
+                _cachedManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            }
+            return _cachedManager;
+        }
+
         /// <summary>
         /// 指定したダウンサンプルレベルのAddressを取得
         /// </summary>
@@ -32,14 +43,17 @@ namespace PLATEAU.DynamicTile
             return GetAddress(0);
         }
 
-       [ContextMenu("DynamicTile/Load Tile")]
+        [ContextMenu("DynamicTile/Load Tile")]
         public void LoadTile()
         {
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            var manager = GetTileManager();
             if (manager != null)
             {
-                manager.Load(this, 0);
-                Debug.Log($"{this.name} のタイルをロードしました");
+                bool success = manager.Load(this, 0);
+                if (success)
+                {
+                    Debug.Log($"{this.name} のタイルをロードしました");
+                }
             }
             else
             {
@@ -50,11 +64,14 @@ namespace PLATEAU.DynamicTile
         [ContextMenu("DynamicTile/Unload Tile")]
         public void UnloadTile()
         {
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            var manager = GetTileManager();
             if (manager != null)
             {
-                manager.Unload(this, 0);
-                Debug.Log($"{this.name} のタイルをアンロードしました");
+                bool success = manager.Unload(this, 0);
+                if (success)
+                {
+                    Debug.Log($"{this.name} のタイルをアンロードしました");
+                }
             }
             else
             {

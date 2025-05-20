@@ -22,7 +22,7 @@ namespace PLATEAU.DynamicTile
                 // 子要素をすべて削除
                 for (int i = tile.transform.childCount - 1; i >= 0; i--)
                 {
-                    DestroyImmediate(tile.transform.GetChild(i).gameObject);
+                    Destroy(tile.transform.GetChild(i).gameObject);
                 }
                 
                 Load(tile, downSampleLevel);
@@ -32,24 +32,23 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 指定したDynamicTileをもとにAddressablesからロードする
         /// </summary>
-        public void Load(PLATEAUDynamicTile tile, int downSampleLevel)
+        public bool Load(PLATEAUDynamicTile tile, int downSampleLevel)
         {
-            string address;
-            if (excludeTiles.Contains(tile))
-            {
-                address = tile.GetOriginalAddress();
-            }
-            else
-            {
-                address = tile.GetAddress(downSampleLevel);
-            }
+            string address = GetTileAddress(tile, downSampleLevel);
             if (string.IsNullOrEmpty(address))
             {
                 Debug.LogWarning($"指定したアドレスが見つかりません: {tile.name}");
-                return;
+                return false;
+            }
+            // 既にロードされている場合はスキップ
+            if (loadedObjects.ContainsKey(address))
+            {
+                Debug.Log($"Already loaded: {address}");
+                return true;
             }
             Transform parent = tile.transform;
             LoadByAddress(address, parent);
+            return true;
         }
 
         /// <summary>
@@ -62,11 +61,15 @@ namespace PLATEAU.DynamicTile
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     loadedObjects[address] = handle.Result;
-                    Debug.Log($"Loaded: {address}");
                 }
                 else
                 {
                     Debug.LogError($"Failed to load: {address}");
+                    // 失敗の詳細情報を記録
+                    if (handle.OperationException != null)
+                    {
+                        Debug.LogException(handle.OperationException);
+                    }
                 }
             };
         }
@@ -74,23 +77,16 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 指定したDynamicTileに対応するAddressablesインスタンスをアンロードする
         /// </summary>
-        public void Unload(PLATEAUDynamicTile tile, int downSampleLevel)
+        public bool Unload(PLATEAUDynamicTile tile, int downSampleLevel)
         {
-            string address;
-            if (excludeTiles.Contains(tile))
-            {
-                address = tile.GetOriginalAddress();
-            }
-            else
-            {
-                address = tile.GetAddress(downSampleLevel);
-            }
+            string address = GetTileAddress(tile, downSampleLevel);
             if (string.IsNullOrEmpty(address))
             {
                 Debug.LogWarning($"指定したアドレスが見つかりません: {tile.name}");
-                return;
+                return false;
             }
             UnloadByAddress(address);
+            return true;
         }
 
         /// <summary>
@@ -102,12 +98,37 @@ namespace PLATEAU.DynamicTile
             {
                 Addressables.ReleaseInstance(loadedObjects[address]);
                 loadedObjects.Remove(address);
-                Debug.Log($"Unloaded: {address}");
             }
             else
             {
                 Debug.LogWarning($"Object not loaded: {address}");
             }
+        }
+
+        /// <summary>
+        /// タイルのアドレスを取得する（除外リストを考慮）
+        /// </summary>
+        private string GetTileAddress(PLATEAUDynamicTile tile, int downSampleLevel)
+        {
+            if (tile == null) return null;
+            return excludeTiles.Contains(tile)
+                ? tile.GetOriginalAddress()
+                : tile.GetAddress(downSampleLevel);
+        }
+
+        
+        /// <summary>
+        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// </summary>
+        private void OnDestroy()
+        {
+            // すべてのロード済みオブジェクトをアンロード
+            foreach (var address in new List<string>(loadedObjects.Keys))
+            {
+                UnloadByAddress(address);
+            }
+            // ディクショナリをクリア
+            loadedObjects.Clear();
         }
     }
 }

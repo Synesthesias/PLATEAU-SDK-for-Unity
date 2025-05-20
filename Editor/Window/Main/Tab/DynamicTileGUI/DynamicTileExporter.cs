@@ -96,7 +96,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     new List<string> { AddressableLabel });
 
                 ReplaceWithDynamicTile(
-                    convertedObject.name,
+                    convertedObject,
                     convertedObject.name,
                     downSampleLevel,
                     convertedObject.transform.parent);
@@ -154,13 +154,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             return null;
         }
         
-        private static GameObject ReplaceWithDynamicTile(string objectName, string originalAddress, int downSampleLevel, Transform parent)
+        private static GameObject ReplaceWithDynamicTile(GameObject oldObj, string originalAddress, int downSampleLevel, Transform parent)
         {
-            GameObject oldObj = GameObject.Find(objectName);
-            if (oldObj != null)
-            {
-                GameObject.DestroyImmediate(oldObj);
-            }
+            var objectName = oldObj.name;
+            GameObject.DestroyImmediate(oldObj);
 
             GameObject newObj = new GameObject(objectName);
             
