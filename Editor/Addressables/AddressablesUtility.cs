@@ -3,6 +3,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.AddressableAssets.Build;
 
 namespace PLATEAU.Editor.Addressables
 {
@@ -193,6 +194,31 @@ namespace PLATEAU.Editor.Addressables
             newProfileId = profileSettings.AddProfile(profileName, templateProfileId);
             Debug.Log($"新しいプロファイルを作成: {profileName} (ID: {newProfileId})");
             return true;
+        }
+
+        /// <summary>
+        /// Addressablesのビルドを実行します。
+        /// </summary>
+        public static void BuildAddressables()
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
+                return;
+            }
+
+            // Addressablesのビルドを実行（out引数で結果を取得）
+            AddressablesPlayerBuildResult result;
+            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out result);
+            if (!string.IsNullOrEmpty(result.Error))
+            {
+                Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+            }
+            else
+            {
+                Debug.Log("Addressablesのビルドが完了しました。");
+            }
         }
     }
 } 
