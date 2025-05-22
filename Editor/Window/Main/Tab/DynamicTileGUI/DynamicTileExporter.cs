@@ -123,7 +123,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
             
             // Addressablesのビルドを実行
-            AddressablesUtility.BuildAddressables();
+            // AddressablesUtility.BuildAddressables();
 
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }

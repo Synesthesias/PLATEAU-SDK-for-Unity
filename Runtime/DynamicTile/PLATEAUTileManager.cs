@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -8,53 +9,46 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUTileManager : MonoBehaviour
     {
         private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
+        private List<string> addressCatalog = new List<string>();
 
         [SerializeField]
-        private List<PLATEAUDynamicTile> excludeTiles = new List<PLATEAUDynamicTile>(); // 除外タイルリスト
+        private List<string> excludeTiles = new List<string>(); // 除外Addressリスト
+
+        private const string DynamicTileLabelName = "DynamicTile";
 
         void Start()
         {
-            // TODO: カメラ位置・視野に応じてロード処理を行うようにする
-            int downSampleLevel = 0; // 仮のダウンサンプルレベル
-            PLATEAUDynamicTile[] dynamicTiles = GameObject.FindObjectsOfType<PLATEAUDynamicTile>();
-            foreach (var tile in dynamicTiles)
+            var cityModel = FindObjectOfType<PLATEAUInstancedCityModel>();
+            if (cityModel == null)
             {
-                // 子要素をすべて削除
-                for (int i = tile.transform.childCount - 1; i >= 0; i--)
-                {
-                    Destroy(tile.transform.GetChild(i).gameObject);
-                }
-                
-                Load(tile, downSampleLevel);
+                Debug.LogWarning("都市モデルが見つかりません。");
+                return;
             }
-        }
+            
+            // Addressablesの初期化を非同期で行い、完了後にカタログ（アドレス一覧）を取得
+            Addressables.InitializeAsync().Completed += handle =>
+            {
+                addressCatalog.Clear();
 
-        /// <summary>
-        /// 指定したDynamicTileをもとにAddressablesからロードする
-        /// </summary>
-        public bool Load(PLATEAUDynamicTile tile, int downSampleLevel)
-        {
-            string address = GetTileAddress(tile, downSampleLevel);
-            if (string.IsNullOrEmpty(address))
-            {
-                Debug.LogWarning($"指定したアドレスが見つかりません: {tile.name}");
-                return false;
-            }
-            // 既にロードされている場合はスキップ
-            if (loadedObjects.ContainsKey(address))
-            {
-                Debug.Log($"Already loaded: {address}");
-                return true;
-            }
-            Transform parent = tile.transform;
-            LoadByAddress(address, parent);
-            return true;
+                // Addressablesのラベルを使用して、アドレスを取得
+                Addressables.LoadResourceLocationsAsync(DynamicTileLabelName).Completed += locHandle =>
+                {
+                    foreach (var loc in locHandle.Result)
+                    {
+                        var address = loc.PrimaryKey;
+                        addressCatalog.Add(address);
+
+                        // TODO：カメラに応じてLoadする
+                        LoadByAddress(address, cityModel.gameObject.transform);
+                    }
+                };
+            };
         }
 
         /// <summary>
         /// Addressを指定してAddressablesからロードする
         /// </summary>
-        private void LoadByAddress(string address, Transform parent = null)
+        public void LoadByAddress(string address, Transform parent = null)
         {
             Addressables.InstantiateAsync(address, parent).Completed += handle =>
             {
@@ -75,24 +69,9 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 指定したDynamicTileに対応するAddressablesインスタンスをアンロードする
-        /// </summary>
-        public bool Unload(PLATEAUDynamicTile tile, int downSampleLevel)
-        {
-            string address = GetTileAddress(tile, downSampleLevel);
-            if (string.IsNullOrEmpty(address))
-            {
-                Debug.LogWarning($"指定したアドレスが見つかりません: {tile.name}");
-                return false;
-            }
-            UnloadByAddress(address);
-            return true;
-        }
-
-        /// <summary>
         /// Addressで指定したインスタンスをAddressablesからアンロードする
         /// </summary>
-        private void UnloadByAddress(string address)
+        public void UnloadByAddress(string address)
         {
             if (loadedObjects.ContainsKey(address))
             {
@@ -105,18 +84,6 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        /// <summary>
-        /// タイルのアドレスを取得する（除外リストを考慮）
-        /// </summary>
-        private string GetTileAddress(PLATEAUDynamicTile tile, int downSampleLevel)
-        {
-            if (tile == null) return null;
-            return excludeTiles.Contains(tile)
-                ? tile.GetOriginalAddress()
-                : tile.GetAddress(downSampleLevel);
-        }
-
-        
         /// <summary>
         /// 破棄時にすべてのロード済みオブジェクトをアンロード
         /// </summary>

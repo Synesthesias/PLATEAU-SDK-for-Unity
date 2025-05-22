@@ -199,13 +199,20 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// Addressablesのビルドを実行します。
         /// </summary>
-        public static void BuildAddressables()
+        /// <param name="cleanCache">ビルド前にキャッシュを消す場合はtrue</param>
+        public static void BuildAddressables(bool cleanCache = false)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
                 Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
                 return;
+            }
+
+            if (cleanCache)
+            {
+                UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.CleanPlayerContent();
+                Debug.Log("Addressablesのキャッシュをクリアしました。");
             }
 
             // Addressablesのビルドを実行（out引数で結果を取得）
