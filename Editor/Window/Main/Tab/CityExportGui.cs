@@ -106,9 +106,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         }
                     }
                     this.exportHiddenObject = PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
+                    
+                    // 座標軸の向きを選択するUI
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
-
                     coordinateSystemGui.Draw();
                     fileFormatSpecificGui.SetCoordinateSystem(coordinateSystemGui.SelectedCoordinateSystem);
                 }
