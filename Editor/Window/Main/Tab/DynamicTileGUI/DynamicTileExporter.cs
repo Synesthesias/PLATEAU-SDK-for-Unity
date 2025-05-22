@@ -97,19 +97,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
 
                 // プレハブをAddressableに登録
-                var downSampleLevel = 0; // TODO: ダウンサンプルレベルごとに登録
-                var address = prefabAsset.name + "_down_" + downSampleLevel; // TODO : タイルごとにAddressを設定する
+                // TODO : タイルごとにAddress名を設定する
+                // tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)
+                var address = prefabAsset.name;
                 AddressablesUtility.RegisterAssetAsAddressable(
                     prefabPath,
                     address,
                     groupName,
                     new List<string> { AddressableLabel });
 
-                ReplaceWithDynamicTile(
-                    convertedObject,
-                    prefabAsset.name,
-                    downSampleLevel,
-                    convertedObject.transform.parent);
+                // シーン上のオブジェクトを削除
+                GameObject.DestroyImmediate(convertedObject);
             }
 
             if (!string.IsNullOrEmpty(buildFolderPath))
@@ -123,6 +121,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 // ビルドパスを指定
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
             }
+            
+            // Addressablesのビルドを実行
+            AddressablesUtility.BuildAddressables();
 
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
@@ -163,21 +164,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return convertObjects[0];
             }
             return null;
-        }
-        
-        private static GameObject ReplaceWithDynamicTile(GameObject oldObj, string originalAddress, int downSampleLevel, Transform parent)
-        {
-            var objectName = oldObj.name;
-            GameObject.DestroyImmediate(oldObj);
-
-            GameObject newObj = new GameObject(objectName);
-            
-            // PLATEAUDynamicTileコンポーネントを付与し、Addressをセット
-            var dynamicTileComp = newObj.AddComponent<PLATEAU.DynamicTile.PLATEAUDynamicTile>();
-            dynamicTileComp.OriginalAddress = originalAddress;
-            newObj.transform.SetParent(parent, false);
-            
-            return newObj;
         }
     }
 } 
