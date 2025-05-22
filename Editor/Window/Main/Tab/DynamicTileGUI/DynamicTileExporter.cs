@@ -70,15 +70,25 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
     
                 assetConfig.SrcGameObj = cityObject.gameObject;
 
-                // 変換実行
-                var convertedObject = PrepareAndConvert(assetConfig, onError);
+                var baseFolderPath = Path.Combine(assetConfig.AssetPath, cityObject.gameObject.name);
+                var saveFolderPath = baseFolderPath;
+                int count = 1;
+                // 同名のディレクトリが存在する場合は、_1, _2, ... のように連番を付けて保存
+                while (Directory.Exists(saveFolderPath))
+                {
+                    saveFolderPath = $"{baseFolderPath}_{count}";
+                    count++;
+                }
+                
+                var convertedObject = PrepareAndConvert(assetConfig, saveFolderPath, onError);
                 if (convertedObject == null)
                 {
                     Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
                     continue;
                 }
                 
-                string prefabPath = $"{assetConfig.AssetPath}/{convertedObject.name}.prefab";
+                // TODO: タイルごとにプレハブを保存する
+                string prefabPath = saveFolderPath + ".prefab";
                 var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
                 if (prefabAsset == null)
                 {
@@ -88,7 +98,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 // プレハブをAddressableに登録
                 var downSampleLevel = 0; // TODO: ダウンサンプルレベルごとに登録
-                var address = convertedObject.name + "_down_" + downSampleLevel; // TODO : タイルごとにAddressを設定する
+                var address = prefabAsset.name + "_down_" + downSampleLevel; // TODO : タイルごとにAddressを設定する
                 AddressablesUtility.RegisterAssetAsAddressable(
                     prefabPath,
                     address,
@@ -97,7 +107,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 ReplaceWithDynamicTile(
                     convertedObject,
-                    convertedObject.name,
+                    prefabAsset.name,
                     downSampleLevel,
                     convertedObject.transform.parent);
             }
@@ -117,22 +127,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
 
-        private static GameObject PrepareAndConvert(ConvertToAssetConfig config, Action<string> onError)
+        private static GameObject PrepareAndConvert(
+            ConvertToAssetConfig config,
+            string saveFolderPath,
+            Action<string> onError)
         {
             var assetPath = config.AssetPath;
-            string subFolderName = config.SrcGameObj.name;
-            string subFolderFullPath = Path.Combine(assetPath, subFolderName);
             List<GameObject> convertObjects = null;
             
             try
             {
-                if (!Directory.Exists(subFolderFullPath))
+                if (!Directory.Exists(saveFolderPath))
                 {
-                    Directory.CreateDirectory(subFolderFullPath);
+                    Directory.CreateDirectory(saveFolderPath);
                 }
                 
                 // AssetDatabase用のパスに変換
-                config.SetByFullPath(subFolderFullPath);
+                config.SetByFullPath(saveFolderPath);
 
                 // 変換
                 convertObjects = new ConvertToAsset().ConvertCore(config);
@@ -165,9 +176,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             var dynamicTileComp = newObj.AddComponent<PLATEAU.DynamicTile.PLATEAUDynamicTile>();
             dynamicTileComp.OriginalAddress = originalAddress;
             newObj.transform.SetParent(parent, false);
-            
-            // 画面の表示上、DynamicTileをロードする
-            dynamicTileComp.LoadTile();
             
             return newObj;
         }
