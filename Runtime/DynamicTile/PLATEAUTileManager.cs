@@ -66,6 +66,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async void Load(string address, Transform parent = null)
         {
+            if (loadedObjects.ContainsKey(address))
+            {
+                Debug.LogWarning($"アセット {address} は既にロードされています");
+                return;
+            }
+
             try
             {
                 var instance = await addressableLoader.InstantiateAssetAsync(address, parent);
@@ -86,6 +92,12 @@ namespace PLATEAU.DynamicTile
         /// <param name="address"></param>
         public void Unload(string address)
         {
+            if (!loadedObjects.ContainsKey(address))
+            {
+                Debug.LogWarning($"アセット {address} はロードされていません");
+                return;
+            }
+
             if (loadedObjects.TryGetValue(address, out var instance))
             {
                 try
@@ -123,6 +135,17 @@ namespace PLATEAU.DynamicTile
         /// <param name="tile"></param>
         public void AddTile(PLATEAUDynamicTile tile)
         {
+            if (tile == null)
+            {
+                Debug.LogWarning("nullのタイルは追加できません");
+                return;
+            }
+            
+            if (dynamicTiles.Contains(tile))
+            {
+                Debug.LogWarning("既に追加済みのタイルです");
+                return;
+            }
             dynamicTiles.Add(tile);
         }
     }

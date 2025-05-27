@@ -13,6 +13,7 @@ namespace PLATEAU.DynamicTile
     {
         /// <summary>
         /// Addressからアセットをインスタンス化します
+        /// 注意: 返されたGameObjectは呼び出し側でAddressables.ReleaseInstanceを使用して解放する必要があります
         /// </summary>
         public async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
         {

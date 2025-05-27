@@ -88,8 +88,7 @@ namespace PLATEAU.Editor.Addressables
             string assetPath,
             string address,
             string groupName,
-            List<string> labels,
-            bool packSeparately = false)
+            List<string> labels)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -193,12 +192,6 @@ namespace PLATEAU.Editor.Addressables
             {
                 profileSettings.CreateValue(pathVar, path);
             }
-            if (!profileSettings.GetVariableNames().Contains(pathVar))
-            {
-                profileSettings.CreateValue(pathVar, path);
-            }
-
-            profileSettings.SetValue(settings.activeProfileId, pathVar, path);
             profileSettings.SetValue(settings.activeProfileId, pathVar, path);
 
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, pathVar);
@@ -260,9 +253,8 @@ namespace PLATEAU.Editor.Addressables
                 Debug.Log("Addressablesのキャッシュをクリアしました。");
             }
 
-            // Addressablesのビルドを実行（out引数で結果を取得）
-            AddressablesPlayerBuildResult result;
-            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out result);
+            // Addressablesのビルドを実行
+            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
             if (!string.IsNullOrEmpty(result.Error))
             {
                 Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");

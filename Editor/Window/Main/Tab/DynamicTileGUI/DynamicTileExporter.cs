@@ -103,9 +103,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             if (isExcludeAssetFolder)
             {
                 // Remote用のプロファイルを作成
-                AddressablesUtility.SetOrCreateProfile(groupName);
-                AddressablesUtility.SetRemoteProfileSettings(buildFolderPath, groupName);
-                AddressablesUtility.SetGroupLoadAndBuildPath(groupName);
+                var profileID = AddressablesUtility.SetOrCreateProfile(groupName);
+                if (!string.IsNullOrEmpty(profileID))
+                {
+                    AddressablesUtility.SetRemoteProfileSettings(buildFolderPath, groupName);
+                    AddressablesUtility.SetGroupLoadAndBuildPath(groupName);
+                }
             }
             else
             {

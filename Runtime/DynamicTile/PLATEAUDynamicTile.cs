@@ -11,16 +11,20 @@ namespace PLATEAU.DynamicTile
     {
         [SerializeField]
         private string address;
+        public string Address => address;
         
         [SerializeField]
         private Transform parent;
+        public Transform Parent => parent;
         
         [SerializeField]
         private bool isExcluded;
+        public bool IsExcluded => isExcluded;
 
         // TODO: Extentの取得
         [SerializeField]
-        private Bounds Extent;
+        private Bounds extent;
+        public Bounds Extent => extent;
 
         public PLATEAUDynamicTile(string address)
         {
