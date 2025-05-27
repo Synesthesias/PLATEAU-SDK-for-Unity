@@ -161,6 +161,18 @@ namespace PLATEAU.Editor.Addressables
         /// </summary>
         public static void SetRemoteProfileSettings(string path, string pathVar)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogError("pathパラメータが無効です。");
+                return;
+            }
+            
+            if (string.IsNullOrEmpty(pathVar))
+            {
+                Debug.LogError("pathVarパラメータが無効です。");
+                return;
+            }
+            
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
