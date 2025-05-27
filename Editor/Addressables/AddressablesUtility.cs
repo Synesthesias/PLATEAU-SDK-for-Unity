@@ -4,6 +4,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor.AddressableAssets.Build;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace PLATEAU.Editor.Addressables
 {
@@ -28,6 +29,7 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// 指定した名前のグループを取得。なければ新規作成。
         /// </summary>
+        /// <param name="groupName">グループ名</param>
         public static AddressableAssetGroup GetOrCreateGroup(string groupName)
         {
             var settings = RequireAddressableSettings();
@@ -55,9 +57,26 @@ namespace PLATEAU.Editor.Addressables
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
 
+            settings.DefaultGroup = group; // デフォルトグループに設定
             return group;
         }
+        
+        public static AddressableAssetGroup GetDefaultGroup()
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                return null;
+            }
 
+            var group = settings.DefaultGroup;
+            if (group == null)
+            {
+                Debug.LogWarning("デフォルトグループが設定されていません。");
+            }
+            return group;
+        }
+        
         /// <summary>
         /// 指定したアセットを指定グループにAddressableとして登録
         /// <param name="assetPath">登録するアセットのパス</param>
@@ -69,7 +88,8 @@ namespace PLATEAU.Editor.Addressables
             string assetPath,
             string address,
             string groupName,
-            List<string> labels)
+            List<string> labels,
+            bool packSeparately = false)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -117,8 +137,7 @@ namespace PLATEAU.Editor.Addressables
         /// 指定したグループのロードパス(LoadPath)とビルドパス(buildPath)を変更します。
         /// </summary>
         /// <param name="groupName">グループ名</param>
-        /// <param name="path">新しいパス（例: "Assets/AddressableAssetsData/BuildPath"）</param>
-        public static void SetGroupLoadAndBuildPath(string groupName, string path)
+        public static void SetGroupLoadAndBuildPath(string groupName)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -140,62 +159,92 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            string customPathName = "CustomPath_" + groupName;
-            string profileName = "CustomProfile_" + groupName;
-            if (!AddressablesUtility.TryCreateProfile(profileName, out var profileId))
-            {
-                Debug.LogError($"プロファイルの作成に失敗しました: {profileName}");
-                return;
-            }
-            var profileSettings = settings.profileSettings;
+            string buildPathVar = "CatalogBuildPath";
+            string loadPathVar = "CatalogLoadPath";
             
-            // プロファイル変数がなければ作成
-            if (!profileSettings.GetVariableNames().Contains(customPathName))
-            {
-                profileSettings.CreateValue(customPathName, path);
-            }
-
-            // そのプロファイルIDにのみ値をセット
-            profileSettings.SetValue(profileId, customPathName, path);
-
-            // アクティブプロファイルをこのプロファイルに切り替え
-            settings.activeProfileId = profileId;
-
             // グループのBuildPathとLoadPathに変数名をセット
-            bundledSchema.BuildPath.SetVariableByName(settings, customPathName);
-            bundledSchema.LoadPath.SetVariableByName(settings, customPathName);
-
-            Debug.Log($"{groupName} の BuildPath/LoadPath を {path} に設定しました。");
+            bundledSchema.BuildPath.SetVariableByName(settings, buildPathVar);
+            bundledSchema.LoadPath.SetVariableByName(settings, loadPathVar);
+            
+            // グループの設定
+            bundledSchema.IncludeAddressInCatalog = true;
+            bundledSchema.IncludeGUIDInCatalog = true;
+            bundledSchema.IncludeLabelsInCatalog = true;
+            bundledSchema.IncludeInBuild = true;
+            bundledSchema.AssetLoadMode = AssetLoadMode.AllPackedAssetsAndDependencies;
         }
-
+        
         /// <summary>
-        /// 新しいAddressablesプロファイルを作成します。
+        /// プロファイルを設定します。
         /// </summary>
-        /// <param name="profileName">新しいプロファイル名</param>
-        /// <param name="templateProfileName">テンプレートとするプロファイル名（省略時は"Default"）</param>
-        /// <returns>作成したプロファイルのID。失敗時はnull。</returns>
-        private static bool TryCreateProfile(string profileName, out string newProfileId, string templateProfileName = "Default")
+        public static void SetRemoteProfileSettings(string path)
         {
-            newProfileId = null;
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
-                return false;
+                return;
             }
+            
+            // カタログ設定
+            settings.BuildRemoteCatalog = true;
+            
+            // Remoteの場合のみパスを設定
+            string buildPathVar = "CatalogBuildPath";
+            string loadPathVar = "CatalogLoadPath";
 
             var profileSettings = settings.profileSettings;
-            string templateProfileId = profileSettings.GetProfileId(templateProfileName);
-            if (string.IsNullOrEmpty(templateProfileId))
+            if (!profileSettings.GetVariableNames().Contains(buildPathVar))
             {
-                Debug.LogWarning($"テンプレートプロファイルが見つかりません: {templateProfileName}");
-                return false;
+                profileSettings.CreateValue(buildPathVar, path);
+            }
+            if (!profileSettings.GetVariableNames().Contains(loadPathVar))
+            {
+                profileSettings.CreateValue(loadPathVar, path);
             }
 
-            newProfileId = profileSettings.AddProfile(profileName, templateProfileId);
-            Debug.Log($"新しいプロファイルを作成: {profileName} (ID: {newProfileId})");
-            return true;
+            profileSettings.SetValue(settings.activeProfileId, buildPathVar, path);
+            profileSettings.SetValue(settings.activeProfileId, loadPathVar, path);
+
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, buildPathVar);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, loadPathVar);
         }
 
+        /// <summary>
+        /// Addressablesのプロファイルを作成し、アクティブにします。
+        /// </summary>
+        /// <param name="profileName">作成するプロファイル名</param>
+        /// <returns>作成したプロファイルのID</returns>
+        public static string SetOrCreateProfile(string profileName)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
+                return null;
+            }
+
+            // プロファイルが既に存在するか確認
+            var profileSettings = settings.profileSettings;
+            var existingProfileId = profileSettings.GetProfileId(profileName);
+            if (!string.IsNullOrEmpty(existingProfileId))
+            {
+                settings.activeProfileId = existingProfileId;
+                return existingProfileId;
+            }
+
+            // 新しいプロファイルを作成
+            var newProfileId = profileSettings.AddProfile(profileName, settings.activeProfileId);
+            if (string.IsNullOrEmpty(newProfileId))
+            {
+                Debug.LogError($"プロファイル '{profileName}' の作成に失敗しました。");
+                return null;
+            }
+
+            // プロファイルをアクティブに設定
+            settings.activeProfileId = newProfileId;
+            return newProfileId;
+        }
+        
         /// <summary>
         /// Addressablesのビルドを実行します。
         /// </summary>

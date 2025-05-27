@@ -12,7 +12,8 @@
         "NetTopologySuiteAssemblyDefinition",
         "PlateauToolkit.Sandbox",
         "Unity.Addressables",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [
         "Editor"

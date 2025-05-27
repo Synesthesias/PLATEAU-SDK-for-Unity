@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -8,15 +9,17 @@ namespace PLATEAU.DynamicTile
 {
     public class PLATEAUTileManager : MonoBehaviour
     {
-        private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
-        private List<string> addressCatalog = new List<string>();
-
         [SerializeField]
-        private List<string> excludeTiles = new List<string>(); // 除外Addressリスト
+        private List<string> excludeTiles = new List<string>();
+        
+        [SerializeField]
+        private string catalogPath;
+        public string CatalogPath => catalogPath;
 
         private const string DynamicTileLabelName = "DynamicTile";
-
-        void Start()
+        private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
+        
+        async void Start()
         {
             var cityModel = FindObjectOfType<PLATEAUInstancedCityModel>();
             if (cityModel == null)
@@ -25,62 +28,73 @@ namespace PLATEAU.DynamicTile
                 return;
             }
             
-            // Addressablesの初期化を非同期で行い、完了後にカタログ（アドレス一覧）を取得
-            Addressables.InitializeAsync().Completed += handle =>
+            List<string> addresses;
+            if (!string.IsNullOrEmpty(catalogPath))
             {
-                addressCatalog.Clear();
-
-                // Addressablesのラベルを使用して、アドレスを取得
-                Addressables.LoadResourceLocationsAsync(DynamicTileLabelName).Completed += locHandle =>
-                {
-                    foreach (var loc in locHandle.Result)
-                    {
-                        var address = loc.PrimaryKey;
-                        addressCatalog.Add(address);
-
-                        // TODO：カメラに応じてLoadする
-                        LoadByAddress(address, cityModel.gameObject.transform);
-                    }
-                };
-            };
+                // カタログパスが指定されている場合は、カタログをロード
+                addresses = await AddressableLoader.LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+            }
+            else
+            {
+                // ローカルのアドレスをロード
+                addresses = await AddressableLoader.LoadLocalAddresses(DynamicTileLabelName);
+            }
+            
+            // TODO: カメラからの距離に応じてLoad
+            foreach (var address in addresses)
+            {
+                Load(address, cityModel.transform);
+            }
+            
+            Debug.Log("全てのAddressablesのロードが完了しました");
+        }
+        
+        public void SaveCatalogPath(string path)
+        {
+            // パスを正規化（バックスラッシュをスラッシュに変換）
+            catalogPath = path.Replace('\\', '/');
         }
 
         /// <summary>
         /// Addressを指定してAddressablesからロードする
         /// </summary>
-        public void LoadByAddress(string address, Transform parent = null)
+        public async void Load(string address, Transform parent = null)
         {
-            Addressables.InstantiateAsync(address, parent).Completed += handle =>
+            try
             {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
+                var instance = await AddressableLoader.InstantiateAssetAsync(address, parent);
+                if (instance != null)
                 {
-                    loadedObjects[address] = handle.Result;
+                    loadedObjects[address] = instance;
                 }
-                else
-                {
-                    Debug.LogError($"Failed to load: {address}");
-                    // 失敗の詳細情報を記録
-                    if (handle.OperationException != null)
-                    {
-                        Debug.LogException(handle.OperationException);
-                    }
-                }
-            };
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Addressで指定したインスタンスをAddressablesからアンロードする
+        /// Addressを指定してAddressablesからアンロードする
         /// </summary>
-        public void UnloadByAddress(string address)
+        /// <param name="address"></param>
+        public void Unload(string address)
         {
-            if (loadedObjects.ContainsKey(address))
+            if (loadedObjects.TryGetValue(address, out var instance))
             {
-                Addressables.ReleaseInstance(loadedObjects[address]);
-                loadedObjects.Remove(address);
+                try
+                {
+                    Addressables.ReleaseInstance(instance);
+                    loadedObjects.Remove(address);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"アセットのアンロード中にエラーが発生しました: {ex.Message}");
+                }
             }
             else
             {
-                Debug.LogWarning($"Object not loaded: {address}");
+                Debug.LogWarning($"アセット {address} はロードされていません");
             }
         }
 
@@ -89,13 +103,13 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
-            // すべてのロード済みオブジェクトをアンロード
-            foreach (var address in new List<string>(loadedObjects.Keys))
+            foreach (var loadedObject  in loadedObjects)
             {
-                UnloadByAddress(address);
+                Addressables.ReleaseInstance(loadedObject.Value);
             }
-            // ディクショナリをクリア
             loadedObjects.Clear();
+            
+            Debug.Log("全てのアセットをアンロードしました");
         }
     }
 }

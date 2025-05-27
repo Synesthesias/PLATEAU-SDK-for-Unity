@@ -32,6 +32,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             string buildFolderPath,
             Action<string> onError = null)
         {
+            var isExcludeAssetFolder = !string.IsNullOrEmpty(buildFolderPath);
             var cityObjects = GameObject.FindObjectsOfType<PLATEAUCityObjectGroup>();
             if (cityObjects == null || cityObjects.Length == 0)
             {
@@ -40,22 +41,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
 
             var groupName = AddressableGroupName;
-            if (!string.IsNullOrEmpty(buildFolderPath))
+            if (isExcludeAssetFolder)
             {
                 // ビルドフォルダパスを指定する場合はグループを分ける
                 var directoryName = Path.GetFileName(
                     buildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
                 groupName += "_" + directoryName;
             }
-
-            // DynamicTile管理用GameObjectを生成
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (manager == null)
-            {
-                GameObject managerObj = new GameObject("DynamicTileManager");
-                manager = managerObj.AddComponent<PLATEAUTileManager>();
-            }
-
+            
             foreach (var cityObject in cityObjects)
             {
                 if (excludeObjects.Contains(cityObject))
@@ -67,9 +60,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     Debug.LogWarning($"GameObjectがnullです。");
                     continue;
                 }
-    
+            
                 assetConfig.SrcGameObj = cityObject.gameObject;
-
+            
                 var baseFolderPath = Path.Combine(assetConfig.AssetPath, cityObject.gameObject.name);
                 var saveFolderPath = baseFolderPath;
                 int count = 1;
@@ -95,35 +88,60 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
                     continue;
                 }
-
+            
                 // プレハブをAddressableに登録
                 // TODO : タイルごとにAddress名を設定する
-                // tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)
                 var address = prefabAsset.name;
-                AddressablesUtility.RegisterAssetAsAddressable(
-                    prefabPath,
-                    address,
-                    groupName,
-                    new List<string> { AddressableLabel });
-
+            
+                    AddressablesUtility.RegisterAssetAsAddressable(
+                        prefabPath,
+                        address,
+                        groupName,
+                        new List<string> { AddressableLabel });
+                    Debug.Log($"プレハブをAddressableに登録: {address}");
+            
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
 
-            if (!string.IsNullOrEmpty(buildFolderPath))
+            if (isExcludeAssetFolder)
             {
-                if (!Directory.Exists(buildFolderPath))
+                // Remote用のプロファイルを作成
+                AddressablesUtility.SetOrCreateProfile(groupName);
+                AddressablesUtility.SetRemoteProfileSettings(buildFolderPath);
+                AddressablesUtility.SetGroupLoadAndBuildPath(groupName);
+            }
+            else
+            {
+                // プロファイルをデフォルトに設定
+                AddressablesUtility.SetOrCreateProfile("Default");
+            }
+
+            // Addressablesのビルドを実行
+            AddressablesUtility.BuildAddressables();
+            
+            // DynamicTile管理用GameObjectを生成
+            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (manager == null)
+            {
+                GameObject managerObj = new GameObject("DynamicTileManager");
+                manager = managerObj.AddComponent<PLATEAUTileManager>();
+            }
+
+            manager.SaveCatalogPath("");
+            
+            if (isExcludeAssetFolder)
+            {
+                // カタログファイルのパスを取得
+                var catalogFiles = Directory.GetFiles(buildFolderPath, "catalog_*.json");
+                if (catalogFiles.Length == 0)
                 {
-                    onError?.Invoke("指定されたビルドフォルダが存在しません。");
+                    Debug.LogError("カタログファイルが見つかりません");
                     return;
                 }
-
-                // ビルドパスを指定
-                AddressablesUtility.SetGroupLoadAndBuildPath(groupName, buildFolderPath);
+                var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
+                manager.SaveCatalogPath(catalogPath);
             }
-            
-            // Addressablesのビルドを実行
-            // AddressablesUtility.BuildAddressables();
 
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
