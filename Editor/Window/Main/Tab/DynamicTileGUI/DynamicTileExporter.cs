@@ -113,11 +113,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             else
             {
                 // プロファイルをデフォルトに設定
-                AddressablesUtility.SetOrCreateProfile("Default");
+                AddressablesUtility.SetDefaultProfileSettings();
             }
 
             // Addressablesのビルドを実行
-            AddressablesUtility.BuildAddressables();
+            AddressablesUtility.BuildAddressables(true);
             
             // DynamicTile管理用GameObjectを生成
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -141,6 +141,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 manager.SaveCatalogPath(catalogPath);
             }
             
+            // DynamicTileのアドレスを設定
+            manager.ClearTiles();
             foreach (var address in addresses)
             {
                 var tile = new PLATEAUDynamicTile(address);

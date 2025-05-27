@@ -197,6 +197,32 @@ namespace PLATEAU.Editor.Addressables
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, pathVar);
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, pathVar);
         }
+        
+        /// <summary>
+        /// デフォルトのプロファイル設定を行います。
+        /// </summary>
+        public static void SetDefaultProfileSettings()
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                return;
+            }
+
+            // デフォルトプロファイルの作成
+            var profileId = SetOrCreateProfile("Default");
+            if (string.IsNullOrEmpty(profileId))
+            {
+                Debug.LogError("デフォルトプロファイルの作成に失敗しました。");
+                return;
+            }
+
+            // プロファイルをアクティブに設定
+            settings.activeProfileId = profileId;
+            
+            // リモートカタログを無効化
+            settings.BuildRemoteCatalog = false;
+        }
 
         /// <summary>
         /// Addressablesのプロファイルを作成し、アクティブにします。

@@ -11,6 +11,36 @@ namespace PLATEAU.DynamicTile
 {
     public class AddressableLoader
     {
+        private const string DynamicTileLabelName = "DynamicTile";
+        private string bundlePath;
+
+        public async Task<List<string>> Initialize(string catalogPath)
+        {
+            Addressables.InternalIdTransformFunc = (location) =>
+            {
+                string originalPath = location.InternalId;
+                if (string.IsNullOrEmpty(bundlePath) || !originalPath.Contains(".bundle"))
+                {
+                    return originalPath;
+                }
+                // bundlePathが設定されている場合は、パスを結合して返す
+                return Path.Combine(bundlePath, location.PrimaryKey);
+            };
+            
+            List<string> addresses;
+            if (!string.IsNullOrEmpty(catalogPath))
+            {
+                // カタログパスが指定されている場合は、カタログをロード
+                addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+            }
+            else
+            {
+                // ローカルのアドレスをロード
+                addresses = await LoadLocalAddresses(DynamicTileLabelName);
+            }
+            return addresses;
+        }
+        
         /// <summary>
         /// Addressからアセットをインスタンス化します
         /// 注意: 返されたGameObjectは呼び出し側でAddressables.ReleaseInstanceを使用して解放する必要があります
@@ -25,7 +55,9 @@ namespace PLATEAU.DynamicTile
 
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
+                Debug.Log($"アセットのロードに成功しました: {address}");
                 handle.Result.name = address;
+
                 return handle.Result;
             }
             else
@@ -48,6 +80,9 @@ namespace PLATEAU.DynamicTile
             {
                 // パスを正規化（バックスラッシュをスラッシュに変換）
                 catalogPath = catalogPath.Replace('\\', '/');
+                
+                // bundlePathを保持
+                bundlePath = Path.GetDirectoryName(catalogPath);
 
                 // file://プロトコルを追加
                 if (!catalogPath.StartsWith("file://"))
@@ -67,7 +102,7 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
                     return addresses;
                 }
-                
+    
                 // カタログからアセットのアドレスを取得
                 IList<IResourceLocation> locations;
                 if (catalogHandle.Result.Locate(label, typeof(GameObject), out locations) && locations.Count > 0)

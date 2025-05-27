@@ -22,8 +22,10 @@ namespace PLATEAU.DynamicTile
 
         async void Start()
         {
+            // 初期化
+            var addresses = await addressableLoader.Initialize(catalogPath);
+
             // TODO: カメラからの距離に応じてLoad
-            
             var cityModel = FindObjectOfType<PLATEAUInstancedCityModel>();
             if (cityModel == null)
             {
@@ -31,24 +33,10 @@ namespace PLATEAU.DynamicTile
                 return;
             }
             
-            List<string> addresses;
-            if (!string.IsNullOrEmpty(catalogPath))
-            {
-                // カタログパスが指定されている場合は、カタログをロード
-                addresses = await addressableLoader.LoadCatalogAsync(catalogPath, DynamicTileLabelName);
-            }
-            else
-            {
-                // ローカルのアドレスをロード
-                addresses = await addressableLoader.LoadLocalAddresses(DynamicTileLabelName);
-            }
-            
             foreach (var address in addresses)
             {
                 Load(address, cityModel.transform);
             }
-            
-            Debug.Log("全てのAddressablesのロードが完了しました");
         }
         
         /// <summary>
@@ -147,6 +135,14 @@ namespace PLATEAU.DynamicTile
                 return;
             }
             dynamicTiles.Add(tile);
+        }
+        
+        /// <summary>
+        /// 登録したタイルをクリア
+        /// </summary>
+        public void ClearTiles()
+        {
+            dynamicTiles.Clear();
         }
     }
 }
