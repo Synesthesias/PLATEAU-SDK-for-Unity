@@ -198,6 +198,27 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             return strGridCodes;
         }
 
+        private void CalculateAllRectVerts()
+        {
+            var min = AreaMin;
+            var max = AreaMax;
+            var cellWidth = (max.x - min.x) / divideNumColumn;
+            var cellHeight = (max.z - min.z) / divideNumRow;
+            allRectVerts = new List<Vector3[]>();
+
+            for (var col = 0; col < divideNumColumn; col++)
+            {
+                for (var row = 0; row < divideNumRow; row++)
+                {
+                    var rectVerts = new[]
+                    {
+                        new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight * col), new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col), new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col), new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight * col)
+                    };
+                    allRectVerts.Add(rectVerts);
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// 選択範囲を描画
@@ -410,30 +431,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference.Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
             return (camera.WorldToScreenPoint(positionLowerRight) - camera.WorldToScreenPoint(positionUpperLeft)).x;
-        }
-
-        private void CalculateAllRectVerts()
-        {
-            var min = AreaMin;
-            var max = AreaMax;
-            var cellWidth = (max.x - min.x) / divideNumColumn;
-            var cellHeight = (max.z - min.z) / divideNumRow;
-            allRectVerts = new List<Vector3[]>();
-
-            for (var col = 0; col < divideNumColumn; col++)
-            {
-                for (var row = 0; row < divideNumRow; row++)
-                {
-                    var rectVerts = new[]
-                    {
-                        new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight * col),
-                        new Vector3(min.x + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
-                        new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight + cellHeight * col),
-                        new Vector3(min.x + cellWidth + cellWidth * row, min.y, min.z + cellHeight * col)
-                    };
-                    allRectVerts.Add(rectVerts);
-                }
-            }
         }
 #endif
     }
