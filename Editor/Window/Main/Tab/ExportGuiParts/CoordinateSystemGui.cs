@@ -30,8 +30,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.ExportGuiParts
             switch (format)
             {
                 case MeshFileFormat.OBJ:
+                    // objは、仕様に従うと右手座標系で扱うべきなので、左手座標系を選択肢から除外します。
+                    meshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem)))
+                        .Where(sys => sys.IsRightHanded())
+                        .ToList();
+                    break;
                 case MeshFileFormat.FBX:
-                    // obj, fbxは、仕様に従うと右手座標系で扱うべきなので、左手座標系を選択肢から除外します。
+                    // fbxは、右手座標系がデファクトなので左手座標系を選択肢から除外します。
                     meshAxisChoices = ((CoordinateSystem[])Enum.GetValues(typeof(CoordinateSystem)))
                         .Where(sys => sys.IsRightHanded())
                         .ToList();

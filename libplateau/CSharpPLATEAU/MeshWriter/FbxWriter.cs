@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 
@@ -9,10 +10,12 @@ namespace PLATEAU.MeshWriter
     public struct FbxWriteOptions
     {
         public FbxFileFormat FileFormat;
+        public CoordinateSystem CoordinateSystem;
 
-        public FbxWriteOptions(FbxFileFormat fileFormat)
+        public FbxWriteOptions(FbxFileFormat fileFormat, CoordinateSystem coordinateSystem)
         {
             this.FileFormat = fileFormat;
+            this.CoordinateSystem = coordinateSystem;
         }
     }
     
