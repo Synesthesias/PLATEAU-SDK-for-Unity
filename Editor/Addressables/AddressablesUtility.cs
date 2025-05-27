@@ -159,12 +159,9 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            string buildPathVar = "CatalogBuildPath";
-            string loadPathVar = "CatalogLoadPath";
-            
             // グループのBuildPathとLoadPathに変数名をセット
-            bundledSchema.BuildPath.SetVariableByName(settings, buildPathVar);
-            bundledSchema.LoadPath.SetVariableByName(settings, loadPathVar);
+            bundledSchema.BuildPath.SetVariableByName(settings, groupName);
+            bundledSchema.LoadPath.SetVariableByName(settings, groupName);
             
             // グループの設定
             bundledSchema.IncludeAddressInCatalog = true;
@@ -172,12 +169,15 @@ namespace PLATEAU.Editor.Addressables
             bundledSchema.IncludeLabelsInCatalog = true;
             bundledSchema.IncludeInBuild = true;
             bundledSchema.AssetLoadMode = AssetLoadMode.AllPackedAssetsAndDependencies;
+            
+            // bundleを個別にパックする
+            bundledSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
         }
         
         /// <summary>
         /// プロファイルを設定します。
         /// </summary>
-        public static void SetRemoteProfileSettings(string path)
+        public static void SetRemoteProfileSettings(string path, string pathVar)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -187,26 +187,22 @@ namespace PLATEAU.Editor.Addressables
             
             // カタログ設定
             settings.BuildRemoteCatalog = true;
-            
-            // Remoteの場合のみパスを設定
-            string buildPathVar = "CatalogBuildPath";
-            string loadPathVar = "CatalogLoadPath";
 
             var profileSettings = settings.profileSettings;
-            if (!profileSettings.GetVariableNames().Contains(buildPathVar))
+            if (!profileSettings.GetVariableNames().Contains(pathVar))
             {
-                profileSettings.CreateValue(buildPathVar, path);
+                profileSettings.CreateValue(pathVar, path);
             }
-            if (!profileSettings.GetVariableNames().Contains(loadPathVar))
+            if (!profileSettings.GetVariableNames().Contains(pathVar))
             {
-                profileSettings.CreateValue(loadPathVar, path);
+                profileSettings.CreateValue(pathVar, path);
             }
 
-            profileSettings.SetValue(settings.activeProfileId, buildPathVar, path);
-            profileSettings.SetValue(settings.activeProfileId, loadPathVar, path);
+            profileSettings.SetValue(settings.activeProfileId, pathVar, path);
+            profileSettings.SetValue(settings.activeProfileId, pathVar, path);
 
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, buildPathVar);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, loadPathVar);
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, pathVar);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, pathVar);
         }
 
         /// <summary>

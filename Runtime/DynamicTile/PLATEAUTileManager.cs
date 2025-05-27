@@ -10,7 +10,7 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUTileManager : MonoBehaviour
     {
         [SerializeField]
-        private List<string> excludeTiles = new List<string>();
+        private List<PLATEAUDynamicTile> dynamicTiles = new();
         
         [SerializeField]
         private string catalogPath;
@@ -18,9 +18,12 @@ namespace PLATEAU.DynamicTile
 
         private const string DynamicTileLabelName = "DynamicTile";
         private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
-        
+        private AddressableLoader addressableLoader = new ();
+
         async void Start()
         {
+            // TODO: カメラからの距離に応じてLoad
+            
             var cityModel = FindObjectOfType<PLATEAUInstancedCityModel>();
             if (cityModel == null)
             {
@@ -32,15 +35,14 @@ namespace PLATEAU.DynamicTile
             if (!string.IsNullOrEmpty(catalogPath))
             {
                 // カタログパスが指定されている場合は、カタログをロード
-                addresses = await AddressableLoader.LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+                addresses = await addressableLoader.LoadCatalogAsync(catalogPath, DynamicTileLabelName);
             }
             else
             {
                 // ローカルのアドレスをロード
-                addresses = await AddressableLoader.LoadLocalAddresses(DynamicTileLabelName);
+                addresses = await addressableLoader.LoadLocalAddresses(DynamicTileLabelName);
             }
             
-            // TODO: カメラからの距離に応じてLoad
             foreach (var address in addresses)
             {
                 Load(address, cityModel.transform);
@@ -49,6 +51,10 @@ namespace PLATEAU.DynamicTile
             Debug.Log("全てのAddressablesのロードが完了しました");
         }
         
+        /// <summary>
+        /// カタログパスを保存します。
+        /// </summary>
+        /// <param name="path"></param>
         public void SaveCatalogPath(string path)
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）
@@ -62,7 +68,7 @@ namespace PLATEAU.DynamicTile
         {
             try
             {
-                var instance = await AddressableLoader.InstantiateAssetAsync(address, parent);
+                var instance = await addressableLoader.InstantiateAssetAsync(address, parent);
                 if (instance != null)
                 {
                     loadedObjects[address] = instance;
@@ -108,8 +114,16 @@ namespace PLATEAU.DynamicTile
                 Addressables.ReleaseInstance(loadedObject.Value);
             }
             loadedObjects.Clear();
-            
             Debug.Log("全てのアセットをアンロードしました");
+        }
+        
+        /// <summary>
+        /// Tileデータを追加
+        /// </summary>
+        /// <param name="tile"></param>
+        public void AddTile(PLATEAUDynamicTile tile)
+        {
+            dynamicTiles.Add(tile);
         }
     }
 }

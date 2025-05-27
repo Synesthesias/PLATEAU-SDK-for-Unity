@@ -162,7 +162,6 @@ namespace PLATEAU.Editor.Window.Main
             }
             DynamicTileExporter.Export(
                 assetConfig,
-                excludeObjects,
                 folderPathLabel.text, 
                 msg => Dialogue.Display(msg, "OK"));
         }

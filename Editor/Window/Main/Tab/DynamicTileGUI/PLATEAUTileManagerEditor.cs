@@ -11,14 +11,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
+        private const string NEEDS_ADDRESSABLES_BUILD_KEY = "PLATEAU_NEEDS_ADDRESSABLES_BUILD";
         private string previousCatalogPath;
 
         private void OnEnable()
         {
             var manager = (PLATEAUTileManager)target;
             previousCatalogPath = manager.CatalogPath;
-            
-            EditorPrefs.SetBool("PLATEAU_NEEDS_ADDRESSABLES_BUILD", false);
         }
 
         public override void OnInspectorGUI()
@@ -34,10 +33,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 {
                     return;
                 }
-                EditorPrefs.SetBool("PLATEAU_NEEDS_ADDRESSABLES_BUILD", true);
+                EditorPrefs.SetBool(NEEDS_ADDRESSABLES_BUILD_KEY, true);
             }
 
-            if (EditorPrefs.GetBool("PLATEAU_NEEDS_ADDRESSABLES_BUILD"))
+            if (EditorPrefs.GetBool(NEEDS_ADDRESSABLES_BUILD_KEY))
             {
                 if (GUILayout.Button("Addressablesを再ビルド"))
                 {
@@ -48,16 +47,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     }
                     
                     var directoryPath = Path.GetDirectoryName(previousCatalogPath);
+                    if (string.IsNullOrEmpty(directoryPath))
+                    {
+                        Dialogue.Display("カタログファイルのディレクトリパスが無効です: " + directoryPath, "OK");
+                        return;
+                    }
                     
                     // パスを再設定してビルド
                     var defaultGroup = AddressablesUtility.GetDefaultGroup();
-                    AddressablesUtility.SetRemoteProfileSettings(directoryPath);
+                    AddressablesUtility.SetRemoteProfileSettings(directoryPath, defaultGroup.name);
                     AddressablesUtility.SetGroupLoadAndBuildPath(defaultGroup.name);
                     
                     AddressablesUtility.BuildAddressables(false);
                     
                     Dialogue.Display("Addressablesのビルドが完了しました。", "OK");
-                    EditorPrefs.SetBool("PLATEAU_NEEDS_ADDRESSABLES_BUILD", false);
+                    EditorPrefs.SetBool(NEEDS_ADDRESSABLES_BUILD_KEY, false);
                 }
             }
         }

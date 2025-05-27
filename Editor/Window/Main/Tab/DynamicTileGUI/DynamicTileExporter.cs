@@ -23,12 +23,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         /// 都市モデルをDynamicTile用にプレハブ化し、一括エクスポートする。
         /// </summary>
         /// <param name="assetConfig">変換設定</param>
-        /// <param name="excludeObjects">除外するオブジェクト</param>
         /// <param name="buildFolderPath"></param>
         /// <param name="onError">エラー時のコールバック</param>
         public static void Export(
             ConvertToAssetConfig assetConfig,
-            List<PLATEAUCityObjectGroup> excludeObjects,
             string buildFolderPath,
             Action<string> onError = null)
         {
@@ -48,13 +46,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     buildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
                 groupName += "_" + directoryName;
             }
-            
+
+            var addresses = new List<string>();
             foreach (var cityObject in cityObjects)
             {
-                if (excludeObjects.Contains(cityObject))
-                {
-                    continue;
-                }
                 if (cityObject == null || cityObject.gameObject == null)
                 {
                     Debug.LogWarning($"GameObjectがnullです。");
@@ -92,13 +87,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 // プレハブをAddressableに登録
                 // TODO : タイルごとにAddress名を設定する
                 var address = prefabAsset.name;
-            
-                    AddressablesUtility.RegisterAssetAsAddressable(
-                        prefabPath,
-                        address,
-                        groupName,
-                        new List<string> { AddressableLabel });
-                    Debug.Log($"プレハブをAddressableに登録: {address}");
+                AddressablesUtility.RegisterAssetAsAddressable(
+                    prefabPath,
+                    address,
+                    groupName,
+                    new List<string> { AddressableLabel });
+                Debug.Log($"プレハブをAddressableに登録: {address}");
+                
+                addresses.Add(address);
             
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
@@ -108,7 +104,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             {
                 // Remote用のプロファイルを作成
                 AddressablesUtility.SetOrCreateProfile(groupName);
-                AddressablesUtility.SetRemoteProfileSettings(buildFolderPath);
+                AddressablesUtility.SetRemoteProfileSettings(buildFolderPath, groupName);
                 AddressablesUtility.SetGroupLoadAndBuildPath(groupName);
             }
             else
@@ -129,7 +125,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
 
             manager.SaveCatalogPath("");
-            
             if (isExcludeAssetFolder)
             {
                 // カタログファイルのパスを取得
@@ -141,6 +136,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
                 var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                 manager.SaveCatalogPath(catalogPath);
+            }
+            
+            foreach (var address in addresses)
+            {
+                var tile = new PLATEAUDynamicTile(address);
+                manager.AddTile(tile);
             }
 
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");

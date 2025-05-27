@@ -14,7 +14,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressからアセットをインスタンス化します
         /// </summary>
-        public static async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
+        public async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
         {
             var handle = Addressables.InstantiateAsync(address, parent);
             while (!handle.IsDone)
@@ -40,7 +40,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="catalogPath">カタログファイルのパス</param>
         /// <param name="label">ラベル</param>
         /// <returns>ロードされたGameObjectのリスト</returns>
-        public static async Task<List<string>> LoadCatalogAsync(string catalogPath, string label)
+        public async Task<List<string>> LoadCatalogAsync(string catalogPath, string label)
         {
             var addresses = new List<string>();
             try
@@ -66,7 +66,7 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
                     return addresses;
                 }
-
+                
                 // カタログからアセットのアドレスを取得
                 IList<IResourceLocation> locations;
                 if (catalogHandle.Result.Locate(label, typeof(GameObject), out locations) && locations.Count > 0)
@@ -91,7 +91,7 @@ namespace PLATEAU.DynamicTile
             return addresses;
         }
         
-        public static async Task<List<string>> LoadLocalAddresses(string label)
+        public async Task<List<string>> LoadLocalAddresses(string label)
         {
             var addresses = new List<string>();
             try
