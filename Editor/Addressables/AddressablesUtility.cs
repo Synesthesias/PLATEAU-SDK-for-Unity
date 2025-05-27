@@ -56,24 +56,6 @@ namespace PLATEAU.Editor.Addressables
             {
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
-
-            settings.DefaultGroup = group; // デフォルトグループに設定
-            return group;
-        }
-        
-        public static AddressableAssetGroup GetDefaultGroup()
-        {
-            var settings = RequireAddressableSettings();
-            if (settings == null)
-            {
-                return null;
-            }
-
-            var group = settings.DefaultGroup;
-            if (group == null)
-            {
-                Debug.LogWarning("デフォルトグループが設定されていません。");
-            }
             return group;
         }
         
