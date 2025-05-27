@@ -49,11 +49,7 @@ namespace PLATEAU.DynamicTile
         public async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
         {
             var handle = Addressables.InstantiateAsync(address, parent);
-            while (!handle.IsDone)
-            {
-                await Task.Yield();
-            }
-
+            await handle.Task;
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 Debug.Log($"アセットのロードに成功しました: {address}");
