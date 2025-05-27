@@ -31,6 +31,8 @@ namespace PLATEAU.Editor.Window.Main
         private const string PrefabsSavePath = "Assets/PLATEAUPrefabs";
         private const string CustomFolderLabel = "任意のフォルダに保存";
 
+        private bool isFolderShow;
+
         public VisualElement CreateGui()
         {
             container = LoadMainUxml();
@@ -56,6 +58,7 @@ namespace PLATEAU.Editor.Window.Main
             assetConfig = ConvertToAssetConfig.DefaultValue;
             assetConfig.AssetPath = PrefabsSavePath;
             excludeObjects = new List<PLATEAUCityObjectGroup>();
+            isFolderShow = false;
         }
 
         private void FindUIElements()
@@ -92,7 +95,7 @@ namespace PLATEAU.Editor.Window.Main
             // 保存先ドロップダウン
             saveLocationDropdown.RegisterValueChangedCallback(evt =>
             {
-                bool isFolderShow = evt.newValue == CustomFolderLabel;
+                isFolderShow = evt.newValue == CustomFolderLabel;
                 folderPathLabel.text = "";
                 folderSelectRow.style.display = isFolderShow ? DisplayStyle.Flex : DisplayStyle.None;
             });
@@ -155,7 +158,7 @@ namespace PLATEAU.Editor.Window.Main
 
         private void Export()
         {
-            if (string.IsNullOrEmpty(assetConfig.AssetPath))
+            if (isFolderShow && string.IsNullOrEmpty(folderPathLabel.text))
             {
                 Dialogue.Display("保存先フォルダを指定してください。", "OK");
                 return;
