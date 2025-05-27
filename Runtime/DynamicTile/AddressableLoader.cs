@@ -19,7 +19,8 @@ namespace PLATEAU.DynamicTile
             Addressables.InternalIdTransformFunc = (location) =>
             {
                 string originalPath = location.InternalId;
-                if (string.IsNullOrEmpty(bundlePath) || !originalPath.Contains(".bundle"))
+                if (string.IsNullOrEmpty(bundlePath) ||
+                    !originalPath.EndsWith(".bundle"))
                 {
                     return originalPath;
                 }
@@ -57,7 +58,6 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.Log($"アセットのロードに成功しました: {address}");
                 handle.Result.name = address;
-
                 return handle.Result;
             }
             else

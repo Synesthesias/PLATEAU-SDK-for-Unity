@@ -3,6 +3,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.AddressableAssets.Build;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
@@ -270,6 +271,36 @@ namespace PLATEAU.Editor.Addressables
             else
             {
                 Debug.Log("Addressablesのビルドが完了しました。");
+            }
+        }
+
+        /// <summary>
+        /// デフォルトグループ以外のグループを削除します。
+        /// </summary>
+        public static void RemoveNonDefaultGroups()
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                return;
+            }
+
+            var defaultGroup = settings.DefaultGroup;
+            if (defaultGroup == null)
+            {
+                Debug.LogWarning("デフォルトグループが設定されていません。");
+                return;
+            }
+
+            // グループのリストをコピー（削除中に変更されるため）
+            var groups = settings.groups.ToList();
+            foreach (var group in groups)
+            {
+                if (group != defaultGroup)
+                {
+                    settings.RemoveGroup(group);
+                    Debug.Log($"グループを削除しました: {group.Name}");
+                }
             }
         }
     }

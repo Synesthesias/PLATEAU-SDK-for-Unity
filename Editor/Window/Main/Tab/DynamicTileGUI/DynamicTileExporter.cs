@@ -47,6 +47,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 groupName += "_" + directoryName;
             }
 
+            // グループを削除
+            AddressablesUtility.RemoveNonDefaultGroups();
+
             var addresses = new List<string>();
             foreach (var cityObject in cityObjects)
             {
