@@ -99,8 +99,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     convertedObject,
                     convertedObject.name,
                     downSampleLevel,
-                    convertedObject.transform.parent);
+                    convertedObject.transform.parent,
+                    manager);
             }
+
+            PLATEAU.CameraMovement.SceneViewCameraTracker.Initialize();
+
+//#if UNITY_EDITOR
+//            manager.UpdateAssetByCameraPosition(SceneView.currentDrawingSceneView.camera.transform.position);
+//#else
+//            manager.UpdateAssetByCameraPosition(Camera.main.transform.position);
+//#endif
 
             if (!string.IsNullOrEmpty(buildFolderPath))
             {
@@ -154,22 +163,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             return null;
         }
         
-        private static GameObject ReplaceWithDynamicTile(GameObject oldObj, string originalAddress, int downSampleLevel, Transform parent)
+        private static void ReplaceWithDynamicTile(GameObject oldObj, string originalAddress, int downSampleLevel, Transform parent, PLATEAUTileManager manager)
         {
-            var objectName = oldObj.name;
-            GameObject.DestroyImmediate(oldObj);
+            var dynamicTileComp = new PLATEAU.DynamicTile.PLATEAUDynamicTile(originalAddress, parent, oldObj);
+            manager.AddTile(dynamicTileComp);
 
-            GameObject newObj = new GameObject(objectName);
-            
-            // PLATEAUDynamicTileコンポーネントを付与し、Addressをセット
-            var dynamicTileComp = newObj.AddComponent<PLATEAU.DynamicTile.PLATEAUDynamicTile>();
-            dynamicTileComp.OriginalAddress = originalAddress;
-            newObj.transform.SetParent(parent, false);
-            
-            // 画面の表示上、DynamicTileをロードする
-            dynamicTileComp.LoadTile();
-            
-            return newObj;
+            // 元のGameObjectを削除
+            GameObject.DestroyImmediate(oldObj);
         }
     }
 } 
