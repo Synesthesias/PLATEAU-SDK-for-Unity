@@ -1,12 +1,9 @@
-using System;
+using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Unity.Jobs;
-
 
 namespace PLATEAU.DynamicTile
 {
@@ -28,52 +25,9 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 指定したDynamicTileをもとにAddressablesからロードする
         /// </summary>
-        public bool Load(PLATEAUDynamicTile tile, int downSampleLevel)
-        {
-            //string address = tile.GetTileAddress(downSampleLevel, excludeTiles.Contains(tile)); 
-            string address = tile.GetTileAddress(downSampleLevel);
-            if (string.IsNullOrEmpty(address))
-            {
-                Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
-                return false;
-            }
-            // 既にロードされている場合はスキップ
-            if( tile.LoadedObject != null || tile.IsLoading )
-            {
-                //Debug.Log($"Already loaded: {address}");
-                return true;
-            }
-
-            Transform parent = tile.GetParent();
-
-            tile.IsLoading = true;
-            Addressables.InstantiateAsync(address, parent).Completed += handle =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    tile.LoadedObject = handle.Result;
-                }
-                else
-                {
-                    Debug.LogError($"Failed to load: {address}");
-                    // 失敗の詳細情報を記録
-                    if (handle.OperationException != null)
-                    {
-                        Debug.LogException(handle.OperationException);
-                    }
-                }
-                tile.IsLoading = false;
-            };
-
-            return true;
-        }
-
-        // Task　Load
         public async Task<bool> LoadAsync(PLATEAUDynamicTile tile, int downSampleLevel)
         {
             var tcs = new TaskCompletionSource<bool>();
-
-            //string address = tile.GetTileAddress(downSampleLevel, excludeTiles.Contains(tile)); 
             string address = tile.GetTileAddress(downSampleLevel);
             if (string.IsNullOrEmpty(address))
             {
@@ -109,7 +63,6 @@ namespace PLATEAU.DynamicTile
                 }
                 tile.IsLoading = false;
             };
-
             return await tcs.Task;
         }
 
@@ -118,7 +71,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public bool Unload(PLATEAUDynamicTile tile, int downSampleLevel)
         {
-            //string address = tile.GetTileAddress(downSampleLevel, excludeTiles.Contains(tile));
             string address = tile.GetTileAddress(downSampleLevel);
             if (string.IsNullOrEmpty(address))
             {
@@ -143,11 +95,6 @@ namespace PLATEAU.DynamicTile
                     Debug.LogWarning($"Failed to ReleaseInstance : {address}");
                 }
             }
-            else
-            {
-                //Debug.LogWarning($"Object not loaded: {address}");
-            }
-
             return true;
         }
 
@@ -209,7 +156,7 @@ namespace PLATEAU.DynamicTile
 
         public void UpdateAssetByCameraPositionInternal(Vector3 position)
         {
-            //Debug.Log($"UpdateAssetByCameraPosition: {position}");
+            //Debug.Log($"UpdateAssetByCameraPositionInternal: {position}");
 
             foreach (var tile in dynamicTiles)
             {
@@ -257,11 +204,12 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        // Debug用
         public void ShowBounds()
         {
             foreach (var tile in dynamicTiles)
             {
-                PLATEAUDynamicTile.DrawBounds(tile.GetExtent(), Color.red, 30f);
+                DebugEx.DrawBounds(tile.GetExtent(), Color.red, 30f);
             }
         }
 

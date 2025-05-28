@@ -47,13 +47,13 @@ namespace PLATEAU.DynamicTile
             return bounds.ClosestPoint(position);
         }
 
-        //Vector3 ClosestPointOnBounds(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
-        //{
-        //    float x = Mathf.Clamp(position.x, boundsMin.x, boundsMax.x);
-        //    float y = Mathf.Clamp(position.y, boundsMin.y, boundsMax.y);
-        //    float z = Mathf.Clamp(position.z, boundsMin.z, boundsMax.z);
-        //    return new Vector3(x, y, z);
-        //}
+        Vector3 ClosestPointOnBoundsSimple(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
+        {
+            float x = Mathf.Clamp(position.x, boundsMin.x, boundsMax.x);
+            float y = Mathf.Clamp(position.y, boundsMin.y, boundsMax.y);
+            float z = Mathf.Clamp(position.z, boundsMin.z, boundsMax.z);
+            return new Vector3(x, y, z);
+        }
     }
 
     public struct NextTileState
@@ -114,9 +114,11 @@ namespace PLATEAU.DynamicTile
             if (NativeDistances.IsCreated)
                 NativeDistances.Dispose();
         }
-
+        
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
+            //Debug.Log($"UpdateAssetByCameraPosition (JobSystem): {position}");
+
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
             handle.Complete();
@@ -131,7 +133,6 @@ namespace PLATEAU.DynamicTile
             {
                 var distance = NativeDistances[i];
                 var tile = dynamicTiles[i];
-
 
                 var nextLoadState = LoadState.None;
                 if (distance < PLATEAUTileManager.DefaultLoadDistance)

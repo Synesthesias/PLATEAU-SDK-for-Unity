@@ -105,12 +105,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
             PLATEAU.CameraMovement.SceneViewCameraTracker.Initialize();
 
-//#if UNITY_EDITOR
-//            manager.UpdateAssetByCameraPosition(SceneView.currentDrawingSceneView.camera.transform.position);
-//#else
-//            manager.UpdateAssetByCameraPosition(Camera.main.transform.position);
-//#endif
-
             if (!string.IsNullOrEmpty(buildFolderPath))
             {
                 if (!Directory.Exists(buildFolderPath))
@@ -165,8 +159,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         
         private static void ReplaceWithDynamicTile(GameObject oldObj, string originalAddress, int downSampleLevel, Transform parent, PLATEAUTileManager manager)
         {
-            var dynamicTileComp = new PLATEAU.DynamicTile.PLATEAUDynamicTile(originalAddress, parent, oldObj);
-            manager.AddTile(dynamicTileComp);
+            var dynamicTile = new PLATEAU.DynamicTile.PLATEAUDynamicTile(originalAddress, parent, oldObj);
+            manager.AddTile(dynamicTile);
 
             // 元のGameObjectを削除
             GameObject.DestroyImmediate(oldObj);

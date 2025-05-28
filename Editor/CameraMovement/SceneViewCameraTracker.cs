@@ -1,4 +1,4 @@
-using PLATEAU.DynamicTile;
+ï»¿using PLATEAU.DynamicTile;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 namespace PLATEAU.CameraMovement
 {
+
+    /// <summary>
+    /// Editor Mode æ™‚ã®SceneViewã‚«ãƒ¡ãƒ©ã®ä½ç½®ã‚’ç›£è¦–ã—ã€PLATEAUTileManagerã«é€šçŸ¥ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+    /// </summary>
     [InitializeOnLoad]
     public class SceneViewCameraTracker
     {
@@ -58,6 +62,9 @@ namespace PLATEAU.CameraMovement
         }
     }
 
+    /// <summary>
+    /// Unity Editorã®èµ·å‹•æ™‚ã‚„ã‚·ãƒ¼ãƒ³ã‚ªãƒ¼ãƒ—ãƒ³æ™‚ã«PLATEAUTileManagerã‚’åˆæœŸåŒ–ã‚„ã€SceneViewCameraTrackerã®åˆæœŸåŒ–ã‚’è¡Œã†ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+    /// </summary>
     [InitializeOnLoad]
     public class SceneOpenListener : UnityEditor.AssetModificationProcessor
     {
@@ -75,22 +82,24 @@ namespace PLATEAU.CameraMovement
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
 
-
             InitView();
         }
 
         static void OnEditorUpdate()
         {
-            Debug.Log("Unity Editor‚ª‹N“®‚µ‚Ü‚µ‚½I");
-            EditorApplication.update -= OnEditorUpdate; // ˆê“x‚¾‚¯Às
+            if (EditorApplication.isPlaying)
+                return;
+
+            Debug.Log("Unity Editor Started");
+            EditorApplication.update -= OnEditorUpdate; // ä¸€åº¦ã ã‘å®Ÿè¡Œ
 
             InitView();
         }
 
         private static void OnSceneSaving(Scene scene, string path)
         {
-            Debug.Log($"ƒV[ƒ“•Û‘¶‘O‚Ìˆ—: {scene.name}, •Û‘¶æ: {path}");
-            // ‚±‚±‚ÅAddressables‚ÌƒAƒ“ƒ[ƒhˆ—‚ğÀs
+            Debug.Log($"Scene Saving : {scene.name}, save path : {path}");
+            // ã“ã“ã§Addressablesã®ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰å‡¦ç†ã‚’å®Ÿè¡Œ
             var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (tileManageer != null)
             {
@@ -102,7 +111,7 @@ namespace PLATEAU.CameraMovement
         {
             if (state == PlayModeStateChange.ExitingEditMode)
             {
-                Debug.Log("Play Mode ‚É“ü‚é‘O‚Ìˆ—‚ğÀs");
+                Debug.Log("Play Mode about to start");
 
                 var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
                 if (tileManageer != null)
@@ -112,7 +121,7 @@ namespace PLATEAU.CameraMovement
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
-                Debug.Log("Play Mode ‚©‚ç–ß‚Á‚½Œã‚Ìˆ—‚ğÀs");
+                Debug.Log("Play Mode ended (Entered Edit Mode)");
                 //SceneViewCameraTracker.Initialize();
                 InitView();
             }
@@ -138,12 +147,16 @@ namespace PLATEAU.CameraMovement
         }
     }
 
+    /// <summary>
+    /// PLATEAUTileManagerã®Editoræ‹¡å¼µã‚¯ãƒ©ã‚¹ã€‚
+    /// TODO: å°‚ç”¨ãƒ•ã‚¡ã‚¤ãƒ«ã«ã™ã‚‹
+    /// </summary>
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector(); // ’Êí‚ÌInspector•\¦
+            DrawDefaultInspector(); // é€šå¸¸ã®Inspectorè¡¨ç¤º
 
             PLATEAUTileManager myComponent = (PLATEAUTileManager)target;
 

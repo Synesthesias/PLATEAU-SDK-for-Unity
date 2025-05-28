@@ -1,44 +1,41 @@
 ﻿using PLATEAU.DynamicTile;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.LowLevel;
-using UnityEngine.PlayerLoop;
 using UnityEngine.Rendering.VirtualTexturing;
 
 namespace PLATEAU.CameraMovement
 {
-
-    public class RuntimeCameraTracker : MonoBehaviour
+    /// <summary>
+    /// Runtime中のカメラ位置を監視し、位置が変わったらPLATEAUTileManagerに通知するクラス。
+    /// </summary>
+    public class RuntimeCameraTracker
     {
         private static PLATEAUTileManager tileManageer;
 
         private static Vector3 lastPosition;
 
-        public struct MyUpdate { }
+        public struct PostLateUpdateDelegete { }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnRuntimeInitialize()
         {
-            //Disabled
-            //return;
-
             tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (tileManageer == null)
                 return;
 
-            Debug.Log("ゲーム開始時に実行されました！");
+            Debug.Log("RuntimeCameraTracker Initialized (Runtime Camera Tracking Start))");
 
             lastPosition = Camera.main.transform.position;
 
             tileManageer.ClearAll();
             tileManageer.UpdateAssetByCameraPosition(lastPosition);
 
-            var mySystem = new PlayerLoopSystem
+            var loopSystem = new PlayerLoopSystem
             {
-                type = typeof(MyUpdate),
-                updateDelegate = CustomUpdate,
+                updateDelegate = CustomPostLateUpdate,
+                type = typeof(PostLateUpdateDelegete),
             };
 
             var playerloop = PlayerLoop.GetDefaultPlayerLoop();
@@ -47,15 +44,21 @@ namespace PLATEAU.CameraMovement
             {
                 if (playerloop.subSystemList[i].type == typeof(UnityEngine.PlayerLoop.PostLateUpdate))
                 {
-                    playerloop.subSystemList[i] = new PlayerLoopSystem
-                    {
-                        type = playerloop.subSystemList[i].type,
-                        updateDelegate = playerloop.subSystemList[i].updateDelegate,
-                        //subSystemList = playerloop.subSystemList[i].subSystemList.Prepend(mySystem).ToArray(),      // subSystemListの先頭にmySystem追加
-                        subSystemList = playerloop.subSystemList[i].subSystemList.Append(mySystem).ToArray(), // subSystemListの末尾にmySystem追加
-                        updateFunction = playerloop.subSystemList[i].updateFunction,
-                        loopConditionFunction = playerloop.subSystemList[i].loopConditionFunction,
-                    };
+                    //playerloop.subSystemList[i] = new PlayerLoopSystem
+                    //{
+                    //    type = playerloop.subSystemList[i].type,
+                    //    updateDelegate = playerloop.subSystemList[i].updateDelegate,
+                    //    subSystemList = playerloop.subSystemList[i].subSystemList.Append(loopSystem).ToArray(), // subSystemListの末尾にmySystem追加
+                    //    updateFunction = playerloop.subSystemList[i].updateFunction,
+                    //    loopConditionFunction = playerloop.subSystemList[i].loopConditionFunction,
+                    //};
+
+                    var postLateUpdateSystem = playerloop.subSystemList[i];
+                    var subSystem = new List<PlayerLoopSystem>(postLateUpdateSystem.subSystemList);
+                    subSystem.Add(loopSystem);
+                    postLateUpdateSystem.subSystemList = subSystem.ToArray();
+                    playerloop.subSystemList[i] = postLateUpdateSystem;
+
                     break;
                 }
             }
@@ -63,18 +66,19 @@ namespace PLATEAU.CameraMovement
             PlayerLoop.SetPlayerLoop(playerloop);
         }
 
-        private static void CustomUpdate()
+        private static void CustomPostLateUpdate()
         {
             //Debug.Log("my update.");
 
-            if (Camera.main != null && tileManageer != null)
+            var targetCamera = Camera.main;
+
+            if (targetCamera != null && tileManageer != null)
             {
-                Vector3 currentPosition = Camera.main.transform.position;
+                Vector3 currentPosition = targetCamera.transform.position;
                 if (currentPosition != lastPosition)
                 {
                     //Debug.Log($"MainCameraが移動しました！ 新しい位置: {currentPosition}");
                     lastPosition = currentPosition;
-
                     tileManageer.UpdateAssetByCameraPosition(currentPosition);
                 }
             }
