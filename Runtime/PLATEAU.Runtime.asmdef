@@ -5,7 +5,9 @@
         "libplateau",
         "Unity.Splines",
         "Unity.Mathematics",
-        "LibTessDotNet"
+        "LibTessDotNet",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

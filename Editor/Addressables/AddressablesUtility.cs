@@ -3,6 +3,9 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.AddressableAssets.Build;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace PLATEAU.Editor.Addressables
 {
@@ -27,6 +30,7 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// 指定した名前のグループを取得。なければ新規作成。
         /// </summary>
+        /// <param name="groupName">グループ名</param>
         public static AddressableAssetGroup GetOrCreateGroup(string groupName)
         {
             var settings = RequireAddressableSettings();
@@ -53,10 +57,9 @@ namespace PLATEAU.Editor.Addressables
             {
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
-
             return group;
         }
-
+        
         /// <summary>
         /// 指定したアセットを指定グループにAddressableとして登録
         /// <param name="assetPath">登録するアセットのパス</param>
@@ -116,8 +119,7 @@ namespace PLATEAU.Editor.Addressables
         /// 指定したグループのロードパス(LoadPath)とビルドパス(buildPath)を変更します。
         /// </summary>
         /// <param name="groupName">グループ名</param>
-        /// <param name="path">新しいパス（例: "Assets/AddressableAssetsData/BuildPath"）</param>
-        public static void SetGroupLoadAndBuildPath(string groupName, string path)
+        public static void SetGroupLoadAndBuildPath(string groupName)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -139,60 +141,186 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            string customPathName = "CustomPath_" + groupName;
-            string profileName = "CustomProfile_" + groupName;
-            if (!AddressablesUtility.TryCreateProfile(profileName, out var profileId))
+            // グループのBuildPathとLoadPathに変数名をセット
+            bundledSchema.BuildPath.SetVariableByName(settings, groupName);
+            bundledSchema.LoadPath.SetVariableByName(settings, groupName);
+            
+            // グループの設定
+            bundledSchema.IncludeAddressInCatalog = true;
+            bundledSchema.IncludeGUIDInCatalog = true;
+            bundledSchema.IncludeLabelsInCatalog = true;
+            bundledSchema.IncludeInBuild = true;
+            bundledSchema.AssetLoadMode = AssetLoadMode.AllPackedAssetsAndDependencies;
+            
+            // bundleを個別にパックする
+            bundledSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+        }
+        
+        /// <summary>
+        /// プロファイルを設定します。
+        /// </summary>
+        public static void SetRemoteProfileSettings(string path, string pathVar)
+        {
+            if (string.IsNullOrEmpty(path))
             {
-                Debug.LogError($"プロファイルの作成に失敗しました: {profileName}");
+                Debug.LogError("pathパラメータが無効です。");
                 return;
             }
-            var profileSettings = settings.profileSettings;
             
-            // プロファイル変数がなければ作成
-            if (!profileSettings.GetVariableNames().Contains(customPathName))
+            if (string.IsNullOrEmpty(pathVar))
             {
-                profileSettings.CreateValue(customPathName, path);
+                Debug.LogError("pathVarパラメータが無効です。");
+                return;
             }
-
-            // そのプロファイルIDにのみ値をセット
-            profileSettings.SetValue(profileId, customPathName, path);
-
-            // アクティブプロファイルをこのプロファイルに切り替え
-            settings.activeProfileId = profileId;
-
-            // グループのBuildPathとLoadPathに変数名をセット
-            bundledSchema.BuildPath.SetVariableByName(settings, customPathName);
-            bundledSchema.LoadPath.SetVariableByName(settings, customPathName);
-
-            Debug.Log($"{groupName} の BuildPath/LoadPath を {path} に設定しました。");
-        }
-
-        /// <summary>
-        /// 新しいAddressablesプロファイルを作成します。
-        /// </summary>
-        /// <param name="profileName">新しいプロファイル名</param>
-        /// <param name="templateProfileName">テンプレートとするプロファイル名（省略時は"Default"）</param>
-        /// <returns>作成したプロファイルのID。失敗時はnull。</returns>
-        private static bool TryCreateProfile(string profileName, out string newProfileId, string templateProfileName = "Default")
-        {
-            newProfileId = null;
+            
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
-                return false;
+                return;
             }
+            
+            // カタログ設定
+            settings.BuildRemoteCatalog = true;
 
             var profileSettings = settings.profileSettings;
-            string templateProfileId = profileSettings.GetProfileId(templateProfileName);
-            if (string.IsNullOrEmpty(templateProfileId))
+            if (!profileSettings.GetVariableNames().Contains(pathVar))
             {
-                Debug.LogWarning($"テンプレートプロファイルが見つかりません: {templateProfileName}");
-                return false;
+                profileSettings.CreateValue(pathVar, path);
+            }
+            profileSettings.SetValue(settings.activeProfileId, pathVar, path);
+
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, pathVar);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, pathVar);
+        }
+        
+        /// <summary>
+        /// デフォルトのプロファイル設定を行います。
+        /// </summary>
+        public static void SetDefaultProfileSettings()
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                return;
             }
 
-            newProfileId = profileSettings.AddProfile(profileName, templateProfileId);
-            Debug.Log($"新しいプロファイルを作成: {profileName} (ID: {newProfileId})");
-            return true;
+            // デフォルトプロファイルの作成
+            var profileId = SetOrCreateProfile("Default");
+            if (string.IsNullOrEmpty(profileId))
+            {
+                Debug.LogError("デフォルトプロファイルの作成に失敗しました。");
+                return;
+            }
+
+            // プロファイルをアクティブに設定
+            settings.activeProfileId = profileId;
+            
+            // リモートカタログを無効化
+            settings.BuildRemoteCatalog = false;
+        }
+
+        /// <summary>
+        /// Addressablesのプロファイルを作成し、アクティブにします。
+        /// </summary>
+        /// <param name="profileName">作成するプロファイル名</param>
+        /// <returns>作成したプロファイルのID</returns>
+        public static string SetOrCreateProfile(string profileName)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
+                return null;
+            }
+
+            // プロファイルが既に存在するか確認
+            var profileSettings = settings.profileSettings;
+            var existingProfileId = profileSettings.GetProfileId(profileName);
+            if (!string.IsNullOrEmpty(existingProfileId))
+            {
+                settings.activeProfileId = existingProfileId;
+                return existingProfileId;
+            }
+
+            // 新しいプロファイルを作成
+            var newProfileId = profileSettings.AddProfile(profileName, settings.activeProfileId);
+            if (string.IsNullOrEmpty(newProfileId))
+            {
+                Debug.LogError($"プロファイル '{profileName}' の作成に失敗しました。");
+                return null;
+            }
+
+            // プロファイルをアクティブに設定
+            settings.activeProfileId = newProfileId;
+            return newProfileId;
+        }
+        
+        /// <summary>
+        /// Addressablesのビルドを実行します。
+        /// </summary>
+        /// <param name="cleanCache">ビルド前にキャッシュを消す場合はtrue</param>
+        public static void BuildAddressables(bool cleanCache = false)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
+                return;
+            }
+
+            if (cleanCache)
+            {
+                UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.CleanPlayerContent();
+                Debug.Log("Addressablesのキャッシュをクリアしました。");
+            }
+
+            // Addressablesのビルドを実行
+            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
+            if (!string.IsNullOrEmpty(result.Error))
+            {
+                Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+            }
+            else
+            {
+                Debug.Log("Addressablesのビルドが完了しました。");
+            }
+        }
+
+        /// <summary>
+        /// デフォルトグループ以外のグループを削除します。
+        /// </summary>
+        public static void RemoveNonDefaultGroups(string targetLabel = "")
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                return;
+            }
+
+            var defaultGroup = settings.DefaultGroup;
+            if (defaultGroup == null)
+            {
+                Debug.LogWarning("デフォルトグループが設定されていません。");
+                return;
+            }
+
+            // グループのリストをコピー（削除中に変更されるため）
+            var groups = settings.groups.ToList();
+            foreach (var group in groups)
+            {
+                if (!string.IsNullOrEmpty(targetLabel) &&
+                    !group.entries.Any(e => e.labels.Contains(targetLabel)))
+                {
+                    continue;
+                }
+                
+                if (group == defaultGroup)
+                {
+                    continue;
+                }
+                settings.RemoveGroup(group);
+                Debug.Log($"グループを削除しました: {group.Name}");
+            }
         }
     }
 } 
