@@ -1,4 +1,4 @@
-using PLATEAU.DynamicTile;
+ï»¿using PLATEAU.DynamicTile;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace PLATEAU.CameraMovement
             if (tileManageer == null)
                 return;
 
-            Debug.Log("ƒQ[ƒ€ŠJn‚ÉÀs‚³‚ê‚Ü‚µ‚½I");
+            Debug.Log("ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã«å®Ÿè¡Œã•ã‚Œã¾ã—ãŸï¼");
 
             lastPosition = Camera.main.transform.position;
 
@@ -51,8 +51,8 @@ namespace PLATEAU.CameraMovement
                     {
                         type = playerloop.subSystemList[i].type,
                         updateDelegate = playerloop.subSystemList[i].updateDelegate,
-                        //subSystemList = playerloop.subSystemList[i].subSystemList.Prepend(mySystem).ToArray(),      // subSystemList‚Ìæ“ª‚ÉmySystem’Ç‰Á
-                        subSystemList = playerloop.subSystemList[i].subSystemList.Append(mySystem).ToArray(), // subSystemList‚Ì––”ö‚ÉmySystem’Ç‰Á
+                        //subSystemList = playerloop.subSystemList[i].subSystemList.Prepend(mySystem).ToArray(),      // subSystemListã®å…ˆé ­ã«mySystemè¿½åŠ 
+                        subSystemList = playerloop.subSystemList[i].subSystemList.Append(mySystem).ToArray(), // subSystemListã®æœ«å°¾ã«mySystemè¿½åŠ 
                         updateFunction = playerloop.subSystemList[i].updateFunction,
                         loopConditionFunction = playerloop.subSystemList[i].loopConditionFunction,
                     };
@@ -72,7 +72,7 @@ namespace PLATEAU.CameraMovement
                 Vector3 currentPosition = Camera.main.transform.position;
                 if (currentPosition != lastPosition)
                 {
-                    //Debug.Log($"MainCamera‚ªˆÚ“®‚µ‚Ü‚µ‚½I V‚µ‚¢ˆÊ’u: {currentPosition}");
+                    //Debug.Log($"MainCameraãŒç§»å‹•ã—ã¾ã—ãŸï¼ æ–°ã—ã„ä½ç½®: {currentPosition}");
                     lastPosition = currentPosition;
 
                     tileManageer.UpdateAssetByCameraPosition(currentPosition);
