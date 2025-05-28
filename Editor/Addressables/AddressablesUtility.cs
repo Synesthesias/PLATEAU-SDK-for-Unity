@@ -289,7 +289,7 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// デフォルトグループ以外のグループを削除します。
         /// </summary>
-        public static void RemoveNonDefaultGroups()
+        public static void RemoveNonDefaultGroups(string targetLabel = "")
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -308,11 +308,18 @@ namespace PLATEAU.Editor.Addressables
             var groups = settings.groups.ToList();
             foreach (var group in groups)
             {
-                if (group != defaultGroup)
+                if (!string.IsNullOrEmpty(targetLabel) &&
+                    !group.entries.Any(e => e.labels.Contains(targetLabel)))
                 {
-                    settings.RemoveGroup(group);
-                    Debug.Log($"グループを削除しました: {group.Name}");
+                    continue;
                 }
+                
+                if (group == defaultGroup)
+                {
+                    continue;
+                }
+                settings.RemoveGroup(group);
+                Debug.Log($"グループを削除しました: {group.Name}");
             }
         }
     }
