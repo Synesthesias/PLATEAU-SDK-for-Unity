@@ -37,6 +37,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 onError?.Invoke("都市モデルが見つかりません。都市モデルをインポートしてください。");
                 return;
             }
+            
+            using var progressBar = new ProgressBar();
 
             var groupName = AddressableGroupName;
             if (isExcludeAssetFolder)
@@ -51,14 +53,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             AddressablesUtility.RemoveNonDefaultGroups();
 
             var addresses = new List<string>();
-            foreach (var cityObject in cityObjects)
+            for (var i = 0; i < cityObjects.Length; i++)
             {
+                var cityObject = cityObjects[i];
                 if (cityObject == null || cityObject.gameObject == null)
                 {
                     Debug.LogWarning($"GameObjectがnullです。");
                     continue;
                 }
-            
+                
+                float progress = (float)(i+1) / cityObjects.Length;
+                progressBar.Display("動的タイルを生成中..", progress);
+
                 assetConfig.SrcGameObj = cityObject.gameObject;
             
                 var baseFolderPath = Path.Combine(assetConfig.AssetPath, cityObject.gameObject.name);
@@ -86,7 +92,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
                     continue;
                 }
-            
+
+                progressBar.Display("動的タイルをAddressableに登録中..", progress);
+    
                 // プレハブをAddressableに登録
                 // TODO : タイルごとにAddress名を設定する
                 var address = prefabAsset.name;
@@ -95,13 +103,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     address,
                     groupName,
                     new List<string> { AddressableLabel });
-                Debug.Log($"プレハブをAddressableに登録: {address}");
                 
                 addresses.Add(address);
             
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
+
+            progressBar.Display("Addressableのビルドを実行中...", 0.1f);
 
             if (isExcludeAssetFolder)
             {
@@ -151,7 +160,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var tile = new PLATEAUDynamicTile(address);
                 manager.AddTile(tile);
             }
-
+            
+            progressBar.Display("Addressableのビルドを実行中...", 0.99f);
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
 
@@ -174,7 +184,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 config.SetByFullPath(saveFolderPath);
 
                 // 変換
-                convertObjects = new ConvertToAsset().ConvertCore(config);
+                convertObjects = new ConvertToAsset().ConvertCore(config, false);
                 
                 // アセットパスを戻す
                 config.AssetPath = assetPath;
