@@ -50,7 +50,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
 
             // グループを削除
-            AddressablesUtility.RemoveNonDefaultGroups();
+            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel);
 
             var addresses = new List<string>();
             for (var i = 0; i < cityObjects.Length; i++)
@@ -184,7 +184,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 config.SetByFullPath(saveFolderPath);
 
                 // 変換
-                convertObjects = new ConvertToAsset().ConvertCore(config, false);
+                convertObjects = new ConvertToAsset().ConvertCore(config, new DummyProgressBar());
                 
                 // アセットパスを戻す
                 config.AssetPath = assetPath;
