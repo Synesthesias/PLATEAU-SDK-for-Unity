@@ -11,7 +11,8 @@ namespace PLATEAU.DynamicTile
     {
         [SerializeField]
         private List<PLATEAUDynamicTile> dynamicTiles = new();
-        
+        public List<PLATEAUDynamicTile> DynamicTiles => dynamicTiles;
+
         [SerializeField]
         private string catalogPath;
         public string CatalogPath => catalogPath;

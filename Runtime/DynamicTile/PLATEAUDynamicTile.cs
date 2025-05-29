@@ -26,9 +26,10 @@ namespace PLATEAU.DynamicTile
         private Bounds extent;
         public Bounds Extent => extent;
 
-        public PLATEAUDynamicTile(string address)
+        public PLATEAUDynamicTile(string address, Transform parent)
         {
             this.address = address;
+            this.parent = parent;
         }
     }
 } 
