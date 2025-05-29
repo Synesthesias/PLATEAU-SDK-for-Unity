@@ -10,15 +10,18 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUTileManager : MonoBehaviour
     {
         public static readonly float DefaultLoadDistance = 1500f; // デフォルトのロード距離
+        public const bool showDebugTileInfo = true; // Debug情報を表示するかどうか
 
         [SerializeField]
         private bool useJobSystem = true; // Job Systemを使用するかどうか
-
+      
         [SerializeField]
         private List<PLATEAUDynamicTile> dynamicTiles = new List<PLATEAUDynamicTile>(); // タイルリスト
 
         //[SerializeField]
         //private List<PLATEAUDynamicTile> excludeTiles = new List<PLATEAUDynamicTile>(); // 除外タイルリスト
+
+        public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; // 最後にカメラが更新された位置
 
         private PLATEAUDynamicTileJobSystem jobSystem;
 
@@ -125,6 +128,7 @@ namespace PLATEAU.DynamicTile
             // すべてのロード済みオブジェクトをアンロード
             foreach (var tile in dynamicTiles)
             {
+                if (tile == null) continue; // タイルがnullの場合はスキップ
                 if (tile.LoadedObject != null)
                 {
                     if (!Addressables.ReleaseInstance(tile.LoadedObject))
@@ -152,20 +156,17 @@ namespace PLATEAU.DynamicTile
                 // Job Systemを使用しない場合
                 UpdateAssetByCameraPositionInternal(position);
             }
+
+            LastCameraPosition = position; // 最後のカメラ位置を更新
         }
 
         public void UpdateAssetByCameraPositionInternal(Vector3 position)
         {
-            //Debug.Log($"UpdateAssetByCameraPositionInternal: {position}");
-
             foreach (var tile in dynamicTiles)
             {
                 var distance = tile.GetDistance(position, true);
-
-                //Debug.Log($"UpdateAssetByCameraPosition: {distance}");
                 if (distance < DefaultLoadDistance)
                 {
-                    //Load(tile, 0);
                     if (tile.IsLoadedOrLoading)
                         tile.NextLoadState = LoadState.None;
                     else
@@ -173,14 +174,12 @@ namespace PLATEAU.DynamicTile
                 }
                 else
                 {
-                    //Unload(tile, 0);
                     if (tile.IsLoadedOrLoading)
                         tile.NextLoadState = LoadState.Unload;
                     else
                         tile.NextLoadState = LoadState.None;
                 }
             }
-
             ExecuteLoadTask();
         }
 
@@ -212,32 +211,5 @@ namespace PLATEAU.DynamicTile
                 DebugEx.DrawBounds(tile.GetExtent(), Color.red, 30f);
             }
         }
-
-        //private Vector3 lastCameraPosition;
-
-        //void Awake()
-        //{
-        //    Debug.Log("PLATEAUTileManager Start");
-
-        //    lastCameraPosition = Vector3.zero;
-        //    ClearAll();
-        //}
-
-        ////Runtime時のCamera Update
-        //private void Update()
-        //{
-
-        //    if (Camera.main != null)
-        //    {
-        //        Vector3 currentPosition = Camera.main.transform.position;
-        //        if (currentPosition != lastCameraPosition)
-        //        {
-        //            //Debug.Log($"MainCameraが移動しました！ 新しい位置: {currentPosition}");
-        //            lastCameraPosition = currentPosition;
-
-        //            UpdateAssetByCameraPosition(currentPosition);
-        //        }
-        //    }
-        //}
     }
 }

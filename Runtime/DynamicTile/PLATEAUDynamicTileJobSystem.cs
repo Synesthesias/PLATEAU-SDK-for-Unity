@@ -102,7 +102,7 @@ namespace PLATEAU.DynamicTile
             for (int i = 0; i < dynamicTiles.Count; i++)
             {
                 var tile = dynamicTiles[i];
-                NativeTileBounds[i] = tile.GetTileState();
+                NativeTileBounds[i] = tile.GetTileBoundsStruct();
             }
         }
 
@@ -144,10 +144,9 @@ namespace PLATEAU.DynamicTile
                     nextLoadState = LoadState.Unload;
                 }
 
-                // debug ============================================================
-                tile.DebugInfo.Distance = distance;
-                tile.DebugInfo.NextLoadState = nextLoadState;
-                // debug ============================================================
+                // debug用
+                tile.DistanceFromCamera = distance;
+                tile.NextLoadState = nextLoadState;
 
                 if (nextLoadState == LoadState.None)
                 {

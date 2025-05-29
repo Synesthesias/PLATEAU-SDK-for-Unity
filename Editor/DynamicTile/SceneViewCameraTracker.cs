@@ -1,10 +1,12 @@
-﻿using PLATEAU.DynamicTile;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace PLATEAU.CameraMovement
+namespace PLATEAU.DynamicTile
 {
 
     /// <summary>
@@ -15,8 +17,8 @@ namespace PLATEAU.CameraMovement
     {
         private static PLATEAUTileManager tileManageer;
 
-        private static Vector3 lastPosition = Vector3.zero;
-        private static Quaternion lastRotation = Quaternion.identity;
+        //private static Vector3 lastPosition = Vector3.zero;
+        //private static Quaternion lastRotation = Quaternion.identity;
 
         static SceneViewCameraTracker()
         {
@@ -44,17 +46,20 @@ namespace PLATEAU.CameraMovement
             if (EditorApplication.isPlaying)
                 return;
 
-                Camera sceneCamera = sceneView.camera;
+            if (tileManageer == null)
+                return;
+
+            Camera sceneCamera = sceneView.camera;
             if (sceneCamera != null && tileManageer != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                Quaternion currentRotation = sceneCamera.transform.rotation;
+                //Quaternion currentRotation = sceneCamera.transform.rotation;
 
-                if (currentPosition != lastPosition || currentRotation != lastRotation)
+                if (currentPosition != tileManageer.LastCameraPosition)
                 {
                     //Debug.Log($"SceneView Camera Moved! Position: {currentPosition}, Rotation: {currentRotation}");
-                    lastPosition = currentPosition;
-                    lastRotation = currentRotation;
+                    //lastPosition = currentPosition;
+                    //lastRotation = currentRotation;
 
                     tileManageer.UpdateAssetByCameraPosition(currentPosition);
                 }
@@ -98,31 +103,32 @@ namespace PLATEAU.CameraMovement
 
         private static void OnSceneSaving(Scene scene, string path)
         {
-            Debug.Log($"Scene Saving : {scene.name}, save path : {path}");
-            // ここでAddressablesのアンロード処理を実行
             var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer != null)
-            {
-                tileManageer.ClearAll();
-            }
+            if (tileManageer == null)
+                return;
+            
+            Debug.Log($"Scene Saving : {scene.name}, save path : {path}");
+
+            // Addressablesのアンロード処理を実行
+            tileManageer.ClearAll();
+            
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
+            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManageer == null)
+                return;
+
             if (state == PlayModeStateChange.ExitingEditMode)
             {
                 Debug.Log("Play Mode about to start");
-
-                var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (tileManageer != null)
-                {
-                    tileManageer.ClearAll();
-                }
+                tileManageer.ClearAll();
+                
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
                 Debug.Log("Play Mode ended (Entered Edit Mode)");
-                //SceneViewCameraTracker.Initialize();
                 InitView();
             }
         }
@@ -130,6 +136,10 @@ namespace PLATEAU.CameraMovement
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
+            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManageer == null)
+                return;
+
             Debug.Log($"Scene Opened: {scene.name}");
             InitView();
         }
@@ -137,13 +147,11 @@ namespace PLATEAU.CameraMovement
         static void InitView()
         {
             var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer != null)
-            {
-                tileManageer.ClearAll();
-                SceneViewCameraTracker.Initialize();
+            if (tileManageer == null)
+                return;
 
-                Debug.Log($"Tile Manager Clear All Called.");
-            }
+            tileManageer.ClearAll();
+            SceneViewCameraTracker.Initialize();
         }
     }
 
@@ -158,18 +166,20 @@ namespace PLATEAU.CameraMovement
         {
             DrawDefaultInspector(); // 通常のInspector表示
 
-            PLATEAUTileManager myComponent = (PLATEAUTileManager)target;
+            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
 
-            if (GUILayout.Button("Clear All"))
+            if (PLATEAUTileManager.showDebugTileInfo)
             {
-                myComponent.ClearAll();
+                if (GUILayout.Button("Clear All"))
+                {
+                    tileManager.ClearAll();
+                    SceneViewCameraTracker.Initialize();
+                }
 
-                SceneViewCameraTracker.Initialize();
-            }
-
-            if (GUILayout.Button("Show Debug Extent"))
-            {
-                myComponent.ShowBounds();
+                if (GUILayout.Button("Show Debug Extent"))
+                {
+                    tileManager.ShowBounds();
+                }
             }
         }
     }

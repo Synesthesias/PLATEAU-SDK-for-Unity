@@ -103,7 +103,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     manager);
             }
 
-            PLATEAU.CameraMovement.SceneViewCameraTracker.Initialize();
+            SceneViewCameraTracker.Initialize();
 
             if (!string.IsNullOrEmpty(buildFolderPath))
             {

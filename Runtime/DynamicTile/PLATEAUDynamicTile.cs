@@ -13,25 +13,6 @@ namespace PLATEAU.DynamicTile
     [Serializable]
     public class PLATEAUDynamicTile
     {
-
-        [Serializable]
-        public struct DebugInfoStruct
-        {
-            public float Distance;
-            public LoadState NextLoadState;
-        }
-
-        [SerializeField]
-        public DebugInfoStruct DebugInfo;
-
-        public LoadState NextLoadState { get; set; } = LoadState.None;
-
-        public bool IsLoadedOrLoading
-        {
-            get => LoadedObject != null || IsLoading;
-        }
-
-
         [SerializeField]
         private string originalAddress;
         public string OriginalAddress
@@ -46,6 +27,58 @@ namespace PLATEAU.DynamicTile
         {
             get => isExcludeTile;
             set => isExcludeTile = value;
+        }
+
+
+        [SerializeField]
+        private GameObject loadedObject;
+        public GameObject LoadedObject
+        {
+            get => loadedObject;
+            set => loadedObject = value;
+        }
+
+        [SerializeField]
+        private Transform Parent;
+        public Transform GetParent()
+        {
+            return Parent;
+        }
+
+        [SerializeField]
+        private Bounds Extent;
+
+        public Bounds GetExtent()
+        {
+            return Extent;
+        }
+
+        // ロード中かどうかを示すフラグ
+        public bool IsLoading { get; set; }
+
+        public bool IsLoadedOrLoading
+        {
+            get => LoadedObject != null || IsLoading;
+        }
+
+        [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
+        [ReadOnly]
+        [SerializeField]
+        private float distanceFromCamera = 0f;
+        public float DistanceFromCamera
+        {
+            get => distanceFromCamera;
+            set => distanceFromCamera = value;
+        }
+
+        [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
+        [ReadOnly]
+        [SerializeField]
+        private LoadState nextLoadState = LoadState.None;
+        public LoadState NextLoadState
+        {
+            get => nextLoadState;
+            set => nextLoadState = value;
         }
 
         /// <summary>
@@ -71,7 +104,8 @@ namespace PLATEAU.DynamicTile
                 : GetAddress(downSampleLevel);
         }
 
-        public TileBounds GetTileState()
+        // Job Systemで使用するための構造体を返す
+        public TileBounds GetTileBoundsStruct()
         {
             return new TileBounds(Extent.min, Extent.max);
         }
@@ -92,32 +126,6 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        public bool IsLoading { get; set; }
-
-        [SerializeField]
-        private GameObject loadedObject;
-        public GameObject LoadedObject
-        {
-            get => loadedObject;
-            set => loadedObject = value;
-        }
-
-        [SerializeField]
-        private Transform Parent;
-
-        public Transform GetParent()
-        {
-            return Parent;
-        }
-
-        [SerializeField]
-        private Bounds Extent;
-
-        public Bounds GetExtent()
-        {
-            return Extent;
-        }
-
         public float GetDistance(Vector3 position, bool ignoreY)
         {
             if (Extent == null)
@@ -136,9 +144,8 @@ namespace PLATEAU.DynamicTile
             Vector3 closestPoint = Extent.ClosestPoint(position);
             var distance = Vector3.Distance(position, closestPoint);
 
-            //debug info =============================================
-            DebugInfo.Distance = distance;
-            //debug info =============================================
+            //debug用
+            DistanceFromCamera = distance;
 
             return distance;
         }
@@ -158,7 +165,8 @@ namespace PLATEAU.DynamicTile
             Extent = bounds;
 
             // Debug Draw Rect
-            DebugEx.DrawBounds(bounds, Color.red, 30f);
+            if (PLATEAUTileManager.showDebugTileInfo)
+                DebugEx.DrawBounds(bounds, Color.red, 30f);
 
             return bounds;
         }
@@ -169,7 +177,8 @@ namespace PLATEAU.DynamicTile
             Extent = bounds;
 
             // Debug Draw Rect
-            DebugEx.DrawBounds(bounds, Color.red, 30f);
+            if(PLATEAUTileManager.showDebugTileInfo)
+                DebugEx.DrawBounds(bounds, Color.red, 30f);
 
             return bounds;
         }
