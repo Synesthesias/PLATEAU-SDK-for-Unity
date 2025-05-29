@@ -264,12 +264,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return string.Empty;
             }
 
-            // 2次メッシュ（6桁）の場合はシンプルな形式
+            // 2次メッシュ（6桁）
             if (meshCode.Length == 6)
             {
                 return $"tile_{meshCode}_{baseName}";
             }
-            // 3次メッシュ（8桁）の場合は従来の形式
+            // 3次メッシュ（8桁）
             else if (meshCode.Length == 8)
             {
                 // TODO：Zoom Levelを取得する
