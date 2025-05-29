@@ -87,7 +87,7 @@ namespace PLATEAU.DynamicTile
         }
 
         // ロード中かどうかを示すフラグ
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; internal set; }
 
         public bool IsLoadedOrLoading
         {
