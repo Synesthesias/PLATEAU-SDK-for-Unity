@@ -29,7 +29,9 @@ namespace PLATEAU.DynamicTile
             set => isExcludeTile = value;
         }
 
-
+        /// <summary>
+        /// AddressablesでロードされたGameObjectを保持する。
+        /// </summary>
         [SerializeField]
         private GameObject loadedObject;
         public GameObject LoadedObject
@@ -38,29 +40,29 @@ namespace PLATEAU.DynamicTile
             set => loadedObject = value;
         }
 
+        /// <summary>
+        /// Addressablesをロードする際の親Transformを保持する。
+        /// </summary>
         [SerializeField]
-        private Transform Parent;
-        public Transform GetParent()
+        private Transform parent;
+        public Transform Parent
         {
-            return Parent;
+            get => parent;
         }
 
+        /// <summary>
+        /// タイルの範囲を示すBoundsを保持する。
+        /// </summary>
         [SerializeField]
-        private Bounds Extent;
-
-        public Bounds GetExtent()
+        private Bounds extent;
+        public Bounds Extent
         {
-            return Extent;
+            get => extent;
         }
 
-        // ロード中かどうかを示すフラグ
-        public bool IsLoading { get; set; }
-
-        public bool IsLoadedOrLoading
-        {
-            get => LoadedObject != null || IsLoading;
-        }
-
+        /// <summary>
+        /// カメラからの距離を保持する。デバッグ用。
+        /// </summary>
         [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
         [ReadOnly]
         [SerializeField]
@@ -71,6 +73,9 @@ namespace PLATEAU.DynamicTile
             set => distanceFromCamera = value;
         }
 
+        /// <summary>
+        /// 次にAddressablesをロードする状態を示す。
+        /// </summary>
         [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
         [ReadOnly]
         [SerializeField]
@@ -79,6 +84,14 @@ namespace PLATEAU.DynamicTile
         {
             get => nextLoadState;
             set => nextLoadState = value;
+        }
+
+        // ロード中かどうかを示すフラグ
+        public bool IsLoading { get; set; }
+
+        public bool IsLoadedOrLoading
+        {
+            get => LoadedObject != null || IsLoading;
         }
 
         /// <summary>
@@ -110,10 +123,16 @@ namespace PLATEAU.DynamicTile
             return new TileBounds(Extent.min, Extent.max);
         }
 
+        /// <summary>
+        /// PLATEAUDynamicTileのコンストラクタ。
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="parent"></param>
+        /// <param name="original"></param>
         public PLATEAUDynamicTile(string address, Transform parent, GameObject original = null)
         {
             originalAddress = address;
-            Parent = parent;
+            this.parent = parent;
 
             if(original != null)
             {
@@ -126,9 +145,15 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        /// <summary>
+        /// カメラからの距離を計算する。
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="ignoreY"></param>
+        /// <returns></returns>
         public float GetDistance(Vector3 position, bool ignoreY)
         {
-            if (Extent == null)
+            if (extent == null)
             {
                 return 0f;
             }
@@ -150,6 +175,11 @@ namespace PLATEAU.DynamicTile
             return distance;
         }
 
+        /// <summary>
+        /// メッシュコードからタイルの範囲を初期化する。
+        /// </summary>
+        /// <param name="meshcode"></param>
+        /// <returns></returns>
         private Bounds InitializeExtentFromMeshCode(string meshcode)
         {
             GridCode gridCode = GridCode.Create(meshcode);
@@ -162,7 +192,7 @@ namespace PLATEAU.DynamicTile
             var bounds = new Bounds();
             bounds.SetMinMax(new Vector3((float)min.X, (float)min.Y, (float)min.Z), new Vector3((float)max.X, (float)max.Y, (float)max.Z));
 
-            Extent = bounds;
+            extent = bounds;
 
             // Debug Draw Rect
             if (PLATEAUTileManager.showDebugTileInfo)
@@ -171,10 +201,15 @@ namespace PLATEAU.DynamicTile
             return bounds;
         }
 
+        /// <summary>
+        /// GameObjectからタイルの範囲を初期化する。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         private Bounds InitializeExtentFromGameObject(GameObject obj)
         {
             var bounds = obj.GetComponent<Renderer>().bounds;
-            Extent = bounds;
+            extent = bounds;
 
             // Debug Draw Rect
             if(PLATEAUTileManager.showDebugTileInfo)
@@ -183,8 +218,12 @@ namespace PLATEAU.DynamicTile
             return bounds;
         }
 
-        //tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-        //tile_zoom_0_grid_meshcode_gameobjectname_0
+        /// <summary>
+        /// メッシュコードを取得する。
+        /// GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+        /// 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+        /// </summary>
+        /// <returns></returns>
         private string GetMeshCode()
         {
             Match match = Regex.Match(originalAddress, @"_grid_([^_]+)_");

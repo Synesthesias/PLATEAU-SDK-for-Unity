@@ -10,6 +10,7 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUTileManager : MonoBehaviour
     {
         public static readonly float DefaultLoadDistance = 1500f; // デフォルトのロード距離
+
         public const bool showDebugTileInfo = true; // Debug情報を表示するかどうか
 
         [SerializeField]
@@ -44,7 +45,7 @@ namespace PLATEAU.DynamicTile
                 return await Task.FromResult<bool>(true);
             }
 
-            Transform parent = tile.GetParent();
+            Transform parent = tile.Parent;
 
             tile.IsLoading = true;
             Addressables.InstantiateAsync(address, parent).Completed += handle =>
@@ -101,7 +102,10 @@ namespace PLATEAU.DynamicTile
             return true;
         }
 
-
+        /// <summary>
+        /// PLATEAUDynamicTileを追加する
+        /// </summary>
+        /// <param name="tile"></param>
         public void AddTile(PLATEAUDynamicTile tile)
         {
             dynamicTiles.Add(tile);
@@ -115,14 +119,18 @@ namespace PLATEAU.DynamicTile
             ClearAll();
         }
 
+        /// <summary>
+        /// Job Systemを使用している場合、OnDisableでDisposeする
+        /// </summary>
         private void OnDisable()
         {
-            //NativeTileStates.Dispose();
-
             jobSystem?.Dispose();
             jobSystem = null;
         }
 
+        /// <summary>
+        /// すべてのロード済みオブジェクトをアンロードする
+        /// </summary>
         public void ClearAll()
         {
             // すべてのロード済みオブジェクトをアンロード
@@ -139,6 +147,10 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        /// <summary>
+        /// カメラの位置に応じてタイルのロード状態を更新する。
+        /// </summary>
+        /// <param name="position"></param>
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
             if(useJobSystem)
@@ -160,6 +172,10 @@ namespace PLATEAU.DynamicTile
             LastCameraPosition = position; // 最後のカメラ位置を更新
         }
 
+        /// <summary>
+        /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
+        /// </summary>
+        /// <param name="position"></param>
         public void UpdateAssetByCameraPositionInternal(Vector3 position)
         {
             foreach (var tile in dynamicTiles)
@@ -183,6 +199,9 @@ namespace PLATEAU.DynamicTile
             ExecuteLoadTask();
         }
 
+        /// <summary>
+        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
+        /// </summary>
         private async void ExecuteLoadTask()
         {
             foreach (var tile in dynamicTiles)
@@ -203,12 +222,12 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        // Debug用
+        // Debug Bounds表示
         public void ShowBounds()
         {
             foreach (var tile in dynamicTiles)
             {
-                DebugEx.DrawBounds(tile.GetExtent(), Color.red, 30f);
+                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
             }
         }
     }

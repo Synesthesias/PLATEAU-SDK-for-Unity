@@ -13,6 +13,9 @@ namespace PLATEAU.DynamicTile
         Unload
     }
 
+    /// <summary>
+    /// タイルの境界を表す構造体。
+    /// </summary>
     public struct TileBounds
     {
         public Vector3 BoundsMin;
@@ -56,12 +59,9 @@ namespace PLATEAU.DynamicTile
         }
     }
 
-    public struct NextTileState
-    {
-        public LoadState NextLoadState;
-        public float Distance;
-    }
-
+    /// <summary>
+    /// タイルの距離を計算するJobSystemのJob
+    /// </summary>
     public struct TileDistanceCheckJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<TileBounds> TileStates;
@@ -118,7 +118,6 @@ namespace PLATEAU.DynamicTile
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
             //Debug.Log($"UpdateAssetByCameraPosition (JobSystem): {position}");
-
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
             handle.Complete();

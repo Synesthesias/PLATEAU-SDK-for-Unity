@@ -17,9 +17,6 @@ namespace PLATEAU.DynamicTile
     {
         private static PLATEAUTileManager tileManageer;
 
-        //private static Vector3 lastPosition = Vector3.zero;
-        //private static Quaternion lastRotation = Quaternion.identity;
-
         static SceneViewCameraTracker()
         {
             Initialize();
@@ -53,14 +50,8 @@ namespace PLATEAU.DynamicTile
             if (sceneCamera != null && tileManageer != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                //Quaternion currentRotation = sceneCamera.transform.rotation;
-
                 if (currentPosition != tileManageer.LastCameraPosition)
                 {
-                    //Debug.Log($"SceneView Camera Moved! Position: {currentPosition}, Rotation: {currentRotation}");
-                    //lastPosition = currentPosition;
-                    //lastRotation = currentRotation;
-
                     tileManageer.UpdateAssetByCameraPosition(currentPosition);
                 }
             }
@@ -110,8 +101,7 @@ namespace PLATEAU.DynamicTile
             Debug.Log($"Scene Saving : {scene.name}, save path : {path}");
 
             // Addressablesのアンロード処理を実行
-            tileManageer.ClearAll();
-            
+            tileManageer.ClearAll();            
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
@@ -133,7 +123,6 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
             var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -152,35 +141,6 @@ namespace PLATEAU.DynamicTile
 
             tileManageer.ClearAll();
             SceneViewCameraTracker.Initialize();
-        }
-    }
-
-    /// <summary>
-    /// PLATEAUTileManagerのEditor拡張クラス。
-    /// TODO: 専用ファイルにする
-    /// </summary>
-    [CustomEditor(typeof(PLATEAUTileManager))]
-    public class PLATEAUTileManagerEditor : UnityEditor.Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector(); // 通常のInspector表示
-
-            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-
-            if (PLATEAUTileManager.showDebugTileInfo)
-            {
-                if (GUILayout.Button("Clear All"))
-                {
-                    tileManager.ClearAll();
-                    SceneViewCameraTracker.Initialize();
-                }
-
-                if (GUILayout.Button("Show Debug Extent"))
-                {
-                    tileManager.ShowBounds();
-                }
-            }
         }
     }
 }
