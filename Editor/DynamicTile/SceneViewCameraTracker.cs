@@ -128,6 +128,8 @@ namespace PLATEAU.DynamicTile
                 return;
 
             Debug.Log($"Scene Opened: {scene.name}");
+
+            var task = tileManageer.ReinitializeFromCatalog();
             InitView();
         }
 

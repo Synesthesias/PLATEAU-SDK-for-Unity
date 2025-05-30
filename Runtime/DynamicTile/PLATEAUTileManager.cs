@@ -34,6 +34,25 @@ namespace PLATEAU.DynamicTile
 
         private PLATEAUDynamicTileJobSystem jobSystem;
 
+        /// <summary>
+        /// カタログからアドレスを初期化し、各タイルのアドレスを更新します。
+        /// 取得AddressとTileの順番が同じと仮定しています。
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReinitializeFromCatalog()
+        {
+            var addresses = await addressableLoader.Initialize(catalogPath);
+            if( addresses.Count != dynamicTiles.Count)
+                Debug.LogWarning($"アドレスの数とタイルの数が一致しません: アドレス数={addresses.Count}, タイル数={dynamicTiles.Count}");
+
+            for (var i = 0; i < addresses.Count; i++)
+            {
+                var address = addresses[i];
+                var tile = dynamicTiles[i];
+                tile.ReplaceAddress(address);
+            }
+        }
+
         public async Task LoadFromCatalog()
         {
             var addresses = await addressableLoader.Initialize(catalogPath);

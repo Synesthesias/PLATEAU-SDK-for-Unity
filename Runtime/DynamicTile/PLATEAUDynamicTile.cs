@@ -140,6 +140,11 @@ namespace PLATEAU.DynamicTile
             nextLoadState = LoadState.None;
         }
 
+        public void ReplaceAddress(string addr)
+        {
+            address = addr;
+        }
+
         /// <summary>
         /// カメラからの距離を計算する。
         /// </summary>
