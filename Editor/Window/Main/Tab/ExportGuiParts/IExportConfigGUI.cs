@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityExport.Exporters;
+using PLATEAU.Geometries;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ExportGuiParts
 {
@@ -13,6 +14,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.ExportGuiParts
         /// ファイルフォーマットに固有の設定項目のGUIを描画します。
         /// </summary>
         public void Draw();
+        
+        public void SetCoordinateSystem(CoordinateSystem coordinateSystem);
 
         public ICityExporter GetExporter();
     }

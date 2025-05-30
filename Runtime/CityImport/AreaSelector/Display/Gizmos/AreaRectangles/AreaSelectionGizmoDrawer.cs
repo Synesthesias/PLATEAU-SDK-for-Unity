@@ -11,7 +11,6 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
     {
         private const float CenterPositionY = 15f;
         private const float RayCastMaxDistance = 100000.0f;
-        private readonly MeshCode meshCode = new();
         private readonly Color isLeftMouseButtonMovedColor = Color.white;
         private readonly Color isLeftMouseAndShiftButtonMovedColor = Color.red;
         private Vector3 trackingStartedMousePosition;
@@ -54,14 +53,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
                 this.BoxColor = isLeftMouseButtonMoved ? this.isLeftMouseButtonMovedColor : this.isLeftMouseAndShiftButtonMovedColor;
                 this.AreaSelectionMin = new Vector3((float)minX, CenterPositionY, (float)minZ);
                 this.AreaSelectionMax = new Vector3((float)maxX, CenterPositionY, (float)maxZ);
-                Init(centerPosition, size, this.meshCode);
+                Init(centerPosition, size, GridCode);
             }
             #endif
         }
 
         public void ClearAreaSelectionGizmo()
         {
-            Init(Vector3.zero, Vector3.zero, this.meshCode);
+            Init(Vector3.zero, Vector3.zero, GridCode);
         }
     }
 }

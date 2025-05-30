@@ -2,6 +2,8 @@ using System;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -57,13 +59,14 @@ namespace PLATEAU.CityImport.Config
             MapTileURL = DefaultMapTileUrl;
         }
 
-        public override MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID)
+        public override MeshExtractOptions ConvertToNativeOption(PlateauVector3d referencePoint, int coordinateZoneID, GmlFile gml = null)
         {
             var nativeOption = base.ConvertToNativeOption(referencePoint, coordinateZoneID);
             nativeOption.AttachMapTile = AttachMapTile;
             nativeOption.MapTileZoomLevel = MapTileZoomLevel;
             nativeOption.MapTileURL = MapTileURL;
             nativeOption.TexturePackingResolution = GetTexturePackingResolution();
+            nativeOption.epsgCode = gml?.Epsg ?? CoordinateReferenceFactory.DEFAULT_EPSG;
             return nativeOption;
         }
 

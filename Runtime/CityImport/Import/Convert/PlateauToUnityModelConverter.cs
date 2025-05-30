@@ -31,7 +31,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 成否を bool で返します。
         /// </summary>
         public static async Task<GranularityConvertResult> CityModelToScene(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes,
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
             CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
@@ -46,7 +46,7 @@ namespace PLATEAU.CityImport.Import.Convert
             Model plateauModel;
             try
             {
-                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedMeshCodes));
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedGridCodes));
             }
             catch (Exception e)
             {
@@ -135,14 +135,15 @@ namespace PLATEAU.CityImport.Import.Convert
         /// メインスレッドでなくても動作します。
         /// </summary>
         private static Model ExtractMeshes(
-            CityModel cityModel, MeshExtractOptions meshExtractOptions, MeshCodeList selectedMeshCodes)
+            CityModel cityModel, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes)
         {
             var model = Model.Create();
             if (cityModel == null) return model;
-            var extents = selectedMeshCodes.Data.Select(code => {
+            var extents = selectedGridCodes.GridCodes.Select(code => {
                 var extent = code.Extent;
                 extent.Min.Height = -999999.0;
                 extent.Max.Height = 999999.0;
+                code.Dispose(); // 廃棄を明示
                 return extent;
             }).ToList();
             MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);

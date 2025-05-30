@@ -18,18 +18,19 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
     public class AreaLodController
     {
         private readonly AreaLodSearcher searcher;
-        private readonly ConcurrentDictionary<MeshCode, AreaLodView> viewDict = new ConcurrentDictionary<MeshCode, AreaLodView>();
+        private readonly ConcurrentDictionary<GridCode, AreaLodView> viewDict = new ConcurrentDictionary<GridCode, AreaLodView>();
         private Task loadTask;
         private readonly GeoReference geoReference;
         private readonly HashSet<int> showLods;
 
-        public AreaLodController(IDatasetSourceConfig datasetSourceConfig, GeoReference geoReference, IEnumerable<MeshCode> allMeshCodes)
+        public AreaLodController(IDatasetSourceConfig datasetSourceConfig, GeoReference geoReference, NativeVectorGridCode allGridCodes)
         {
             this.searcher = new AreaLodSearcher(datasetSourceConfig);
             this.geoReference = geoReference;
-            foreach (var meshCode in allMeshCodes)
+            for (int i = 0; i < allGridCodes.Length; i++)
             {
-                this.viewDict.TryAdd(meshCode, null);
+                var gridCode = allGridCodes.At(i);
+                this.viewDict.TryAdd(gridCode, null);
             }
             showLods = new HashSet<int> { 1, 2, 3, 4 };
             AreaLodView.Init();
@@ -43,11 +44,11 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         public void Update(Extent cameraExtent)
         {
             if (this.loadTask is { IsCompleted: false }) return;
-            var meshCode = CalcNearestUnloadMeshCode(cameraExtent.Center, 3);
-            if (meshCode == null) return;
+            var gridCode = CalcNearestUnloadGridCode(cameraExtent.Center);
+            if (gridCode == null) return;
             this.loadTask = Task.Run(() =>
             {
-                Load(meshCode.Value);
+                Load(gridCode);
             }).ContinueWithErrorCatch();
         }
 
@@ -55,17 +56,18 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
         /// またLODを検索していないメッシュコードで、地域レベルが引数で与えられたもの以上のもののうち、
         /// <paramref name="geoCoordinate"/> に最も近い（補正あり）ものを返します。
         /// </summary>
-        private MeshCode? CalcNearestUnloadMeshCode(GeoCoordinate geoCoordinate, int minLevel)
+        private GridCode CalcNearestUnloadGridCode(GeoCoordinate geoCoordinate)
         {
             double minSqrDist = double.MaxValue;
-            MeshCode? nearestMeshCode = null;
-            foreach (var meshCode in this.viewDict.Keys)
+            GridCode nearestGridCode = null;
+            foreach (var gridCode in this.viewDict.Keys)
             {
-                if (meshCode.Level < minLevel) continue;
+                // 広域は飛ばします
+                if (!gridCode.IsNormalGmlLevel && !gridCode.IsSmallerThanNormalGml) continue;
                 // 読込済みのものは飛ばします
-                if (this.viewDict.TryGetValue(meshCode, out var areaLodView) && areaLodView != null) continue;
+                if (this.viewDict.TryGetValue(gridCode, out var areaLodView) && areaLodView != null) continue;
 
-                var distFromCenter = meshCode.Extent.Center - geoCoordinate;
+                var distFromCenter = gridCode.Extent.Center - geoCoordinate;
                 
                 // 緯度・経度の値でそのまま距離を取ると、探索範囲が縦長になり、画面の上下にはみ出した箇所が探索されがちになります。
                 // これを補正するため、縦よりも横を優先します。
@@ -76,25 +78,25 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons
                 if (sqrDist < minSqrDist)
                 {
                     minSqrDist = sqrDist;
-                    nearestMeshCode = meshCode;
+                    nearestGridCode = gridCode;
                 }
             }
-            return nearestMeshCode;
+            return nearestGridCode;
         }
         
         /// <summary>
         /// 与えられたメッシュコードで利用可能なパッケージとLODを検索し、ビューに渡します。
         /// </summary>
-        private void Load(MeshCode meshCode)
+        private void Load(GridCode gridCode)
         {
-            var packageLods = this.searcher.LoadLodsInMeshCode(meshCode.ToString());
-            var extent = meshCode.Extent;
+            var packageLods = this.searcher.LoadLodsInGridCode(gridCode.StringCode);
+            var extent = gridCode.Extent;
             var positionUpperLeft = this.geoReference.Project(new GeoCoordinate(extent.Max.Latitude, extent.Min.Longitude, 0)).ToUnityVector();
             var positionLowerRight = this.geoReference
                 .Project(new GeoCoordinate(extent.Min.Latitude, extent.Max.Longitude, 0)).ToUnityVector();
-            if (meshCode.Level >= 3)
+            if (gridCode.IsNormalGmlLevel || gridCode.IsSmallerThanNormalGml)
             {
-                this.viewDict.AddOrUpdate(meshCode,
+                this.viewDict.AddOrUpdate(gridCode,
                     _ => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight),
                     (_, _) => new AreaLodView(packageLods, positionUpperLeft, positionLowerRight));
             }

@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             var visualTree =
                 AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                    $"Packages/{PathUtil.packageFormalName}/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_Main.uxml"
+                    $"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/RoadNetwork/RoadNetwork_Main.uxml"
                 );
             if (visualTree == null)
             {

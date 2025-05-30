@@ -16,13 +16,14 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         protected Color BoxColor { get; set; } = Color.white;
         protected float LineWidth { get; set; } = 1f;
         public int Priority { get; set; }
-
-        MeshCode meshCode;
-        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, MeshCode meshCodeArg)
+        private GridCode gridCode;
+        public GridCode GridCode { get; protected set; }
+        
+        protected void Init(Vector3 centerPosArg, Vector3 sizeArg, GridCode gridCodeArg)
         {
             this.CenterPos = centerPosArg;
             this.Size = sizeArg;
-            this.meshCode = meshCodeArg;
+            this.gridCode = gridCodeArg;
             
         }
 
@@ -85,7 +86,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
         /// <summary>
         /// Y軸の値は無視して、XとZの値で箱同士が重なる箇所があるかどうかを bool で返します。
         /// </summary>
-        protected bool IsBoxIntersectXZ(MeshCodeGizmoDrawer other)
+        protected bool IsBoxIntersectXZ(GridCodeGizmoDrawer other)
         {
             var otherPos = other.CenterPos;
             var otherSize = other.Size;
@@ -93,6 +94,15 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles
             return
                 Math.Abs(this.CenterPos.x - otherPos.x) <= (Math.Abs(this.Size.x) + Math.Abs(otherSize.x)) * 0.5 &&
                 Math.Abs(this.CenterPos.z - otherPos.z) <= (Math.Abs(this.Size.z) + Math.Abs(otherSize.z)) * 0.5;
+        }
+        
+        /// <summary>
+        /// 矩形(areaMin, areaMax)がXZ平面上で重なっているかどうかを判定します。
+        /// </summary>
+        protected bool IsBoxIntersectXZ(Vector3 areaMin, Vector3 areaMax)
+        {
+            return (this.AreaMin.x <= areaMax.x && this.AreaMax.x >= areaMin.x) &&
+                   (this.AreaMin.z <= areaMax.z && this.AreaMax.z >= areaMin.z);
         }
 
 

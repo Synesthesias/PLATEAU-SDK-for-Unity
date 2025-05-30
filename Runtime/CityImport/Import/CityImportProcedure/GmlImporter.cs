@@ -73,7 +73,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
             // ここはメインスレッドで呼ぶ必要があります。
             var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
-                cityModel, meshExtractOptions, conf.AreaMeshCodes, gmlTrans, progressDisplay, gmlName,
+                cityModel, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, gmlName,
                 packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
                 infoForToolkits, packageConf.MeshGranularity
             );
@@ -151,7 +151,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             try
             {
                 gmlTrans.parent = rootTrans;
-                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package);
+                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
             }
             catch (Exception e)
             {

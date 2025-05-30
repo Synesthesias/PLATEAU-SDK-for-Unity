@@ -9,7 +9,11 @@
         "Unity.Splines.Editor",
         "Unity.Mathematics",
         "GeoJSON.NetAssemblyDefinition",
-        "NetTopologySuiteAssemblyDefinition"
+        "NetTopologySuiteAssemblyDefinition",
+        "PlateauToolkit.Sandbox",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [
         "Editor"
@@ -20,6 +24,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.synesthesias.plateau-unity-toolkit",
+            "expression": "",
+            "define": "PLATEAU_TOOLKIT"
+        }
+    ],
     "noEngineReferences": false
 }

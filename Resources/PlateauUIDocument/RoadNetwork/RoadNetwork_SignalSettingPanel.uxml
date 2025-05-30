@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <Style src="./UIStyle.uss" />
     <ui:VisualElement name="SignalSettingPanel" style="flex-grow: 0; align-items: center; flex-shrink: 0;">
         <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.75); padding-top: 16px; padding-right: 16px; padding-bottom: 16px; padding-left: 16px; border-top-left-radius: 16px; border-top-right-radius: 16px; border-bottom-right-radius: 16px; border-bottom-left-radius: 16px; align-items: center;">
             <ui:VisualElement style="flex-grow: 0; flex-direction: row; flex-shrink: 0;">

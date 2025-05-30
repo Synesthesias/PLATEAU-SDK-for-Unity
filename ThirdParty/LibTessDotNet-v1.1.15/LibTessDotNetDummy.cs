@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LibTessDotNetDummy : MonoBehaviour
+namespace LibTessDotNet
 {
-    // Start is called before the first frame update
-    void Start()
+    public class LibTessDotNetDummy : MonoBehaviour
     {
-        Debug.Log("LibTessDotNetDummy");
-    }
+        // Start is called before the first frame update
+        void Start()
+        {
+            Debug.Log("LibTessDotNetDummy");
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }

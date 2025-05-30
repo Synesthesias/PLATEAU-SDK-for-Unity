@@ -55,7 +55,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Windows
             if (GUILayout.Button("メッシュコード検索"))
             {
                 //Meshcode
-                areaSelector.ShowMeshCodeSearchWindow();
+                areaSelector.ShowGridCodeSearchWindow();
             }
             if (GUILayout.Button("キャンセル"))
             {

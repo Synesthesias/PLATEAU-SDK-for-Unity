@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         /// 「範囲選択」ボタンを表示し、押された時に範囲選択を開始します。
         /// 範囲が選択されているかどうかをboolで返します。
         /// </summary>
-        public static bool Draw(MeshCodeList areaMeshCodes, ConfigBeforeAreaSelect confBeforeAreaSelect, IAreaSelectResultReceiver resultReceiver)
+        public static bool Draw(GridCodeList areaGridCodes, ConfigBeforeAreaSelect confBeforeAreaSelect, IAreaSelectResultReceiver resultReceiver)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 }
             
                 // 範囲選択が済かどうかを表示します。
-                bool isAreaSelectComplete = areaMeshCodes != null && areaMeshCodes.Count > 0;
+                bool isAreaSelectComplete = areaGridCodes != null && areaGridCodes.Count > 0;
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
                     string str = isAreaSelectComplete ? "範囲選択 : セット済" : "範囲選択 : 未";

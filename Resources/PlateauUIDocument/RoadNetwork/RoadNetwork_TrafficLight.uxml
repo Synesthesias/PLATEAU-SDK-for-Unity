@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/RoadNetwork/UIStyle.uss" />
+    <Style src="./UIStyle.uss" />
     <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="SignalSettingButton" style="margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-color: rgba(188, 188, 188, 0); width: 110px; rotate: 0;">
         <ui:VisualElement name="SignalSettingPanel" style="flex-grow: 0; align-items: center; flex-shrink: 0;">
             <ui:VisualElement name="TrafficLight" style="flex-grow: 1;">

@@ -78,18 +78,36 @@ namespace PLATEAU.Dataset
         }
 
         /// <summary>
-        /// GMLファイルのメッシュコードを返します。
-        /// ただし、誤った形式のGMLファイル名である等の理由でメッシュコードを読み取れなかった場合は
-        /// 戻り値の meshCode.IsValid が false になります。
+        /// GMLファイルのGridCodeを返します。
+        /// ただし、誤った形式のGMLファイル名である等の理由でGridCodeを読み取れなかった場合は
+        /// 戻り値の isValid が false になります。
+        /// 戻り値が解放されるようにするためにusingを付けてください。
         /// </summary>
-        public MeshCode MeshCode
+        public GridCode GridCode
         {
             get
             {
                 ThrowIfDisposed();
-                var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle,
-                    NativeMethods.plateau_gml_file_get_mesh_code);
-                return meshCode;
+                var gridCodePtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
+                    NativeMethods.plateau_gml_file_get_grid_code);
+                // gridCodePtrの寿命管理はC++側に任せるのでここでは解放しませんが、copiedはC#から解放する必要があります。
+                var copied =  GridCode.CopyFrom(gridCodePtr);
+                return copied;
+            }
+        }
+
+        /// <summary>
+        /// GMLファイルのEPSGコードを返します。
+        /// 取得失敗時のデフォルト値はEPSG:6697です。
+        /// </summary>
+        public int Epsg
+        {
+            get
+            {
+                ThrowIfDisposed();
+                var epsg = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_gml_file_get_epsg);
+                return epsg;
             }
         }
 
@@ -208,10 +226,15 @@ namespace PLATEAU.Dataset
                 out int strLength);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_gml_file_get_mesh_code(
+            internal static extern APIResult plateau_gml_file_get_grid_code(
                 [In] IntPtr gmlFilePtr,
-                out MeshCode outMeshCode);
-        
+                out IntPtr outGridCodePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_gml_file_get_epsg(
+                [In] IntPtr gmlFilePtr,
+                out int outEpsg);
+
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(
                 [In] IntPtr gmlFilePtr,

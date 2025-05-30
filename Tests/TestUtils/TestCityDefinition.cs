@@ -8,7 +8,9 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.CityImport.Import;
 using PLATEAU.Dataset;
+#if UNITY_EDITOR
 using PLATEAU.Editor.Window.ProgressDisplay;
+#endif
 using PLATEAU.Geometries;
 using PLATEAU.Native;
 using PLATEAU.Network;
@@ -23,7 +25,7 @@ namespace PLATEAU.Tests.TestUtils
     internal class TestCityDefinition
     {
         public string SrcRootDirPathLocal => Path.GetFullPath(Path.Combine(testDataDir, this.rootDirName));
-        public MeshCodeList AreaMeshCodes { get; set; }
+        public GridCodeList AreaGridCodes { get; }
         public int CoordinateZoneId { get; set; }
         public TestGmlDefinition[] GmlDefinitions { get; set; }
 
@@ -31,11 +33,11 @@ namespace PLATEAU.Tests.TestUtils
 
         private static readonly string testDataDir = Path.Combine(PathUtil.SdkBasePath, "./Tests/TestData/日本語パステスト");
 
-        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, MeshCodeList areaMeshCodes, int coordinateZoneId)
+        public TestCityDefinition(string rootDirName, TestGmlDefinition[] gmlDefs, GridCodeList areaGridCodes, int coordinateZoneId)
         {
             this.rootDirName = rootDirName;
             GmlDefinitions = gmlDefs;
-            AreaMeshCodes = areaMeshCodes;
+            AreaGridCodes = areaGridCodes;
             CoordinateZoneId = coordinateZoneId;
         }
 
@@ -89,14 +91,15 @@ namespace PLATEAU.Tests.TestUtils
                     ? new DatasetSourceConfigRemote(this.rootDirName, NetworkConfig.MockServerUrl, "")
                     : new DatasetSourceConfigLocal(SrcRootDirPathLocal);
             
-            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, 9), AreaMeshCodes);
+            var dummyAreaSelectResult = new AreaSelectResult(new ConfigBeforeAreaSelect(datasetSourceConfig, CoordinateZoneId), AreaGridCodes, AreaSelectResult.ResultReason.Confirm);
             var conf = CityImportConfig.CreateWithAreaSelectResult(dummyAreaSelectResult);
             
             
             // メッシュコードがあるあたりに基準点を設定します。 Extent.Allの中心を基準点にすると極端な座標になるため。  
             using var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN,
                 conf.ConfBeforeAreaSelect.CoordinateZoneID);
-            conf.ReferencePoint = geoRef.Project(AreaMeshCodes.At(0).Extent.Center);
+            using var grid = AreaGridCodes.At(0); 
+            conf.ReferencePoint = geoRef.Project(grid.Extent.Center);
             
             foreach (var packageConf in conf.PackageImportConfigDict.ForEachPackagePair)
             {
@@ -166,7 +169,7 @@ namespace PLATEAU.Tests.TestUtils
                     new TestGmlDefinition("udx/bldg/53392642_bldg_6697_op2.gml", "53392642_bldg_6697_op2.gml", true,
                         null,
                         2)
-                }, MeshCodeList.CreateFromMeshCodesStr(new string[]
+                }, GridCodeList.CreateFromGridCodesStr(new string[]
                 {
                     "53392642"
                 }),
@@ -195,7 +198,7 @@ namespace PLATEAU.Tests.TestUtils
                 new TestGmlDefinition("udx/urf/533925_urf_6668_yoto_op.gml", "533925_urf_6668_yoto_op.gml", false, null, 0),
                 new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l1_op.gml", true, null, 1),
                 new TestGmlDefinition("udx/fld/natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", "natl/tamagawa_tamagawa-asakawa-etc/53392547_fld_6697_l2_op.gml", true, null, 1),
-            }, MeshCodeList.CreateFromMeshCodesStr(new string[]
+            }, GridCodeList.CreateFromGridCodesStr(new string[]
             {
                 "53394525", "53392546", "53392547", "533925"
             }), 9);
@@ -211,7 +214,7 @@ namespace PLATEAU.Tests.TestUtils
                         null,
                         2),
                     new TestGmlDefinition("udx/bldg/53392670_bldg_6697_2_op.gml", "53392670_bldg_6697_2_op.gml", true, null, 2)
-                }, MeshCodeList.CreateFromMeshCodesStr(new string[]
+                }, GridCodeList.CreateFromGridCodesStr(new string[]
                     { "53392642", "53392670" }
             ), 9);
     }

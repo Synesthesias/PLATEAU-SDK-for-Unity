@@ -21,11 +21,11 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
 
 
         public ReliefImportConfigGUI(ReliefImportConfig config, PackageImportConfigExtendable masterConf,
-            MeshCode firstMeshCode) : base(config, masterConf)
+            GridCode firstGridCode) : base(config, masterConf)
         {
             this.config = config;
             this.mapTileURLOnGUI = config.MapTileURL;
-            zoomLevelSelectGUI = new MapZoomLevelSelectGUI(config, mapTileURLOnGUI, firstMeshCode);
+            zoomLevelSelectGUI = new MapZoomLevelSelectGUI(config, mapTileURLOnGUI, firstGridCode);
         }
 
         /// <summary> インポート設定GUIのうち土地専用の部分です。 </summary>
