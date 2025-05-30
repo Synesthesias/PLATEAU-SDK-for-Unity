@@ -29,7 +29,6 @@ namespace PLATEAU.DynamicTile
         public string CatalogPath => catalogPath;
 
         private const string DynamicTileLabelName = "DynamicTile";
-        //private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
 
         private AddressableLoader addressableLoader = new ();
 
@@ -37,19 +36,6 @@ namespace PLATEAU.DynamicTile
 
         async void Start()
         {
-            // 初期化
-            //var addresses = await addressableLoader.Initialize(catalogPath);
-            // TODO: カメラからの距離に応じてLoad
-            //if (cityModel == null)
-            //{
-            //    Debug.LogWarning("都市モデルが見つかりません。");
-            //    return;
-            //}
-
-            //foreach (var address in addresses)
-            //{
-            //    Load(address, cityModel.transform);
-            //}
         }
         
         /// <summary>
@@ -74,15 +60,13 @@ namespace PLATEAU.DynamicTile
                 return await Task.FromResult<bool>(false);
             }
             // 既にロードされている場合はスキップ
-            if (tile.LoadedObject != null || tile.IsLoading)
+            if (tile.IsLoadedOrLoading)
             {
                 //Debug.Log($"Already loaded: {address}");
                 return await Task.FromResult<bool>(true);
             }
 
-            Transform parent = tile.Parent;
-
-            tile.IsLoading = true;
+            tile.LoadStart();
             try
             {
                 var instance = await addressableLoader.InstantiateAssetAsync(tile.Address, tile.Parent);
@@ -96,7 +80,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
             }
-            tile.IsLoading = false;
+            tile.LoadEnd();
             return false;
         }
 
@@ -132,15 +116,14 @@ namespace PLATEAU.DynamicTile
                 if (Addressables.ReleaseInstance(tile.LoadedObject))
                 {
                     tile.LoadedObject = null;
-                    tile.IsLoading = false;
+                    tile.LoadEnd();
                 }
                 else
                 {
                     // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
                     DestroyImmediate(tile.LoadedObject);
                     tile.LoadedObject = null;
-                    tile.IsLoading = false;
-
+                    tile.LoadEnd();
                     Debug.LogWarning($"Failed to ReleaseInstance : {address}");
                 }
             }

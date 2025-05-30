@@ -1,3 +1,4 @@
+using Codice.CM.WorkspaceServer.Tree.GameUI.Checkin.Updater;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
@@ -34,7 +35,11 @@ namespace PLATEAU.DynamicTile
         public GameObject LoadedObject
         {
             get => loadedObject;
-            set => loadedObject = value;
+            set 
+            { 
+                loadedObject = value;
+                IsLoading = false;
+            }
         }
 
         /// <summary>
@@ -84,7 +89,7 @@ namespace PLATEAU.DynamicTile
         }
 
         // ロード中かどうかを示すフラグ
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; private set; }
 
         public bool IsLoadedOrLoading
         {
@@ -118,6 +123,16 @@ namespace PLATEAU.DynamicTile
                 var meshcode = GetMeshCode();
                 InitializeExtentFromMeshCode(meshcode);
             }
+        }
+
+        public void LoadStart()
+        {
+            IsLoading = true;
+        }
+
+        public void LoadEnd()
+        {
+            IsLoading = false;
         }
 
         /// <summary>
