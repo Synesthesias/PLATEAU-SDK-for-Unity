@@ -1,4 +1,3 @@
-using Codice.CM.WorkspaceServer.Tree.GameUI.Checkin.Updater;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Util;
