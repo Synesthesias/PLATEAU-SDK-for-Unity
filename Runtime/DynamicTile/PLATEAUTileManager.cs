@@ -34,10 +34,15 @@ namespace PLATEAU.DynamicTile
 
         private PLATEAUDynamicTileJobSystem jobSystem;
 
-        async void Start()
+        public async Task LoadFromCatalog()
         {
+            var addresses = await addressableLoader.Initialize(catalogPath);
+            foreach (var address in addresses)
+            {
+                await Load(address);
+            }
         }
-        
+
         /// <summary>
         /// カタログパスを保存します。
         /// </summary>
