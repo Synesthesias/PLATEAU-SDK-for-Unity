@@ -35,7 +35,7 @@ namespace PLATEAU.DynamicTile
         private PLATEAUDynamicTileJobSystem jobSystem;
 
         /// <summary>
-        /// カタログからアドレスを初期化し、各タイルのアドレスを更新します。
+        /// カタログからアドレスを初期化し、各タイルのアドレスを更新します。(暫定）
         /// 取得AddressとTileの順番が同じと仮定しています。
         /// </summary>
         /// <returns></returns>
