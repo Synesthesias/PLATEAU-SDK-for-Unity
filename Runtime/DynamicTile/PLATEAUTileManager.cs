@@ -37,6 +37,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// カタログからアドレスを初期化し、各タイルのアドレスを更新します。(暫定）
         /// 取得AddressとTileの順番が同じと仮定しています。
+        /// 旧Addressと新Addressのマッピングが必要
         /// </summary>
         /// <returns></returns>
         public async Task ReinitializeFromCatalog()
