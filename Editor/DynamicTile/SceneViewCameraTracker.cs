@@ -110,13 +110,14 @@ namespace PLATEAU.DynamicTile
             if (state == PlayModeStateChange.ExitingEditMode)
             {
                 Debug.Log("Play Mode about to start");
-                tileManageer.ClearAll();
-                
+                tileManageer.ClearAll();        
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
                 Debug.Log("Play Mode ended (Entered Edit Mode)");
-                InitView();
+                tileManageer.ClearAll();
+                RuntimeCameraTracker.StopCameraTracking();
+                SceneViewCameraTracker.Initialize();
             }
         }
 

@@ -212,6 +212,7 @@ namespace PLATEAU.DynamicTile
                         DestroyImmediate(tile.LoadedObject);
                     }
                 }
+                tile.Reset();
             }
         }
 

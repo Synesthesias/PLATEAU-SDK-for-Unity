@@ -134,6 +134,12 @@ namespace PLATEAU.DynamicTile
             IsLoading = false;
         }
 
+        public void Reset()
+        {
+            IsLoading = false;
+            nextLoadState = LoadState.None;
+        }
+
         /// <summary>
         /// カメラからの距離を計算する。
         /// </summary>

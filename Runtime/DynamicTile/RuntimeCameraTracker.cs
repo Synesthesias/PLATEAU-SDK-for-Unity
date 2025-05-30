@@ -10,8 +10,6 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class RuntimeCameraTracker
     {
-        private static PLATEAUTileManager tileManageer;
-
         public struct CustomUpdateDelegete { }
 
         /// <summary>
@@ -20,7 +18,7 @@ namespace PLATEAU.DynamicTile
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnRuntimeInitialize()
         {
-            tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (tileManageer == null)
                 return;
 
@@ -55,16 +53,25 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// DefaultのPlayerLoopに戻し、Runtime中のカメラ位置の監視を停止する。
+        /// </summary>
+        public static void StopCameraTracking()
+        {
+            var defaultLoop = PlayerLoop.GetDefaultPlayerLoop();
+            PlayerLoop.SetPlayerLoop(defaultLoop);
+        }
+
+        /// <summary>
         /// Runtime中のカメラ位置を監視し、位置が変わったらPLATEAUTileManagerに通知するメソッド。
         /// </summary>
         private static void CustomUpdate()
         {
-            tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (tileManageer == null)
                 return;
 
             var targetCamera = Camera.main;
-            if (targetCamera != null && tileManageer != null)
+            if (targetCamera != null)
             {
                 Vector3 currentPosition = targetCamera.transform.position;
                 if (currentPosition != tileManageer.LastCameraPosition)
