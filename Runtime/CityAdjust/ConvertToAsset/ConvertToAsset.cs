@@ -34,21 +34,20 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 return;
             }
 
-            ConvertCore(conf);
+            using var progress = new ProgressBar();
+            ConvertCore(conf, progress);
             Dialogue.Display("Assetsへの保存が完了しました！", "OK");
 #else
             throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
 #endif
         }
         
-        public List<GameObject> ConvertCore(ConvertToAssetConfig conf)
+        public List<GameObject> ConvertCore(ConvertToAssetConfig conf, IProgressBar progress)
         {
 #if UNITY_EDITOR
-            using var progress = new ProgressBar();
-
             var srcTransforms = new UniqueParentTransformList(conf.SrcGameObj.transform);
             var srcTrans = conf.SrcGameObj.transform;
-            
+
             progress.Display("都市モデルの情報を記録中...", 0.1f);
 
             var subMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
@@ -61,9 +60,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 new NonLibComponentsDict()
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
-            
+
             progress.Display("共通ライブラリのモデルに変換中...", 0.35f);
-            
+
             // 共通ライブラリのModelに変換します。
             using var model = UnityMeshToDllModelConverter.Convert(
                 srcTransforms,
@@ -71,8 +70,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 false,
                 VertexConverterFactory.LocalCoordinateSystemConverter(CoordinateSystem.WUN, srcTrans.position),
                 true);
-            
+
             progress.Display("FBXに出力中...", 0.6f);
+
             // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
             string fbxNameWithoutExtension = conf.SrcGameObj.name;
@@ -98,9 +98,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 modelImporter.isReadable = true;
                 modelImporter.SaveAndReimport();
             }
-            
+
             progress.Display("FBXをシーンに配置中...", 0.8f);
-            
+
             // FBXをシーンに配置します。
             var fbxs = Directory.GetFiles(fullPath, "*.fbx", SearchOption.TopDirectoryOnly);
 
@@ -121,7 +121,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 AdjustGameObjectNames(newObj.transform);
                 newTransforms.Add(newObj.transform);
             }
-            
+
             progress.Display("都市の情報を復元中...", 0.9f);
 
             // 覚えておいたマテリアル、属性情報、都市情報を復元します。

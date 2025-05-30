@@ -154,11 +154,11 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.IsLoadedOrLoading)
                 {
-                    await tileManager.LoadAsync(tile, 0);
+                    await tileManager.Load(tile);
                 }
                 else if (nextLoadState == LoadState.Unload && tile.IsLoadedOrLoading)
                 {
-                    tileManager.Unload(tile, 0);
+                    tileManager.Unload(tile);
                 }
             }
         }

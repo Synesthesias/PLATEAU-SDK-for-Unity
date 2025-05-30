@@ -1,9 +1,9 @@
 using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
@@ -15,24 +15,59 @@ namespace PLATEAU.DynamicTile
 
         [SerializeField]
         private bool useJobSystem = true; // Job Systemを使用するかどうか
-      
-        [SerializeField]
-        private List<PLATEAUDynamicTile> dynamicTiles = new List<PLATEAUDynamicTile>(); // タイルリスト
-
-        //[SerializeField]
-        //private List<PLATEAUDynamicTile> excludeTiles = new List<PLATEAUDynamicTile>(); // 除外タイルリスト
 
         public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; // 最後にカメラが更新された位置
 
+        [SerializeField]
+        private List<PLATEAUDynamicTile> dynamicTiles = new();
+
+        // TileとAddressのマッピング
+        private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
+
+        [SerializeField]
+        private string catalogPath;
+        public string CatalogPath => catalogPath;
+
+        private const string DynamicTileLabelName = "DynamicTile";
+        //private Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
+
+        private AddressableLoader addressableLoader = new ();
+
         private PLATEAUDynamicTileJobSystem jobSystem;
 
-        /// <summary>
-        /// 指定したDynamicTileをもとにAddressablesからロードする
-        /// </summary>
-        public async Task<bool> LoadAsync(PLATEAUDynamicTile tile, int downSampleLevel)
+        async void Start()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            string address = tile.GetTileAddress(downSampleLevel);
+            // 初期化
+            //var addresses = await addressableLoader.Initialize(catalogPath);
+            // TODO: カメラからの距離に応じてLoad
+            //if (cityModel == null)
+            //{
+            //    Debug.LogWarning("都市モデルが見つかりません。");
+            //    return;
+            //}
+
+            //foreach (var address in addresses)
+            //{
+            //    Load(address, cityModel.transform);
+            //}
+        }
+        
+        /// <summary>
+        /// カタログパスを保存します。
+        /// </summary>
+        /// <param name="path"></param>
+        public void SaveCatalogPath(string path)
+        {
+            // パスを正規化（バックスラッシュをスラッシュに変換）
+            catalogPath = path.Replace('\\', '/');
+        }
+
+        /// <summary>
+        /// Tileを指定してAddressablesからロードする
+        /// </summary>
+        public async Task<bool> Load(PLATEAUDynamicTile tile)
+        {
+            string address = tile.Address;
             if (string.IsNullOrEmpty(address))
             {
                 Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
@@ -48,34 +83,44 @@ namespace PLATEAU.DynamicTile
             Transform parent = tile.Parent;
 
             tile.IsLoading = true;
-            Addressables.InstantiateAsync(address, parent).Completed += handle =>
+            try
             {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
+                var instance = await addressableLoader.InstantiateAssetAsync(tile.Address, tile.Parent);
+                if (instance != null)
                 {
-                    tile.LoadedObject = handle.Result;
-                    tcs.SetResult(true);
+                    tile.LoadedObject = instance;
+                    return true;
                 }
-                else
-                {
-                    Debug.LogError($"Failed to load: {address}");
-                    // 失敗の詳細情報を記録
-                    if (handle.OperationException != null)
-                    {
-                        //Debug.LogException(handle.OperationException);
-                        tcs.SetException(handle.OperationException);
-                    }
-                }
-                tile.IsLoading = false;
-            };
-            return await tcs.Task;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
+            }
+            tile.IsLoading = false;
+            return false;
         }
 
         /// <summary>
-        /// 指定したDynamicTileに対応するAddressablesインスタンスをアンロードする
+        /// Addressを指定してAddressablesからロードする
         /// </summary>
-        public bool Unload(PLATEAUDynamicTile tile, int downSampleLevel)
+        public async Task<bool> Load(string address)
         {
-            string address = tile.GetTileAddress(downSampleLevel);
+            var tile = tileAddressesDict.GetValueOrDefault(address);
+            if (tile == null)
+            {
+                Debug.LogWarning($"指定したアドレスに対応するタイルが見つかりません: {address}");
+                return await Task.FromResult<bool>(false);
+            }
+            return await Load(tile);
+        }
+
+        /// <summary>
+        /// Tileを指定してAddressablesからアンロードする
+        /// </summary>
+        /// <param name="address"></param>
+        public bool Unload(PLATEAUDynamicTile tile)
+        {
+            string address = tile.Address;
             if (string.IsNullOrEmpty(address))
             {
                 Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
@@ -103,12 +148,17 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// PLATEAUDynamicTileを追加する
+        /// Addressを指定してAddressablesからアンロードする
         /// </summary>
-        /// <param name="tile"></param>
-        public void AddTile(PLATEAUDynamicTile tile)
+        public bool Unload(string address)
         {
-            dynamicTiles.Add(tile);
+            var tile = tileAddressesDict.GetValueOrDefault(address);
+            if (tile == null)
+            {
+                Debug.LogWarning($"指定したアドレスに対応するタイルが見つかりません: {address}");
+                return false;
+            }
+            return Unload(tile);
         }
 
         /// <summary>
@@ -117,6 +167,41 @@ namespace PLATEAU.DynamicTile
         private void OnDestroy()
         {
             ClearAll();
+            Debug.Log("全てのアセットをアンロードしました");
+        }
+
+        /// <summary>
+        /// Tileデータを追加
+        /// </summary>
+        /// <param name="tile"></param>
+        public void AddTile(PLATEAUDynamicTile tile)
+        {
+            if (tile == null)
+            {
+                Debug.LogWarning("nullのタイルは追加できません");
+                return;
+            }
+            
+            if (dynamicTiles.Contains(tile))
+            {
+                Debug.LogWarning("既に追加済みのタイルです");
+                return;
+            }
+
+            dynamicTiles.Add(tile);
+
+            if(tileAddressesDict.ContainsKey(tile.Address))
+                Debug.LogWarning("既に追加済みのタイルAddressです");
+            else
+                tileAddressesDict[tile.Address] = tile;
+        }
+        
+        /// <summary>
+        /// 登録したタイルをクリア
+        /// </summary>
+        public void ClearTiles()
+        {
+            dynamicTiles.Clear();
         }
 
         /// <summary>
@@ -153,10 +238,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
-            if(useJobSystem)
+            if (useJobSystem)
             {
                 // Job Systemを使用する場合
-                if(jobSystem == null)
+                if (jobSystem == null)
                 {
                     jobSystem = new PLATEAUDynamicTileJobSystem();
                     jobSystem.Initialize(this, dynamicTiles);
@@ -206,27 +291,28 @@ namespace PLATEAU.DynamicTile
         {
             foreach (var tile in dynamicTiles)
             {
-                if(tile.NextLoadState == LoadState.None)
+                if (tile.NextLoadState == LoadState.None)
                 {
                     // 何もしない
                     continue;
                 }
                 else if (tile.NextLoadState == LoadState.Load)
                 {
-                    await LoadAsync(tile, 0);
+                    await Load(tile);
                 }
                 else if (tile.NextLoadState == LoadState.Unload)
                 {
-                    Unload(tile, 0);
+                    Unload(tile);
                 }
             }
         }
 
-        // Debug Bounds表示
+        // Debug用
         public void ShowBounds()
         {
             foreach (var tile in dynamicTiles)
             {
+                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
                 DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
             }
         }

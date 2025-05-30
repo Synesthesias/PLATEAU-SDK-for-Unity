@@ -14,12 +14,9 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUDynamicTile
     {
         [SerializeField]
-        private string originalAddress;
-        public string OriginalAddress
-        {
-            get => originalAddress;
-            set => originalAddress = value;
-        }
+        private string address;
+        public string Address => address;
+
 
         [SerializeField]
         private bool isExcludeTile;
@@ -87,34 +84,11 @@ namespace PLATEAU.DynamicTile
         }
 
         // ロード中かどうかを示すフラグ
-        public bool IsLoading { get; internal set; }
+        public bool IsLoading { get; set; }
 
         public bool IsLoadedOrLoading
         {
             get => LoadedObject != null || IsLoading;
-        }
-
-        /// <summary>
-        /// 指定したダウンサンプルレベルのAddressを取得
-        /// </summary>
-        public string GetAddress(int downSampleLevel)
-        {
-            return originalAddress + "_down_" + downSampleLevel;
-        }
-
-        /// <summary>
-        /// オリジナル（downSampleLevel=0）のアドレスを返す。
-        /// </summary>
-        public string GetOriginalAddress()
-        {
-            return GetAddress(0);
-        }
-
-        public string GetTileAddress(int downSampleLevel)
-        {
-            return IsExcludeTile
-                ? GetOriginalAddress()
-                : GetAddress(downSampleLevel);
         }
 
         // Job Systemで使用するための構造体を返す
@@ -131,12 +105,13 @@ namespace PLATEAU.DynamicTile
         /// <param name="original"></param>
         public PLATEAUDynamicTile(string address, Transform parent, GameObject original = null)
         {
-            originalAddress = address;
+            this.address = address;
             this.parent = parent;
 
-            if(original != null)
+            if (original != null)
             {
                 InitializeExtentFromGameObject(original);
+                LoadedObject = original;
             }
             else
             {
@@ -212,7 +187,7 @@ namespace PLATEAU.DynamicTile
             extent = bounds;
 
             // Debug Draw Rect
-            if(PLATEAUTileManager.showDebugTileInfo)
+            if (PLATEAUTileManager.showDebugTileInfo)
                 DebugEx.DrawBounds(bounds, Color.red, 30f);
 
             return bounds;
@@ -226,7 +201,7 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         private string GetMeshCode()
         {
-            Match match = Regex.Match(originalAddress, @"_grid_([^_]+)_");
+            Match match = Regex.Match(address, @"_grid_([^_]+)_");
             if (match.Success)
             {
                 string meshcode = match.Groups[1].Value;
@@ -235,7 +210,7 @@ namespace PLATEAU.DynamicTile
                 return meshcode;
             }
             Debug.LogError("メッシュコードが見つかりません");
-            return null;     
+            return null;
         }
     }
 } 

@@ -90,7 +90,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
                     // 選択した出力設定に固有の設定
-                    this.formatToExporterGUI[meshFileFormatGui.SelectedFormat].Draw();
+                    var fileFormatSpecificGui = formatToExporterGUI[meshFileFormatGui.SelectedFormat];
+                    fileFormatSpecificGui.Draw();
 
                     this.exportTextures = PlateauEditorStyle.Toggle("テクスチャを含める", this.exportTextures);
                     if (exportTextures)
@@ -105,11 +106,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         }
                     }
                     this.exportHiddenObject = PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
+                    
+                    // 座標軸の向きを選択するUI
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
-
                     coordinateSystemGui.Draw();
-                    
+                    fileFormatSpecificGui.SetCoordinateSystem(coordinateSystemGui.SelectedCoordinateSystem);
                 }
             });
 
