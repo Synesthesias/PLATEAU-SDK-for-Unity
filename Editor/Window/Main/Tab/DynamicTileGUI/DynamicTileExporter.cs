@@ -18,7 +18,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
     {
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
-        private const string MetaDataAddressName = "PLATEAUDynamicTileCollection";
+        private const string MetaDataAddressName = "PLATEAUDynamicTileMetaInfo";
 
         /// <summary>
         /// 都市モデルをDynamicTile用にプレハブ化し、一括エクスポートする。
@@ -63,7 +63,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             manager.ClearTiles();
             
             // メタデータ生成
-            var tileCollection = ScriptableObject.CreateInstance<PLATEAUDynamicTileCollection>();
+            var metaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
 
             for (var i = 0; i < cityObjects.Length; i++)
             {
@@ -119,15 +119,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var tile = new PLATEAUDynamicTile(address, convertedObject.transform.parent, convertedObject);
                 manager.AddTile(tile);
                 
-                // タイル情報を登録
-                tileCollection.AddTile(tile);
+                // メタ情報を登録
+                metaStore.AddMetaInfo(tile.Address, tile.Extent, cityObject.Lod);
 
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
             
             // メタデータを保存
-            SaveAndRegisterMetaData(tileCollection, assetConfig.AssetPath, groupName);
+            SaveAndRegisterMetaData(metaStore, assetConfig.AssetPath, groupName);
 
             progressBar.Display("Addressableのビルドを実行中...", 0.1f);
 
@@ -219,23 +219,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         /// <summary>
         /// メタデータを保存し、Addressableとして登録する
         /// </summary>
-        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileCollection tileCollection, string assetPath, string groupName)
+        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
         {
-            if (tileCollection == null)
+            if (metaStore == null)
             {
                 Debug.LogWarning("メタデータがnullです。");
                 return;
             }
 
             // メタデータをアセットとして保存
-            string dataPath = Path.Combine(assetPath, MetaDataAddressName + ".asset");
-            AssetDatabase.CreateAsset(tileCollection, dataPath);
+            string addressName = nameof(PLATEAUDynamicTileMetaStore);
+            string dataPath = Path.Combine(assetPath, addressName + ".asset");
+            AssetDatabase.CreateAsset(metaStore, dataPath);
             AssetDatabase.SaveAssets();
 
             // メタデータをAddressableに登録
             AddressablesUtility.RegisterAssetAsAddressable(
                 dataPath,
-                MetaDataAddressName,
+                addressName,
                 groupName,
                 new List<string> { AddressableLabel });
         }
