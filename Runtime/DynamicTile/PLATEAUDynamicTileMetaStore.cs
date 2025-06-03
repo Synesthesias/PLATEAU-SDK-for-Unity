@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace PLATEAU.DynamicTile
 {
     /// <summary>
-    /// PLATEAUDynamicTileの情報を保持するScriptableObject
+    /// Addressに紐づく情報を保持するScriptableObject
     /// </summary>
     [Serializable]
     public class PLATEAUDynamicTileMetaInfo

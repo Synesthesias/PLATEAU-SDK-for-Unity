@@ -18,7 +18,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
     {
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
-        private const string MetaDataAddressName = "PLATEAUDynamicTileMetaInfo";
 
         /// <summary>
         /// 都市モデルをDynamicTile用にプレハブ化し、一括エクスポートする。
