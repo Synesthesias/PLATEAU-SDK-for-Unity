@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace PLATEAU.DynamicTile
 {
     /// <summary>
-    /// Addressに紐づく情報を保持するScriptableObject
+    /// Addressに紐づく情報を保持するデータクラス。
     /// </summary>
     [Serializable]
     public class PLATEAUDynamicTileMetaInfo
@@ -30,6 +30,9 @@ namespace PLATEAU.DynamicTile
         }
     }
 
+    /// <summary>
+    /// Addressに紐づく情報のリストを保持するScriptableObject。
+    /// </summary>
     public class PLATEAUDynamicTileMetaStore : ScriptableObject
     {
         [SerializeField]
@@ -46,13 +49,13 @@ namespace PLATEAU.DynamicTile
         {
             if (string.IsNullOrEmpty(addressName))
             {
-                Debug.LogWarning("Address name cannot be null or empty.");
+                Debug.LogWarning($"{addressName}がnullまたは空です。無効なアドレス名です。");
                 return;
             }
 
             if (tileMetaInfos.Exists(info => info.AddressName == addressName))
             {
-                Debug.LogWarning($"Address '{addressName}' already exists in tile meta infos.");
+                Debug.LogWarning($"{addressName}がすでに存在します。重複を避けてください。");
                 return;
             }
 
@@ -64,7 +67,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="addressName"></param>
         /// <returns></returns>
-        /// <exception cref="KeyNotFoundException"></exception>
         public PLATEAUDynamicTileMetaInfo GetMetaInfo(string addressName)
         {
             foreach (var metaInfo in tileMetaInfos)
@@ -74,7 +76,8 @@ namespace PLATEAU.DynamicTile
                     return metaInfo;
                 }
             }
-            throw new KeyNotFoundException($"Address '{addressName}' not found in tile meta infos.");
+            Debug.LogWarning($"{addressName}が見つかりません。");
+            return null;
         }
 
         /// <summary>
