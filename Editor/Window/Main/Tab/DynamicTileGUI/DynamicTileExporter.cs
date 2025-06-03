@@ -60,6 +60,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 manager = managerObj.AddComponent<PLATEAUTileManager>();
             }
             manager.ClearTiles();
+            
+            // メタデータ生成
+            var metaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
 
             for (var i = 0; i < cityObjects.Length; i++)
             {
@@ -114,10 +117,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 var tile = new PLATEAUDynamicTile(address, convertedObject.transform.parent, convertedObject);
                 manager.AddTile(tile);
+                
+                // メタ情報を登録
+                metaStore.AddMetaInfo(tile.Address, tile.Extent, cityObject.Lod);
 
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
+            
+            // メタデータを保存
+            SaveAndRegisterMetaData(metaStore, assetConfig.AssetPath, groupName);
 
             progressBar.Display("Addressableのビルドを実行中...", 0.1f);
 
@@ -139,7 +148,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
             // Addressablesのビルドを実行
             AddressablesUtility.BuildAddressables(true);
-            
+
+            // シーンが更新されているので、再度取得
+            manager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
+            if (manager == null)
+            {
+                Debug.LogWarning("PLATEAUTileManagerが見つかりません。");
+                return;
+            }
+
             manager.SaveCatalogPath("");
             if (isExcludeAssetFolder)
             {
@@ -196,6 +213,31 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return convertObjects[0];
             }
             return null;
+        }
+
+        /// <summary>
+        /// メタデータを保存し、Addressableとして登録する
+        /// </summary>
+        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
+        {
+            if (metaStore == null)
+            {
+                Debug.LogWarning("メタデータがnullです。");
+                return;
+            }
+
+            // メタデータをアセットとして保存
+            string addressName = nameof(PLATEAUDynamicTileMetaStore);
+            string dataPath = Path.Combine(assetPath, addressName + ".asset");
+            AssetDatabase.CreateAsset(metaStore, dataPath);
+            AssetDatabase.SaveAssets();
+
+            // メタデータをAddressableに登録
+            AddressablesUtility.RegisterAssetAsAddressable(
+                dataPath,
+                addressName,
+                groupName,
+                new List<string> { AddressableLabel });
         }
     }
 } 
