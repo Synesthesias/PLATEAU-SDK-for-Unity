@@ -115,11 +115,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     groupName,
                     new List<string> { AddressableLabel });
 
-                var tile = new PLATEAUDynamicTile(address, convertedObject.transform.parent, convertedObject);
+                var tile = new PLATEAUDynamicTile(address, cityObject.Lod, convertedObject);
                 manager.AddTile(tile);
                 
                 // メタ情報を登録
-                metaStore.AddMetaInfo(tile.Address, tile.Extent, cityObject.Lod);
+                metaStore.AddMetaInfo(tile.Address, tile.Extent, tile.Lod);
 
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);

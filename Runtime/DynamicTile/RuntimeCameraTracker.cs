@@ -16,7 +16,7 @@ namespace PLATEAU.DynamicTile
         /// RuntimeCameraTrackerを初期化し、PLATEAUTileManagerを取得してカメラ位置の監視を開始する。
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void OnRuntimeInitialize()
+        static async void OnRuntimeInitialize()
         {
             var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (tileManageer == null)
@@ -24,7 +24,8 @@ namespace PLATEAU.DynamicTile
 
             Debug.Log("RuntimeCameraTracker Initialized (Runtime Camera Tracking Start))");
 
-            tileManageer.ClearAll();
+            tileManageer.ClearTileAssets();
+            await tileManageer.InitializeTiles();
             tileManageer.UpdateAssetByCameraPosition(tileManageer.LastCameraPosition);
 
             var loopSystem = new PlayerLoopSystem

@@ -1,35 +1,28 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
-using PLATEAU.Util;
-using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
 {
     /// <summary>
-    /// DynamicTileオブジェクトに付与し、ダウンサンプルレベルごとのAddress情報を保持するコンポーネント
+    /// DynamicTileの情報を保持するクラス。
     /// </summary>
-    //[Serializable]
     public class PLATEAUDynamicTile // : UnityEngine.Object
     {
-        [SerializeField]
-        private string address;
-        public string Address => address;
+        /// <summary>
+        /// Addressablesのアドレスを保持する。
+        /// </summary>
+        public string Address { get; private set; }
 
-
-        [SerializeField]
-        private bool isExcludeTile;
-        public bool IsExcludeTile
-        {
-            get => isExcludeTile;
-            set => isExcludeTile = value;
-        }
+        /// <summary>
+        /// タイルが除外されているかどうかを示すフラグ。
+        /// </summary>
+        public bool IsExcludeTile { get; set; }
 
         /// <summary>
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
-        [SerializeField]
         private GameObject loadedObject;
         public GameObject LoadedObject
         {
@@ -41,58 +34,26 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        [SerializeField]
-        private int lod;
-        public int Lod
-        {
-            get => lod;
-        }
-
         /// <summary>
-        /// Addressablesをロードする際の親Transformを保持する。
+        /// LOD（Level of Detail）を保持する。
+        /// Addressablesをロードする際の親Transform取得用。
         /// </summary>
-        [SerializeField]
-        private Transform parent;
-        public Transform Parent
-        {
-            get => parent;
-        }
+        public int Lod { get; private set; } = 0;
 
         /// <summary>
         /// タイルの範囲を示すBoundsを保持する。
         /// </summary>
-        [SerializeField]
-        private Bounds extent;
-        public Bounds Extent
-        {
-            get => extent;
-        }
+        public Bounds Extent { get; private set; }
 
         /// <summary>
         /// カメラからの距離を保持する。デバッグ用。
         /// </summary>
-        [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
-        [ReadOnly]
-        [SerializeField]
-        private float distanceFromCamera = 0f;
-        public float DistanceFromCamera
-        {
-            get => distanceFromCamera;
-            set => distanceFromCamera = value;
-        }
+        public float DistanceFromCamera { get; set; } = 0f;
 
         /// <summary>
         /// 次にAddressablesをロードする状態を示す。
         /// </summary>
-        [ConditionalShowBool(PLATEAUTileManager.showDebugTileInfo)]
-        [ReadOnly]
-        [SerializeField]
-        private LoadState nextLoadState = LoadState.None;
-        public LoadState NextLoadState
-        {
-            get => nextLoadState;
-            set => nextLoadState = value;
-        }
+        public LoadState NextLoadState { get; set; } = LoadState.None;
 
         // ロード中かどうかを示すフラグ
         public bool IsLoading { get; private set; }
@@ -114,10 +75,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="address"></param>
         /// <param name="parent"></param>
         /// <param name="original"></param>
-        public PLATEAUDynamicTile(string address, Transform parent, GameObject original = null)
+        public PLATEAUDynamicTile(string address, int lod, GameObject original = null)
         {
-            this.address = address;
-            this.parent = parent;
+            Address = address;
+            Lod = lod;
 
             if (original != null)
             {
@@ -137,9 +98,9 @@ namespace PLATEAU.DynamicTile
         /// <param name="info">Scriptable Object データ</param>
         public PLATEAUDynamicTile(PLATEAUDynamicTileMetaInfo info)
         {
-            this.address = info.AddressName;
-            this.lod = info.LOD;
-            extent = info.Extent;
+            Address = info.AddressName;
+            Lod = info.LOD;
+            Extent = info.Extent;
         }
         
         public void LoadStart()
@@ -155,12 +116,12 @@ namespace PLATEAU.DynamicTile
         public void Reset()
         {
             IsLoading = false;
-            nextLoadState = LoadState.None;
+            NextLoadState = LoadState.None;
         }
 
         public void ReplaceAddress(string addr)
         {
-            address = addr;
+            Address = addr;
         }
 
         /// <summary>
@@ -171,7 +132,7 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public float GetDistance(Vector3 position, bool ignoreY)
         {
-            if (extent == null)
+            if (Extent == null)
             {
                 return 0f;
             }
@@ -210,12 +171,7 @@ namespace PLATEAU.DynamicTile
             var bounds = new Bounds();
             bounds.SetMinMax(new Vector3((float)min.X, (float)min.Y, (float)min.Z), new Vector3((float)max.X, (float)max.Y, (float)max.Z));
 
-            extent = bounds;
-
-            // Debug Draw Rect
-            if (PLATEAUTileManager.showDebugTileInfo)
-                DebugEx.DrawBounds(bounds, Color.red, 30f);
-
+            Extent = bounds;
             return bounds;
         }
 
@@ -227,12 +183,7 @@ namespace PLATEAU.DynamicTile
         private Bounds InitializeExtentFromGameObject(GameObject obj)
         {
             var bounds = obj.GetComponent<Renderer>().bounds;
-            extent = bounds;
-
-            // Debug Draw Rect
-            if (PLATEAUTileManager.showDebugTileInfo)
-                DebugEx.DrawBounds(bounds, Color.red, 30f);
-
+            Extent = bounds;
             return bounds;
         }
 
@@ -244,7 +195,7 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         private string GetMeshCode()
         {
-            Match match = Regex.Match(address, @"_grid_([^_]+)_");
+            Match match = Regex.Match(Address, @"_grid_([^_]+)_");
             if (match.Success)
             {
                 string meshcode = match.Groups[1].Value;

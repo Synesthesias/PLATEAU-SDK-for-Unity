@@ -1,11 +1,14 @@
 using PLATEAU.CityInfo;
+using PLATEAU.Dataset;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace PLATEAU.DynamicTile
 {
@@ -13,30 +16,41 @@ namespace PLATEAU.DynamicTile
     {
         public static readonly float DefaultLoadDistance = 1500f; // デフォルトのロード距離
 
-        public const bool showDebugTileInfo = true; // Debug情報を表示するかどうか
-
-        [SerializeField]
-        private bool useJobSystem = true; // Job Systemを使用するかどうか
-
-        public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; // 最後にカメラが更新された位置
-
-        //[SerializeField]
-        private List<PLATEAUDynamicTile> dynamicTiles = new();
-
-        // TileとAddressのマッピング
-        private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
-        public List<PLATEAUDynamicTile> DynamicTiles => dynamicTiles;
-
-        private Dictionary<int, Transform> lodParentDict = new();
-
         [SerializeField]
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
-        private const string DynamicTileLabelName = "DynamicTile";
+        [SerializeField]
+        private bool showDebugTileInfo = true; // Debug情報を表示するかどうか
+
+        [ConditionalShow("showDebugTileInfo")]
+        [SerializeField]
+        private bool useJobSystem = true; // Job Systemを使用するかどうか
+
+        // 使用中のタイルリスト
+        public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
+
+        // TileとAddressのマッピング
+        private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
+
+        // Parent TransformをLODごとに管理する辞書
+        private Dictionary<int, Transform> lodParentDict = new();
+
+        public enum ManagerState
+        {
+            None,
+            Initializing,
+            Operating,
+            CleaningUp
+        }
+
+        // マネージャーの状態
+        public ManagerState State { get; private set; } = ManagerState.None;
+
+        // 最後にカメラが更新された位置
+        public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; 
 
         private AddressableLoader addressableLoader = new ();
-
         private PLATEAUDynamicTileJobSystem jobSystem;
 
         /// <summary>
@@ -45,30 +59,49 @@ namespace PLATEAU.DynamicTile
         /// 旧Addressと新Addressのマッピングが必要
         /// </summary>
         /// <returns></returns>
-        public async Task ReinitializeFromCatalog()
+        public async Task InitializeTiles()
         {
+            if (State == ManagerState.Initializing)
+                return;
+
+            State = ManagerState.Initializing;
+
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
             await handle.Task;
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
+                State = ManagerState.None;
                 return;
             }
 
             var metaStore = handle.Result;
 
-            Debug.Log($"ReinitializeFromCatalog: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
-
-            tileAddressesDict.Clear(); // 既存のアドレス辞書をクリア
-            dynamicTiles.Clear(); // 既存のタイルリストをクリア
-
+            Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
+            ClearTileAssets(); // タイルAssetをアンロード
+            ClearTiles(); // 既存のタイルリストをクリア
             foreach (var tileMeta in metaStore.TileMetaInfos)
             {
                 var tile = new PLATEAUDynamicTile(tileMeta);
                 AddTile(tile);
             }
+
+            InitializeCameraPosition();
+
+            State = ManagerState.Operating;
         }
 
+        private void InitializeCameraPosition()
+        {
+            Camera currentCamera = null;
+#if UNITY_EDITOR
+            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera;
+#else
+            currentCamera = Camera.main;
+#endif
+            if (currentCamera != null) 
+                UpdateAssetByCameraPosition(currentCamera.transform.position);
+        }
 
         public async Task LoadFromCatalog()
         {
@@ -191,8 +224,17 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
-            ClearAll();
+            ClearTileAssets();
             Debug.Log("全てのアセットをアンロードしました");
+        }
+
+        /// <summary>
+        /// Job Systemを使用している場合、OnDisableでDisposeする
+        /// </summary>
+        private void OnDisable()
+        {
+            jobSystem?.Dispose();
+            jobSystem = null;
         }
 
         /// <summary>
@@ -207,13 +249,13 @@ namespace PLATEAU.DynamicTile
                 return;
             }
             
-            if (dynamicTiles.Contains(tile))
+            if (DynamicTiles.Contains(tile))
             {
                 Debug.LogWarning("既に追加済みのタイルです");
                 return;
             }
 
-            dynamicTiles.Add(tile);
+            DynamicTiles.Add(tile);
 
             if(tileAddressesDict.ContainsKey(tile.Address))
                 Debug.LogWarning("既に追加済みのタイルAddressです");
@@ -226,26 +268,20 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTiles()
         {
-            dynamicTiles.Clear();
+            DynamicTiles.Clear();
             tileAddressesDict.Clear();
-        }
-
-        /// <summary>
-        /// Job Systemを使用している場合、OnDisableでDisposeする
-        /// </summary>
-        private void OnDisable()
-        {
-            jobSystem?.Dispose();
-            jobSystem = null;
         }
 
         /// <summary>
         /// すべてのロード済みオブジェクトをアンロードする
         /// </summary>
-        public void ClearAll()
+        public void ClearTileAssets()
         {
+            var originalState = State;
+            State = ManagerState.CleaningUp;
+
             // すべてのロード済みオブジェクトをアンロード
-            foreach (var tile in dynamicTiles)
+            foreach (var tile in DynamicTiles)
             {
                 if (tile.LoadedObject != null)
                 {
@@ -257,11 +293,30 @@ namespace PLATEAU.DynamicTile
                 tile.Reset();
             }
 
-            foreach (var lodParent in lodParentDict.Values)
+            ClearLodChildren();
+            State = originalState;
+        }
+
+        /// <summary>
+        /// LOD直下の子オブジェクトをすべてアンロードします。
+        /// (TileからのUnloadでは消去されない場合があるため)
+        /// </summary>
+        private void ClearLodChildren()
+        { 
+            const int maxLod = 4; // 最大LOD数を定義
+
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
+            if (instance == null)
+                return;
+
+            // Lod直下の子オブジェクトをすべてアンロード
+            for (int lod = 0; lod <= maxLod; lod++)
             {
+                var lodName = $"LOD{lod}";
+                var lodParent = instance.transform.Find(lodName)?.gameObject?.transform;
                 if (lodParent != null)
                 {
-                    for( int i= 0; i < lodParent.childCount; i++)
+                    for (int i = 0; i < lodParent.childCount; i++)
                     {
                         var child = lodParent.GetChild(i);
                         if (child != null)
@@ -282,7 +337,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
-            if (dynamicTiles.Count <= 0)
+            if ( State != ManagerState.Operating)
+                return;
+
+            if (DynamicTiles.Count <= 0)
                 return;
 
             if (useJobSystem)
@@ -291,7 +349,7 @@ namespace PLATEAU.DynamicTile
                 if (jobSystem == null)
                 {
                     jobSystem = new PLATEAUDynamicTileJobSystem();
-                    jobSystem.Initialize(this, dynamicTiles);
+                    jobSystem.Initialize(this, DynamicTiles);
                 }
 
                 jobSystem.UpdateAssetByCameraPosition(position);
@@ -311,7 +369,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public void UpdateAssetByCameraPositionInternal(Vector3 position)
         {
-            foreach (var tile in dynamicTiles)
+            foreach (var tile in DynamicTiles)
             {
                 var distance = tile.GetDistance(position, true);
                 if (distance < DefaultLoadDistance)
@@ -337,7 +395,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async void ExecuteLoadTask()
         {
-            foreach (var tile in dynamicTiles)
+            foreach (var tile in DynamicTiles)
             {
                 if (tile.NextLoadState == LoadState.None)
                 {
@@ -355,6 +413,11 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        /// <summary>
+        /// 指定されたLODから親Transformを取得または作成します。
+        /// </summary>
+        /// <param name="lod"></param>
+        /// <returns></returns>
         private Transform FindParent(int lod)
         {
             if(lodParentDict.TryGetValue(lod, out var parentTransform))
@@ -386,7 +449,7 @@ namespace PLATEAU.DynamicTile
         // Debug用
         public void ShowBounds()
         {
-            foreach (var tile in dynamicTiles)
+            foreach (var tile in DynamicTiles)
             {
                 DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
                 DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
