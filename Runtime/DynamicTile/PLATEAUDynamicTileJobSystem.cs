@@ -117,7 +117,6 @@ namespace PLATEAU.DynamicTile
         
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
-            //Debug.Log($"UpdateAssetByCameraPosition (JobSystem): {position}");
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
             handle.Complete();

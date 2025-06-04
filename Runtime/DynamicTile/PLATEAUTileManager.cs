@@ -1,9 +1,11 @@
+using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
@@ -18,11 +20,14 @@ namespace PLATEAU.DynamicTile
 
         public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; // 最後にカメラが更新された位置
 
-        [SerializeField]
+        //[SerializeField]
         private List<PLATEAUDynamicTile> dynamicTiles = new();
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
+        public List<PLATEAUDynamicTile> DynamicTiles => dynamicTiles;
+
+        private Dictionary<int, Transform> lodParentDict = new();
 
         [SerializeField]
         private string catalogPath;
@@ -42,17 +47,28 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public async Task ReinitializeFromCatalog()
         {
-            var addresses = await addressableLoader.Initialize(catalogPath);
-            if( addresses.Count != dynamicTiles.Count)
-                Debug.LogWarning($"アドレスの数とタイルの数が一致しません: アドレス数={addresses.Count}, タイル数={dynamicTiles.Count}");
-
-            for (var i = 0; i < addresses.Count; i++)
+            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
+            await handle.Task;
+            if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                var address = addresses[i];
-                var tile = dynamicTiles[i];
-                tile.ReplaceAddress(address);
+                Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
+                return;
+            }
+
+            var metaStore = handle.Result;
+
+            Debug.Log($"ReinitializeFromCatalog: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
+
+            tileAddressesDict.Clear(); // 既存のアドレス辞書をクリア
+            dynamicTiles.Clear(); // 既存のタイルリストをクリア
+
+            foreach (var tileMeta in metaStore.TileMetaInfos)
+            {
+                var tile = new PLATEAUDynamicTile(tileMeta);
+                AddTile(tile);
             }
         }
+
 
         public async Task LoadFromCatalog()
         {
@@ -87,16 +103,17 @@ namespace PLATEAU.DynamicTile
             // 既にロードされている場合はスキップ
             if (tile.IsLoadedOrLoading)
             {
-                //Debug.Log($"Already loaded: {address}");
+                Debug.Log($"Already loaded: {address}");
                 return await Task.FromResult<bool>(true);
             }
 
             tile.LoadStart();
             try
             {
-                var instance = await addressableLoader.InstantiateAssetAsync(tile.Address, tile.Parent);
+                var instance = await addressableLoader.InstantiateAssetAsync(tile.Address, FindParent(tile.Lod));
                 if (instance != null)
                 {
+                    instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
                     tile.LoadedObject = instance;
                     return true;
                 }
@@ -210,6 +227,7 @@ namespace PLATEAU.DynamicTile
         public void ClearTiles()
         {
             dynamicTiles.Clear();
+            tileAddressesDict.Clear();
         }
 
         /// <summary>
@@ -229,7 +247,6 @@ namespace PLATEAU.DynamicTile
             // すべてのロード済みオブジェクトをアンロード
             foreach (var tile in dynamicTiles)
             {
-                if (tile == null) continue; // タイルがnullの場合はスキップ
                 if (tile.LoadedObject != null)
                 {
                     if (!Addressables.ReleaseInstance(tile.LoadedObject))
@@ -239,6 +256,24 @@ namespace PLATEAU.DynamicTile
                 }
                 tile.Reset();
             }
+
+            foreach (var lodParent in lodParentDict.Values)
+            {
+                if (lodParent != null)
+                {
+                    for( int i= 0; i < lodParent.childCount; i++)
+                    {
+                        var child = lodParent.GetChild(i);
+                        if (child != null)
+                        {
+                            if (!Addressables.ReleaseInstance(child.gameObject))
+                            {
+                                DestroyImmediate(child.gameObject);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -247,6 +282,9 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public void UpdateAssetByCameraPosition(Vector3 position)
         {
+            if (dynamicTiles.Count <= 0)
+                return;
+
             if (useJobSystem)
             {
                 // Job Systemを使用する場合
@@ -255,6 +293,7 @@ namespace PLATEAU.DynamicTile
                     jobSystem = new PLATEAUDynamicTileJobSystem();
                     jobSystem.Initialize(this, dynamicTiles);
                 }
+
                 jobSystem.UpdateAssetByCameraPosition(position);
             }
             else
@@ -314,6 +353,34 @@ namespace PLATEAU.DynamicTile
                     Unload(tile);
                 }
             }
+        }
+
+        private Transform FindParent(int lod)
+        {
+            if(lodParentDict.TryGetValue(lod, out var parentTransform))
+            {
+                return parentTransform;
+            }
+
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
+            if (instance == null)
+            {
+                Debug.LogError("PLATEAUInstancedCityModelが見つかりません。LODの作成に失敗しました。");
+                return null;
+            }
+
+            var lodName = $"LOD{lod}";
+            GameObject lodObject = instance.transform.Find(lodName)?.gameObject;
+            if (lodObject == null)
+            {
+                lodObject = new GameObject(lodName);
+                lodObject.AddComponent<MeshRenderer>();
+                lodObject.AddComponent<BoxCollider>();
+                lodObject.transform.SetParent(instance.transform, false);
+            }
+
+            lodParentDict[lod] = lodObject.transform;
+            return lodObject.transform;
         }
 
         // Debug用
