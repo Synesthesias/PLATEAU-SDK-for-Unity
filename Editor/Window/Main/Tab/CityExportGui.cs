@@ -157,10 +157,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 format, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[format].GetExporter());
             using (var progress = new ProgressBar("エクスポート中..."))
             {
-                progress.Display(0.5f);
                 try
                 {
-                    UnityModelExporter.Export(destinationDir, target, meshExportOptions);
+                    new UnityModelExporter().Export(destinationDir, target, meshExportOptions, progress);
                 }
                 catch (Exception e)
                 {

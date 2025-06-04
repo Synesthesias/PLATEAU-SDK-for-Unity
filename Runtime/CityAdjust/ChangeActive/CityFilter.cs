@@ -43,8 +43,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         // PLATEAUCityObjectGroupが存在しない場合、Modelを利用してタイプ判定
                         else
                         {
-                            // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
-                            //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
+                            // この処理は、かつてインポートしたデータがStreamingAssets以下にコピーされていた時代の名残であり、今は動作しません。
                             var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
                             if (gmlModel == null)
                             {

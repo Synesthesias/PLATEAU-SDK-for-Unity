@@ -21,7 +21,7 @@ namespace PLATEAU.CityExport.ModelConvert
         /// 引数で与えられたゲームオブジェクトとその子(再帰的)を <see cref="Model"/> に変換して返します。
         /// </summary>
         /// <param name="srcTransforms">変換対象ゲームオブジェクトのルートです。</param>
-        /// <param name="unityMeshToDllSubMeshConverter"></param>
+        /// <param name="unityMeshToDllSubMeshConverter">サブメッシュの変換方法を指定します。</param>
         /// <param name="exportDisabledGameObj">false のとき、非Activeのものは対象外とします。</param>
         /// <param name="vertexConverter">頂点座標を変換するメソッドで、 Vector3 から PlateauVector3d に変換する方法を指定します。</param>
         /// /// <param name="invertMesh">true : Mesh Normalを反転します</param>
