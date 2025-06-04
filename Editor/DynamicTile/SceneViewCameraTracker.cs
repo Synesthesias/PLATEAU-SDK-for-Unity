@@ -86,6 +86,11 @@ namespace PLATEAU.DynamicTile
             Debug.Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
+
+            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManageer == null)
+                return;
+
             InitView();
         }
 
@@ -107,6 +112,8 @@ namespace PLATEAU.DynamicTile
             if (tileManageer == null)
                 return;
 
+            var task = tileManageer.ReinitializeFromCatalog();
+
             if (state == PlayModeStateChange.ExitingEditMode)
             {
                 Debug.Log("Play Mode about to start");
@@ -127,9 +134,7 @@ namespace PLATEAU.DynamicTile
             if (tileManageer == null)
                 return;
 
-            Debug.Log($"Scene Opened: {scene.name}");
-
-            var task = tileManageer.ReinitializeFromCatalog();
+            Debug.Log($"Scene Opened: {scene.name}");          
             InitView();
         }
 
@@ -140,6 +145,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             tileManageer.ClearAll();
+            var task = tileManageer.ReinitializeFromCatalog();
             SceneViewCameraTracker.Initialize();
         }
     }

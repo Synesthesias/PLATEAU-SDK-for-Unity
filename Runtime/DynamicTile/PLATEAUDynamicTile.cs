@@ -10,8 +10,8 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// DynamicTileオブジェクトに付与し、ダウンサンプルレベルごとのAddress情報を保持するコンポーネント
     /// </summary>
-    [Serializable]
-    public class PLATEAUDynamicTile
+    //[Serializable]
+    public class PLATEAUDynamicTile // : UnityEngine.Object
     {
         [SerializeField]
         private string address;
@@ -39,6 +39,13 @@ namespace PLATEAU.DynamicTile
                 loadedObject = value;
                 IsLoading = false;
             }
+        }
+
+        [SerializeField]
+        private int lod;
+        public int Lod
+        {
+            get => lod;
         }
 
         /// <summary>
@@ -124,6 +131,17 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        /// <summary>
+        /// PLATEAUDynamicTileのコンストラクタ。
+        /// </summary>
+        /// <param name="info">Scriptable Object データ</param>
+        public PLATEAUDynamicTile(PLATEAUDynamicTileMetaInfo info)
+        {
+            this.address = info.AddressName;
+            this.lod = info.LOD;
+            extent = info.Extent;
+        }
+        
         public void LoadStart()
         {
             IsLoading = true;
