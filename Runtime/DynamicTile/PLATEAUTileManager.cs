@@ -105,10 +105,10 @@ namespace PLATEAU.DynamicTile
 
         public async Task LoadFromCatalog()
         {
-            var addresses = await addressableLoader.Initialize(catalogPath);
-            foreach (var address in addresses)
+            var metaStore = await addressableLoader.Initialize(catalogPath);
+            foreach (var metaInfo in metaStore.TileMetaInfos)
             {
-                await Load(address);
+                await Load(metaInfo.AddressName);
             }
         }
 

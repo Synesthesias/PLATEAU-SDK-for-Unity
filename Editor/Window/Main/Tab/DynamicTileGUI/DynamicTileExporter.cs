@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.SceneManagement;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 {
@@ -143,7 +144,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             else
             {
                 // プロファイルをデフォルトに設定
-                AddressablesUtility.SetDefaultProfileSettings();
+                AddressablesUtility.SetDefaultProfileSettings(groupName);
             }
 
             // Addressablesのビルドを実行
@@ -169,6 +170,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
                 var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                 manager.SaveCatalogPath(catalogPath);
+            }
+
+            // シーンをEdit
+            var scene = EditorSceneManager.GetActiveScene();
+            if (!scene.isDirty)
+            {
+                EditorSceneManager.MarkSceneDirty(scene);
             }
             
             SceneViewCameraTracker.Initialize();

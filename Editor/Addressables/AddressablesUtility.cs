@@ -4,8 +4,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.AddressableAssets.Build;
-using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
 namespace PLATEAU.Editor.Addressables
 {
@@ -144,16 +143,8 @@ namespace PLATEAU.Editor.Addressables
             // グループのBuildPathとLoadPathに変数名をセット
             bundledSchema.BuildPath.SetVariableByName(settings, groupName);
             bundledSchema.LoadPath.SetVariableByName(settings, groupName);
-            
-            // グループの設定
-            bundledSchema.IncludeAddressInCatalog = true;
-            bundledSchema.IncludeGUIDInCatalog = true;
-            bundledSchema.IncludeLabelsInCatalog = true;
-            bundledSchema.IncludeInBuild = true;
-            bundledSchema.AssetLoadMode = AssetLoadMode.AllPackedAssetsAndDependencies;
-            
-            // bundleを個別にパックする
-            bundledSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+
+            SetGroupSchema(bundledSchema);
         }
         
         /// <summary>
@@ -196,7 +187,7 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// デフォルトのプロファイル設定を行います。
         /// </summary>
-        public static void SetDefaultProfileSettings()
+        public static void SetDefaultProfileSettings(string groupName)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -215,8 +206,49 @@ namespace PLATEAU.Editor.Addressables
             // プロファイルをアクティブに設定
             settings.activeProfileId = profileId;
             
-            // リモートカタログを無効化
-            settings.BuildRemoteCatalog = false;
+            settings.BuildRemoteCatalog = true;
+            var profileSettings = settings.profileSettings;
+            profileSettings.GetVariableNames().ForEach((name) => 
+            {
+                Debug.Log("プロファイル変数: " + name);
+            });
+
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, "Local.BuildPath");
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, "Local.LoadPath");
+
+            var group = settings.FindGroup(groupName);
+            if (group == null)
+            {
+                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                return;
+            }
+
+            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
+            if (bundledSchema == null)
+            {
+                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
+                return;
+            }
+
+            SetGroupSchema(bundledSchema);
+        }
+
+        private static void SetGroupSchema(BundledAssetGroupSchema groupSchema)
+        {
+            if (groupSchema == null)
+            {
+                Debug.LogWarning("BundledAssetGroupSchemaがnullです。");
+                return;
+            }
+
+            groupSchema.IncludeAddressInCatalog = true;
+            groupSchema.IncludeGUIDInCatalog = true;
+            groupSchema.IncludeLabelsInCatalog = true;
+            groupSchema.IncludeInBuild = true;
+            groupSchema.UseUnityWebRequestForLocalBundles = true;
+
+            // bundleを個別にパックする
+            groupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
         }
 
         /// <summary>
