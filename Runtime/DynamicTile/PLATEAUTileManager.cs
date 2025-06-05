@@ -147,13 +147,7 @@ namespace PLATEAU.DynamicTile
                 await handle.Task;
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                if (!handle.IsValid())
-                {
-                    Debug.LogWarning($"アセットのロードハンドルが無効です: {address}");
-                    return false;
-                }
-
-                if (handle.Status == AsyncOperationStatus.Succeeded)
+                if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     //Debug.Log($"アセットのロードに成功しました: {address}");
                     var instance = handle.Result;
@@ -166,7 +160,7 @@ namespace PLATEAU.DynamicTile
                 }
                 else
                 {
-                    Debug.LogError($"アセットのロードに失敗しました: {address}");
+                    Debug.LogWarning($"アセットのロードに失敗しました: {address}");
                     return false;
                 }
             }
@@ -179,7 +173,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                Debug.LogError($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
+                Debug.LogWarning($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
             }
             return false;
         }
@@ -224,15 +218,13 @@ namespace PLATEAU.DynamicTile
 
                     if (!Addressables.ReleaseInstance(tile.LoadHandle))
                     {
-                        Debug.LogWarning($"アセットのReleaseに失敗しました: {address}");
-                        DestroyImmediate(tile.LoadedObject);
+                        throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {address}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
-
+                Debug.LogWarning($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
                 if(tile.LoadedObject != null)
                 {
                     // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
@@ -323,14 +315,25 @@ namespace PLATEAU.DynamicTile
             // すべてのロード済みオブジェクトをアンロード
             foreach (var tile in DynamicTiles)
             {
-                if (tile.LoadHandle.IsValid())
+                try
                 {
-                    if (!Addressables.ReleaseInstance(tile.LoadHandle))
+                    if (tile.LoadHandle.IsValid())
                     {
-                        Debug.LogWarning($"タイルのアンロードに失敗しました。{tile.Address}");
+                        if (!Addressables.ReleaseInstance(tile.LoadHandle))
+                        {
+                            throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {tile.Address}");
+                        }
                     }
                 }
-            }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
+                    if (tile.LoadedObject != null)
+                    {
+                        // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
+                        DestroyImmediate(tile.LoadedObject);
+                    }
+                }
 
             ClearLodChildren();
             State = originalState;
@@ -364,15 +367,15 @@ namespace PLATEAU.DynamicTile
                             {
                                 if (!Addressables.ReleaseInstance(child.gameObject))
                                 {
-                                    Debug.LogWarning($"GameObjectのアンロードに失敗しました。{child.gameObject.name}");
-                                    DestroyImmediate(child.gameObject);
+                                    throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {child.gameObject.name}");
                                 }
                             }
                             catch (Exception ex)
                             {
+                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name}");
+
                                 // アドレスのリリースに失敗した場合、直接破棄
                                 DestroyImmediate(child.gameObject);
-                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name}");
                             }
                         }
                     }

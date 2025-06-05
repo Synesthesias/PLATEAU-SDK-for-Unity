@@ -38,7 +38,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressablesのロードハンドルを保持する。
         /// </summary>
-        public AsyncOperationHandle<GameObject> LoadHandle { get; set; }
+        public AsyncOperationHandle<GameObject> LoadHandle { get; set; } = default;
 
         /// <summary>
         /// Addressablesのロードハンドルのキャンセルトークンを保持する。
