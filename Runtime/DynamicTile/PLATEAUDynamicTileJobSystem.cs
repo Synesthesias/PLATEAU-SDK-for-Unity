@@ -151,11 +151,11 @@ namespace PLATEAU.DynamicTile
                     // 何もしない
                     continue;
                 }
-                else if (nextLoadState == LoadState.Load && !tile.IsLoadedOrLoading)
+                else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
                     await tileManager.Load(tile);
                 }
-                else if (nextLoadState == LoadState.Unload && tile.IsLoadedOrLoading)
+                else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
                     tileManager.Unload(tile);
                 }

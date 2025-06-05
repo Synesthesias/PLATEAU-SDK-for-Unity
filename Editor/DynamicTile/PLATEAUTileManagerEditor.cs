@@ -41,7 +41,8 @@ namespace PLATEAU.DynamicTile
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
-                EditorGUILayout.LabelField($"Tile num {dynamicTiles.Count}");
+                EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
+                EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
                 GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
 
                 foreach (var tile in dynamicTiles)
@@ -50,9 +51,10 @@ namespace PLATEAU.DynamicTile
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
                     EditorGUILayout.IntField($"LOD: ", tile.Lod);
-                    EditorGUILayout.LabelField($"Extent: ", tile.Extent.ToString());
+                    EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
                     EditorGUILayout.LabelField($"LoadedObject: ", tile.LoadedObject != null ? tile.LoadedObject.name : "-");
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
+                    EditorGUILayout.LabelField($"LoadHandle: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
                 

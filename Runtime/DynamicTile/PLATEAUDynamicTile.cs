@@ -1,7 +1,9 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
@@ -23,16 +25,26 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
-        private GameObject loadedObject;
-        public GameObject LoadedObject
-        {
-            get => loadedObject;
-            set 
-            { 
-                loadedObject = value;
-                IsLoading = false;
+        public GameObject LoadedObject{
+            get {
+                if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    return LoadHandle.Result as GameObject;
+                }
+                return null;
             }
         }
+
+        /// <summary>
+        /// Addressablesのロードハンドルを保持する。
+        /// </summary>
+        public AsyncOperationHandle<GameObject> LoadHandle { get; set; }
+
+        /// <summary>
+        /// Addressablesのロードハンドルのキャンセルトークンを保持する。
+        /// 現状、AddressablesはCancelをサポートしていないので、普通のフラグでも良いが、将来のために保持しておく。
+        /// </summary>
+        public CancellationTokenSource LoadHandleCancellationTokenSource { get; set; }
 
         /// <summary>
         /// LOD（Level of Detail）を保持する。
@@ -55,14 +67,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public LoadState NextLoadState { get; set; } = LoadState.None;
 
-        // ロード中かどうかを示すフラグ
-        public bool IsLoading { get; private set; }
-
-        public bool IsLoadedOrLoading
-        {
-            get => LoadedObject != null || IsLoading;
-        }
-
         // Job Systemで使用するための構造体を返す
         public TileBounds GetTileBoundsStruct()
         {
@@ -83,7 +87,6 @@ namespace PLATEAU.DynamicTile
             if (original != null)
             {
                 InitializeExtentFromGameObject(original);
-                LoadedObject = original;
             }
             else
             {
@@ -101,22 +104,6 @@ namespace PLATEAU.DynamicTile
             Address = info.AddressName;
             Lod = info.LOD;
             Extent = info.Extent;
-        }
-        
-        public void LoadStart()
-        {
-            IsLoading = true;
-        }
-
-        public void LoadEnd()
-        {
-            IsLoading = false;
-        }
-
-        public void Reset()
-        {
-            IsLoading = false;
-            NextLoadState = LoadState.None;
         }
 
         public void ReplaceAddress(string addr)
