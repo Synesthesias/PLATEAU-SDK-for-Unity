@@ -3,6 +3,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -285,13 +286,12 @@ namespace PLATEAU.DynamicTile
                 Debug.LogWarning("既に追加済みのタイルです");
                 return;
             }
-
             DynamicTiles.Add(tile);
-
             if(tileAddressesDict.ContainsKey(tile.Address))
                 Debug.LogWarning("既に追加済みのタイルAddressです");
             else
                 tileAddressesDict[tile.Address] = tile;
+
         }
         
         /// <summary>
@@ -335,8 +335,9 @@ namespace PLATEAU.DynamicTile
                     }
                 }
 
-            ClearLodChildren();
-            State = originalState;
+                ClearLodChildren();
+                State = originalState;
+            }
         }
 
         /// <summary>
