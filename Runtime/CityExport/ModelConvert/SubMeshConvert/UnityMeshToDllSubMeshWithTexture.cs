@@ -21,6 +21,7 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
     {
         private bool exportDefaultTextures;
         private readonly MaterialConverter materialConverter; // 自身のDispose時にこれをDisposeする必要があります
+        private bool disposed = false;
         public List<Material> GameMaterials { get; } = new();
 
         public UnityMeshToDllSubMeshWithTexture(bool exportDefaultTextures)
@@ -80,7 +81,22 @@ namespace PLATEAU.CityExport.ModelConvert.SubMeshConvert
         /// </summary>
         public void Dispose()
         {
-            materialConverter?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // マネージドリソースの破棄
+                    materialConverter?.Dispose();
+                }
+                // アンマネージドリソースがあればここで破棄
+                disposed = true;
+            }
         }
     }
 }

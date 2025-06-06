@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -18,11 +19,11 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
     internal class MaterialConverter : IDisposable
     {
         
-        /// <summary> 一時的に書き出したテクスチャファイルを覚えておき、クリーンアップメソッドで削除する用 </summary>
-        private readonly List<string> temporaryTextureFiles = new List<string>();
+        /// <summary> 一時的に書き出したテクスチャファイルを覚えておき、クリーンアップメソッドで削除する用です。スレッドセーフに配慮します。 </summary>
+        private readonly ConcurrentBag<string> temporaryTextureFiles = new ConcurrentBag<string>();
         
-        /// <summary> 同じテクスチャを何度も書き出さないように覚えておく用 </summary>
-        private readonly Dictionary<int, string> textureFileCache = new Dictionary<int, string>();
+        /// <summary> 同じテクスチャを何度も書き出さないように覚えておく用です。スレッドセーフに配慮する用です。 </summary>
+        private readonly ConcurrentDictionary<int, string> textureFileCache = new ConcurrentDictionary<int, string>();
         
         /// <summary>
         /// Unityのマテリアルを、DLLのSubMeshのTexturePathに変換します。
@@ -89,7 +90,7 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
                 else
                 {
                     // ファイルが削除されていればキャッシュからも削除
-                    textureFileCache.Remove(textureInstanceId);
+                    textureFileCache.TryRemove(textureInstanceId, out _);
                 }
             }
             
@@ -111,7 +112,7 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
                     textureName = Path.GetFileNameWithoutExtension(textureName);
                 }
                 
-                // ファイル名の長さを制限（Windows の制限を考慮）
+                // ファイル名の長さを制限
                 const int maxNameLength = 100; // InstanceIDと拡張子分を考慮した安全な長さ
                 if (textureName.Length > maxNameLength)
                 {
@@ -131,13 +132,10 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
                 WriteTextureToPNG(tex2D, tempFilePath);
                 
                 // キャッシュに追加
-                textureFileCache[textureInstanceId] = tempFilePath;
+                textureFileCache.TryAdd(textureInstanceId, tempFilePath);
                 
-                // 一時ファイルのリストに追加（重複チェック）
-                if (!temporaryTextureFiles.Contains(tempFilePath))
-                {
-                    temporaryTextureFiles.Add(tempFilePath);
-                }
+                // 一時ファイルのリストに追加
+                temporaryTextureFiles.Add(tempFilePath);
                 
                 return tempFilePath;
             }
@@ -244,7 +242,7 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
             {
                 try
                 {
-                    if (File.Exists(filePath))
+                    if (File.Exists(filePath)) // 重複ケース配慮のチェック
                     {
                         File.Delete(filePath);
                     }
@@ -254,7 +252,11 @@ namespace PLATEAU.CityImport.Import.Convert.MaterialConvert
                     Debug.LogWarning($"一時テクスチャファイル '{filePath}' の削除に失敗しました: {ex.Message}");
                 }
             }
-            temporaryTextureFiles.Clear();
+            // ConcurrentBagを空にします
+            while (!temporaryTextureFiles.IsEmpty)
+            {
+                temporaryTextureFiles.TryTake(out _);
+            }
             textureFileCache.Clear();
         }
         

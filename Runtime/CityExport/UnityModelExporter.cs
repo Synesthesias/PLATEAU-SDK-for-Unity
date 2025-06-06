@@ -36,17 +36,6 @@ namespace PLATEAU.CityExport
             progress.Display("エクスポート準備中...", 0.1f);
             var trans = instancedCityModel.transform;
             int numChild = trans.childCount;
-            int activeChildCount = 0;
-
-            // アクティブな子オブジェクトの数をカウント
-            for (int i = 0; i < numChild; i++)
-            {
-                var childTrans = trans.GetChild(i);
-                if (options.ExportHiddenObjects || childTrans.gameObject.activeInHierarchy)
-                {
-                    activeChildCount++;
-                }
-            }
 
             int processedCount = 0;
             for (int i = 0; i < numChild; i++)
@@ -60,8 +49,8 @@ namespace PLATEAU.CityExport
                 }
 
                 // 進行状況を表示 (0.1～0.9の範囲で更新)
-                float progressFloat = 0.1f + (processedCount * 0.8f / activeChildCount);
-                progress.Display($"エクスポート中... ({processedCount + 1}/{activeChildCount})", progressFloat);
+                float progressFloat = 0.1f + (processedCount * 0.8f / numChild);
+                progress.Display($"エクスポート中... ({processedCount + 1}/{numChild})", progressFloat);
 
                 using var geoReference = instancedCityModel.GeoReference;
 
@@ -76,16 +65,9 @@ namespace PLATEAU.CityExport
                     convertTargets.Add(childTrans.GetChild(j));
                 }
 
-                IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter;
-                if (options.ExportTextures)
-                {
-                    unityMeshToDllSubMeshConverter =
-                        new UnityMeshToDllSubMeshWithTexture(options.ExportDefaultTextures);
-                }
-                else
-                {
-                    unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithEmptyMaterial();
-                }
+                IUnityMeshToDllSubMeshConverter unityMeshToDllSubMeshConverter = options.ExportTextures
+                    ? new UnityMeshToDllSubMeshWithTexture(options.ExportDefaultTextures)
+                    : new UnityMeshToDllSubMeshWithEmptyMaterial();
 
                 bool invertMesh =
                     (options.MeshAxis == CoordinateSystem.ENU || options.MeshAxis == CoordinateSystem.WUN);
