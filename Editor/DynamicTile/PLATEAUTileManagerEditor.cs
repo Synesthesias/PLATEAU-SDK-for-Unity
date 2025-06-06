@@ -1,7 +1,4 @@
-﻿using PLATEAU.Editor.Window.Common;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEditorInternal;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -23,13 +20,19 @@ namespace PLATEAU.DynamicTile
             {
                 PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
 
-                if (GUILayout.Button("Clear Tiles"))
+                if (GUILayout.Button("Clear Tile Assets"))
                 {
                     tileManager.ClearTileAssets();
                     SceneViewCameraTracker.Initialize();
                 }
 
-                if (GUILayout.Button("Load Tiles"))
+                if (GUILayout.Button("Clear Tile List"))
+                {
+                    tileManager.ClearTiles();
+                    SceneViewCameraTracker.Initialize();
+                }
+
+                if (GUILayout.Button("Load Tile Scriptable Objects"))
                 {
                     var task = tileManager.InitializeTiles();
                 }
@@ -37,6 +40,7 @@ namespace PLATEAU.DynamicTile
                 if (GUILayout.Button("Show Tile Bounds"))
                 {
                     tileManager.ShowBounds();
+                    SceneView.lastActiveSceneView?.Repaint();
                 }
 
                 // Tile情報の表示

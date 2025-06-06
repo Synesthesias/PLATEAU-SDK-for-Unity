@@ -14,12 +14,12 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
-    /// タイルの境界を表す構造体。
+    /// タイルの範囲を表す構造体。
     /// </summary>
-    public struct TileBounds
+    public readonly struct TileBounds
     {
-        public Vector3 BoundsMin;
-        public Vector3 BoundsMax;
+        public readonly Vector3 BoundsMin;
+        public readonly Vector3 BoundsMax;
 
         public TileBounds(Vector3 boundsMin, Vector3 boundsMax)//, LoadedState currentState)
         {
@@ -31,9 +31,9 @@ namespace PLATEAU.DynamicTile
         {
             if (ignoreY)
             {
-                var position2d = new Vector3(cameraPosition.x, 0, cameraPosition.z);
+                Vector3 position2d = new(cameraPosition.x, 0, cameraPosition.z);
                 Vector3 closestPoint3d = ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
-                Vector3 closestPoint2d = new Vector3(closestPoint3d.x, 0, closestPoint3d.z);
+                Vector3 closestPoint2d = new(closestPoint3d.x, 0, closestPoint3d.z);
                 return Vector3.Distance(position2d, closestPoint2d);
             }
             else
@@ -45,7 +45,7 @@ namespace PLATEAU.DynamicTile
 
         Vector3 ClosestPointOnBounds(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
         {
-            var bounds = new Bounds();
+            Bounds bounds = new();
             bounds.SetMinMax(boundsMin, boundsMax);
             return bounds.ClosestPoint(position);
         }

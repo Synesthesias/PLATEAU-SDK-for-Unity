@@ -1,16 +1,14 @@
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
+using static PlasticGui.LaunchDiffParameters;
 
 namespace PLATEAU.DynamicTile
 {
@@ -65,6 +63,10 @@ namespace PLATEAU.DynamicTile
                 return;
 
             State = ManagerState.Initializing;
+
+            // PLATEAUDynamicTileMetaStoreをAddressablesからロード
+            // TODO: ↓で取得できるように変更
+            //var metaStore = await addressableLoader.Initialize(catalogPath);
 
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
             await handle.Task;
@@ -256,7 +258,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
-            ClearTileAssets();
+            ClearTiles();
             Debug.Log("全てのアセットをアンロードしました");
         }
 
@@ -302,6 +304,9 @@ namespace PLATEAU.DynamicTile
             ClearTileAssets();
             DynamicTiles.Clear();
             tileAddressesDict.Clear();
+
+            // LODの親Transformもクリア
+            lodParentDict.Clear();
         }
 
         /// <summary>
@@ -356,12 +361,12 @@ namespace PLATEAU.DynamicTile
             for (int lod = 0; lod <= maxLod; lod++)
             {
                 var lodName = $"LOD{lod}";
-                var lodParent = instance.transform.Find(lodName)?.gameObject?.transform;
+                var lodParent = instance.transform.Find(lodName)?.gameObject;
                 if (lodParent != null)
                 {
-                    for (int i = 0; i < lodParent.childCount; i++)
+                    for (int i = 0; i < lodParent.transform.childCount; i++)
                     {
-                        var child = lodParent.GetChild(i);
+                        var child = lodParent.transform.GetChild(i);
                         if (child != null)
                         {
                             try
@@ -373,13 +378,14 @@ namespace PLATEAU.DynamicTile
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name}");
-
+                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
                                 // アドレスのリリースに失敗した場合、直接破棄
-                                DestroyImmediate(child.gameObject);
+                                DestroyImmediate(child);
                             }
                         }
                     }
+                    // LODの親Transformも削除
+                    DestroyImmediate(lodParent);
                 }
             }
         }
@@ -486,7 +492,7 @@ namespace PLATEAU.DynamicTile
             }
 
             var lodName = $"LOD{lod}";
-            GameObject lodObject = instance.transform.Find(lodName)?.gameObject;
+            GameObject lodObject= instance.transform.Find(lodName)?.gameObject;
             if (lodObject == null)
             {
                 lodObject = new GameObject(lodName);
@@ -499,7 +505,7 @@ namespace PLATEAU.DynamicTile
             return lodObject.transform;
         }
 
-        // Debug用
+        // Debug用Bounds表示
         public void ShowBounds()
         {
             foreach (var tile in DynamicTiles)
