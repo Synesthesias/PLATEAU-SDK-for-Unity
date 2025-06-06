@@ -56,12 +56,11 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
                     EditorGUILayout.IntField($"LOD: ", tile.Lod);
                     EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
-                    EditorGUILayout.LabelField($"LoadedObject: ", tile.LoadedObject != null ? tile.LoadedObject.name : "-");
+                    EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
-                    EditorGUILayout.LabelField($"LoadHandle: ", tile.LoadHandle.IsValid().ToString());
+                    EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
-                
                 Repaint();
             }
         }

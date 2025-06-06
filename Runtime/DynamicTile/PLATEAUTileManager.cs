@@ -380,7 +380,7 @@ namespace PLATEAU.DynamicTile
                             {
                                 Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
                                 // アドレスのリリースに失敗した場合、直接破棄
-                                DestroyImmediate(child);
+                                DestroyImmediate(child.gameObject);
                             }
                         }
                     }
