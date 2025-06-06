@@ -1,6 +1,7 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -40,6 +41,17 @@ namespace PLATEAU.Editor.CityInfo
             PlateauEditorStyle.Heading("属性情報", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
+                // 属性情報をクリップボードにコピーするボタン
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("属性情報をクリップボードにコピー"))
+                    {
+                        string json = GetCachedJson();
+                        EditorGUIUtility.systemCopyBuffer = json;
+                        Dialogue.Display("属性情報をクリップボードにコピーしました", "OK");
+                    }
+                }
+                
                 // 属性情報の表示は重いことがあるので、ボタンで切り替えられるようにします。
                 using (new EditorGUILayout.HorizontalScope())
                 {
