@@ -17,21 +17,23 @@ namespace PLATEAU.DynamicTile
         private Dictionary<string, string> bundlePathMap = new ();
         private string bundlePath;
 
-        private static PLATEAUDynamicTileMetaStore metaStore;
-        private static string catalogPath;
-        
         public async Task<PLATEAUDynamicTileMetaStore> Initialize(string catalogPath)
         {
-            Debug.Log("AddressableLoader Initialize called");
-            if (AddressableLoader.metaStore != null && AddressableLoader.catalogPath == catalogPath)
+            // 明示的に初期化しておくと安心
+            Addressables.InitializeAsync().Completed += handle =>
             {
-                // すでにロード済で、パスの変更がなければ、そのままデータを返す
-                return AddressableLoader.metaStore;
-            }
+                Debug.Log("Addressables Initialized!");
+            };
+            
+            var init = Addressables.InitializeAsync();
+            await init.Task;
+            
+            Debug.Log("AddressableLoader Initialize called");
 
             // カタログをロード
             if (!string.IsNullOrEmpty(catalogPath))
             {
+                Debug.Log($"AddressableLoader Initialize called with catalogPath: {catalogPath}");
                 var addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
             }
 
@@ -41,10 +43,6 @@ namespace PLATEAU.DynamicTile
             {
                 return null;
             }
-
-            // キャッシュ保持
-            AddressableLoader.metaStore = metaStore;
-            AddressableLoader.catalogPath = catalogPath;
 
             return metaStore;
         }
