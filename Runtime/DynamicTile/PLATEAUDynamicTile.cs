@@ -106,11 +106,6 @@ namespace PLATEAU.DynamicTile
             Extent = info.Extent;
         }
 
-        public void ReplaceAddress(string addr)
-        {
-            Address = addr;
-        }
-
         /// <summary>
         /// カメラからの距離を計算する。
         /// </summary>

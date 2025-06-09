@@ -108,6 +108,7 @@ namespace PLATEAU.DynamicTile
                 UpdateAssetsByCameraPosition(currentCamera.transform.position);
         }
 
+        // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
             var addresses = await addressableLoader.Initialize(catalogPath);
