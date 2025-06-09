@@ -127,7 +127,7 @@ namespace PLATEAU.DynamicTile
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
-                Debug.Log("Play Mode ended (Entered Edit Mode)");
+                Debug.Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
                 InitView();
             }
         }
@@ -144,7 +144,7 @@ namespace PLATEAU.DynamicTile
 
         static async void InitView()
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
                 return;
 
             Debug.Log("InitView");

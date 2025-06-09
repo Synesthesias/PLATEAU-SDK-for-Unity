@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static PlasticGui.LaunchDiffParameters;
+using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace PLATEAU.DynamicTile
 {
@@ -70,6 +70,7 @@ namespace PLATEAU.DynamicTile
 
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
             await handle.Task;
+
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
@@ -87,16 +88,20 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            InitializeCameraPosition();
+            Addressables.Release(handle); // ハンドルを解放
 
             State = ManagerState.Operating;
+            InitializeCameraPosition();
         }
 
+        /// <summary>
+        /// 初期化時にタイルのロード状態をカメラの位置に基づいて更新します。
+        /// </summary>
         private void InitializeCameraPosition()
         {
             Camera currentCamera = null;
 #if UNITY_EDITOR
-            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera;
+            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera ?? SceneView.lastActiveSceneView?.camera;
 #else
             currentCamera = Camera.main;
 #endif
@@ -270,7 +275,34 @@ namespace PLATEAU.DynamicTile
             jobSystem?.Dispose();
             jobSystem = null;
         }
+        /*
+        /// <summary>
+        /// Runtime時のカメラ移動
+        /// </summary>
+        private async void Start()
+        {
+            await InitializeTiles();
+            var targetCamera = Camera.main;
+            if (targetCamera != null)
+            {
+                Vector3 currentPosition = targetCamera.transform.position;
+                UpdateAssetByCameraPosition(currentPosition);
+            }
+        }
 
+        private void Update()
+        {
+            var targetCamera = Camera.main;
+            if (targetCamera != null)
+            {
+                Vector3 currentPosition = targetCamera.transform.position;
+                if (currentPosition != LastCameraPosition)
+                {
+                    UpdateAssetByCameraPosition(currentPosition);
+                }
+            }
+        }
+        */
         /// <summary>
         /// Tileデータを追加
         /// </summary>
@@ -307,6 +339,8 @@ namespace PLATEAU.DynamicTile
 
             // LODの親Transformもクリア
             lodParentDict.Clear();
+
+            State = ManagerState.None; // マネージャーの状態をリセット
         }
 
         /// <summary>
@@ -314,7 +348,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTileAssets()
         {
-            var originalState = State;
+            var originalState = State == ManagerState.CleaningUp ? ManagerState.Operating : State;
             State = ManagerState.CleaningUp;
 
             // すべてのロード済みオブジェクトをアンロード
@@ -339,10 +373,10 @@ namespace PLATEAU.DynamicTile
                         DestroyImmediate(tile.LoadedObject);
                     }
                 }
-
-                ClearLodChildren();
-                State = originalState;
             }
+
+            ClearLodChildren();
+            State = originalState;
         }
 
         /// <summary>
@@ -353,9 +387,9 @@ namespace PLATEAU.DynamicTile
         { 
             const int maxLod = 4; // 最大LOD数を定義
 
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
             if (instance == null)
-                return;
+                instance = this.gameObject;
 
             // Lod直下の子オブジェクトをすべてアンロード
             for (int lod = 0; lod <= maxLod; lod++)
@@ -484,21 +518,19 @@ namespace PLATEAU.DynamicTile
                 return parentTransform;
             }
 
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
-            if (instance == null)
-            {
-                Debug.LogError("PLATEAUInstancedCityModelが見つかりません。LODの作成に失敗しました。");
-                return null;
-            }
-
             var lodName = $"LOD{lod}";
-            GameObject lodObject= instance.transform.Find(lodName)?.gameObject;
+            GameObject lodObject = null;
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
+            if (instance == null)
+                instance = this.gameObject;
+
+            lodObject = instance.transform.Find(lodName)?.gameObject;
             if (lodObject == null)
             {
                 lodObject = new GameObject(lodName);
                 lodObject.AddComponent<MeshRenderer>();
                 lodObject.AddComponent<BoxCollider>();
-                lodObject.transform.SetParent(instance.transform, false);
+                lodObject.transform.SetParent(instance?.transform, false);
             }
 
             lodParentDict[lod] = lodObject.transform;
