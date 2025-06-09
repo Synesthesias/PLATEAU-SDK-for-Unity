@@ -7,6 +7,7 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace PLATEAU.DynamicTile
 {
@@ -16,45 +17,38 @@ namespace PLATEAU.DynamicTile
         private Dictionary<string, string> bundlePathMap = new ();
         private string bundlePath;
 
+        private static PLATEAUDynamicTileMetaStore metaStore;
+        private static string catalogPath;
+        
         public async Task<PLATEAUDynamicTileMetaStore> Initialize(string catalogPath)
         {
-            Clear();
-
-            Addressables.InternalIdTransformFunc = (location) =>
+            
+            Addressables.Release(catalogPath);
+            
+            Debug.Log("AddressableLoader Initialize called");
+            if (AddressableLoader.metaStore != null && AddressableLoader.catalogPath == catalogPath)
             {
-                string originalPath = location.InternalId;
-                if (string.IsNullOrEmpty(bundlePath))
-                {
-                    return originalPath;
-                }
-                if (originalPath.EndsWith(".bundle"))
-                {
-                    foreach (var mapPair in bundlePathMap)
-                    {
-                        if (originalPath.Contains(mapPair.Key.ToLower()))
-                        {
-                            // bundlePathMapに存在する場合は、マップから取得したパスを返す
-                            var fullPath = Path.Combine(bundlePath, mapPair.Value);
-                            return fullPath;
-                        }
-                    }
-                    return Path.Combine(bundlePath, location.PrimaryKey);
-                }
-                return originalPath;
-            };
+                // すでにロード済で、パスの変更がなければ、そのままデータを返す
+                return AddressableLoader.metaStore;
+            }
 
             // カタログをロード
             if (!string.IsNullOrEmpty(catalogPath))
             {
-                _ = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+                var addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
             }
 
             // meta情報をロード
-            var metaStore = await LoadMetaStore();
+            var metaStore = await LoadMetaStoreAsync();
             if (metaStore == null)
             {
                 return null;
             }
+
+            // キャッシュ保持
+            AddressableLoader.metaStore = metaStore;
+            AddressableLoader.catalogPath = catalogPath;
+
             return metaStore;
         }
         
@@ -99,6 +93,7 @@ namespace PLATEAU.DynamicTile
             var addresses = new List<string>();
             try
             {
+                
                 // パスを正規化（バックスラッシュをスラッシュに変換）
                 catalogPath = catalogPath.Replace('\\', '/');
                 
@@ -112,17 +107,19 @@ namespace PLATEAU.DynamicTile
                 }
 
                 // カタログファイルをロード
+                // var locationHadh = Addressables.CreateCatalogLocationWithHashDependencies<TextDataProvider>(catalogPath);
+                // Debug.Log($"AddressableLoader LoadCatalog called {locationHadh.PrimaryKey}");
                 var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
                 await catalogHandle.Task;
-
+                // Debug.Log($"AddressableLoader LoadCatalog called 2 {catalogHandle.Result}");
+                
                 if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                    // カタログ用のhandleの解放
                     Addressables.Release(catalogHandle);
                     return addresses;
                 }
-    
+
                 // カタログからアセットのアドレスを取得
                 bool hasGameObjects = catalogHandle.Result.Locate(label, typeof(GameObject), out var gameObjectLocations);
                 bool hasScriptableObjects = catalogHandle.Result.Locate(label, typeof(ScriptableObject), out var scriptableObjectLocations);
@@ -137,6 +134,8 @@ namespace PLATEAU.DynamicTile
                         {
                             continue;
                         }
+                        Debug.Log($"GameObjectのアドレス: {location.PrimaryKey}, バンドルパス: {location.Dependencies[0].PrimaryKey}");
+                        
                         // バンドルパスをマップに追加
                         if (!bundlePathMap.ContainsKey(location.PrimaryKey))
                         {
@@ -155,10 +154,15 @@ namespace PLATEAU.DynamicTile
                         {
                             continue;
                         }
+                        Debug.Log($"ScriptableObjectのアドレス: {location.PrimaryKey}, バンドルパス: {location.Dependencies[0].PrimaryKey}");
                         // バンドルパスをマップに追加
                         if (!bundlePathMap.ContainsKey(location.PrimaryKey))
                         {
                             bundlePathMap.Add(location.PrimaryKey, location.Dependencies[0].PrimaryKey);
+                        }
+                        else
+                        {
+                            bundlePathMap[location.PrimaryKey] = location.Dependencies[0].PrimaryKey;
                         }
                     }
                 }
@@ -203,7 +207,7 @@ namespace PLATEAU.DynamicTile
         /// meta情報をロードします。
         /// </summary>
         /// <returns></returns>
-        private async Task<PLATEAUDynamicTileMetaStore> LoadMetaStore()
+        private async Task<PLATEAUDynamicTileMetaStore> LoadMetaStoreAsync()
         {
             PLATEAUDynamicTileMetaStore metaStore = null;
             try
