@@ -8,7 +8,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
 
 namespace PLATEAU.DynamicTile
 {
@@ -168,8 +167,13 @@ namespace PLATEAU.DynamicTile
                 }
                 else
                 {
-                    Debug.LogWarning($"アセットのロードに失敗しました: {address}");
-                    return false;
+                    // ロードに失敗した場合は、1回リトライ
+                    tile.LoadHandle = default;
+                    tile.LoadHandleCancellationTokenSource?.Dispose();
+                    bool success = await Load(tile);
+                    if (!success)
+                        Debug.LogWarning($"アセットのロードに失敗しました: {address}");
+                    return success;
                 }
             }
             catch (OperationCanceledException)
@@ -275,34 +279,7 @@ namespace PLATEAU.DynamicTile
             jobSystem?.Dispose();
             jobSystem = null;
         }
-        /*
-        /// <summary>
-        /// Runtime時のカメラ移動
-        /// </summary>
-        private async void Start()
-        {
-            await InitializeTiles();
-            var targetCamera = Camera.main;
-            if (targetCamera != null)
-            {
-                Vector3 currentPosition = targetCamera.transform.position;
-                UpdateAssetByCameraPosition(currentPosition);
-            }
-        }
 
-        private void Update()
-        {
-            var targetCamera = Camera.main;
-            if (targetCamera != null)
-            {
-                Vector3 currentPosition = targetCamera.transform.position;
-                if (currentPosition != LastCameraPosition)
-                {
-                    UpdateAssetByCameraPosition(currentPosition);
-                }
-            }
-        }
-        */
         /// <summary>
         /// Tileデータを追加
         /// </summary>
