@@ -1,7 +1,4 @@
-﻿using PLATEAU.Editor.Window.Common;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEditorInternal;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -23,13 +20,19 @@ namespace PLATEAU.DynamicTile
             {
                 PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
 
-                if (GUILayout.Button("Clear Tiles"))
+                if (GUILayout.Button("Clear Tile Assets"))
                 {
                     tileManager.ClearTileAssets();
                     SceneViewCameraTracker.Initialize();
                 }
 
-                if (GUILayout.Button("Load Tiles"))
+                if (GUILayout.Button("Clear Tile List"))
+                {
+                    tileManager.ClearTiles();
+                    SceneViewCameraTracker.Initialize();
+                }
+
+                if (GUILayout.Button("Load Tile Scriptable Objects"))
                 {
                     var task = tileManager.InitializeTiles();
                 }
@@ -37,11 +40,13 @@ namespace PLATEAU.DynamicTile
                 if (GUILayout.Button("Show Tile Bounds"))
                 {
                     tileManager.ShowBounds();
+                    SceneView.lastActiveSceneView?.Repaint();
                 }
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
-                EditorGUILayout.LabelField($"Tile num {dynamicTiles.Count}");
+                EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
+                EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
                 GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
 
                 foreach (var tile in dynamicTiles)
@@ -50,12 +55,12 @@ namespace PLATEAU.DynamicTile
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
                     EditorGUILayout.IntField($"LOD: ", tile.Lod);
-                    EditorGUILayout.LabelField($"Extent: ", tile.Extent.ToString());
-                    EditorGUILayout.LabelField($"LoadedObject: ", tile.LoadedObject != null ? tile.LoadedObject.name : "-");
+                    EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
+                    EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
+                    EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
-                
                 Repaint();
             }
         }

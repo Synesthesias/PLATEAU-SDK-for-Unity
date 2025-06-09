@@ -1,14 +1,14 @@
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
+using static PlasticGui.LaunchDiffParameters;
 
 namespace PLATEAU.DynamicTile
 {
@@ -54,9 +54,7 @@ namespace PLATEAU.DynamicTile
         private PLATEAUDynamicTileJobSystem jobSystem;
 
         /// <summary>
-        /// カタログからアドレスを初期化し、各タイルのアドレスを更新します。(暫定）
-        /// 取得AddressとTileの順番が同じと仮定しています。
-        /// 旧Addressと新Addressのマッピングが必要
+        /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
         /// <returns></returns>
         public async Task InitializeTiles()
@@ -65,6 +63,10 @@ namespace PLATEAU.DynamicTile
                 return;
 
             State = ManagerState.Initializing;
+
+            // PLATEAUDynamicTileMetaStoreをAddressablesからロード
+            // TODO: ↓で取得できるように変更
+            //var metaStore = await addressableLoader.Initialize(catalogPath);
 
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
             await handle.Task;
@@ -78,7 +80,6 @@ namespace PLATEAU.DynamicTile
             var metaStore = handle.Result;
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
-            ClearTileAssets(); // タイルAssetをアンロード
             ClearTiles(); // 既存のタイルリストをクリア
             foreach (var tileMeta in metaStore.TileMetaInfos)
             {
@@ -134,30 +135,52 @@ namespace PLATEAU.DynamicTile
                 return await Task.FromResult<bool>(false);
             }
             // 既にロードされている場合はスキップ
-            if (tile.IsLoadedOrLoading)
+            if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
                 Debug.Log($"Already loaded: {address}");
                 return await Task.FromResult<bool>(true);
             }
 
-            tile.LoadStart();
             try
             {
-                var instance = await addressableLoader.InstantiateAssetAsync(tile.Address, FindParent(tile.Lod));
-                if (instance != null)
+                // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
+                tile.LoadHandleCancellationTokenSource = new CancellationTokenSource();
+                var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
+                tile.LoadHandle = handle;
+                await handle.Task;
+                tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
-                    tile.LoadedObject = instance;
-                    return true;
+                    //Debug.Log($"アセットのロードに成功しました: {address}");
+                    var instance = handle.Result;
+                    if (instance != null)
+                    {
+                        instance.name = address;
+                        instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
+                        return true;
+                    }
                 }
+                else
+                {
+                    Debug.LogWarning($"アセットのロードに失敗しました: {address}");
+                    return false;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
+                if (tile.LoadHandle.IsValid())
+                    Addressables.ReleaseInstance(tile.LoadHandle);
+                return false;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
+                Debug.LogWarning($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
             }
-            tile.LoadEnd();
             return false;
         }
+
 
         /// <summary>
         /// Addressを指定してAddressablesからロードする
@@ -185,22 +208,33 @@ namespace PLATEAU.DynamicTile
                 Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
                 return false;
             }
-
-            if (tile.LoadedObject != null)
+            try
             {
-                if (Addressables.ReleaseInstance(tile.LoadedObject))
+                if (tile.LoadHandle.IsValid())
                 {
-                    tile.LoadedObject = null;
-                    tile.LoadEnd();
+                    if (!tile.LoadHandle.IsDone)
+                    {
+                        // ロードが完了していない場合はキャンセル
+                        tile.LoadHandleCancellationTokenSource?.Cancel();
+                        return false;
+                    }
+
+                    if (!Addressables.ReleaseInstance(tile.LoadHandle))
+                    {
+                        throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {address}");
+                    }
                 }
-                else
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
+                if(tile.LoadedObject != null)
                 {
                     // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
                     DestroyImmediate(tile.LoadedObject);
-                    tile.LoadedObject = null;
-                    tile.LoadEnd();
-                    Debug.LogWarning($"Failed to ReleaseInstance : {address}");
                 }
+                tile.LoadHandle = default; // ハンドルをリセット
+                Debug.Log($"Addressablesのハンドルをリセットしました: {address}");
             }
             return true;
         }
@@ -224,7 +258,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
-            ClearTileAssets();
+            ClearTiles();
             Debug.Log("全てのアセットをアンロードしました");
         }
 
@@ -254,13 +288,12 @@ namespace PLATEAU.DynamicTile
                 Debug.LogWarning("既に追加済みのタイルです");
                 return;
             }
-
             DynamicTiles.Add(tile);
-
             if(tileAddressesDict.ContainsKey(tile.Address))
                 Debug.LogWarning("既に追加済みのタイルAddressです");
             else
                 tileAddressesDict[tile.Address] = tile;
+
         }
         
         /// <summary>
@@ -268,8 +301,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTiles()
         {
+            ClearTileAssets();
             DynamicTiles.Clear();
             tileAddressesDict.Clear();
+
+            // LODの親Transformもクリア
+            lodParentDict.Clear();
         }
 
         /// <summary>
@@ -283,18 +320,29 @@ namespace PLATEAU.DynamicTile
             // すべてのロード済みオブジェクトをアンロード
             foreach (var tile in DynamicTiles)
             {
-                if (tile.LoadedObject != null)
+                try
                 {
-                    if (!Addressables.ReleaseInstance(tile.LoadedObject))
+                    if (tile.LoadHandle.IsValid())
                     {
+                        if (!Addressables.ReleaseInstance(tile.LoadHandle))
+                        {
+                            throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {tile.Address}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
+                    if (tile.LoadedObject != null)
+                    {
+                        // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
                         DestroyImmediate(tile.LoadedObject);
                     }
                 }
-                tile.Reset();
-            }
 
-            ClearLodChildren();
-            State = originalState;
+                ClearLodChildren();
+                State = originalState;
+            }
         }
 
         /// <summary>
@@ -313,20 +361,31 @@ namespace PLATEAU.DynamicTile
             for (int lod = 0; lod <= maxLod; lod++)
             {
                 var lodName = $"LOD{lod}";
-                var lodParent = instance.transform.Find(lodName)?.gameObject?.transform;
+                var lodParent = instance.transform.Find(lodName)?.gameObject;
                 if (lodParent != null)
                 {
-                    for (int i = 0; i < lodParent.childCount; i++)
+                    for (int i = 0; i < lodParent.transform.childCount; i++)
                     {
-                        var child = lodParent.GetChild(i);
+                        var child = lodParent.transform.GetChild(i);
                         if (child != null)
                         {
-                            if (!Addressables.ReleaseInstance(child.gameObject))
+                            try
                             {
+                                if (!Addressables.ReleaseInstance(child.gameObject))
+                                {
+                                    throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {child.gameObject.name}");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
+                                // アドレスのリリースに失敗した場合、直接破棄
                                 DestroyImmediate(child.gameObject);
                             }
                         }
                     }
+                    // LODの親Transformも削除
+                    DestroyImmediate(lodParent);
                 }
             }
         }
@@ -374,14 +433,14 @@ namespace PLATEAU.DynamicTile
                 var distance = tile.GetDistance(position, true);
                 if (distance < DefaultLoadDistance)
                 {
-                    if (tile.IsLoadedOrLoading)
+                    if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.None;
                     else
                         tile.NextLoadState = LoadState.Load;
                 }
                 else
                 {
-                    if (tile.IsLoadedOrLoading)
+                    if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.Unload;
                     else
                         tile.NextLoadState = LoadState.None;
@@ -433,7 +492,7 @@ namespace PLATEAU.DynamicTile
             }
 
             var lodName = $"LOD{lod}";
-            GameObject lodObject = instance.transform.Find(lodName)?.gameObject;
+            GameObject lodObject= instance.transform.Find(lodName)?.gameObject;
             if (lodObject == null)
             {
                 lodObject = new GameObject(lodName);
@@ -446,7 +505,7 @@ namespace PLATEAU.DynamicTile
             return lodObject.transform;
         }
 
-        // Debug用
+        // Debug用Bounds表示
         public void ShowBounds()
         {
             foreach (var tile in DynamicTiles)

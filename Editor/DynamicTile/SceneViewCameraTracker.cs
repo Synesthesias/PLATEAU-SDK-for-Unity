@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 namespace PLATEAU.DynamicTile
 {
-
     /// <summary>
     /// Editor Mode 時のSceneViewカメラの位置を監視し、PLATEAUTileManagerに通知するクラス。
     /// </summary>
@@ -121,10 +120,14 @@ namespace PLATEAU.DynamicTile
                 Debug.Log("Play Mode about to start");
                 tileManageer.ClearTileAssets();        
             }
+            else if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Debug.Log("Play Mode about to end");
+                RuntimeCameraTracker.StopCameraTracking();
+            }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
                 Debug.Log("Play Mode ended (Entered Edit Mode)");
-                RuntimeCameraTracker.StopCameraTracking();
                 InitView();
             }
         }
