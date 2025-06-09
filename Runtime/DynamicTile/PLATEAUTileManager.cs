@@ -515,7 +515,8 @@ namespace PLATEAU.DynamicTile
         {
             if(lodParentDict.TryGetValue(lod, out var parentTransform))
             {
-                return parentTransform;
+                if (parentTransform != null)
+                    return parentTransform;
             }
 
             var lodName = $"LOD{lod}";
