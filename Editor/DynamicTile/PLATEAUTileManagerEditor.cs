@@ -37,6 +37,13 @@ namespace PLATEAU.DynamicTile
                     var task = tileManager.InitializeTiles();
                 }
 
+                if (GUILayout.Button("Update Assets By Camera Position"))
+                {
+                    var currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera ?? SceneView.lastActiveSceneView?.camera;
+                    if (currentCamera != null)
+                        tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
+                }
+
                 if (GUILayout.Button("Show Tile Bounds"))
                 {
                     tileManager.ShowBounds();

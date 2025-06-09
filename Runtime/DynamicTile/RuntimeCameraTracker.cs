@@ -26,7 +26,7 @@ namespace PLATEAU.DynamicTile
 
             tileManageer.ClearTileAssets();
             await tileManageer.InitializeTiles();
-            tileManageer.UpdateAssetByCameraPosition(tileManageer.LastCameraPosition);
+            tileManageer.UpdateAssetsByCameraPosition(tileManageer.LastCameraPosition);
 
             var loopSystem = new PlayerLoopSystem
             {
@@ -77,7 +77,7 @@ namespace PLATEAU.DynamicTile
                 Vector3 currentPosition = targetCamera.transform.position;
                 if (currentPosition != tileManageer.LastCameraPosition)
                 {
-                    tileManageer.UpdateAssetByCameraPosition(currentPosition);
+                    tileManageer.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }

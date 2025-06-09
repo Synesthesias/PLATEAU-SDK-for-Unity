@@ -50,7 +50,7 @@ namespace PLATEAU.DynamicTile
                 Vector3 currentPosition = sceneCamera.transform.position;
                 if (currentPosition != tileManageer.LastCameraPosition)
                 {
-                    tileManageer.UpdateAssetByCameraPosition(currentPosition);
+                    tileManageer.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }

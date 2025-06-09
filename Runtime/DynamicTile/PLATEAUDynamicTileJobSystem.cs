@@ -115,7 +115,7 @@ namespace PLATEAU.DynamicTile
                 NativeDistances.Dispose();
         }
         
-        public void UpdateAssetByCameraPosition(Vector3 position)
+        public void UpdateAssetsByCameraPosition(Vector3 position)
         {
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);

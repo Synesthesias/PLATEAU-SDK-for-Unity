@@ -105,7 +105,7 @@ namespace PLATEAU.DynamicTile
             currentCamera = Camera.main;
 #endif
             if (currentCamera != null) 
-                UpdateAssetByCameraPosition(currentCamera.transform.position);
+                UpdateAssetsByCameraPosition(currentCamera.transform.position);
         }
 
         public async Task LoadFromCatalog()
@@ -405,7 +405,7 @@ namespace PLATEAU.DynamicTile
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetByCameraPosition(Vector3 position)
+        public void UpdateAssetsByCameraPosition(Vector3 position)
         {
             if ( State != ManagerState.Operating)
                 return;
@@ -422,12 +422,12 @@ namespace PLATEAU.DynamicTile
                     jobSystem.Initialize(this, DynamicTiles);
                 }
 
-                jobSystem.UpdateAssetByCameraPosition(position);
+                jobSystem.UpdateAssetsByCameraPosition(position);
             }
             else
             {
                 // Job Systemを使用しない場合
-                UpdateAssetByCameraPositionInternal(position);
+                UpdateAssetsByCameraPositionInternal(position);
             }
 
             LastCameraPosition = position; // 最後のカメラ位置を更新
@@ -437,7 +437,7 @@ namespace PLATEAU.DynamicTile
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetByCameraPositionInternal(Vector3 position)
+        public void UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
             foreach (var tile in DynamicTiles)
             {
