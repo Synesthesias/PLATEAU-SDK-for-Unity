@@ -22,9 +22,6 @@ namespace PLATEAU.DynamicTile
         
         public async Task<PLATEAUDynamicTileMetaStore> Initialize(string catalogPath)
         {
-            
-            Addressables.Release(catalogPath);
-            
             Debug.Log("AddressableLoader Initialize called");
             if (AddressableLoader.metaStore != null && AddressableLoader.catalogPath == catalogPath)
             {
