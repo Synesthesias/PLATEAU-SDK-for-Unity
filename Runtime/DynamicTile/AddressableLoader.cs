@@ -1,3 +1,4 @@
+using PLATEAU.Util.Async;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -20,13 +21,14 @@ namespace PLATEAU.DynamicTile
         public async Task<PLATEAUDynamicTileMetaStore> Initialize(string catalogPath)
         {
             // 明示的に初期化しておくと安心
-            Addressables.InitializeAsync().Completed += handle =>
-            {
-                Debug.Log("Addressables Initialized!");
-            };
+            // Addressables.InitializeAsync().Completed += handle =>
+            // {
+            //     Debug.Log("Addressables Initialized!");
+            // };
             
             var init = Addressables.InitializeAsync();
-            await init.Task;
+            init.WaitForCompletion();
+            // await init.Task.ContinueWithErrorCatch();
             
             Debug.Log("AddressableLoader Initialize called");
 
@@ -34,11 +36,11 @@ namespace PLATEAU.DynamicTile
             if (!string.IsNullOrEmpty(catalogPath))
             {
                 Debug.Log($"AddressableLoader Initialize called with catalogPath: {catalogPath}");
-                var addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+                var addresses = LoadCatalogAsync(catalogPath, DynamicTileLabelName).ContinueWithErrorCatch();
             }
 
             // meta情報をロード
-            var metaStore = await LoadMetaStoreAsync();
+            var metaStore = await LoadMetaStoreAsync().ContinueWithErrorCatch();
             if (metaStore == null)
             {
                 return null;
@@ -63,7 +65,7 @@ namespace PLATEAU.DynamicTile
         public async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
         {
             var handle = Addressables.InstantiateAsync(address, parent);
-            await handle.Task;
+            handle.WaitForCompletion();
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
                 //Debug.Log($"アセットのロードに成功しました: {address}");
@@ -105,7 +107,7 @@ namespace PLATEAU.DynamicTile
                 // var locationHadh = Addressables.CreateCatalogLocationWithHashDependencies<TextDataProvider>(catalogPath);
                 // Debug.Log($"AddressableLoader LoadCatalog called {locationHadh.PrimaryKey}");
                 var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-                await catalogHandle.Task;
+                catalogHandle.WaitForCompletion();
                 // Debug.Log($"AddressableLoader LoadCatalog called 2 {catalogHandle.Result}");
                 
                 if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
@@ -178,7 +180,7 @@ namespace PLATEAU.DynamicTile
             {
                 // ラベルでリソースロケーションを非同期取得
                 var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(GameObject));
-                await locationsHandle.Task;
+                locationsHandle.WaitForCompletion();
                 if (locationsHandle.Status == AsyncOperationStatus.Succeeded && locationsHandle.Result.Count > 0)
                 {
                     addresses = locationsHandle.Result.Select(x => x.PrimaryKey).ToList();
@@ -240,7 +242,7 @@ namespace PLATEAU.DynamicTile
                 else
                 {
                     var data = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(nameof(PLATEAUDynamicTileMetaStore));
-                    await data.Task;
+                    data.WaitForCompletion();
                     if (data.Status == AsyncOperationStatus.Succeeded)
                     {
                         metaStore = data.Result;

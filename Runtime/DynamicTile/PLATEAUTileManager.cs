@@ -1,5 +1,6 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -70,19 +71,19 @@ namespace PLATEAU.DynamicTile
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             // TODO: ↓で取得できるように変更
-            //var metaStore = await addressableLoader.Initialize(catalogPath);
+            var metaStore = await addressableLoader.Initialize(catalogPath).ContinueWithErrorCatch();
 
-            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
-            await handle.Task;
+            // var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
+            // await handle.Task;
+            //
+            // if (handle.Status != AsyncOperationStatus.Succeeded)
+            // {
+            //     Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
+            //     State = ManagerState.None;
+            //     return;
+            // }
 
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
-                State = ManagerState.None;
-                return;
-            }
-
-            var metaStore = handle.Result;
+            // var metaStore = handle.Result;
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             ClearTiles(); // 既存のタイルリストをクリア
@@ -92,7 +93,7 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            Addressables.Release(handle); // ハンドルを解放
+            // Addressables.Release(handle); // ハンドルを解放
 
             State = ManagerState.Operating;
             InitializeCameraPosition();
@@ -116,10 +117,10 @@ namespace PLATEAU.DynamicTile
         // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
-            var metaStore = await addressableLoader.Initialize(catalogPath);
+            var metaStore = await addressableLoader.Initialize(catalogPath).ContinueWithErrorCatch();
             foreach (var metaInfo in metaStore.TileMetaInfos)
             {
-                await Load(metaInfo.AddressName);
+                await Load(metaInfo.AddressName).ContinueWithErrorCatch();
             }
         }
 
@@ -142,13 +143,13 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(address))
             {
                 Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
-                return await Task.FromResult<bool>(false);
+                return await Task.FromResult<bool>(false).ContinueWithErrorCatch();
             }
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
                 Debug.Log($"Already loaded: {address}");
-                return await Task.FromResult<bool>(true);
+                return await Task.FromResult<bool>(true).ContinueWithErrorCatch();
             }
 
             try
@@ -158,7 +159,7 @@ namespace PLATEAU.DynamicTile
 
                 var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
                 tile.LoadHandle = handle;
-                await handle.Task;
+                await handle.Task.ContinueWithErrorCatch();
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -179,7 +180,7 @@ namespace PLATEAU.DynamicTile
                     // ロードに失敗した場合は、1回リトライ
                     tile.LoadHandle = default;
                     tile.LoadHandleCancellationTokenSource?.Dispose();
-                    bool success = await Load(tile);
+                    bool success = await Load(tile).ContinueWithErrorCatch();
                     if (!success)
                         Debug.LogWarning($"アセットのロードに失敗しました: {address}");
                     return success;
@@ -210,9 +211,9 @@ namespace PLATEAU.DynamicTile
             if (tile == null)
             {
                 Debug.LogWarning($"指定したアドレスに対応するタイルが見つかりません: {address}");
-                return await Task.FromResult<bool>(false);
+                return await Task.FromResult<bool>(false).ContinueWithErrorCatch();
             }
-            return await Load(tile);
+            return await Load(tile).ContinueWithErrorCatch();
         }
 
         /// <summary>
@@ -492,7 +493,7 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (tile.NextLoadState == LoadState.Load)
                 {
-                    await Load(tile);
+                    await Load(tile).ContinueWithErrorCatch();
                 }
                 else if (tile.NextLoadState == LoadState.Unload)
                 {

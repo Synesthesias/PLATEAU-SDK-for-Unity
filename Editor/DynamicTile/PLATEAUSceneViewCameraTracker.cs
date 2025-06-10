@@ -153,7 +153,7 @@ namespace PLATEAU.DynamicTile
             if (tileManageer == null)
                 return;
 
-            await tileManageer.InitializeTiles();
+            // await tileManageer.InitializeTiles();
             PLATEAUSceneViewCameraTracker.Initialize();
         }
     }
