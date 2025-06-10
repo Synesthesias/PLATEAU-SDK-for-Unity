@@ -23,13 +23,13 @@ namespace PLATEAU.DynamicTile
                 if (GUILayout.Button("Clear Tile Assets"))
                 {
                     tileManager.ClearTileAssets();
-                    SceneViewCameraTracker.Initialize();
+                    PLATEAUSceneViewCameraTracker.Initialize();
                 }
 
                 if (GUILayout.Button("Clear Tile List"))
                 {
                     tileManager.ClearTiles();
-                    SceneViewCameraTracker.Initialize();
+                    PLATEAUSceneViewCameraTracker.Initialize();
                 }
 
                 if (GUILayout.Button("Load Tile Scriptable Objects"))
@@ -48,6 +48,11 @@ namespace PLATEAU.DynamicTile
                 {
                     tileManager.ShowBounds();
                     SceneView.lastActiveSceneView?.Repaint();
+                }
+
+                if (GUILayout.Button("Cancel Load Task"))
+                {
+                    tileManager.CancelLoadTask();
                 }
 
                 // Tile情報の表示

@@ -13,7 +13,9 @@ namespace PLATEAU.DynamicTile
 {
     public class PLATEAUTileManager : MonoBehaviour
     {
-        public static readonly float DefaultLoadDistance = 1500f; // デフォルトのロード距離
+
+        [SerializeField]
+        public float loadDistance = 1500f; // ロードを行うカメラからの距離
 
         [SerializeField]
         private string catalogPath;
@@ -28,6 +30,9 @@ namespace PLATEAU.DynamicTile
 
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
+
+        // 全タイルのロードタスク実行時のCancellationTokenSource
+        public CancellationTokenSource LoadTaskCancellationTokenSource { get; set; } = new();
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
@@ -149,10 +154,13 @@ namespace PLATEAU.DynamicTile
             try
             {
                 // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
-                tile.LoadHandleCancellationTokenSource = new CancellationTokenSource();
+                tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
+
                 var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
                 tile.LoadHandle = handle;
                 await handle.Task;
+
+                //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
@@ -179,9 +187,10 @@ namespace PLATEAU.DynamicTile
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
+                //Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
                 if (tile.LoadHandle.IsValid())
                     Addressables.ReleaseInstance(tile.LoadHandle);
+                tile.LoadHandle = default; // ハンドルをリセット
                 return false;
             }
             catch (Exception ex)
@@ -443,7 +452,7 @@ namespace PLATEAU.DynamicTile
             foreach (var tile in DynamicTiles)
             {
                 var distance = tile.GetDistance(position, true);
-                if (distance < DefaultLoadDistance)
+                if (distance < loadDistance)
                 {
                     if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.None;
@@ -458,13 +467,21 @@ namespace PLATEAU.DynamicTile
                         tile.NextLoadState = LoadState.None;
                 }
             }
-            ExecuteLoadTask();
+
+            try
+            {
+                var task = ExecuteLoadTask(LoadTaskCancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("タイルのロードTaskがキャンセルされました。");
+            }
         }
 
         /// <summary>
         /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
         /// </summary>
-        private async void ExecuteLoadTask()
+        private async Task ExecuteLoadTask(CancellationToken token)
         {
             foreach (var tile in DynamicTiles)
             {
@@ -481,7 +498,18 @@ namespace PLATEAU.DynamicTile
                 {
                     Unload(tile);
                 }
+                token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
+        /// </summary>
+        public void CancelLoadTask()
+        {
+            LoadTaskCancellationTokenSource?.Cancel();
+            LoadTaskCancellationTokenSource?.Dispose();
+            LoadTaskCancellationTokenSource = new();
         }
 
         /// <summary>

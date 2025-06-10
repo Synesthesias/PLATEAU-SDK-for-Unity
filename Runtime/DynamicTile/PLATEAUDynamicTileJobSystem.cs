@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -121,11 +123,18 @@ namespace PLATEAU.DynamicTile
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
             handle.Complete();
 
-            ExecuteLoadTask();
+            try
+            {
+                var task = ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("タイルのロードTaskがキャンセルされました。");
+            }
         }
 
         // カメラ距離に応じてタイルのロード状態を更新する
-        private async void ExecuteLoadTask()
+        private async Task ExecuteLoadTask(CancellationToken token)
         {
             for (int i = 0; i < NativeDistances.Length; i++)
             {
@@ -133,7 +142,7 @@ namespace PLATEAU.DynamicTile
                 var tile = dynamicTiles[i];
 
                 var nextLoadState = LoadState.None;
-                if (distance < PLATEAUTileManager.DefaultLoadDistance)
+                if (distance < tileManager.loadDistance)
                 {
                     nextLoadState = LoadState.Load;
                 }
@@ -159,6 +168,7 @@ namespace PLATEAU.DynamicTile
                 {
                     tileManager.Unload(tile);
                 }
+                token.ThrowIfCancellationRequested();
             }
         }
 

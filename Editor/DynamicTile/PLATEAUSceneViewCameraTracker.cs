@@ -9,11 +9,11 @@ namespace PLATEAU.DynamicTile
     /// Editor Mode 時のSceneViewカメラの位置を監視し、PLATEAUTileManagerに通知するクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class SceneViewCameraTracker
+    public class PLATEAUSceneViewCameraTracker
     {
         private static PLATEAUTileManager tileManageer;
 
-        static SceneViewCameraTracker()
+        static PLATEAUSceneViewCameraTracker()
         {
             Initialize();
         }
@@ -60,9 +60,9 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class SceneOpenListener : UnityEditor.AssetModificationProcessor
+    public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
     {
-        static SceneOpenListener()
+        static PLATEAUEditorEventListener()
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
@@ -123,7 +123,7 @@ namespace PLATEAU.DynamicTile
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Debug.Log("Play Mode about to end");
-                RuntimeCameraTracker.StopCameraTracking();
+                PLATEAURuntimeCameraTracker.StopCameraTracking();
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
@@ -154,7 +154,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             await tileManageer.InitializeTiles();
-            SceneViewCameraTracker.Initialize();
+            PLATEAUSceneViewCameraTracker.Initialize();
         }
     }
 }
