@@ -42,6 +42,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// Addressablesのロードハンドルのキャンセルトークンを保持する。
+        /// Tileごとのキャンセルをサポートするためのもの。
         /// 現状、AddressablesはCancelをサポートしていないので、普通のフラグでも良いが、将来のために保持しておく。
         /// </summary>
         public CancellationTokenSource LoadHandleCancellationTokenSource { get; set; }
@@ -104,11 +105,6 @@ namespace PLATEAU.DynamicTile
             Address = info.AddressName;
             Lod = info.LOD;
             Extent = info.Extent;
-        }
-
-        public void ReplaceAddress(string addr)
-        {
-            Address = addr;
         }
 
         /// <summary>

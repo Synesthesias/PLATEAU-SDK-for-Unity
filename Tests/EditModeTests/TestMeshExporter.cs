@@ -11,7 +11,9 @@ using PLATEAU.Editor.Window.Main.Tab.ExportGuiParts;
 using PLATEAU.Geometries;
 using PLATEAU.MeshWriter;
 using PLATEAU.Tests.TestUtils;
+using PLATEAU.Util;
 using UnityEngine.TestTools;
+using DirectoryUtil = PLATEAU.Tests.TestUtils.DirectoryUtil;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Tests.EditModeTests
@@ -45,7 +47,7 @@ namespace PLATEAU.Tests.EditModeTests
                 MeshExportOptions.MeshTransformType.Local,
                 exportTextures: true, exportDefaultTextures: true, true, MeshFileFormat.OBJ, CoordinateSystem.ENU,
                 new ExportConfigGuiObj().GetExporter());
-            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
+            new UnityModelExporter().Export(destDirPath, instancedCityModel, options, new ProgressBar());
 
             var expectedObjFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
@@ -68,7 +70,7 @@ namespace PLATEAU.Tests.EditModeTests
                 MeshExportOptions.MeshTransformType.Local,
                 exportTextures: true, exportDefaultTextures: true, false, MeshFileFormat.FBX, CoordinateSystem.ENU,
                 new ExportConfigGuiFbx().GetExporter());
-            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
+            new UnityModelExporter().Export(destDirPath, instancedCityModel, options, new ProgressBar());
             var expectedFbxFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
                 .Select(def => Path.GetFileNameWithoutExtension(def.GmlPath) + ".fbx")
@@ -88,7 +90,7 @@ namespace PLATEAU.Tests.EditModeTests
                 MeshExportOptions.MeshTransformType.Local,
                 exportTextures: true, exportDefaultTextures: true, false, MeshFileFormat.GLTF, CoordinateSystem.ENU,
                 gltfExportGui.GetExporter());
-            UnityModelExporter.Export(destDirPath, instancedCityModel, options);
+            new UnityModelExporter().Export(destDirPath, instancedCityModel, options, new ProgressBar());
             var expectedGltfFiles = TestCityDefinition.MiniTokyo.GmlDefinitions
                 .Where(def => def.ContainsMesh)
                 .Select(def =>

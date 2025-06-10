@@ -7,8 +7,10 @@ namespace PLATEAU.DynamicTile
 {
     /// <summary>
     /// Runtime中のカメラ位置を監視し、位置が変わったらPLATEAUTileManagerに通知するクラス。
+    /// PlayerLoopでUpdateをオーバーライドして使用
+    /// PLATEAUTileManager側のStart,Update処理で代用することも可能
     /// </summary>
-    public class RuntimeCameraTracker
+    public class PLATEAURuntimeCameraTracker
     {
         public struct CustomUpdateDelegete { }
 
@@ -24,9 +26,10 @@ namespace PLATEAU.DynamicTile
 
             Debug.Log("RuntimeCameraTracker Initialized (Runtime Camera Tracking Start))");
 
+            // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
             tileManageer.ClearTileAssets();
             await tileManageer.InitializeTiles();
-            tileManageer.UpdateAssetByCameraPosition(tileManageer.LastCameraPosition);
+            tileManageer.UpdateAssetsByCameraPosition(tileManageer.LastCameraPosition);
 
             var loopSystem = new PlayerLoopSystem
             {
@@ -49,12 +52,12 @@ namespace PLATEAU.DynamicTile
                     break;
                 }
             }
-
             PlayerLoop.SetPlayerLoop(playerloop);
         }
 
         /// <summary>
         /// DefaultのPlayerLoopに戻し、Runtime中のカメラ位置の監視を停止する。
+        /// PLATEAUEditorEventListenerでEditorのEventを監視
         /// </summary>
         public static void StopCameraTracking()
         {
@@ -64,6 +67,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// Runtime中のカメラ位置を監視し、位置が変わったらPLATEAUTileManagerに通知するメソッド。
+        ///  (PLATEAUTileManager側でUpdateメソッドで行うことも可能)
         /// </summary>
         private static void CustomUpdate()
         {
@@ -77,7 +81,7 @@ namespace PLATEAU.DynamicTile
                 Vector3 currentPosition = targetCamera.transform.position;
                 if (currentPosition != tileManageer.LastCameraPosition)
                 {
-                    tileManageer.UpdateAssetByCameraPosition(currentPosition);
+                    tileManageer.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }

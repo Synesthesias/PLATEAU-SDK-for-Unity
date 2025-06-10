@@ -8,13 +8,14 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static PlasticGui.LaunchDiffParameters;
 
 namespace PLATEAU.DynamicTile
 {
     public class PLATEAUTileManager : MonoBehaviour
     {
-        public static readonly float DefaultLoadDistance = 1500f; // デフォルトのロード距離
+
+        [SerializeField]
+        public float loadDistance = 1500f; // ロードを行うカメラからの距離
 
         [SerializeField]
         private string catalogPath;
@@ -29,6 +30,9 @@ namespace PLATEAU.DynamicTile
 
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
+
+        // 全タイルのロードタスク実行時のCancellationTokenSource
+        public CancellationTokenSource LoadTaskCancellationTokenSource { get; set; } = new();
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
@@ -70,6 +74,7 @@ namespace PLATEAU.DynamicTile
 
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
             await handle.Task;
+
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
@@ -87,23 +92,28 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            InitializeCameraPosition();
+            Addressables.Release(handle); // ハンドルを解放
 
             State = ManagerState.Operating;
+            InitializeCameraPosition();
         }
 
+        /// <summary>
+        /// 初期化時にタイルのロード状態をカメラの位置に基づいて更新します。
+        /// </summary>
         private void InitializeCameraPosition()
         {
             Camera currentCamera = null;
 #if UNITY_EDITOR
-            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera;
+            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera ?? SceneView.lastActiveSceneView?.camera;
 #else
             currentCamera = Camera.main;
 #endif
             if (currentCamera != null) 
-                UpdateAssetByCameraPosition(currentCamera.transform.position);
+                UpdateAssetsByCameraPosition(currentCamera.transform.position);
         }
 
+        // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
             var metaStore = await addressableLoader.Initialize(catalogPath);
@@ -144,10 +154,13 @@ namespace PLATEAU.DynamicTile
             try
             {
                 // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
-                tile.LoadHandleCancellationTokenSource = new CancellationTokenSource();
+                tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
+
                 var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
                 tile.LoadHandle = handle;
                 await handle.Task;
+
+                //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
@@ -163,15 +176,21 @@ namespace PLATEAU.DynamicTile
                 }
                 else
                 {
-                    Debug.LogWarning($"アセットのロードに失敗しました: {address}");
-                    return false;
+                    // ロードに失敗した場合は、1回リトライ
+                    tile.LoadHandle = default;
+                    tile.LoadHandleCancellationTokenSource?.Dispose();
+                    bool success = await Load(tile);
+                    if (!success)
+                        Debug.LogWarning($"アセットのロードに失敗しました: {address}");
+                    return success;
                 }
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
+                //Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
                 if (tile.LoadHandle.IsValid())
                     Addressables.ReleaseInstance(tile.LoadHandle);
+                tile.LoadHandle = default; // ハンドルをリセット
                 return false;
             }
             catch (Exception ex)
@@ -307,6 +326,8 @@ namespace PLATEAU.DynamicTile
 
             // LODの親Transformもクリア
             lodParentDict.Clear();
+
+            State = ManagerState.None; // マネージャーの状態をリセット
         }
 
         /// <summary>
@@ -314,7 +335,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTileAssets()
         {
-            var originalState = State;
+            var originalState = State == ManagerState.CleaningUp ? ManagerState.Operating : State;
             State = ManagerState.CleaningUp;
 
             // すべてのロード済みオブジェクトをアンロード
@@ -339,10 +360,10 @@ namespace PLATEAU.DynamicTile
                         DestroyImmediate(tile.LoadedObject);
                     }
                 }
-
-                ClearLodChildren();
-                State = originalState;
             }
+
+            ClearLodChildren();
+            State = originalState;
         }
 
         /// <summary>
@@ -353,9 +374,9 @@ namespace PLATEAU.DynamicTile
         { 
             const int maxLod = 4; // 最大LOD数を定義
 
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
             if (instance == null)
-                return;
+                instance = this.gameObject;
 
             // Lod直下の子オブジェクトをすべてアンロード
             for (int lod = 0; lod <= maxLod; lod++)
@@ -394,7 +415,7 @@ namespace PLATEAU.DynamicTile
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetByCameraPosition(Vector3 position)
+        public void UpdateAssetsByCameraPosition(Vector3 position)
         {
             if ( State != ManagerState.Operating)
                 return;
@@ -411,12 +432,12 @@ namespace PLATEAU.DynamicTile
                     jobSystem.Initialize(this, DynamicTiles);
                 }
 
-                jobSystem.UpdateAssetByCameraPosition(position);
+                jobSystem.UpdateAssetsByCameraPosition(position);
             }
             else
             {
                 // Job Systemを使用しない場合
-                UpdateAssetByCameraPositionInternal(position);
+                UpdateAssetsByCameraPositionInternal(position);
             }
 
             LastCameraPosition = position; // 最後のカメラ位置を更新
@@ -426,12 +447,12 @@ namespace PLATEAU.DynamicTile
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetByCameraPositionInternal(Vector3 position)
+        public void UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
             foreach (var tile in DynamicTiles)
             {
                 var distance = tile.GetDistance(position, true);
-                if (distance < DefaultLoadDistance)
+                if (distance < loadDistance)
                 {
                     if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.None;
@@ -446,13 +467,21 @@ namespace PLATEAU.DynamicTile
                         tile.NextLoadState = LoadState.None;
                 }
             }
-            ExecuteLoadTask();
+
+            try
+            {
+                var task = ExecuteLoadTask(LoadTaskCancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("タイルのロードTaskがキャンセルされました。");
+            }
         }
 
         /// <summary>
         /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
         /// </summary>
-        private async void ExecuteLoadTask()
+        private async Task ExecuteLoadTask(CancellationToken token)
         {
             foreach (var tile in DynamicTiles)
             {
@@ -469,7 +498,18 @@ namespace PLATEAU.DynamicTile
                 {
                     Unload(tile);
                 }
+                token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
+        /// </summary>
+        public void CancelLoadTask()
+        {
+            LoadTaskCancellationTokenSource?.Cancel();
+            LoadTaskCancellationTokenSource?.Dispose();
+            LoadTaskCancellationTokenSource = new();
         }
 
         /// <summary>
@@ -481,24 +521,23 @@ namespace PLATEAU.DynamicTile
         {
             if(lodParentDict.TryGetValue(lod, out var parentTransform))
             {
-                return parentTransform;
-            }
-
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>();
-            if (instance == null)
-            {
-                Debug.LogError("PLATEAUInstancedCityModelが見つかりません。LODの作成に失敗しました。");
-                return null;
+                if (parentTransform != null)
+                    return parentTransform;
             }
 
             var lodName = $"LOD{lod}";
-            GameObject lodObject= instance.transform.Find(lodName)?.gameObject;
+            GameObject lodObject = null;
+            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
+            if (instance == null)
+                instance = this.gameObject;
+
+            lodObject = instance.transform.Find(lodName)?.gameObject;
             if (lodObject == null)
             {
                 lodObject = new GameObject(lodName);
                 lodObject.AddComponent<MeshRenderer>();
                 lodObject.AddComponent<BoxCollider>();
-                lodObject.transform.SetParent(instance.transform, false);
+                lodObject.transform.SetParent(instance?.transform, false);
             }
 
             lodParentDict[lod] = lodObject.transform;

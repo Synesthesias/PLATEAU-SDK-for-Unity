@@ -9,7 +9,7 @@ namespace PLATEAU.Editor.Window.Common.PathSelector
     {
         protected override string PathSelectorDialogue()
         {
-            return EditorUtility.OpenFolderPanel("フォルダ選択", "", "");
+            return EditorUtility.OpenFolderPanel("フォルダ選択", SelectedPath ?? "", "");
         }
     }
 }

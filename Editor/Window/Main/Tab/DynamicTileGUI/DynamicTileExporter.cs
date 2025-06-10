@@ -179,7 +179,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 EditorSceneManager.MarkSceneDirty(scene);
             }
             
-            SceneViewCameraTracker.Initialize();
+            PLATEAUSceneViewCameraTracker.Initialize();
 
             progressBar.Display("Addressableのビルドを実行中...", 0.99f);
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
