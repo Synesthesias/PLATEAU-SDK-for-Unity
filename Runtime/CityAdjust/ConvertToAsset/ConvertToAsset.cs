@@ -50,7 +50,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             progress.Display("都市モデルの情報を記録中...", 0.1f);
 
-            var subMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
+            using var subMeshConverter = new UnityMeshToDllSubMeshWithTexture(true);
             
             // 属性情報、都市情報、マテリアルを覚えておきます。
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(

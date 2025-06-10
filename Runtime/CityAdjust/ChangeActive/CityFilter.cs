@@ -32,37 +32,15 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         CityGML.CityObjectType cityObjType = 0;
                         var cityObjGrp = cityObjTrans.GetComponent<PLATEAUCityObjectGroup>();
 
+                        if (cityObjGrp == null) return;
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
-                        if (cityObjGrp != null)
-                        {
-                            List<CityObjectList.CityObject> cityObjList = (List<CityObjectList.CityObject>)cityObjGrp.GetAllCityObjects();
-                            // 最小地物のみ処理
-                            if (cityObjList.Count == 1)
-                                cityObjType = cityObjList.First().CityObjectType;
-                        }
-                        // PLATEAUCityObjectGroupが存在しない場合、Modelを利用してタイプ判定
-                        else
-                        {
-                            // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
-                            //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
-                            var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
-                            if (gmlModel == null)
-                            {
-                                Debug.LogError($"GMLファイルのロードに失敗しました: {gmlTrans.name}");
-                                return;
-                            }
 
-                            try
-                            {
-                                var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
-                                cityObjType = cityObj.Type;
-                            }
-                            catch (KeyNotFoundException e)
-                            {
-                                Debug.LogError(e.Message);
-                            }
-                        }
-
+                        List<CityObjectList.CityObject> cityObjList =
+                            (List<CityObjectList.CityObject>)cityObjGrp.GetAllCityObjects();
+                        // 最小地物のみ処理
+                        if (cityObjList.Count == 1)
+                            cityObjType = cityObjList.First().CityObjectType;
+                        
                         var typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         try
                         {
