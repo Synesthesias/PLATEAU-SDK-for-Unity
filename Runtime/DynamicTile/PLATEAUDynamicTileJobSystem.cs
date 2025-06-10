@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using static PLATEAU.DynamicTile.PLATEAUTileManager;
 
 namespace PLATEAU.DynamicTile
 {
@@ -169,7 +170,7 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    await tileManager.Load(tile);
+                    await tileManager.LoadWithRetry(tile, 2);
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {

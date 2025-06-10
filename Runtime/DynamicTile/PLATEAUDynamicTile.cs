@@ -11,7 +11,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// DynamicTileの情報を保持するクラス。
     /// </summary>
-    public class PLATEAUDynamicTile // : UnityEngine.Object
+    public class PLATEAUDynamicTile
     {
         /// <summary>
         /// Addressablesのアドレスを保持する。
@@ -111,6 +111,18 @@ namespace PLATEAU.DynamicTile
             Address = info.AddressName;
             Lod = info.LOD;
             Extent = info.Extent;
+        }
+
+        /// <summary>
+        /// タイルのロード状態をリセットする。
+        /// LoadHandle.Resultが存在する場合は、Reset前に必ずAddressablesのReleaseを行うこと。
+        /// </summary>
+        public void Reset()
+        {
+            LoadHandle = default; // ハンドルをリセット
+            LoadHandleCancellationTokenSource?.Cancel();
+            LoadHandleCancellationTokenSource?.Dispose();
+            NextLoadState = LoadState.None;
         }
 
         /// <summary>

@@ -34,14 +34,7 @@ namespace PLATEAU.DynamicTile
 
                 if (GUILayout.Button("Load Tile Scriptable Objects"))
                 {
-                    try
-                    {
-                        _ = tileManager.InitializeTiles();
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError($"Failed to load tile scriptable objects: {e.Message}");
-                    }     
+                    _ = tileManager.InitializeTiles();  
                 }
 
                 if (GUILayout.Button("Update Assets By Camera Position"))
