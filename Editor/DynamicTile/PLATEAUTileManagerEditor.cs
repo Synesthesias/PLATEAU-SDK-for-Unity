@@ -34,7 +34,14 @@ namespace PLATEAU.DynamicTile
 
                 if (GUILayout.Button("Load Tile Scriptable Objects"))
                 {
-                    var task = tileManager.InitializeTiles();
+                    try
+                    {
+                        _ = tileManager.InitializeTiles();
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"Failed to load tile scriptable objects: {e.Message}");
+                    }     
                 }
 
                 if (GUILayout.Button("Update Assets By Camera Position"))
@@ -73,7 +80,9 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
-                Repaint();
+
+                if (dynamicTiles.Count > 0)
+                    Repaint();
             }
         }
     }

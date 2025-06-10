@@ -11,7 +11,7 @@ namespace PLATEAU.DynamicTile
     [InitializeOnLoad]
     public class PLATEAUSceneViewCameraTracker
     {
-        private static PLATEAUTileManager tileManageer;
+        private static PLATEAUTileManager tileManager;
 
         static PLATEAUSceneViewCameraTracker()
         {
@@ -23,34 +23,31 @@ namespace PLATEAU.DynamicTile
             if (EditorApplication.isPlaying)
                 return;
 
-            tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null)
                 return;
 
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
 
-            tileManageer.ClearTileAssets();
+            tileManager.ClearTileAssets();
         }
 
         private static void OnSceneGUI(SceneView sceneView)
         {
-            if (!Application.isEditor)
-                return;
-
             if (EditorApplication.isPlaying)
                 return;
 
-            if (tileManageer == null)
+            if (tileManager == null)
                 return;
 
             Camera sceneCamera = sceneView.camera;
-            if (sceneCamera != null && tileManageer != null)
+            if (sceneCamera != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                if (currentPosition != tileManageer.LastCameraPosition)
+                if (currentPosition != tileManager.LastCameraPosition)
                 {
-                    tileManageer.UpdateAssetsByCameraPosition(currentPosition);
+                    tileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }
@@ -62,6 +59,8 @@ namespace PLATEAU.DynamicTile
     [InitializeOnLoad]
     public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
     {
+        public const bool ShowDebugLog = true;
+
         static PLATEAUEditorEventListener()
         {
             EditorApplication.update -= OnEditorUpdate;
@@ -84,7 +83,7 @@ namespace PLATEAU.DynamicTile
 
         static void OnEditorUpdate()
         {
-            Debug.Log("Unity Editor Started");
+            Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
             InitView();
@@ -92,69 +91,76 @@ namespace PLATEAU.DynamicTile
 
         static void OnProjectChanged()
         {
-            Debug.Log("Project Changed");
+            Log("Project Changed");
 
             InitView();
         }
 
         private static void OnSceneSaving(Scene scene, string path)
         {
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null)
                 return;
-            
-            Debug.Log($"Scene Saving : {scene.name}, save path : {path}");
+
+            Log($"Scene Saving : {scene.name}, save path : {path}");
 
             // Addressablesのアンロード処理を実行
-            tileManageer.ClearTileAssets();  
+            tileManager.ClearTileAssets();
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null)
                 return;
 
             if (state == PlayModeStateChange.ExitingEditMode)
             {
-                Debug.Log("Play Mode about to start");
-                tileManageer.ClearTileAssets();        
+                Log("Play Mode about to start");
+                tileManager.ClearTileAssets();
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                Debug.Log("Play Mode about to end");
+                Log("Play Mode about to end");
                 PLATEAURuntimeCameraTracker.StopCameraTracking();
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
-                Debug.Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
+                Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
                 InitView();
             }
         }
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null)
                 return;
 
-            Debug.Log($"Scene Opened: {scene.name}");          
+            Log($"Scene Opened: {scene.name}");
             InitView();
         }
-
         static async void InitView()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 return;
 
-            Debug.Log("InitView");
+            Log("InitView");
 
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null)
                 return;
 
-            await tileManageer.InitializeTiles();
+            await tileManager.InitializeTiles();
             PLATEAUSceneViewCameraTracker.Initialize();
+        }
+
+        static void Log(string message)
+        {
+            if (ShowDebugLog)
+            {
+                Debug.Log(message);
+            }
         }
     }
 }

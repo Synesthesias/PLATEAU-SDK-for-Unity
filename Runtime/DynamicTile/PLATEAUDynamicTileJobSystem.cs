@@ -52,6 +52,7 @@ namespace PLATEAU.DynamicTile
             return bounds.ClosestPoint(position);
         }
 
+        // 未使用。パフォーマンステスト用に残しておく。
         Vector3 ClosestPointOnBoundsSimple(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
         {
             float x = Mathf.Clamp(position.x, boundsMin.x, boundsMax.x);
@@ -96,6 +97,12 @@ namespace PLATEAU.DynamicTile
             dynamicTiles = tiles;
             tileManager = manager;
 
+            if(NativeTileBounds.Length != dynamicTiles.Count || !NativeTileBounds.IsCreated)
+            {
+                // 既存の配列を破棄
+                Dispose();
+            }
+
             if (!NativeTileBounds.IsCreated)
                 NativeTileBounds = new NativeArray<TileBounds>(dynamicTiles.Count, Allocator.Persistent);
             if (!NativeDistances.IsCreated)
@@ -117,7 +124,7 @@ namespace PLATEAU.DynamicTile
                 NativeDistances.Dispose();
         }
         
-        public void UpdateAssetsByCameraPosition(Vector3 position)
+        public async void UpdateAssetsByCameraPosition(Vector3 position)
         {
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
@@ -125,7 +132,7 @@ namespace PLATEAU.DynamicTile
 
             try
             {
-                var task = ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
+                await ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {

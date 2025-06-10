@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static PlasticGui.PlasticTableColumn;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 {
@@ -115,7 +116,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     groupName,
                     new List<string> { AddressableLabel });
 
-                var tile = new PLATEAUDynamicTile(address, cityObject.Lod, convertedObject);
+                var renderer = convertedObject.GetComponent<Renderer>();
+                var bounds = (renderer != null) ? renderer.bounds : new Bounds(Vector3.zero, Vector3.one);
+                var tile = new PLATEAUDynamicTile(address, cityObject.Lod, bounds);
                 manager.AddTile(tile);
                 
                 // メタ情報を登録
@@ -153,7 +156,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             manager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
             if (manager == null)
             {
-                Debug.LogWarning("PLATEAUTileManagerが見つかりません。");
+                Debug.LogWarning("PLATEAUTileManagerが見つかりません。エクスポート処理は完了しましたが、カタログパスの保存ができませんでした。");
                 return;
             }
 

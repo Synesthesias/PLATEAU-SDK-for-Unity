@@ -13,6 +13,7 @@ namespace PLATEAU.DynamicTile
 {
     public class PLATEAUTileManager : MonoBehaviour
     {
+        private const int MaxLodLevel = 4;　 // 最大LODレベル (最小LODは0とする)
 
         [SerializeField]
         public float loadDistance = 1500f; // ロードを行うカメラからの距離
@@ -32,7 +33,7 @@ namespace PLATEAU.DynamicTile
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
         // 全タイルのロードタスク実行時のCancellationTokenSource
-        public CancellationTokenSource LoadTaskCancellationTokenSource { get; set; } = new();
+        public CancellationTokenSource LoadTaskCancellationTokenSource { get; private set; } = new();
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
@@ -176,13 +177,22 @@ namespace PLATEAU.DynamicTile
                 }
                 else
                 {
-                    // ロードに失敗した場合は、1回リトライ
                     tile.LoadHandle = default;
                     tile.LoadHandleCancellationTokenSource?.Dispose();
-                    bool success = await Load(tile);
-                    if (!success)
-                        Debug.LogWarning($"アセットのロードに失敗しました: {address}");
-                    return success;
+
+                    // ロードに失敗した場合は、3回リトライ
+                    const int MaxRetryCount = 3;
+                    int retryCount = 0;
+                    while (retryCount < MaxRetryCount)
+                    {
+                        bool success = await Load(tile);
+                        if (success)
+                            return true;
+                        
+                        retryCount++;
+                        await Task.Delay(1000); 
+                    }
+                    return false;
                 }
             }
             catch (OperationCanceledException)
@@ -372,20 +382,18 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void ClearLodChildren()
         { 
-            const int maxLod = 4; // 最大LOD数を定義
-
             var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
             if (instance == null)
                 instance = this.gameObject;
 
             // Lod直下の子オブジェクトをすべてアンロード
-            for (int lod = 0; lod <= maxLod; lod++)
+            for (int lod = 0; lod <= MaxLodLevel; lod++)
             {
                 var lodName = $"LOD{lod}";
                 var lodParent = instance.transform.Find(lodName)?.gameObject;
                 if (lodParent != null)
                 {
-                    for (int i = 0; i < lodParent.transform.childCount; i++)
+                    for (int i = lodParent.transform.childCount - 1; i >= 0; i--)
                     {
                         var child = lodParent.transform.GetChild(i);
                         if (child != null)
@@ -401,7 +409,10 @@ namespace PLATEAU.DynamicTile
                             {
                                 Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
                                 // アドレスのリリースに失敗した場合、直接破棄
-                                DestroyImmediate(child.gameObject);
+                                if (Application.isPlaying)
+                                    Destroy(child.gameObject);
+                                else
+                                    DestroyImmediate(child.gameObject);
                             }
                         }
                     }
@@ -447,7 +458,7 @@ namespace PLATEAU.DynamicTile
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetsByCameraPositionInternal(Vector3 position)
+        public async void UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
             foreach (var tile in DynamicTiles)
             {
@@ -470,7 +481,7 @@ namespace PLATEAU.DynamicTile
 
             try
             {
-                var task = ExecuteLoadTask(LoadTaskCancellationTokenSource.Token);
+                await ExecuteLoadTask(LoadTaskCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
@@ -535,8 +546,6 @@ namespace PLATEAU.DynamicTile
             if (lodObject == null)
             {
                 lodObject = new GameObject(lodName);
-                lodObject.AddComponent<MeshRenderer>();
-                lodObject.AddComponent<BoxCollider>();
                 lodObject.transform.SetParent(instance?.transform, false);
             }
 
@@ -549,7 +558,6 @@ namespace PLATEAU.DynamicTile
         {
             foreach (var tile in DynamicTiles)
             {
-                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
                 DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
             }
         }

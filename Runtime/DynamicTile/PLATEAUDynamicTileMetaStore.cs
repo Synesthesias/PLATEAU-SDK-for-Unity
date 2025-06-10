@@ -49,7 +49,7 @@ namespace PLATEAU.DynamicTile
         {
             if (string.IsNullOrEmpty(addressName))
             {
-                Debug.LogWarning($"{addressName}がnullまたは空です。無効なアドレス名です。");
+                Debug.LogWarning("アドレス名がnullまたは空です。無効なアドレス名です。");
                 return;
             }
 

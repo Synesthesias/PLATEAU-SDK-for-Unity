@@ -12,6 +12,8 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class PLATEAURuntimeCameraTracker
     {
+        private static PLATEAUTileManager cachedTileManager;
+
         public struct CustomUpdateDelegete { }
 
         /// <summary>
@@ -20,16 +22,24 @@ namespace PLATEAU.DynamicTile
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static async void OnRuntimeInitialize()
         {
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            cachedTileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (cachedTileManager == null)
                 return;
 
-            Debug.Log("RuntimeCameraTracker Initialized (Runtime Camera Tracking Start))");
+            try
+            {
+                // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
+                cachedTileManager.ClearTileAssets();
+                await cachedTileManager.InitializeTiles();
+                cachedTileManager.UpdateAssetsByCameraPosition(cachedTileManager.LastCameraPosition);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to initialize PLATEAURuntimeCameraTracker: {e.Message}");
+                return;
+            }
 
-            // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
-            tileManageer.ClearTileAssets();
-            await tileManageer.InitializeTiles();
-            tileManageer.UpdateAssetsByCameraPosition(tileManageer.LastCameraPosition);
+            Debug.Log("RuntimeCameraTracker Initialized (Runtime Camera Tracking Start)");
 
             var loopSystem = new PlayerLoopSystem
             {
@@ -71,17 +81,18 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private static void CustomUpdate()
         {
-            var tileManageer = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManageer == null)
+            if (cachedTileManager == null)
+                cachedTileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (cachedTileManager == null)
                 return;
 
             var targetCamera = Camera.main;
             if (targetCamera != null)
             {
                 Vector3 currentPosition = targetCamera.transform.position;
-                if (currentPosition != tileManageer.LastCameraPosition)
+                if (currentPosition != cachedTileManager.LastCameraPosition)
                 {
-                    tileManageer.UpdateAssetsByCameraPosition(currentPosition);
+                    cachedTileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }
