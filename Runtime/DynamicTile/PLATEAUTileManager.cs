@@ -159,7 +159,7 @@ namespace PLATEAU.DynamicTile
 
                 var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
                 tile.LoadHandle = handle;
-                await handle.Task.ContinueWithErrorCatch();
+                handle.WaitForCompletion();
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
