@@ -31,7 +31,7 @@ namespace PLATEAU.DynamicTile
                 // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
                 cachedTileManager.ClearTileAssets();
                 await cachedTileManager.InitializeTiles();
-                cachedTileManager.UpdateAssetsByCameraPosition(cachedTileManager.LastCameraPosition);
+                await cachedTileManager.UpdateAssetsByCameraPosition(cachedTileManager.LastCameraPosition);
             }
             catch (System.Exception e)
             {
@@ -79,7 +79,7 @@ namespace PLATEAU.DynamicTile
         /// Runtime中のカメラ位置を監視し、位置が変わったらPLATEAUTileManagerに通知するメソッド。
         ///  (PLATEAUTileManager側でUpdateメソッドで行うことも可能)
         /// </summary>
-        private static void CustomUpdate()
+        private static async void CustomUpdate()
         {
             if (cachedTileManager == null)
                 cachedTileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -92,7 +92,7 @@ namespace PLATEAU.DynamicTile
                 Vector3 currentPosition = targetCamera.transform.position;
                 if (currentPosition != cachedTileManager.LastCameraPosition)
                 {
-                    cachedTileManager.UpdateAssetsByCameraPosition(currentPosition);
+                    await cachedTileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }

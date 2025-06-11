@@ -33,7 +33,7 @@ namespace PLATEAU.DynamicTile
             tileManager.ClearTileAssets();
         }
 
-        private static void OnSceneGUI(SceneView sceneView)
+        private static async void OnSceneGUI(SceneView sceneView)
         {
             if (EditorApplication.isPlaying)
                 return;
@@ -47,7 +47,7 @@ namespace PLATEAU.DynamicTile
                 Vector3 currentPosition = sceneCamera.transform.position;
                 if (currentPosition != tileManager.LastCameraPosition)
                 {
-                    tileManager.UpdateAssetsByCameraPosition(currentPosition);
+                    await tileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
             }
         }

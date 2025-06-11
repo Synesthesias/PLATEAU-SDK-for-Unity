@@ -139,7 +139,7 @@ namespace PLATEAU.DynamicTile
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public async void UpdateAssetsByCameraPosition(Vector3 position)
+        public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);

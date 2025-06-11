@@ -394,6 +394,7 @@ namespace PLATEAU.DynamicTile
                         {
                             throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {tile.Address}");
                         }
+                        tile.Reset();
                     }
                 }
                 catch (Exception ex)
@@ -464,7 +465,7 @@ namespace PLATEAU.DynamicTile
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public void UpdateAssetsByCameraPosition(Vector3 position)
+        public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
             if ( State != ManagerState.Operating)
                 return;
@@ -481,12 +482,12 @@ namespace PLATEAU.DynamicTile
                     jobSystem.Initialize(this, DynamicTiles);
                 }
 
-                jobSystem.UpdateAssetsByCameraPosition(position);
+                await jobSystem.UpdateAssetsByCameraPosition(position);
             }
             else
             {
                 // Job Systemを使用しない場合
-                UpdateAssetsByCameraPositionInternal(position);
+                await UpdateAssetsByCameraPositionInternal(position);
             }
 
             LastCameraPosition = position; // 最後のカメラ位置を更新
@@ -497,7 +498,7 @@ namespace PLATEAU.DynamicTile
         /// JobSystemを使用しない場合の実装。
         /// </summary>
         /// <param name="position"></param>
-        public async void UpdateAssetsByCameraPositionInternal(Vector3 position)
+        public async Task UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
             foreach (var tile in DynamicTiles)
             {
