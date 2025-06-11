@@ -90,8 +90,6 @@ namespace PLATEAU.DynamicTile
         /// <returns>ロードされたGameObjectのリスト</returns>
         private List<string> LoadCatalog(string catalogPath, string label)
         {
-            Addressables.ClearResourceLocators();
-
             var addresses = new List<string>();
             try
             {
@@ -119,7 +117,7 @@ namespace PLATEAU.DynamicTile
                     Addressables.Release(catalogHandle);
                     return addresses;
                 }
-
+                
                 // カタログからアセットのアドレスを取得
                 bool hasGameObjects = catalogHandle.Result.Locate(label, typeof(GameObject), out var gameObjectLocations);
                 bool hasScriptableObjects = catalogHandle.Result.Locate(label, typeof(ScriptableObject), out var scriptableObjectLocations);
