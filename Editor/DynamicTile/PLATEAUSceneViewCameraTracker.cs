@@ -123,8 +123,8 @@ namespace PLATEAU.DynamicTile
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Log("Play Mode about to end");
-                PLATEAURuntimeCameraTracker.StopCameraTracking();
                 tileManager.ClearTileAssets();
+                PLATEAURuntimeCameraTracker.StopCameraTracking();
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
@@ -153,8 +153,8 @@ namespace PLATEAU.DynamicTile
             if (tileManager == null)
                 return;
 
-            tileManager.InitializeTiles();
             PLATEAUSceneViewCameraTracker.Initialize();
+            tileManager.InitializeTiles();
         }
 
         static void Log(string message)

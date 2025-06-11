@@ -7,6 +7,9 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
+    /// <summary>
+    /// Addressableを使用してカタログとMeta情報をロードするクラス。
+    /// </summary>
     public class AddressableLoader
     {
         // DynamicTileのラベル名
@@ -20,12 +23,17 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 初期化処理
+        /// 非同期で処理をすると、プレイ終了後に処理がとまるため、同期で処理を行う。
         /// </summary>
         /// <param name="catalogPath"></param>
         /// <returns></returns>
         public PLATEAUDynamicTileMetaStore Initialize(string catalogPath)
         {
             Clear();
+
+            // Addressablesの初期化
+            var init = Addressables.InitializeAsync();
+            init.WaitForCompletion();
 
             // カタログをロード
             if (!string.IsNullOrEmpty(catalogPath))
@@ -80,8 +88,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="catalogPath">カタログファイルのパス</param>
         /// <param name="label">ラベル</param>
         /// <returns>ロードされたGameObjectのリスト</returns>
-        public List<string> LoadCatalog(string catalogPath, string label)
+        private List<string> LoadCatalog(string catalogPath, string label)
         {
+            Addressables.ClearResourceLocators();
+
             var addresses = new List<string>();
             try
             {
@@ -162,7 +172,7 @@ namespace PLATEAU.DynamicTile
             }
             return addresses;
         }
-        
+
         /// <summary>
         /// meta情報をロードします。
         /// </summary>
