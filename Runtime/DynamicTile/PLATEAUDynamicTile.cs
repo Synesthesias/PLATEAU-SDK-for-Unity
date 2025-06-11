@@ -83,9 +83,6 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
-        /// <param name="address"></param>
-        /// <param name="parent"></param>
-        /// <param name="original"></param>
         public PLATEAUDynamicTile(string address, int lod, Bounds bounds)
         {
             Address = address;
