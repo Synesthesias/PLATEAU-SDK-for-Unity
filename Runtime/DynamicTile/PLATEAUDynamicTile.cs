@@ -1,6 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
@@ -121,7 +122,12 @@ namespace PLATEAU.DynamicTile
         public void Reset()
         {
             LoadHandle = default; // ハンドルをリセット
-            LoadHandleCancellationTokenSource?.Cancel();
+            try
+            {
+                LoadHandleCancellationTokenSource?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {}
             LoadHandleCancellationTokenSource?.Dispose();
             NextLoadState = LoadState.None;
         }
