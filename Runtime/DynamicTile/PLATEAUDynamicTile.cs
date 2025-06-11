@@ -142,7 +142,7 @@ namespace PLATEAU.DynamicTile
         {
             if (Extent.size == Vector3.zero)
             {
-                return 0f;
+                return float.MaxValue;
             }
 
             if (ignoreY)
