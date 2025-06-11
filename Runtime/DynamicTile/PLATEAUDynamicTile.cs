@@ -27,11 +27,13 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
-        public GameObject LoadedObject{
-            get {
+        public GameObject LoadedObject
+        {
+            get
+            {
                 if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    return LoadHandle.Result as GameObject;
+                    return LoadHandle.Result;
                 }
                 return null;
             }
@@ -40,14 +42,14 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressablesのロードハンドルを保持する。
         /// </summary>
-        public AsyncOperationHandle<GameObject> LoadHandle { get; set; } = default;
+        public AsyncOperationHandle<GameObject> LoadHandle { get; internal set; } = default;
 
         /// <summary>
         /// Addressablesのロードハンドルのキャンセルトークンを保持する。
         /// Tileごとのキャンセルをサポートするためのもの。
         /// 現状、AddressablesはCancelをサポートしていないので、普通のフラグでも良いが、将来のために保持しておく。
         /// </summary>
-        public CancellationTokenSource LoadHandleCancellationTokenSource { get; set; }
+        public CancellationTokenSource LoadHandleCancellationTokenSource { get; internal set; }
 
         /// <summary>
         /// LOD（Level of Detail）を保持する。
@@ -129,6 +131,7 @@ namespace PLATEAU.DynamicTile
             catch (ObjectDisposedException)
             {}
             LoadHandleCancellationTokenSource?.Dispose();
+            LoadHandleCancellationTokenSource = null;
             NextLoadState = LoadState.None;
         }
 
