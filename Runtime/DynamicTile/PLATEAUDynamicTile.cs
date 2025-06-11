@@ -101,7 +101,10 @@ namespace PLATEAU.DynamicTile
                 if (geo != null)
                 {
                     var meshcode = GetMeshCode();
-                    InitializeExtentFromMeshCode(meshcode, geo);
+                    if (!string.IsNullOrEmpty(meshcode))
+                        InitializeExtentFromMeshCode(meshcode, geo);
+                    else
+                        Debug.LogError("メッシュコードが取得できませんでした。Address: " + Address);
                 }
             }
         }
@@ -150,7 +153,7 @@ namespace PLATEAU.DynamicTile
 
             if (ignoreY)
             {
-                var extent2d = new Bounds(new Vector3(Extent.center.x, 0, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
+                var extent2d = new Bounds(new Vector3(Extent.center.x, Extent.center.y, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
                 var position2d = new Vector3(position.x, 0, position.z);
                 Vector3 closestPoint2d = extent2d.ClosestPoint(position2d);
                 return Vector3.Distance(position2d, closestPoint2d);
