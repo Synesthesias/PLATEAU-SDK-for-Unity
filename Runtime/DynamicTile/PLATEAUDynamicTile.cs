@@ -1,6 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
@@ -26,11 +27,13 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
-        public GameObject LoadedObject{
-            get {
+        public GameObject LoadedObject
+        {
+            get
+            {
                 if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    return LoadHandle.Result as GameObject;
+                    return LoadHandle.Result;
                 }
                 return null;
             }
@@ -39,14 +42,14 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressablesのロードハンドルを保持する。
         /// </summary>
-        public AsyncOperationHandle<GameObject> LoadHandle { get; set; } = default;
+        public AsyncOperationHandle<GameObject> LoadHandle { get; internal set; } = default;
 
         /// <summary>
         /// Addressablesのロードハンドルのキャンセルトークンを保持する。
         /// Tileごとのキャンセルをサポートするためのもの。
         /// 現状、AddressablesはCancelをサポートしていないので、普通のフラグでも良いが、将来のために保持しておく。
         /// </summary>
-        public CancellationTokenSource LoadHandleCancellationTokenSource { get; set; }
+        public CancellationTokenSource LoadHandleCancellationTokenSource { get; internal set; }
 
         /// <summary>
         /// LOD（Level of Detail）を保持する。
@@ -72,15 +75,14 @@ namespace PLATEAU.DynamicTile
         // Job Systemで使用するための構造体を返す
         public TileBounds GetTileBoundsStruct()
         {
+            if (Extent.size == Vector3.zero)
+                return default;
             return new TileBounds(Extent.min, Extent.max);
         }
 
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
-        /// <param name="address"></param>
-        /// <param name="parent"></param>
-        /// <param name="original"></param>
         public PLATEAUDynamicTile(string address, int lod, Bounds bounds)
         {
             Address = address;
@@ -98,7 +100,10 @@ namespace PLATEAU.DynamicTile
                 if (geo != null)
                 {
                     var meshcode = GetMeshCode();
-                    InitializeExtentFromMeshCode(meshcode, geo);
+                    if (!string.IsNullOrEmpty(meshcode))
+                        InitializeExtentFromMeshCode(meshcode, geo);
+                    else
+                        Debug.LogError("メッシュコードが取得できませんでした。Address: " + Address);
                 }
             }
         }
@@ -121,8 +126,14 @@ namespace PLATEAU.DynamicTile
         public void Reset()
         {
             LoadHandle = default; // ハンドルをリセット
-            LoadHandleCancellationTokenSource?.Cancel();
+            try
+            {
+                LoadHandleCancellationTokenSource?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {}
             LoadHandleCancellationTokenSource?.Dispose();
+            LoadHandleCancellationTokenSource = null;
             NextLoadState = LoadState.None;
         }
 
@@ -136,7 +147,7 @@ namespace PLATEAU.DynamicTile
         {
             if (Extent.size == Vector3.zero)
             {
-                return 0f;
+                return float.MaxValue;
             }
 
             if (ignoreY)
@@ -144,7 +155,7 @@ namespace PLATEAU.DynamicTile
                 var extent2d = new Bounds(new Vector3(Extent.center.x, 0, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
                 var position2d = new Vector3(position.x, 0, position.z);
                 Vector3 closestPoint2d = extent2d.ClosestPoint(position2d);
-                return Vector3.Distance(position2d, closestPoint2d);
+                return Vector2.Distance(new Vector2(position2d.x, position2d.z),new Vector2(closestPoint2d.x, closestPoint2d.z));
             }
 
             Vector3 closestPoint = Extent.ClosestPoint(position);

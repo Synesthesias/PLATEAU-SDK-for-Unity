@@ -76,6 +76,9 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
         private PLATEAUDynamicTileJobSystem jobSystem;
 
+        // Tile数（NativeArrayのサイズ変更を取得するために使用）
+        private int lastTileCount = -1;
+
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
@@ -97,23 +100,8 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
+            LastCameraPosition = Vector3.zero; 
             State = ManagerState.Operating;
-            InitializeCameraPosition();
-        }
-
-        /// <summary>
-        /// 初期化時にタイルのロード状態をカメラの位置に基づいて更新します。
-        /// </summary>
-        private void InitializeCameraPosition()
-        {
-            Camera currentCamera = null;
-#if UNITY_EDITOR
-            currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera ?? SceneView.lastActiveSceneView?.camera;
-#else
-            currentCamera = Camera.main;
-#endif
-            if (currentCamera != null) 
-                _= UpdateAssetsByCameraPosition(currentCamera.transform.position);
         }
 
         // TODO:　この処理は削除予定
@@ -174,6 +162,7 @@ namespace PLATEAU.DynamicTile
                     {
                         instance.name = address;
                         instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
+                        tile.LoadHandleCancellationTokenSource?.Dispose(); // キャンセルトークンソースを解放
                         return LoadResult.Success;
                     }
                 }
@@ -309,8 +298,10 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
+            CancelLoadTask();
             ClearTiles();
-            Debug.Log("全てのアセットをアンロードしました");
+            jobSystem?.Dispose();
+            jobSystem = null;
         }
 
         /// <summary>
@@ -318,6 +309,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDisable()
         {
+            CancelLoadTask();
             jobSystem?.Dispose();
             jobSystem = null;
         }
@@ -332,19 +324,21 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogWarning("nullのタイルは追加できません");
                 return;
-            }
-            
+            }        
             if (DynamicTiles.Contains(tile))
             {
                 Debug.LogWarning("既に追加済みのタイルです");
                 return;
             }
-            DynamicTiles.Add(tile);
-            if(tileAddressesDict.ContainsKey(tile.Address))
+            if (tileAddressesDict.ContainsKey(tile.Address))
+            {
                 Debug.LogWarning("既に追加済みのタイルAddressです");
-            else
-                tileAddressesDict[tile.Address] = tile;
-
+                return;
+            }
+                
+            DynamicTiles.Add(tile);
+            tileAddressesDict[tile.Address] = tile;
+            lastTileCount = -1;
         }
         
         /// <summary>
@@ -359,6 +353,7 @@ namespace PLATEAU.DynamicTile
             // LODの親Transformもクリア
             lodParentDict.Clear();
 
+            lastTileCount = -1;
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -465,6 +460,15 @@ namespace PLATEAU.DynamicTile
 
             if (useJobSystem)
             {
+                if(lastTileCount != DynamicTiles.Count)
+                {
+                    // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
+                    CancelLoadTask();
+                    jobSystem?.Dispose();
+                    jobSystem = null;
+                    lastTileCount = DynamicTiles.Count;
+                }
+
                 // Job Systemを使用する場合
                 if (jobSystem == null)
                 {
