@@ -61,28 +61,14 @@ namespace PLATEAU.DynamicTile
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
         /// <returns></returns>
-        public async Task InitializeTiles()
+        public void InitializeTiles()
         {
             if (State == ManagerState.Initializing)
                 return;
 
             State = ManagerState.Initializing;
 
-            // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            // TODO: ↓で取得できるように変更
-            //var metaStore = await addressableLoader.Initialize(catalogPath);
-
-            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
-            await handle.Task;
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
-                State = ManagerState.None;
-                return;
-            }
-
-            var metaStore = handle.Result;
+            var metaStore = addressableLoader.Initialize(catalogPath);
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             ClearTiles(); // 既存のタイルリストをクリア
@@ -91,8 +77,6 @@ namespace PLATEAU.DynamicTile
                 var tile = new PLATEAUDynamicTile(tileMeta);
                 AddTile(tile);
             }
-
-            Addressables.Release(handle); // ハンドルを解放
 
             State = ManagerState.Operating;
             InitializeCameraPosition();
@@ -116,7 +100,7 @@ namespace PLATEAU.DynamicTile
         // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
-            var metaStore = await addressableLoader.Initialize(catalogPath);
+            var metaStore = addressableLoader.Initialize(catalogPath);
             foreach (var metaInfo in metaStore.TileMetaInfos)
             {
                 await Load(metaInfo.AddressName);

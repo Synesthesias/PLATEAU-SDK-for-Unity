@@ -124,6 +124,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.Log("Play Mode about to end");
                 PLATEAURuntimeCameraTracker.StopCameraTracking();
+                tileManageer.ClearTileAssets();
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
@@ -153,7 +154,7 @@ namespace PLATEAU.DynamicTile
             if (tileManageer == null)
                 return;
 
-            await tileManageer.InitializeTiles();
+            tileManageer.InitializeTiles();
             PLATEAUSceneViewCameraTracker.Initialize();
         }
     }

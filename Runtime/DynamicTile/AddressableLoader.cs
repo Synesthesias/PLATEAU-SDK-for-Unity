@@ -1,44 +1,41 @@
-using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using System.Threading.Tasks;
-using UnityEngine.ResourceManagement.ResourceLocations;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace PLATEAU.DynamicTile
 {
     public class AddressableLoader
     {
+        // DynamicTileのラベル名
         private const string DynamicTileLabelName = "DynamicTile";
+        
+        // Addressableのバンドルパスとアドレスのマッピングを保持するための辞書
         private Dictionary<string, string> bundlePathMap = new ();
+        
+        // バンドルパスを保持するための変数
         private string bundlePath;
 
-        public async Task<PLATEAUDynamicTileMetaStore> Initialize(string catalogPath)
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        /// <param name="catalogPath"></param>
+        /// <returns></returns>
+        public PLATEAUDynamicTileMetaStore Initialize(string catalogPath)
         {
-            // 明示的に初期化しておくと安心
-            Addressables.InitializeAsync().Completed += handle =>
-            {
-                Debug.Log("Addressables Initialized!");
-            };
-            
-            var init = Addressables.InitializeAsync();
-            await init.Task;
-            
-            Debug.Log("AddressableLoader Initialize called");
+            Clear();
 
             // カタログをロード
             if (!string.IsNullOrEmpty(catalogPath))
             {
                 Debug.Log($"AddressableLoader Initialize called with catalogPath: {catalogPath}");
-                var addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
+                var addresses = LoadCatalog(catalogPath, DynamicTileLabelName);
             }
 
             // meta情報をロード
-            var metaStore = await LoadMetaStoreAsync();
+            var metaStore = LoadMetaStore();
             if (metaStore == null)
             {
                 return null;
@@ -83,12 +80,11 @@ namespace PLATEAU.DynamicTile
         /// <param name="catalogPath">カタログファイルのパス</param>
         /// <param name="label">ラベル</param>
         /// <returns>ロードされたGameObjectのリスト</returns>
-        public async Task<List<string>> LoadCatalogAsync(string catalogPath, string label)
+        public List<string> LoadCatalog(string catalogPath, string label)
         {
             var addresses = new List<string>();
             try
             {
-                
                 // パスを正規化（バックスラッシュをスラッシュに変換）
                 catalogPath = catalogPath.Replace('\\', '/');
                 
@@ -102,12 +98,11 @@ namespace PLATEAU.DynamicTile
                 }
 
                 // カタログファイルをロード
-                // var locationHadh = Addressables.CreateCatalogLocationWithHashDependencies<TextDataProvider>(catalogPath);
-                // Debug.Log($"AddressableLoader LoadCatalog called {locationHadh.PrimaryKey}");
                 var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-                await catalogHandle.Task;
-                // Debug.Log($"AddressableLoader LoadCatalog called 2 {catalogHandle.Result}");
                 
+                // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
+                catalogHandle.WaitForCompletion();
+
                 if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
@@ -129,8 +124,6 @@ namespace PLATEAU.DynamicTile
                         {
                             continue;
                         }
-                        Debug.Log($"GameObjectのアドレス: {location.PrimaryKey}, バンドルパス: {location.Dependencies[0].PrimaryKey}");
-                        
                         // バンドルパスをマップに追加
                         if (!bundlePathMap.ContainsKey(location.PrimaryKey))
                         {
@@ -149,7 +142,6 @@ namespace PLATEAU.DynamicTile
                         {
                             continue;
                         }
-                        Debug.Log($"ScriptableObjectのアドレス: {location.PrimaryKey}, バンドルパス: {location.Dependencies[0].PrimaryKey}");
                         // バンドルパスをマップに追加
                         if (!bundlePathMap.ContainsKey(location.PrimaryKey))
                         {
@@ -171,38 +163,11 @@ namespace PLATEAU.DynamicTile
             return addresses;
         }
         
-        public async Task<List<string>> LoadLocalAddresses(string label)
-        {
-            var addresses = new List<string>();
-            try
-            {
-                // ラベルでリソースロケーションを非同期取得
-                var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(GameObject));
-                await locationsHandle.Task;
-                if (locationsHandle.Status == AsyncOperationStatus.Succeeded && locationsHandle.Result.Count > 0)
-                {
-                    addresses = locationsHandle.Result.Select(x => x.PrimaryKey).ToList();
-                }
-                else
-                {
-                    Debug.LogError($"アセットのアドレスを取得できませんでした: {label}");
-                }
-                
-                // 取得したリソースの解放
-                Addressables.Release(locationsHandle);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
-            }
-            return addresses;
-        }
-
         /// <summary>
         /// meta情報をロードします。
         /// </summary>
         /// <returns></returns>
-        private async Task<PLATEAUDynamicTileMetaStore> LoadMetaStoreAsync()
+        private PLATEAUDynamicTileMetaStore LoadMetaStore()
         {
             PLATEAUDynamicTileMetaStore metaStore = null;
             try
@@ -240,7 +205,8 @@ namespace PLATEAU.DynamicTile
                 else
                 {
                     var data = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(nameof(PLATEAUDynamicTileMetaStore));
-                    await data.Task;
+                    // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
+                    data.WaitForCompletion();
                     if (data.Status == AsyncOperationStatus.Succeeded)
                     {
                         metaStore = data.Result;

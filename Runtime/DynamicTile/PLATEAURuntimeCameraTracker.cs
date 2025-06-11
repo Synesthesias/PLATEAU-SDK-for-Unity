@@ -28,7 +28,7 @@ namespace PLATEAU.DynamicTile
 
             // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
             tileManageer.ClearTileAssets();
-            await tileManageer.InitializeTiles();
+            tileManageer.InitializeTiles();
             tileManageer.UpdateAssetsByCameraPosition(tileManageer.LastCameraPosition);
 
             var loopSystem = new PlayerLoopSystem
