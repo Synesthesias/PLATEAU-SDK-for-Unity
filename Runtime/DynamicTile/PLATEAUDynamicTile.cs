@@ -92,7 +92,8 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
-                // 現状この処理は未使用なのでここで行っているが、もし使用する場合GeoReferenceの取得は各Tileの生成前に一度だけ行うのが望ましい。
+                // 現状この処理は未使用なのでここで行っているが、FindObjectOfTypeは処理コストが高く、オブジェクトが見つからない可能性があるため、
+                // もし使用する場合GeoReferenceの取得は各Tileの生成前に一度だけ行ってTileに渡すのが望ましい。
                 var geo = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>().GeoReference;
                 if (geo != null)
                 {

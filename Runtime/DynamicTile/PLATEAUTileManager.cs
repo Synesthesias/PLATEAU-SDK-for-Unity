@@ -157,13 +157,13 @@ namespace PLATEAU.DynamicTile
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
             {
-                Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
+                DebugLog($"指定したアドレスが見つかりません: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.Failure);
             }
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
-                Debug.Log($"Already loaded: {address}");
+                DebugLog($"Already loaded: {address}", false);
                 return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
             }
 
@@ -181,7 +181,7 @@ namespace PLATEAU.DynamicTile
 
                 if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    //Debug.Log($"アセットのロードに成功しました: {address}");
+                    //DebugLog($"アセットのロードに成功しました: {address}", false);
                     var instance = handle.Result;
                     if (instance != null)
                     {
@@ -193,13 +193,13 @@ namespace PLATEAU.DynamicTile
                 else
                 {
                     tile.Reset();
-                    Debug.LogWarning($"アセットのロードに失敗しました: {address}");
+                    DebugLog($"アセットのロードに失敗しました: {address}");
                     return LoadResult.NeedRetry;
                 }
             }
             catch (OperationCanceledException)
             {
-                //Debug.LogWarning($"アセットのロードがキャンセルされました: {address}");
+                DebugLog($"アセットのロードがキャンセルされました: {address}");
                 if (tile.LoadHandle.IsValid())
                     Addressables.ReleaseInstance(tile.LoadHandle);
                 tile.Reset();
@@ -207,9 +207,43 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
+                DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
+                if (tile.LoadHandle.IsValid())
+                    Addressables.ReleaseInstance(tile.LoadHandle);
+                tile.Reset();
             }
             return LoadResult.Failure;
+        }
+
+        /// <summary>
+        /// Tileを指定してAddressablesからロードする (リトライ機能付き)
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="maxRetryCount">リトライ数</param>
+        /// <returns></returns>
+        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, int delay = 1000)
+        {
+            var result = await Load(tile);
+            if (result == LoadResult.NeedRetry)
+            {
+                // ロードに失敗した場合は、リトライ
+                DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
+                int retryCount = 0;
+                while (retryCount < maxRetryCount)
+                {
+                    var retryResult = await Load(tile);
+                    if (retryResult == LoadResult.Success)
+                        return true;
+                    else if (retryResult != LoadResult.NeedRetry)
+                        break;
+
+                    retryCount++;
+                    await Task.Delay(delay);
+                }
+            }
+            else if (result == LoadResult.Success)
+                return true;
+            return false;
         }
 
 
@@ -221,41 +255,10 @@ namespace PLATEAU.DynamicTile
             var tile = tileAddressesDict.GetValueOrDefault(address);
             if (tile == null)
             {
-                Debug.LogWarning($"指定したアドレスに対応するタイルが見つかりません: {address}");
+                DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.Failure);
             }
             return await Load(tile);
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからロードする (リトライ機能付き)
-        /// </summary>
-        /// <param name="tile"></param>
-        /// <param name="maxRetryCount">リトライ数</param>
-        /// <returns></returns>
-        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount)
-        {
-            var result = await Load(tile);
-            if (result == LoadResult.NeedRetry)
-            {
-                // ロードに失敗した場合は、リトライ
-                Debug.LogWarning($"タイルのロードに失敗しました。リトライします: {tile.Address}");
-                int retryCount = 0;
-                while (retryCount < maxRetryCount)
-                {
-                    var retryResult = await Load(tile);
-                    if (retryResult == LoadResult.Success)
-                        return true;
-                    else if (retryResult != LoadResult.NeedRetry)
-                        break;
-
-                    retryCount++;
-                    await Task.Delay(1000);
-                }
-            }
-            else if (result == LoadResult.Success)
-                return true;
-            return false;
         }
 
         /// <summary>
@@ -267,7 +270,7 @@ namespace PLATEAU.DynamicTile
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
             {
-                Debug.LogWarning($"指定したアドレスが見つかりません: {address}");
+                DebugLog($"指定したアドレスが見つかりません: {address}");
                 return false;
             }
             try
@@ -289,7 +292,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
+                DebugLog($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
                 if(tile.LoadedObject != null)
                 {
                     // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
@@ -308,7 +311,7 @@ namespace PLATEAU.DynamicTile
             var tile = tileAddressesDict.GetValueOrDefault(address);
             if (tile == null)
             {
-                Debug.LogWarning($"指定したアドレスに対応するタイルが見つかりません: {address}");
+                DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
                 return false;
             }
             return Unload(tile);
@@ -395,11 +398,14 @@ namespace PLATEAU.DynamicTile
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
+                    DebugLog($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
                     if (tile.LoadedObject != null)
                     {
                         // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
-                        DestroyImmediate(tile.LoadedObject);
+                        if (Application.isPlaying)
+                            Destroy(tile.LoadedObject);
+                        else
+                            DestroyImmediate(tile.LoadedObject);
                     }
                 }
             }
@@ -439,7 +445,7 @@ namespace PLATEAU.DynamicTile
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogWarning($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
+                                DebugLog($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
                                 // アドレスのリリースに失敗した場合、直接破棄
                                 if (Application.isPlaying)
                                     Destroy(child.gameObject);
@@ -488,6 +494,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
+        /// JobSystemを使用しない場合の実装。
         /// </summary>
         /// <param name="position"></param>
         public async void UpdateAssetsByCameraPositionInternal(Vector3 position)
@@ -517,12 +524,13 @@ namespace PLATEAU.DynamicTile
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning("タイルのロードTaskがキャンセルされました。");
+                DebugLog("タイルのロードTaskがキャンセルされました。");
             }
         }
 
         /// <summary>
         /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
+        /// Job Systemを使用しない場合の実装。
         /// </summary>
         private async Task ExecuteLoadTask(CancellationToken token)
         {
@@ -535,7 +543,7 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (tile.NextLoadState == LoadState.Load)
                 {
-                    await LoadWithRetry(tile, 2);
+                    await LoadWithRetry(tile);
                 }
                 else if (tile.NextLoadState == LoadState.Unload)
                 {
@@ -583,6 +591,21 @@ namespace PLATEAU.DynamicTile
 
             lodParentDict[lod] = lodObject.transform;
             return lodObject.transform;
+        }
+
+        /// <summary>
+        /// showDebugTileInfo:ON時のみDebugログに警告メッセージを出力します。
+        /// </summary>
+        /// <param name="message"></param>
+        public void DebugLog(string message, bool warn = true)
+        {
+            if (showDebugTileInfo)
+            {
+                if (warn)
+                    Debug.LogWarning(message);
+                else
+                    Debug.Log(message);
+            }
         }
 
         // Debug用Bounds表示

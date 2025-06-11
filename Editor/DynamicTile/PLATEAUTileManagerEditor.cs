@@ -59,8 +59,6 @@ namespace PLATEAU.DynamicTile
                 var dynamicTiles = tileManager.DynamicTiles;
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
-                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
-
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
