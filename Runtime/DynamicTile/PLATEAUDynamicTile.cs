@@ -75,6 +75,8 @@ namespace PLATEAU.DynamicTile
         // Job Systemで使用するための構造体を返す
         public TileBounds GetTileBoundsStruct()
         {
+            if (Extent.size == Vector3.zero)
+                return default;
             return new TileBounds(Extent.min, Extent.max);
         }
 
@@ -153,10 +155,10 @@ namespace PLATEAU.DynamicTile
 
             if (ignoreY)
             {
-                var extent2d = new Bounds(new Vector3(Extent.center.x, Extent.center.y, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
+                var extent2d = new Bounds(new Vector3(Extent.center.x, 0, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
                 var position2d = new Vector3(position.x, 0, position.z);
                 Vector3 closestPoint2d = extent2d.ClosestPoint(position2d);
-                return Vector3.Distance(position2d, closestPoint2d);
+                return Vector2.Distance(new Vector2(position2d.x, position2d.z),new Vector2(closestPoint2d.x, closestPoint2d.z));
             }
 
             Vector3 closestPoint = Extent.ClosestPoint(position);
