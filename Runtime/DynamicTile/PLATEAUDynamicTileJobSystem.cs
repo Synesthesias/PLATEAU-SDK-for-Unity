@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
@@ -194,6 +195,40 @@ namespace PLATEAU.DynamicTile
                 }
                 token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。(並列処理版)
+        ///　（タイルが消えなくなる不具合があるため、現在は使用していない）
+        /// </summary>
+        private async Task ExecuteLoadTaskParallel(CancellationToken token, int maxConcurrency = 3)
+        {
+            using var sem = new SemaphoreSlim(maxConcurrency);
+            var tasks = dynamicTiles.Select(async (tile, index) =>
+            {
+                var distance = NativeDistances[index];
+
+                // ロード・アンロード判定
+                tile.DistanceFromCamera = distance;
+                tile.NextLoadState = distance < tileManager.loadDistance
+                    ? LoadState.Load
+                    : LoadState.Unload;
+
+                await sem.WaitAsync(token);
+                try
+                {
+                    if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
+                        await tileManager.LoadWithRetry(tile);
+                    else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
+                        tileManager.Unload(tile);
+                }
+                finally
+                {
+                    sem.Release();
+                }
+            }).ToArray();
+
+            await Task.WhenAll(tasks);
         }
 
     }

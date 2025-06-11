@@ -1,13 +1,16 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace PLATEAU.DynamicTile
 {
@@ -36,7 +39,7 @@ namespace PLATEAU.DynamicTile
             Cancelled
         }
 
-        private const int MaxLodLevel = 4;　 // 最大LODレベル (最小LODは0とする)
+        private const int MaxLodLevel = 4; // 最大LODレベル (最小LODは0とする)
 
         [SerializeField]
         public float loadDistance = 1500f; // ロードを行うカメラからの距離
@@ -126,7 +129,7 @@ namespace PLATEAU.DynamicTile
             currentCamera = Camera.main;
 #endif
             if (currentCamera != null) 
-                UpdateAssetsByCameraPosition(currentCamera.transform.position);
+                _= UpdateAssetsByCameraPosition(currentCamera.transform.position);
         }
 
         // TODO:　この処理は削除予定
@@ -456,7 +459,10 @@ namespace PLATEAU.DynamicTile
                         }
                     }
                     // LODの親Transformも削除
-                    DestroyImmediate(lodParent);
+                    if (Application.isPlaying)
+                        Destroy(lodParent);
+                    else
+                        DestroyImmediate(lodParent);
                 }
             }
         }
@@ -552,6 +558,32 @@ namespace PLATEAU.DynamicTile
                 }
                 token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。(並列処理版)
+        ///　（タイルが消えなくなる不具合があるため、現在は使用していない）
+        /// </summary>
+        private async Task ExecuteLoadTaskParallel(CancellationToken token, int maxConcurrency = 3)
+        {
+            using var sem = new SemaphoreSlim(maxConcurrency);
+            var tasks = DynamicTiles.Select(async tile =>
+            {
+                await sem.WaitAsync(token);
+                try
+                {
+                    if (tile.NextLoadState == LoadState.Load)
+                        await LoadWithRetry(tile);
+                    else if (tile.NextLoadState == LoadState.Unload)
+                        Unload(tile);
+                }
+                finally
+                {
+                    sem.Release();
+                }
+            }).ToArray();
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
