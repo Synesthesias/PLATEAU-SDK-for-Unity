@@ -16,7 +16,9 @@ namespace PLATEAU.Util
         }
     }
 
-
+    /// <summary>
+    /// プロパティが特定の条件を満たす場合にのみ表示されるようにする属性。const bool を使用する場合に使用。
+    /// </summary>
     public class ConditionalShowBoolAttribute : PropertyAttribute
     {
         public bool show;

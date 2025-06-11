@@ -14,8 +14,9 @@ namespace PLATEAU.Util
         {
             ConditionalShowAttribute attr = (ConditionalShowAttribute)attribute;
             SerializedProperty conditionProperty = property.serializedObject.FindProperty(attr.conditionField);
-
-            if (conditionProperty != null && conditionProperty.boolValue)
+            if (conditionProperty == null)
+                Debug.LogError($"Condition field '{attr.conditionField}' not found");
+            else if (conditionProperty.boolValue)
             {
                 EditorGUI.PropertyField(position, property, label);
             }

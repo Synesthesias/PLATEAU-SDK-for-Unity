@@ -599,22 +599,22 @@ namespace PLATEAU.Util
             Vector3 p8 = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
 
             // 底面の線
-            Debug.DrawLine(p1, p2, color, duration);
-            Debug.DrawLine(p2, p3, color, duration);
-            Debug.DrawLine(p3, p4, color, duration);
-            Debug.DrawLine(p4, p1, color, duration);
+            DrawLine(p1, p2, color, duration);
+            DrawLine(p2, p3, color, duration);
+            DrawLine(p3, p4, color, duration);
+            DrawLine(p4, p1, color, duration);
 
             // 上面の線
-            Debug.DrawLine(p5, p6, color, duration);
-            Debug.DrawLine(p6, p7, color, duration);
-            Debug.DrawLine(p7, p8, color, duration);
-            Debug.DrawLine(p8, p5, color, duration);
+            DrawLine(p5, p6, color, duration);
+            DrawLine(p6, p7, color, duration);
+            DrawLine(p7, p8, color, duration);
+            DrawLine(p8, p5, color, duration);
 
             // 側面の線
-            DebugEx.DrawLine(p1, p5, color, duration);
-            DebugEx.DrawLine(p2, p6, color, duration);
-            DebugEx.DrawLine(p3, p7, color, duration);
-            DebugEx.DrawLine(p4, p8, color, duration);
+            DrawLine(p1, p5, color, duration);
+            DrawLine(p2, p6, color, duration);
+            DrawLine(p3, p7, color, duration);
+            DrawLine(p4, p8, color, duration);
         }
 
         /// <summary>

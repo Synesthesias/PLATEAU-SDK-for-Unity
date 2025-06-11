@@ -9,7 +9,7 @@ namespace PLATEAU.DynamicTile
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
+        public async override void OnInspectorGUI()
         {
             DrawDefaultInspector(); // 通常のInspector表示
   
@@ -41,7 +41,7 @@ namespace PLATEAU.DynamicTile
                 {
                     var currentCamera = EditorApplication.isPlaying ? Camera.main : SceneView.currentDrawingSceneView?.camera ?? SceneView.lastActiveSceneView?.camera;
                     if (currentCamera != null)
-                        tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
+                        await tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
                 }
 
                 if (GUILayout.Button("Show Tile Bounds"))
@@ -59,8 +59,6 @@ namespace PLATEAU.DynamicTile
                 var dynamicTiles = tileManager.DynamicTiles;
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
-                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
-
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
@@ -73,7 +71,9 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
-                Repaint();
+
+                if (dynamicTiles.Count > 0)
+                    Repaint();
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
@@ -29,6 +30,7 @@ namespace PLATEAU.DynamicTile
             BoundsMax = boundsMax;
         }
 
+        // カメラからの距離を計算するメソッド。
         public float CalcDistance(Vector3 cameraPosition, bool ignoreY)
         {
             if (ignoreY)
@@ -45,6 +47,7 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        // タイルの範囲とカメラの位置から最も近い点を計算するメソッド。
         Vector3 ClosestPointOnBounds(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
         {
             Bounds bounds = new();
@@ -52,6 +55,7 @@ namespace PLATEAU.DynamicTile
             return bounds.ClosestPoint(position);
         }
 
+        // ↑の軽量処理。未使用 パフォーマンステスト用に残しておく。
         Vector3 ClosestPointOnBoundsSimple(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
         {
             float x = Mathf.Clamp(position.x, boundsMin.x, boundsMax.x);
@@ -91,10 +95,25 @@ namespace PLATEAU.DynamicTile
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUTileManager tileManager;
 
+        /// <summary>
+        /// NativeArrayを初期化し、タイルマネージャーとタイルリストを設定する。
+        /// 
+        /// [Leak Detected : Persistent allocates 2 individual allocations.]
+        /// Unity Editor上でNativeArrayをAllocator.Persistentで確保すると、Leak Detectedという警告が表示されるのは仕様です。
+        /// これは、Unityのメモリ管理システムがEditor環境でのメモリリークを検出するための仕組みとして動作しているためです。
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="tiles"></param>
         public void Initialize(PLATEAUTileManager manager, List<PLATEAUDynamicTile> tiles)
         {
             dynamicTiles = tiles;
             tileManager = manager;
+
+            if(NativeTileBounds.Length != dynamicTiles.Count || !NativeTileBounds.IsCreated)
+            {
+                // 既存の配列を破棄
+                Dispose();
+            }
 
             if (!NativeTileBounds.IsCreated)
                 NativeTileBounds = new NativeArray<TileBounds>(dynamicTiles.Count, Allocator.Persistent);
@@ -116,8 +135,12 @@ namespace PLATEAU.DynamicTile
             if (NativeDistances.IsCreated)
                 NativeDistances.Dispose();
         }
-        
-        public void UpdateAssetsByCameraPosition(Vector3 position)
+
+        /// <summary>
+        /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
+        /// </summary>
+        /// <param name="position"></param>
+        public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = true };
             JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
@@ -125,15 +148,17 @@ namespace PLATEAU.DynamicTile
 
             try
             {
-                var task = ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
+                await ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning("タイルのロードTaskがキャンセルされました。");
+                tileManager.DebugLog("タイルのロードTaskがキャンセルされました。");
             }
         }
 
-        // カメラ距離に応じてタイルのロード状態を更新する
+        /// <summary>
+        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
+        /// </summary>
         private async Task ExecuteLoadTask(CancellationToken token)
         {
             for (int i = 0; i < NativeDistances.Length; i++)
@@ -162,7 +187,7 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    await tileManager.Load(tile);
+                    await tileManager.LoadWithRetry(tile);
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
@@ -170,6 +195,40 @@ namespace PLATEAU.DynamicTile
                 }
                 token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。(並列処理版)
+        ///　（タイルが消えなくなる不具合があるため、現在は使用していない）
+        /// </summary>
+        private async Task ExecuteLoadTaskParallel(CancellationToken token, int maxConcurrency = 3)
+        {
+            using var sem = new SemaphoreSlim(maxConcurrency);
+            var tasks = dynamicTiles.Select(async (tile, index) =>
+            {
+                var distance = NativeDistances[index];
+
+                // ロード・アンロード判定
+                tile.DistanceFromCamera = distance;
+                tile.NextLoadState = distance < tileManager.loadDistance
+                    ? LoadState.Load
+                    : LoadState.Unload;
+
+                await sem.WaitAsync(token);
+                try
+                {
+                    if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
+                        await tileManager.LoadWithRetry(tile);
+                    else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
+                        tileManager.Unload(tile);
+                }
+                finally
+                {
+                    sem.Release();
+                }
+            }).ToArray();
+
+            await Task.WhenAll(tasks);
         }
 
     }
