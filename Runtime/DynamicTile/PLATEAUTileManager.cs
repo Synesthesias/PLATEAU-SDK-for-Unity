@@ -76,6 +76,9 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
         private PLATEAUDynamicTileJobSystem jobSystem;
 
+        // Tile数（NativeArrayのサイズ変更を取得するために使用）
+        private int lastTileCount = -1;
+
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
@@ -334,6 +337,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDisable()
         {
+            CancelLoadTask();
             jobSystem?.Dispose();
             jobSystem = null;
         }
@@ -348,19 +352,21 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogWarning("nullのタイルは追加できません");
                 return;
-            }
-            
+            }        
             if (DynamicTiles.Contains(tile))
             {
                 Debug.LogWarning("既に追加済みのタイルです");
                 return;
             }
-            DynamicTiles.Add(tile);
-            if(tileAddressesDict.ContainsKey(tile.Address))
+            if (tileAddressesDict.ContainsKey(tile.Address))
+            {
                 Debug.LogWarning("既に追加済みのタイルAddressです");
-            else
-                tileAddressesDict[tile.Address] = tile;
-
+                return;
+            }
+                
+            DynamicTiles.Add(tile);
+            tileAddressesDict[tile.Address] = tile;
+            lastTileCount = -1;
         }
         
         /// <summary>
@@ -375,6 +381,7 @@ namespace PLATEAU.DynamicTile
             // LODの親Transformもクリア
             lodParentDict.Clear();
 
+            lastTileCount = -1;
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -481,6 +488,15 @@ namespace PLATEAU.DynamicTile
 
             if (useJobSystem)
             {
+                if(lastTileCount != DynamicTiles.Count)
+                {
+                    // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
+                    CancelLoadTask();
+                    jobSystem?.Dispose();
+                    jobSystem = null;
+                    lastTileCount = DynamicTiles.Count;
+                }
+
                 // Job Systemを使用する場合
                 if (jobSystem == null)
                 {

@@ -109,7 +109,7 @@ namespace PLATEAU.DynamicTile
             dynamicTiles = tiles;
             tileManager = manager;
 
-            if(NativeTileBounds.Length != dynamicTiles.Count || !NativeTileBounds.IsCreated)
+            if (!NativeTileBounds.IsCreated || NativeTileBounds.Length != dynamicTiles.Count)
             {
                 // 既存の配列を破棄
                 Dispose();
