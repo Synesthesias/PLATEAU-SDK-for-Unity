@@ -163,7 +163,7 @@ namespace PLATEAU.Editor.Window.Main
                 Dialogue.Display("保存先フォルダを指定してください。", "OK");
                 return;
             }
-            DynamicTileExporter.Export(
+            _ = DynamicTileExporter.Export(
                 assetConfig,
                 folderPathLabel.text, 
                 msg => Dialogue.Display(msg, "OK"));

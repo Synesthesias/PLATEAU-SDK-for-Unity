@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using static PlasticGui.PlasticTableColumn;
 using UnityEditor.SceneManagement;
 
@@ -27,7 +28,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         /// <param name="assetConfig">変換設定</param>
         /// <param name="buildFolderPath"></param>
         /// <param name="onError">エラー時のコールバック</param>
-        public static void Export(
+        public static async Task Export(
             ConvertToAssetConfig assetConfig,
             string buildFolderPath,
             Action<string> onError = null)
@@ -91,6 +92,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
 
                 var convertedObject = PrepareAndConvert(assetConfig, saveFolderPath, onError);
+
+                // NOTE:同フレームで実行すると止まる現状があるので、１フレーム待つ
+                await Task.Yield();
+
                 if (convertedObject == null)
                 {
                     Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
