@@ -1,0 +1,91 @@
+using UnityEngine;
+using System;
+using System.Collections.Generic;
+
+namespace PLATEAU.DynamicTile
+{
+    /// <summary>
+    /// Addressに紐づく情報を保持するデータクラス。
+    /// </summary>
+    [Serializable]
+    public class PLATEAUDynamicTileMetaInfo
+    {
+        [SerializeField]
+        private string addressName;
+        public string AddressName => addressName;
+        
+        [SerializeField]
+        private Bounds extent;
+        public Bounds Extent => extent;
+
+        [SerializeField]
+        private int lod;
+        public int LOD => lod;
+
+        public PLATEAUDynamicTileMetaInfo(string addressName, Bounds extent, int lod)
+        {
+            this.addressName = addressName;
+            this.extent = extent;
+            this.lod = lod;
+        }
+    }
+
+    /// <summary>
+    /// Addressに紐づく情報のリストを保持するScriptableObject。
+    /// </summary>
+    public class PLATEAUDynamicTileMetaStore : ScriptableObject
+    {
+        [SerializeField]
+        private List<PLATEAUDynamicTileMetaInfo> tileMetaInfos = new List<PLATEAUDynamicTileMetaInfo>();
+        public List<PLATEAUDynamicTileMetaInfo> TileMetaInfos => tileMetaInfos;
+
+        /// <summary>
+        /// meta情報を追加します。
+        /// </summary>
+        /// <param name="addressName"></param>
+        /// <param name="extent"></param>
+        /// <param name="lod"></param>
+        public void AddMetaInfo(string addressName, Bounds extent, int lod)
+        {
+            if (string.IsNullOrEmpty(addressName))
+            {
+                Debug.LogWarning("アドレス名がnullまたは空です。無効なアドレス名です。");
+                return;
+            }
+
+            if (tileMetaInfos.Exists(info => info.AddressName == addressName))
+            {
+                Debug.LogWarning($"{addressName}がすでに存在します。重複を避けてください。");
+                return;
+            }
+
+            tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(addressName, extent, lod));
+        }
+        
+        /// <summary>
+        /// meta情報を取得します。
+        /// </summary>
+        /// <param name="addressName"></param>
+        /// <returns></returns>
+        public PLATEAUDynamicTileMetaInfo GetMetaInfo(string addressName)
+        {
+            foreach (var metaInfo in tileMetaInfos)
+            {
+                if (metaInfo.AddressName == addressName)
+                {
+                    return metaInfo;
+                }
+            }
+            Debug.LogWarning($"{addressName}が見つかりません。");
+            return null;
+        }
+
+        /// <summary>
+        /// meta情報をすべてクリアします。
+        /// </summary>
+        public void Clear()
+        {
+            tileMetaInfos.Clear();
+        }
+    }
+} 

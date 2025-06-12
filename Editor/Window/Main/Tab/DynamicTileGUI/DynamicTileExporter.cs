@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static PlasticGui.PlasticTableColumn;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 {
@@ -37,7 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 onError?.Invoke("都市モデルが見つかりません。都市モデルをインポートしてください。");
                 return;
             }
-            
+
             using var progressBar = new ProgressBar();
 
             var groupName = AddressableGroupName;
@@ -52,7 +53,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             // グループを削除
             AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel);
 
-            var addresses = new List<string>();
+            // DynamicTile管理用GameObjectを生成
+            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (manager == null)
+            {
+                GameObject managerObj = new GameObject("DynamicTileManager");
+                manager = managerObj.AddComponent<PLATEAUTileManager>();
+            }
+            manager.ClearTiles();
+            
+            // メタデータ生成
+            var metaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
+
             for (var i = 0; i < cityObjects.Length; i++)
             {
                 var cityObject = cityObjects[i];
@@ -61,7 +73,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     Debug.LogWarning($"GameObjectがnullです。");
                     continue;
                 }
-                
+
                 float progress = (float)(i+1) / cityObjects.Length;
                 progressBar.Display("動的タイルを生成中..", progress);
 
@@ -76,7 +88,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     saveFolderPath = $"{baseFolderPath}_{count}";
                     count++;
                 }
-                
+
                 var convertedObject = PrepareAndConvert(assetConfig, saveFolderPath, onError);
                 if (convertedObject == null)
                 {
@@ -103,12 +115,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     address,
                     groupName,
                     new List<string> { AddressableLabel });
+
+                var renderer = convertedObject.GetComponent<Renderer>();
+                var bounds = (renderer != null) ? renderer.bounds : new Bounds(Vector3.zero, Vector3.one);
+                var tile = new PLATEAUDynamicTile(address, cityObject.Lod, bounds);
+                manager.AddTile(tile);
                 
-                addresses.Add(address);
-            
+                // メタ情報を登録
+                metaStore.AddMetaInfo(tile.Address, tile.Extent, tile.Lod);
+
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
+            
+            // メタデータを保存
+            SaveAndRegisterMetaData(metaStore, assetConfig.AssetPath, groupName);
 
             progressBar.Display("Addressableのビルドを実行中...", 0.1f);
 
@@ -130,13 +151,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
             // Addressablesのビルドを実行
             AddressablesUtility.BuildAddressables(true);
-            
-            // DynamicTile管理用GameObjectを生成
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+
+            // シーンが更新されているので、再度取得
+            manager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
             if (manager == null)
             {
-                GameObject managerObj = new GameObject("DynamicTileManager");
-                manager = managerObj.AddComponent<PLATEAUTileManager>();
+                Debug.LogWarning("PLATEAUTileManagerが見つかりません。エクスポート処理は完了しましたが、カタログパスの保存ができませんでした。");
+                return;
             }
 
             manager.SaveCatalogPath("");
@@ -153,14 +174,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 manager.SaveCatalogPath(catalogPath);
             }
             
-            // DynamicTileのアドレスを設定
-            manager.ClearTiles();
-            foreach (var address in addresses)
-            {
-                var tile = new PLATEAUDynamicTile(address);
-                manager.AddTile(tile);
-            }
-            
+            PLATEAUSceneViewCameraTracker.Initialize();
+
             progressBar.Display("Addressableのビルドを実行中...", 0.99f);
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
         }
@@ -201,6 +216,31 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 return convertObjects[0];
             }
             return null;
+        }
+
+        /// <summary>
+        /// メタデータを保存し、Addressableとして登録する
+        /// </summary>
+        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
+        {
+            if (metaStore == null)
+            {
+                Debug.LogWarning("メタデータがnullです。");
+                return;
+            }
+
+            // メタデータをアセットとして保存
+            string addressName = nameof(PLATEAUDynamicTileMetaStore);
+            string dataPath = Path.Combine(assetPath, addressName + ".asset");
+            AssetDatabase.CreateAsset(metaStore, dataPath);
+            AssetDatabase.SaveAssets();
+
+            // メタデータをAddressableに登録
+            AddressablesUtility.RegisterAssetAsAddressable(
+                dataPath,
+                addressName,
+                groupName,
+                new List<string> { AddressableLabel });
         }
     }
 } 
