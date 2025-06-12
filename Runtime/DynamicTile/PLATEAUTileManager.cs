@@ -83,7 +83,7 @@ namespace PLATEAU.DynamicTile
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
         /// <returns></returns>
-        public async Task InitializeTiles()
+        public void InitializeTiles()
         {
             if (State == ManagerState.Initializing)
                 return;
@@ -91,20 +91,7 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Initializing;
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            // TODO: ↓で取得できるように変更
-            //var metaStore = await addressableLoader.Initialize(catalogPath);
-
-            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
-            await handle.Task;
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
-                State = ManagerState.None;
-                return;
-            }
-
-            var metaStore = handle.Result;
+            var metaStore = addressableLoader.Initialize(catalogPath);
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             ClearTiles(); // 既存のタイルリストをクリア
@@ -114,8 +101,6 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            Addressables.Release(handle); // ハンドルを解放
-
             LastCameraPosition = Vector3.zero; 
             State = ManagerState.Operating;
         }
@@ -123,10 +108,10 @@ namespace PLATEAU.DynamicTile
         // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
-            var addresses = await addressableLoader.Initialize(catalogPath);
-            foreach (var address in addresses)
+            var addresses = addressableLoader.Initialize(catalogPath);
+            foreach (var address in addresses.TileMetaInfos)
             {
-                await Load(address);
+                await Load(address.AddressName);
             }
         }
 
