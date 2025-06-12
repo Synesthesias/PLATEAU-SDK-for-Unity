@@ -154,7 +154,7 @@ namespace PLATEAU.DynamicTile
             if (tileManager == null)
                 return;
 
-            PLATEAUSceneViewCameraTracker.Initialize();
+            PLATEAUSceneViewCameraTracker.Initialize(); 
             tileManager.InitializeTiles();
         }
 

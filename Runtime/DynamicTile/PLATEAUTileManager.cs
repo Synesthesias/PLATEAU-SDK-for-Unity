@@ -92,6 +92,12 @@ namespace PLATEAU.DynamicTile
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             var metaStore = addressableLoader.Initialize(catalogPath);
+            if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
+            {
+                Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
+                State = ManagerState.None;
+                return;
+            }
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             ClearTiles(); // 既存のタイルリストをクリア

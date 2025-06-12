@@ -213,11 +213,6 @@ namespace PLATEAU.Editor.Addressables
             
             settings.BuildRemoteCatalog = true;
             var profileSettings = settings.profileSettings;
-            profileSettings.GetVariableNames().ForEach((name) => 
-            {
-                Debug.Log("プロファイル変数: " + name);
-            });
-
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, "Local.BuildPath");
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, "Local.LoadPath");
 

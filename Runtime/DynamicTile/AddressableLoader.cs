@@ -31,7 +31,6 @@ namespace PLATEAU.DynamicTile
         {
             Clear();
 
-            // Addressablesの初期化
             var init = Addressables.InitializeAsync();
             init.WaitForCompletion();
 
