@@ -139,6 +139,11 @@ namespace PLATEAU.Editor.Addressables
                 Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
                 return;
             }
+            
+            if (!settings.profileSettings.GetVariableNames().Contains(groupName))
+            {
+                settings.profileSettings.CreateValue(groupName, "");
+            }
 
             // グループのBuildPathとLoadPathに変数名をセット
             bundledSchema.BuildPath.SetVariableByName(settings, groupName);
