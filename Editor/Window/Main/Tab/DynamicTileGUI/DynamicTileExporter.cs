@@ -174,6 +174,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                 manager.SaveCatalogPath(catalogPath);
             }
+            
+            PLATEAUSceneViewCameraTracker.Initialize();
 
             // シーンをEdit
             var scene = EditorSceneManager.GetActiveScene();
