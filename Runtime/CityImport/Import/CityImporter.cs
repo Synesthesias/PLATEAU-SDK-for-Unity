@@ -107,7 +107,6 @@ namespace PLATEAU.CityImport.Import
                 // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
                 // ただしメモリ使用量が増えます。
                 var semGmlProcess = new SemaphoreSlim(4);
-                string finalGmlRootPath = "";
                 await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
                 {
                     await semGmlProcess.WaitAsync(); 
@@ -130,9 +129,6 @@ namespace PLATEAU.CityImport.Import
                             {
                                 Debug.LogError(e);
                             }
-
-                            // 最後に処理されたGMLのルートパスを保存
-                            finalGmlRootPath = fetchedGml.CityRootPath();
                         }
                     }
                     catch (Exception e)
@@ -148,6 +144,7 @@ namespace PLATEAU.CityImport.Import
 
                 // インポート完了後の処理
                 CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+                string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }
             finally
@@ -190,7 +187,7 @@ namespace PLATEAU.CityImport.Import
                     gml.Path = gml.Path.Replace('\\', '/');
                     string gmlName = Path.GetFileName(gml.Path);
                     fetchedGmls.Add(gml);
-                    progressDisplay.SetProgress(gmlName, 15f, "ローカルファイル取得完了（Fetch省略）");
+                    progressDisplay.SetProgress(gmlName, 15f, "ローカルファイル取得完了");
                 }
             }
             else
