@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
         /// <param name="assetConfig">変換設定</param>
         /// <param name="buildFolderPath"></param>
         /// <param name="onError">エラー時のコールバック</param>
-        public static async Task Export(
+        public static void Export(
             ConvertToAssetConfig assetConfig,
             string buildFolderPath,
             Action<string> onError = null)

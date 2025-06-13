@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -32,13 +33,15 @@ namespace PLATEAU.DynamicTile
             Clear();
 
             var init = Addressables.InitializeAsync();
+            // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
             init.WaitForCompletion();
-
-            // カタログをロード
-            if (!string.IsNullOrEmpty(catalogPath))
+ 
+            // カタログを取得
+            var addresses = LoadCatalog(catalogPath, DynamicTileLabelName);
+            if (addresses == null || addresses.Count == 0)
             {
-                Debug.Log($"AddressableLoader Initialize called with catalogPath: {catalogPath}");
-                var addresses = LoadCatalog(catalogPath, DynamicTileLabelName);
+                Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
+                return null;
             }
 
             // meta情報をロード
@@ -82,6 +85,15 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// file://プロトコルを除去します
+        /// </summary>
+        private string RemoveFileProtocol(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return path;
+            return path.StartsWith("file://") ? path.Substring("file://".Length) : path;
+        }
+
+        /// <summary>
         /// カタログファイルをロードし、Addressを読み込みます
         /// </summary>
         /// <param name="catalogPath">カタログファイルのパス</param>
@@ -92,18 +104,30 @@ namespace PLATEAU.DynamicTile
             var addresses = new List<string>();
             try
             {
-                // パスを正規化（バックスラッシュをスラッシュに変換）
-                catalogPath = catalogPath.Replace('\\', '/');
-                
-                // bundlePathを保持
-                bundlePath = Path.GetDirectoryName(catalogPath);
-
-                // file://プロトコルを追加
-                if (!catalogPath.StartsWith("file://"))
+                if (string.IsNullOrEmpty(catalogPath))
                 {
-                    catalogPath = "file://" + catalogPath;
+                    // 空の場合はローカルのカタログパスを取得
+                    catalogPath = GetLocalCatalogPath();
+                    if (!string.IsNullOrEmpty(catalogPath))
+                    {
+                        bundlePath = Path.GetDirectoryName(RemoveFileProtocol(catalogPath));
+                    }
                 }
+                else
+                {
+                    // パスを正規化（バックスラッシュをスラッシュに変換）
+                    catalogPath = catalogPath.Replace('\\', '/');
+                    
+                    // bundlePathを保持
+                    bundlePath = Path.GetDirectoryName(catalogPath);
 
+                    // file://プロトコルを追加
+                    if (!catalogPath.StartsWith("file://"))
+                    {
+                        catalogPath = "file://" + catalogPath;
+                    }
+                }
+                
                 // カタログファイルをロード
                 var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
                 
@@ -168,6 +192,49 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
             }
             return addresses;
+        }
+        
+        /// <summary>
+        /// カタログのローカルパスを取得します。
+        /// </summary>
+        /// <returns></returns>
+        private string GetLocalCatalogPath()
+        {
+            foreach (var resourceLocator in Addressables.ResourceLocators)
+            {
+                foreach (var key in resourceLocator.Keys)
+                {
+                    if (!resourceLocator.Locate(key, typeof(object), out var locations))
+                    {
+                        continue;
+                    }
+                    foreach (var loc in locations)
+                    {
+                        string internalId = RemoveFileProtocol(loc.InternalId);
+
+                        if (!internalId.EndsWith(".bundle"))
+                        {
+                            continue;
+                        }
+
+                        string dir = Path.GetDirectoryName(internalId);
+                        if (string.IsNullOrEmpty(dir))
+                        {
+                            Debug.LogError("カタログファイルのディレクトリが取得できません");
+                            return "";
+                        }
+                        // カタログファイルのパスを取得
+                        var catalogFiles = Directory.GetFiles(dir, "catalog_*.json");
+                        if (catalogFiles.Length == 0)
+                        {
+                            Debug.LogError("カタログファイルが見つかりません");
+                            return "";
+                        }
+                        return catalogFiles[0];
+                    }
+                }
+            }
+            return "";
         }
 
         /// <summary>
