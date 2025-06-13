@@ -21,6 +21,7 @@ namespace PLATEAU.CityImport.Import
     /// </summary>
     public static class CityImporter
     {
+        
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
@@ -96,8 +97,90 @@ namespace PLATEAU.CityImport.Import
                 Directory.CreateDirectory(remoteDownloadPath);
             }
 
-            List<GmlFile> fetchedGmls = new List<GmlFile>();
             bool isLocalImport = datasetSourceConfig is DatasetSourceConfigLocal;
+
+            try
+            {
+                var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
+
+                // GMLファイルを同時に処理する最大数です。
+                // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+                // ただしメモリ使用量が増えます。
+                var semGmlProcess = new SemaphoreSlim(4);
+                string finalGmlRootPath = "";
+                await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+                {
+                    await semGmlProcess.WaitAsync(); 
+                    try
+                    {
+
+                        if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                        {
+                            try
+                            {
+                                // GMLを1つインポートします。
+                                // ここはメインスレッドで呼ぶ必要があります。
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
+                            }
+                            catch(OperationCanceledException)
+                            {
+                                progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError(e);
+                            }
+
+                            // 最後に処理されたGMLのルートパスを保存
+                            finalGmlRootPath = fetchedGml.CityRootPath();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                    finally
+                    {
+                        semGmlProcess.Release();
+                    }
+
+                }));
+
+                // インポート完了後の処理
+                CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+                rootTrans.name = Path.GetFileName(finalGmlRootPath);
+            }
+            finally
+            {
+                // インポートの成否にかかわらず、リモートインポートでできた一時フォルダを削除します。
+                if (isRemoteImport && !string.IsNullOrEmpty(remoteDownloadPath) && Directory.Exists(remoteDownloadPath))
+                {
+                    try
+                    {
+                        Directory.Delete(remoteDownloadPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"一時フォルダの削除に失敗しました: {remoteDownloadPath}\n{e.Message}");
+                    }
+                }
+            }
+        }
+        
+        
+        /// <summary>
+        /// GMLファイルの取得処理を行います。
+        /// ローカルインポートの場合は元のパスをそのまま使用し、リモートインポートの場合はダウンロードします。
+        /// </summary>
+        private static async Task<List<GmlFile>> Fetch(
+            List<GmlFile> targetGmls,
+            bool isLocalImport,
+            string remoteDownloadPath,
+            CityImportConfig config,
+            IProgressDisplay progressDisplay,
+            CancellationToken? token)
+        {
+            var fetchedGmls = new List<GmlFile>();
             
             if (isLocalImport)
             {
@@ -133,70 +216,8 @@ namespace PLATEAU.CityImport.Import
                     }
                 }
             }
-
-            // GMLファイルを同時に処理する最大数です。
-            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-            // ただしメモリ使用量が増えます。
-            var semGmlProcess = new SemaphoreSlim(4);
-            string finalGmlRootPath = "";
-            await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
-            {
-                await semGmlProcess.WaitAsync(); 
-                try
-                {
-
-                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
-                    {
-                        try
-                        {
-                            // GMLを1つインポートします。
-                            // ここはメインスレッドで呼ぶ必要があります。
-                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
-                        }
-                        catch(OperationCanceledException)
-                        {
-                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-
-                        // 最後に処理されたGMLのルートパスを保存（並行処理中のスレッドセーフティのため lock を使用）
-                        lock (fetchedGmls)
-                        {
-                            finalGmlRootPath = fetchedGml.CityRootPath();
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-                finally
-                {
-                    semGmlProcess.Release();
-                }
-
-            }));
-
-            // インポート完了後の処理
-            CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-            rootTrans.name = Path.GetFileName(finalGmlRootPath);
             
-            // リモートインポートの場合は一時フォルダを削除
-            string remoteDownloadPathBase = Directory.GetParent(remoteDownloadPath)?.FullName ?? remoteDownloadPath;
-            if (isRemoteImport && Directory.Exists(remoteDownloadPathBase))
-            {
-                try
-                {
-                    Directory.Delete(remoteDownloadPathBase, true);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"一時フォルダの削除に失敗しました: {remoteDownloadPathBase}\n{e.Message}");
-                }
-            }
+            return fetchedGmls;
         }
     }
 }
