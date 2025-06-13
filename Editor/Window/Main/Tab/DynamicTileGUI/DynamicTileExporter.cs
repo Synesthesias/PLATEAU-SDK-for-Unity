@@ -8,8 +8,6 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using static PlasticGui.PlasticTableColumn;
 using UnityEditor.SceneManagement;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
