@@ -167,7 +167,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
             
             PLATEAUSceneViewCameraTracker.Initialize();
-            manager.InitializeTiles();
+            _ = manager.InitializeTiles();
 
             // シーンをEdit
             var scene = EditorSceneManager.GetActiveScene();

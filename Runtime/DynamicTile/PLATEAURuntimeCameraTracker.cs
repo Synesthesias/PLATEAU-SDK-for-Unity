@@ -30,7 +30,7 @@ namespace PLATEAU.DynamicTile
             {
                 // PLATEAUTileManagerの初期化を行う (PLATEAUTileManager側でStartメソッドで行うことも可能)
                 cachedTileManager.ClearTileAssets();
-                cachedTileManager.InitializeTiles();
+                await cachedTileManager.InitializeTiles();
                 await cachedTileManager.UpdateAssetsByCameraPosition(cachedTileManager.LastCameraPosition);
             }
             catch (System.Exception e)

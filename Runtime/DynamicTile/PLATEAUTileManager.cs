@@ -83,7 +83,7 @@ namespace PLATEAU.DynamicTile
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
         /// <returns></returns>
-        public void InitializeTiles()
+        public async Task InitializeTiles()
         {
             if (State == ManagerState.Initializing)
                 return;
@@ -91,7 +91,7 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Initializing;
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            var metaStore = addressableLoader.Initialize(catalogPath);
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
                 Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
@@ -114,7 +114,7 @@ namespace PLATEAU.DynamicTile
         // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
-            var addresses = addressableLoader.Initialize(catalogPath);
+            var addresses = await addressableLoader.InitializeAsync(catalogPath);
             foreach (var address in addresses.TileMetaInfos)
             {
                 await Load(address.AddressName);

@@ -16,19 +16,48 @@ namespace PLATEAU.DynamicTile
         private const string DynamicTileLabelName = "DynamicTile";
 
         /// <summary>
+        /// 非同期処理を制御します
+        /// </summary>
+        private async Task<T> WaitForCompletionAsync<T>(AsyncOperationHandle<T> handle)
+        {
+            // エディタプレイ以外は同期で処理
+            if (Application.isEditor && !Application.isPlaying)
+            {
+                handle.WaitForCompletion();
+            }
+            else
+            {
+                await handle.Task;
+            }
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                throw new System.Exception($"Operation failed with status: {handle.Status}");
+            }
+
+            return handle.Result;
+        }
+
+        /// <summary>
         /// 初期化処理
-        /// 非同期で処理をすると、プレイ終了後に処理がとまるため、同期で処理を行う。
         /// </summary>
         /// <param name="catalogPath"></param>
         /// <returns></returns>
-        public PLATEAUDynamicTileMetaStore Initialize(string catalogPath)
+        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath)
         {
-            var init = Addressables.InitializeAsync();
-            // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
-            init.WaitForCompletion();
- 
+            var init = Addressables.InitializeAsync(false);
+            await WaitForCompletionAsync(init);
+            if (init.Status != AsyncOperationStatus.Succeeded)
+            {
+                Addressables.Release(init);
+                Debug.LogError("Addressablesの初期化に失敗しました。");
+                return null;
+            }
+            Addressables.Release(init);
+
             // カタログを取得
-            if (!LoadCatalog(catalogPath, DynamicTileLabelName, out var metaStorePath))
+            var metaStorePath = await LoadCatalog(catalogPath, DynamicTileLabelName);
+            if (string.IsNullOrEmpty(metaStorePath))
             {
                 Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
                 return null;
@@ -43,7 +72,7 @@ namespace PLATEAU.DynamicTile
 
             return metaStore;
         }
-        
+
         /// <summary>
         /// file://プロトコルを除去します
         /// </summary>
@@ -58,11 +87,9 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="catalogPath">カタログファイルのパス</param>
         /// <param name="label">ラベル</param>
-        /// <param name="metaStorePath"></param>
         /// <returns>ロードされたGameObjectのリスト</returns>
-        private bool LoadCatalog(string catalogPath, string label, out string metaStorePath)
+        private async Task<string> LoadCatalog(string catalogPath, string label)
         {
-            metaStorePath = string.Empty;
             try
             {
                 var bundlePath = string.Empty;
@@ -91,15 +118,14 @@ namespace PLATEAU.DynamicTile
                 }
 
                 // カタログファイルをロード
-                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath, true);
-
-                // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
-                catalogHandle.WaitForCompletion();
+                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
+                await WaitForCompletionAsync(catalogHandle);
 
                 if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                    return false;
+                    Addressables.Release(catalogHandle);
+                    return "";
                 }
 
                 // ScriptableObjectのアドレスを取得
@@ -114,19 +140,20 @@ namespace PLATEAU.DynamicTile
 
                         if (bundlePath != null)
                         {
-                            // メタ情報のパスを保持
-                            metaStorePath = Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
-                            return true;
+                            Addressables.Release(catalogHandle);
+                            // メタ情報のパスを返す
+                            return Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
                         }
                     }
                 }
+                Addressables.Release(catalogHandle);
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
             }
             
-            return false;
+            return "";
         }
 
         /// <summary>
