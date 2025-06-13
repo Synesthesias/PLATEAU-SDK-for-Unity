@@ -89,17 +89,16 @@ namespace PLATEAU.DynamicTile
                         catalogPath = "file://" + catalogPath;
                     }
                 }
-                
+
                 // カタログファイルをロード
-                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-                
+                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath, true);
+
                 // NOTE: プレイ終了直後だと非同期で取得できないため、同期で取得
                 catalogHandle.WaitForCompletion();
 
                 if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                    Addressables.Release(catalogHandle);
                     return false;
                 }
 
@@ -121,13 +120,12 @@ namespace PLATEAU.DynamicTile
                         }
                     }
                 }
-                // カタログ用のhandleの解放
-                Addressables.Release(catalogHandle);
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
             }
+            
             return false;
         }
 
