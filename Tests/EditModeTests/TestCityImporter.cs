@@ -14,7 +14,7 @@ namespace PLATEAU.Tests.EditModeTests
     public class TestCityImporter
     {
 
-        /// <summary> インポート時、テストデータはこのパスにコピーされることを確認します。 </summary>
+        /// <summary> リモートインポートでは一時フォルダが使用されるため、このパスにはファイルが残らないことを確認します。 </summary>
         private const string testDataFetchPath = "Assets/StreamingAssets/.PLATEAU";
 
         [UnityTest]
@@ -25,8 +25,9 @@ namespace PLATEAU.Tests.EditModeTests
             yield return cityDefinition.ImportLocal().AsIEnumerator();
             LogAssert.ignoreFailingMessages = false;
             
-            // GMLファイルが生成されることを確認します。
-            cityDefinition.AssertFilesExist(testDataFetchPath + "/TestDataTokyoMini");
+            // ローカルインポートの場合は、元のファイルが元の場所にそのまま存在することを確認します。
+            // Fetch処理を省略しているため、StreamingAssetsにはコピーされません。
+            cityDefinition.AssertFilesExist(cityDefinition.SrcRootDirPathLocal);
 
             // ゲームオブジェクトが生成されることを確認します。
             AssertGameObjsExist(cityDefinition.ExpectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
@@ -39,8 +40,10 @@ namespace PLATEAU.Tests.EditModeTests
             var cityDefinition = TestCityDefinition.TestServer23Ku;
             yield return cityDefinition.ImportServer().AsIEnumerator();
             
-            // GMLファイルが生成されることを確認します。
-            cityDefinition.AssertFilesExist(testDataFetchPath + "/13100_tokyo23-ku_2020_citygml_3_2_op");
+            // リモートインポートではダウンロードしたファイルは一時フォルダに保存され、インポート後に削除される。
+            // そのため、StreamingAssetsにファイルが残っていないことを確認します。
+            string expectedPath = testDataFetchPath + "/13100_tokyo23-ku_2020_citygml_3_2_op";
+            Assert.False(Directory.Exists(expectedPath), $"一時ファイルが削除されていることを確認: {expectedPath}");
             
             // ゲームオブジェクトが生成されることを確認します。
             AssertGameObjsExist(cityDefinition.ExpectedObjNames.Concat(new []{"LOD0", "LOD1", "LOD2"}));
