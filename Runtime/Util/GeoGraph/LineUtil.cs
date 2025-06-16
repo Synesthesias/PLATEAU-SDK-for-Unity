@@ -652,7 +652,13 @@ namespace PLATEAU.Util.GeoGraph
         public static Vector2 GetNearestPoint(this Ray2D self, Vector2 p, out float t)
         {
             var d = self.direction;
-            t = Vector2.Dot(self.direction, p - self.origin);
+            var sqrD = Vector2.Dot(d, d); // |d|^2
+            if (sqrD <= Mathf.Epsilon)
+            {
+                t = 0f;
+                return self.origin;
+            }
+            t = Vector2.Dot(self.direction, p - self.origin) / sqrD;
             return self.origin + t * d;
         }
 

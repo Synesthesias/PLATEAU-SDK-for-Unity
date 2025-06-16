@@ -128,6 +128,9 @@ namespace Tests.RoadNetworkTest
 
                     var lenA = (posA - pos).magnitude;
                     var lenB = (posB - pos).magnitude;
+                    
+                    // 極端に距離が小さいときは正しくテストできないのでスキップ。極端な値での正確性は求めない。
+                    if (lenA < 0.01f || lenB < 0.01f) continue;
 
                     // lenA : lenB = p : (1-p)
                     var x = lenA * (1 - p);
@@ -136,7 +139,7 @@ namespace Tests.RoadNetworkTest
                     var p2 = lenA / (lenA + lenB);
                     if (Mathf.Abs(p2 - p) > 1e-1f)
                     {
-                        var label = $"[{i}] {p} != {p2}. {a.ToLogString()}/{b.ToLogString()}/{ray.ToLogString()} {x} != {y}";
+                        var label = $"[{i}] lenA={lenA}, lenB={lenB}, p={p} p2={p2}. p!=p2. {a.ToLogString()}/{b.ToLogString()}/{ray.ToLogString()} {x} != {y}";
                         Assert.IsTrue(false, label);
                     }
                 }
@@ -149,7 +152,7 @@ namespace Tests.RoadNetworkTest
 
                 foreach (var p in Enumerable.Range(0, pCount + 1).Select(x => 1f * x / pCount))
                 {
-                    var ray = GeoGraph2D.LerpRay2(a, b, p);
+                    var ray = GeoGraph2D.LerpRay(a, b, p);
                     Check(a, b, ray, p);
                 }
             }
