@@ -1155,98 +1155,52 @@ namespace PLATEAU.Util.GeoGraph
         /// <param name="rayB"></param>
         /// <param name="p"></param>
         /// <returns></returns>
-        public static Ray2D LerpRay2(Ray2D rayA, Ray2D rayB, float p)
-        {
-            static Vector2 Get(Ray2D r1, Ray2D r2, Vector2 a, float p)
-            {
-                var b = r2.GetNearestPoint(a);
-                if ((a - b).sqrMagnitude < Epsilon)
-                {
-                    return a;
-                }
-                var c = r1.GetNearestPoint(b);
-
-                var ab = (b - a).magnitude;
-                var bc = (c - b).magnitude;
-
-                var x = ab * (1 - p);
-                var t = x / (x + bc * p);
-                return Vector2.Lerp(a, b, t);
-            }
-
-            p = 1 - Mathf.Clamp01(p);
-            var p1 = Get(rayA, rayB, rayA.origin, p);
-            var p2 = Get(rayA, rayB, rayA.origin + rayA.direction * 10, p);
-            var dir = (p2 - p1).normalized;
-            if (Vector2.Dot(dir, rayA.direction) < 0)
-                dir = -dir;
-            return new Ray2D(p1, dir);
-        }
-
-        /// <summary>
-        /// 直線l上の点から直線a,bへの距離がp : 1-pとなるような直線lを返す
-        /// 0.5だと中間の角度が返る
-        /// \ p  |1-p /
-        ///  \   |   /
-        ///   \  |  / 
-        ///  a \ | / b
-        ///     \ /
-        /// </summary>
-        /// <param name="rayA"></param>
-        /// <param name="rayB"></param>
-        /// <param name="p"></param>
-        /// <returns></returns>
         public static Ray2D LerpRay(Ray2D rayA, Ray2D rayB, float p)
         {
-            // 2線が平行の時は交点が無いので特別処理
-            if (LineUtil.LineIntersection(rayA, rayB, out var intersection, out var t1, out var t2) == false)
+            p = Mathf.Clamp01(p);
+            if (p <= Mathf.Epsilon) return rayA;
+            if (p >= 1f - Mathf.Epsilon) return rayB;
+
+            // 単位方向 → 単位法線
+            Vector2 dA = rayA.direction.normalized;
+            Vector2 dB = rayB.direction.normalized;
+            Vector2 nA = new(-dA.y, dA.x);
+            Vector2 nB = new(-dB.y, dB.x);
+
+            // 必要なら nB の向きを合わせる（符号が違うと精度が落ちる）
+            if (Vector2.Dot(nA, nB) < 0) nB = -nB;
+
+            float k = p / (1f - p); // 距離比 → 重み
+            int branch = 1; // s = +1 が基本
+            Vector2 m = nA - k * nB; // 法線ベクトル
+
+            // m が極端に小さい＝ほぼ平行 ⇒ もう一方の枝を使う
+            if (m.sqrMagnitude < 1e-8f)
             {
-                var aPos = Vector2.Dot(rayB.origin - rayA.origin, rayA.direction) * rayA.direction + rayA.origin;
-                var origin = Vector2.Lerp(aPos, rayB.origin, p);
-                return new Ray2D(origin, rayA.direction);
+                branch = -1;
+                m = nA + k * nB; // s = -1
             }
 
-            var dirA = rayA.direction;
-            var dirB = rayB.direction;
+            // 定数項
+            float cA = Vector2.Dot(nA, rayA.origin);
+            float cB = Vector2.Dot(nB, rayB.origin);
+            float d = cA - branch * k * cB;
 
-            var radX = Mathf.Deg2Rad * Vector2.Angle(dirA, dirB);
-            var siX = Mathf.Sin(radX);
-            var coX = Mathf.Cos(radX);
-            // a-b間の角度をx
-            // a-l間の角度A
-            // l-b間の角度(x - A)
-            // sin(A) : sin(B) = p : (1-p)
-            // B = X - A
-            // sin(A) : sin(X - A) = p : (1-p)
-            // Sin(A) : sin(X)cos(A) - cos(X)sin(A) = p : (1-p)
-            // (1-p)Sin(A) = p ( sin(X)cos(A) - cos(X)sin(A))
-            // ((1-p) + p * cos(X))sin(A) = p*sin(X)cos(A)
-            // tan(A) = p*sin(X) / ((1-p) + p * cos(X))
-            var radA = Mathf.Atan2(p * siX, 1 - p + p * coX);
-            var dir = Vector2Ex.RotateTo(dirA, dirB, radA);
+            // 線上の 1 点を “法線方向” に投影して作る（交点を使わない）
+            float denom = Vector2.Dot(m, m); // = |m|²  > 0  （上でゼロ回避済み）
+            Vector2 origin = m * (d / denom);
 
-            // a,bが平行に近いとintersectionが遠点となりfloat誤差が発生するため, a,bのStartからdirへの射影をして見つかった位置をoriginにする
-            var inters = new List<Vector2>(2);
-            // rayAの法線上の点posにおいて, len(rayA.origin - pos) : distance(pos - rayB) = p : 1-pとなる点は, 答えのray上にある
-            if (CalcLerpPointInLine(new Ray2D(rayA.origin, rayA.direction.Rotate(90)), rayB, p, out var pos))
-            {
-                inters.Add(pos);
-            }
-            if (CalcLerpPointInLine(new Ray2D(rayB.origin, rayB.direction.Rotate(90)), rayA, p, out var pos2))
-            {
-                inters.Add(pos2);
-            }
+            // 方向ベクトル = 法線を 90° 回転
+            Vector2 dir = new(m.y, -m.x);
+            dir.Normalize();
 
-            if (inters.Count == 0)
-                return new Ray2D(intersection, dir);
+            // A とおおむね同じ向きにそろえると見た目が安定
+            if (Vector2.Dot(dir, rayA.direction) < 0) dir = -dir;
 
-            if (inters.Count == 1)
-                return new Ray2D(inters[0], dir);
-
-            if (Vector2.Dot(dir, inters[1] - inters[0]) > 0)
-                return new Ray2D(inters[0], dir);
-            return new Ray2D(inters[1], dir);
+            return new Ray2D(origin, dir);
         }
+        
+        
 
         public class BorderParabola2D
         {

@@ -12,8 +12,15 @@ namespace PLATEAU.Util
         // この値はテストのときのみ変更されるのでreadonlyにしないでください。
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
-
-        public static readonly string PLATEAUSrcFetchDir = Path.GetFullPath(Application.streamingAssetsPath + "/.PLATEAU");
+        
+        
+        /// <summary>
+        /// インポートでのダウンロード用の一時フォルダのパスです。インポート後に削除されます。
+        /// </summary>
+        public static string GetTempImportDir()
+        {
+            return Path.Combine(Application.temporaryCachePath, "PLATEAU_Import", System.Guid.NewGuid().ToString("N"));
+        }
         public const string UdxFolderName = "udx";
         private static readonly string packageFormalName = "com.synesthesias.plateau-unity-sdk"; // 外部から使う時はSdkBasePathを使ってください
         private static readonly string packageDirName = "PLATEAU-SDK-for-Unity";

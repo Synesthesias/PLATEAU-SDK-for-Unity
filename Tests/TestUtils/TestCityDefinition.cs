@@ -110,7 +110,7 @@ namespace PLATEAU.Tests.TestUtils
 
         /// <summary>
         /// <see cref="TestCityDefinition"/> に記述されたファイルについて、
-        /// GMLファイルとその関連ファイルが Assets/StreamingAssets/.PLATEAU にコピーされることを確認します。
+        /// GMLファイルとその関連ファイルが指定フォルダにコピーされることを確認します。
         /// </summary>
         public void AssertFilesExist(string testDataFetchPath)
         {
