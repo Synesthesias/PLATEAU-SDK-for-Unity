@@ -61,7 +61,9 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
-        public const bool ShowDebugLog = false;
+        public const bool ShowDebugLog = true;
+
+        public static bool IsTileCreationInProgress { get; set; } = false;
 
         static PLATEAUEditorEventListener()
         {
@@ -93,6 +95,9 @@ namespace PLATEAU.DynamicTile
 
         static void OnProjectChanged()
         {
+            if (IsTileCreationInProgress) 
+                return;
+
             Log("Project Changed");
 
             InitView();

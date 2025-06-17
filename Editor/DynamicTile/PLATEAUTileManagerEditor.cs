@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -58,6 +59,7 @@ namespace PLATEAU.DynamicTile
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
+                EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.IsTileCreationInProgress.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
                 foreach (var tile in dynamicTiles)
                 {
@@ -66,6 +68,7 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
                     EditorGUILayout.IntField($"LOD: ", tile.Lod);
                     EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
+                    EditorGUILayout.IntField($"ZoomLevel: ", tile.ZoomLevel);
                     EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());

@@ -24,7 +24,7 @@ namespace PLATEAU.DynamicTile
             None,
             Initializing,
             Operating,
-            CleaningUp
+            CleaningUp,
         }
 
         /// <summary>

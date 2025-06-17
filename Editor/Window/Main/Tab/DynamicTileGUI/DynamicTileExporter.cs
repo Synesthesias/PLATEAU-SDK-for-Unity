@@ -8,7 +8,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static PlasticGui.PlasticTableColumn;
+using PLATEAU.Util.Async;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 {
@@ -53,6 +53,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             // グループを削除
             AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel);
 
+            PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
+
             // DynamicTile管理用GameObjectを生成
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (manager == null)
@@ -79,7 +81,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 assetConfig.SrcGameObj = cityObject.gameObject;
             
-                var baseFolderPath = Path.Combine(assetConfig.AssetPath, cityObject.gameObject.name);
+                var baseFolderPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11"); // 解像度オリジナルなので_11を付ける
                 var saveFolderPath = baseFolderPath;
                 int count = 1;
                 // 同名のディレクトリが存在する場合は、_1, _2, ... のように連番を付けて保存
@@ -105,24 +107,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                     continue;
                 }
 
-                progressBar.Display("動的タイルをAddressableに登録中..", progress);
-    
-                // プレハブをAddressableに登録
-                // TODO : タイルごとにAddress名を設定する
-                var address = prefabAsset.name;
-                AddressablesUtility.RegisterAssetAsAddressable(
-                    prefabPath,
-                    address,
-                    groupName,
-                    new List<string> { AddressableLabel });
+                //低解像度のプレハブを生成 (Tile生成処理追加後に仕様が変わるのでとりあえずベタ実装）
+                var prefab1Data = new AltResolutionPrefabCreator.Result { SavePath = prefabPath, Prefab = prefabAsset, Bounds = convertedObject.GetComponentInChildren<Renderer>() == null ? default : convertedObject.GetComponentInChildren<Renderer>().bounds , ZoomLevel = 11 }; // ↑で生成済みなのでResultのみ
+                var prefab2Data = AltResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 2, 10);
+                var prefab4Data = AltResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 4, 9);
 
-                var renderer = convertedObject.GetComponent<Renderer>();
-                var bounds = (renderer != null) ? renderer.bounds : new Bounds(Vector3.zero, Vector3.one);
-                var tile = new PLATEAUDynamicTile(address, cityObject.Lod, bounds);
-                manager.AddTile(tile);
-                
-                // メタ情報を登録
-                metaStore.AddMetaInfo(tile.Address, tile.Extent, tile.Lod);
+                progressBar.Display("動的タイルをAddressableに登録中..", progress);
+
+                RegisterAssets(new List<AltResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data } , groupName, cityObject, manager, metaStore);
 
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
@@ -173,11 +165,42 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                 manager.SaveCatalogPath(catalogPath);
             }
-            
-            PLATEAUSceneViewCameraTracker.Initialize();
 
             progressBar.Display("Addressableのビルドを実行中...", 0.99f);
             Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+
+            PLATEAUEditorEventListener.IsTileCreationInProgress = false; // タイル生成中フラグを設定
+            PLATEAUSceneViewCameraTracker.Initialize();
+            manager.InitializeTiles().ContinueWithErrorCatch(); // タイルの初期化
+        }
+
+        private static void RegisterAssets(IList<AltResolutionPrefabCreator.Result> results, string groupName, PLATEAUCityObjectGroup cityObject, PLATEAUTileManager manager, PLATEAUDynamicTileMetaStore metaStore)
+        {
+            foreach(var res in results)
+            {
+                var prefabAsset = res.Prefab;
+                var prefabPath = AssetPathUtil.GetAssetPath(res.SavePath);
+                var bounds = res.Bounds;
+                var zoomLevel = res.ZoomLevel;
+                var lod = cityObject.Lod;
+
+                // プレハブをAddressableに登録
+                // TODO : タイルごとにAddress名を設定する
+                var address = prefabAsset.name;
+                AddressablesUtility.RegisterAssetAsAddressable(
+                    prefabPath,
+                address,
+                    groupName,
+                    new List<string> { AddressableLabel });
+
+                Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
+
+                var tile = new PLATEAUDynamicTile(address, lod, bounds, zoomLevel);
+                manager.AddTile(tile);
+
+                // メタ情報を登録
+                metaStore.AddMetaInfo(address, bounds, lod, zoomLevel);
+            }
         }
 
         private static GameObject PrepareAndConvert(

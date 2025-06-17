@@ -22,11 +22,16 @@ namespace PLATEAU.DynamicTile
         private int lod;
         public int LOD => lod;
 
-        public PLATEAUDynamicTileMetaInfo(string addressName, Bounds extent, int lod)
+        [SerializeField]
+        private int zoomLevel;
+        public int ZoomLevel => zoomLevel;
+
+        public PLATEAUDynamicTileMetaInfo(string addressName, Bounds extent, int lod, int zoomLevel)
         {
             this.addressName = addressName;
             this.extent = extent;
             this.lod = lod;
+            this.zoomLevel = zoomLevel;
         }
     }
 
@@ -45,7 +50,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="addressName"></param>
         /// <param name="extent"></param>
         /// <param name="lod"></param>
-        public void AddMetaInfo(string addressName, Bounds extent, int lod)
+        public void AddMetaInfo(string addressName, Bounds extent, int lod, int zoomLevel)
         {
             if (string.IsNullOrEmpty(addressName))
             {
@@ -59,7 +64,7 @@ namespace PLATEAU.DynamicTile
                 return;
             }
 
-            tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(addressName, extent, lod));
+            tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(addressName, extent, lod, zoomLevel));
         }
         
         /// <summary>

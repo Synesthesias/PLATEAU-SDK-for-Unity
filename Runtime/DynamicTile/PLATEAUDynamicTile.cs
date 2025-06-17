@@ -57,6 +57,8 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public int Lod { get; private set; } = 0;
 
+        public int ZoomLevel { get; private set; } = 0;
+
         /// <summary>
         /// タイルの範囲を示すBoundsを保持する。
         /// </summary>
@@ -83,10 +85,11 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
-        public PLATEAUDynamicTile(string address, int lod, Bounds bounds)
+        public PLATEAUDynamicTile(string address, int lod, Bounds bounds, int zoomLevel)
         {
             Address = address;
             Lod = lod;
+            ZoomLevel = zoomLevel;
 
             if (bounds.size != Vector3.zero)
             {
@@ -117,6 +120,7 @@ namespace PLATEAU.DynamicTile
             Address = info.AddressName;
             Lod = info.LOD;
             Extent = info.Extent;
+            ZoomLevel = info.ZoomLevel;
         }
 
         /// <summary>
