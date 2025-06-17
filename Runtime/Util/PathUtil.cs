@@ -12,8 +12,7 @@ namespace PLATEAU.Util
         // この値はテストのときのみ変更されるのでreadonlyにしないでください。
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static string unityProjectDataPath = Application.dataPath;
-
-        public static readonly string PLATEAUSrcFetchDir = Path.GetFullPath(Application.streamingAssetsPath + "/.PLATEAU");
+        
         
         /// <summary>
         /// インポートでのダウンロード用の一時フォルダのパスです。インポート後に削除されます。

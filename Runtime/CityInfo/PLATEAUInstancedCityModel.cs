@@ -42,8 +42,11 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// GMLに対応する Transform からGMLを非同期ロードして <see cref="CityModel"/> を返します。
         /// 合致するGMLがなければ null を返します。
+        /// <param name="parentPathOfRootDir">
+        /// 3D都市モデルが入っているディレクトリの親ディレクトリのパスを指定します。
+        /// </param>
         /// </summary>
-        public async Task<CityModel> LoadGmlAsync(Transform gmlTransform)
+        public async Task<CityModel> LoadGmlAsync(Transform gmlTransform, string parentPathOfRootDir)
         {
             var trans = transform;
             int childCount = trans.childCount;
@@ -52,7 +55,7 @@ namespace PLATEAU.CityInfo
                 var child = trans.GetChild(i);
                 if (child == gmlTransform)
                 {
-                    return await PLATEAUCityGmlProxy.LoadAsync(child.gameObject, trans.name);
+                    return await PLATEAUCityGmlProxy.LoadAsync(child.gameObject, trans.name, parentPathOfRootDir);
                 }
             }
 

@@ -30,17 +30,10 @@ namespace PLATEAU.CityInfo
         /// </param>
         /// <param name="parentPathOfRootDir">
         /// <paramref name="rootDirName"/>の親ディレクトリのパスを指定します。
-        /// 省略または空文字の場合、インポート時に自動でコピーされる場所になります。
-        /// すなわち、 Assets/StreamingAssets/.PLATEAU になります。
         /// </param>
         /// <returns>パースした結果を返します。パース失敗時は null を返します。</returns>
-        public static async Task<CityModel> LoadAsync(GameObject go, string rootDirName = null, string parentPathOfRootDir = null)
+        public static async Task<CityModel> LoadAsync(GameObject go, string rootDirName, string parentPathOfRootDir)
         {
-            // デフォルト値は PLATEAUウィンドウで操作したときのインポート先です。
-            if (string.IsNullOrEmpty(parentPathOfRootDir))
-            {
-                parentPathOfRootDir = PathUtil.PLATEAUSrcFetchDir;
-            }
 
             if (string.IsNullOrEmpty(rootDirName))
             {
