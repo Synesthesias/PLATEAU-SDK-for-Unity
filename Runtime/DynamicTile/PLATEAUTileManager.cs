@@ -91,20 +91,13 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Initializing;
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            // TODO: ↓で取得できるように変更
-            //var metaStore = await addressableLoader.Initialize(catalogPath);
-
-            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>("PLATEAUDynamicTileMetaStore");
-            await handle.Task;
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
+            if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
-                Debug.LogError("PLATEAUDynamicTileMetaStoreのロードに失敗しました");
+                Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
                 State = ManagerState.None;
                 return;
             }
-
-            var metaStore = handle.Result;
 
             Debug.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             ClearTiles(); // 既存のタイルリストをクリア
@@ -114,8 +107,6 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            Addressables.Release(handle); // ハンドルを解放
-
             LastCameraPosition = Vector3.zero; 
             State = ManagerState.Operating;
         }
@@ -123,10 +114,10 @@ namespace PLATEAU.DynamicTile
         // TODO:　この処理は削除予定
         public async Task LoadFromCatalog()
         {
-            var addresses = await addressableLoader.Initialize(catalogPath);
-            foreach (var address in addresses)
+            var addresses = await addressableLoader.InitializeAsync(catalogPath);
+            foreach (var address in addresses.TileMetaInfos)
             {
-                await Load(address);
+                await Load(address.AddressName);
             }
         }
 

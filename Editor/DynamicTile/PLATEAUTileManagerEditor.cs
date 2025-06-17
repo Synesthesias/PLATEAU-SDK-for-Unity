@@ -35,7 +35,7 @@ namespace PLATEAU.DynamicTile
 
                 if (GUILayout.Button("Load Tile Scriptable Objects"))
                 {
-                    _ = tileManager.InitializeTiles();  
+                    _ = tileManager.InitializeTiles();
                 }
 
                 if (GUILayout.Button("Update Assets By Camera Position"))

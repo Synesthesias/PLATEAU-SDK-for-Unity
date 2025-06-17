@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using PLATEAU.Util.Async;
+using UnityEditor.SceneManagement;
 
 namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 {
@@ -57,12 +58,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
             // DynamicTile管理用GameObjectを生成
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (manager == null)
+            if (manager != null)
             {
-                GameObject managerObj = new GameObject("DynamicTileManager");
-                manager = managerObj.AddComponent<PLATEAUTileManager>();
+                // DynamicTile管理用Managerを破棄
+                GameObject.DestroyImmediate(manager.gameObject);
             }
-            manager.ClearTiles();
             
             // メタデータ生成
             var metaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
@@ -116,6 +116,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 RegisterAssets(new List<AltResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data } , groupName, cityObject, manager, metaStore);
 
+                //var renderer = convertedObject.GetComponent<Renderer>();
+                //var bounds = (renderer != null) ? renderer.bounds : new Bounds(Vector3.zero, Vector3.one);
+                //var tile = new PLATEAUDynamicTile(address, cityObject.Lod, bounds);
+                
+                //// メタ情報を登録
+                //metaStore.AddMetaInfo(tile.Address, tile.Extent, tile.Lod);
+
                 // シーン上のオブジェクトを削除
                 GameObject.DestroyImmediate(convertedObject);
             }
@@ -138,21 +145,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             else
             {
                 // プロファイルをデフォルトに設定
-                AddressablesUtility.SetDefaultProfileSettings();
+                AddressablesUtility.SetDefaultProfileSettings(groupName);
             }
 
             // Addressablesのビルドを実行
             AddressablesUtility.BuildAddressables(true);
 
-            // シーンが更新されているので、再度取得
-            manager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
-            if (manager == null)
-            {
-                Debug.LogWarning("PLATEAUTileManagerが見つかりません。エクスポート処理は完了しましたが、カタログパスの保存ができませんでした。");
-                return;
-            }
-
-            manager.SaveCatalogPath("");
+            // managerを生成
+            var managerObj = new GameObject("DynamicTileManager");
+            manager = managerObj.AddComponent<PLATEAUTileManager>();
+            
             if (isExcludeAssetFolder)
             {
                 // カタログファイルのパスを取得
@@ -164,6 +166,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 }
                 var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                 manager.SaveCatalogPath(catalogPath);
+            }
+            
+            PLATEAUSceneViewCameraTracker.Initialize();
+            _ = manager.InitializeTiles();
+
+            // シーンをEdit
+            var scene = EditorSceneManager.GetActiveScene();
+            if (!scene.isDirty)
+            {
+                EditorSceneManager.MarkSceneDirty(scene);
             }
 
             progressBar.Display("Addressableのビルドを実行中...", 0.99f);

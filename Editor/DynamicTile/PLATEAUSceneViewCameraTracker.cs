@@ -129,6 +129,7 @@ namespace PLATEAU.DynamicTile
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Log("Play Mode about to end");
+                tileManager.ClearTileAssets();
                 PLATEAURuntimeCameraTracker.StopCameraTracking();
             }
             else if (state == PlayModeStateChange.EnteredEditMode)
