@@ -114,7 +114,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 progressBar.Display("動的タイルをAddressableに登録中..", progress);
 
-                RegisterAssets(new List<AltResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data } , groupName, cityObject, manager, metaStore);
+                RegisterAssets(new List<AltResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data } , groupName, cityObject, metaStore);
 
                 //var renderer = convertedObject.GetComponent<Renderer>();
                 //var bounds = (renderer != null) ? renderer.bounds : new Bounds(Vector3.zero, Vector3.one);
@@ -186,7 +186,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             manager.InitializeTiles().ContinueWithErrorCatch(); // タイルの初期化
         }
 
-        private static void RegisterAssets(IList<AltResolutionPrefabCreator.Result> results, string groupName, PLATEAUCityObjectGroup cityObject, PLATEAUTileManager manager, PLATEAUDynamicTileMetaStore metaStore)
+        private static void RegisterAssets(IList<AltResolutionPrefabCreator.Result> results, string groupName, PLATEAUCityObjectGroup cityObject, PLATEAUDynamicTileMetaStore metaStore)
         {
             foreach(var res in results)
             {
@@ -207,8 +207,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
 
                 Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
 
-                var tile = new PLATEAUDynamicTile(address, lod, bounds, zoomLevel);
-                manager.AddTile(tile);
+                //var tile = new PLATEAUDynamicTile(address, lod, bounds, zoomLevel);
+                //manager.AddTile(tile);
 
                 // メタ情報を登録
                 metaStore.AddMetaInfo(address, bounds, lod, zoomLevel);
