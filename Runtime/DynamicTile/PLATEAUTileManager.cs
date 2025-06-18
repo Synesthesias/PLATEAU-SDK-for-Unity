@@ -161,16 +161,18 @@ namespace PLATEAU.DynamicTile
 
             try
             {
+                if (tile.LoadHandle.IsValid() && !tile.LoadHandle.IsDone)
+                {
+                    tile.LoadHandleCancellationTokenSource.Cancel();
+                    await tile.LoadHandle.Task;
+                    tile.LoadHandleCancellationTokenSource.Dispose();
+                    tile.LoadHandleCancellationTokenSource = null;
+                }
+
                 if (tile.LoadHandleCancellationTokenSource == null)
                 {
                     // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
                     tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
-                }
-
-                if (!tile.LoadHandle.IsDone)
-                {
-                    tile.LoadHandleCancellationTokenSource.Cancel();
-                    await tile.LoadHandle.Task;
                 }
 
                 var timeoutTask = Task.Delay((int)(timeoutSeconds * 1000));
@@ -652,7 +654,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task CancelLoadTask()
         {
-            LoadTaskCancellationTokenSource?.Cancel();
+            try
+            {
+                LoadTaskCancellationTokenSource?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            { }
             LoadTaskCancellationTokenSource?.Dispose();
             if (HasCurrentTask)
                 await CurrentTask;

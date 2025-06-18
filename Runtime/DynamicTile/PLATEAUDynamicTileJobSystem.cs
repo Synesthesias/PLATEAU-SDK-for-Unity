@@ -165,7 +165,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async Task ExecuteLoadTask(CancellationToken token)
         {
-            tileManager.DebugLog($"<color=green>ExecuteLoadTask start. TileCount: {TileCount}</color>");
+            //tileManager.DebugLog($"<color=green>ExecuteLoadTask start. TileCount: {TileCount}</color>");
             for (int i = 0; i < NativeDistances.Length; i++)
             {
                 var distance = NativeDistances[i];
@@ -193,9 +193,9 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    tileManager.DebugLog($"Loading start {i}/{NativeDistances.Length} tile: {tile.Address} ");
+                    //tileManager.DebugLog($"Loading start {i}/{NativeDistances.Length} tile: {tile.Address} ");
                     await tileManager.LoadWithRetry(tile);
-                    tileManager.DebugLog($"Loading finish {i}/{NativeDistances.Length} tile: {tile.Address}");
+                    //tileManager.DebugLog($"Loading finish {i}/{NativeDistances.Length} tile: {tile.Address}");
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
@@ -203,7 +203,7 @@ namespace PLATEAU.DynamicTile
                 }
                 token.ThrowIfCancellationRequested();
             }
-            tileManager.DebugLog($"<color=green>ExecuteLoadTask Finish. TileCount: {TileCount}</color>");
+            //tileManager.DebugLog($"<color=green>ExecuteLoadTask Finish. TileCount: {TileCount}</color>");
         }
 
         /// <summary>
