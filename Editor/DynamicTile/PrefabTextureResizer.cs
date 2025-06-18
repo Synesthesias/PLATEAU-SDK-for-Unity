@@ -67,8 +67,8 @@ namespace PLATEAU.DynamicTile
         {
             //サイズ
             var proportion = 1f / denominator;
-            var newWidth = Mathf.RoundToInt(sourceTexture.width * proportion);
-            var newHeight = Mathf.RoundToInt(sourceTexture.height * proportion);
+            var newWidth = Mathf.Max(1, Mathf.RoundToInt(sourceTexture.width * proportion));
+            var newHeight = Mathf.Max(1, Mathf.RoundToInt(sourceTexture.height * proportion));
 
             //TextureImporter取得
             var textureImporter = GetTextureImporter(sourceTexture);
@@ -160,16 +160,10 @@ namespace PLATEAU.DynamicTile
                 int quality = 75; // 画質を指定（0〜100）
                 bytes = texture.EncodeToJPG(quality);
             }
-            else if (fileExtension == "png")
-            {
-                // PNG形式の場合、PNGエンコーダを使用
-                bytes = texture.EncodeToPNG();
-            }
-
             else
             {
-                Debug.LogError("Unsupported texture format: " + fileExtension);
-                return;
+                // PNGエンコーダを使用
+                bytes = texture.EncodeToPNG();
             }
 
             string path = AssetPathUtil.GetFullPath(relativePath);

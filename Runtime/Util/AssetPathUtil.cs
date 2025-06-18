@@ -6,7 +6,7 @@ namespace PLATEAU.Util
     public static class AssetPathUtil
     {
 
-        public static readonly string ASSET_PATH = "Assets/";
+        public static readonly string ASSET_PATH = "Assets";
 
         /// <summary>
         /// 「Assets/」以下のパスからフルパスを取得
@@ -15,7 +15,8 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static string GetFullPath(string assetPath)
         {
-            var fullPath = Path.Combine(Application.dataPath, assetPath.Replace(ASSET_PATH,""));
+            var trimmed = assetPath.StartsWith(ASSET_PATH) ? assetPath.Substring(ASSET_PATH.Length + 1) : assetPath;
+            var fullPath = Path.Combine(Application.dataPath, trimmed);
             return fullPath;
         }
 
@@ -41,7 +42,7 @@ namespace PLATEAU.Util
             if(relativePath.StartsWith(ASSET_PATH))
                 return relativePath;
 
-            var assetPath = ASSET_PATH + relativePath;
+            var assetPath = Path.Combine(ASSET_PATH, relativePath);
             return assetPath;
         }
 

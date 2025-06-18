@@ -14,7 +14,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 生成したPrefabの情報を保持する構造体
         /// </summary>
-        public struct Result
+        public class Result
         {
             public GameObject Prefab;
             public Bounds Bounds;
@@ -189,6 +189,7 @@ namespace PLATEAU.DynamicTile
                     {
                         var material = renderer.sharedMaterials[i];
                         if (material != null && material.shader.name == "Standard")
+                        //if (material != null && material.HasProperty("_MainTex"))
                         {
                             Texture2D albedoTexture = material.mainTexture as Texture2D;
                             if (albedoTexture != null)
@@ -230,6 +231,12 @@ namespace PLATEAU.DynamicTile
         {
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
+
+            if(target.GetComponentInChildren<Renderer>() == null)
+            {
+                Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
+                return;
+            }
 
             // マテリアルアサイン
             target.GetComponentInChildren<Renderer>().sharedMaterials = materialList;

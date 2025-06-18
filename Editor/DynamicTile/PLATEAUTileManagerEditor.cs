@@ -112,6 +112,12 @@ namespace PLATEAU.DynamicTile
             isShowingZoomLevel = false;
         }
 
+        public void OnDisable()
+        {
+            SceneView.duringSceneGui -= DrawZoomLevel;
+            isShowingZoomLevel = false;
+        }
+
         /// <summary>
         /// ZoomレベルをSceneViewに描画
         /// </summary>

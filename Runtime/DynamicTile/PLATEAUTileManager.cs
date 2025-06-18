@@ -49,7 +49,6 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 各Zoomレベルごとのカメラからのロード距離を定義します。
         /// </summary>
-        [SerializeField]
         public Dictionary<int, (float, float)> loadDistances = new Dictionary<int, (float, float)>
         {
             { 11, (-1000f, 1001f) },
@@ -655,10 +654,9 @@ namespace PLATEAU.DynamicTile
         {
             LoadTaskCancellationTokenSource?.Cancel();
             LoadTaskCancellationTokenSource?.Dispose();
-            LoadTaskCancellationTokenSource = new();
-
             if (HasCurrentTask)
                 await CurrentTask;
+            LoadTaskCancellationTokenSource = new();
         }
 
         /// <summary>
@@ -699,8 +697,11 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         internal bool WithinTheRange(float distance, PLATEAUDynamicTile tile)
         {
-            var (min, max) = loadDistances[tile.ZoomLevel];
-            return (distance > min && distance < max);
+            if(loadDistances.TryGetValue(tile.ZoomLevel, out var minmax)){
+                var (min, max) = minmax;
+                return (distance > min && distance < max);
+            }
+            return false;
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace PLATEAU.DynamicTile
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
 
-        public static bool IsTileCreationInProgress { get; set; } = false;
+        public static volatile bool IsTileCreationInProgress = false;
 
         static PLATEAUEditorEventListener()
         {
