@@ -144,7 +144,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             // Addressablesのビルドを実行
             AddressablesUtility.BuildAddressables(true);
 
-            //// managerを生成
+            // managerを生成
             var managerObj = new GameObject("DynamicTileManager");
             manager = managerObj.AddComponent<PLATEAUTileManager>();
 
