@@ -79,7 +79,7 @@ namespace PLATEAU.DynamicTile
         {
             if (Extent.size == Vector3.zero)
                 return default;
-            return new TileBounds(Extent.min, Extent.max);
+            return new TileBounds(Extent.min, Extent.max, ZoomLevel);
         }
 
         /// <summary>

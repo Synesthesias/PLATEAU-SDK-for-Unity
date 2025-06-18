@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,8 +42,19 @@ namespace PLATEAU.DynamicTile
 
         private const int MaxLodLevel = 4; // 最大LODレベル (最小LODは0とする)
 
+        //[SerializeField]
+        //public float loadDistance = 1500f; // ロードを行うカメラからの距離
+
+        /// <summary>
+        /// 各Zoomレベルごとのカメラからのロード距離を定義します。
+        /// </summary>
         [SerializeField]
-        public float loadDistance = 1500f; // ロードを行うカメラからの距離
+        public Dictionary<int, (float, float)> loadDistances = new Dictionary<int, (float, float)>
+        {
+            { 11, (-1000f, 1001f) },
+            { 10, (1000f, 1501f) },
+            { 9, (1500f, 2000f) },
+        }; 
 
         [SerializeField]
         private string catalogPath;
@@ -76,8 +88,16 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
         private PLATEAUDynamicTileJobSystem jobSystem;
 
-        // Tile数（NativeArrayのサイズ変更を取得するために使用）
-        private int lastTileCount = -1;
+        // 実行中のUpdateAssetsByCameraPosition内のTask
+        private Task CurrentTask;
+        // Taskの実行中にキャンセルされたタスクの数をカウントし指定回数以上になった場合は、強制的にキャンセルする
+        private int NumPendingTask = 0;
+        private const int MAX_PENDING_TASK_COUNT = 100; // 最大待機タスク数
+
+        /// <summary>
+        /// 現在タスクが実行中かどうかを示すプロパティ。
+        /// </summary>
+        public bool HasCurrentTask => CurrentTask != null && !CurrentTask.IsCompleted;
 
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
@@ -111,16 +131,6 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Operating;
         }
 
-        // TODO:　この処理は削除予定
-        public async Task LoadFromCatalog()
-        {
-            var addresses = await addressableLoader.InitializeAsync(catalogPath);
-            foreach (var address in addresses.TileMetaInfos)
-            {
-                await Load(address.AddressName);
-            }
-        }
-
         /// <summary>
         /// カタログパスを保存します。
         /// </summary>
@@ -151,8 +161,16 @@ namespace PLATEAU.DynamicTile
 
             try
             {
-                // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
-                tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
+                if (tile.LoadHandleCancellationTokenSource == null)
+                {
+                    // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
+                    tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
+                }
+
+                if (!tile.LoadHandle.IsDone)
+                {
+                    await tile.LoadHandle.Task;
+                }
 
                 var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
                 tile.LoadHandle = handle;
@@ -169,7 +187,8 @@ namespace PLATEAU.DynamicTile
                     {
                         instance.name = address;
                         instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
-                        tile.LoadHandleCancellationTokenSource?.Dispose(); // キャンセルトークンソースを解放
+                        tile.LoadHandleCancellationTokenSource?.Dispose();
+                        tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
                         return LoadResult.Success;
                     }
                 }
@@ -192,9 +211,9 @@ namespace PLATEAU.DynamicTile
             {
                 DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
                 if (tile.LoadHandle.IsValid())
-                    Addressables.ReleaseInstance(tile.LoadHandle);
-                tile.Reset();
+                    Addressables.ReleaseInstance(tile.LoadHandle);        
             }
+            tile.Reset();
             return LoadResult.Failure;
         }
 
@@ -204,16 +223,21 @@ namespace PLATEAU.DynamicTile
         /// <param name="tile"></param>
         /// <param name="maxRetryCount">リトライ数</param>
         /// <returns></returns>
-        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, int delay = 1000)
+        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, int delay = 300)
         {
             var result = await Load(tile);
             if (result == LoadResult.NeedRetry)
             {
+                Profiler.BeginSample("Retry");
                 // ロードに失敗した場合は、リトライ
                 DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
                 int retryCount = 0;
                 while (retryCount < maxRetryCount)
                 {
+                    if (tile.LoadHandleCancellationTokenSource == null)
+                        throw new OperationCanceledException("LoadHandleCancellationTokenSource is null.");
+                    tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                     var retryResult = await Load(tile);
                     if (retryResult == LoadResult.Success)
                         return true;
@@ -221,14 +245,13 @@ namespace PLATEAU.DynamicTile
                         break;
 
                     retryCount++;
-                    await Task.Delay(delay);
+                    await Task.Delay(delay, tile.LoadHandleCancellationTokenSource.Token);
                 }
             }
             else if (result == LoadResult.Success)
                 return true;
             return false;
         }
-
 
         /// <summary>
         /// Addressを指定してAddressablesからロードする
@@ -305,7 +328,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDestroy()
         {
-            CancelLoadTask();
+            CancelLoadTask().ConfigureAwait(false); // 非同期タスクをキャンセル
             ClearTiles();
             jobSystem?.Dispose();
             jobSystem = null;
@@ -314,9 +337,9 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Job Systemを使用している場合、OnDisableでDisposeする
         /// </summary>
-        private void OnDisable()
+        private async void OnDisable()
         {
-            CancelLoadTask();
+            await CancelLoadTask();
             jobSystem?.Dispose();
             jobSystem = null;
         }
@@ -345,7 +368,6 @@ namespace PLATEAU.DynamicTile
                 
             DynamicTiles.Add(tile);
             tileAddressesDict[tile.Address] = tile;
-            lastTileCount = -1;
         }
         
         /// <summary>
@@ -360,7 +382,6 @@ namespace PLATEAU.DynamicTile
             // LODの親Transformもクリア
             lodParentDict.Clear();
 
-            lastTileCount = -1;
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -465,15 +486,29 @@ namespace PLATEAU.DynamicTile
             if (DynamicTiles.Count <= 0)
                 return;
 
+            // 前回のタスクがまだ完了していない場合は指定回数実行まで待機
+            if (CurrentTask != null && !CurrentTask.IsCompleted)
+            {
+                NumPendingTask++;
+                if (NumPendingTask < MAX_PENDING_TASK_COUNT)
+                //if (Vector3.Distance(LastCameraPosition, position) < 100)
+                {
+                    DebugLog("前回のタスクがまだ完了していません。タスクをキャンセルします。");
+                    return;
+                }
+
+                await CancelLoadTask();
+            }
+            NumPendingTask = 0;
+
             if (useJobSystem)
             {
-                if(lastTileCount != DynamicTiles.Count)
+                if(jobSystem?.TileCount != DynamicTiles.Count)
                 {
                     // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
-                    CancelLoadTask();
+                    await CancelLoadTask();
                     jobSystem?.Dispose();
                     jobSystem = null;
-                    lastTileCount = DynamicTiles.Count;
                 }
 
                 // Job Systemを使用する場合
@@ -483,15 +518,17 @@ namespace PLATEAU.DynamicTile
                     jobSystem.Initialize(this, DynamicTiles);
                 }
 
-                await jobSystem.UpdateAssetsByCameraPosition(position);
+                CurrentTask = jobSystem.UpdateAssetsByCameraPosition(position);
             }
             else
             {
                 // Job Systemを使用しない場合
-                await UpdateAssetsByCameraPositionInternal(position);
+                CurrentTask = UpdateAssetsByCameraPositionInternal(position);
             }
 
             LastCameraPosition = position; // 最後のカメラ位置を更新
+
+            await CurrentTask;
         }
 
         /// <summary>
@@ -504,7 +541,8 @@ namespace PLATEAU.DynamicTile
             foreach (var tile in DynamicTiles)
             {
                 var distance = tile.GetDistance(position, true);
-                if (distance < loadDistance)
+                //if (distance < loadDistance)
+                if (WithinTheRange(distance,tile))
                 {
                     if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.None;
@@ -584,11 +622,14 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
         /// </summary>
-        public void CancelLoadTask()
+        public async Task CancelLoadTask()
         {
             LoadTaskCancellationTokenSource?.Cancel();
             LoadTaskCancellationTokenSource?.Dispose();
             LoadTaskCancellationTokenSource = new();
+
+            if (HasCurrentTask)
+                await CurrentTask;
         }
 
         /// <summary>
@@ -622,10 +663,22 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 指定された距離がタイルのロード範囲内にあるかどうかを判定
+        /// </summary>
+        /// <param name="distance">カメラからの距離</param>
+        /// <param name="tile">Tile</param>
+        /// <returns></returns>
+        internal bool WithinTheRange(float distance, PLATEAUDynamicTile tile)
+        {
+            var (min, max) = loadDistances[tile.ZoomLevel];
+            return (distance > min && distance < max);
+        }
+
+        /// <summary>
         /// showDebugTileInfo:ON時のみDebugログに警告メッセージを出力します。
         /// </summary>
         /// <param name="message"></param>
-        public void DebugLog(string message, bool warn = true)
+        internal void DebugLog(string message, bool warn = true)
         {
             if (showDebugTileInfo)
             {
@@ -633,15 +686,6 @@ namespace PLATEAU.DynamicTile
                     Debug.LogWarning(message);
                 else
                     Debug.Log(message);
-            }
-        }
-
-        // Debug用Bounds表示
-        public void ShowBounds()
-        {
-            foreach (var tile in DynamicTiles)
-            {
-                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
             }
         }
     }

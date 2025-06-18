@@ -23,11 +23,13 @@ namespace PLATEAU.DynamicTile
     {
         public readonly Vector3 BoundsMin;
         public readonly Vector3 BoundsMax;
+        public readonly int ZoomLevel;
 
-        public TileBounds(Vector3 boundsMin, Vector3 boundsMax)//, LoadedState currentState)
+        public TileBounds(Vector3 boundsMin, Vector3 boundsMax, int zoomLevel)//, LoadedState currentState)
         {
             BoundsMin = boundsMin;
             BoundsMax = boundsMax;
+            ZoomLevel = zoomLevel;
         }
 
         // カメラからの距離を計算するメソッド。
@@ -94,6 +96,8 @@ namespace PLATEAU.DynamicTile
 
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUTileManager tileManager;
+
+        public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
 
         /// <summary>
         /// NativeArrayを初期化し、タイルマネージャーとタイルリストを設定する。
@@ -167,7 +171,8 @@ namespace PLATEAU.DynamicTile
                 var tile = dynamicTiles[i];
 
                 var nextLoadState = LoadState.None;
-                if (distance < tileManager.loadDistance)
+                //if (distance < tileManager.loadDistance)
+                if (tileManager.WithinTheRange(distance, tile))
                 {
                     nextLoadState = LoadState.Load;
                 }
@@ -210,7 +215,8 @@ namespace PLATEAU.DynamicTile
 
                 // ロード・アンロード判定
                 tile.DistanceFromCamera = distance;
-                tile.NextLoadState = distance < tileManager.loadDistance
+                //tile.NextLoadState = distance < tileManager.loadDistance
+                tile.NextLoadState = tileManager.WithinTheRange(distance, tile)
                     ? LoadState.Load
                     : LoadState.Unload;
 
@@ -230,7 +236,6 @@ namespace PLATEAU.DynamicTile
 
             await Task.WhenAll(tasks);
         }
-
     }
 
 }

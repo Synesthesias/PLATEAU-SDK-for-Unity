@@ -1,6 +1,11 @@
-﻿using UnityEditor;
+﻿using log4net.Util;
+using PLATEAU.Util;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.TerrainTools;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PLATEAU.DynamicTile
 {
@@ -47,13 +52,33 @@ namespace PLATEAU.DynamicTile
 
                 if (GUILayout.Button("Show Tile Bounds"))
                 {
-                    tileManager.ShowBounds();
+                    ShowBounds();
                     SceneView.lastActiveSceneView?.Repaint();
                 }
 
+                if (isShowingZoomLevel)
+                {
+                    if (GUILayout.Button("Hide Zoom Level"))
+                    {
+                        SceneView.duringSceneGui -= DrawZoomLevel;
+                        isShowingZoomLevel = false;
+                        SceneView.lastActiveSceneView?.Repaint();
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Show Zoom Level"))
+                    {
+                        SceneView.duringSceneGui -= DrawZoomLevel;
+                        SceneView.duringSceneGui += DrawZoomLevel;
+                        isShowingZoomLevel = true;
+                    }
+                }
+
+
                 if (GUILayout.Button("Cancel Load Task"))
                 {
-                    tileManager.CancelLoadTask();
+                    _= tileManager.CancelLoadTask();
                 }
 
                 // Tile情報の表示
@@ -61,6 +86,7 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
                 EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.IsTileCreationInProgress.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
+                EditorGUILayout.LabelField($"Task Running: ", tileManager.HasCurrentTask.ToString());
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
@@ -73,11 +99,69 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
+
                 }
 
                 if (dynamicTiles.Count > 0)
                     Repaint();
             }
         }
+
+        public void OnEnable()
+        {
+            isShowingZoomLevel = false;
+        }
+
+        /// <summary>
+        /// ZoomレベルをSceneViewに描画
+        /// </summary>
+        private bool isShowingZoomLevel = false;
+        private void DrawZoomLevel(SceneView sceneView)
+        {
+            if(!isShowingZoomLevel)
+            {
+                SceneView.duringSceneGui -= DrawZoomLevel;
+                return;
+            }
+
+            Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
+            {
+                { 9, Color.red },
+                { 10, Color.yellow },
+                { 11, Color.green },
+            };
+
+            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
+            foreach (var tile in tileManager.DynamicTiles)
+            {
+                if (tile.LoadedObject != null)
+                {
+                    var center = tile.Extent.center;
+                    Handles.BeginGUI();
+                    Handles.Label(center, $"{tile.ZoomLevel}", new GUIStyle
+                    {
+                        fontSize = 32,
+                        normal = new GUIStyleState { textColor = zoomLevelColors[ tile.ZoomLevel ] },
+                        alignment = TextAnchor.MiddleCenter,
+                        fontStyle = FontStyle.Bold
+                    });
+                    Handles.EndGUI();
+
+                    DebugEx.DrawBounds(tile.Extent, zoomLevelColors[tile.ZoomLevel], 0.1f);
+                }
+            }
+            sceneView.Repaint();
+        }
+
+        // Debug用Bounds表示
+        private void ShowBounds()
+        {
+            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
+            foreach (var tile in tileManager.DynamicTiles)
+            {
+                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
+            }
+        }
+
     }
 }

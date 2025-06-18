@@ -90,7 +90,7 @@ namespace PLATEAU.DynamicTile
         /// <returns>ロードされたGameObjectのリスト</returns>
         private async Task<string> LoadCatalog(string catalogPath, string label)
         {
-            try
+            //try
             {
                 var bundlePath = string.Empty;
                 if (string.IsNullOrEmpty(catalogPath))
@@ -148,10 +148,10 @@ namespace PLATEAU.DynamicTile
                 }
                 Addressables.Release(catalogHandle);
             }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
-            }
+            //catch (System.Exception ex)
+            //{
+            //    Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
+            //}
             
             return "";
         }
