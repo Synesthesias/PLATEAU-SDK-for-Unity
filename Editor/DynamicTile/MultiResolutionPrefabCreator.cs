@@ -77,7 +77,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）複数ターゲット対応版
         /// </summary>
-        public static Result CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel)
+        public static List<Result> CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel)
         {
             var creator = new MultiResolutionPrefabCreator(savePath);
             return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
@@ -111,20 +111,20 @@ namespace PLATEAU.DynamicTile
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
 
             var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
-            SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
+            var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             Debug.Log($"Prefabs Created for : {content.name}");
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
 
-            return createdResults.First();
+            return result;
         }
 
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）複数ターゲット対応版
         /// </summary>
-        public Result CreateFromPrefabs(List<GameObject> prefabs, int denominator, int zoomLevel)
+        public List<Result> CreateFromPrefabs(List<GameObject> prefabs, int denominator, int zoomLevel)
         {
             foreach (var targetPrafab in prefabs)
             {
@@ -133,7 +133,7 @@ namespace PLATEAU.DynamicTile
 
             AssetDatabase.Refresh();
 
-            return createdResults.First();
+            return createdResults;
         }
 
         /// <summary>
@@ -154,14 +154,14 @@ namespace PLATEAU.DynamicTile
             var clone = Object.Instantiate(target);
             clone.name = target.name;
             var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
-            SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
+            var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             Debug.Log($"Prefab Created for : {target.name}");
 
             //破棄
             Object.DestroyImmediate(clone);
 
-            return createdResults.First();
+            return result;
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private void SavePrefabFromGameObject(GameObject target, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromGameObject(GameObject target, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
@@ -235,11 +235,12 @@ namespace PLATEAU.DynamicTile
             if(target.GetComponentInChildren<Renderer>() == null)
             {
                 Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
-                return;
+                return null;
             }
 
             // マテリアルアサイン
-            target.GetComponentInChildren<Renderer>().sharedMaterials = materialList;
+            if (materialList != null)
+                target.GetComponentInChildren<Renderer>().sharedMaterials = materialList;
 
             // 保存
             var newName = $"{prefabName}.prefab";
@@ -247,7 +248,10 @@ namespace PLATEAU.DynamicTile
             var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
             var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
             var bounds = target.GetComponentInChildren<Renderer>() == null ? default : target.GetComponentInChildren<Renderer>().bounds;
-            createdResults.Add(new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel });
+
+            var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
+            createdResults.Add(result);
+            return result;
         }
 
         /// <summary>
@@ -258,14 +262,15 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private void SavePrefabFromPrefab(GameObject prefab, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromPrefab(GameObject prefab, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             var path = AssetDatabase.GetAssetPath(prefab);
             var content = PrefabUtility.LoadPrefabContents(path);
-            SavePrefabFromGameObject(content, materialList, zoomLevel, prefabName, saveDirectory);
+            var result = SavePrefabFromGameObject(content, materialList, zoomLevel, prefabName, saveDirectory);
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
+            return result;
         }
 
         /// <summary>

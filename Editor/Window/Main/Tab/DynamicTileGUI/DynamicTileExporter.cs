@@ -101,7 +101,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                         continue;
                     }
 
-                    // TODO: タイルごとにプレハブを保存する
                     string prefabPath = saveFolderPath + ".prefab";
                     var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
                     if (prefabAsset == null)

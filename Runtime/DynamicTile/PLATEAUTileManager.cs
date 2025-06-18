@@ -354,9 +354,9 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 破棄時にすべてのロード済みオブジェクトをアンロード
         /// </summary>
-        private void OnDestroy()
+        private async void OnDestroy()
         {
-            CancelLoadTask().ConfigureAwait(false); // 非同期タスクをキャンセル
+            await CancelLoadTask();
             ClearTiles();
             jobSystem?.Dispose();
             jobSystem = null;
