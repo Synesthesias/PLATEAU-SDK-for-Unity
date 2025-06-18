@@ -134,7 +134,7 @@ namespace PLATEAU.DynamicTile
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             foreach (var tile in tileManager.DynamicTiles)
             {
-                if (tile.LoadedObject != null)
+                if (tile.LoadHandle.IsDone && tile.LoadedObject != null)
                 {
                     var center = tile.Extent.center;
                     Handles.BeginGUI();
@@ -146,8 +146,7 @@ namespace PLATEAU.DynamicTile
                         fontStyle = FontStyle.Bold
                     });
                     Handles.EndGUI();
-
-                    DebugEx.DrawBounds(tile.Extent, zoomLevelColors[tile.ZoomLevel], 0.1f);
+                    DebugEx.DrawBounds(tile.Extent, zoomLevelColors[tile.ZoomLevel], 0.01f);
                 }
             }
             sceneView.Repaint();
