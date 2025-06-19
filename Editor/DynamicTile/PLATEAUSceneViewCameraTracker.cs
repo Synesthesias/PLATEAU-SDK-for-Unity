@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -170,37 +167,6 @@ namespace PLATEAU.DynamicTile
             if (ShowDebugLog)
             {
                 Debug.Log(message);
-            }
-        }
-    }
-
-    public class EditorCoroutineRunner
-    {
-        private static List<IEnumerator> coroutines = new List<IEnumerator>();
-
-        public static void StartEditorCoroutine(IEnumerator coroutine)
-        {
-            if (coroutines.Count == 0)
-            {
-                EditorApplication.update += Update;
-            }
-            coroutines.Add(coroutine);
-        }
-
-        private static void Update()
-        {
-            if (coroutines.Count == 0)
-            {
-                EditorApplication.update -= Update;
-                return;
-            }
-
-            for (int i = coroutines.Count - 1; i >= 0; i--)
-            {
-                if (!coroutines[i].MoveNext())
-                {
-                    coroutines.RemoveAt(i);
-                }
             }
         }
     }
