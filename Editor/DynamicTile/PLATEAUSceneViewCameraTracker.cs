@@ -1,5 +1,4 @@
-﻿using Unity.Collections;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -63,6 +62,8 @@ namespace PLATEAU.DynamicTile
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
 
+        public static volatile bool IsTileCreationInProgress = false;
+
         static PLATEAUEditorEventListener()
         {
             EditorApplication.update -= OnEditorUpdate;
@@ -93,6 +94,9 @@ namespace PLATEAU.DynamicTile
 
         static void OnProjectChanged()
         {
+            if (IsTileCreationInProgress) 
+                return;
+
             Log("Project Changed");
 
             InitView();

@@ -23,11 +23,13 @@ namespace PLATEAU.DynamicTile
     {
         public readonly Vector3 BoundsMin;
         public readonly Vector3 BoundsMax;
+        public readonly int ZoomLevel;
 
-        public TileBounds(Vector3 boundsMin, Vector3 boundsMax)//, LoadedState currentState)
+        public TileBounds(Vector3 boundsMin, Vector3 boundsMax, int zoomLevel)//, LoadedState currentState)
         {
             BoundsMin = boundsMin;
             BoundsMax = boundsMax;
+            ZoomLevel = zoomLevel;
         }
 
         // カメラからの距離を計算するメソッド。
@@ -95,6 +97,8 @@ namespace PLATEAU.DynamicTile
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUTileManager tileManager;
 
+        public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
+
         /// <summary>
         /// NativeArrayを初期化し、タイルマネージャーとタイルリストを設定する。
         /// 
@@ -161,13 +165,15 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async Task ExecuteLoadTask(CancellationToken token)
         {
+            //tileManager.DebugLog($"<color=green>ExecuteLoadTask start. TileCount: {TileCount}</color>");
             for (int i = 0; i < NativeDistances.Length; i++)
             {
                 var distance = NativeDistances[i];
                 var tile = dynamicTiles[i];
 
                 var nextLoadState = LoadState.None;
-                if (distance < tileManager.loadDistance)
+                //if (distance < tileManager.loadDistance)
+                if (tileManager.WithinTheRange(distance, tile))
                 {
                     nextLoadState = LoadState.Load;
                 }
@@ -187,7 +193,9 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
+                    //tileManager.DebugLog($"Loading start {i}/{NativeDistances.Length} tile: {tile.Address} ");
                     await tileManager.LoadWithRetry(tile);
+                    //tileManager.DebugLog($"Loading finish {i}/{NativeDistances.Length} tile: {tile.Address}");
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
@@ -195,6 +203,7 @@ namespace PLATEAU.DynamicTile
                 }
                 token.ThrowIfCancellationRequested();
             }
+            //tileManager.DebugLog($"<color=green>ExecuteLoadTask Finish. TileCount: {TileCount}</color>");
         }
 
         /// <summary>
@@ -210,7 +219,8 @@ namespace PLATEAU.DynamicTile
 
                 // ロード・アンロード判定
                 tile.DistanceFromCamera = distance;
-                tile.NextLoadState = distance < tileManager.loadDistance
+                //tile.NextLoadState = distance < tileManager.loadDistance
+                tile.NextLoadState = tileManager.WithinTheRange(distance, tile)
                     ? LoadState.Load
                     : LoadState.Unload;
 
@@ -230,7 +240,6 @@ namespace PLATEAU.DynamicTile
 
             await Task.WhenAll(tasks);
         }
-
     }
 
 }
