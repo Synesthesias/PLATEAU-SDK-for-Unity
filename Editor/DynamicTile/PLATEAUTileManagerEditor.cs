@@ -139,14 +139,16 @@ namespace PLATEAU.DynamicTile
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             foreach (var tile in tileManager.DynamicTiles)
             {
-                if (tile.LoadHandle.IsDone && tile.LoadedObject != null)
+                //if (tile.LoadHandle.IsDone && tile.LoadedObject != null)
+                //if (tile.LoadHandle.IsDone)
+                if (tile.NextLoadState == LoadState.Load )
                 {
                     var center = tile.Extent.center;
                     Handles.BeginGUI();
                     Handles.Label(center, $"{tile.ZoomLevel}", new GUIStyle
                     {
                         fontSize = 32,
-                        normal = new GUIStyleState { textColor = zoomLevelColors[ tile.ZoomLevel ] },
+                        normal = new GUIStyleState { textColor = tile.LoadedObject == null ? Color.white : zoomLevelColors[ tile.ZoomLevel ] },
                         alignment = TextAnchor.MiddleCenter,
                         fontStyle = FontStyle.Bold
                     });

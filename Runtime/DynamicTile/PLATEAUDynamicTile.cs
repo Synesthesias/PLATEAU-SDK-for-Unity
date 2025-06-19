@@ -27,17 +27,17 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
-        public GameObject LoadedObject
-        {
-            get
-            {
-                if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    return LoadHandle.Result;
-                }
-                return null;
-            }
-        }
+        public GameObject LoadedObject { get; internal set; } = null;
+        //{
+        //    get
+        //    {
+        //        if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
+        //        {
+        //            return LoadHandle.Result;
+        //        }
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Addressablesのロードハンドルを保持する。

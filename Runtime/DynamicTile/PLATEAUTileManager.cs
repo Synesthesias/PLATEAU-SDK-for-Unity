@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -174,37 +175,34 @@ namespace PLATEAU.DynamicTile
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
+                //var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
+                tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                tile.LoadHandle = handle;
                 //await handle.Task;
-                var completedTask = await Task.WhenAny(handle.Task, timeoutTask);
+                var completedTask = await Task.WhenAny(tile.LoadHandle.Task, timeoutTask);
 
                 if (completedTask == timeoutTask)
                 {
                     throw new TimeoutException($"アセットのロードがタイムアウトしました: {address}");
                 }
 
-                if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
+                if (tile.LoadHandle.IsValid() && tile.LoadHandle.Status == AsyncOperationStatus.Succeeded)
+                //if (InstantiateFromTile(tile))
                 {
-                    //DebugLog($"アセットのロードに成功しました: {address}", false);
-                    var instance = handle.Result;
-                    if (instance != null)
-                    {
-                        instance.name = address;
-                        instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
-                        tile.LoadHandleCancellationTokenSource?.Dispose();
-                        tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
-                        return LoadResult.Success;
-                    }
+                    // ロードに成功した場合は、LoadHandleCancellationTokenSourceをDisposeしてnullに設定
+                    tile.LoadHandleCancellationTokenSource?.Dispose();
+                    tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
+                    return LoadResult.Success;
                 }
                 else
                 {
                     if (tile.LoadHandle.IsValid())
-                        Addressables.ReleaseInstance(tile.LoadHandle);
+                        Addressables.Release(tile.LoadHandle);
+                    DeleteGameObjectInstance(tile.LoadedObject);
+
                     tile.Reset();
                     DebugLog($"アセットのロードに失敗しました: {address}");
                     return LoadResult.NeedRetry;
@@ -229,14 +227,14 @@ namespace PLATEAU.DynamicTile
                 }
 
                 if (tile.LoadHandle.IsValid())
-                    Addressables.ReleaseInstance(tile.LoadHandle);
+                    Addressables.Release(tile.LoadHandle);
+                DeleteGameObjectInstance(tile.LoadedObject);
 
                 tile.Reset();
                 return loadResult;
             }
-
-            tile.Reset();
-            return LoadResult.Failure;
+            //tile.Reset();
+            //return LoadResult.Failure;
         }
 
         /// <summary>
@@ -312,22 +310,17 @@ namespace PLATEAU.DynamicTile
                         tile.LoadHandleCancellationTokenSource?.Cancel();
                         return false;
                     }
-
-                    if (!Addressables.ReleaseInstance(tile.LoadHandle))
-                    {
-                        throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {address}");
-                    }
+                    Addressables.Release(tile.LoadHandle);
                 }
             }
             catch (Exception ex)
             {
                 DebugLog($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
-                if(tile.LoadedObject != null)
-                {
-                    // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
-                    DestroyImmediate(tile.LoadedObject);
-                }
-                tile.Reset();
+            }
+            finally
+            {
+                //DeleteGameObjectInstance(tile.LoadedObject);
+                tile.Reset(); // タイルの状態をリセット
             }
             return true;
         }
@@ -423,24 +416,17 @@ namespace PLATEAU.DynamicTile
                 {
                     if (tile.LoadHandle.IsValid())
                     {
-                        if (!Addressables.ReleaseInstance(tile.LoadHandle))
-                        {
-                            throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {tile.Address}");
-                        }
-                        tile.Reset();
+                        Addressables.Release(tile.LoadHandle);
                     }
                 }
                 catch (Exception ex)
                 {
                     DebugLog($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
-                    if (tile.LoadedObject != null)
-                    {
-                        // AddressablesのReleaseInstanceが失敗した場合、オブジェクトを破棄
-                        if (Application.isPlaying)
-                            Destroy(tile.LoadedObject);
-                        else
-                            DestroyImmediate(tile.LoadedObject);
-                    }
+                }
+                finally
+                {
+                    DeleteGameObjectInstance(tile.LoadedObject);
+                    tile.Reset(); // タイルの状態をリセット
                 }
             }
 
@@ -470,29 +456,12 @@ namespace PLATEAU.DynamicTile
                         var child = lodParent.transform.GetChild(i);
                         if (child != null)
                         {
-                            try
-                            {
-                                if (!Addressables.ReleaseInstance(child.gameObject))
-                                {
-                                    throw new Exception($"AddressablesのReleaseInstanceに失敗しました: {child.gameObject.name}");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                DebugLog($"GameObjectのアンロードでエラーが発生しました。{child.gameObject.name} {ex.Message}");
-                                // アドレスのリリースに失敗した場合、直接破棄
-                                if (Application.isPlaying)
-                                    Destroy(child.gameObject);
-                                else
-                                    DestroyImmediate(child.gameObject);
-                            }
+                            // 子オブジェクトを削除
+                            DeleteGameObjectInstance(child.gameObject);
                         }
                     }
                     // LODの親Transformも削除
-                    if (Application.isPlaying)
-                        Destroy(lodParent);
-                    else
-                        DestroyImmediate(lodParent);
+                    DeleteGameObjectInstance(lodParent);
                 }
             }
         }
@@ -682,6 +651,99 @@ namespace PLATEAU.DynamicTile
             return lodObject.transform;
         }
 
+        private bool InstantiateFromTile(PLATEAUDynamicTile tile)
+        {
+            if (tile.LoadHandle.IsValid() && tile.LoadHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                //DebugLog($"アセットのロードに成功しました: {address}", false);
+                var instance = Instantiate(tile.LoadHandle.Result);
+                if (instance != null)
+                {
+                    instance.transform.SetParent(FindParent(tile.Lod), false); // LODごとの親Transformに設定
+                    instance.name = tile.Address;
+                    instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
+                    DeleteGameObjectInstance(tile.LoadedObject); // 既存のオブジェクトが存在する場合削除
+                    tile.LoadedObject = instance; // ロードしたオブジェクトを保持
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void DeleteGameObjectInstance(GameObject obj)
+        {
+            if (obj == null)
+                return;
+            if (Application.isPlaying)
+                Destroy(obj);
+            else
+                DestroyImmediate(obj);
+        }
+
+        //private List<PLATEAUDynamicTile> loadQueue = new List<PLATEAUDynamicTile>();
+        //private List<PLATEAUDynamicTile> unloadQueue = new List<PLATEAUDynamicTile>();
+        //internal void AddToQueue(PLATEAUDynamicTile tile, bool load)
+        //{
+        //    if (tile == null)
+        //        return;
+        //    if (load)
+        //        loadQueue.Add(tile);
+        //    else
+        //        unloadQueue.Add(tile);
+        //}
+
+        internal void StartInstantiation()
+        {
+            //loadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
+            //unloadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
+#if UNITY_EDITOR
+            EditorCoroutineRunner.StartEditorCoroutine(InstantiationRoutine());
+#endif
+        }
+
+        private IEnumerator InstantiationRoutine()
+        {
+            var loadQueue = DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Load && tile.LoadedObject == null);
+            var unloadQueue = DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Unload && tile.LoadedObject != null);
+            loadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
+            unloadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
+
+            Debug.Log($"タイルのインスタンス化を開始します。タイル数: {loadQueue.Count} : {unloadQueue.Count}");
+
+            for (int i = 0; i < loadQueue.Count; i++)
+            {
+                var tile = loadQueue[i];
+                if (tile == null)
+                    continue;
+
+                if (InstantiateFromTile(tile))
+                {
+                    DebugLog($"タイルをインスタンス化しました: {tile.Address}", false);
+                }
+                else
+                {
+                    DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address} {i}");
+                }
+
+                Debug.Log($"Tile : {i}");
+                yield return null; // フレームごとに処理を分割
+            }
+
+            for (int i = 0; i < unloadQueue.Count; i++)
+            {
+                var tile = unloadQueue[i];
+                if (tile == null)
+                    continue;
+
+                DeleteGameObjectInstance(tile.LoadedObject);
+                DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address} {i}");
+                yield return null; // フレームごとに処理を分割
+            }
+
+            loadQueue.Clear();
+            unloadQueue.Clear();
+        }
+
         /// <summary>
         /// 指定された距離がタイルのロード範囲内にあるかどうかを判定
         /// </summary>
@@ -713,3 +775,36 @@ namespace PLATEAU.DynamicTile
         }
     }
 }
+
+#if UNITY_EDITOR
+public class EditorCoroutineRunner
+{
+    private static List<IEnumerator> coroutines = new List<IEnumerator>();
+
+    public static void StartEditorCoroutine(IEnumerator coroutine)
+    {
+        if (coroutines.Count == 0)
+        {
+            EditorApplication.update += Update;
+        }
+        coroutines.Add(coroutine);
+    }
+
+    private static void Update()
+    {
+        if (coroutines.Count == 0)
+        {
+            EditorApplication.update -= Update;
+            return;
+        }
+
+        for (int i = coroutines.Count - 1; i >= 0; i--)
+        {
+            if (!coroutines[i].MoveNext())
+            {
+                coroutines.RemoveAt(i);
+            }
+        }
+    }
+}
+#endif

@@ -194,16 +194,25 @@ namespace PLATEAU.DynamicTile
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
                     //tileManager.DebugLog($"Loading start {i}/{NativeDistances.Length} tile: {tile.Address} ");
-                    await tileManager.LoadWithRetry(tile);
+                    var success = await tileManager.LoadWithRetry(tile);
                     //tileManager.DebugLog($"Loading finish {i}/{NativeDistances.Length} tile: {tile.Address}");
+
+                    //if (success)
+                    //    tileManager.AddToQueue(tile, true); // タイルをキューに追加
+
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
-                    tileManager.Unload(tile);
+                    var success = tileManager.Unload(tile);
+
+                    //if (success)
+                    //    tileManager.AddToQueue(tile, false ); // タイルをキューに追加
                 }
                 token.ThrowIfCancellationRequested();
             }
             //tileManager.DebugLog($"<color=green>ExecuteLoadTask Finish. TileCount: {TileCount}</color>");
+
+            tileManager.StartInstantiation();
         }
 
         /// <summary>
