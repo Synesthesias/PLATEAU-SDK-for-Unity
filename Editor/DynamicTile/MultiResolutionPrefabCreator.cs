@@ -49,7 +49,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：GameObject）
-        /// 解像度、ZoomLevelを指定siteして生成
+        /// 解像度、ZoomLevelを指定して生成
         /// 名前はGameObject名を利用
         /// </summary>
         /// <param name="target">元GameObject</param>
@@ -135,9 +135,9 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public List<Result> CreateFromPrefabs(List<GameObject> prefabs, int denominator, int zoomLevel)
         {
-            foreach (var targetPrafab in prefabs)
+            foreach (var targetPrefab in prefabs)
             {
-                CreateFromPrefab(targetPrafab, denominator, zoomLevel);
+                CreateFromPrefab(targetPrefab, denominator, zoomLevel);
             }
 
             AssetDatabase.Refresh();
@@ -240,7 +240,8 @@ namespace PLATEAU.DynamicTile
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
 
-            if(target.GetComponentInChildren<Renderer>() == null)
+            var renderer = target.GetComponentInChildren<Renderer>();
+            if (renderer == null)
             {
                 Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
                 return null;
@@ -248,14 +249,14 @@ namespace PLATEAU.DynamicTile
 
             // マテリアルアサイン
             if (materialList != null)
-                target.GetComponentInChildren<Renderer>().sharedMaterials = materialList;
+                renderer.sharedMaterials = materialList;
 
             // 保存
             var newName = $"{prefabName}.prefab";
             var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
             var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
             var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
-            var bounds = target.GetComponentInChildren<Renderer>() == null ? default : target.GetComponentInChildren<Renderer>().bounds;
+            var bounds = renderer == null ? default : target.GetComponentInChildren<Renderer>().bounds;
 
             var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
             createdResults.Add(result);
@@ -263,7 +264,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// Prefaから生成したPrefabを保存
+        /// Prefabから生成したPrefabを保存
         /// </summary>
         /// <param name="prefab"></param>
         /// <param name="materialList"></param>
