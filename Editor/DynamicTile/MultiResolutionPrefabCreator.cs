@@ -44,7 +44,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 生成したPrefab, Bounds, Pathのリスト
         /// </summary>
-        private List<Result> createdResults = new();
+        private List<Result> createdResults;
         public List<Result> CreatedResults => createdResults;
 
         /// <summary>
@@ -90,6 +90,15 @@ namespace PLATEAU.DynamicTile
         public MultiResolutionPrefabCreator(string savePath_)
         {
             savePath = savePath_;
+            createdResults = new();
+        }
+
+        /// <summary>
+        /// 生成したResultリストをクリアする
+        /// </summary>
+        public void ClearResults()
+        {
+            createdResults.Clear();
         }
 
         /// <summary>
