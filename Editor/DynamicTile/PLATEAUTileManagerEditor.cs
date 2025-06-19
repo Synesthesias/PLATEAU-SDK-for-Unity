@@ -86,7 +86,7 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
                 EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.IsTileCreationInProgress.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
-                EditorGUILayout.LabelField($"Task Running: ", tileManager.HasCurrentTask.ToString());
+                EditorGUILayout.LabelField($"Task Running: ", tileManager.HasCurrentTask.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.HasCurrentTask ? Color.red : Color.green } });
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
@@ -99,7 +99,6 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
-
                 }
 
                 if (dynamicTiles.Count > 0)

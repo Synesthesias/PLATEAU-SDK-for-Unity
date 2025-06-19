@@ -90,9 +90,6 @@ namespace PLATEAU.DynamicTile
 
         // 実行中のUpdateAssetsByCameraPosition内のTask
         private Task CurrentTask;
-        // Taskの実行中にキャンセルされたタスクの数をカウントし指定回数以上になった場合は、強制的にキャンセルする
-        private int NumPendingTask = 0;
-        private const int MAX_PENDING_TASK_COUNT = 100; // 最大待機タスク数
 
         /// <summary>
         /// 現在タスクが実行中かどうかを示すプロパティ。
@@ -256,13 +253,12 @@ namespace PLATEAU.DynamicTile
             var result = await Load(tile);
             if (result == LoadResult.NeedRetry)
             {
-                UnityEngine.Profiling.Profiler.BeginSample("Retry");
                 // ロードに失敗した場合は、リトライ
                 DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
                 int retryCount = 0;
                 while (retryCount < maxRetryCount)
                 {
-                    DebugLog($"Retrying {retryCount + 1}/{maxRetryCount} for tile: {tile.Address}");
+                    //DebugLog($"Retrying {retryCount + 1}/{maxRetryCount} for tile: {tile.Address}");
 
                     if (tile.LoadHandleCancellationTokenSource == null)
                         throw new OperationCanceledException("LoadHandleCancellationTokenSource is null.");
@@ -508,7 +504,8 @@ namespace PLATEAU.DynamicTile
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public async Task UpdateAssetsByCameraPosition(Vector3 position)
+        /// <param name="timeoutSeconds">完了まで待機する際のタイムアウト秒数</param>
+        public async Task UpdateAssetsByCameraPosition(Vector3 position, float timeoutSeconds = 2f)
         {
             if ( State != ManagerState.Operating)
                 return;
@@ -516,20 +513,12 @@ namespace PLATEAU.DynamicTile
             if (DynamicTiles.Count <= 0)
                 return;
 
-            // 前回のタスクがまだ完了していない場合は指定回数実行まで待機
+            // 前回のタスクがまだ完了していない場合処理しない
             if (CurrentTask != null && !CurrentTask.IsCompleted)
-            {
-                NumPendingTask++;
-                if (NumPendingTask < MAX_PENDING_TASK_COUNT)
-                //if (Vector3.Distance(LastCameraPosition, position) < 100)
-                {
-                    //DebugLog("前回のタスクがまだ完了していません。タスクをキャンセルします。");
-                    return;
-                }
+                return;
 
-                await CancelLoadTask();
-            }
-            NumPendingTask = 0;
+            await CancelLoadTask();
+            LoadTaskCancellationTokenSource?.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds)); // タイムアウト設定
 
             if (useJobSystem)
             {
@@ -659,10 +648,10 @@ namespace PLATEAU.DynamicTile
                 LoadTaskCancellationTokenSource?.Cancel();
             }
             catch (ObjectDisposedException)
-            { }
-            LoadTaskCancellationTokenSource?.Dispose();
+            { } 
             if (HasCurrentTask)
                 await CurrentTask;
+            LoadTaskCancellationTokenSource?.Dispose();
             LoadTaskCancellationTokenSource = new();
         }
 
@@ -706,7 +695,7 @@ namespace PLATEAU.DynamicTile
         {
             if(loadDistances.TryGetValue(tile.ZoomLevel, out var minmax)){
                 var (min, max) = minmax;
-                return (distance > min && distance < max);
+                return (distance >= min && distance <= max);
             }
             return false;
         }
