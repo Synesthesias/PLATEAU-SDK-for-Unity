@@ -215,9 +215,15 @@ namespace PLATEAU.DynamicTile
 
                                 materials[i] = newMaterial; // 変更後のマテリアルをセット    
                             }
+                            else
+                                Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
                         }
+                        else if (material == null)
+                            Debug.LogWarning($"Material at index {i} is null in {source.name}");
                     }
                 }
+                else
+                    Debug.LogWarning($"No shared materials found in renderer for {source.name}");
             }
             else
             {
