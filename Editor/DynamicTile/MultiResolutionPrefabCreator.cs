@@ -65,7 +65,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）
-        /// 解像度、ZoomLevelを指定siteして生成
+        /// 解像度、ZoomLevelを指定して生成
         /// 名前はGameObject名を利用
         /// </summary>
         public static Result CreateFromPrefab(GameObject target, string savePath, int denominator, int zoomLevel)
@@ -183,7 +183,7 @@ namespace PLATEAU.DynamicTile
         /// <returns>各解像度ごとのsharedMaterialsリスト</returns>
         private Material[] CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
         {
-            Material[] materials = null; // 変更後のマテリアルを格納する配列
+            Material[] materials = new Material[0]; // 空の配列で初期化
 
             var renderer = source.GetComponentInChildren<Renderer>();
             if (renderer != null)
@@ -262,7 +262,7 @@ namespace PLATEAU.DynamicTile
             var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
             var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
             var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
-            var bounds = renderer == null ? default : target.GetComponentInChildren<Renderer>().bounds;
+            var bounds = renderer.bounds;
 
             var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
             createdResults.Add(result);
