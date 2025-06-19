@@ -1,11 +1,7 @@
-﻿using log4net.Util;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEditor.TerrainTools;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.DynamicTile
 {

@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
@@ -188,8 +188,7 @@ namespace PLATEAU.DynamicTile
                     for (int i = 0; i < renderer.sharedMaterials.Length; i++)
                     {
                         var material = renderer.sharedMaterials[i];
-                        if (material != null && material.shader.name == "Standard")
-                        //if (material != null && material.HasProperty("_MainTex"))
+                        if (material != null && material.HasMainTextureAttribute())
                         {
                             Texture2D albedoTexture = material.mainTexture as Texture2D;
                             if (albedoTexture != null)
