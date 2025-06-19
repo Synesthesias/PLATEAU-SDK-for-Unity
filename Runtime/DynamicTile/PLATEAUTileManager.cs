@@ -43,9 +43,6 @@ namespace PLATEAU.DynamicTile
 
         private const int MaxLodLevel = 4; // 最大LODレベル (最小LODは0とする)
 
-        //[SerializeField]
-        //public float loadDistance = 1500f; // ロードを行うカメラからの距離
-
         /// <summary>
         /// 各Zoomレベルごとのカメラからのロード距離を定義します。
         /// </summary>
