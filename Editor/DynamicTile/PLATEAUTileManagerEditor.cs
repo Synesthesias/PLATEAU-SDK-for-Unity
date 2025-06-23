@@ -1,11 +1,7 @@
-﻿using log4net.Util;
-using PLATEAU.Util;
+﻿using PLATEAU.Util;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEditor.TerrainTools;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PLATEAU.DynamicTile
 {
@@ -87,6 +83,11 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.IsTileCreationInProgress.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
                 EditorGUILayout.LabelField($"Task Running: ", tileManager.HasCurrentTask.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.HasCurrentTask ? Color.red : Color.green } });
+
+                EditorGUILayout.LabelField($"Coroutine Running: ", tileManager.IsCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsCoroutineRunning ? Color.red : Color.green } });
+                //EditorGUILayout.LabelField($"Queue Coroutine Running: ", tileManager.IsQueueCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsQueueCoroutineRunning ? Color.red : Color.green } });
+                //EditorGUILayout.LabelField($"Queue Tile Running: ", tileManager.IsTileCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsTileCoroutineRunning ? Color.red : Color.green } });
+
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
@@ -98,6 +99,7 @@ namespace PLATEAU.DynamicTile
                     EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);
                     EditorGUILayout.LabelField($"NextLoadState: ", tile.NextLoadState.ToString());
                     EditorGUILayout.LabelField($"LoadHandle Valid: ", tile.LoadHandle.IsValid().ToString());
+                    EditorGUILayout.LabelField($"LastLoadResult: ", tile.LastLoadResult.ToString());
                     EditorGUILayout.FloatField($"DistanceFromCamera: ", tile.DistanceFromCamera);
                 }
 
@@ -121,6 +123,22 @@ namespace PLATEAU.DynamicTile
         /// ZoomレベルをSceneViewに描画
         /// </summary>
         private bool isShowingZoomLevel = false;
+
+        private Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
+        {
+            { 9, Color.red },
+            { 10, Color.yellow },
+            { 11, Color.green },
+        };
+
+        private Color GetLabelColor(PLATEAUDynamicTile tile)
+        {
+            if (tile.LoadHandle.IsValid() && tile.LoadHandle.IsDone)
+                return tile.LoadedObject == null ? Color.white : zoomLevelColors[tile.ZoomLevel];
+
+            return Color.black; // Loading中は黒
+        }
+
         private void DrawZoomLevel(SceneView sceneView)
         {
             if(!isShowingZoomLevel)
@@ -128,13 +146,6 @@ namespace PLATEAU.DynamicTile
                 SceneView.duringSceneGui -= DrawZoomLevel;
                 return;
             }
-
-            Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
-            {
-                { 9, Color.red },
-                { 10, Color.yellow },
-                { 11, Color.green },
-            };
 
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             foreach (var tile in tileManager.DynamicTiles)
@@ -145,13 +156,15 @@ namespace PLATEAU.DynamicTile
                 {
                     var center = tile.Extent.center;
                     Handles.BeginGUI();
+
                     Handles.Label(center, $"{tile.ZoomLevel}", new GUIStyle
                     {
                         fontSize = 32,
-                        normal = new GUIStyleState { textColor = tile.LoadedObject == null ? Color.white : zoomLevelColors[ tile.ZoomLevel ] },
+                        normal = new GUIStyleState { textColor = GetLabelColor(tile) },
                         alignment = TextAnchor.MiddleCenter,
                         fontStyle = FontStyle.Bold
                     });
+
                     Handles.EndGUI();
                     DebugEx.DrawBounds(tile.Extent, zoomLevelColors[tile.ZoomLevel], 0.01f);
                 }
@@ -165,7 +178,7 @@ namespace PLATEAU.DynamicTile
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             foreach (var tile in tileManager.DynamicTiles)
             {
-                DebugEx.DrawBounds(tile.Extent, Color.red, 30f);
+                DebugEx.DrawBounds(tile.Extent, Color.red, 3f);
             }
         }
 

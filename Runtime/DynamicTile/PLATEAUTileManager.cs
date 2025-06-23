@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -34,10 +33,11 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public enum LoadResult
         {
+            None, // 初期状態
             Success,
             Failure,
             AlreadyLoaded,
-            NeedRetry,
+            //NeedRetry,
             Cancelled,
             Timeout
         }
@@ -49,9 +49,9 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public Dictionary<int, (float, float)> loadDistances = new Dictionary<int, (float, float)>
         {
-            { 11, (-1000f, 1001f) },
-            { 10, (1000f, 1501f) },
-            { 9, (1500f, 2000f) },
+            { 11, (-10000f, 500f) },
+            { 10, (500f, 1500f) },
+            { 9, (1500f, 10000f) },
         }; 
 
         [SerializeField]
@@ -64,6 +64,10 @@ namespace PLATEAU.DynamicTile
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
         private bool useJobSystem = true; // Job Systemを使用するかどうか
+
+        [ConditionalShow("showDebugTileInfo")]
+        [SerializeField]
+        private bool showDebugLog = true; // ログを表示するか
 
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
@@ -86,6 +90,8 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
         private PLATEAUDynamicTileJobSystem jobSystem;
 
+        private PLATEAUDynamicTileInstantiation tileInstantiation;
+
         // 実行中のUpdateAssetsByCameraPosition内のTask
         private Task CurrentTask;
 
@@ -93,6 +99,11 @@ namespace PLATEAU.DynamicTile
         /// 現在タスクが実行中かどうかを示すプロパティ。
         /// </summary>
         public bool HasCurrentTask => CurrentTask != null && !CurrentTask.IsCompleted;
+
+        /// <summary>
+        /// Instance化のコルーチンが実行中かどうかを示すプロパティ。
+        /// </summary>
+        public bool IsCoroutineRunning => tileInstantiation != null && tileInstantiation.IsRunning;
 
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
@@ -122,6 +133,8 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
+            tileInstantiation = new(this);
+
             LastCameraPosition = Vector3.zero; 
             State = ManagerState.Operating;
         }
@@ -139,7 +152,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Tileを指定してAddressablesからロードする
         /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 1f)
+        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
@@ -150,7 +163,7 @@ namespace PLATEAU.DynamicTile
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
-                DebugLog($"Already loaded: {address}", false);
+                //DebugLog($"Already loaded: {address}", false);
                 return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
             }
 
@@ -170,7 +183,7 @@ namespace PLATEAU.DynamicTile
                     tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
                 }
 
-                var timeoutTask = Task.Delay((int)(timeoutSeconds * 1000));
+                var timeoutTask = Task.Delay((int)(timeoutSeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -181,7 +194,7 @@ namespace PLATEAU.DynamicTile
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                //await handle.Task;
+                // タイムアウト付きロード
                 var completedTask = await Task.WhenAny(tile.LoadHandle.Task, timeoutTask);
 
                 if (completedTask == timeoutTask)
@@ -195,17 +208,20 @@ namespace PLATEAU.DynamicTile
                     // ロードに成功した場合は、LoadHandleCancellationTokenSourceをDisposeしてnullに設定
                     tile.LoadHandleCancellationTokenSource?.Dispose();
                     tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
+
+                    tileInstantiation?.AddToQueue(tile, true); // タイルをキューに追加してキューコルーチン実行
+
                     return LoadResult.Success;
                 }
                 else
                 {
                     if (tile.LoadHandle.IsValid())
                         Addressables.Release(tile.LoadHandle);
-                    DeleteGameObjectInstance(tile.LoadedObject);
+                    //DeleteGameObjectInstance(tile.LoadedObject);
 
                     tile.Reset();
-                    DebugLog($"アセットのロードに失敗しました: {address}");
-                    return LoadResult.NeedRetry;
+                    //DebugLog($"アセットのロードに失敗しました: {address}");
+                    return LoadResult.Failure;
                 }
             }
             catch (Exception ex)
@@ -228,13 +244,10 @@ namespace PLATEAU.DynamicTile
 
                 if (tile.LoadHandle.IsValid())
                     Addressables.Release(tile.LoadHandle);
-                DeleteGameObjectInstance(tile.LoadedObject);
 
                 tile.Reset();
                 return loadResult;
             }
-            //tile.Reset();
-            //return LoadResult.Failure;
         }
 
         /// <summary>
@@ -243,13 +256,13 @@ namespace PLATEAU.DynamicTile
         /// <param name="tile"></param>
         /// <param name="maxRetryCount">リトライ数</param>
         /// <returns></returns>
-        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, int delay = 300)
+        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, float delaySeconds = 0.3f)
         {
             var result = await Load(tile);
-            if (result == LoadResult.NeedRetry)
+            if (result != LoadResult.Success && result != LoadResult.Cancelled)
             {
                 // ロードに失敗した場合は、リトライ
-                DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
+                //DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
                 int retryCount = 0;
                 while (retryCount < maxRetryCount)
                 {
@@ -262,15 +275,22 @@ namespace PLATEAU.DynamicTile
                     var retryResult = await Load(tile);
                     if (retryResult == LoadResult.Success)
                         return true;
-                    else if (retryResult != LoadResult.NeedRetry)
-                        break;
+                    //else if (retryResult != LoadResult.NeedRetry)
+                    //    break;
 
                     retryCount++;
-                    await Task.Delay(delay, tile.LoadHandleCancellationTokenSource.Token);
+                    await Task.Delay((int)(delaySeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
                 }
             }
             else if (result == LoadResult.Success)
+            {
+                tile.LastLoadResult = result;
                 return true;
+            }
+                
+            DebugLog($"タイルのロードのリトライに失敗しました: {tile.Address}", true);
+
+            tile.LastLoadResult = result; // 最後のロード結果を保存
             return false;
         }
 
@@ -319,7 +339,7 @@ namespace PLATEAU.DynamicTile
             }
             finally
             {
-                //DeleteGameObjectInstance(tile.LoadedObject);
+                tileInstantiation?.AddToQueue(tile, false); // タイルを削除キューに追加
                 tile.Reset(); // タイルの状態をリセット
             }
             return true;
@@ -466,12 +486,18 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        public bool CheckIfCameraPositionHasChenged(Vector3 position, float threshold = 0.01f)
+        {
+            return Vector3.Distance(LastCameraPosition, position) > threshold;
+            //return (position != LastCameraPosition);
+        }
+
         /// <summary>
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
         /// <param name="timeoutSeconds">完了まで待機する際のタイムアウト秒数</param>
-        public async Task UpdateAssetsByCameraPosition(Vector3 position, float timeoutSeconds = 2f)
+        public async Task UpdateAssetsByCameraPosition(Vector3 position, float timeoutSeconds = 10f)
         {
             if ( State != ManagerState.Operating)
                 return;
@@ -523,7 +549,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
-            foreach (var tile in DynamicTiles)
+            var sortByDistance = new List<PLATEAUDynamicTile>(DynamicTiles);
+            sortByDistance.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // Distance順にソート
+
+            foreach (var tile in sortByDistance)
             {
                 var distance = tile.GetDistance(position, true);
                 //if (distance < loadDistance)
@@ -550,6 +579,10 @@ namespace PLATEAU.DynamicTile
             catch (OperationCanceledException)
             {
                 DebugLog("タイルのロードTaskがキャンセルされました。");
+            }
+            finally
+            {
+                PostLoadTask();
             }
         }
 
@@ -651,7 +684,12 @@ namespace PLATEAU.DynamicTile
             return lodObject.transform;
         }
 
-        private bool InstantiateFromTile(PLATEAUDynamicTile tile)
+        /// <summary>
+        /// 指定されたアセット読込済タイルからGameObjectをインスタンス化します。
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        internal bool InstantiateFromTile(PLATEAUDynamicTile tile)
         {
             if (tile.LoadHandle.IsValid() && tile.LoadHandle.Status == AsyncOperationStatus.Succeeded)
             {
@@ -664,13 +702,55 @@ namespace PLATEAU.DynamicTile
                     instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
                     DeleteGameObjectInstance(tile.LoadedObject); // 既存のオブジェクトが存在する場合削除
                     tile.LoadedObject = instance; // ロードしたオブジェクトを保持
+
+                    //Debug Material色変え =========================================================================
+                    var color = Color.white;
+                    switch (tile.ZoomLevel)
+                    {
+                        case 9:
+                            color = Color.red;
+                            break;
+                        case 10:
+                            color = Color.yellow;
+                            break;
+                        case 11:
+                            color = Color.green;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    var renderers = instance.GetComponentsInChildren<Renderer>(false)?.ToList();
+                    if (renderers != null)
+                    {
+                        foreach (var renderer in renderers)
+                        {
+                            if (renderer.sharedMaterials != null)
+                            {
+                                foreach (var material in renderer.sharedMaterials)
+                                {
+                                    if (material != null)
+                                    {
+                                        material.SetColor("_BaseColor", color);
+                                        material.color = color;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // ====================================================================================
+
                     return true;
                 }
             }
             return false;
         }
 
-        private void DeleteGameObjectInstance(GameObject obj)
+        /// <summary>
+        /// GameObjectインスタンスを削除します。
+        /// </summary>
+        /// <param name="obj"></param>
+        internal void DeleteGameObjectInstance(GameObject obj)
         {
             if (obj == null)
                 return;
@@ -680,68 +760,13 @@ namespace PLATEAU.DynamicTile
                 DestroyImmediate(obj);
         }
 
-        //private List<PLATEAUDynamicTile> loadQueue = new List<PLATEAUDynamicTile>();
-        //private List<PLATEAUDynamicTile> unloadQueue = new List<PLATEAUDynamicTile>();
-        //internal void AddToQueue(PLATEAUDynamicTile tile, bool load)
-        //{
-        //    if (tile == null)
-        //        return;
-        //    if (load)
-        //        loadQueue.Add(tile);
-        //    else
-        //        unloadQueue.Add(tile);
-        //}
-
-        internal void StartInstantiation()
+        /// <summary>
+        /// タイルのロードタスク後に実行する処理。
+        /// </summary>
+        internal void PostLoadTask()
         {
-            //loadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
-            //unloadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
-#if UNITY_EDITOR
-            EditorCoroutineRunner.StartEditorCoroutine(InstantiationRoutine());
-#endif
-        }
-
-        private IEnumerator InstantiationRoutine()
-        {
-            var loadQueue = DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Load && tile.LoadedObject == null);
-            var unloadQueue = DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Unload && tile.LoadedObject != null);
-            loadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
-            unloadQueue.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
-
-            Debug.Log($"タイルのインスタンス化を開始します。タイル数: {loadQueue.Count} : {unloadQueue.Count}");
-
-            for (int i = 0; i < loadQueue.Count; i++)
-            {
-                var tile = loadQueue[i];
-                if (tile == null)
-                    continue;
-
-                if (InstantiateFromTile(tile))
-                {
-                    DebugLog($"タイルをインスタンス化しました: {tile.Address}", false);
-                }
-                else
-                {
-                    DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address} {i}");
-                }
-
-                Debug.Log($"Tile : {i}");
-                yield return null; // フレームごとに処理を分割
-            }
-
-            for (int i = 0; i < unloadQueue.Count; i++)
-            {
-                var tile = unloadQueue[i];
-                if (tile == null)
-                    continue;
-
-                DeleteGameObjectInstance(tile.LoadedObject);
-                DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address} {i}");
-                yield return null; // フレームごとに処理を分割
-            }
-
-            loadQueue.Clear();
-            unloadQueue.Clear();
+            //tileInstantiation?.StartInstantiationFromTile();
+            tileInstantiation?.DeleteFromeQueue(); // キューからGameObjectインスタンス削除
         }
 
         /// <summary>
@@ -765,7 +790,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="message"></param>
         internal void DebugLog(string message, bool warn = true)
         {
-            if (showDebugTileInfo)
+            if (showDebugLog)
             {
                 if (warn)
                     Debug.LogWarning(message);
@@ -775,36 +800,3 @@ namespace PLATEAU.DynamicTile
         }
     }
 }
-
-#if UNITY_EDITOR
-public class EditorCoroutineRunner
-{
-    private static List<IEnumerator> coroutines = new List<IEnumerator>();
-
-    public static void StartEditorCoroutine(IEnumerator coroutine)
-    {
-        if (coroutines.Count == 0)
-        {
-            EditorApplication.update += Update;
-        }
-        coroutines.Add(coroutine);
-    }
-
-    private static void Update()
-    {
-        if (coroutines.Count == 0)
-        {
-            EditorApplication.update -= Update;
-            return;
-        }
-
-        for (int i = coroutines.Count - 1; i >= 0; i--)
-        {
-            if (!coroutines[i].MoveNext())
-            {
-                coroutines.RemoveAt(i);
-            }
-        }
-    }
-}
-#endif

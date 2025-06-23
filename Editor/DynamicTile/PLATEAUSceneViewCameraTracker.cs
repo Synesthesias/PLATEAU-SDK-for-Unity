@@ -18,6 +18,12 @@ namespace PLATEAU.DynamicTile
             Initialize();
         }
 
+        public static void Dispose()
+        {
+            SceneView.duringSceneGui -= OnSceneGUI;
+            tileManager = null;
+        }
+
         public static void Initialize()
         {
             if (EditorApplication.isPlaying)
@@ -45,7 +51,7 @@ namespace PLATEAU.DynamicTile
             if (sceneCamera != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                if (currentPosition != tileManager.LastCameraPosition)
+                if (tileManager.CheckIfCameraPositionHasChenged(currentPosition))
                 {
                     await tileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
@@ -78,8 +84,8 @@ namespace PLATEAU.DynamicTile
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
 
-            EditorSceneManager.sceneSaving -= OnSceneSaving;
-            EditorSceneManager.sceneSaving += OnSceneSaving;
+            //EditorSceneManager.sceneSaving -= OnSceneSaving;
+            //EditorSceneManager.sceneSaving += OnSceneSaving;
 
             InitView();
         }

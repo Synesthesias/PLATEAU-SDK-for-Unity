@@ -28,16 +28,6 @@ namespace PLATEAU.DynamicTile
         /// AddressablesでロードされたGameObjectを保持する。
         /// </summary>
         public GameObject LoadedObject { get; internal set; } = null;
-        //{
-        //    get
-        //    {
-        //        if (LoadHandle.IsValid() && LoadHandle.Status == AsyncOperationStatus.Succeeded)
-        //        {
-        //            return LoadHandle.Result;
-        //        }
-        //        return null;
-        //    }
-        //}
 
         /// <summary>
         /// Addressablesのロードハンドルを保持する。
@@ -73,6 +63,8 @@ namespace PLATEAU.DynamicTile
         /// 次にAddressablesをロードする状態を示す。
         /// </summary>
         public LoadState NextLoadState { get; set; } = LoadState.None;
+
+        public PLATEAUTileManager.LoadResult LastLoadResult { get; set; } = PLATEAUTileManager.LoadResult.None;
 
         // Job Systemで使用するための構造体を返す
         public TileBounds GetTileBoundsStruct()
@@ -138,7 +130,7 @@ namespace PLATEAU.DynamicTile
             {}
             LoadHandleCancellationTokenSource?.Dispose();
             LoadHandleCancellationTokenSource = null;
-            NextLoadState = LoadState.None;
+            //NextLoadState = LoadState.None;
         }
 
         /// <summary>
