@@ -1,7 +1,7 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
-using PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI;
 using PLATEAU.Util;
 using System;
 using UnityEditor;

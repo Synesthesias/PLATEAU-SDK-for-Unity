@@ -11,7 +11,7 @@ using System.IO;
 using PLATEAU.Util.Async;
 using UnityEditor.SceneManagement;
 
-namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
+namespace PLATEAU.DynamicTile
 {
     /// <summary>
     /// 都市モデルをDynamicTile用にプレハブ化し、一括エクスポート処理を提供する。
