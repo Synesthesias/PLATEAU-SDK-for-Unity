@@ -14,22 +14,25 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
         public bool DoSetAttrInfo { get; set; }
         public bool EnableTexturePacking { get; set; }
         public TexturePackingResolution TexturePackingResolution { get; set; }
+        public bool ForcePerCityModelArea { get; set; }
 
         public PackageImportConfigExtendable()
             : this(true, MeshGranularity.PerPrimaryFeatureObject, true, true, true,
-                TexturePackingResolution.W2048H2048){}
+                TexturePackingResolution.W2048H2048, false){}
 
         public PackageImportConfigExtendable(
             bool includeTexture, MeshGranularity meshGranularity,
             bool doSetMeshCollider, bool doSetAttrInfo,
-            bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
+            bool enableTexturePacking, TexturePackingResolution texturePackingResolution,
+            bool forcePerCityModelArea)
         {
             IncludeTexture = includeTexture;
-            MeshGranularity = meshGranularity;
             DoSetMeshCollider = doSetMeshCollider;
             DoSetAttrInfo = doSetAttrInfo;
             EnableTexturePacking = enableTexturePacking;
             TexturePackingResolution = texturePackingResolution;
+            ForcePerCityModelArea = forcePerCityModelArea;
+            MeshGranularity = forcePerCityModelArea ? MeshGranularity.PerCityModelArea : meshGranularity;
         }
 
         public void CopyFrom(PackageImportConfigExtendable other)
@@ -40,6 +43,7 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
             DoSetAttrInfo = other.DoSetAttrInfo;
             EnableTexturePacking = other.EnableTexturePacking;
             TexturePackingResolution = other.TexturePackingResolution;
+            ForcePerCityModelArea = other.ForcePerCityModelArea;
         }
         
 

@@ -24,7 +24,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             
         public void Draw()
         {
-            PlateauEditorStyle.Heading("地物別設定", "num3.png");
             this.cityImportConfigGUI.Draw();
                 
             PlateauEditorStyle.Separator(0);

@@ -13,14 +13,20 @@ namespace PLATEAU.Editor.CityImport
     internal class CityImportConfigGUI
     {
         private readonly IEditorDrawable[] guiComponents;
+        private readonly PackageImportConfigGUIList packageConfigGUIList;
 
         public CityImportConfigGUI(CityImportConfig cityImportConf, PackageToLodDict availablePackageLodsArg)
         {
             if(cityImportConf == null) throw new ArgumentNullException(nameof(cityImportConf));
+            
+            // パッケージ設定GUIListを保持
+            packageConfigGUIList = new PackageImportConfigGUIList(availablePackageLodsArg, cityImportConf);
+            
             // パッケージ種ごとの設定GUI、その下に基準座標設定GUIが表示されるようにGUIコンポーネントを置きます。
             guiComponents = new IEditorDrawable[]
             {
-                new PackageImportConfigGUIList(availablePackageLodsArg, cityImportConf),
+                new DynamicTileConfigGUI(cityImportConf, packageConfigGUIList),
+                packageConfigGUIList,
                 new PositionConfGUI(cityImportConf)
             };
         }
@@ -30,8 +36,18 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public void Draw()
         {
+            // 動的タイルの設定GUIを最初に描画
+            guiComponents[0].Draw();
+            
+            PlateauEditorStyle.Heading("地物別設定", "num3.png");
+
             foreach (var guiComponent in guiComponents)
             {
+                if (guiComponent is DynamicTileConfigGUI)
+                {
+                    // すでに描画済みなのでスキップ
+                    continue;
+                }
                 guiComponent.Draw();
             }
         }

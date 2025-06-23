@@ -35,6 +35,11 @@ namespace PLATEAU.CityImport.Config
         /// </summary>
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
 
+        /// <summary>
+        /// 動的タイルの設定項目です。
+        /// </summary>
+        public DynamicTileImportConfig DynamicTileImportConfig { get; set; } = new DynamicTileImportConfig();
+
         private CityImportConfig(){}
 
         /// <summary>
