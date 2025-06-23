@@ -56,6 +56,12 @@ namespace PLATEAU.Editor.Addressables
             {
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
+
+            ///　非圧縮に設定
+            bundledSchema.Compression = BundledAssetGroupSchema.BundleCompressionMode.Uncompressed;
+            EditorUtility.SetDirty(bundledSchema);
+            AssetDatabase.SaveAssets();
+
             return group;
         }
         
