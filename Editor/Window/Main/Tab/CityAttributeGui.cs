@@ -5,7 +5,7 @@ using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static PLATEAU.CityInfo.CityObjectList;
+using static PLATEAU.CityInfo.SerializableCityObjectList;
 using ProgressBar = PLATEAU.Util.ProgressBar;
 
 namespace PLATEAU.Editor.Window.Main.Tab
@@ -17,8 +17,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
     {
         private static readonly string GIZMO_GAMEOBJECT_NAME = "PLATEAUCityObjectGroup_GizmoGameObject";
         private readonly EditorWindow parentEditorWindow;
-        private CityObject parent;
-        private CityObject child;
+        private SerializableCityObject parent;
+        private SerializableCityObject child;
         private string parentJson;
         private string childJson;
         private string targetObjectName;
@@ -193,7 +193,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
         }
 
-        private string GetIdAndAttributeString(CityObject obj)
+        private string GetIdAndAttributeString(SerializableCityObject obj)
         {
             var id = obj.GmlID;
 

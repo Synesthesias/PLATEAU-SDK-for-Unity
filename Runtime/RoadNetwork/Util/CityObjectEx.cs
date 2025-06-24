@@ -66,7 +66,7 @@ namespace PLATEAU.RoadNetwork.Util
             ["道床"] = RRoadTypeMask.Road,
         };
 
-        public static RRoadTypeMask GetRoadType(this CityInfo.CityObjectList.CityObject self)
+        public static RRoadTypeMask GetRoadType(this CityInfo.SerializableCityObjectList.SerializableCityObject self)
         {
             // 緊急輸送道路もはじく必要がある
             // LOD3からチェックする

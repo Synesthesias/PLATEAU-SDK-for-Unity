@@ -77,14 +77,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return retKeys;
         }
 
-        private HashSet<string> FindAllKeys(CityObjectList.CityObject cityObj)
+        private HashSet<string> FindAllKeys(SerializableCityObjectList.SerializableCityObject cityObj)
         {
             var retKeys = new HashSet<string>();
             FindAllKeysRecursive(cityObj.AttributesMap, retKeys, "");
             return retKeys;
         }
         
-        private void FindAllKeysRecursive(CityObjectList.Attributes attrs, HashSet<string> outKeys, string parentKey)
+        private void FindAllKeysRecursive(SerializableCityObjectList.SerializableAttributes attrs, HashSet<string> outKeys, string parentKey)
         {
             foreach (var (key, value) in attrs)
             {

@@ -12,7 +12,7 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
     /// </summary>
     public class GmlIdToSerializedCityObj : INonLibData
     {
-        private Dictionary<string, CityObjectList.CityObject> data = new();
+        private Dictionary<string, SerializableCityObjectList.SerializableCityObject> data = new();
         
         /// <summary>
         /// 引数に含まれるGmlIDと属性情報をすべて取得して記憶したインスタンスを返します。
@@ -42,11 +42,11 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
 
         }
 
-        private void Add(string gmlId, CityObjectList.CityObject serializedCityObj)
+        private void Add(string gmlId, SerializableCityObjectList.SerializableCityObject serializedSerializableCityObj)
         {
             if (data.ContainsKey(gmlId))
             {
-                var srcAttributes = serializedCityObj.AttributesMap;
+                var srcAttributes = serializedSerializableCityObj.AttributesMap;
                 var dstAttributes = data[gmlId].AttributesMap;
                 if (srcAttributes == dstAttributes)
                 {
@@ -58,17 +58,17 @@ namespace PLATEAU.CityAdjust.NonLibDataHolder
             }
             else
             {
-                data.Add(gmlId, serializedCityObj);
+                data.Add(gmlId, serializedSerializableCityObj);
             }
         }
 
-        public bool TryGet(string gmlID, out CityObjectList.CityObject outSerializedCityObj)
+        public bool TryGet(string gmlID, out SerializableCityObjectList.SerializableCityObject outSerializedSerializableCityObj)
         {
-            if (data.TryGetValue(gmlID, out outSerializedCityObj))
+            if (data.TryGetValue(gmlID, out outSerializedSerializableCityObj))
             {
                 return true;
             }
-            outSerializedCityObj = null;
+            outSerializedSerializableCityObj = null;
             return false;
         }
 

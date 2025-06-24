@@ -1,10 +1,13 @@
-﻿using PLATEAU.CityInfo;
+﻿using MessagePack;
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Newtonsoft.Json;
+using System;
 
 namespace PLATEAU.Editor.CityInfo
 {
@@ -44,11 +47,22 @@ namespace PLATEAU.Editor.CityInfo
                 // 属性情報をクリップボードにコピーするボタン
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button("属性情報をクリップボードにコピー"))
+                    if (GUILayout.Button("属性情報をクリップボードにコピー(json形式)"))
                     {
                         string json = GetCachedJson();
                         EditorGUIUtility.systemCopyBuffer = json;
                         Dialogue.Display("属性情報をクリップボードにコピーしました", "OK");
+                    }
+                }
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("属性情報をクリップボードにコピー(MessagePack形式)"))
+                    {
+                        var messagePack = GetMessagePackData();
+                        string base64 = System.Convert.ToBase64String(messagePack);
+                        EditorGUIUtility.systemCopyBuffer = base64;
+                        Dialogue.Display($"属性情報をクリップボードにコピーしました。({messagePack.Length}byte)", "OK");
                     }
                 }
                 
@@ -79,17 +93,35 @@ namespace PLATEAU.Editor.CityInfo
                 base.OnInspectorGUI();
             }
         }
+
+        private byte[] GetMessagePackData()
+        {
+            SerializedProperty prop = serializedObject.FindProperty("serializedCityObjects");
+            if (prop == null || prop.arraySize <= 0)
+            {
+                return null;
+            }
+
+            byte[] messagePackData = new byte[prop.arraySize];
+            for (int i = 0; i < prop.arraySize; i++)
+            {
+                messagePackData[i] = (byte)prop.GetArrayElementAtIndex(i).intValue;
+            }
+
+            return messagePackData;
+
+        }
         
         /// <summary>
-        /// 属性情報のJSONをキャッシュから取得します。一度取得したらキャッシュを使用し、長い情報の繰り返し取得を避けます。
+        /// 属性情報のMessagePackバイナリをキャッシュから取得します。一度取得したらキャッシュを使用し、長い情報の繰り返し取得を避けます。
         /// </summary>
         private string GetCachedJson()
         {
-            // 初回のみprop.stringValueから取得
+            // 初回のみserializedCityObjectsのbyte[]から取得
             if (!jsonLoaded)
             {
-                SerializedProperty prop = serializedObject.FindProperty("serializedCityObjects");
-                cachedJson = prop.stringValue;
+                var messagePackData = GetMessagePackData();
+                cachedJson = messagePackData != null ? MessagePackSerializer.ConvertToJson(messagePackData) : "MessagePackデータが見つかりません";
                 jsonLoaded = true;
             }
             

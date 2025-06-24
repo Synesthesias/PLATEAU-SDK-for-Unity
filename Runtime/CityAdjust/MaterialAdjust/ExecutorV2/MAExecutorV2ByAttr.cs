@@ -78,7 +78,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2
         /// <summary>
         /// 条件付きで属性情報をC++に渡します。
         /// </summary>
-        private bool RegisterAttributeConditional(CityObjectList.CityObject co, MAExecutorConfByAttr conf, MaterialAdjusterByAttr adjuster, string parentAttrVal)
+        private bool RegisterAttributeConditional(SerializableCityObjectList.SerializableCityObject co, MAExecutorConfByAttr conf, MaterialAdjusterByAttr adjuster, string parentAttrVal)
         {
             // 特別ケースに対処:
             // 親と自身に同名のキーをとる属性情報があり、かつどちらもマテリアル変更対象である場合、子を優先して登録します。
