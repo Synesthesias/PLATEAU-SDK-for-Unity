@@ -14,14 +14,13 @@ namespace PLATEAU.DynamicTile
         public async override void OnInspectorGUI()
         {
             DrawDefaultInspector(); // 通常のInspector表示
-  
+
+            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             SerializedObject serializedObject = new SerializedObject(target);
             SerializedProperty debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
 
             if (debugInfoProperty.boolValue)
             {
-                PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-
                 if (GUILayout.Button("Clear Tile Assets"))
                 {
                     tileManager.ClearTileAssets();
@@ -77,17 +76,40 @@ namespace PLATEAU.DynamicTile
                     _= tileManager.CancelLoadTask();
                 }
 
+                if (!PLATEAUSceneViewCameraTracker.IsRunning)
+                {
+                    if (GUILayout.Button("Enable Realtime Load On Editor"))
+                    {
+                        PLATEAUSceneViewCameraTracker.Initialize();
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Disable Realtime Load On Editor"))
+                    {
+                        PLATEAUSceneViewCameraTracker.Release();
+                    }
+                }
+
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
-                EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.IsTileCreationInProgress.ToString());
+                EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.disableProjectChangeEvent.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
-                EditorGUILayout.LabelField($"Task Running: ", tileManager.HasCurrentTask.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.HasCurrentTask ? Color.red : Color.green } });
+                EditorGUILayout.LabelField($"Load Task: ", tileManager.HasCurrentTask ? "Running" : "Complete", new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.HasCurrentTask ? Color.red : Color.green } });
+                EditorGUILayout.LabelField($"Instantiate Coroutine: ", tileManager.IsCoroutineRunning? "Running" : "Complete", new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsCoroutineRunning ? Color.red : Color.green } });
 
-                EditorGUILayout.LabelField($"Coroutine Running: ", tileManager.IsCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsCoroutineRunning ? Color.red : Color.green } });
-                //EditorGUILayout.LabelField($"Queue Coroutine Running: ", tileManager.IsQueueCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsQueueCoroutineRunning ? Color.red : Color.green } });
-                //EditorGUILayout.LabelField($"Queue Tile Running: ", tileManager.IsTileCoroutineRunning.ToString(), new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsTileCoroutineRunning ? Color.red : Color.green } });
+                // Zoom Levelごとのロード距離
+                foreach (var dist in tileManager.loadDistances)
+                {
+                    var zoomLevel = dist.Key;
+                    var (min, max) = dist.Value;
+                    GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
+                    EditorGUILayout.IntField($"ZoomLevel: ", zoomLevel);
+                    EditorGUILayout.Vector2Field($"Load Distance: ", new Vector2(min, max));
+                }
 
+                // 各タイルの情報を表示
                 foreach (var tile in dynamicTiles)
                 {
                     if (tile == null) continue;
@@ -108,6 +130,11 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        /// <summary>
+        /// ZoomレベルをSceneViewに描画
+        /// </summary>
+        private bool isShowingZoomLevel = false;
+
         public void OnEnable()
         {
             isShowingZoomLevel = false;
@@ -118,11 +145,6 @@ namespace PLATEAU.DynamicTile
             SceneView.duringSceneGui -= DrawZoomLevel;
             isShowingZoomLevel = false;
         }
-
-        /// <summary>
-        /// ZoomレベルをSceneViewに描画
-        /// </summary>
-        private bool isShowingZoomLevel = false;
 
         private Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
         {
@@ -150,8 +172,6 @@ namespace PLATEAU.DynamicTile
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             foreach (var tile in tileManager.DynamicTiles)
             {
-                //if (tile.LoadHandle.IsDone && tile.LoadedObject != null)
-                //if (tile.LoadHandle.IsDone)
                 if (tile.NextLoadState == LoadState.Load )
                 {
                     var center = tile.Extent.center;

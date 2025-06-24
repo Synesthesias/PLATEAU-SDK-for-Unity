@@ -13,15 +13,19 @@ namespace PLATEAU.DynamicTile
     {
         private static PLATEAUTileManager tileManager;
 
+        public static bool IsRunning { get; private set; }
+
         static PLATEAUSceneViewCameraTracker()
         {
             Initialize();
         }
 
-        public static void Dispose()
+        public static void Release()
         {
             SceneView.duringSceneGui -= OnSceneGUI;
             tileManager = null;
+
+            IsRunning = false;
         }
 
         public static void Initialize()
@@ -37,6 +41,8 @@ namespace PLATEAU.DynamicTile
             SceneView.duringSceneGui += OnSceneGUI;
 
             tileManager.ClearTileAssets();
+
+            IsRunning = true;
         }
 
         private static async void OnSceneGUI(SceneView sceneView)
@@ -68,9 +74,16 @@ namespace PLATEAU.DynamicTile
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
 
-        public static volatile bool IsTileCreationInProgress = false;
+        public static volatile bool disableProjectChangeEvent = false;
+
+        public static bool IsRunning { get; private set; }
 
         static PLATEAUEditorEventListener()
+        {
+            Initialize();
+        }
+
+        public static void Initialize()
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
@@ -88,6 +101,20 @@ namespace PLATEAU.DynamicTile
             //EditorSceneManager.sceneSaving += OnSceneSaving;
 
             InitView();
+
+            IsRunning = true;
+        }
+
+        public static void Release()
+        {
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.projectChanged -= OnProjectChanged;
+            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
+            EditorSceneManager.sceneOpened -= OnSceneOpened;
+            //EditorSceneManager.sceneSaving -= OnSceneSaving;
+            PLATEAUSceneViewCameraTracker.Release();
+
+            IsRunning = false;
         }
 
         static void OnEditorUpdate()
@@ -100,7 +127,7 @@ namespace PLATEAU.DynamicTile
 
         static void OnProjectChanged()
         {
-            if (IsTileCreationInProgress) 
+            if (disableProjectChangeEvent) 
                 return;
 
             Log("Project Changed");

@@ -37,7 +37,6 @@ namespace PLATEAU.DynamicTile
             Success,
             Failure,
             AlreadyLoaded,
-            //NeedRetry,
             Cancelled,
             Timeout
         }
@@ -67,13 +66,13 @@ namespace PLATEAU.DynamicTile
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
-        private bool showDebugLog = true; // ログを表示するか
+        private bool showDebugLog = false; // ログを表示するか
 
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
         // 全タイルのロードタスク実行時のCancellationTokenSource
-        public CancellationTokenSource LoadTaskCancellationTokenSource { get; private set; } = new();
+        internal CancellationTokenSource LoadTaskCancellationTokenSource { get; private set; } = new();
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
@@ -85,13 +84,13 @@ namespace PLATEAU.DynamicTile
         public ManagerState State { get; private set; } = ManagerState.None;
 
         // 最後にカメラが更新された位置
-        public Vector3 LastCameraPosition { get; private set; } = Vector3.zero; 
+        internal Vector3 LastCameraPosition { get; private set; } = Vector3.zero; 
 
         private AddressableLoader addressableLoader = new ();
-        private PLATEAUDynamicTileJobSystem jobSystem;
-
+        private PLATEAUDynamicTileLoader tileLoader;
         private PLATEAUDynamicTileInstantiation tileInstantiation;
-
+        private PLATEAUDynamicTileJobSystem jobSystem;
+        
         // 実行中のUpdateAssetsByCameraPosition内のTask
         private Task CurrentTask;
 
@@ -133,6 +132,7 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
+            tileLoader = new(this); 
             tileInstantiation = new(this);
 
             LastCameraPosition = Vector3.zero; 
@@ -154,100 +154,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
-            string address = tile.Address;
-            if (string.IsNullOrEmpty(address))
-            {
-                DebugLog($"指定したアドレスが見つかりません: {address}");
-                return await Task.FromResult<LoadResult>(LoadResult.Failure);
-            }
-            // 既にロードされている場合はスキップ
-            if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
-            {
-                //DebugLog($"Already loaded: {address}", false);
-                return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
-            }
-
-            try
-            {
-                if (tile.LoadHandle.IsValid() && !tile.LoadHandle.IsDone)
-                {
-                    tile.LoadHandleCancellationTokenSource.Cancel();
-                    await tile.LoadHandle.Task;
-                    tile.LoadHandleCancellationTokenSource.Dispose();
-                    tile.LoadHandleCancellationTokenSource = null;
-                }
-
-                if (tile.LoadHandleCancellationTokenSource == null)
-                {
-                    // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
-                    tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LoadTaskCancellationTokenSource.Token);
-                }
-
-                var timeoutTask = Task.Delay((int)(timeoutSeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
-
-                //Cancel処理
-                tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                //var handle = Addressables.InstantiateAsync(address, FindParent(tile.Lod));
-                tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
-
-                //Cancel処理
-                tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                // タイムアウト付きロード
-                var completedTask = await Task.WhenAny(tile.LoadHandle.Task, timeoutTask);
-
-                if (completedTask == timeoutTask)
-                {
-                    throw new TimeoutException($"アセットのロードがタイムアウトしました: {address}");
-                }
-
-                if (tile.LoadHandle.IsValid() && tile.LoadHandle.Status == AsyncOperationStatus.Succeeded)
-                //if (InstantiateFromTile(tile))
-                {
-                    // ロードに成功した場合は、LoadHandleCancellationTokenSourceをDisposeしてnullに設定
-                    tile.LoadHandleCancellationTokenSource?.Dispose();
-                    tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
-
-                    tileInstantiation?.AddToQueue(tile, true); // タイルをキューに追加してキューコルーチン実行
-
-                    return LoadResult.Success;
-                }
-                else
-                {
-                    if (tile.LoadHandle.IsValid())
-                        Addressables.Release(tile.LoadHandle);
-                    //DeleteGameObjectInstance(tile.LoadedObject);
-
-                    tile.Reset();
-                    //DebugLog($"アセットのロードに失敗しました: {address}");
-                    return LoadResult.Failure;
-                }
-            }
-            catch (Exception ex)
-            {
-                var loadResult = LoadResult.Failure;
-                if(ex is OperationCanceledException)
-                {
-                    DebugLog($"アセットのロードがキャンセルされました: {address}");
-                    loadResult = LoadResult.Cancelled;
-                }
-                else if (ex is TimeoutException)
-                {
-                    DebugLog($"アセットのロードがタイムアウトしました: {address}");
-                    loadResult = LoadResult.Timeout;
-                }
-                else
-                {
-                    DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
-                }
-
-                if (tile.LoadHandle.IsValid())
-                    Addressables.Release(tile.LoadHandle);
-
-                tile.Reset();
-                return loadResult;
-            }
+            return await tileLoader.Load(tile, OnLoadSuccessHandler, timeoutSeconds);
         }
 
         /// <summary>
@@ -255,43 +162,11 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="tile"></param>
         /// <param name="maxRetryCount">リトライ数</param>
+        /// <param name="delaySeconds">リトライ時のディレイ</param>
         /// <returns></returns>
-        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, float delaySeconds = 0.3f)
-        {
-            var result = await Load(tile);
-            if (result != LoadResult.Success && result != LoadResult.Cancelled)
-            {
-                // ロードに失敗した場合は、リトライ
-                //DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address}");
-                int retryCount = 0;
-                while (retryCount < maxRetryCount)
-                {
-                    //DebugLog($"Retrying {retryCount + 1}/{maxRetryCount} for tile: {tile.Address}");
-
-                    if (tile.LoadHandleCancellationTokenSource == null)
-                        throw new OperationCanceledException("LoadHandleCancellationTokenSource is null.");
-                    tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                    var retryResult = await Load(tile);
-                    if (retryResult == LoadResult.Success)
-                        return true;
-                    //else if (retryResult != LoadResult.NeedRetry)
-                    //    break;
-
-                    retryCount++;
-                    await Task.Delay((int)(delaySeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
-                }
-            }
-            else if (result == LoadResult.Success)
-            {
-                tile.LastLoadResult = result;
-                return true;
-            }
-                
-            DebugLog($"タイルのロードのリトライに失敗しました: {tile.Address}", true);
-
-            tile.LastLoadResult = result; // 最後のロード結果を保存
-            return false;
+        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback, int maxRetryCount = 2, float delaySeconds = 0.3f) 
+        { 
+            return await tileLoader.LoadWithRetry(tile, loadSuccessCallback, maxRetryCount, delaySeconds);
         }
 
         /// <summary>
@@ -305,7 +180,12 @@ namespace PLATEAU.DynamicTile
                 DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.Failure);
             }
-            return await Load(tile);
+            return await tileLoader.Load(tile, OnLoadSuccessHandler);
+        }
+
+        private void OnLoadSuccessHandler(PLATEAUDynamicTile tile)
+        {
+            tileInstantiation?.AddToQueue(tile, true);
         }
 
         /// <summary>
@@ -314,35 +194,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="address"></param>
         public bool Unload(PLATEAUDynamicTile tile)
         {
-            string address = tile.Address;
-            if (string.IsNullOrEmpty(address))
-            {
-                DebugLog($"指定したアドレスが見つかりません: {address}");
-                return false;
-            }
-            try
-            {
-                if (tile.LoadHandle.IsValid())
-                {
-                    if (!tile.LoadHandle.IsDone)
-                    {
-                        // ロードが完了していない場合はキャンセル
-                        tile.LoadHandleCancellationTokenSource?.Cancel();
-                        return false;
-                    }
-                    Addressables.Release(tile.LoadHandle);
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLog($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
-            }
-            finally
-            {
-                tileInstantiation?.AddToQueue(tile, false); // タイルを削除キューに追加
-                tile.Reset(); // タイルの状態をリセット
-            }
-            return true;
+            return tileLoader.Unload(tile);
         }
 
         /// <summary>
@@ -356,7 +208,7 @@ namespace PLATEAU.DynamicTile
                 DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
                 return false;
             }
-            return Unload(tile);
+            return tileLoader.Unload(tile);
         }
 
         /// <summary>
@@ -368,6 +220,9 @@ namespace PLATEAU.DynamicTile
             ClearTiles();
             jobSystem?.Dispose();
             jobSystem = null;
+
+            tileLoader?.Dispose();
+            tileInstantiation?.Dispose();
         }
 
         /// <summary>
@@ -555,7 +410,6 @@ namespace PLATEAU.DynamicTile
             foreach (var tile in sortByDistance)
             {
                 var distance = tile.GetDistance(position, true);
-                //if (distance < loadDistance)
                 if (WithinTheRange(distance,tile))
                 {
                     if (tile.LoadHandle.IsValid())
@@ -601,11 +455,11 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (tile.NextLoadState == LoadState.Load)
                 {
-                    await LoadWithRetry(tile);
+                    await PrepareLoadTile(tile);
                 }
                 else if (tile.NextLoadState == LoadState.Unload)
                 {
-                    Unload(tile);
+                    PrepareUnloadTile(tile);
                 }
                 token.ThrowIfCancellationRequested();
             }
@@ -624,9 +478,9 @@ namespace PLATEAU.DynamicTile
                 try
                 {
                     if (tile.NextLoadState == LoadState.Load)
-                        await LoadWithRetry(tile);
+                        await PrepareLoadTile(tile);
                     else if (tile.NextLoadState == LoadState.Unload)
-                        Unload(tile);
+                        PrepareUnloadTile(tile);
                 }
                 finally
                 {
@@ -635,6 +489,28 @@ namespace PLATEAU.DynamicTile
             }).ToArray();
 
             await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// TaskからCallされるTileのロード処理
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        internal async Task<bool> PrepareLoadTile(PLATEAUDynamicTile tile)
+        {
+            return await tileLoader.LoadWithRetry(tile, OnLoadSuccessHandler);
+        }
+
+        /// <summary>
+        /// TaskからCallされるTileのアンロード処理
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        internal bool PrepareUnloadTile(PLATEAUDynamicTile tile)
+        {
+            //return Unload(tile);
+            tileInstantiation?.AddToQueue(tile, false); // タイルを削除キューに追加
+            return true;
         }
 
         /// <summary>
@@ -703,42 +579,8 @@ namespace PLATEAU.DynamicTile
                     DeleteGameObjectInstance(tile.LoadedObject); // 既存のオブジェクトが存在する場合削除
                     tile.LoadedObject = instance; // ロードしたオブジェクトを保持
 
-                    //Debug Material色変え =========================================================================
-                    var color = Color.white;
-                    switch (tile.ZoomLevel)
-                    {
-                        case 9:
-                            color = Color.red;
-                            break;
-                        case 10:
-                            color = Color.yellow;
-                            break;
-                        case 11:
-                            color = Color.green;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    var renderers = instance.GetComponentsInChildren<Renderer>(false)?.ToList();
-                    if (renderers != null)
-                    {
-                        foreach (var renderer in renderers)
-                        {
-                            if (renderer.sharedMaterials != null)
-                            {
-                                foreach (var material in renderer.sharedMaterials)
-                                {
-                                    if (material != null)
-                                    {
-                                        material.SetColor("_BaseColor", color);
-                                        material.color = color;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // ====================================================================================
+                    //Debug Material色変え
+                    ReplaceWithDebugMaterial(tile);
 
                     return true;
                 }
@@ -765,7 +607,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         internal void PostLoadTask()
         {
-            //tileInstantiation?.StartInstantiationFromTile();
             tileInstantiation?.DeleteFromeQueue(); // キューからGameObjectインスタンス削除
         }
 
@@ -796,6 +637,51 @@ namespace PLATEAU.DynamicTile
                     Debug.LogWarning(message);
                 else
                     Debug.Log(message);
+            }
+        }
+
+        /// <summary>
+        /// デバッグ用 (元アセットのマテリアルが変わってしまうので、注意)
+        /// タイルのマテリアルをZoomLevelごとに着色して置き換えます。
+        /// </summary>
+        /// <param name="tile"></param>
+        private void ReplaceWithDebugMaterial(PLATEAUDynamicTile tile)
+        {
+            var color = Color.white;
+            switch (tile.ZoomLevel)
+            {
+                case 9:
+                    color = Color.red;
+                    break;
+                case 10:
+                    color = Color.yellow;
+                    break;
+                case 11:
+                    color = Color.green;
+                    break;
+                default:
+                    break;
+            }
+            //color = Color.white;
+            var renderers = tile.LoadedObject.GetComponentsInChildren<Renderer>(false)?.ToList();
+            if (renderers != null)
+            {
+                foreach (var renderer in renderers)
+                {
+                    var materials = renderer.sharedMaterials;
+                    if (materials != null)
+                    {
+                        for (int i = 0; i < materials.Length; i++)
+                        {
+                            var material = materials[i];
+                            if (material != null)
+                            {
+                                material.SetColor("_BaseColor", color);
+                                material.color = color;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

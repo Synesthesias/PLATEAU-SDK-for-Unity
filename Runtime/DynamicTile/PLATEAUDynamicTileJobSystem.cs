@@ -108,7 +108,6 @@ namespace PLATEAU.DynamicTile
 
         public void Execute()
         {
-            //Distances.Sort(new DistanceComparer());
             //NativeSortExtensionsが使えないので自前でソート
             int length = Distances.Length;
             for (int i = 0; i < length - 1; i++)
@@ -125,14 +124,6 @@ namespace PLATEAU.DynamicTile
             }
         }
     }
-
-    //public struct DistanceComparer : IComparer<DistanceWithIndex>
-    //{
-    //    public int Compare(DistanceWithIndex x, DistanceWithIndex y)
-    //    {
-    //        return x.Distance.CompareTo(y.Distance);
-    //    }
-    //}
 
     /// <summary>
     /// Jobsystemを使用したタイルロード処理
@@ -223,7 +214,6 @@ namespace PLATEAU.DynamicTile
         private async Task ExecuteLoadTask(CancellationToken token)
         {
             int loadFailCount = 0;
-            int unLoadFailCount = 0;
 
             for (int i = 0; i < NativeDistances.Length; i++)
             {
@@ -252,23 +242,19 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    var success = await tileManager.LoadWithRetry(tile);
-
+                    var success = await tileManager.PrepareLoadTile(tile);
                     if (!success)
                         loadFailCount++;
                     
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
-                    var success = tileManager.Unload(tile);
-
-                    if (!success)
-                        unLoadFailCount++;
+                    tileManager.PrepareUnloadTile(tile);
                 }
                 token.ThrowIfCancellationRequested();
             }
 
-            tileManager.DebugLog($"タイルのロード・アンロード処理が完了しました。ロード失敗数: {loadFailCount}, アンロード失敗数: {unLoadFailCount}");
+            tileManager.DebugLog($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
         }
 
         /// <summary>
@@ -295,9 +281,9 @@ namespace PLATEAU.DynamicTile
                 try
                 {
                     if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
-                        await tileManager.LoadWithRetry(tile);
+                        await tileManager.PrepareLoadTile(tile);
                     else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
-                        tileManager.Unload(tile);
+                        tileManager.PrepareUnloadTile(tile);
                 }
                 finally
                 {

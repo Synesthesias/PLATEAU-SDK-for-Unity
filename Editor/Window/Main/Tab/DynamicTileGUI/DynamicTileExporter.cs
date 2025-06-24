@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
                 // グループを削除
                 AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel);
 
-                PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
+                PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
 
                 // DynamicTile管理用GameObjectを生成
                 var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -173,7 +173,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
             finally
             {
-                PLATEAUEditorEventListener.IsTileCreationInProgress = false; // タイル生成中フラグを設定     
+                PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定     
                 var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
                 if (manager != null)
                 {

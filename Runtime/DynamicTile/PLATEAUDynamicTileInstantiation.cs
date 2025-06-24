@@ -12,21 +12,17 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class PLATEAUDynamicTileInstantiation : IDisposable
     {
-        private PLATEAUTileManager manager;
+        private readonly PLATEAUTileManager manager;
 
         private Queue<PLATEAUDynamicTile> loadQueue = new Queue<PLATEAUDynamicTile>();
         private Queue<PLATEAUDynamicTile> unloadQueue = new Queue<PLATEAUDynamicTile>();
 
-        // Editr/Runtime共にコルーチン停止用に保持
+        // Runtimeコルーチン停止用に保持
         private Coroutine instantiationFromQueueCoroutine;
-        private Coroutine instantiationFromTileCoroutine;
-        private IEnumerator instantiationFromQueueEnumerator;
-        private IEnumerator instantiationFromTileEnumerator;
 
         private bool isInstantiationFromQueueRunning = false;
-        private bool isInstantiationFromTileRunning = false;
 
-        public bool IsRunning => (isInstantiationFromQueueRunning || isInstantiationFromTileRunning );
+        public bool IsRunning => isInstantiationFromQueueRunning;
 
         public PLATEAUDynamicTileInstantiation(PLATEAUTileManager manager)
         {
@@ -34,7 +30,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// キューにタイルを追加します。
+        /// キューにタイルを追加してコルーチンを実行します。
         /// </summary>
         /// <param name="tile"></param>
         /// <param name="load">true:load, false:unload</param>
@@ -65,7 +61,7 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
-                instantiationFromQueueEnumerator = EditorCoroutineRunner.StartEditorCoroutine(InstantiationFromQueueRoutine());
+                EditorCoroutineRunner.StartEditorCoroutine(InstantiationFromQueueRoutine());
             }
 
 #else
@@ -99,79 +95,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// キューを使用せず、タイルのロード状態に基づいてインスタンス化を行います。
-        ///　未使用
-        /// </summary>
-        internal void StartInstantiationFromTile()
-        {
-
-
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                if (isInstantiationFromTileRunning)
-                    manager.StopCoroutine(instantiationFromTileCoroutine); // 既に実行中の場合は停止して再実行
-                instantiationFromTileCoroutine = manager.StartCoroutine(InstantiationFromTileRoutine());
-            }
-            else
-            {
-                if (isInstantiationFromTileRunning)
-                    EditorCoroutineRunner.StopEditorCoroutine(instantiationFromTileEnumerator); // 既に実行中の場合は停止して再実行
-                instantiationFromTileEnumerator = EditorCoroutineRunner.StartEditorCoroutine(InstantiationFromTileRoutine());
-            }
-
-#else
-            if (isInstantiationFromTileRunning)
-                manager.StopCoroutine(instantiationFromTileCoroutine); // 既に実行中の場合は停止して再実行
-            instantiationFromTileCoroutine = manager.StartCoroutine(InstantiationFromTileRoutine());
-#endif
-        }
-
-        /// <summary>
-        /// キューを使用せず、タイルのロード状態に基づいてインスタンス化する処理のコルーチン。
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator InstantiationFromTileRoutine()
-        {
-            isInstantiationFromTileRunning = true;
-
-            var loadList = manager.DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Load && tile.LoadedObject == null);
-            var unloadList = manager.DynamicTiles.FindAll(tile => tile.NextLoadState == LoadState.Unload && tile.LoadedObject != null);
-            loadList.Sort((b, a) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // DistanceFromCameraでソート
-
-            // Instantiate処理
-            for (int i = 0; i < loadList.Count; i++)
-            {
-                var tile = loadList[i];
-                if (tile == null)
-                    continue;
-
-                if (!manager.InstantiateFromTile(tile))
-                {
-                    manager.DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address} {i}");
-                }
-
-                yield return null; // フレームごとに処理を実行
-            }
-
-            // Delete処理
-            for (int i = 0; i < unloadList.Count; i++)
-            {
-                var tile = unloadList[i];
-                if (tile == null)
-                    continue;
-
-                manager.DeleteGameObjectInstance(tile.LoadedObject);
-            }
-
-            loadList.Clear();
-            unloadList.Clear();
-
-            isInstantiationFromTileRunning = false;
-        }
-
-        /// <summary>
-        /// Unloadにキューされたタイルを全て削除します。
+        /// Unloadにキューされたタイルを全てUnloadします。
         /// </summary>
         public void DeleteFromeQueue()
         {
@@ -181,7 +105,7 @@ namespace PLATEAU.DynamicTile
                 if (tile == null)
                     continue;
 
-                manager.DeleteGameObjectInstance(tile.LoadedObject);
+                manager.Unload(tile);
             }
 
             unloadQueue.Clear();
@@ -190,7 +114,6 @@ namespace PLATEAU.DynamicTile
         public void Dispose()
         {
             manager.StopCoroutine(instantiationFromQueueCoroutine);
-            manager.StopCoroutine(instantiationFromTileCoroutine);
 
 #if UNITY_EDITOR
             EditorCoroutineRunner.StopAllEditorCoroutines();
@@ -208,7 +131,7 @@ namespace PLATEAU.DynamicTile
     {
         private static List<IEnumerator> coroutines = new List<IEnumerator>();
 
-        public static IEnumerator StartEditorCoroutine(IEnumerator coroutine)
+        public static void StartEditorCoroutine(IEnumerator coroutine)
         {
             if (coroutines.Count == 0)
             {
@@ -216,15 +139,6 @@ namespace PLATEAU.DynamicTile
                 EditorApplication.update += Update;
             }
             coroutines.Add(coroutine);
-            return coroutine;
-        }
-
-        public static void StopEditorCoroutine(IEnumerator coroutine)
-        {
-            if (coroutines.Remove(coroutine) && coroutines.Count == 0)
-            {
-                EditorApplication.update -= Update;
-            }
         }
 
         public static bool IsRunning()
