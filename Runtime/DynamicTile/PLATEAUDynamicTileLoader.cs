@@ -16,7 +16,7 @@ namespace PLATEAU.DynamicTile
 
         private readonly PLATEAUTileManager tileManager;
 
-        public PLATEAUDynamicTileLoader(PLATEAUTileManager tileManager)
+        internal PLATEAUDynamicTileLoader(PLATEAUTileManager tileManager)
         {
             this.tileManager = tileManager;
         }
@@ -28,7 +28,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Tileを指定してAddressablesからロードする
         /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback,  float timeoutSeconds = 2f)
+        internal async Task<LoadResult> Load(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback,  float timeoutSeconds = 2f)
         {
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
@@ -131,7 +131,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="tile"></param>
         /// <param name="maxRetryCount">リトライ数</param>
         /// <returns></returns>
-        public async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback, int maxRetryCount = 2, float delaySeconds = 0.3f)
+        internal async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback, int maxRetryCount = 2, float delaySeconds = 0.3f)
         {
             var result = await Load(tile, loadSuccessCallback);
             if (result != LoadResult.Success && result != LoadResult.Cancelled)
@@ -170,7 +170,7 @@ namespace PLATEAU.DynamicTile
         /// Tileを指定してAddressablesからアンロード後、インスタンスを削除します。
         /// </summary>
         /// <param name="address"></param>
-        public bool Unload(PLATEAUDynamicTile tile)
+        internal bool Unload(PLATEAUDynamicTile tile)
         {
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))

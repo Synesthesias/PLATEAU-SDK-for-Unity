@@ -10,7 +10,7 @@ namespace PLATEAU.DynamicTile
     /// インスタンス化、GameObject削除を管理するクラス。
     /// インスタンス化はコルーチンで毎フレーム１オブジェクトずつ行う。
     /// </summary>
-    public class PLATEAUDynamicTileInstantiation : IDisposable
+    internal class PLATEAUDynamicTileInstantiation : IDisposable
     {
         private readonly PLATEAUTileManager manager;
 
@@ -24,7 +24,7 @@ namespace PLATEAU.DynamicTile
 
         public bool IsRunning => isInstantiationFromQueueRunning;
 
-        public PLATEAUDynamicTileInstantiation(PLATEAUTileManager manager)
+        internal PLATEAUDynamicTileInstantiation(PLATEAUTileManager manager)
         {
             this.manager = manager;
         }
@@ -97,7 +97,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Unloadにキューされたタイルを全てUnloadします。
         /// </summary>
-        public void DeleteFromeQueue()
+        internal void DeleteFromeQueue()
         {
             while (unloadQueue.Count > 0)
             {
@@ -127,11 +127,11 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// Unityエディタ上でコルーチンを実行するためのクラス。
     /// </summary>
-    public class EditorCoroutineRunner
+    internal class EditorCoroutineRunner
     {
         private static List<IEnumerator> coroutines = new List<IEnumerator>();
 
-        public static void StartEditorCoroutine(IEnumerator coroutine)
+        internal static void StartEditorCoroutine(IEnumerator coroutine)
         {
             if (coroutines.Count == 0)
             {
@@ -146,7 +146,7 @@ namespace PLATEAU.DynamicTile
             return coroutines.Count > 0;
         }
 
-        public static void StopAllEditorCoroutines()
+        internal static void StopAllEditorCoroutines()
         {
             coroutines.Clear();
             EditorApplication.update -= Update;
