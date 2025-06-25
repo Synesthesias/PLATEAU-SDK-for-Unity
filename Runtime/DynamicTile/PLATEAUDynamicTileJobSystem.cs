@@ -127,8 +127,8 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class PLATEAUDynamicTileJobSystem : IDisposable
     {
-        public NativeArray<TileBounds> NativeTileBounds;
-        public NativeArray<DistanceWithIndex> NativeDistances;
+        private NativeArray<TileBounds> NativeTileBounds;
+        private NativeArray<DistanceWithIndex> NativeDistances;
 
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUDynamicTileLoadTask loadTask;

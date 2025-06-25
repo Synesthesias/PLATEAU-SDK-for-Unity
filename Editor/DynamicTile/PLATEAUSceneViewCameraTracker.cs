@@ -88,7 +88,7 @@ namespace PLATEAU.DynamicTile
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
 
-            EditorApplication.projectChanged -= OnProjectChanged; // プロジェクトが変更されたときにOnEditorUpdateを呼び出す
+            EditorApplication.projectChanged -= OnProjectChanged; // コード更新時
             EditorApplication.projectChanged += OnProjectChanged;
 
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
@@ -96,9 +96,6 @@ namespace PLATEAU.DynamicTile
 
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
-
-            //EditorSceneManager.sceneSaving -= OnSceneSaving;
-            //EditorSceneManager.sceneSaving += OnSceneSaving;
 
             InitView();
 
@@ -111,7 +108,6 @@ namespace PLATEAU.DynamicTile
             EditorApplication.projectChanged -= OnProjectChanged;
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorSceneManager.sceneOpened -= OnSceneOpened;
-            //EditorSceneManager.sceneSaving -= OnSceneSaving;
             PLATEAUSceneViewCameraTracker.Release();
 
             IsRunning = false;
@@ -133,18 +129,6 @@ namespace PLATEAU.DynamicTile
             Log("Project Changed");
 
             InitView();
-        }
-
-        private static void OnSceneSaving(Scene scene, string path)
-        {
-            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManager == null)
-                return;
-
-            Log($"Scene Saving : {scene.name}, save path : {path}");
-
-            // Addressablesのアンロード処理を実行
-            tileManager.ClearTileAssets();
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
@@ -180,6 +164,7 @@ namespace PLATEAU.DynamicTile
             Log($"Scene Opened: {scene.name}");
             InitView();
         }
+
         static async void InitView()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

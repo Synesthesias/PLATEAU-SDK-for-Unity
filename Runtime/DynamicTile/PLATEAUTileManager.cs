@@ -198,7 +198,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async void OnDestroy()
         {
-            await loadTask?.OnDestroyTask();
+            await loadTask?.DestroyTask();
             ClearTiles();
         }
 
@@ -207,7 +207,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async void OnDisable()
         {
-            await loadTask?.OnDestroyTask();
+            await loadTask?.DestroyTask();
         }
 
         /// <summary>

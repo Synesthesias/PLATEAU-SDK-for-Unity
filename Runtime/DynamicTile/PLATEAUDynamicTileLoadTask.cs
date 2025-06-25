@@ -45,7 +45,30 @@ namespace PLATEAU.DynamicTile
 
         public async void Dispose()
         {
-            await OnDestroyTask();
+            await DestroyTask();
+        }
+
+        /// <summary>
+        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// </summary>
+        public async Task DestroyTask()
+        {
+            await CancelLoadTask();
+            jobSystem?.Dispose();
+            jobSystem = null;
+
+            tileLoader?.Dispose();
+            tileInstantiation?.Dispose();
+        }
+
+        /// <summary>
+        /// Job Systemを使用している場合、OnDisableでDisposeする
+        /// </summary>
+        public async Task DisableTask()
+        {
+            await CancelLoadTask();
+            jobSystem?.Dispose();
+            jobSystem = null;
         }
 
         /// <summary>
@@ -75,29 +98,6 @@ namespace PLATEAU.DynamicTile
         public bool Unload(PLATEAUDynamicTile tile)
         {
             return tileLoader?.Unload(tile) ?? false;
-        }
-
-        /// <summary>
-        /// 破棄時にすべてのロード済みオブジェクトをアンロード
-        /// </summary>
-        public async Task OnDestroyTask()
-        {
-            await CancelLoadTask();
-            jobSystem?.Dispose();
-            jobSystem = null;
-
-            tileLoader?.Dispose();
-            tileInstantiation?.Dispose();
-        }
-
-        /// <summary>
-        /// Job Systemを使用している場合、OnDisableでDisposeする
-        /// </summary>
-        public async Task OnDisableTask()
-        {
-            await CancelLoadTask();
-            jobSystem?.Dispose();
-            jobSystem = null;
         }
 
         /// <summary>
