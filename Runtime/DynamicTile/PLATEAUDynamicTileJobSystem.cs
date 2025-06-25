@@ -75,7 +75,6 @@ namespace PLATEAU.DynamicTile
     /// タイルの距離とインデックスを保持する構造体。
     /// </summary>
     public readonly struct DistanceWithIndex : IComparable<DistanceWithIndex>
-
     {
         public readonly float Distance;
         public readonly int Index;
@@ -132,7 +131,7 @@ namespace PLATEAU.DynamicTile
         public NativeArray<DistanceWithIndex> NativeDistances;
 
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
-        private PLATEAUTileManager tileManager;
+        private PLATEAUDynamicTileLoadTask loadTask;
 
         public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
 
@@ -145,10 +144,10 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="tiles"></param>
-        public void Initialize(PLATEAUTileManager manager, List<PLATEAUDynamicTile> tiles)
+        internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, List<PLATEAUDynamicTile> tiles)
         {
             dynamicTiles = tiles;
-            tileManager = manager;
+            this.loadTask = loadTask;
 
             if (!NativeTileBounds.IsCreated || NativeTileBounds.Length != dynamicTiles.Count)
             {
@@ -194,15 +193,15 @@ namespace PLATEAU.DynamicTile
 
             try
             {
-                await ExecuteLoadTask(tileManager.LoadTaskCancellationTokenSource.Token);
+                await ExecuteLoadTask(loadTask.LoadTaskCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
-                tileManager.DebugLog("タイルのロードTaskがキャンセルされました。");
+                loadTask.DebugLog("タイルのロードTaskがキャンセルされました。");
             }
             finally
             {
-                tileManager.PostLoadTask();
+                loadTask.PostLoadTask();
             }
         }
 
@@ -221,7 +220,7 @@ namespace PLATEAU.DynamicTile
                 var tile = dynamicTiles[index];
 
                 var nextLoadState = LoadState.None;
-                if (tileManager.WithinTheRange(distance, tile))
+                if (loadTask.TileManager.WithinTheRange(distance, tile))
                 {
                     nextLoadState = LoadState.Load;
                 }
@@ -240,19 +239,19 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    var result = await tileManager.PrepareLoadTile(tile);
+                    var result = await loadTask.PrepareLoadTile(tile);
                     if (result != PLATEAUTileManager.LoadResult.Success)
                         loadFailCount++;
                     
                 }
                 else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
-                    tileManager.PrepareUnloadTile(tile);
+                    loadTask.PrepareUnloadTile(tile);
                 }
                 token.ThrowIfCancellationRequested();
             }
 
-            tileManager.DebugLog($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
+            loadTask.DebugLog($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
         }
     }
 

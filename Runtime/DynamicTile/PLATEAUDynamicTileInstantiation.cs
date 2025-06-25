@@ -7,12 +7,13 @@ using UnityEngine;
 namespace PLATEAU.DynamicTile
 {
     /// <summary>
-    /// インスタンス化、GameObject削除を管理するクラス。
+    /// AddressablesでのLoad後のTileインスタンス化、GameObject削除を管理するクラス。
     /// インスタンス化はコルーチンで毎フレーム１オブジェクトずつ行う。
     /// </summary>
     internal class PLATEAUDynamicTileInstantiation : IDisposable
     {
-        private readonly PLATEAUTileManager manager;
+        private readonly PLATEAUDynamicTileLoadTask loatTask;
+        private readonly MonoBehaviour mono;
 
         private Queue<PLATEAUDynamicTile> loadQueue = new Queue<PLATEAUDynamicTile>();
         private Queue<PLATEAUDynamicTile> unloadQueue = new Queue<PLATEAUDynamicTile>();
@@ -24,9 +25,10 @@ namespace PLATEAU.DynamicTile
 
         public bool IsRunning => isInstantiationFromQueueRunning;
 
-        internal PLATEAUDynamicTileInstantiation(PLATEAUTileManager manager)
+        internal PLATEAUDynamicTileInstantiation(PLATEAUDynamicTileLoadTask loatTask)
         {
-            this.manager = manager;
+            this.loatTask = loatTask;
+            this.mono = loatTask.TileManager as MonoBehaviour;
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace PLATEAU.DynamicTile
 #if UNITY_EDITOR
             if (Application.isPlaying)
             {
-                instantiationFromQueueCoroutine = manager.StartCoroutine(InstantiationFromQueueRoutine());
+                instantiationFromQueueCoroutine = mono.StartCoroutine(InstantiationFromQueueRoutine());
             }
             else
             {
@@ -83,9 +85,9 @@ namespace PLATEAU.DynamicTile
                 if (tile == null)
                     continue;
 
-                if (!manager.InstantiateFromTile(tile))
+                if (!loatTask.TileManager.InstantiateFromTile(tile))
                 {
-                    manager.DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address}");
+                    loatTask.DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address}");
                 }
 
                 yield return null; // フレームごとに処理を実行
@@ -105,7 +107,7 @@ namespace PLATEAU.DynamicTile
                 if (tile == null)
                     continue;
 
-                manager.Unload(tile);
+                loatTask.Unload(tile);
             }
 
             unloadQueue.Clear();
@@ -113,7 +115,7 @@ namespace PLATEAU.DynamicTile
 
         public void Dispose()
         {
-            manager.StopCoroutine(instantiationFromQueueCoroutine);
+            mono.StopCoroutine(instantiationFromQueueCoroutine);
 
 #if UNITY_EDITOR
             EditorCoroutineRunner.StopAllEditorCoroutines();
