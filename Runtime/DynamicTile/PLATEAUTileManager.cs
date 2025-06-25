@@ -461,32 +461,6 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。(並列処理版)
-        ///　（タイルが消えなくなる不具合があるため、現在は使用していない）
-        /// </summary>
-        private async Task ExecuteLoadTaskParallel(CancellationToken token, int maxConcurrency = 3)
-        {
-            using var sem = new SemaphoreSlim(maxConcurrency);
-            var tasks = DynamicTiles.Select(async tile =>
-            {
-                await sem.WaitAsync(token);
-                try
-                {
-                    if (tile.NextLoadState == LoadState.Load)
-                        await PrepareLoadTile(tile);
-                    else if (tile.NextLoadState == LoadState.Unload)
-                        PrepareUnloadTile(tile);
-                }
-                finally
-                {
-                    sem.Release();
-                }
-            }).ToArray();
-
-            await Task.WhenAll(tasks);
-        }
-
-        /// <summary>
         /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
         /// </summary>
         public async Task CancelLoadTask()

@@ -10,7 +10,8 @@
     "com.unity.formats.fbx": "4.1.2",
     "com.unity.test-framework": "1.1.31",
     "com.unity.splines": "2.5.2",
-    "com.unity.addressables": "1.21.21"
+    "com.unity.addressables": "1.21.21",
+	"com.unity.collections": "2.5.7"
   },
     "author": {
         "name": "Synesthesias Inc."

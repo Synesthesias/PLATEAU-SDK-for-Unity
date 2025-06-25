@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using Unity.Collections;
 
 namespace PLATEAU.DynamicTile
 {
@@ -25,7 +25,7 @@ namespace PLATEAU.DynamicTile
         public readonly Vector3 BoundsMax;
         public readonly int ZoomLevel;
 
-        public TileBounds(Vector3 boundsMin, Vector3 boundsMax, int zoomLevel)//, LoadedState currentState)
+        public TileBounds(Vector3 boundsMin, Vector3 boundsMax, int zoomLevel)
         {
             BoundsMin = boundsMin;
             BoundsMax = boundsMax;
@@ -33,18 +33,22 @@ namespace PLATEAU.DynamicTile
         }
 
         // カメラからの距離を計算するメソッド。
-        public float CalcDistance(Vector3 cameraPosition, bool ignoreY)
+        public float CalcDistance(Vector3 cameraPosition, bool ignoreY, bool useLight = false)
         {
             if (ignoreY)
             {
                 Vector3 position2d = new(cameraPosition.x, 0, cameraPosition.z);
-                Vector3 closestPoint3d = ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
+                Vector3 closestPoint3d = useLight ? 
+                    ClosestPointOnBoundsLight(cameraPosition, BoundsMin, BoundsMax) : 
+                    ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
                 Vector3 closestPoint2d = new(closestPoint3d.x, 0, closestPoint3d.z);
                 return Vector3.Distance(position2d, closestPoint2d);
             }
             else
             {
-                Vector3 closestPoint = ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
+                Vector3 closestPoint = useLight ? 
+                    ClosestPointOnBoundsLight(cameraPosition, BoundsMin, BoundsMax) : 
+                    ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
                 return Vector3.Distance(cameraPosition, closestPoint);
             }
         }
@@ -58,7 +62,7 @@ namespace PLATEAU.DynamicTile
         }
 
         // ↑の軽量処理。未使用 パフォーマンステスト用に残しておく。
-        Vector3 ClosestPointOnBoundsSimple(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
+        Vector3 ClosestPointOnBoundsLight(Vector3 position, Vector3 boundsMin, Vector3 boundsMax)
         {
             float x = Mathf.Clamp(position.x, boundsMin.x, boundsMax.x);
             float y = Mathf.Clamp(position.y, boundsMin.y, boundsMax.y);
@@ -70,7 +74,8 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// タイルの距離とインデックスを保持する構造体。
     /// </summary>
-    public readonly struct DistanceWithIndex
+    public readonly struct DistanceWithIndex : IComparable<DistanceWithIndex>
+
     {
         public readonly float Distance;
         public readonly int Index;
@@ -79,6 +84,11 @@ namespace PLATEAU.DynamicTile
             Distance = distance;
             Index = index;
         }
+        public int CompareTo(DistanceWithIndex other)
+        {
+            return Distance.CompareTo(other.Distance);
+        }
+
     }
 
     /// <summary>
@@ -100,7 +110,7 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
-    /// タイルの距離をソートするJobSystemのJob
+    /// タイルの距離でソートするJobSystemのJob
     /// </summary>
     public struct SortDistancesJob : IJob
     {
@@ -108,20 +118,7 @@ namespace PLATEAU.DynamicTile
 
         public void Execute()
         {
-            //NativeSortExtensionsが使えないので自前でソート
-            int length = Distances.Length;
-            for (int i = 0; i < length - 1; i++)
-            {
-                for (int j = 0; j < length - i - 1; j++)
-                {
-                    if (Distances[j].Distance > Distances[j + 1].Distance)
-                    {
-                        var temp = Distances[j];
-                        Distances[j] = Distances[j + 1];
-                        Distances[j + 1] = temp;
-                    }
-                }
-            }
+            Distances.Sort(); // NativeSortExtension を利用
         }
     }
 
@@ -186,12 +183,13 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
+            // 距離計算
             TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = false };
-            JobHandle handle = job.Schedule(NativeTileBounds.Length, 64);
-            handle.Complete();
+            JobHandle distHandle = job.Schedule(NativeTileBounds.Length, 64);
+            distHandle.Complete();
 
-            //距離が近い順にソート
-            JobHandle sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule();
+            // 距離が近い順にソート
+            JobHandle sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule(distHandle);
             sortHandle.Complete();
 
             try
@@ -242,8 +240,8 @@ namespace PLATEAU.DynamicTile
                 }
                 else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
-                    var success = await tileManager.PrepareLoadTile(tile);
-                    if (!success)
+                    var result = await tileManager.PrepareLoadTile(tile);
+                    if (result != PLATEAUTileManager.LoadResult.Success)
                         loadFailCount++;
                     
                 }
@@ -255,43 +253,6 @@ namespace PLATEAU.DynamicTile
             }
 
             tileManager.DebugLog($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
-        }
-
-        /// <summary>
-        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。(並列処理版)
-        ///　（タイルが消えなくなる不具合があるため、現在は使用していない）
-        /// </summary>
-        private async Task ExecuteLoadTaskParallel(CancellationToken token, int maxConcurrency = 3)
-        {
-            using var sem = new SemaphoreSlim(maxConcurrency);
-            var tasks = dynamicTiles.Select(async (tile, i) =>
-            {
-                var distanceWithIndex = NativeDistances[i];
-                var distance = distanceWithIndex.Distance;
-                var index = distanceWithIndex.Index;
-
-                // ロード・アンロード判定
-                tile.DistanceFromCamera = distance;
-                //tile.NextLoadState = distance < tileManager.loadDistance
-                tile.NextLoadState = tileManager.WithinTheRange(distance, tile)
-                    ? LoadState.Load
-                    : LoadState.Unload;
-
-                await sem.WaitAsync(token);
-                try
-                {
-                    if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
-                        await tileManager.PrepareLoadTile(tile);
-                    else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
-                        tileManager.PrepareUnloadTile(tile);
-                }
-                finally
-                {
-                    sem.Release();
-                }
-            }).ToArray();
-
-            await Task.WhenAll(tasks);
         }
     }
 
