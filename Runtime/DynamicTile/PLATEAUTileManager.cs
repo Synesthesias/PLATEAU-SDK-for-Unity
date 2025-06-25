@@ -70,9 +70,6 @@ namespace PLATEAU.DynamicTile
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
-        // 全タイルのロードタスク実行時のCancellationTokenSource
-        //internal CancellationTokenSource LoadTaskCancellationTokenSource { get; private set; } = new();
-
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
 
