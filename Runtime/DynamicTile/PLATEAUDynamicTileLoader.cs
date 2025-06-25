@@ -28,7 +28,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Tileを指定してAddressablesからロードする
         /// </summary>
-        internal async Task<LoadResult> Load(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback,  float timeoutSeconds = 2f)
+        internal async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
@@ -78,15 +78,12 @@ namespace PLATEAU.DynamicTile
                     throw new TimeoutException($"アセットのロードがタイムアウトしました: {address}");
                 }
 
+                // ロード成功時
                 if (tile.LoadHandle.IsValid() && tile.LoadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
                     // ロードに成功した場合は、LoadHandleCancellationTokenSourceをDisposeしてnullに設定
                     tile.LoadHandleCancellationTokenSource?.Dispose();
                     tile.LoadHandleCancellationTokenSource = null; // Dispose後はnullにする
-
-                    //tileInstantiation?.AddToQueue(tile, true); // タイルをキューに追加してインスタンス化コルーチン実行
-                    loadSuccessCallback?.Invoke(tile);
-
                     return LoadResult.Success;
                 }
                 else
@@ -131,9 +128,9 @@ namespace PLATEAU.DynamicTile
         /// <param name="tile"></param>
         /// <param name="maxRetryCount">リトライ数</param>
         /// <returns></returns>
-        internal async Task<bool> LoadWithRetry(PLATEAUDynamicTile tile, Action<PLATEAUDynamicTile> loadSuccessCallback, int maxRetryCount = 2, float delaySeconds = 0.3f)
+        internal async Task<LoadResult> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, float delaySeconds = 0.3f)
         {
-            var result = await Load(tile, loadSuccessCallback);
+            var result = await Load(tile);
             if (result != LoadResult.Success && result != LoadResult.Cancelled)
             {
                 // ロードに失敗した場合は、リトライ      
@@ -146,9 +143,9 @@ namespace PLATEAU.DynamicTile
                         throw new OperationCanceledException("LoadHandleCancellationTokenSource is null.");
                     tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                    var retryResult = await Load(tile, loadSuccessCallback);
+                    var retryResult = await Load(tile);
                     if (retryResult == LoadResult.Success)
-                        return true;
+                        return retryResult;
 
                     retryCount++;
                     await Task.Delay((int)(delaySeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
@@ -157,13 +154,13 @@ namespace PLATEAU.DynamicTile
             else if (result == LoadResult.Success)
             {
                 tile.LastLoadResult = result;
-                return true;
+                return result;
             }
 
             DebugLog($"タイルのロードのリトライに失敗しました: {tile.Address}", true);
 
             tile.LastLoadResult = result; // 最後のロード結果を保存
-            return false;
+            return result;
         }
 
         /// <summary>
