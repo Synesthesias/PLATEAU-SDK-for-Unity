@@ -8,10 +8,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace PLATEAU.DynamicTile
 {
     public class PLATEAUTileManager : MonoBehaviour
