@@ -395,7 +395,7 @@ namespace PLATEAU.DynamicTile
                     tile.LoadedObject = instance; // ロードしたオブジェクトを保持
 
                     //Debug Material色変え
-                    ReplaceWithDebugMaterial(tile);
+                    //ReplaceWithDebugMaterial(tile);
 
                     return true;
                 }
