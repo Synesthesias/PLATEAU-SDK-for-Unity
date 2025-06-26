@@ -22,7 +22,8 @@ namespace PLATEAU.DynamicTile
         }
 
         public void Dispose()
-        {           
+        {
+            // 現在は解放すべきリソースなし
         }
 
         /// <summary>
@@ -50,7 +51,12 @@ namespace PLATEAU.DynamicTile
                 if (tile.LoadHandle.IsValid() && !tile.LoadHandle.IsDone)
                 {
                     tile.LoadHandleCancellationTokenSource.Cancel();
-                    await tile.LoadHandle.Task;
+                    try
+                    {
+                        await tile.LoadHandle.Task;
+                    }
+                    catch (OperationCanceledException){ /*キャンセル済みタスクの完了待機時の例外は無視*/ }
+
                     tile.LoadHandleCancellationTokenSource.Dispose();
                     tile.LoadHandleCancellationTokenSource = null;
                 }
@@ -135,7 +141,7 @@ namespace PLATEAU.DynamicTile
             var result = await Load(tile);
             if (result != LoadResult.Success && result != LoadResult.Cancelled)
             {
-                // ロードに失敗した場合は、リトライ      
+                // ロードに失敗した場合は、リトライ
                 int retryCount = 0;
                 while (retryCount < maxRetryCount)
                 {
