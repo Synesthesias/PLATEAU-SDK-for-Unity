@@ -116,6 +116,7 @@ namespace PLATEAU.DynamicTile
 
             if (useJobSystem)
             {
+                // Job Systemを使用する場合
                 if (jobSystem?.TileCount != tileManager.DynamicTiles.Count)
                 {
                     // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
@@ -124,7 +125,6 @@ namespace PLATEAU.DynamicTile
                     jobSystem = null;
                 }
 
-                // Job Systemを使用する場合
                 if (jobSystem == null)
                 {
                     jobSystem = new PLATEAUDynamicTileJobSystem();

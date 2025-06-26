@@ -123,7 +123,7 @@ namespace PLATEAU.DynamicTile
 
     /// <summary>
     /// Jobsystemを使用したタイルロード処理
-    /// 今のところカメラ距離計算のみJob Systemを使用する。
+    /// 今のところカメラ距離計算、SortのみJob Systemを使用する。
     /// </summary>
     public class PLATEAUDynamicTileJobSystem : IDisposable
     {

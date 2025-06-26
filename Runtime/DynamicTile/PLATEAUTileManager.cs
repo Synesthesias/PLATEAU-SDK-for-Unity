@@ -40,6 +40,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 各Zoomレベルごとのカメラからのロード距離を定義します。
+        /// {zoomLevel, (最小距離, 最大距離)}
         /// </summary>
         public Dictionary<int, (float, float)> loadDistances = new Dictionary<int, (float, float)>
         {
@@ -66,17 +67,17 @@ namespace PLATEAU.DynamicTile
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
+        // マネージャーの状態
+        public ManagerState State { get; private set; } = ManagerState.None;
+
+        // 最後にカメラが更新された位置
+        internal Vector3 LastCameraPosition { get; private set; } = Vector3.zero;
+
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
 
         // Parent TransformをLODごとに管理する辞書
         private Dictionary<int, Transform> lodParentDict = new();
-
-        // マネージャーの状態
-        public ManagerState State { get; private set; } = ManagerState.None;
-
-        // 最後にカメラが更新された位置
-        internal Vector3 LastCameraPosition { get; private set; } = Vector3.zero; 
 
         private AddressableLoader addressableLoader = new ();
 
@@ -140,20 +141,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
-            //return await tileLoader?.Load(tile, timeoutSeconds);
             return await loadTask?.Load(tile, timeoutSeconds);
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからロードする (リトライ機能付き)
-        /// </summary>
-        /// <param name="tile"></param>
-        /// <param name="maxRetryCount">リトライ数</param>
-        /// <param name="delaySeconds">リトライ時のディレイ</param>
-        /// <returns></returns>
-        public async Task<LoadResult> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, float delaySeconds = 0.3f) 
-        {
-            return await loadTask?.LoadWithRetry(tile, maxRetryCount, delaySeconds);
         }
 
         /// <summary>
@@ -356,7 +344,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// TaskからCallされるTileのロード処理
+        /// TaskからCallされるTileのロード開始処理
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>
@@ -366,7 +354,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// TaskからCallされるTileのアンロード処理
+        /// TaskからCallされるTileのアンロード開始処理
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>

@@ -60,6 +60,7 @@ namespace PLATEAU.DynamicTile
                         SceneView.duringSceneGui -= DrawZoomLevel;
                         SceneView.duringSceneGui += DrawZoomLevel;
                         isShowingZoomLevel = true;
+                        SceneView.lastActiveSceneView?.Repaint();
                     }
                 }
 

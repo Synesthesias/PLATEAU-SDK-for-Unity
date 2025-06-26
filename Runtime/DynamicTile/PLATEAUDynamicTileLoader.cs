@@ -27,6 +27,8 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// Tileを指定してAddressablesからロードする
+        /// TileのLoadHandleにAddressables.LoadAssetAsync設定
+        /// ロード成功時にTileのLoadHandleからResultを取得して利用する
         /// </summary>
         internal async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
