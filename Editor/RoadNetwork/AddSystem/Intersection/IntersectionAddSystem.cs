@@ -310,6 +310,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
 
             // 逆側交差点を一時的に切り離す
             var oppositeIntersection = (RnIntersection)(isRoadPrev ? road.Next : road.Prev);
+            if (oppositeIntersection == null) return;
             var oppositeIntersectionBorder = oppositeIntersection.Borders.FirstOrDefault(n => n.Road == road);
             if (isRoadPrev)
                 road.SetPrevNext(intersection, null);
