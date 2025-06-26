@@ -10,7 +10,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// DynamicTileのロードとアンロードのTaskを管理するクラス。
     /// </summary>
-    internal class PLATEAUDynamicTileLoadTask : IDisposable
+    internal class PLATEAUDynamicTileLoadTask : IAsyncDisposable
     {
         private readonly PLATEAUTileManager tileManager;
 
@@ -43,7 +43,7 @@ namespace PLATEAU.DynamicTile
             tileInstantiation = new(this);
         }
 
-        public async void Dispose()
+        public async ValueTask DisposeAsync()
         {
             await DestroyTask();
         }
@@ -262,7 +262,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         internal void PostLoadTask()
         {
-            tileInstantiation?.DeleteFromeQueue(); // キューからGameObjectインスタンス削除
+            tileInstantiation?.DeleteFromQueue(); // キューからGameObjectインスタンス削除
         }
 
         public void DebugLog(string message, bool warn = true)

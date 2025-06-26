@@ -57,7 +57,7 @@ namespace PLATEAU.DynamicTile
             if (sceneCamera != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                if (tileManager.CheckIfCameraPositionHasChenged(currentPosition))
+                if (tileManager.CheckIfCameraPositionHasChanged(currentPosition))
                 {
                     await tileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }

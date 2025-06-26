@@ -313,7 +313,7 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        public bool CheckIfCameraPositionHasChenged(Vector3 position, float threshold = 0.01f)
+        public bool CheckIfCameraPositionHasChanged(Vector3 position, float threshold = 0.01f)
         {
             return Vector3.Distance(LastCameraPosition, position) > threshold;
             //return (position != LastCameraPosition);
@@ -350,7 +350,7 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         internal async Task<LoadResult> PrepareLoadTile(PLATEAUDynamicTile tile)
         {
-            return await loadTask.PrepareLoadTile(tile);
+            return await loadTask?.PrepareLoadTile(tile);
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         internal bool PrepareUnloadTile(PLATEAUDynamicTile tile)
         {
-            return loadTask.PrepareUnloadTile(tile); // タイルのアンロードをタスクに追加
+            return loadTask?.PrepareUnloadTile(tile) ?? false; // タイルのアンロードをタスクに追加
         }
 
         /// <summary>

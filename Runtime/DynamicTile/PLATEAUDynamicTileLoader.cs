@@ -14,11 +14,11 @@ namespace PLATEAU.DynamicTile
     internal class PLATEAUDynamicTileLoader : IDisposable
     {
 
-        private readonly PLATEAUDynamicTileLoadTask loatTask;
+        private readonly PLATEAUDynamicTileLoadTask loadTask;
 
-        internal PLATEAUDynamicTileLoader(PLATEAUDynamicTileLoadTask loatTask)
+        internal PLATEAUDynamicTileLoader(PLATEAUDynamicTileLoadTask loadTask)
         {
-            this.loatTask = loatTask;
+            this.loadTask = loadTask;
         }
 
         public void Dispose()
@@ -58,7 +58,7 @@ namespace PLATEAU.DynamicTile
                 if (tile.LoadHandleCancellationTokenSource == null)
                 {
                     // Addressablesでは、Cancel処理がサポートされていないため、CancellationTokenSourceを使用してキャンセル可能なロードを実装
-                    tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(loatTask.LoadTaskCancellationTokenSource.Token);
+                    tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(loadTask.LoadTaskCancellationTokenSource.Token);
                 }
 
                 var timeoutTask = Task.Delay((int)(timeoutSeconds * 1000), tile.LoadHandleCancellationTokenSource.Token);
@@ -197,7 +197,7 @@ namespace PLATEAU.DynamicTile
             finally
             {
                 // Instance削除
-                loatTask.TileManager.DeleteGameObjectInstance(tile.LoadedObject);
+                loadTask.TileManager.DeleteGameObjectInstance(tile.LoadedObject);
                 tile.Reset(); // タイルの状態をリセット
             }
             return true;
@@ -205,7 +205,7 @@ namespace PLATEAU.DynamicTile
 
         private void DebugLog(string message, bool warn = true)
         {
-            loatTask?.DebugLog(message, warn);
+            loadTask?.DebugLog(message, warn);
         }
 
     }
