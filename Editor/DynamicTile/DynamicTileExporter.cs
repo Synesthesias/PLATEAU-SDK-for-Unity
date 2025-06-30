@@ -37,7 +37,7 @@ namespace PLATEAU.DynamicTile
                 var context = new DynamicTileProcessingContext(config);
 
                 // グループを削除
-                AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel);
+                AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, context.IsExcludeAssetFolder);
                 
                 PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
                 

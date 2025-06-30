@@ -117,6 +117,13 @@ namespace PLATEAU.DynamicTile
                     }
                 }
 
+                var removedProtocolPath = RemoveFileProtocol(catalogPath);
+                if (string.IsNullOrEmpty(removedProtocolPath) || !File.Exists(removedProtocolPath))
+                {
+                    Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
+                    return "";
+                }
+
                 // カタログファイルをロード
                 var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
                 await WaitForCompletionAsync(catalogHandle);
@@ -140,9 +147,19 @@ namespace PLATEAU.DynamicTile
 
                         if (bundlePath != null)
                         {
-                            Addressables.Release(catalogHandle);
                             // メタ情報のパスを返す
-                            return Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
+                            foreach (var iResourceLocation in location.Dependencies)
+                            {
+                                var fullPath = iResourceLocation.InternalId;
+                                var dirName = Path.GetDirectoryName(fullPath);
+                                
+                                // ディレクトリ名が一致するか確認
+                                if (dirName != null && dirName.Contains(bundlePath))
+                                {
+                                    Addressables.Release(catalogHandle);
+                                    return iResourceLocation.InternalId;
+                                }
+                            }
                         }
                     }
                 }
@@ -173,8 +190,7 @@ namespace PLATEAU.DynamicTile
                     foreach (var loc in locations)
                     {
                         string internalId = RemoveFileProtocol(loc.InternalId);
-
-                        if (!internalId.EndsWith(".bundle"))
+                        if (!internalId.StartsWith("Library/"))
                         {
                             continue;
                         }
@@ -182,11 +198,24 @@ namespace PLATEAU.DynamicTile
                         string dir = Path.GetDirectoryName(internalId);
                         if (string.IsNullOrEmpty(dir))
                         {
-                            Debug.LogError("カタログファイルのディレクトリが取得できません");
+                            Debug.LogError("ディレクトリが取得できません");
                             return "";
                         }
                         // カタログファイルのパスを取得
                         var catalogFiles = Directory.GetFiles(dir, "catalog_*.json");
+                        
+                        // 親のディレクトリも確認
+                        if (catalogFiles.Length == 0)
+                        {
+                            dir = Path.GetDirectoryName(dir);
+                            if (string.IsNullOrEmpty(dir))
+                            {
+                                Debug.LogError("親ディレクトリが取得できません");
+                                return "";
+                            }
+                            catalogFiles = Directory.GetFiles(dir, "catalog.json");
+                        }
+
                         if (catalogFiles.Length == 0)
                         {
                             Debug.LogError("カタログファイルが見つかりません");
@@ -200,7 +229,7 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// meta情報をロードします。
+        /// パスをもとに、meta情報をロードします。
         /// </summary>
         /// <returns></returns>
         private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStorePath)

@@ -3,6 +3,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
@@ -321,7 +322,7 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// デフォルトグループ以外のグループを削除します。
         /// </summary>
-        public static void RemoveNonDefaultGroups(string targetLabel = "")
+        public static void RemoveNonDefaultGroups(string targetLabel, bool isExcludeAssetFolder)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -350,6 +351,14 @@ namespace PLATEAU.Editor.Addressables
                 {
                     continue;
                 }
+
+                if (isExcludeAssetFolder && group.Name == "PLATEAUCityObjectGroup")
+                {
+                    // ローカルビルド用（ビルドに含める）のグループは削除しない
+                    // 削除するとLibrary配下から削除されるため
+                    continue;
+                }
+
                 settings.RemoveGroup(group);
                 Debug.Log($"グループを削除しました: {group.Name}");
             }
