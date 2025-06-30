@@ -9,6 +9,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Import.CityImportProcedure
@@ -46,7 +47,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token)
+            CancellationToken? token, Action<List<GameObject>> onGmlImported = null)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
@@ -82,6 +83,9 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             if (placingResult.IsSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
+                
+                // コールバックが設定されている場合は実行
+                onGmlImported?.Invoke(placingResult.GeneratedObjs);
             }
             else
             {
