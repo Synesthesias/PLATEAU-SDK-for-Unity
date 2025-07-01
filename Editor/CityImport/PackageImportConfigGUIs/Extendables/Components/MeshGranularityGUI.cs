@@ -23,13 +23,19 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
         public static MeshGranularity Draw(string label, MeshGranularity current, bool forcePerCityModelArea)
         {
             var options = new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
+            int selectedIndex = (int)current;
+            
             if (forcePerCityModelArea)
             {
                 // 地域単位のみを選択可能にする
                 options = new[] { "地域単位" };
+                selectedIndex = 0; // 地域単位のみなので常に0
+                EditorGUILayout.Popup(label, selectedIndex, options);
+                return MeshGranularity.PerCityModelArea; // 常に地域単位を返す
             }
-            return (MeshGranularity)EditorGUILayout.Popup(label,
-                (int)current, options);
+            
+            selectedIndex = EditorGUILayout.Popup(label, selectedIndex, options);
+            return (MeshGranularity)selectedIndex;
         }
     }
 }

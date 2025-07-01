@@ -1,21 +1,16 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
-using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Addressables;
 using PLATEAU.Util;
-using UnityEngine;
+using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using PLATEAU.Util.Async;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 
 namespace PLATEAU.DynamicTile
 {
@@ -28,61 +23,31 @@ namespace PLATEAU.DynamicTile
         private const string AddressableLabel = "DynamicTile";
 
         /// <summary>
-        /// Addressableの事前処理を行います。
+        /// 動的タイルの事前処理を行います。
         /// </summary>
-        public static DynamicTileProcessingContext SetupAddressablePreProcessing(DynamicTileImportConfig config)
+        public static DynamicTileProcessingContext SetupPreProcessing(DynamicTileImportConfig config)
         {
-            try
+            if (config == null)
             {
-                var context = new DynamicTileProcessingContext(config);
-
-                // グループを削除
-                AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, context.IsExcludeAssetFolder);
-                
-                PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
-                
-                // DynamicTile管理用Managerを破棄
-                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (manager != null)
-                {
-                    GameObject.DestroyImmediate(manager.gameObject);
-                }
-                
-                return context;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Addressable事前処理でエラーが発生しました: {ex.Message}");
+                Debug.LogError("DynamicTileImportConfigがnullです。");
                 return null;
             }
-        }
-
-        /// <summary>
-        /// 都市オブジェクト配列を処理し、プレハブ化・Addressable登録を行う
-        /// </summary>
-        /// <param name="cityObjects">処理対象の都市オブジェクト配列</param>
-        /// <param name="context">DynamicTile処理コンテキスト</param>
-        /// <param name="onError">エラー時のコールバック</param>
-        public static void ProcessCityObjects(
-            List<PLATEAUCityObjectGroup> cityObjects,
-            DynamicTileProcessingContext context,
-            Action<string> onError = null)
-        {
-            if (context == null || !context.IsValid())
+            
+            PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
+            
+            // DynamicTile管理用Managerを破棄
+            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+            if (manager != null)
             {
-                Debug.LogError("DynamicTileProcessingContextが無効です。");
-                return;
+                GameObject.DestroyImmediate(manager.gameObject);
             }
+            
+            var context = new DynamicTileProcessingContext(config);
+    
+            // グループを削除
+            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, context.IsExcludeAssetFolder);
 
-            for (var i = 0; i < cityObjects.Count; i++)
-            {
-                float progress = (float)(i + 1) / cityObjects.Count;
-                context.ProgressBar?.Display("動的タイルを生成中..", progress);
-
-                ProcessCityObject(cityObjects[i], context.AssetConfig, context.AddressableGroupName, context.MetaStore, onError);
-
-                context.ProgressBar?.Display("動的タイルをAddressableに登録中..", progress);
-            }
+            return context;
         }
 
         /// <summary>
@@ -175,7 +140,8 @@ namespace PLATEAU.DynamicTile
                 var lod = cityObject.Lod;
 
                 // プレハブをAddressableに登録
-                var address = GetAddress(prefabAsset, zoomLevel);
+                // TODO : タイルごとにAddress名を設定する
+                var address = prefabAsset.name;
                 AddressablesUtility.RegisterAssetAsAddressable(
                     prefabPath,
                     address,
@@ -187,66 +153,6 @@ namespace PLATEAU.DynamicTile
                 // メタ情報を登録
                 metaStore.AddMetaInfo(address, bounds, lod, zoomLevel);
             }
-        }
-
-        /// <summary>
-        /// 指定したGameObjectからAddressables用のアドレス名を取得します。
-        /// </summary>
-        /// <param name="obj">アドレスを取得したいGameObject</param>
-        /// <param name="zoomLevel"></param>
-        /// <returns>アドレス名。取得できない場合は空文字列。</returns>
-        private static string GetAddress(GameObject obj, int zoomLevel)
-        {
-            if (obj == null) return string.Empty;
-
-            string baseName = obj.name;
-            string meshCode = string.Empty;
-
-            // 親のGMLオブジェクトを探す
-            var gmlObjects = obj.GetComponentsInParent<Transform>()
-                .Where(t => t.name.EndsWith(".gml"))
-                .ToList();
-
-            if (gmlObjects.Count > 0)
-            {
-                var gmlName = gmlObjects[0].name;
-
-                // パスが含まれているかチェック
-                // 13_1/533936_htd_6697_op.gml
-                // pref/sumidagaw-shingashigawa-ryuiki/53393680_fld_6697_l2_op.gml
-                if (gmlName.Contains("/"))
-                {
-                    // パスが含まれている場合は最後の部分を取得
-                    var parts = gmlName.Split('/');
-                    var lastPart = parts[parts.Length - 1];
-                    // 最後の部分から最初の_までの部分を取得
-                    meshCode = lastPart.Split('_')[0];
-                }
-                else
-                {
-                    // パスが含まれていない場合は最初の_までの部分を取得
-                    meshCode = gmlName.Split('_')[0];
-                }
-            }
-
-            var gridCode = GridCode.Create(meshCode);
-            if (!gridCode.IsValid)
-            {
-                Debug.LogError($"不正なメッシュコード形式です: {meshCode}");
-                return string.Empty;
-            }
-
-            // 2次メッシュ（6桁）
-            if (meshCode.Length == 6)
-            {
-                return $"tile_{meshCode}_{baseName}";
-            }
-            // 3次メッシュ（8桁）
-            else if (meshCode.Length == 8)
-            {
-                return $"tile_zoom_{zoomLevel}_grid_{meshCode}_{baseName}";
-            }
-            return baseName;
         }
 
         private static GameObject PrepareAndConvert(
@@ -314,13 +220,61 @@ namespace PLATEAU.DynamicTile
 
 
         /// <summary>
+        /// 新しい都市オブジェクト処理メソッド（コールバック付き）
+        /// </summary>
+        public static void ProcessCityObjects(
+            List<GameObject> placedObjects,
+            DynamicTileProcessingContext context,
+            string meshCode,
+            Action<string> onProgressUpdate = null)
+        {
+            if (placedObjects == null || !placedObjects.Any() || context == null || !context.IsValid()) return;
+
+            // 都市オブジェクトを取得
+            var cityObjectGroups = placedObjects
+                .Select(obj => obj.GetComponent<PLATEAUCityObjectGroup>())
+                .Where(group => group != null)
+                .ToList();
+
+            if (cityObjectGroups.Count == 0) return;
+
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+
+            // ディレクトリの存在確認
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+
+            // 都市オブジェクトを個別に処理
+            for (int i = 0; i < cityObjectGroups.Count; i++)
+            {
+                var cityObject = cityObjectGroups[i];
+                if (cityObject == null) continue;
+
+                // オブジェクト名にメッシュコードを追加
+                cityObject.name = meshCode + "_" + cityObject.name;
+
+                // 進捗更新を通知
+                onProgressUpdate?.Invoke(cityObject.name);
+
+                // 個別のオブジェクトを処理
+                ProcessCityObject(
+                    cityObject,
+                    context.AssetConfig,
+                    context.AddressableGroupName,
+                    context.MetaStore,
+                    errorMessage => Debug.LogError($"DynamicTileExporter error: {errorMessage}")
+                );
+            }
+        }
+
+        /// <summary>
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// </summary>
         /// <param name="context">DynamicTile処理コンテキスト</param>
-        /// <param name="onError">エラー時のコールバック（省略可）</param>
-        public static void CompleteDynamicTileProcessing(
-            DynamicTileProcessingContext context = null,
-            System.Action<string> onError = null)
+        public static void CompleteProcessing(
+            DynamicTileProcessingContext context)
         {
             if (context == null || !context.IsValid())
             {
@@ -332,8 +286,6 @@ namespace PLATEAU.DynamicTile
             {
                 // メタデータを保存
                 SaveAndRegisterMetaData(context.MetaStore, context.AssetConfig.AssetPath, context.AddressableGroupName);
-
-                context.ProgressBar?.Display("Addressableのビルドを実行中...", 0.1f);
 
                 if (context.IsExcludeAssetFolder)
                 {
@@ -371,17 +323,16 @@ namespace PLATEAU.DynamicTile
                     manager.SaveCatalogPath(catalogPath);
                 }
 
-                context.ProgressBar?.Display("Addressableのビルドを実行中...", 0.99f);
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
             }
             catch (Exception ex)
             {
                 Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
-                onError?.Invoke($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
             }
             finally
             {
-                PLATEAUEditorEventListener.IsTileCreationInProgress = false; // タイル生成中フラグを設定     
+                PLATEAUEditorEventListener.IsTileCreationInProgress = false; // タイル生成中フラグを設定
+
                 var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
                 if (manager != null)
                 {

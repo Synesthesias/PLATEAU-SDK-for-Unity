@@ -6,6 +6,7 @@ using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,35 +40,58 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        // 動的タイルの場合のバリデーション
+                        if (config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile &&
+                            string.IsNullOrEmpty(config.DynamicTileImportConfig.OutputPath))
+                        {
+                            Dialogue.Display("動的タイル（Addressable出力）を選択する場合は、出力先を指定してください", "OK");
+                            return;
+                        }
+
                         // ボタンを実行します。
                         Interlocked.Increment(ref numCurrentRunningTasks);
 
                         cancellationTokenSrc = new CancellationTokenSource();
 
-                        // Addressableの事前処理
-                        var context = ProcessAddressablePreSetup(progressDisplay, config);
+                        // Addressableインポートの場合は、事前処理を実行。
+                        var addressableContext = default(DynamicTileProcessingContext);
+                        
+                        // ロードされたGMLファイルの数をカウントする変数
+                        var loadedGmlCount = 0;
+                        if (config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile)
+                        {
+                            addressableContext = DynamicTileImportProcessor.SetupPreProcessing(progressDisplay, config);
+                        }
     
                         // ここでインポートします。
                         var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, 
-                            (placedObjects) =>
+                            (placedObjects, totalGmls, meshCode) =>
                             {
-                                if (context != null && context.IsValid())
+                                if (config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile)
                                 {
+                                    if (addressableContext == null)
+                                    {
+                                        return;
+                                    }
+                                    addressableContext.GmlCount = totalGmls;
+                                    System.Threading.Interlocked.Increment(ref loadedGmlCount);
+
                                     // 各GMLファイルのインポート完了時に都市オブジェクトを処理
-                                    ProcessCityObjectsForAddressable(placedObjects, context, progressDisplay);
+                                    DynamicTileImportProcessor.ProcessCityObjects(
+                                        placedObjects,
+                                        addressableContext,
+                                        progressDisplay,
+                                        meshCode,
+                                        loadedGmlCount);
                                 }
                             });
-                        
-                        task.ContinueWith((_) =>
-                        {
-                            if (context != null && context.IsValid())
-                            {
-                                // Addressableの事後処理
-                                DynamicTileExporter.CompleteDynamicTileProcessing(context);
-                            }
 
-                            Interlocked.Decrement(ref numCurrentRunningTasks);
-                        });
+                        // インポート完了後の事後処理
+                        DynamicTileImportProcessor.HandleCompletionAsync(
+                            task, 
+                            addressableContext, 
+                            progressDisplay,
+                            () => Interlocked.Decrement(ref numCurrentRunningTasks));
                         
                         task.ContinueWithErrorCatch();
                     }
@@ -89,58 +113,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Addressableの事前処理を実行します。
-        /// </summary>
-        /// <returns>成功時はDynamicTileProcessingContext、失敗時はnullを返します。</returns>
-        private static DynamicTileProcessingContext ProcessAddressablePreSetup(IProgressDisplay progressDisplay, CityImportConfig config)
-        {
-            progressDisplay.SetProgress("Addressable事前処理", 0f, "Addressableセットアップ中...");
-            var context = DynamicTileExporter.SetupAddressablePreProcessing(
-                config.DynamicTileImportConfig);
-
-            if (context == null || !context.IsValid())
-            {
-                Debug.LogError("Addressableの事前処理に失敗しました。");
-                return null;
-            }
-
-            progressDisplay.SetProgress("Addressable事前処理", 100f, "完了");
-            return context;
-        }
-
-        /// <summary>
-        /// 都市オブジェクトをAddressableアセットとして処理します。
-        /// </summary>
-        private static void ProcessCityObjectsForAddressable(
-            List<GameObject> placedObjects,
-            DynamicTileProcessingContext context,
-            IProgressDisplay progressDisplay)
-        {
-            if (placedObjects == null || !placedObjects.Any() || context == null || !context.IsValid()) return;
-
-            // 都市オブジェクトを取得
-            var cityObjectGroups = placedObjects
-                .Select(obj => obj.GetComponent<PLATEAUCityObjectGroup>())
-                .Where(group => group != null)
-                .ToList();
-
-            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
-
-            // ディレクトリの存在確認
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
-            
-            // 都市オブジェクトを一括処理
-            DynamicTileExporter.ProcessCityObjects(
-                cityObjectGroups,
-                context,
-                errorMessage => Debug.LogError($"DynamicTileExporter error: {errorMessage}")
-            );
         }
     }
 }

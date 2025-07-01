@@ -48,38 +48,33 @@ namespace PLATEAU.DynamicTile
         public string BuildFolderPath { get; set; }
         
         /// <summary>
-        /// プログレスバー
-        /// </summary>
-        public ProgressBar ProgressBar { get; set; }
-        
-        /// <summary>
         /// Assets外のパスかどうか
         /// </summary>
         public bool IsExcludeAssetFolder { get; set; }
-
+        
+        /// <summary>
+        /// GML数
+        /// </summary>
+        public int GmlCount { get; set; }
+        
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="config">DynamicTileインポート設定</param>
         public DynamicTileProcessingContext(DynamicTileImportConfig config)
         {
-            Config = config;
-            if (config != null)
-            {
-                AssetConfig = ConvertToAssetConfig.DefaultValue;
-                AssetConfig.AssetPath = PrefabsSavePath;
-                BuildFolderPath = config.OutputPath;
-                IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
-                
-                // AddressableGroupNameを生成
-                AddressableGroupName = GenerateAddressableGroupName();
-                
-                // MetaStoreを生成
-                MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
-                
-                // ProgressBarを生成
-                ProgressBar = new ProgressBar();
-            }
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+            
+            AssetConfig = ConvertToAssetConfig.DefaultValue;
+            AssetConfig.AssetPath = PrefabsSavePath;
+            BuildFolderPath = config.OutputPath;
+            IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
+            
+            // AddressableGroupNameを生成
+            AddressableGroupName = GenerateAddressableGroupName();
+            
+            // MetaStoreを生成
+            MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
         }
         
         /// <summary>
@@ -105,9 +100,18 @@ namespace PLATEAU.DynamicTile
         {
             if (string.IsNullOrEmpty(path))
                 return true;
-            
-            var normalizedPath = path.Replace('\\', '/');
-            return normalizedPath.StartsWith("Assets/");
+
+            try
+            {
+                // Assetsフォルダー内で、かつ相対パスに「..」が含まれないことを確認
+                var assetPath = AssetPathUtil.GetAssetPath(path);
+                return assetPath.StartsWith("Assets") && !assetPath.Contains("..");
+            }
+            catch
+            {
+                // 変換に失敗した場合はプロジェクト外のパスと判定
+                return false;
+            }
         }
         
         /// <summary>
@@ -125,10 +129,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void Dispose()
         {
-            // マネージドリソースの解放
-            ProgressBar?.Dispose();
-            ProgressBar = null;
-            
             // MetaStoreの解放（ScriptableObjectなのでDestroyが必要）
             if (MetaStore != null)
             {
@@ -141,6 +141,7 @@ namespace PLATEAU.DynamicTile
             Config = null;
             AddressableGroupName = null;
             BuildFolderPath = null;
+            GmlCount = 0;
         }
     }
 }

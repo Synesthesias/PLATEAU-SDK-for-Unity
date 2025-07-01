@@ -27,7 +27,7 @@ namespace PLATEAU.CityImport.Import
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token, Action<List<GameObject>> onGmlImported = null)
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token, Action<List<GameObject>, int, string> onGmlImported = null)
         {
             if (config == null)
             {
@@ -102,7 +102,7 @@ namespace PLATEAU.CityImport.Import
             try
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
-
+                
                 // GMLファイルを同時に処理する最大数です。
                 // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
                 // ただしメモリ使用量が増えます。
@@ -119,7 +119,11 @@ namespace PLATEAU.CityImport.Import
                             {
                                 // GMLを1つインポートします。
                                 // ここはメインスレッドで呼ぶ必要があります。
-                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token, onGmlImported);
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token, 
+                                    (placedObjects) =>
+                                    {
+                                        onGmlImported?.Invoke(placedObjects, fetchedGmls.Count, fetchedGml.GridCode.StringCode);
+                                    });
                             }
                             catch(OperationCanceledException)
                             {

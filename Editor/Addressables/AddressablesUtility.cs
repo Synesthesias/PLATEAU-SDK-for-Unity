@@ -341,26 +341,39 @@ namespace PLATEAU.Editor.Addressables
             var groups = settings.groups.ToList();
             foreach (var group in groups)
             {
-                if (!string.IsNullOrEmpty(targetLabel) &&
-                    !group.entries.Any(e => e.labels.Contains(targetLabel)))
-                {
-                    continue;
-                }
-                
-                if (group == defaultGroup)
+                if (group == null ||
+                    group == defaultGroup)
                 {
                     continue;
                 }
 
-                if (isExcludeAssetFolder && group.Name == "PLATEAUCityObjectGroup")
+                if (group.entries == null)
                 {
-                    // ローカルビルド用（ビルドに含める）のグループは削除しない
-                    // 削除するとLibrary配下から削除されるため
                     continue;
                 }
 
-                settings.RemoveGroup(group);
-                Debug.Log($"グループを削除しました: {group.Name}");
+                try
+                {
+                    // 指定されたラベルを持つエントリがない場合はスキップ
+                    if (!group.entries.Any(e => e != null && e.labels != null && e.labels.Contains(targetLabel)))
+                    {
+                        continue;
+                    }
+                    
+                    if (isExcludeAssetFolder && group.Name == "PLATEAUCityObjectGroup")
+                    {
+                        // ローカルビルド用（ビルドに含める）のグループは削除しない
+                        // 削除するとLibrary配下から削除されるため
+                        continue;
+                    }
+
+                    settings.RemoveGroup(group);
+                    Debug.Log($"グループを削除しました: {group.Name}");
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"グループ '{group.Name}' の処理中にエラーが発生しました: {ex.Message}");
+                }
             }
         }
     }
