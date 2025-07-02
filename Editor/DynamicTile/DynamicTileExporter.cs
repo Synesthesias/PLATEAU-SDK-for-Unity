@@ -206,6 +206,14 @@ namespace PLATEAU.DynamicTile
 
             // メタデータをアセットとして保存
             string addressName = nameof(PLATEAUDynamicTileMetaStore);
+
+            // metaStoreの名前をグループ名に基づいて変更
+            if (groupName.IndexOf('_') >= 0)
+            {
+                var groupNameSplit = groupName.Split('_');
+                addressName += "_" + groupNameSplit[1];
+            }
+
             string dataPath = Path.Combine(assetPath, addressName + ".asset");
             AssetDatabase.CreateAsset(metaStore, dataPath);
             AssetDatabase.SaveAssets();
