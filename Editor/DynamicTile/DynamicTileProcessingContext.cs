@@ -58,6 +58,19 @@ namespace PLATEAU.DynamicTile
         public int GmlCount { get; set; }
         
         /// <summary>
+        /// 読み込み完了したGML数
+        /// </summary>
+        private int loadedGmlCount;
+        
+        /// <summary>
+        /// 読み込み完了したGML数をインクリメントして返す
+        /// </summary>
+        public int IncrementAndGetLoadedGmlCount()
+        {
+            return System.Threading.Interlocked.Increment(ref loadedGmlCount);
+        }
+        
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="config">DynamicTileインポート設定</param>
@@ -132,16 +145,16 @@ namespace PLATEAU.DynamicTile
             // MetaStoreの解放（ScriptableObjectなのでDestroyが必要）
             if (MetaStore != null)
             {
-                UnityEngine.Object.DestroyImmediate(MetaStore);
+                UnityEngine.Object.DestroyImmediate(MetaStore, true);
                 MetaStore = null;
             }
-            
             // その他のリソースをnullに設定
             AssetConfig = null;
             Config = null;
             AddressableGroupName = null;
             BuildFolderPath = null;
             GmlCount = 0;
+            loadedGmlCount = 0;
         }
     }
 }

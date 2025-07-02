@@ -320,10 +320,62 @@ namespace PLATEAU.Editor.Addressables
         }
 
         /// <summary>
+        /// 指定したグループを削除します。
+        /// </summary>
+        /// <param name="groupName">削除するグループ名</param>
+        /// <returns>削除に成功した場合はtrue</returns>
+        public static bool RemoveGroup(string groupName)
+        {
+            if (string.IsNullOrEmpty(groupName))
+            {
+                Debug.LogWarning("グループ名が指定されていません。");
+                return false;
+            }
+            
+            try
+            {
+                var settings = RequireAddressableSettings();
+                if (settings == null)
+                {
+                    return false;
+                }
+                
+                var group = settings.FindGroup(groupName);
+                if (group == null)
+                {
+                    Debug.LogWarning($"グループが見つかりません: {groupName}");
+                    return false;
+                }
+                
+                if (group == settings.DefaultGroup)
+                {
+                    Debug.LogWarning("デフォルトグループは削除できません。");
+                    return false;
+                }
+                
+                settings.RemoveGroup(group);
+                Debug.Log($"Addressableグループを削除しました: {groupName}");
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"Addressableグループの削除中にエラーが発生しました: {ex.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
         /// デフォルトグループ以外のグループを削除します。
         /// </summary>
         public static void RemoveNonDefaultGroups(string targetLabel, bool isExcludeAssetFolder)
         {
+            // パラメータ検証
+            if (string.IsNullOrEmpty(targetLabel))
+            {
+                Debug.LogError("targetLabelが無効です。");
+                return;
+            }
+
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
@@ -342,12 +394,9 @@ namespace PLATEAU.Editor.Addressables
             foreach (var group in groups)
             {
                 if (group == null ||
-                    group == defaultGroup)
-                {
-                    continue;
-                }
-
-                if (group.entries == null)
+                    group == defaultGroup ||
+                    group.entries == null ||
+                    !group.entries.Any())
                 {
                     continue;
                 }
@@ -355,7 +404,17 @@ namespace PLATEAU.Editor.Addressables
                 try
                 {
                     // 指定されたラベルを持つエントリがない場合はスキップ
-                    if (!group.entries.Any(e => e != null && e.labels != null && e.labels.Contains(targetLabel)))
+                    bool hasTargetLabel = false;
+                    foreach (var entry in group.entries)
+                    {
+                        if (entry != null && entry.labels != null && entry.labels.Contains(targetLabel))
+                        {
+                            hasTargetLabel = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasTargetLabel)
                     {
                         continue;
                     }
@@ -366,9 +425,11 @@ namespace PLATEAU.Editor.Addressables
                         // 削除するとLibrary配下から削除されるため
                         continue;
                     }
-
+    
+                    // グループを削除
+                    string groupName = group.Name; // 削除前に名前を保存
                     settings.RemoveGroup(group);
-                    Debug.Log($"グループを削除しました: {group.Name}");
+                    Debug.Log($"グループを削除しました: {groupName}");
                 }
                 catch (System.Exception ex)
                 {

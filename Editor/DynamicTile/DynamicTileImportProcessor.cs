@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using PLATEAU.CityInfo;
+using PLATEAU.Editor.Addressables;
 using PLATEAU.Util;
 using UnityEngine;
 
@@ -16,30 +17,40 @@ namespace PLATEAU.DynamicTile
     public static class DynamicTileImportProcessor
     {
         private const string DynamicTileGenerationText = "動的タイル生成処理";
-
+        
         /// <summary>
         /// 動的タイルインポートの事前処理を調整します。
         /// </summary>
         /// <returns>成功時はDynamicTileProcessingContext、失敗時はnullを返します。</returns>
         public static DynamicTileProcessingContext SetupPreProcessing(IProgressDisplay progressDisplay, CityImportConfig config)
         {
-            progressDisplay?.SetProgress(DynamicTileGenerationText, 0f, "動的タイル生成を開始中...");
-            
-            if (config?.DynamicTileImportConfig == null)
+            try
             {
-                Debug.LogError("CityImportConfigまたはDynamicTileImportConfigがnullです。");
-                return null;
-            }
+                Debug.Log("DynamicTileImportProcessor.SetupPreProcessing 開始");
+                progressDisplay?.SetProgress(DynamicTileGenerationText, 0f, "動的タイル生成を開始中...");
+            
+                if (config?.DynamicTileImportConfig == null)
+                {
+                    Debug.LogError("CityImportConfigまたはDynamicTileImportConfigがnullです。");
+                    return null;
+                }
 
-            var context = DynamicTileExporter.SetupPreProcessing(config.DynamicTileImportConfig);
-            if (context == null || !context.IsValid())
+                var context = DynamicTileExporter.SetupPreProcessing(config.DynamicTileImportConfig);
+                if (context == null || !context.IsValid())
+                {
+                    Debug.LogError("動的タイルの事前処理に失敗しました。");
+                    return null;
+                }
+            
+                progressDisplay?.SetProgress(DynamicTileGenerationText, 10f, "動的タイル生成を開始中...");
+                Debug.Log("DynamicTileImportProcessor.SetupPreProcessing 完了");
+                return context;
+            }
+            catch (System.Exception ex)
             {
-                Debug.LogError("動的タイルの事前処理に失敗しました。");
+                Debug.LogError($"SetupPreProcessing中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
                 return null;
             }
-            
-            progressDisplay?.SetProgress(DynamicTileGenerationText, 10f, "動的タイル生成を開始中...");
-            return context;
         }
 
         /// <summary>
@@ -90,6 +101,10 @@ namespace PLATEAU.DynamicTile
                     progressDisplay?.SetProgress(DynamicTileGenerationText, 100f, "動的タイル生成完了");
                 }
             }
+            catch (System.OperationCanceledException)
+            {
+                Debug.Log("動的タイルインポート処理がキャンセルされました。");
+            }
             catch (System.Exception ex)
             {
                 Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
@@ -97,6 +112,30 @@ namespace PLATEAU.DynamicTile
             finally
             {
                 onFinally?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// キャンセル時の共通処理
+        /// </summary>
+        public static void HandleCancellation(
+            IProgressDisplay progressDisplay,
+            DynamicTileProcessingContext context = null,
+            float progress = 0f)
+        {
+            progressDisplay?.SetProgress(DynamicTileGenerationText, progress, "キャンセルされました。");
+            Debug.Log("動的タイル生成がキャンセルされました。");
+            
+            // Contextの破棄
+            if (context != null)
+            {
+                // 作成途中のAddressableグループを削除
+                if (!string.IsNullOrEmpty(context.AddressableGroupName))
+                {
+                    AddressablesUtility.RemoveGroup(context.AddressableGroupName);
+                }
+                // Contextを破棄
+                context.Dispose();
             }
         }
     }

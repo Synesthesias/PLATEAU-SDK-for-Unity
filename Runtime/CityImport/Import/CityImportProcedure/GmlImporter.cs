@@ -84,8 +84,15 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
                 
-                // コールバックが設定されている場合は実行
-                onGmlImported?.Invoke(placingResult.GeneratedObjs);
+                // コールバックが設定されている場合は安全に実行
+                try
+                {
+                    onGmlImported?.Invoke(placingResult.GeneratedObjs);
+                }
+                catch (System.Exception ex)
+                {
+                    UnityEngine.Debug.LogError($"GML import callback error: {ex.Message}");
+                }
             }
             else
             {
