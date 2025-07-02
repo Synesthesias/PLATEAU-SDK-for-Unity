@@ -134,7 +134,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             return cityModel;
         }
 
-        private static GameObject CreateGmlGameObject(GmlFile fetchedGmlFile)
+        internal static GameObject CreateGmlGameObject(GmlFile fetchedGmlFile)
         {
             string udxFeature = $"/udx/{fetchedGmlFile.FeatureType}/";
             var gmlPath = fetchedGmlFile.Path;
@@ -159,7 +159,6 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             {
                 progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
                 meshExtractOptions = new MeshExtractOptions();
-                conf.packageImportConfigConverter?.Convert(ref meshExtractOptions);
                 result = meshExtractOptions;
                 return false;
             }

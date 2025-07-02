@@ -115,9 +115,6 @@ namespace PLATEAU.PolygonMesh
         /// <summary> 出力するLODの範囲の下限です。 </summary>
         private uint minLOD;
 
-        public uint MaxLOD => this.maxLOD;
-        public uint MinLOD => this.minLOD;
-
         public void SetLODRange(uint minLODArg, uint maxLODArg)
         {
             if (minLODArg > maxLODArg)

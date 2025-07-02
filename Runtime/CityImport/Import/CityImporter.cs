@@ -143,7 +143,7 @@ namespace PLATEAU.CityImport.Import
 
                 //}));
 
-                await TileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
+                await new TileImporter().Import(fetchedGmls, config, rootTrans, progressDisplay, token);
 
                 // インポート完了後の処理
                 CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
