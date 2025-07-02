@@ -35,6 +35,11 @@ namespace PLATEAU.CityImport.Config
         /// </summary>
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
 
+        /// <summary>
+        /// MeshExtractOptionsの再変換用の処理を提供するインターフェイスです。
+        /// </summary>
+        public IPackageImportConfigConverter packageImportConfigConverter { get;  set; }
+
         private CityImportConfig(){}
 
         /// <summary>
@@ -115,13 +120,22 @@ namespace PLATEAU.CityImport.Config
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package, GmlFile gml)
         {
             var packageConf = GetConfigForPackage(package);
-            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID, gml);
+            var opt = packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID, gml);
+            packageImportConfigConverter?.Convert(ref opt);
+            return opt;
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
         {
             return package != PredefinedCityModelPackage.Relief;
-        }
-        
+        }       
+    }
+
+    /// <summary>
+    /// 都市インポート設定の再変換を行うインターフェイスです。
+    /// </summary>
+    public interface IPackageImportConfigConverter
+    {
+        public void Convert(ref MeshExtractOptions options);
     }
 }

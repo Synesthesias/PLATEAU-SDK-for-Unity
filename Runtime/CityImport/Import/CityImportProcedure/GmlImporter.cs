@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,8 +90,8 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
             }
         }
-        
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName)
+
+        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName)
         {
             progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
@@ -156,7 +158,9 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             catch (Exception e)
             {
                 progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
-                result = new MeshExtractOptions();
+                meshExtractOptions = new MeshExtractOptions();
+                conf.packageImportConfigConverter?.Convert(ref meshExtractOptions);
+                result = meshExtractOptions;
                 return false;
             }
 

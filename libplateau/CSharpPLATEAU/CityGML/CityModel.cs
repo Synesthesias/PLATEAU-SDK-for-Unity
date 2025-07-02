@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 using PLATEAU.Native;
+using System.Linq;
 
 namespace PLATEAU.CityGML
 {

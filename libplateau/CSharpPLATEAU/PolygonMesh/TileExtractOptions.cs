@@ -11,54 +11,54 @@ namespace PLATEAU.PolygonMesh
     /// <summary>
     /// メッシュの結合単位
     /// </summary>
-    public enum MeshGranularity
-    {
-        /// <summary>
-        /// 最小地物単位(LOD2, LOD3の各部品)
-        /// </summary>
-        PerAtomicFeatureObject,
-        /// <summary>
-        /// 主要地物単位(建築物、道路等)
-        /// </summary>
-        PerPrimaryFeatureObject,
-        /// <summary>
-        /// 都市モデル地域単位(GMLファイル内のすべてを結合)
-        /// </summary>
-        PerCityModelArea
-    }
+    //public enum MeshGranularity
+    //{
+    //    /// <summary>
+    //    /// 最小地物単位(LOD2, LOD3の各部品)
+    //    /// </summary>
+    //    PerAtomicFeatureObject,
+    //    /// <summary>
+    //    /// 主要地物単位(建築物、道路等)
+    //    /// </summary>
+    //    PerPrimaryFeatureObject,
+    //    /// <summary>
+    //    /// 都市モデル地域単位(GMLファイル内のすべてを結合)
+    //    /// </summary>
+    //    PerCityModelArea
+    //}
 
-    public static class MeshGranularityExtension
-    {
-        public static string ToJapaneseString(this MeshGranularity granularity)
-        {
-            switch (granularity)
-            {
-                case MeshGranularity.PerAtomicFeatureObject:
-                    return "最小地物単位";
-                case MeshGranularity.PerPrimaryFeatureObject:
-                    return "主要地物単位";
-                case MeshGranularity.PerCityModelArea:
-                    return "地域単位";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(granularity));
-            }
-        }
+    //public static class MeshGranularityExtension
+    //{
+    //    public static string ToJapaneseString(this MeshGranularity granularity)
+    //    {
+    //        switch (granularity)
+    //        {
+    //            case MeshGranularity.PerAtomicFeatureObject:
+    //                return "最小地物単位";
+    //            case MeshGranularity.PerPrimaryFeatureObject:
+    //                return "主要地物単位";
+    //            case MeshGranularity.PerCityModelArea:
+    //                return "地域単位";
+    //            default:
+    //                throw new ArgumentOutOfRangeException(nameof(granularity));
+    //        }
+    //    }
         
-        public static ConvertGranularity ToConvertGranularity(this MeshGranularity g)
-        {
-            switch (g)
-            {
-                case MeshGranularity.PerAtomicFeatureObject:
-                    return ConvertGranularity.PerAtomicFeatureObject;
-                case MeshGranularity.PerPrimaryFeatureObject:
-                    return ConvertGranularity.PerPrimaryFeatureObject;
-                case MeshGranularity.PerCityModelArea:
-                    return ConvertGranularity.PerCityModelArea;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(g));
-            }
-        }
-    }
+    //    public static ConvertGranularity ToConvertGranularity(this MeshGranularity g)
+    //    {
+    //        switch (g)
+    //        {
+    //            case MeshGranularity.PerAtomicFeatureObject:
+    //                return ConvertGranularity.PerAtomicFeatureObject;
+    //            case MeshGranularity.PerPrimaryFeatureObject:
+    //                return ConvertGranularity.PerPrimaryFeatureObject;
+    //            case MeshGranularity.PerCityModelArea:
+    //                return ConvertGranularity.PerCityModelArea;
+    //            default:
+    //                throw new ArgumentOutOfRangeException(nameof(g));
+    //        }
+    //    }
+    //}
 
 
     /// <summary>
@@ -70,9 +70,9 @@ namespace PLATEAU.PolygonMesh
     /// マーシャリングも考慮する必要があります。
     /// しかし、追加でプロパティを定義する分には問題ないため、プロパティで値の整合性チェックをしています。
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct MeshExtractOptions
+    public struct TileExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode)
+        public TileExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -99,6 +99,29 @@ namespace PLATEAU.PolygonMesh
             MapTileURL = mapTileURL;
         }
 
+        public static TileExtractOptions FromMeshExtractOptions(MeshExtractOptions options)
+        {
+            return new TileExtractOptions(
+                options.ReferencePoint, 
+                options.MeshAxes,
+                options.MeshGranularity,
+                options.MinLOD,
+                options.MaxLOD,
+                options.ExportAppearance,
+                options.GridCountOfSide,
+                options.UnitScale,
+                options.CoordinateZoneID,
+                options.ExcludeCityObjectOutsideExtent,
+                options.ExcludePolygonsOutsideExtent,
+                options.EnableTexturePacking,
+                options.TexturePackingResolution,
+                options.AttachMapTile,
+                options.MapTileZoomLevel,
+                options.MapTileURL,
+                options.epsgCode
+                );
+        }
+
         /// <summary> 直交座標系における座標で、3Dモデルの原点をどこに設定するかです。 </summary>
         public PlateauVector3d ReferencePoint;
 
@@ -114,9 +137,6 @@ namespace PLATEAU.PolygonMesh
 
         /// <summary> 出力するLODの範囲の下限です。 </summary>
         private uint minLOD;
-
-        public uint MaxLOD => this.maxLOD;
-        public uint MinLOD => this.minLOD;
 
         public void SetLODRange(uint minLODArg, uint maxLODArg)
         {
@@ -231,9 +251,9 @@ namespace PLATEAU.PolygonMesh
         public int epsgCode;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
-        internal static MeshExtractOptions DefaultValue()
+        internal static TileExtractOptions DefaultValue()
         {
-            var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
+            var apiResult = NativeMethods.plateau_tile_extract_options_default_value(out var defaultOptions);
             DLLUtil.CheckDllError(apiResult);
             return defaultOptions;
         }
@@ -241,8 +261,8 @@ namespace PLATEAU.PolygonMesh
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_mesh_extract_options_default_value(
-                out MeshExtractOptions outDefaultOptions);
+            internal static extern APIResult plateau_tile_extract_options_default_value(
+                out TileExtractOptions outDefaultOptions);
         }
     }
 }
