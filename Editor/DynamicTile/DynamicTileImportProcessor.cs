@@ -134,8 +134,6 @@ namespace PLATEAU.DynamicTile
                 {
                     AddressablesUtility.RemoveGroup(context.AddressableGroupName);
                 }
-                // Contextを破棄
-                context.Dispose();
             }
         }
     }

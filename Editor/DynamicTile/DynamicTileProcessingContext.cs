@@ -10,7 +10,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// DynamicTile処理で必要なデータを保持するコンテキストクラス
     /// </summary>
-    public class DynamicTileProcessingContext : IDisposable
+    public class DynamicTileProcessingContext
     {
         /// <summary>
         /// プレハブ保存パス
@@ -137,24 +137,5 @@ namespace PLATEAU.DynamicTile
                    !string.IsNullOrEmpty(AssetConfig.AssetPath);
         }
         
-        /// <summary>
-        /// リソースの解放
-        /// </summary>
-        public void Dispose()
-        {
-            // MetaStoreの解放（ScriptableObjectなのでDestroyが必要）
-            if (MetaStore != null)
-            {
-                UnityEngine.Object.DestroyImmediate(MetaStore, true);
-                MetaStore = null;
-            }
-            // その他のリソースをnullに設定
-            AssetConfig = null;
-            Config = null;
-            AddressableGroupName = null;
-            BuildFolderPath = null;
-            GmlCount = 0;
-            loadedGmlCount = 0;
-        }
     }
 }

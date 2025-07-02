@@ -354,9 +354,6 @@ namespace PLATEAU.DynamicTile
                 {
                     EditorSceneManager.MarkSceneDirty(scene);
                 }
-                
-                // リソース解放
-                context?.Dispose();
             }
         }
     }
