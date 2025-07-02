@@ -47,6 +47,22 @@ namespace PLATEAU.DynamicTile
             // グループを削除
             AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, context.IsExcludeAssetFolder);
 
+            // グループを設定
+            if (context.IsExcludeAssetFolder)
+            {
+                // Remote用のプロファイルを作成
+                var profileID = AddressablesUtility.SetOrCreateProfile(context.AddressableGroupName);
+                if (!string.IsNullOrEmpty(profileID))
+                {
+                    AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
+                    AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
+                }
+            }
+            else
+            {
+                // プロファイルをデフォルトに設定
+                AddressablesUtility.SetDefaultProfileSettings(context.AddressableGroupName);
+            }
             return context;
         }
 
@@ -294,22 +310,6 @@ namespace PLATEAU.DynamicTile
             {
                 // メタデータを保存
                 SaveAndRegisterMetaData(context.MetaStore, context.AssetConfig.AssetPath, context.AddressableGroupName);
-
-                if (context.IsExcludeAssetFolder)
-                {
-                    // Remote用のプロファイルを作成
-                    var profileID = AddressablesUtility.SetOrCreateProfile(context.AddressableGroupName);
-                    if (!string.IsNullOrEmpty(profileID))
-                    {
-                        AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
-                        AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
-                    }
-                }
-                else
-                {
-                    // プロファイルをデフォルトに設定
-                    AddressablesUtility.SetDefaultProfileSettings(context.AddressableGroupName);
-                }
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(true);

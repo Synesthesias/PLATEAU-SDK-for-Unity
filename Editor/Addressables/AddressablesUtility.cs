@@ -127,10 +127,10 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            var group = settings.FindGroup(groupName);
+            var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 
@@ -217,10 +217,10 @@ namespace PLATEAU.Editor.Addressables
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, "Local.BuildPath");
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, "Local.LoadPath");
 
-            var group = settings.FindGroup(groupName);
+            var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 
