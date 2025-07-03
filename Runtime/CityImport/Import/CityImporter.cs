@@ -143,10 +143,11 @@ namespace PLATEAU.CityImport.Import
 
                 //}));
 
-                await new TileImporter().Import(fetchedGmls, config, rootTrans, progressDisplay, token);
+                using var tileImporter = new TileImporter();
+                await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
 
                 // インポート完了後の処理
-                CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+                //CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }
