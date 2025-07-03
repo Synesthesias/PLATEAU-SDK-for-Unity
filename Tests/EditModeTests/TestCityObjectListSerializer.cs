@@ -5,12 +5,12 @@ using PLATEAU.CityInfo;
 using System;
 using System.Collections.Generic;
 using UnityEditor.Compilation;
-using static PLATEAU.CityInfo.SerializableCityObjectList;
+using static PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.Tests.EditModeTests
 {
     /// <summary>
-    /// <see cref="SerializableCityObjectList"/>がシリアライズ・デシリアライズできることをテストします。
+    /// <see cref="CityObjectList"/>がシリアライズ・デシリアライズできることをテストします。
     /// </summary>
     [TestFixture]
     public class TestCityObjectListSerializer
@@ -19,27 +19,27 @@ namespace PLATEAU.Tests.EditModeTests
         public void CityObjectList_Can_SerializeAndDeserialize()
         {
             // テスト用のCityObjectListを作成します。
-            var cityObjs = new SerializableCityObjectList
+            var cityObjs = new CityObjectList
             {
                 outsideChildren = new List<string> { "testOutsideChildren" },
                 outsideParent = "testOutsideParent",
                 rootCityObjects =
                 {
-                    new SerializableCityObject()
+                    new CityObjectList.CityObject()
                     {
                         GmlID = "testGmlID",
                         CityObjectIndex = new int[]{0, -1},
-                        AttributesMap = new SerializableAttributes(new Dictionary<string, SerializableAttributes.SerializableValue>
+                        AttributesMap = new Attributes(new Dictionary<string, Attributes.Value>
                         {
-                            {"testAttributeKey", new SerializableAttributes.SerializableValue(AttributeType.Integer, 1)}
+                            {"testAttributeKey", new Attributes.Value(AttributeType.Integer, 1)}
                         }),
-                        Children = { new SerializableCityObject()
+                        Children = { new CityObjectList.CityObject()
                         {
                             GmlID = "testChildGmlID",
                             CityObjectIndex = new int[]{1, 2},
-                            AttributesMap = new SerializableAttributes(new Dictionary<string, SerializableAttributes.SerializableValue>
+                            AttributesMap = new Attributes(new Dictionary<string, Attributes.Value>
                             {
-                                {"testChildAttributeKey", new SerializableAttributes.SerializableValue(AttributeType.String, "testChildAttributeValue")}
+                                {"testChildAttributeKey", new Attributes.Value(AttributeType.String, "testChildAttributeValue")}
                             })
                         } }
                     }
@@ -51,7 +51,7 @@ namespace PLATEAU.Tests.EditModeTests
             Assert.True(messagePack.Length > 0, "MessagePack serialization failed.");
             
             // デシリアライズします。
-            var deserialized = MessagePackSerializer.Deserialize<SerializableCityObjectList>(messagePack);
+            var deserialized = MessagePackSerializer.Deserialize<CityObjectList>(messagePack);
             
             // デシリアライズ結果をチェックします。
             Assert.AreEqual(1, deserialized.outsideChildren.Count);

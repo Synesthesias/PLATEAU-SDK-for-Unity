@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using PLATEAU.CityGML;
 using System;
 using System.Collections.Generic;
-using static PLATEAU.CityInfo.SerializableCityObjectList;
+using static PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.CityInfo
 {
@@ -12,7 +12,7 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal class CityObjectSerializable_CityObjectListJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(SerializableCityObjectList);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectList);
 
         public override bool CanRead { get { return false; } }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -22,7 +22,7 @@ namespace PLATEAU.CityInfo
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var attr = value as SerializableCityObjectList;
+            var attr = value as CityObjectList;
             if (attr == null) return;
 
             writer.WriteStartObject();
@@ -54,18 +54,18 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal class CityObjectSerializable_CityObjectJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(SerializableCityObject);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectList.CityObject);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var param = new SerializableCityObject();
+            var param = new CityObjectList.CityObject();
             
             JObject jObject = JObject.Load(reader);
             string gmlID = jObject["gmlID"]?.ToString();
             ulong cityObjectType = (ulong)Enum.Parse(typeof(CityObjectType), jObject["cityObjectType"].ToString());
             int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
-            List<SerializableCityObject> children = jObject["children"]?.ToObject<List<SerializableCityObject>>();
-            SerializableAttributes attributesMap = jObject["attributes"]?.ToObject<SerializableAttributes>() ?? new SerializableAttributes();
+            List<CityObjectList.CityObject> children = jObject["children"]?.ToObject<List<CityObjectList.CityObject>>();
+            Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
 
             param.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children );
            
@@ -74,7 +74,7 @@ namespace PLATEAU.CityInfo
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var param = value as SerializableCityObject;
+            var param = value as CityObjectList.CityObject;
             if (param == null) return;
 
             writer.WriteStartObject();
@@ -105,11 +105,11 @@ namespace PLATEAU.CityInfo
         /// </summary>
         internal class CityObjectSerializable_AttributesJsonConverter : JsonConverter
         {
-            public override bool CanConvert(Type objectType) => objectType == typeof(SerializableAttributes);
+            public override bool CanConvert(Type objectType) => objectType == typeof(Attributes);
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                var attr = new SerializableAttributes();
+                var attr = new Attributes();
 
                 while (reader.Read())
                 {
@@ -125,7 +125,7 @@ namespace PLATEAU.CityInfo
                         else if (type == AttributeType.Double.ToString())
                             attr.AddAttribute(key, AttributeType.Double, Double.Parse(jObject["value"].ToString()));
                         else if (type == AttributeType.AttributeSet.ToString())
-                            attr.AddAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<SerializableAttributes>());
+                            attr.AddAttribute(key, AttributeType.AttributeSet, jObject["value"].ToObject<Attributes>());
                         else
                             attr.AddAttribute(key, (AttributeType)Enum.Parse(typeof(AttributeType), type), jObject["value"].ToString());
                     }
@@ -135,7 +135,7 @@ namespace PLATEAU.CityInfo
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                var attr = value as SerializableAttributes;
+                var attr = value as Attributes;
                 if (attr == null) return;
 
                 writer.WriteStartArray();

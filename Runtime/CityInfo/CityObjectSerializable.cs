@@ -12,13 +12,13 @@ using PLATEAUCityObject = PLATEAU.CityGML.CityObject;
 namespace PLATEAU.CityInfo
 {
     /// <summary>
-    /// シリアライズ可能なCityObjectデータです。
+    /// MessagePack形式でシリアライズ可能なCityObjectデータです。
     /// </summary>
     [MessagePackObject]
-    public partial class SerializableCityObjectList
+    public partial class CityObjectList // partialはMessagePackの自動生成コードを利用するために必要です
     {
         // Key名は短い文字列で指定します。
-        // Key名は短いほうが軽量化できますが、かといってキーがないとMessagePack保存時にMapではなく配列になってしまい将来的に順番に変更があった場合に読めなくなってしまいます。
+        // Key名は短いほうが軽量化できますが、かといってキーがないとMessagePack保存時にMapではなく配列になってしまうため将来的に順番に変更があった場合に読めなくなってしまいます。
         [Key("p")]
         public string outsideParent = "";
         
@@ -26,12 +26,12 @@ namespace PLATEAU.CityInfo
         public List<string> outsideChildren = new List<string>();
         
         [Key("o")]
-        public List<SerializableCityObject> rootCityObjects = new ();
+        public List<CityObject> rootCityObjects = new ();
 
         public bool IsEmpty() => outsideParent == "" && outsideChildren.Count == 0 && rootCityObjects.Count == 0;
 
         [MessagePackObject(true, AllowPrivate = true)]
-        public partial class SerializableCityObject
+        public partial class CityObject // // partialはMessagePackの自動生成コードを利用するために必要です
         {
             [Key("i")]
             private string gmlID = "";
@@ -43,10 +43,10 @@ namespace PLATEAU.CityInfo
             private ulong cityObjectType;
             
             [Key("c")]
-            private List<SerializableCityObject> children = new List<SerializableCityObject>();
+            private List<CityObject> children = new List<CityObject>();
             
             [Key("a")]
-            private SerializableAttributes attributesMap = new SerializableAttributes();
+            private Attributes attributesMap = new Attributes();
 
             [IgnoreMember]
             public string GmlID
@@ -72,16 +72,16 @@ namespace PLATEAU.CityInfo
             public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
             
             [IgnoreMember]
-            public List<SerializableCityObject> Children => children;
+            public List<CityObject> Children => children;
 
             [IgnoreMember]
-            public SerializableAttributes AttributesMap
+            public Attributes AttributesMap
             {
                 get { return attributesMap; }
                 set { attributesMap = value; }
             }
 
-            public SerializableCityObject Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, SerializableAttributes attributesMapArg, List<SerializableCityObject> childrenArg = null )
+            public CityObject Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg, List<CityObject> childrenArg = null )
             {
                 gmlID = gmlIDArg;
                 cityObjectIndex = cityObjectIndexArg;
@@ -92,9 +92,9 @@ namespace PLATEAU.CityInfo
                 return this;
             }
 
-            public SerializableCityObject CopyWithoutChildren()
+            public CityObject CopyWithoutChildren()
             {
-                var copy = new SerializableCityObject();
+                var copy = new CityObject();
                 copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, null);
                 return copy;
             }
@@ -138,28 +138,28 @@ namespace PLATEAU.CityInfo
         /// シリアライズ可能なAttributeMapデータです。
         /// </summary>
         [MessagePackObject(AllowPrivate = true)]
-        public partial class SerializableAttributes
+        public partial class Attributes // partialはMessagePackの自動生成コードを利用するために必要です
         {
             [Key("m")]
-            private readonly Dictionary<string, SerializableValue> attrMap = new ();
+            private readonly Dictionary<string, Value> attrMap = new ();
 
             [IgnoreMember]
             public int Count => attrMap.Count;
             
             [IgnoreMember]
-            public SerializableValue this[string key] => attrMap[key];
+            public Value this[string key] => attrMap[key];
 
             [IgnoreMember]
             public IEnumerable<string> Keys => attrMap.Keys;
 
             [IgnoreMember]
-            public IEnumerable<SerializableValue> Values => attrMap.Values;
+            public IEnumerable<Value> Values => attrMap.Values;
 
-            public IEnumerator<KeyValuePair<string, SerializableValue>> GetEnumerator() { return attrMap.GetEnumerator(); }
+            public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return attrMap.GetEnumerator(); }
             
-            public SerializableAttributes(){}
+            public Attributes(){}
 
-            public SerializableAttributes(Dictionary<string, SerializableValue> attrMap)
+            public Attributes(Dictionary<string, Value> attrMap)
             {
                 this.attrMap = attrMap;
             }
@@ -168,7 +168,7 @@ namespace PLATEAU.CityInfo
             /// 属性情報のキーバリューペアのうち、キーを指定してバリューを得ます。
             /// 成否をboolで返します。
             /// </summary>
-            public bool TryGetValue(string key, out SerializableValue val)
+            public bool TryGetValue(string key, out Value val)
             {
                 return attrMap.TryGetValue(key, out val);
             }
@@ -178,7 +178,7 @@ namespace PLATEAU.CityInfo
             /// キーにスラッシュ"/"を含む場合、属性情報が入れ子になっていると見なし、再帰的にキーを探索してバリューを取得します。
             /// 成否をboolで返します。
             /// </summary>
-            public bool TryGetValueWithSlash(string keyWithSlash, out SerializableValue val)
+            public bool TryGetValueWithSlash(string keyWithSlash, out Value val)
             {
                 var keys = keyWithSlash.Split("/");
                 string firstKey = keys[0];
@@ -208,18 +208,18 @@ namespace PLATEAU.CityInfo
 
             public void AddAttribute(string key, NativeAttributeValue value)
             {
-                attrMap.Add(key, new SerializableValue(value));
+                attrMap.Add(key, new Value(value));
             }
             public void AddAttribute(string key, AttributeType type, object value)
             {
-                attrMap.Add(key, new SerializableValue(type, value));
+                attrMap.Add(key, new Value(type, value));
             }
 
             /// <summary>
             /// AttributesにAttributesを追加します。
             /// すでに存在するキーは無視されます。
             /// </summary>
-            public void AddAttributes(SerializableAttributes attrs)
+            public void AddAttributes(Attributes attrs)
             {
                 foreach (var attr in attrs)
                 {
@@ -240,7 +240,7 @@ namespace PLATEAU.CityInfo
             }
             
             [MessagePackObject(true)]
-            public partial class SerializableValue
+            public partial class Value // partialはMessagePackの自動生成コードを利用するために必要です
             {
                 [Key("t")]
                 public AttributeType Type   { get; private set; }
@@ -255,11 +255,11 @@ namespace PLATEAU.CityInfo
                 public double DoubleValue   { get; private set; }
 
                 [Key("m")]
-                public SerializableAttributes AttributesMapValue = new SerializableAttributes();
+                public Attributes AttributesMapValue = new Attributes();
                 
-                public SerializableValue(){}
+                public Value(){}
 
-                public SerializableValue(NativeAttributeValue value)
+                public Value(NativeAttributeValue value)
                 {
                     Type = value.Type;
 
@@ -298,7 +298,7 @@ namespace PLATEAU.CityInfo
                     }
                 }
 
-                public SerializableValue(AttributeType type, object value)
+                public Value(AttributeType type, object value)
                 {
                     Type = type;
                     switch (type)
@@ -312,7 +312,7 @@ namespace PLATEAU.CityInfo
                             StringValue = DoubleValue.ToString();
                             break;
                         case AttributeType.AttributeSet:
-                            AttributesMapValue = value as SerializableAttributes;
+                            AttributesMapValue = value as Attributes;
                             break;
                         default:
                             StringValue = value as string;
@@ -362,12 +362,12 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal static class CityObjectSerializableConvert
     {
-        public static SerializableCityObjectList.SerializableCityObject FromCityGMLCityObject(PLATEAUCityObject obj, CityObjectIndex? idx = null)
+        public static CityObjectList.CityObject FromCityGMLCityObject(PLATEAUCityObject obj, CityObjectIndex? idx = null)
         {
             string gmlID = obj.ID;
             ulong cityObjectType = (ulong)obj.Type;
             int[] cityObjectIndex = { -1, -1 };
-            SerializableCityObjectList.SerializableAttributes map = new SerializableCityObjectList.SerializableAttributes();
+            CityObjectList.Attributes map = new CityObjectList.Attributes();
 
             if( idx != null )
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
@@ -376,7 +376,7 @@ namespace PLATEAU.CityInfo
                 map.AddAttribute(m.Key, m.Value);
             }
 
-            var ret = new SerializableCityObjectList.SerializableCityObject();
+            var ret = new CityObjectList.CityObject();
             ret.Init(gmlID, cityObjectIndex, cityObjectType, map);
             return ret;
         }

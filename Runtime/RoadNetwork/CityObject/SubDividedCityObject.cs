@@ -224,7 +224,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         [SerializeField]
         private string serializedCityObjects;
 
-        private CityInfo.SerializableCityObjectList cityObjects;
+        private CityInfo.CityObjectList cityObjects;
 
         [field: SerializeField]
         public bool Visible { get; set; } = true;
@@ -251,7 +251,7 @@ namespace PLATEAU.RoadNetwork.CityObject
 
         public string SerializedCityObjects => serializedCityObjects;
 
-        public CityInfo.SerializableCityObjectList CityObjects
+        public CityInfo.CityObjectList CityObjects
         {
             get
             {
@@ -259,7 +259,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                     return cityObjects;
 
                 if (!string.IsNullOrEmpty(serializedCityObjects))
-                    cityObjects = JsonConvert.DeserializeObject<CityInfo.SerializableCityObjectList>(serializedCityObjects);
+                    cityObjects = JsonConvert.DeserializeObject<CityInfo.CityObjectList>(serializedCityObjects);
 
                 return cityObjects;
             }

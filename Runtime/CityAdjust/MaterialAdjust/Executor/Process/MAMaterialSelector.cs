@@ -2,6 +2,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using System.Linq;
 using UnityEngine;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
 {
@@ -12,7 +13,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     public interface IMAMaterialSelector
     {
-        public Result<Material> Get(PLATEAUCityObjectGroup cog, SerializableCityObjectList.SerializableCityObject cityObj, IMAConfig materialAdjustConf);
+        public Result<Material> Get(PLATEAUCityObjectGroup cog, CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf);
     }
         
     /// <summary>
@@ -20,7 +21,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
     /// </summary>
     internal class MAMaterialSelectorByType : IMAMaterialSelector
     {
-        public Result<Material> Get(PLATEAUCityObjectGroup cog, SerializableCityObjectList.SerializableCityObject cityObj, IMAConfig materialAdjustConf)
+        public Result<Material> Get(PLATEAUCityObjectGroup cog, CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf)
         {
             var matChangeConf = ((MAMaterialConfig<CityObjectTypeHierarchy.Node>)materialAdjustConf).GetConfFor(cityObj.type.ToTypeNode());
             if (matChangeConf == null || !matChangeConf.ShouldChangeMaterial) return new Result<Material>(false, null);
@@ -41,7 +42,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
             this.attrKey = attrKey;
         }
             
-        public Result<Material> Get(PLATEAUCityObjectGroup cog, SerializableCityObjectList.SerializableCityObject cityObj, IMAConfig materialAdjustConf)
+        public Result<Material> Get(PLATEAUCityObjectGroup cog, CityObjectList.CityObject cityObj, IMAConfig materialAdjustConf)
         {
             var matConf = (MAMaterialConfig<string>)materialAdjustConf;
             
@@ -69,7 +70,7 @@ namespace PLATEAU.CityAdjust.MaterialAdjust.Executor.Process
         /// <summary>
         /// マテリアル分けで、<paramref name="cityObj"/>に対応するマテリアルを返します。
         /// </summary>
-        private Result<Material> GetMaterialFor(SerializableCityObjectList.SerializableCityObject cityObj, MAMaterialConfig<string> matConf)
+        private Result<Material> GetMaterialFor(CityObjectList.CityObject cityObj, MAMaterialConfig<string> matConf)
         {
             if (!cityObj.AttributesMap.TryGetValueWithSlash(attrKey, out var attrValue))
             {

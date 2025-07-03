@@ -6,6 +6,7 @@ using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
 using System.Linq;
 using UnityEngine;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using PLATEAUCityObjectList = PLATEAU.PolygonMesh.CityObjectList;
 
 namespace PLATEAU.CityImport.Import.Convert
@@ -150,7 +151,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// 各CityObjectの属性情報を取得してシリアライズ可能なデータに変換します
         /// CityObjectが存在しない場合はnullを返します
         /// </summary>
-        public SerializableCityObjectList GetSerializableCityObject()
+        public CityObjectList GetSerializableCityObject()
         {
             if (!doSetAttrInfo) return null;
             switch (granularity)
@@ -169,7 +170,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// <summary>
         /// 最小地物単位または主要地物単位のモデルの場合の、シリアライズ可能なデータへの変換です。
         /// </summary>
-        private SerializableCityObjectList GetSerializableCityObjectForNonArea()
+        private CityObjectList GetSerializableCityObjectForNonArea()
         {
             var cityObjSerArr = serializedCityObjectGetter.GetDstCityObjectsByNode(currentNode, index, parentGmlID);
             if (cityObjSerArr == null || cityObjSerArr.Length == 0)
@@ -177,13 +178,13 @@ namespace PLATEAU.CityImport.Import.Convert
                 return null;
             }
 
-            SerializableCityObjectList serializableCityObjList = new SerializableCityObjectList();
+            CityObjectList cityObjList = new CityObjectList();
             foreach (var cityObjSer in cityObjSerArr)
             {
                 cityObjSer.CityObjectIndex = index.ToArray(); // 分割結合時に必要
 
                 if (!string.IsNullOrEmpty(this.parentGmlID))
-                    serializableCityObjList.outsideParent = this.parentGmlID;
+                    cityObjList.outsideParent = this.parentGmlID;
 
                 for (int i = 0; i < indexList.Count; i++)
                 {
@@ -194,11 +195,11 @@ namespace PLATEAU.CityImport.Import.Convert
                     childCityObj.CityObjectIndex = id.Index.ToArray(); // 分割結合時に必要
                     cityObjSer.Children.Add(childCityObj);
                 }
-                serializableCityObjList.rootCityObjects.Add(cityObjSer);
+                cityObjList.rootCityObjects.Add(cityObjSer);
             }
             
-            serializableCityObjList.outsideChildren = outsideChildrenList;
-            return serializableCityObjList;
+            cityObjList.outsideChildren = outsideChildrenList;
+            return cityObjList;
         }
 
         /// <summary>
@@ -206,12 +207,12 @@ namespace PLATEAU.CityImport.Import.Convert
         /// rootCityObjectsが空の場合はnullを返します
         /// </summary>
         /// <returns></returns>
-        private SerializableCityObjectList GetSerializableCityObjectForArea()
+        private CityObjectList GetSerializableCityObjectForArea()
         {
             if (indexList.Count <= 0) 
                 return null;
 
-            SerializableCityObjectList serializableCityObjSer = new SerializableCityObjectList();
+            CityObjectList cityObjSer = new CityObjectList();
             Dictionary<string, List<CityObjectID>> chidrenMap = new Dictionary<string, List<CityObjectID>>();
 
             foreach (var id in indexList)
@@ -245,9 +246,9 @@ namespace PLATEAU.CityImport.Import.Convert
                     childCityObj.CityObjectIndex = new int[]{id.Index.PrimaryIndex, c.Index.AtomicIndex}; // 分割結合時に必要
                     cityObj.Children.Add(childCityObj);
                 }
-                serializableCityObjSer.rootCityObjects.Add(cityObj);
+                cityObjSer.rootCityObjects.Add(cityObj);
             }   
-            return serializableCityObjSer;
+            return cityObjSer;
         }
 
         public void Dispose()
@@ -269,14 +270,14 @@ namespace PLATEAU.CityImport.Import.Convert
             this.cityModel = cityModel;
         }
         
-        public SerializableCityObjectList.SerializableCityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? index, string _)
+        public CityObjectList.CityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? index, string _)
         {
             var co = GetDstCityObjectByGmlID(node.Name, index);
             if (co == null) return null;
             return new[] { co };
         }
         
-        public SerializableCityObjectList.SerializableCityObject GetDstCityObjectByGmlID(string gmlID, CityObjectIndex? index)
+        public CityObjectList.CityObject GetDstCityObjectByGmlID(string gmlID, CityObjectIndex? index)
         {
             var cityObj = GetByIDInner(gmlID);
             if (cityObj == null)
@@ -310,8 +311,8 @@ namespace PLATEAU.CityImport.Import.Convert
     /// </summary>
     internal interface ISerializedCityObjectGetter
     {
-        SerializableCityObjectList.SerializableCityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? index, string parentGmlID);
-        SerializableCityObjectList.SerializableCityObject GetDstCityObjectByGmlID(string gmlID, CityObjectIndex? index);
+        CityObjectList.CityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? index, string parentGmlID);
+        CityObjectList.CityObject GetDstCityObjectByGmlID(string gmlID, CityObjectIndex? index);
         void Dispose();
     }
 }

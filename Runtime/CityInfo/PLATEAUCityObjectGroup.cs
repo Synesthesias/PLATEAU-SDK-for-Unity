@@ -5,7 +5,7 @@ using PLATEAU.Dataset;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
-using static PLATEAU.CityInfo.SerializableCityObjectList;
+using static PLATEAU.CityInfo.CityObjectList;
 using System.Threading.Tasks;
 
 namespace PLATEAU.CityInfo
@@ -15,14 +15,21 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
+        // 地物の情報はMessagePack形式でシリアライズされます。
+        //
+        // 経緯: 以前はjson形式でシリアライズしていましたが、文字数が多く、特に動的タイルの読み込み時にデータコピーで重くなる問題がありました。
+        //      そこで属性情報のデータ量を削減するためにMessagePack形式に変更しました。
         
         /// <summary>
-        /// <see cref="SerializableCityObject"/>に関する情報はここに収められます。
+        /// <see cref="CityObject"/>に関する情報はここにMessagePack形式で収められます。
         /// </summary>
         [HideInInspector][SerializeField] private byte[] serializedCityObjects;
         
-        private SerializableCityObjectList cityObjects;
-        private SerializableCityObject outsideParent;
+        /// <summary>
+        /// デシリアライズしたcityObjectです。
+        /// </summary>
+        private CityObjectList cityObjects;
+        private CityObject outsideParent;
         private UnityEngine.Mesh currentMesh;
         
         /// <summary> Toolkits向けの情報です。 </summary>
@@ -30,6 +37,17 @@ namespace PLATEAU.CityInfo
 
         [SerializeField] private MeshGranularity granularity;
         [SerializeField] private int lod;
+        
+        /// <summary>
+        /// シリアライズとデシリアライズに使うオプションです。
+        /// 
+        /// シリアライズとデシリアライズの変換処理にかかる時間よりも、データ量のほうがボトルネックになっています。
+        /// データ量のせいで、動的タイルのInstantiateでコピー処理が重かったり、地域単位の地物の選択時に重くなったりします。
+        /// そこでMessagePack+LZ4圧縮を採用してデータ量を下げます。
+        /// </summary>
+        private static readonly MessagePackSerializerOptions messagePackOption =
+            MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); // LZ4圧縮
+        
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
         public MeshGranularity Granularity
         {
@@ -56,7 +74,7 @@ namespace PLATEAU.CityInfo
             }
         }
 
-        public SerializableCityObjectList CityObjects
+        public CityObjectList CityObjects
         {
             get
             {
@@ -64,19 +82,27 @@ namespace PLATEAU.CityInfo
                     return this.cityObjects;
 
                 if (serializedCityObjects.Length > 0)
-                    this.cityObjects = MessagePackSerializer.Deserialize<SerializableCityObjectList>(serializedCityObjects);
+                    this.cityObjects = MessagePackSerializer.Deserialize<CityObjectList>(serializedCityObjects, messagePackOption);
                 else
-                    this.cityObjects = new SerializableCityObjectList();
+                    this.cityObjects = new CityObjectList();
                 return this.cityObjects;               
             }
         }
         
-        public void Init(SerializableCityObjectList serializableCityObject, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
+        public void Init(CityObjectList serializableCityObject, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
         {
-            serializedCityObjects = MessagePackSerializer.Serialize(serializableCityObject);
+            Serialize(serializableCityObject);
             infoForToolkits = cogInfoForToolkits; 
             granularity = granularityArg;
             Lod = lodArg;
+        }
+
+        /// <summary>
+        /// シリアライズして保存します。
+        /// </summary>
+        private void Serialize(CityObjectList serializableCityObjectList)
+        {
+            serializedCityObjects = MessagePackSerializer.Serialize(serializableCityObjectList, messagePackOption);
         }
 
         public void CopyFrom(PLATEAUCityObjectGroup other)
@@ -90,7 +116,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// RaycastHitからPrimary CityObjectを取得します
         /// </summary>
-        public SerializableCityObject GetPrimaryCityObject(RaycastHit hit)
+        public CityObject GetPrimaryCityObject(RaycastHit hit)
         {
             if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
@@ -105,7 +131,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// RaycastHitからAtomic CityObjectを取得します
         /// </summary>
-        public SerializableCityObject GetAtomicCityObject(RaycastHit hit)
+        public CityObject GetAtomicCityObject(RaycastHit hit)
         {
             if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var vec))
             {
@@ -117,7 +143,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// 座標からAtomic CityObjectを取得します
         /// </summary>
-        public SerializableCityObject GetCityObject(Vector2 uv)
+        public CityObject GetCityObject(Vector2 uv)
         {
             CityObjectIndex index = new CityObjectIndex();
             index.PrimaryIndex = (int)Mathf.Round(uv.x);
@@ -128,7 +154,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// CityObjectIndexからAtomic CityObjectを取得します
         /// </summary>
-        public SerializableCityObject GetCityObject(CityObjectIndex index)
+        public CityObject GetCityObject(CityObjectIndex index)
         {
             var des = CityObjects;
             //最小地物時の outsideParent 設定
@@ -166,7 +192,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// RaycastHitから非同期でPrimary CityObjectを取得します
         /// </summary>
-        public async Task<SerializableCityObject> GetPrimaryCityObjectAsync(RaycastHit hit)
+        public async Task<CityObject> GetPrimaryCityObjectAsync(RaycastHit hit)
         {
             if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
@@ -181,7 +207,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// RaycastHitから非同期でAtomic CityObjectを取得します
         /// </summary>
-        public async Task<SerializableCityObject> GetAtomicCityObjectAsync(RaycastHit hit)
+        public async Task<CityObject> GetAtomicCityObjectAsync(RaycastHit hit)
         {
             if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
@@ -196,7 +222,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// CityObjectIndexから非同期でCityObjectを取得します
         /// </summary>
-        public async Task<SerializableCityObject> GetCityObjectAsync(CityObjectIndex index)
+        public async Task<CityObject> GetCityObjectAsync(CityObjectIndex index)
         {
             var des = await Task.Run(() =>{ return CityObjects; });
 
@@ -238,7 +264,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// RaycastHitから非同期でPrimary Atomic CityObjectを両方取得します
         /// </summary>
-        public async Task<SerializableCityObject[]> GetPrimaryAndAtomicCityObjectsAsync(RaycastHit hit)
+        public async Task<CityObject[]> GetPrimaryAndAtomicCityObjectsAsync(RaycastHit hit)
         {
             if (TryGetUV4FromTriangleIndex(hit.triangleIndex, out var uv))
             {
@@ -253,9 +279,9 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// CityObjectIndexから非同期でPrimary Atomic CityObjectを両方取得します
         /// </summary>
-        public async Task<SerializableCityObject[]> GetPrimaryAndAtomicCityObjectsAsync(CityObjectIndex index)
+        public async Task<CityObject[]> GetPrimaryAndAtomicCityObjectsAsync(CityObjectIndex index)
         {
-            SerializableCityObject[] result = new SerializableCityObject[2];
+            CityObject[] result = new CityObject[2];
             var des = await Task.Run(() =>{ return CityObjects; });
 
             //最小値物時の outsideParent 設定
@@ -306,7 +332,7 @@ namespace PLATEAU.CityInfo
             });
         }
 
-        public IEnumerable<SerializableCityObjectList.SerializableCityObject> PrimaryCityObjects
+        public IEnumerable<CityObjectList.CityObject> PrimaryCityObjects
         {
             get
             {
@@ -315,12 +341,12 @@ namespace PLATEAU.CityInfo
         }
 
         /// <summary>
-        /// コンポーネントが保持する<see cref="SerializableCityObjectList"/>から、
-        /// すべての<see cref="SerializableCityObject"/>を返します。
+        /// コンポーネントが保持する<see cref="CityObjectList"/>から、
+        /// すべての<see cref="CityObject"/>を返します。
         /// </summary>
-        public IEnumerable<SerializableCityObjectList.SerializableCityObject> GetAllCityObjects()
+        public IEnumerable<CityObjectList.CityObject> GetAllCityObjects()
         {
-            List<SerializableCityObjectList.SerializableCityObject> objs = new List<SerializableCityObjectList.SerializableCityObject>();
+            List<CityObjectList.CityObject> objs = new List<CityObjectList.CityObject>();
             var des = CityObjects;
             foreach (var co in des.rootCityObjects)
             {
@@ -351,7 +377,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// 最小地物の場合、親となるPLATEAUCityObjectGroupを検索しCityObjectを取得します
         /// </summary>  
-        private SerializableCityObject GetOutsideParent(string parentId)
+        private CityObject GetOutsideParent(string parentId)
         {
             if (this.outsideParent != null) return this.outsideParent;
 

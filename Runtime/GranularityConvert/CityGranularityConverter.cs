@@ -12,6 +12,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
+using CityObjectList = PLATEAU.CityInfo.CityObjectList;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -163,14 +164,14 @@ namespace PLATEAU.GranularityConvert
             this.dstModel = dstModel;
         }
 
-        public CityInfo.SerializableCityObjectList.SerializableCityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? _, string parentGmlID)
+        public CityInfo.CityObjectList.CityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? _, string parentGmlID)
         {
             var mesh = node.Mesh;
             if (mesh == null) return null;
             var col = mesh.CityObjectList;
             if (col.Length == 0) return null;
             var indices = col.GetAllKeys();
-            var ret = new List<SerializableCityObjectList.SerializableCityObject>();
+            var ret = new List<CityObjectList.CityObject>();
             foreach (var idx in indices)
             {
                 string gmlID = col.GetAtomicID(idx);
@@ -186,7 +187,7 @@ namespace PLATEAU.GranularityConvert
             return ret.ToArray();
         }
 
-        public CityInfo.SerializableCityObjectList.SerializableCityObject GetDstCityObjectByGmlID(string gmlIDArg, CityObjectIndex? _)
+        public CityInfo.CityObjectList.CityObject GetDstCityObjectByGmlID(string gmlIDArg, CityObjectIndex? _)
         {
             string gmlID = gmlIDArg.EndsWith("_combined") ? gmlIDArg.Replace("_combined", "") : gmlIDArg;
             if (srcData.TryGet(gmlID, out var serializedCityObj))
