@@ -14,9 +14,6 @@ using PLATEAU.Util;
 using UnityEngine;
 using PLATEAU.CityImport.Import.CityImportProcedure;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
-using static UnityEngine.UI.Image;
-using static PLATEAU.RoadNetwork.CityObject.SubDividedCityObject;
-using Mono.Cecil.Cil;
 
 namespace PLATEAU.CityImport.Import.Tile
 {
@@ -34,7 +31,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// </summary>
         private Dictionary<CityModel, GmlFile> cityModelGml;
 
-        private readonly object cityModelsLock = new object();
+        private readonly object cityModelLock = new object();
 
         /// <summary>
         /// TileImporterの初期化を行います。
@@ -50,7 +47,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// </summary>
         public void Dispose()
         {
-            lock (cityModelsLock)
+            lock (cityModelLock)
             {
                 //foreach (var cityModel in cityModels.Values.SelectMany(models => models))
                 //{
@@ -84,14 +81,13 @@ namespace PLATEAU.CityImport.Import.Tile
             {
                 token?.ThrowIfCancellationRequested();
 
-                await ImportGmlParallel(fetchedGmlFiles, conf, rootTrans, progressDisplay, token);
+                await ImportGmlParallel(fetchedGmlFiles, conf, rootTrans, progressDisplay, 10f, 40f, token); // GML読込
 
-                //await ImportEachTiles(conf, 11, rootTrans, progressDisplay, token);
+                await ImportTiles(conf, 11, rootTrans, progressDisplay, 40f, 60f, token);
 
-                //await ImportEachTiles(conf, 10, rootTrans, progressDisplay, token);
+                await ImportTiles(conf, 10, rootTrans, progressDisplay, 60f, 80f, token);
 
-                // TODO: メッシュコード4枚取り出す
-                await ImportCombinedTiles(conf, 9, rootTrans, progressDisplay, token);
+                await ImportTiles(conf, 9, rootTrans, progressDisplay, 80f, 100f, token);
 
             }
             catch (Exception ex) when (!(ex is OperationCanceledException))
@@ -114,15 +110,13 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="token"></param>
         /// <returns></returns>
         internal async Task ImportGml(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
             CancellationToken? token)
         {
-            token?.ThrowIfCancellationRequested();
-
             foreach (var fetchedGmlFile in fetchedGmlFiles)
             {
                 token?.ThrowIfCancellationRequested();
-                await ImportGmlInner(fetchedGmlFile, conf, rootTrans, progressDisplay, token);
+                await ImportGmlInner(fetchedGmlFile, conf, rootTrans, progressDisplay, startProgess, endProgress, token);
             }
 
             Debug.Log($"GMLファイルのロードが完了しました。{cityModels.Count} 個のパッケージが見つかりました。");
@@ -138,35 +132,26 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="token"></param>
         /// <returns></returns>
         internal async Task ImportGmlParallel(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
             CancellationToken? token)
         {
-            token?.ThrowIfCancellationRequested();
-
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
             // ただしメモリ使用量が増えます。
             var semGmlProcess = new SemaphoreSlim(4);
-            await Task.WhenAll(fetchedGmlFiles.Select(async fetchedGml =>
+            async Task ProcessGmlAsync(GmlFile fetchedGml)
             {
+                if (fetchedGml == null || string.IsNullOrEmpty(fetchedGml.Path))
+                    return;
+
                 await semGmlProcess.WaitAsync();
                 try
                 {
-                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
-                    {
-                        try
-                        {
-                            await ImportGmlInner(fetchedGml, conf,rootTrans, progressDisplay,token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-                    }
+                    await ImportGmlInner(fetchedGml, conf, rootTrans, progressDisplay, startProgess, endProgress, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
                 }
                 catch (Exception e)
                 {
@@ -176,8 +161,8 @@ namespace PLATEAU.CityImport.Import.Tile
                 {
                     semGmlProcess.Release();
                 }
-
-            }));
+            }
+            await Task.WhenAll(fetchedGmlFiles.Select(ProcessGmlAsync));
 
             Debug.Log($"GMLファイルのロードが完了しました。{cityModels.Count} 個のパッケージが見つかりました。");
         }
@@ -192,18 +177,19 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="token"></param>
         /// <returns></returns>
         internal async Task ImportGmlInner(GmlFile fetchedGmlFile, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
             CancellationToken? token)
         {
             token?.ThrowIfCancellationRequested();
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName);
+            //using var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName);
+            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, startProgess);
 
             if (cityModel != null)
             {
-                lock (cityModelsLock)
+                lock (cityModelLock)
                 {
                     if (cityModels.ContainsKey((fetchedGmlFile.Package, fetchedGmlFile.Epsg)))
                         cityModels[(fetchedGmlFile.Package, fetchedGmlFile.Epsg)].Add(cityModel);
@@ -213,7 +199,30 @@ namespace PLATEAU.CityImport.Import.Tile
                     cityModelGml.Add(cityModel, fetchedGmlFile);
                 }
 
-                progressDisplay.SetProgress(gmlName, 100f, "GMLファイルのロードが完了しました。");
+                progressDisplay.SetProgress(gmlName, endProgress, "GMLファイルのロードが完了しました。");
+            }
+        }
+
+        /// <summary>
+        /// タイルのインポート処理です。
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <param name="zoomLevel"></param>
+        /// <param name="rootTrans"></param>
+        /// <param name="progressDisplay"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        internal async Task ImportTiles(CityImportConfig conf, int zoomLevel,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
+            CancellationToken? token)
+        {
+            if (zoomLevel <= 9)
+            {
+                await ImportCombinedTiles(conf, zoomLevel, rootTrans, progressDisplay, startProgress, endProgress, token);
+            }
+            else
+            {
+                await ImportEachTiles(conf, zoomLevel, rootTrans, progressDisplay, startProgress, endProgress, token);
             }
         }
 
@@ -227,7 +236,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="token"></param>
         /// <returns></returns>
         internal async Task ImportEachTiles(CityImportConfig conf, int zoomLevel,
-            Transform rootTrans, IProgressDisplay progressDisplay,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
             CancellationToken? token)
         {
             foreach (var cityModel in cityModels.Values.SelectMany(models => models))
@@ -237,7 +246,8 @@ namespace PLATEAU.CityImport.Import.Tile
                 var gml = cityModelGml[cityModel];
                 var gmlName = Path.GetFileName(gml.Path);
 
-                var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
+                //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
+                var gmlTrans = new GameObject($"{gmlName}_{zoomLevel}").transform;
 
                 if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, gml, progressDisplay, gmlName, zoomLevel,
                         out var meshExtractOptions))
@@ -248,15 +258,15 @@ namespace PLATEAU.CityImport.Import.Tile
                 var packageConf = conf.GetConfigForPackage(gml.Package);
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
                 // ここはメインスレッドで呼ぶ必要があります。
-                var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
-                    cityModel, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, gmlName,
+                var placingResult = await CityModelToScene(
+                    new List<CityModel>() { cityModel }, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, gmlName,
                     packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                    infoForToolkits, packageConf.MeshGranularity
+                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, endProgress
                 );
 
                 if (placingResult.IsSucceed)
                 {
-                    progressDisplay.SetProgress(gmlName, 100f, "完了");
+                    progressDisplay.SetProgress(gmlName, endProgress, "完了");
                 }
                 else
                 {
@@ -275,7 +285,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="token"></param>
         /// <returns></returns>
         internal async Task ImportCombinedTiles(CityImportConfig conf, int zoomLevel,
-            Transform rootTrans, IProgressDisplay progressDisplay,
+            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
             CancellationToken? token)
         {
             foreach (var kv in cityModels)
@@ -296,7 +306,7 @@ namespace PLATEAU.CityImport.Import.Tile
                 var firstGml = cityModelGml[cityModels.FirstOrDefault()]; // epsg判定、gml名取得用
                 var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
 
-                var gmlTrans = new GameObject(firstGmlName).transform;
+                var gmlTrans = new GameObject($"{firstGmlName}_{zoomLevel}").transform;
 
                 if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
                     out var meshExtractOptions))
@@ -307,17 +317,17 @@ namespace PLATEAU.CityImport.Import.Tile
                 var packageConf = conf.GetConfigForPackage(package);
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
 
-                // TODO : 下の処理前にcitymodelsを 4タイルずつのListにまとめて 4タイル分マージする
+                var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
 
-                var listInTiles = GetCityModelsForEachTile(cityModels, zoomLevel);
-
-                foreach (var cityModelsInTile in listInTiles)
+                foreach (var cityModelsInTile in tileGroups)
                 {
+                    token?.ThrowIfCancellationRequested();
+
                     // ここはメインスレッドで呼ぶ必要があります。
                     var placingResult = await CityModelToScene(
                         cityModelsInTile, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, package.ToString(),
                         packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                        infoForToolkits, packageConf.MeshGranularity
+                        infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, endProgress
                     );
 
                     foreach (var cityModel in cityModels)
@@ -326,7 +336,7 @@ namespace PLATEAU.CityImport.Import.Tile
                         string gmlName = Path.GetFileName(gml.Path);
                         if (placingResult.IsSucceed)
                         {
-                            progressDisplay.SetProgress(gmlName, 100f, "完了");
+                            progressDisplay.SetProgress(gmlName, endProgress, "完了");
                         }
                         else
                         {
@@ -335,7 +345,7 @@ namespace PLATEAU.CityImport.Import.Tile
                     }
                 }
 
-                progressDisplay.SetProgress(package.ToString(), 100f, "完了");
+                //progressDisplay.SetProgress(package.ToString(), 100f, "完了");
             }
         }
 
@@ -352,10 +362,17 @@ namespace PLATEAU.CityImport.Import.Tile
 
             Dictionary<string, List<(int, CityModel)>> CodeDict = new(); //key:３次メッシュコード value: List (グループIndex , CityModel)
 
-            if (zoomLevel == 9) // 隣接する 4 Gridcode分結合
+            // 全て結合する場合は zoomLevel 0
+            if (zoomLevel == 0) 
+            {
+                tileGroup.Add(cityModels);
+                return tileGroup;
+            }
+
+            var groups = new List<List<(int x, int y)>>();
+            if (zoomLevel == 9) // 隣接する 4Gridcode分結合
             {
                 // ３次メッシュ内の分割地域メッシュコードを４グリッドずつ結合したグループを作成
-                var groups = new List<List<(int x, int y)>>();
                 for (int y = 0; y <= 8; y += 2) // 1刻みで2段分 → 2刻み
                 {
                     for (int x = 0; x <= 8; x += 2) // 2列分をまとめて
@@ -370,62 +387,57 @@ namespace PLATEAU.CityImport.Import.Tile
                         groups.Add(group);
                     }
                 }
+            }
 
-                foreach (var cityModel in cityModels)
+            foreach (var cityModel in cityModels)
+            {
+                if (cityModel == null)
                 {
-                    if (cityModel == null)
-                    {
-                        Debug.LogWarning("CityModelがnullです。");
-                        continue;
-                    }
-
-                    var gml = cityModelGml[cityModel];
-                    var gridCode = gml.GridCode.StringCode;
-                    var tertiaryMesh = gridCode.Substring(0, gridCode.Length - 2); // ３次メッシュ
-                    var subdividedGridSquareCode = gridCode.Substring(gridCode.Length - 2, 2); // 分割地域メッシュコード
-                    var x = subdividedGridSquareCode.Substring(0, 1); // 分割地域メッシュコード 1桁目
-                    var y = subdividedGridSquareCode.Substring(1, 1); // 分割地域メッシュコード 2桁目
-                    var groupIndex = groups.FindIndex(g => g.Any(c => c.x.ToString() == x && c.y.ToString() == y)); // ↑で作成したグループの該当するIndexを取得
-
-                    Debug.Log($"CityModelのGridCode: {gridCode} {x} {y} {groupIndex}");
-
-                    if (CodeDict.ContainsKey(tertiaryMesh))
-                    {
-                        CodeDict[tertiaryMesh].Add((groupIndex, cityModel));
-                    }
-                    else
-                    {
-                        CodeDict[tertiaryMesh] = new List<(int, CityModel)> { (groupIndex, cityModel) };
-                    }
+                    Debug.LogWarning("CityModelがnullです。");
+                    continue;
                 }
 
-                foreach (var code in CodeDict)
+                var gml = cityModelGml[cityModel];
+                var gridCode = gml.GridCode.StringCode;
+                var tertiaryMesh = gridCode.Substring(0, gridCode.Length - 2); // ３次メッシュ
+                var subdividedGridSquareCode = gridCode.Substring(gridCode.Length - 2, 2); // 分割地域メッシュコード
+                var x = subdividedGridSquareCode.Substring(0, 1); // 分割地域メッシュコード 1桁目
+                var y = subdividedGridSquareCode.Substring(1, 1); // 分割地域メッシュコード 2桁目
+                var groupIndex = groups.FindIndex(g => g.Any(c => c.x.ToString() == x && c.y.ToString() == y)); // ↑で作成したグループの該当するIndexを取得
+
+                Debug.Log($"CityModelのGridCode: {gridCode} {x} {y} {groupIndex}");
+
+                if (CodeDict.ContainsKey(tertiaryMesh))
                 {
-                    Dictionary<int, List<CityModel>> tileGroupDict = new Dictionary<int, List<CityModel>>(); // グループIndexごとにCityModelをまとめる
-
-                    code.Value.ForEach(x =>
-                    {
-                        if (!tileGroupDict.ContainsKey(x.Item1))
-                        {
-                            tileGroupDict[x.Item1] = new List<CityModel>();
-                        }
-                        tileGroupDict[x.Item1].Add(x.Item2);
-                    });
-
-                    foreach (var tileGroupEntry in tileGroupDict)
-                    {
-                        // グループIndexごとにCityModelのリストを作成
-                        if (tileGroupEntry.Value.Count > 0)
-                        {
-                            tileGroup.Add(tileGroupEntry.Value);
-                        }
-                    }
+                    CodeDict[tertiaryMesh].Add((groupIndex, cityModel));
+                }
+                else
+                {
+                    CodeDict[tertiaryMesh] = new List<(int, CityModel)> { (groupIndex, cityModel) };
                 }
             }
-            else
+
+            foreach (var code in CodeDict)
             {
-                // 全部結合
-                tileGroup.Add(cityModels);
+                Dictionary<int, List<CityModel>> tileGroupDict = new(); // グループIndexごとにCityModelをまとめる
+
+                code.Value.ForEach(x =>
+                {
+                    if (!tileGroupDict.ContainsKey(x.Item1))
+                    {
+                        tileGroupDict[x.Item1] = new List<CityModel>();
+                    }
+                    tileGroupDict[x.Item1].Add(x.Item2);
+                });
+
+                foreach (var tileGroupEntry in tileGroupDict)
+                {
+                    //グループIndexごとにCityModelのリストを作成
+                    if (tileGroupEntry.Value.Count > 0)
+                    {
+                        tileGroup.Add(tileGroupEntry.Value);
+                    }
+                }
             }
 
             return tileGroup;
@@ -451,23 +463,27 @@ namespace PLATEAU.CityImport.Import.Tile
             List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token, UnityEngine.Material fallbackMaterial,
-            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
+            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity, 
+            int zoomLevel, float startProgress, float endProgress
         )
         {
             Debug.Log($"load started");
 
-            var cityModel = cityModels.First();
+            token?.ThrowIfCancellationRequested();
 
             // TODO: 分割された属性情報を結合する処理が必要
 
-            token?.ThrowIfCancellationRequested();
+            //var cityModel = cityModels.First();
+            //AttributeDataHelper attributeDataHelper =
+            //    new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
+
             AttributeDataHelper attributeDataHelper =
-                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
+                new AttributeDataHelper(new SerializedCityObjectGetterFromCityModels(cityModels), doSetAttrInfo);
 
             Model plateauModel;
             try
             {
-                plateauModel = await Task.Run(() => ExtractMeshes(cityModels, meshExtractOptions, selectedGridCodes));
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModels, meshExtractOptions, selectedGridCodes, zoomLevel));
             }
             catch (Exception e)
             {
@@ -481,7 +497,7 @@ namespace PLATEAU.CityImport.Import.Tile
 
             return await PlateauToUnityModelConverter.PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf,
-                plateauModel, attributeDataHelper, true);
+                plateauModel, attributeDataHelper, true, startProgress, endProgress);
         }
 
         /// <summary>
@@ -492,7 +508,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="selectedGridCodes"></param>
         /// <returns></returns>
         private Model ExtractMeshes(
-            List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes)
+            List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes, int zoomLevel)
         {
             var model = Model.Create();
             if (cityModels.Count == 0) return model;
@@ -504,11 +520,12 @@ namespace PLATEAU.CityImport.Import.Tile
                 return extent;
             }).ToList();
 
-            meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea; //
-            meshExtractOptions.GridCountOfSide = 1;
-            TileExtractor.ExtractInExtents(ref model, cityModels, meshExtractOptions, extents);
+            if(zoomLevel <= 9)
+                TileExtractor.ExtractInExtents(ref model, cityModels, meshExtractOptions, extents); //結合
+            else
+                MeshExtractor.ExtractInExtents(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents);　//分割、又はエリア単位
 
-            Debug.Log("model extracted.");
+                Debug.Log("model extracted.");
             return model;
         }
 

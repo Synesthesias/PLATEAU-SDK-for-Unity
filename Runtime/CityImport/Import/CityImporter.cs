@@ -143,7 +143,8 @@ namespace PLATEAU.CityImport.Import
 
                 //}));
 
-                using var tileImporter = new TileImporter();
+                //using var tileImporter = new TileImporter();
+                var tileImporter = new TileImporter();
                 await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
 
                 // インポート完了後の処理

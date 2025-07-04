@@ -91,9 +91,9 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             }
         }
 
-        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName)
+        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName, float progress = 20f)
         {
-            progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
+            progressDisplay.SetProgress(gmlName, progress, "GMLファイルをロード中");
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。

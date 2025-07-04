@@ -306,6 +306,56 @@ namespace PLATEAU.CityImport.Import.Convert
         }
     }
 
+    internal class SerializedCityObjectGetterFromCityModels : ISerializedCityObjectGetter
+    {
+        private List<CityModel> cityModels;
+
+        public SerializedCityObjectGetterFromCityModels(List<CityModel> cityModels)
+        {
+            this.cityModels = cityModels;
+        }
+
+        public CityObjectList.CityObject[] GetDstCityObjectsByNode(Node node, CityObjectIndex? index, string _)
+        {
+            var co = GetDstCityObjectByGmlID(node.Name, index);
+            if (co == null) return null;
+            return new[] { co };
+        }
+
+        public CityObjectList.CityObject GetDstCityObjectByGmlID(string gmlID, CityObjectIndex? index)
+        {
+            var cityObj = GetByIDInner(gmlID);
+            if (cityObj == null)
+                return null;
+
+            var ser = CityObjectSerializableConvert.FromCityGMLCityObject(cityObj, index);
+            return ser;
+        }
+
+        public void Dispose()
+        {
+            cityModels.Clear();
+        }
+
+        private CityGML.CityObject GetByIDInner(string id)
+        {
+            foreach (var model in cityModels)
+            {
+                try
+                {
+                    return model.GetCityObjectById(id);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // このモデルには存在しない
+                }
+            }
+            Debug.Log($"skipping because id {id} is not existing.");
+            return null;
+        }
+    }
+
+
     /// <summary>
     /// <see cref="AttributeDataHelper"/>が、属性情報を設定するためにどうやってNode名から<see cref="CityObject"/>を得るかの違いを吸収します。
     /// </summary>
