@@ -12,12 +12,14 @@ using PLATEAUCityObject = PLATEAU.CityGML.CityObject;
 namespace PLATEAU.CityInfo
 {
     /// <summary>
-    /// MessagePack形式でシリアライズ可能なCityObjectデータです。
+    /// シリアライズ可能なCityObjectデータです。
+    /// シリアライズ時はMessagePack形式にしますが、人間が読む用にjson形式でも出力可能です。
     /// </summary>
     [MessagePackObject]
+    [JsonConverter(typeof(CityObjectSerializable_CityObjectListJsonConverter))]
     public partial class CityObjectList // partialはMessagePackの自動生成コードを利用するために必要です
     {
-        // Key名は短い文字列で指定します。
+        // MessagePackのKey名は短い文字列で指定します。
         // Key名は短いほうが軽量化できますが、かといってキーがないとMessagePack保存時にMapではなく配列になってしまうため将来的に順番に変更があった場合に読めなくなってしまいます。
         [Key("p")]
         public string outsideParent = "";
@@ -31,6 +33,7 @@ namespace PLATEAU.CityInfo
         public bool IsEmpty() => outsideParent == "" && outsideChildren.Count == 0 && rootCityObjects.Count == 0;
 
         [MessagePackObject(true, AllowPrivate = true)]
+        [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
         public partial class CityObject // // partialはMessagePackの自動生成コードを利用するために必要です
         {
             [Key("i")]
@@ -95,7 +98,7 @@ namespace PLATEAU.CityInfo
             public CityObject CopyWithoutChildren()
             {
                 var copy = new CityObject();
-                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, null);
+                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap);
                 return copy;
             }
 
@@ -138,6 +141,7 @@ namespace PLATEAU.CityInfo
         /// シリアライズ可能なAttributeMapデータです。
         /// </summary>
         [MessagePackObject(AllowPrivate = true)]
+        [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter.CityObjectSerializable_AttributesJsonConverter))]
         public partial class Attributes // partialはMessagePackの自動生成コードを利用するために必要です
         {
             [Key("m")]

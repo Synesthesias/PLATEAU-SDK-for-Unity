@@ -19,6 +19,7 @@ namespace PLATEAU.CityInfo
         //
         // 経緯: 以前はjson形式でシリアライズしていましたが、文字数が多く、特に動的タイルの読み込み時にデータコピーで重くなる問題がありました。
         //      そこで属性情報のデータ量を削減するためにMessagePack形式に変更しました。
+        //      ただし、MessagePackは人間が読める形式ではないため、人間向けに従来のjson表示も併用します。
         
         /// <summary>
         /// <see cref="CityObject"/>に関する情報はここにMessagePack形式で収められます。
@@ -26,9 +27,10 @@ namespace PLATEAU.CityInfo
         [HideInInspector][SerializeField] private byte[] serializedCityObjects;
         
         /// <summary>
-        /// デシリアライズしたcityObjectです。
+        /// メインデータ
         /// </summary>
         private CityObjectList cityObjects;
+        
         private CityObject outsideParent;
         private UnityEngine.Mesh currentMesh;
         

@@ -112,16 +112,17 @@ namespace PLATEAU.Editor.CityInfo
 
         }
         
+        
         /// <summary>
         /// 属性情報のMessagePackバイナリをキャッシュから取得します。一度取得したらキャッシュを使用し、長い情報の繰り返し取得を避けます。
         /// </summary>
         private string GetCachedJson()
         {
-            // 初回のみserializedCityObjectsのbyte[]から取得
+            // 初回のみ取得
             if (!jsonLoaded)
             {
-                var messagePackData = GetMessagePackData();
-                cachedJson = messagePackData != null ? MessagePackSerializer.ConvertToJson(messagePackData) : "MessagePackデータが見つかりません";
+                var cityObjGroup = target as PLATEAUCityObjectGroup;
+                cachedJson = cityObjGroup != null ? JsonConvert.SerializeObject(cityObjGroup.CityObjects, Formatting.Indented) : "データが見つかりません";
                 jsonLoaded = true;
             }
             
