@@ -31,7 +31,7 @@ namespace PLATEAU.Samples.AttributesColorSample
                     }
                 
                     // 属性情報のうち、水害時の想定浸水高さを取得します。
-                    if (attributes.TryGetValue("uro:floodingRiskAttribute", out var disasterRiskAttr))
+                    if (attributes.TryGetValue("uro:HighTideRiskAttribute", out var disasterRiskAttr))
                     {
                         if (disasterRiskAttr.AttributesMapValue.TryGetValue("uro:rank", out var depthValue))
                         {
