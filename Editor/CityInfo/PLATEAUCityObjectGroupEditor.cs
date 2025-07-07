@@ -22,7 +22,7 @@ namespace PLATEAU.Editor.CityInfo
         
         // 属性情報の表示制御
         private bool showAttributeInfo = false;
-        private const string CityObjsPropertyName = "serializedCityObjects";
+        private static readonly string CityObjsPropertyName = PLATEAUCityObjectGroup.NameOfCityObjectsMessagePack;
 
         public void OnEnable()
         {

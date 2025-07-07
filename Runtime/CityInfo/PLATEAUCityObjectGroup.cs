@@ -27,6 +27,7 @@ namespace PLATEAU.CityInfo
         /// <see cref="CityObject"/>に関する情報はここにMessagePack形式でシリアライズされます。
         /// </summary>
         [HideInInspector][SerializeField] private byte[] cityObjectsMessagePack;
+        public static string NameOfCityObjectsMessagePack => nameof(cityObjectsMessagePack);
         
         /// <summary>
         /// 後方互換性のために残しています。
