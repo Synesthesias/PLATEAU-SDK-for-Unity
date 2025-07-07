@@ -11,6 +11,51 @@ using PLATEAUCityObject = PLATEAU.CityGML.CityObject;
 
 namespace PLATEAU.CityInfo
 {
+
+    /// <summary>
+    /// <see cref="CityObjectList"/>のシリアライズとデシリアライズをします。
+    /// </summary>
+    public class CityObjectListSerializer
+    {
+        public const int CurrentSerializeVersion = 1; // シリアライズの方式を変える時はこの数字を増やしてください。
+
+        /// <summary>
+        /// MessagePack形式のシリアライズとデシリアライズに使うオプションです。
+        ///
+        /// MessagePack+LZ4圧縮を選定した理由：
+        /// シリアライズとデシリアライズの変換処理にかかる時間よりも、データ量のほうがボトルネックになっています。
+        /// データ量のせいで、動的タイルのInstantiateでコピー処理が重かったり、地域単位の地物の選択時に重くなったりします。
+        /// そこでMessagePack+LZ4圧縮を採用してデータ量を下げます。
+        /// </summary>
+        private static readonly MessagePackSerializerOptions messagePackOption =
+            MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); // LZ4圧縮
+        
+        /// <summary> バージョンに応じてデシリアライズします。 </summary>
+        public CityObjectList Deserialize(int serializeVersion, byte[] messagePack, string oldJson)
+        {
+            switch (serializeVersion)
+            {
+                // json文字列で保存していた時代（後方互換性に配慮）
+                case 0: 
+                    if (string.IsNullOrEmpty(oldJson)) return new CityObjectList();
+                    return JsonConvert.DeserializeObject<CityObjectList>(oldJson);
+                
+                // MessagePackを導入
+                case 1:
+                    if (messagePack.Length == 0) return new CityObjectList();
+                    return MessagePackSerializer.Deserialize<CityObjectList>(messagePack, messagePackOption);
+                default:
+                    throw new Exception($"サポートされないシリアライズバージョンです。このSDKがサポートするバージョン: {CurrentSerializeVersion}まで, 受け取ったバージョン: {serializeVersion}");
+            }
+        }
+
+        /// <summary> シリアライズします。 </summary>
+        public byte[] Serialize(CityObjectList cityObjectList)
+        {
+            return MessagePackSerializer.Serialize(cityObjectList, messagePackOption);
+        }
+    }
+    
     /// <summary>
     /// シリアライズ可能なCityObjectデータです。
     /// シリアライズ時はMessagePack形式にしますが、人間が読む用にjson形式でも出力可能です。

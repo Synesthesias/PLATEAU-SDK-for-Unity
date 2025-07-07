@@ -22,6 +22,7 @@ namespace PLATEAU.Editor.CityInfo
         
         // 属性情報の表示制御
         private bool showAttributeInfo = false;
+        private const string CityObjsPropertyName = "serializedCityObjects";
 
         public void OnEnable()
         {
@@ -42,6 +43,20 @@ namespace PLATEAU.Editor.CityInfo
             EditorGUILayout.LabelField(cog.Granularity.ToJapaneseString());
             
             PlateauEditorStyle.Heading("属性情報", null);
+
+            // 属性情報のデータ量を表示
+            switch (cog.SerializeVersion)
+            {
+                case 0:
+                    EditorGUILayout.LabelField($"属性情報のデータ量: {cog.OldSerializedCityObjectsLength} 文字");
+                    break;
+                case 1:
+                    EditorGUILayout.LabelField($"属性情報のデータ量: {GetMessagePackDataLength()} byte");
+                    break;
+                default:
+                    throw new Exception("不明なSerializeVersionです。");
+            }
+            
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
                 // 属性情報をクリップボードにコピーするボタン
@@ -52,17 +67,6 @@ namespace PLATEAU.Editor.CityInfo
                         string json = GetCachedJson();
                         EditorGUIUtility.systemCopyBuffer = json;
                         Dialogue.Display("属性情報をクリップボードにコピーしました", "OK");
-                    }
-                }
-
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    if (GUILayout.Button("属性情報をクリップボードにコピー(MessagePack形式)"))
-                    {
-                        var messagePack = GetMessagePackData();
-                        string base64 = System.Convert.ToBase64String(messagePack);
-                        EditorGUIUtility.systemCopyBuffer = base64;
-                        Dialogue.Display($"属性情報をクリップボードにコピーしました。({messagePack.Length}byte)", "OK");
                     }
                 }
                 
@@ -96,20 +100,30 @@ namespace PLATEAU.Editor.CityInfo
 
         private byte[] GetMessagePackData()
         {
-            SerializedProperty prop = serializedObject.FindProperty("serializedCityObjects");
-            if (prop == null || prop.arraySize <= 0)
-            {
-                return null;
-            }
-
-            byte[] messagePackData = new byte[prop.arraySize];
-            for (int i = 0; i < prop.arraySize; i++)
+            var dataLength = GetMessagePackDataLength();
+            if (dataLength <= 0) return null;
+            
+            SerializedProperty prop = serializedObject.FindProperty(CityObjsPropertyName);
+            
+            byte[] messagePackData = new byte[dataLength];
+            for (int i = 0; i < dataLength; i++)
             {
                 messagePackData[i] = (byte)prop.GetArrayElementAtIndex(i).intValue;
             }
 
             return messagePackData;
 
+        }
+
+        private long GetMessagePackDataLength()
+        {
+            SerializedProperty prop = serializedObject.FindProperty(CityObjsPropertyName);
+            if (prop == null)
+            {
+                return 0;
+            }
+
+            return prop.arraySize;
         }
         
         

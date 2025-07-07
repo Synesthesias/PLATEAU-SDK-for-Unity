@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 using PLATEAU.Dataset;
@@ -7,6 +8,7 @@ using System.Linq;
 using PLATEAU.PolygonMesh;
 using static PLATEAU.CityInfo.CityObjectList;
 using System.Threading.Tasks;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.CityInfo
 {
@@ -22,9 +24,24 @@ namespace PLATEAU.CityInfo
         //      ただし、MessagePackは人間が読める形式ではないため、人間向けに従来のjson表示も併用します。
         
         /// <summary>
-        /// <see cref="CityObject"/>に関する情報はここにMessagePack形式で収められます。
+        /// <see cref="CityObject"/>に関する情報はここにMessagePack形式でシリアライズされます。
         /// </summary>
-        [HideInInspector][SerializeField] private byte[] serializedCityObjects;
+        [HideInInspector][SerializeField] private byte[] cityObjectsMessagePack;
+        
+        /// <summary>
+        /// 後方互換性のために残しています。
+        /// json形式でシリアライズしていた時代にインポートされた情報はここに入ります。
+        /// </summary>
+        [FormerlySerializedAs("serializedCityObjects")] [SerializeField]
+        private string oldSerializedCityObjects;
+        public long OldSerializedCityObjectsLength => oldSerializedCityObjects?.Length ?? 0;
+
+        /// <summary>
+        /// シリアライズ方式のバージョンです。
+        /// json形式だった時代は0, 初めてMessagePackを導入した時は1です。
+        /// </summary>
+        [SerializeField] private int serializeVersion;
+        public int SerializeVersion => serializeVersion;
         
         /// <summary>
         /// メインデータ
@@ -40,15 +57,6 @@ namespace PLATEAU.CityInfo
         [SerializeField] private MeshGranularity granularity;
         [SerializeField] private int lod;
         
-        /// <summary>
-        /// シリアライズとデシリアライズに使うオプションです。
-        /// 
-        /// シリアライズとデシリアライズの変換処理にかかる時間よりも、データ量のほうがボトルネックになっています。
-        /// データ量のせいで、動的タイルのInstantiateでコピー処理が重かったり、地域単位の地物の選択時に重くなったりします。
-        /// そこでMessagePack+LZ4圧縮を採用してデータ量を下げます。
-        /// </summary>
-        private static readonly MessagePackSerializerOptions messagePackOption =
-            MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); // LZ4圧縮
         
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
         public MeshGranularity Granularity
@@ -83,10 +91,7 @@ namespace PLATEAU.CityInfo
                 if (cityObjects != null && !cityObjects.IsEmpty())
                     return this.cityObjects;
 
-                if (serializedCityObjects.Length > 0)
-                    this.cityObjects = MessagePackSerializer.Deserialize<CityObjectList>(serializedCityObjects, messagePackOption);
-                else
-                    this.cityObjects = new CityObjectList();
+                cityObjects = new CityObjectListSerializer().Deserialize(serializeVersion, cityObjectsMessagePack, oldSerializedCityObjects);
                 return this.cityObjects;               
             }
         }
@@ -97,6 +102,7 @@ namespace PLATEAU.CityInfo
             infoForToolkits = cogInfoForToolkits; 
             granularity = granularityArg;
             Lod = lodArg;
+            serializeVersion = CityObjectListSerializer.CurrentSerializeVersion;
         }
 
         /// <summary>
@@ -104,12 +110,13 @@ namespace PLATEAU.CityInfo
         /// </summary>
         private void Serialize(CityObjectList serializableCityObjectList)
         {
-            serializedCityObjects = MessagePackSerializer.Serialize(serializableCityObjectList, messagePackOption);
+            cityObjectsMessagePack = new CityObjectListSerializer().Serialize(serializableCityObjectList);
+            serializeVersion = CityObjectListSerializer.CurrentSerializeVersion;
         }
 
         public void CopyFrom(PLATEAUCityObjectGroup other)
         {
-            serializedCityObjects = other.serializedCityObjects;
+            cityObjectsMessagePack = other.cityObjectsMessagePack;
             infoForToolkits = other.infoForToolkits;
             granularity = other.granularity;
             lod = other.lod;
