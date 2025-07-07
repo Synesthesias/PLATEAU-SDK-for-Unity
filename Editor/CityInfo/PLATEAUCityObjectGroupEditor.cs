@@ -98,23 +98,6 @@ namespace PLATEAU.Editor.CityInfo
             }
         }
 
-        private byte[] GetMessagePackData()
-        {
-            var dataLength = GetMessagePackDataLength();
-            if (dataLength <= 0) return null;
-            
-            SerializedProperty prop = serializedObject.FindProperty(CityObjsPropertyName);
-            
-            byte[] messagePackData = new byte[dataLength];
-            for (int i = 0; i < dataLength; i++)
-            {
-                messagePackData[i] = (byte)prop.GetArrayElementAtIndex(i).intValue;
-            }
-
-            return messagePackData;
-
-        }
-
         private long GetMessagePackDataLength()
         {
             SerializedProperty prop = serializedObject.FindProperty(CityObjsPropertyName);

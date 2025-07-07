@@ -92,7 +92,7 @@ namespace PLATEAU.CityInfo
                 if (cityObjects != null && !cityObjects.IsEmpty())
                     return this.cityObjects;
 
-                cityObjects = new CityObjectListSerializer().Deserialize(serializeVersion, cityObjectsMessagePack, oldSerializedCityObjects);
+                cityObjects = CityObjectListSerializer.Deserialize(serializeVersion, cityObjectsMessagePack, oldSerializedCityObjects);
                 return this.cityObjects;               
             }
         }
@@ -111,7 +111,7 @@ namespace PLATEAU.CityInfo
         /// </summary>
         private void Serialize(CityObjectList serializableCityObjectList)
         {
-            cityObjectsMessagePack = new CityObjectListSerializer().Serialize(serializableCityObjectList);
+            cityObjectsMessagePack = CityObjectListSerializer.Serialize(serializableCityObjectList);
             serializeVersion = CityObjectListSerializer.CurrentSerializeVersion;
         }
 

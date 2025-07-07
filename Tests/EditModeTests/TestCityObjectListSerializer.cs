@@ -15,8 +15,7 @@ namespace PLATEAU.Tests.EditModeTests
     [TestFixture]
     public class TestCityObjectListSerializer
     {
-        [Test]
-        public void CityObjectList_Can_SerializeAndDeserialize()
+        private CityObjectList CreateTestCityObjectList()
         {
             // テスト用のCityObjectListを作成します。
             var cityObjs = new CityObjectList
@@ -45,6 +44,13 @@ namespace PLATEAU.Tests.EditModeTests
                     }
                 }
             };
+            return cityObjs;
+        }
+        
+        [Test]
+        public void CityObjectList_Can_SerializeAndDeserialize()
+        {
+            var cityObjs = CreateTestCityObjectList();
 
             // MessagePack形式にシリアライズします。
             var messagePack = MessagePackSerializer.Serialize(cityObjs);

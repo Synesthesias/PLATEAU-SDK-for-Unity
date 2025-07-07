@@ -14,8 +14,9 @@ namespace PLATEAU.CityInfo
 
     /// <summary>
     /// <see cref="CityObjectList"/>のシリアライズとデシリアライズをします。
+    /// バージョンに応じた場合分けにより後方互換性を保ちます。
     /// </summary>
-    public class CityObjectListSerializer
+    public static class CityObjectListSerializer
     {
         public const int CurrentSerializeVersion = 1; // シリアライズの方式を変える時はこの数字を増やしてください。
 
@@ -31,7 +32,7 @@ namespace PLATEAU.CityInfo
             MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); // LZ4圧縮
         
         /// <summary> バージョンに応じてデシリアライズします。 </summary>
-        public CityObjectList Deserialize(int serializeVersion, byte[] messagePack, string oldJson)
+        public static CityObjectList Deserialize(int serializeVersion, byte[] messagePack, string oldJson)
         {
             switch (serializeVersion)
             {
@@ -50,7 +51,7 @@ namespace PLATEAU.CityInfo
         }
 
         /// <summary> シリアライズします。 </summary>
-        public byte[] Serialize(CityObjectList cityObjectList)
+        public static byte[] Serialize(CityObjectList cityObjectList)
         {
             return MessagePackSerializer.Serialize(cityObjectList, messagePackOption);
         }
