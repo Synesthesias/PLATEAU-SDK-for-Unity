@@ -134,6 +134,9 @@ namespace PLATEAU.DynamicTile
                 {
                     AddressablesUtility.RemoveGroup(context.AddressableGroupName);
                 }
+                
+                // 一時フォルダーを削除
+                DynamicTileExporter.CleanupTempFolder();
             }
         }
     }

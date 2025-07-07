@@ -13,9 +13,9 @@ namespace PLATEAU.DynamicTile
     public class DynamicTileProcessingContext
     {
         /// <summary>
-        /// プレハブ保存パス
+        /// プレハブ一時保存パス
         /// </summary>
-        private const string PrefabsSavePath = "Assets/PLATEAUPrefabs";
+        public const string PrefabsTempSavePath = "Assets/PLATEAUPrefabs";
         
         /// <summary>
         /// Addressableグループのベース名
@@ -79,9 +79,11 @@ namespace PLATEAU.DynamicTile
             Config = config ?? throw new ArgumentNullException(nameof(config));
             
             AssetConfig = ConvertToAssetConfig.DefaultValue;
-            AssetConfig.AssetPath = PrefabsSavePath;
-            BuildFolderPath = config.OutputPath;
             IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
+
+            // Assetsフォルダー外のパスを指定している場合は、プレハブ一時保存パスを使用
+            AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : config.OutputPath;
+            BuildFolderPath = config.OutputPath;
             
             // AddressableGroupNameを生成
             AddressableGroupName = GenerateAddressableGroupName();

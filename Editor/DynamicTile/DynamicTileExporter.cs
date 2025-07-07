@@ -230,7 +230,23 @@ namespace PLATEAU.DynamicTile
                 addressName += "_" + groupNameSplit[1];
             }
 
-            string dataPath = Path.Combine(assetPath, addressName + ".asset");
+            // assetPathが既に相対パスであることを確認し、必要に応じて変換
+            string normalizedAssetPath = assetPath;
+            if (Path.IsPathRooted(assetPath))
+            {
+                // 絶対パスの場合は相対パスに変換
+                normalizedAssetPath = AssetPathUtil.GetAssetPath(assetPath);
+            }
+            else if (!assetPath.StartsWith("Assets"))
+            {
+                // Assetsで始まらない相対パスの場合は、Assetsからの相対パスに変換
+                normalizedAssetPath = AssetPathUtil.GetAssetPathFromRelativePath(assetPath);
+            }
+
+            string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset");
+            // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
+            dataPath = dataPath.Replace('\\', '/');
+            
             AssetDatabase.CreateAsset(metaStore, dataPath);
             AssetDatabase.SaveAssets();
 
@@ -329,6 +345,9 @@ namespace PLATEAU.DynamicTile
                     }
                     var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                     manager.SaveCatalogPath(catalogPath);
+                    
+                    // 一時フォルダーを削除
+                    CleanupTempFolder();
                 }
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
@@ -354,6 +373,23 @@ namespace PLATEAU.DynamicTile
                 {
                     EditorSceneManager.MarkSceneDirty(scene);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 一時フォルダーを削除します
+        /// </summary>
+        public static void CleanupTempFolder()
+        {
+            var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            if (AssetDatabase.DeleteAsset(assetPath))
+            {
+                AssetDatabase.Refresh();
+                Debug.Log($"一時フォルダーを削除しました: {assetPath}");
+            }
+            else
+            {
+                Debug.LogWarning($"一時フォルダーの削除に失敗しました: {assetPath}");
             }
         }
     }
