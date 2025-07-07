@@ -141,7 +141,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
-            return await loadTask?.Load(tile, timeoutSeconds);
+            if (loadTask == null)
+            {
+                Debug.LogError("LoadTask is not initialized.");
+                return LoadResult.Failure;
+            }
+            return await loadTask.Load(tile, timeoutSeconds);
         }
 
         /// <summary>
@@ -155,7 +160,12 @@ namespace PLATEAU.DynamicTile
                 DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.Failure);
             }
-            return await loadTask?.Load(tile);
+            if (loadTask == null)
+            {
+                Debug.LogError("LoadTask is not initialized.");
+                return LoadResult.Failure;
+            }
+            return await loadTask.Load(tile);
         }
 
         /// <summary>

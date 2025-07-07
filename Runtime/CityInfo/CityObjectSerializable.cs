@@ -44,9 +44,16 @@ namespace PLATEAU.CityInfo
                 // MessagePackを導入
                 case 1:
                     if (messagePack.Length == 0) return new CityObjectList();
-                    return MessagePackSerializer.Deserialize<CityObjectList>(messagePack, messagePackOption);
+                    try
+                    {
+                        return MessagePackSerializer.Deserialize<CityObjectList>(messagePack, messagePackOption);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"MessagePack deserialization failed: {ex.Message}", ex);
+                    }
                 default:
-                    throw new Exception($"サポートされないシリアライズバージョンです。このSDKがサポートするバージョン: {CurrentSerializeVersion}まで, 受け取ったバージョン: {serializeVersion}");
+                    throw new Exception($"Unsupported serialization version. Supported version: up to {{CurrentSerializeVersion}}, received version: {{serializeVersion}}");
             }
         }
 
@@ -211,6 +218,7 @@ namespace PLATEAU.CityInfo
 
             public Attributes(Dictionary<string, Value> attrMap)
             {
+                if (attrMap == null) throw new ArgumentNullException(nameof(attrMap));
                 this.attrMap = attrMap;
             }
             

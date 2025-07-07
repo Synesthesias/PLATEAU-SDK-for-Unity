@@ -57,7 +57,7 @@ namespace PLATEAU.Editor.Addressables
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
 
-            //　非圧縮に設定
+            // FIXME: 動的タイルロード時のパフォーマンス向上のため、将来的に非圧縮を検討
             //bundledSchema.Compression = BundledAssetGroupSchema.BundleCompressionMode.Uncompressed;
             //EditorUtility.SetDirty(bundledSchema);
             //AssetDatabase.SaveAssets();
