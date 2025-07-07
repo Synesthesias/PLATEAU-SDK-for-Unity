@@ -72,7 +72,7 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode, bool highestLodOnly)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -91,6 +91,7 @@ namespace PLATEAU.PolygonMesh
             this.MapTileZoomLevel = mapTileZoomLevel;
             this.mapTileURL = mapTileURL;
             this.epsgCode = epsgCode;
+            this.highestLodOnly = highestLodOnly;
 
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
@@ -226,6 +227,8 @@ namespace PLATEAU.PolygonMesh
         }
 
         public int epsgCode;
+
+        public bool highestLodOnly;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()

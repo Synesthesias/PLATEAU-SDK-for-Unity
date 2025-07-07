@@ -14,26 +14,13 @@ namespace PLATEAU.PolygonMesh
     public static class TileExtractor
     {
 
+
         /// <summary>
-        /// <see cref="CityModel"/> から <see cref="Model"/> を抽出します。
+        /// <see cref="CityModel"/> からタイル分割された <see cref="Model"/> を抽出します。
         /// 結果は <paramref name="outModel"/> に格納されます。
         /// 通常、<paramref name="outModel"/> には new したばかりの Model を渡してください。
         /// </summary>
-        public static void Extract(ref Model outModel, CityModel cityModel, MeshExtractOptions options)
-        {
-            var result = NativeMethods.plateau_tile_extractor_extract(
-                cityModel.Handle, options, outModel.Handle
-            );
-            DLLUtil.CheckDllError(result);
-        }
-
-
-        /// <summary>
-        /// <see cref="CityModel"/> から範囲内の <see cref="Model"/> を抽出します。
-        /// 結果は <paramref name="outModel"/> に格納されます。
-        /// 通常、<paramref name="outModel"/> には new したばかりの Model を渡してください。
-        /// </summary>
-        public static void ExtractInExtents(ref Model outModel, CityModel cityModel, MeshExtractOptions options, List<Extent> extents)
+        public static void ExtractWithGrid(ref Model outModel, CityModel cityModel, MeshExtractOptions options, List<Extent> extents)
         {
             var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
@@ -41,13 +28,20 @@ namespace PLATEAU.PolygonMesh
                 nativeExtents.Add(extent);
             }
 
-            var result = NativeMethods.plateau_tile_extractor_extract_in_extents(
+            var result = NativeMethods.plateau_tile_extractor_extract_with_grid(
                 cityModel.Handle, options, nativeExtents.Handle, outModel.Handle
             );
             DLLUtil.CheckDllError(result);
         }
 
-        public static void ExtractInExtents(ref Model outModel, List<CityModel> cityModels, MeshExtractOptions options, List<Extent> extents)
+        /// <summary>
+        /// 複数の<see cref="CityModel"/> のリストから、範囲内の <see cref="Model"/> を抽出します。
+        /// </summary>
+        /// <param name="outModel"></param>
+        /// <param name="cityModels"></param>
+        /// <param name="options"></param>
+        /// <param name="extents"></param>
+        public static void ExtractWithCombine(ref Model outModel, List<CityModel> cityModels, MeshExtractOptions options, List<Extent> extents)
         {
             var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
@@ -57,7 +51,7 @@ namespace PLATEAU.PolygonMesh
 
             int cityModelCount = cityModels.Count;
             IntPtr[] nativePtrs = cityModels.Select(model => model.Handle).ToArray();
-            var result = NativeMethods.plateau_tile_extractor_extract_in_extents_multi(
+            var result = NativeMethods.plateau_tile_extractor_extract_with_combine(
                 nativePtrs, cityModelCount, options, nativeExtents.Handle, outModel.Handle
             );
             DLLUtil.CheckDllError(result);
@@ -66,20 +60,14 @@ namespace PLATEAU.PolygonMesh
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_tile_extractor_extract(
-                [In] IntPtr cityModelPtr,
-                MeshExtractOptions options,
-                [In] IntPtr outModelPtr);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_tile_extractor_extract_in_extents(
+            internal static extern APIResult plateau_tile_extractor_extract_with_grid(
                 [In] IntPtr cityModelPtr,
                 MeshExtractOptions options,
                 [In] IntPtr extentsPtr,
                 [In] IntPtr outModelPtr);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_tile_extractor_extract_in_extents_multi(
+            internal static extern APIResult plateau_tile_extractor_extract_with_combine(
             [In] IntPtr[] cityModelPtrs,
             [In] int cityModelCount,
             MeshExtractOptions options,

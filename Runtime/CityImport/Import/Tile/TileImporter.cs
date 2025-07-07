@@ -49,10 +49,6 @@ namespace PLATEAU.CityImport.Import.Tile
         {
             lock (cityModelLock)
             {
-                //foreach (var cityModel in cityModels.Values.SelectMany(models => models))
-                //{
-                //    cityModel.Dispose();
-                //}
                 foreach (var cityModel in cityModelGml.Keys)
                 {
                     cityModel.Dispose();
@@ -303,17 +299,6 @@ namespace PLATEAU.CityImport.Import.Tile
 
                 Debug.Log($"パッケージ: {package}, EPSG: {epsg} のモデルを配置します。");
 
-                var firstGml = cityModelGml[cityModels.FirstOrDefault()]; // epsg判定、gml名取得用
-                var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
-
-                var gmlTrans = new GameObject($"{firstGmlName}_{zoomLevel}").transform;
-
-                if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
-                    out var meshExtractOptions))
-                {
-                    return;
-                }
-
                 var packageConf = conf.GetConfigForPackage(package);
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
 
@@ -323,9 +308,19 @@ namespace PLATEAU.CityImport.Import.Tile
                 {
                     token?.ThrowIfCancellationRequested();
 
+                    var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
+                    var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
+                    var gmlTrans = new GameObject($"{firstGmlName}_{zoomLevel}").transform;
+
+                    if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
+                        out var meshExtractOptions))
+                    {
+                        return;
+                    }
+
                     // ここはメインスレッドで呼ぶ必要があります。
                     var placingResult = await CityModelToScene(
-                        cityModelsInTile, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, package.ToString(),
+                        cityModelsInTile, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, firstGmlName,
                         packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
                         infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, endProgress
                     );
@@ -344,8 +339,6 @@ namespace PLATEAU.CityImport.Import.Tile
                         }
                     }
                 }
-
-                //progressDisplay.SetProgress(package.ToString(), 100f, "完了");
             }
         }
 
@@ -471,12 +464,6 @@ namespace PLATEAU.CityImport.Import.Tile
 
             token?.ThrowIfCancellationRequested();
 
-            // TODO: 分割された属性情報を結合する処理が必要
-
-            //var cityModel = cityModels.First();
-            //AttributeDataHelper attributeDataHelper =
-            //    new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
-
             AttributeDataHelper attributeDataHelper =
                 new AttributeDataHelper(new SerializedCityObjectGetterFromCityModels(cityModels), doSetAttrInfo);
 
@@ -521,9 +508,9 @@ namespace PLATEAU.CityImport.Import.Tile
             }).ToList();
 
             if(zoomLevel <= 9)
-                TileExtractor.ExtractInExtents(ref model, cityModels, meshExtractOptions, extents); //結合
+                TileExtractor.ExtractWithCombine(ref model, cityModels, meshExtractOptions, extents); //結合
             else
-                MeshExtractor.ExtractInExtents(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents);　//分割、又はエリア単位
+                TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents);　//分割、又はエリア単位
 
                 Debug.Log("model extracted.");
             return model;
@@ -563,16 +550,19 @@ namespace PLATEAU.CityImport.Import.Tile
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 2; // 11の時は2x2グリッドに分割
+                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
             }
             else if (zoomLevel == 10)
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 1; // 分割しない
+                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
             }
             else if (zoomLevel == 9)
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 1;
+                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
             }
 
             result = meshExtractOptions;
