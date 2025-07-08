@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
@@ -70,10 +71,14 @@ namespace PLATEAU.CityInfo
     /// </summary>
     [MessagePackObject]
     [JsonConverter(typeof(CityObjectSerializable_CityObjectListJsonConverter))]
-    public partial class CityObjectList // partialはMessagePackの自動生成コードを利用するために必要です
+    public class CityObjectList
     {
+        // [MessagePack化する際の留意点]
         // MessagePackのKey名は短い文字列で指定します。
         // Key名は短いほうが軽量化できますが、かといってキーがないとMessagePack保存時にMapではなく配列になってしまうため将来的に順番に変更があった場合に読めなくなってしまいます。
+        // また[Key]が付いている箇所は、publicで読み書きできるフィールドまたはプロパティにしています。
+        // [Key(AllowPrivate=true)]と書いても、デフォルトではprivateを読み書きできるようにはなりません。
+        
         [Key("p")]
         public string outsideParent = "";
         
@@ -85,26 +90,26 @@ namespace PLATEAU.CityInfo
 
         public bool IsEmpty() => outsideParent == "" && outsideChildren.Count == 0 && rootCityObjects.Count == 0;
 
-        [MessagePackObject(true, AllowPrivate = true)]
+        [MessagePackObject(true)]
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
-        public partial class CityObject // // partialはMessagePackの自動生成コードを利用するために必要です
+        public class CityObject
         {
-            [Key("i")]
+            [IgnoreMember]
             private string gmlID = "";
             
-            [Key("x")]
+            [IgnoreMember]
             private int[] cityObjectIndex = {-1, -1};
             
-            [Key("t")]
+            [IgnoreMember]
             private ulong cityObjectType;
             
-            [Key("c")]
+            [IgnoreMember]
             private List<CityObject> children = new List<CityObject>();
             
-            [Key("a")]
+            [IgnoreMember]
             private Attributes attributesMap = new Attributes();
 
-            [IgnoreMember]
+            [Key("i")]
             public string GmlID
             {
                 get
@@ -117,20 +122,53 @@ namespace PLATEAU.CityInfo
                 }
             }
 
-            [IgnoreMember]
+            [Key("x")]
             public int[] CityObjectIndex
             {
                 get => cityObjectIndex;
                 set => cityObjectIndex = value;
             }
-            
-            [IgnoreMember]
-            public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
-            
-            [IgnoreMember]
-            public List<CityObject> Children => children;
 
+            [Key("t")]
+            public ulong CityObjectTypeULong
+            {
+                get
+                {
+                    return cityObjectType;                    
+                }
+                set
+                {
+                    cityObjectType = value;
+                }
+            } 
+            
             [IgnoreMember]
+            public CityObjectType CityObjectType
+            {
+                get
+                {
+                    return (CityObjectType)cityObjectType;                    
+                }
+                set
+                {
+                    cityObjectType = (ulong)value;
+                }
+            }
+
+            [Key("c")]
+            public List<CityObject> Children
+            {
+                get
+                {
+                    return children;
+                }
+                set
+                {
+                    children = value;
+                }
+            }
+
+            [Key("a")]
             public Attributes AttributesMap
             {
                 get { return attributesMap; }
@@ -193,12 +231,12 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// シリアライズ可能なAttributeMapデータです。
         /// </summary>
-        [MessagePackObject(AllowPrivate = true)]
+        [MessagePackObject]
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter.CityObjectSerializable_AttributesJsonConverter))]
-        public partial class Attributes // partialはMessagePackの自動生成コードを利用するために必要です
+        public class Attributes
         {
-            [Key("m")]
-            private readonly Dictionary<string, Value> attrMap = new ();
+            [IgnoreMember]
+            private Dictionary<string, Value> attrMap = new ();
 
             [IgnoreMember]
             public int Count => attrMap.Count;
@@ -213,6 +251,19 @@ namespace PLATEAU.CityInfo
             public IEnumerable<Value> Values => attrMap.Values;
 
             public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return attrMap.GetEnumerator(); }
+
+            [Key("m")]
+            public Dictionary<string, Value> AttributeMap
+            {
+                get
+                {
+                    return attrMap;
+                }
+                set
+                {
+                    attrMap = value;
+                }
+            }
             
             public Attributes(){}
 
@@ -298,19 +349,19 @@ namespace PLATEAU.CityInfo
             }
             
             [MessagePackObject(true)]
-            public partial class Value // partialはMessagePackの自動生成コードを利用するために必要です
+            public class Value
             {
                 [Key("t")]
-                public AttributeType Type   { get; private set; }
+                public AttributeType Type   { get; set; }
                 
                 [Key("s")]
-                public string StringValue   { get; private set; }
+                public string StringValue   { get; set; }
                 
                 [Key("i")]
-                public int IntValue         { get; private set; }
+                public int IntValue         { get; set; }
                 
                 [Key("d")]
-                public double DoubleValue   { get; private set; }
+                public double DoubleValue   { get; set; }
 
                 [Key("m")]
                 public Attributes AttributesMapValue = new Attributes();
