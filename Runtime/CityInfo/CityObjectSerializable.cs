@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;

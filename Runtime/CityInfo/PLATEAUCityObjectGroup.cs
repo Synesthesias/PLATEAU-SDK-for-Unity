@@ -1,6 +1,4 @@
-﻿using MessagePack;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using PLATEAU.Dataset;
 using System;
