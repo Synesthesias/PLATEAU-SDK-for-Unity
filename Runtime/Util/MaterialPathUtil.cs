@@ -17,11 +17,10 @@ namespace PLATEAU.Util
     {
         //ベースパス
         public static readonly string BaseMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
-        // 地図表示用のデフォルトマテリアルパス
-        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        private const string MapMaterialNameUrp = "MapUnlitMaterial_URP.mat";
-
-        private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP.mat";
+        // 地図表示用のデフォルトマテリアル名
+        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP";
+        private const string MapMaterialNameUrp = "MapUnlitMaterial_URP";
+        private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP";
 
         public static PipeLineType GetRenderPipelineType()
         {
