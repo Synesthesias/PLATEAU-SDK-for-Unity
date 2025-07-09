@@ -42,7 +42,7 @@ namespace PLATEAU.Util
             }
         }
 
-        public static string GetMapMatPath()
+        public static string GetMapMatName()
         {
             var pipeline = GetRenderPipelineType();
             var materialFileName = pipeline switch
@@ -53,7 +53,7 @@ namespace PLATEAU.Util
                 _ => throw new Exception("Unknown pipeline type.")
             };
 
-            return Path.Combine(BaseMaterialDir, materialFileName);
+            return materialFileName;
         }
 
         
