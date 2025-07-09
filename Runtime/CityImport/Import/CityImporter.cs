@@ -22,7 +22,8 @@ namespace PLATEAU.CityImport.Import
     /// </summary>
     public static class CityImporter
     {
-        
+        public static bool tileImport = true;
+      
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
@@ -104,51 +105,56 @@ namespace PLATEAU.CityImport.Import
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
 
-                // GMLファイルを同時に処理する最大数です。
-                // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-                // ただしメモリ使用量が増えます。
-                //var semGmlProcess = new SemaphoreSlim(4);
-                //await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
-                //{
-                //    await semGmlProcess.WaitAsync(); 
-                //    try
-                //    {
+                if (tileImport)
+                {
+                    // タイルインポート処理を行います。
+                    using var tileImporter = new TileImporter();
+                    await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
+                }
+                else
+                {
+                    // GMLファイルを同時に処理する最大数です。
+                    // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+                    // ただしメモリ使用量が増えます。
+                    var semGmlProcess = new SemaphoreSlim(4);
+                    await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+                    {
+                        await semGmlProcess.WaitAsync();
+                        try
+                        {
 
-                //        if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
-                //        {
-                //            try
-                //            {
-                //                // GMLを1つインポートします。
-                //                // ここはメインスレッドで呼ぶ必要があります。
-                //                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
-                //            }
-                //            catch(OperationCanceledException)
-                //            {
-                //                progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                Debug.LogError(e);
-                //            }
-                //        }
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        Debug.LogError(e);
-                //    }
-                //    finally
-                //    {
-                //        semGmlProcess.Release();
-                //    }
+                            if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                            {
+                                try
+                                {
+                                    // GMLを1つインポートします。
+                                    // ここはメインスレッドで呼ぶ必要があります。
+                                    await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError(e);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+                        finally
+                        {
+                            semGmlProcess.Release();
+                        }
 
-                //}));
+                    }));
+                    CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+                }
 
-                using var tileImporter = new TileImporter();
-                //var tileImporter = new TileImporter();
-                await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
-
-                // インポート完了後の処理
-                //CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
+                // インポート完了後の処理  
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }

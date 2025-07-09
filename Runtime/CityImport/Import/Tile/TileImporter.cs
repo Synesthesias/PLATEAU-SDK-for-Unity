@@ -180,7 +180,6 @@ namespace PLATEAU.CityImport.Import.Tile
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            //using var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName);
             var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, startProgess);
 
             if (cityModel != null)
@@ -262,7 +261,7 @@ namespace PLATEAU.CityImport.Import.Tile
 
                 if (placingResult.IsSucceed)
                 {
-                    progressDisplay.SetProgress(gmlName, endProgress, "完了");
+                    progressDisplay.SetProgress(gmlName, endProgress, $"ズームレベル:{zoomLevel} 完了");
                 }
                 else
                 {
@@ -331,7 +330,7 @@ namespace PLATEAU.CityImport.Import.Tile
                         string gmlName = Path.GetFileName(gml.Path);
                         if (placingResult.IsSucceed)
                         {
-                            progressDisplay.SetProgress(gmlName, endProgress, "完了");
+                            progressDisplay.SetProgress(gmlName, endProgress, endProgress >= 100f ? "完了" : $"ズームレベル:{zoomLevel} 完了");
                         }
                         else
                         {
