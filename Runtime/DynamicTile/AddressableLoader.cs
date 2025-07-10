@@ -184,49 +184,7 @@ namespace PLATEAU.DynamicTile
             
             return "";
         }
-
-        /// <summary>
-        /// カタログのローカルパスを取得します。
-        /// </summary>
-        /// <returns></returns>
-        // private string GetLocalCatalogPath()
-        // {
-        //     foreach (var resourceLocator in Addressables.ResourceLocators)
-        //     {
-        //         foreach (var key in resourceLocator.Keys)
-        //         {
-        //             if (!resourceLocator.Locate(key, typeof(object), out var locations))
-        //             {
-        //                 continue;
-        //             }
-        //             foreach (var loc in locations)
-        //             {
-        //                 string internalId = RemoveFileProtocol(loc.InternalId);
-        //
-        //                 if (!internalId.EndsWith(".bundle"))
-        //                 {
-        //                     continue;
-        //                 }
-        //
-        //                 string dir = Path.GetDirectoryName(internalId);
-        //                 if (string.IsNullOrEmpty(dir))
-        //                 {
-        //                     Debug.LogError("カタログファイルのディレクトリが取得できません");
-        //                     return "";
-        //                 }
-        //                 // カタログファイルのパスを取得
-        //                 var catalogFiles = Directory.GetFiles(dir, "catalog_*.json");
-        //                 if (catalogFiles.Length == 0)
-        //                 {
-        //                     Debug.LogError("カタログファイルが見つかりません");
-        //                     return "";
-        //                 }
-        //                 return catalogFiles[0];
-        //             }
-        //         }
-        //     }
-        //     return "";
-        // }
+        
 
         /// <summary>
         /// meta情報をロードします。
