@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,42 +8,171 @@ using PLATEAU.CityGML;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using PLATEAUCityObject = PLATEAU.CityGML.CityObject;
-using CityObject = PLATEAU.CityInfo.CityObjectList.CityObject;
-using static PLATEAU.CityInfo.CityObjectList;
-using static PLATEAU.CityInfo.CityObjectSerializable_CityObjectJsonConverter;
 
 namespace PLATEAU.CityInfo
 {
+
+    /// <summary>
+    /// <see cref="CityObjectList"/>のシリアライズとデシリアライズをします。
+    /// バージョンに応じた場合分けにより後方互換性を保ちます。
+    /// </summary>
+    public static class CityObjectListSerializer
+    {
+        public const int CurrentSerializeVersion = 1; // シリアライズの方式を変える時はこの数字を増やしてください。
+
+        /// <summary>
+        /// MessagePack形式のシリアライズとデシリアライズに使うオプションです。
+        ///
+        /// MessagePack+LZ4圧縮を選定した理由：
+        /// シリアライズとデシリアライズの変換処理にかかる時間よりも、データ量のほうがボトルネックになっています。
+        /// データ量のせいで、動的タイルのInstantiateでコピー処理が重かったり、地域単位の地物の選択時に重くなったりします。
+        /// そこでMessagePack+LZ4圧縮を採用してデータ量を下げます。
+        /// </summary>
+        private static readonly MessagePackSerializerOptions messagePackOption =
+            MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray); // LZ4圧縮
+        
+        /// <summary> バージョンに応じてデシリアライズします。 </summary>
+        public static CityObjectList Deserialize(int serializeVersion, byte[] messagePack, string oldJson)
+        {
+            switch (serializeVersion)
+            {
+                // json文字列で保存していた時代（後方互換性に配慮）
+                case 0: 
+                    if (string.IsNullOrEmpty(oldJson)) return new CityObjectList();
+                    return JsonConvert.DeserializeObject<CityObjectList>(oldJson);
+                
+                // MessagePackを導入
+                case 1:
+                    if (messagePack.Length == 0) return new CityObjectList();
+                    try
+                    {
+                        return MessagePackSerializer.Deserialize<CityObjectList>(messagePack, messagePackOption);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"MessagePack deserialization failed: {ex.Message}", ex);
+                    }
+                default:
+                    throw new Exception($"Unsupported serialization version. Supported version: up to {{CurrentSerializeVersion}}, received version: {{serializeVersion}}");
+            }
+        }
+
+        /// <summary> シリアライズします。 </summary>
+        public static byte[] Serialize(CityObjectList cityObjectList)
+        {
+            return MessagePackSerializer.Serialize(cityObjectList, messagePackOption);
+        }
+    }
+    
     /// <summary>
     /// シリアライズ可能なCityObjectデータです。
+    /// シリアライズ時はMessagePack形式にしますが、人間が読む用にjson形式でも出力可能です。
     /// </summary>
+    [MessagePackObject]
     [JsonConverter(typeof(CityObjectSerializable_CityObjectListJsonConverter))]
     public class CityObjectList
     {
+        // [MessagePack化する際の留意点]
+        // MessagePackのKey名は短い文字列で指定します。
+        // Key名は短いほうが軽量化できますが、かといってキーがないとMessagePack保存時にMapではなく配列になってしまうため将来的に順番に変更があった場合に読めなくなってしまいます。
+        // また[Key]が付いている箇所は、publicで読み書きできるフィールドまたはプロパティにしています。
+        // [Key(AllowPrivate=true)]と書いても、デフォルトではprivateを読み書きできるようにはなりません。
+        
+        [Key("p")]
         public string outsideParent = "";
+        
+        [Key("c")]
         public List<string> outsideChildren = new List<string>();
-        public readonly List<CityObject> rootCityObjects = new List<CityObject>();
+        
+        [Key("o")]
+        public List<CityObject> rootCityObjects = new ();
 
+        public bool IsEmpty() => outsideParent == "" && outsideChildren.Count == 0 && rootCityObjects.Count == 0;
+
+        [MessagePackObject(true)]
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter))]
         public class CityObject
         {
+            [IgnoreMember]
             private string gmlID = "";
+            
+            [IgnoreMember]
             private int[] cityObjectIndex = {-1, -1};
+            
+            [IgnoreMember]
             private ulong cityObjectType;
+            
+            [IgnoreMember]
             private List<CityObject> children = new List<CityObject>();
+            
+            [IgnoreMember]
             private Attributes attributesMap = new Attributes();
 
-            // Getters/Setters
-            public string GmlID => gmlID;
+            [Key("i")]
+            public string GmlID
+            {
+                get
+                {
+                    return gmlID;
+                }
+                set
+                {
+                    gmlID = value;
+                }
+            }
 
+            [Key("x")]
             public int[] CityObjectIndex
             {
                 get => cityObjectIndex;
                 set => cityObjectIndex = value;
             }
-            public CityObjectType CityObjectType => (CityObjectType)cityObjectType;
-            public List<CityObject> Children => children;
-            public Attributes AttributesMap => attributesMap;
+
+            [Key("t")]
+            public ulong CityObjectTypeULong
+            {
+                get
+                {
+                    return cityObjectType;                    
+                }
+                set
+                {
+                    cityObjectType = value;
+                }
+            } 
+            
+            [IgnoreMember]
+            public CityObjectType CityObjectType
+            {
+                get
+                {
+                    return (CityObjectType)cityObjectType;                    
+                }
+                set
+                {
+                    cityObjectType = (ulong)value;
+                }
+            }
+
+            [Key("c")]
+            public List<CityObject> Children
+            {
+                get
+                {
+                    return children;
+                }
+                set
+                {
+                    children = value;
+                }
+            }
+
+            [Key("a")]
+            public Attributes AttributesMap
+            {
+                get { return attributesMap; }
+                set { attributesMap = value; }
+            }
 
             public CityObject Init(string gmlIDArg, int[] cityObjectIndexArg, ulong cityObjectTypeArg, Attributes attributesMapArg, List<CityObject> childrenArg = null )
             {
@@ -58,12 +188,14 @@ namespace PLATEAU.CityInfo
             public CityObject CopyWithoutChildren()
             {
                 var copy = new CityObject();
-                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, null);
+                copy.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap);
                 return copy;
             }
 
+            [IgnoreMember]
             public CityObjectType type => (CityObjectType)cityObjectType;
 
+            [IgnoreMember]
             public CityObjectIndex IndexInMesh
             {
                 get
@@ -81,7 +213,7 @@ namespace PLATEAU.CityInfo
             /// <summary>
             /// デバッグ用に自身の情報をstringで返します。
             /// </summary>
-            public virtual string DebugString()
+            public string DebugString()
             {
                 var sb = new StringBuilder();
                 sb.Append($"GmlID : {GmlID}\n");
@@ -98,21 +230,48 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// シリアライズ可能なAttributeMapデータです。
         /// </summary>
-        [JsonConverter(typeof(CityObjectSerializable_AttributesJsonConverter))]
+        [MessagePackObject]
+        [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter.CityObjectSerializable_AttributesJsonConverter))]
         public class Attributes
         {
-            private Dictionary<string, Value> attrMap = new Dictionary<string, Value>();
+            [IgnoreMember]
+            private Dictionary<string, Value> attrMap = new ();
 
+            [IgnoreMember]
             public int Count => attrMap.Count;
             
+            [IgnoreMember]
             public Value this[string key] => attrMap[key];
 
+            [IgnoreMember]
             public IEnumerable<string> Keys => attrMap.Keys;
 
+            [IgnoreMember]
             public IEnumerable<Value> Values => attrMap.Values;
 
             public IEnumerator<KeyValuePair<string, Value>> GetEnumerator() { return attrMap.GetEnumerator(); }
 
+            [Key("m")]
+            public Dictionary<string, Value> AttributeMap
+            {
+                get
+                {
+                    return attrMap;
+                }
+                set
+                {
+                    attrMap = value;
+                }
+            }
+            
+            public Attributes(){}
+
+            public Attributes(Dictionary<string, Value> attrMap)
+            {
+                if (attrMap == null) throw new ArgumentNullException(nameof(attrMap));
+                this.attrMap = attrMap;
+            }
+            
             /// <summary>
             /// 属性情報のキーバリューペアのうち、キーを指定してバリューを得ます。
             /// 成否をboolで返します。
@@ -187,15 +346,26 @@ namespace PLATEAU.CityInfo
 
                 return sb.ToString();
             }
-
+            
+            [MessagePackObject(true)]
             public class Value
             {
-                public AttributeType Type   { get; private set; }
-                public string StringValue   { get; private set; }
-                public int IntValue         { get; private set; }
-                public double DoubleValue   { get; private set; }
+                [Key("t")]
+                public AttributeType Type   { get; set; }
+                
+                [Key("s")]
+                public string StringValue   { get; set; }
+                
+                [Key("i")]
+                public int IntValue         { get; set; }
+                
+                [Key("d")]
+                public double DoubleValue   { get; set; }
 
+                [Key("m")]
                 public Attributes AttributesMapValue = new Attributes();
+                
+                public Value(){}
 
                 public Value(NativeAttributeValue value)
                 {
@@ -300,12 +470,12 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal static class CityObjectSerializableConvert
     {
-        public static CityObject FromCityGMLCityObject(PLATEAUCityObject obj, CityObjectIndex? idx = null)
+        public static CityObjectList.CityObject FromCityGMLCityObject(PLATEAUCityObject obj, CityObjectIndex? idx = null)
         {
             string gmlID = obj.ID;
             ulong cityObjectType = (ulong)obj.Type;
             int[] cityObjectIndex = { -1, -1 };
-            Attributes map = new Attributes();
+            CityObjectList.Attributes map = new CityObjectList.Attributes();
 
             if( idx != null )
                 cityObjectIndex = new[] { idx.Value.PrimaryIndex, idx.Value.AtomicIndex };
@@ -314,7 +484,7 @@ namespace PLATEAU.CityInfo
                 map.AddAttribute(m.Key, m.Value);
             }
 
-            var ret = new CityObject();
+            var ret = new CityObjectList.CityObject();
             ret.Init(gmlID, cityObjectIndex, cityObjectType, map);
             return ret;
         }

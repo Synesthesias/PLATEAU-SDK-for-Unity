@@ -168,7 +168,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.DynamicTileGUI
             }
             catch (Exception ex)
             {
-                Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
+                Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
                 onError?.Invoke($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
             }
             finally
