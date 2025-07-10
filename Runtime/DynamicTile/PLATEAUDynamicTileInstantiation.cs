@@ -90,6 +90,7 @@ namespace PLATEAU.DynamicTile
                 if (!loadTask.TileManager.InstantiateFromTile(tile))
                 {
                     loadTask.DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address}");
+                    tile.LastLoadResult = PLATEAUTileManager.LoadResult.Failure;
                 }
 
                 yield return null; // フレームごとに処理を実行
