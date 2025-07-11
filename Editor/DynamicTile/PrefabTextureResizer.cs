@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
+using System.Threading.Tasks;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile
@@ -88,7 +89,7 @@ namespace PLATEAU.DynamicTile
 
             var newTexture = new Texture2D(newWidth, newHeight, TextureFormat.RGBA32 /*非圧縮フォーマットを使うこと*/, textureImporter.mipmapEnabled);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
-            ResizeTexture(sourceTexture, newTexture);
+            ResizeTextureAsync(sourceTexture, newTexture);
 
             // 保存先のディレクトリを作成 (解像度ごとに異なるフォルダに保存)
             string directoryPath = AssetPathUtil.GetFullPath(saveDirectory);
@@ -133,26 +134,35 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="source">ソースTexture2D</param>
         /// <param name="dest">変換用Texture2D</param>
-        private void ResizeTexture(Texture2D source, Texture2D dest)
+        private void ResizeTextureAsync(Texture2D source, Texture2D dest)
         {
             RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height);
             Graphics.Blit(source, rt);
-
-            AsyncGPUReadback.Request(rt, 0, request =>
+            
+            if (SystemInfo.supportsAsyncGPUReadback)
             {
+                // GPU上にあるRenderTextureを取得します。
+                var request = AsyncGPUReadback.Request(rt, 0);
+                // GPUにリクエストしたうえで成功を待たないと、下のLoadRawTextureDataに失敗する場合があります。
+                request.WaitForCompletion();
                 if (request.hasError)
                 {
                     Debug.LogError("GPU Readback にエラーが発生しました。");
+                    RenderTexture.ReleaseTemporary(rt);
                     return;
                 }
-
-                // リクエストの成功を待たないと、LoadTextureDataに失敗する場合があります。データをTexture2Dにロードします。
-                // この時点ではまだGPUメモリ上にある可能性があるため、GetData<byte>()でCPU側にコピーします。
+                // データをTexture2Dにロードします。
                 dest.LoadRawTextureData(request.GetData<byte>());
-                dest.Apply();
-            });
+            }
+            else
+            {
+                dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+            }
+            
 
-            AsyncGPUReadback.WaitAllRequests();
+            
+            dest.Apply();
+            
             RenderTexture.ReleaseTemporary(rt);
         }
 

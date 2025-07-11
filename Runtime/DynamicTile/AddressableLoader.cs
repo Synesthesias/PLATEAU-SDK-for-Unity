@@ -126,62 +126,52 @@ namespace PLATEAU.DynamicTile
         /// <returns>ロードされたGameObjectのリスト</returns>
         private async Task<string> LoadCatalog(string catalogPath, string label)
         {
-            //try
+            var bundlePath = string.Empty;
+
+            // パスを正規化（バックスラッシュをスラッシュに変換）
+            catalogPath = catalogPath.Replace('\\', '/');
+
+            // bundlePathを保持
+            bundlePath = Path.GetDirectoryName(catalogPath);
+
+            // file://プロトコルを追加
+            if (!catalogPath.StartsWith("file://"))
             {
-                var bundlePath = string.Empty;
+                catalogPath = "file://" + catalogPath;
+            }
 
-                // パスを正規化（バックスラッシュをスラッシュに変換）
-                catalogPath = catalogPath.Replace('\\', '/');
+            var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
+            await WaitForCompletionAsync(catalogHandle);
 
-                // bundlePathを保持
-                bundlePath = Path.GetDirectoryName(catalogPath);
+            if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
+            {
+                Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
+                Addressables.Release(catalogHandle);
+                return "";
+            }
 
-                // file://プロトコルを追加
-                if (!catalogPath.StartsWith("file://"))
+            // DynamicTileメタ情報のアドレスを取得
+            if (catalogHandle.Result.Locate(label, typeof(PLATEAUDynamicTileMetaStore),
+                    out var scriptableObjectLocations))
+            {
+                foreach (var location in scriptableObjectLocations)
                 {
-                    catalogPath = "file://" + catalogPath;
-                }
-
-                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-                await WaitForCompletionAsync(catalogHandle);
-
-                if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
-                {
-                    Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                    Addressables.Release(catalogHandle);
-                    return "";
-                }
-
-                // DynamicTileメタ情報のアドレスを取得
-                if (catalogHandle.Result.Locate(label, typeof(PLATEAUDynamicTileMetaStore),
-                        out var scriptableObjectLocations))
-                {
-                    foreach (var location in scriptableObjectLocations)
+                    if (location.Dependencies.Count <= 0)
                     {
-                        if (location.Dependencies.Count <= 0)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        if (bundlePath != null)
-                        {
-                            Addressables.Release(catalogHandle);
-                            // メタ情報のパスを返す
-                            return Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
-                        }
+                    if (bundlePath != null)
+                    {
+                        Addressables.Release(catalogHandle);
+                        // メタ情報のパスを返す
+                        return Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
                     }
                 }
-
-                Addressables.Release(catalogHandle);
-                
-
-                
             }
-            //catch (System.Exception ex)
-            //{
-            //    Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
-            //}
-            
+
+            Addressables.Release(catalogHandle);
+
             return "";
         }
         
