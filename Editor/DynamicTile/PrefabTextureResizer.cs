@@ -63,7 +63,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="denominator">サイズ比の分母</param>
         /// <param name="saveDirectory">保存フォルダ名</param>
         /// <returns>再読み込み後のTexture</returns>
-        private (Texture2D,string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
+        private (Texture2D, string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
         {
             //サイズ
             var proportion = 1f / denominator;
@@ -74,18 +74,24 @@ namespace PLATEAU.DynamicTile
             var textureImporter = GetTextureImporter(sourceTexture);
             if (textureImporter == null)
             {
-                Debug.LogError("TextureImporter is not suppoerted.");
-                return (null,null);
+                Debug.LogError($"TextureImporter is not suppoerted. {sourceTexture?.name}");
             }
-            var compression = textureImporter.textureCompression;
-            var textureType = textureImporter.textureType;
+            TextureImporterCompression compression = TextureImporterCompression.Uncompressed;
+            TextureImporterType textureType = TextureImporterType.Default;
+            bool mipmapEnabled = true;
+            if (textureImporter != null)
+            {
+                compression = textureImporter.textureCompression;
+                textureType = textureImporter.textureType;
 
-            //設定変更
-            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
-            textureImporter.textureType = TextureImporterType.Default;
-            textureImporter.SaveAndReimport();
+                //設定変更
+                textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+                textureImporter.textureType = TextureImporterType.Default;
+                mipmapEnabled = textureImporter.mipmapEnabled;
+                textureImporter.SaveAndReimport();
+            }
 
-            var newTexture = new Texture2D(newWidth, newHeight, sourceTexture.format, textureImporter.mipmapEnabled);
+            var newTexture = new Texture2D(newWidth, newHeight, sourceTexture.format, mipmapEnabled);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
             ResizeTexture(sourceTexture, ref newTexture);
 
@@ -102,10 +108,13 @@ namespace PLATEAU.DynamicTile
 
             SaveTexture(newTexture, newPath, fileExtension.TrimStart('.'));
 
-            //設定を元に戻す
-            textureImporter.textureType = textureType;
-            textureImporter.textureCompression = compression;
-            textureImporter.SaveAndReimport();
+            if (textureImporter != null) 
+            {
+                //設定を元に戻す
+                textureImporter.textureType = textureType;
+                textureImporter.textureCompression = compression;
+                textureImporter.SaveAndReimport();
+            }
 
             //Texture再読み込み (AssetDatabaseにインポート)
             return (LoadTexture(newPath), newPath);

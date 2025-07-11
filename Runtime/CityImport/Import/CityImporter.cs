@@ -111,7 +111,7 @@ namespace PLATEAU.CityImport.Import
                     using var tileImporter = new TileImporter();
                     await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
                 }
-                else
+                else 
                 {
                     // GMLファイルを同時に処理する最大数です。
                     // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。

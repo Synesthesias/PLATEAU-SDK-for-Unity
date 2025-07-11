@@ -185,49 +185,56 @@ namespace PLATEAU.DynamicTile
         {
             Material[] materials = new Material[0]; // 空の配列で初期化
 
-            var renderer = source.GetComponentInChildren<Renderer>();
-            if (renderer != null)
+            var renderers = source.GetComponentsInChildren<Renderer>();
+            if (renderers == null || renderers.Length == 0)
             {
-                if (renderer.sharedMaterials.Length > 0)
-                {
-                    //元のMaterial複製
-                    materials = new Material[renderer.sharedMaterials.Length];
-                    Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
-
-                    for (int i = 0; i < renderer.sharedMaterials.Length; i++)
-                    {
-                        var material = renderer.sharedMaterials[i];
-                        if (material != null && material.HasMainTextureAttribute())
-                        {
-                            Texture2D albedoTexture = material.mainTexture as Texture2D;
-                            if (albedoTexture != null)
-                            {
-                                // Texture生成
-                                var textureResizer = new PrefabTextureResizer(saveDirectory);
-                                var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
-
-                                // Material差替え 保存　
-                                var newMaterial = new Material(material);
-                                newMaterial.mainTexture = newTexture;
-
-                                var materialName = $"{newMaterial.name}_{zoomLevel}";
-                                SaveMaterialAsset(newMaterial, saveDirectory, materialName);
-
-                                materials[i] = newMaterial; // 変更後のマテリアルをセット    
-                            }
-                            else
-                                Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
-                        }
-                        else if (material == null)
-                            Debug.LogWarning($"Material at index {i} is null in {source.name}");
-                    }
-                }
-                else
-                    Debug.LogWarning($"No shared materials found in renderer for {source.name}");
+                Debug.LogError($"No Renderer found in {source.name}");
+                return materials;
             }
             else
             {
-                Debug.LogError($"renderer is null!!　{source.name}");
+                foreach (var renderer in renderers)
+                {
+                    if (renderer != null)
+                    {
+                        if (renderer.sharedMaterials.Length > 0)
+                        {
+                            //元のMaterial複製
+                            materials = new Material[renderer.sharedMaterials.Length];
+                            Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
+
+                            for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+                            {
+                                var material = renderer.sharedMaterials[i];
+                                if (material != null && material.HasMainTextureAttribute())
+                                {
+                                    Texture2D albedoTexture = material.mainTexture as Texture2D;
+                                    if (albedoTexture != null)
+                                    {
+                                        // Texture生成
+                                        var textureResizer = new PrefabTextureResizer(saveDirectory);
+                                        var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
+
+                                        // Material差替え 保存　
+                                        var newMaterial = new Material(material);
+                                        newMaterial.mainTexture = newTexture;
+
+                                        var materialName = $"{newMaterial.name}_{zoomLevel}";
+                                        SaveMaterialAsset(newMaterial, saveDirectory, materialName);
+
+                                        materials[i] = newMaterial; // 変更後のマテリアルをセット    
+                                    }
+                                    else
+                                        Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
+                                }
+                                else if (material == null)
+                                    Debug.LogWarning($"Material at index {i} is null in {source.name}");
+                            }
+                        }
+                        else
+                            Debug.LogWarning($"No shared materials found in renderer for {source.name}");
+                    }
+                }
             }
 
             return materials;
@@ -246,23 +253,40 @@ namespace PLATEAU.DynamicTile
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
 
-            var renderer = target.GetComponentInChildren<Renderer>();
-            if (renderer == null)
+            List<Bounds> boundsList = new List<Bounds>();
+            var renderers = target.GetComponentsInChildren<Renderer>();
+            if (renderers == null || renderers.Length == 0)
             {
                 Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
                 return null;
             }
-
-            // マテリアルアサイン
-            if (materialList != null)
-                renderer.sharedMaterials = materialList;
+            else
+            {
+                foreach (var renderer in renderers)
+                {
+                    if (renderer != null)
+                    {
+                        // マテリアルアサイン
+                        if (materialList != null)
+                            renderer.sharedMaterials = materialList;
+                        boundsList.Add(renderer.bounds);
+                    }
+                }
+            }
 
             // 保存
             var newName = $"{prefabName}.prefab";
             var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
             var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
             var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
-            var bounds = renderer.bounds;
+            var bounds = new Bounds();
+            foreach (var b in boundsList)
+            {
+                if (bounds.size == Vector3.zero)
+                    bounds = b;
+                else
+                    bounds.Encapsulate(b);
+            }
 
             var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
             createdResults.Add(result);
