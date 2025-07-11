@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
 using System.Threading.Tasks;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile
@@ -16,6 +17,7 @@ namespace PLATEAU.DynamicTile
     public class PrefabTextureResizer
     {
         public static readonly int[] DENOMINATORS = { 1, 2, 4, 8, 16 };　//等倍サイズも含める場合
+        private const TextureFormat TempTextureFormat = TextureFormat.RGBA32; // 非圧縮フォーマットを使うこと
 
         /// <summary>
         /// 保存先パス
@@ -87,7 +89,7 @@ namespace PLATEAU.DynamicTile
             textureImporter.textureType = TextureImporterType.Default;
             textureImporter.SaveAndReimport();
 
-            var newTexture = new Texture2D(newWidth, newHeight, TextureFormat.RGBA32 /*非圧縮フォーマットを使うこと*/, textureImporter.mipmapEnabled);
+            var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, false);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
             ResizeTextureAsync(sourceTexture, newTexture);
 
@@ -136,13 +138,13 @@ namespace PLATEAU.DynamicTile
         /// <param name="dest">変換用Texture2D</param>
         private void ResizeTextureAsync(Texture2D source, Texture2D dest)
         {
-            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height);
+            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height, 0, RenderTextureFormat.ARGB32);
             Graphics.Blit(source, rt);
             
             if (SystemInfo.supportsAsyncGPUReadback)
             {
                 // GPU上にあるRenderTextureを取得します。
-                var request = AsyncGPUReadback.Request(rt, 0);
+                var request = AsyncGPUReadback.Request(rt, 0, TempTextureFormat);
                 // GPUにリクエストしたうえで成功を待たないと、下のLoadRawTextureDataに失敗する場合があります。
                 request.WaitForCompletion();
                 if (request.hasError)
@@ -156,13 +158,13 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
+                var prev = RenderTexture.active;
+                RenderTexture.active = rt;
                 dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+                RenderTexture.active = prev;
             }
             
-
-            
             dest.Apply();
-            
             RenderTexture.ReleaseTemporary(rt);
         }
 
