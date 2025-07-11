@@ -116,7 +116,10 @@ namespace PLATEAU.DynamicTile
             // 上書きする場合はAssetDatabaseのパスを指定
             if (overwriteExisting && textureImporter != null)
             {
-                newPath = AssetPathUtil.GetAssetPath(textureImporter.assetPath);
+                if(textureImporter == null)
+                    Debug.LogError($"Overwriting Texture is not suppoerted without TextureImporter suppoert. {sourceTexture?.name}");
+                else
+                    newPath = AssetPathUtil.GetAssetPath(textureImporter.assetPath);
             }
 
             SaveTexture(newTexture, newPath, fileExtension.TrimStart('.'));
