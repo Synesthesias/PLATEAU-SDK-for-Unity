@@ -69,6 +69,16 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 既存のGameObjectのTextureを異なる解像度に変更して上書き
+        /// 解像度、ZoomLevelを指定して生成
+        /// </summary>
+        public static Result OverwriteGameObject(GameObject target, int denominator, int zoomLevel)
+        {
+            var creator = new MultiResolutionPrefabCreator();
+            return creator.CreateFromGameObject(target, denominator, zoomLevel);
+        }
+
+        /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）
         /// 解像度、ZoomLevelを指定して生成
         /// 名前はGameObject名を利用
@@ -86,6 +96,26 @@ namespace PLATEAU.DynamicTile
         {
             var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
+        }
+
+        /// <summary>
+        /// 既存のPrefabのTextureを異なる解像度に変更して上書き
+        /// 解像度、ZoomLevelを指定して生成
+        /// </summary>
+        public static List<Result> OverwritePrefabs(List<GameObject> prefabs, int denominator, int zoomLevel)
+        {
+            var creator = new MultiResolutionPrefabCreator();
+            return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
+        }
+
+        /// <summary>
+        /// constructor (上書きのみ）
+        /// </summary>
+        public MultiResolutionPrefabCreator()
+        {
+            savePath = string.Empty;
+            overwriteExisting = true;
+            createdResults = new();
         }
 
         /// <summary>
