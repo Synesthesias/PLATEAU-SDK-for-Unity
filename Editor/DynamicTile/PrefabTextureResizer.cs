@@ -4,6 +4,9 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
+using System.Threading.Tasks;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile
 {
@@ -14,6 +17,7 @@ namespace PLATEAU.DynamicTile
     public class PrefabTextureResizer
     {
         public static readonly int[] DENOMINATORS = { 1, 2, 4, 8, 16 };　//等倍サイズも含める場合
+        private const TextureFormat TempTextureFormat = TextureFormat.RGBA32; // 非圧縮フォーマットを使うこと
 
         /// <summary>
         /// 保存先パス
@@ -85,9 +89,9 @@ namespace PLATEAU.DynamicTile
             textureImporter.textureType = TextureImporterType.Default;
             textureImporter.SaveAndReimport();
 
-            var newTexture = new Texture2D(newWidth, newHeight, sourceTexture.format, textureImporter.mipmapEnabled);
+            var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, false);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
-            ResizeTexture(sourceTexture, ref newTexture);
+            ResizeTextureAsync(sourceTexture, newTexture);
 
             // 保存先のディレクトリを作成 (解像度ごとに異なるフォルダに保存)
             string directoryPath = AssetPathUtil.GetFullPath(saveDirectory);
@@ -132,16 +136,35 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="source">ソースTexture2D</param>
         /// <param name="dest">変換用Texture2D</param>
-        private void ResizeTexture(Texture2D source, ref Texture2D dest)
+        private void ResizeTextureAsync(Texture2D source, Texture2D dest)
         {
-            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height);
+            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height, 0, RenderTextureFormat.ARGB32);
             Graphics.Blit(source, rt);
-
-            RenderTexture.active = rt;
-            dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+            
+            if (SystemInfo.supportsAsyncGPUReadback)
+            {
+                // GPU上にあるRenderTextureを取得します。
+                var request = AsyncGPUReadback.Request(rt, 0, TempTextureFormat);
+                // GPUにリクエストしたうえで成功を待たないと、下のLoadRawTextureDataに失敗する場合があります。
+                request.WaitForCompletion();
+                if (request.hasError)
+                {
+                    Debug.LogError("GPU Readback にエラーが発生しました。");
+                    RenderTexture.ReleaseTemporary(rt);
+                    return;
+                }
+                // データをTexture2Dにロードします。
+                dest.LoadRawTextureData(request.GetData<byte>());
+            }
+            else
+            {
+                var prev = RenderTexture.active;
+                RenderTexture.active = rt;
+                dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+                RenderTexture.active = prev;
+            }
+            
             dest.Apply();
-
-            RenderTexture.active = null;
             RenderTexture.ReleaseTemporary(rt);
         }
 
