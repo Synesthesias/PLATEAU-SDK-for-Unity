@@ -21,12 +21,19 @@ namespace PLATEAU.DynamicTile
         private string savePath;
 
         /// <summary>
+        /// 既存のファイルを上書きするかどうか
+        /// </summary>
+        private bool overwriteExisting;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="savePath_">保存先パス</param>
-        public PrefabTextureResizer(string savePath_)
+        /// <param name="overwrite">上書きするかどうか</param>
+        public PrefabTextureResizer(string savePath_, bool overwrite)
         {
             savePath = savePath_;
+            overwriteExisting = overwrite;
         }
 
         /// <summary>
@@ -105,6 +112,12 @@ namespace PLATEAU.DynamicTile
             var newAssetName = Path.GetFileNameWithoutExtension(sourceTexture.name) + $"_{zoomLevel}" + fileExtension;
             // 新しいファイルとして保存
             string newPath = Path.Combine(directoryPath, newAssetName);
+
+            // 上書きする場合はAssetDatabaseのパスを指定
+            if (overwriteExisting && textureImporter != null)
+            {
+                newPath = AssetPathUtil.GetAssetPath(textureImporter.assetPath);
+            }
 
             SaveTexture(newTexture, newPath, fileExtension.TrimStart('.'));
 

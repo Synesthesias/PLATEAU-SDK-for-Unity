@@ -28,6 +28,11 @@ namespace PLATEAU.DynamicTile
         private string savePath;
 
         /// <summary>
+        /// 既存のファイルを上書きするかどうか
+        /// </summary>
+        private bool overwriteExisting;
+
+        /// <summary>
         /// Material, Textureの保存用フォルダ生成
         /// 存在する場合は連番を付与して生成
         /// </summary>
@@ -57,9 +62,9 @@ namespace PLATEAU.DynamicTile
         /// <param name="denominator">テクスチャ解像度分母 (1/2 : 2 , 1/4 : 4 )</param>
         /// <param name="zoomLevel"> 9, 10 , 11 </param>
         /// <returns></returns>
-        public static Result CreateFromGameObject(GameObject target, string savePath, int denominator, int zoomLevel)
+        public static Result CreateFromGameObject(GameObject target, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromGameObject(target, denominator, zoomLevel);
         }
 
@@ -68,18 +73,18 @@ namespace PLATEAU.DynamicTile
         /// 解像度、ZoomLevelを指定して生成
         /// 名前はGameObject名を利用
         /// </summary>
-        public static Result CreateFromPrefab(GameObject target, string savePath, int denominator, int zoomLevel)
+        public static Result CreateFromPrefab(GameObject target, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromPrefab(target, denominator, zoomLevel);
         }
 
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）複数ターゲット対応版
         /// </summary>
-        public static List<Result> CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel)
+        public static List<Result> CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
         }
 
@@ -87,9 +92,11 @@ namespace PLATEAU.DynamicTile
         /// constructor
         /// </summary>
         /// <param name="savePath_">保存先パス</param>
-        public MultiResolutionPrefabCreator(string savePath_)
+        /// <param name="overwrite">上書きするかどうか</param>
+        public MultiResolutionPrefabCreator(string savePath_, bool overwrite)
         {
             savePath = savePath_;
+            overwriteExisting = overwrite;
             createdResults = new();
         }
 
@@ -212,8 +219,12 @@ namespace PLATEAU.DynamicTile
                                     if (albedoTexture != null)
                                     {
                                         // Texture生成
-                                        var textureResizer = new PrefabTextureResizer(saveDirectory);
+                                        var textureResizer = new PrefabTextureResizer(saveDirectory, overwriteExisting);
                                         var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
+
+                                        // 上書きする場合はTexture更新のみ
+                                        if(overwriteExisting)
+                                            continue;
 
                                         // Material差替え 保存　
                                         var newMaterial = new Material(material);
