@@ -242,7 +242,6 @@ namespace PLATEAU.CityImport.Import.Tile
                 var gmlName = Path.GetFileName(gml.Path);
 
                 // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
                 var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{gmlName.TrimEnd('.','g','m','l')}" ;
                 //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
                 var gmlTrans = new GameObject(gameObjectName).transform;
@@ -275,7 +274,6 @@ namespace PLATEAU.CityImport.Import.Tile
                 {
                     // Grid GameObject名変更
                     // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                    // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
                     for ( int i = 0; i <  gmlTrans.childCount; i++)
                     {
                         var child = gmlTrans.GetChild(i);
@@ -335,7 +333,6 @@ namespace PLATEAU.CityImport.Import.Tile
                     var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
 
                     // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                    // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
                     var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{firstGmlName.TrimEnd('.', 'g', 'm', 'l')}";
                     var gmlTrans = new GameObject(gameObjectName).transform;
 
