@@ -4,7 +4,6 @@ using PLATEAU.CityGML;
 using System;
 using System.Collections.Generic;
 using static PLATEAU.CityInfo.CityObjectList;
-using CityObject = PLATEAU.CityInfo.CityObjectList.CityObject;
 
 namespace PLATEAU.CityInfo
 {
@@ -55,17 +54,17 @@ namespace PLATEAU.CityInfo
     /// </summary>
     internal class CityObjectSerializable_CityObjectJsonConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(CityObject);
+        public override bool CanConvert(Type objectType) => objectType == typeof(CityObjectList.CityObject);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var param = new CityObject();
+            var param = new CityObjectList.CityObject();
             
             JObject jObject = JObject.Load(reader);
             string gmlID = jObject["gmlID"]?.ToString();
             ulong cityObjectType = (ulong)Enum.Parse(typeof(CityObjectType), jObject["cityObjectType"].ToString());
             int[] cityObjectIndex = jObject["cityObjectIndex"]?.ToObject<int[]>();
-            List<CityObject> children = jObject["children"]?.ToObject<List<CityObject>>();
+            List<CityObjectList.CityObject> children = jObject["children"]?.ToObject<List<CityObjectList.CityObject>>();
             Attributes attributesMap = jObject["attributes"]?.ToObject<Attributes>() ?? new Attributes();
 
             param.Init(gmlID, cityObjectIndex, cityObjectType, attributesMap, children );
@@ -75,7 +74,7 @@ namespace PLATEAU.CityInfo
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var param = value as CityObject;
+            var param = value as CityObjectList.CityObject;
             if (param == null) return;
 
             writer.WriteStartObject();

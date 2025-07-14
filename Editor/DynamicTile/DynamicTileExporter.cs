@@ -33,7 +33,7 @@ namespace PLATEAU.DynamicTile
                 return null;
             }
             
-            PLATEAUEditorEventListener.IsTileCreationInProgress = true; // タイル生成中フラグを設定
+            PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
             
             // DynamicTile管理用Managerを破棄
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -197,7 +197,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                onError?.Invoke($"変換処理中にエラーが発生しました: {ex.Message}");
+                onError?.Invoke($"変換処理中にエラーが発生しました: {ex}");
                 config.AssetPath = assetPath; // エラー時もパスを元に戻す
                 return null;
             }
@@ -358,7 +358,7 @@ namespace PLATEAU.DynamicTile
             }
             finally
             {
-                PLATEAUEditorEventListener.IsTileCreationInProgress = false; // タイル生成中フラグを設定
+                PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定
 
                 var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
                 if (manager != null)

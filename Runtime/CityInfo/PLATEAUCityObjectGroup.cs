@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
 using PLATEAU.Dataset;
 using System;
 using System.Linq;
 using PLATEAU.PolygonMesh;
 using static PLATEAU.CityInfo.CityObjectList;
 using System.Threading.Tasks;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.CityInfo
 {
@@ -15,13 +15,38 @@ namespace PLATEAU.CityInfo
     /// </summary>
     public class PLATEAUCityObjectGroup : MonoBehaviour
     {
+        // 地物の情報はMessagePack形式でシリアライズされます。
+        //
+        // 経緯: 以前はjson形式でシリアライズしていましたが、文字数が多く、特に動的タイルの読み込み時にデータコピーで重くなる問題がありました。
+        //      そこで属性情報のデータ量を削減するためにMessagePack形式に変更しました。
+        //      ただし、MessagePackは人間が読める形式ではないため、人間向けに従来のjson表示も併用します。
         
         /// <summary>
-        /// <see cref="CityObject"/>に関する情報はここに収められます。
+        /// <see cref="CityObject"/>に関する情報はここにMessagePack形式でシリアライズされます。
         /// </summary>
-        [HideInInspector][SerializeField] private string serializedCityObjects;
+        [HideInInspector][SerializeField] private byte[] cityObjectsMessagePack;
+        public static string NameOfCityObjectsMessagePack => nameof(cityObjectsMessagePack);
         
+        /// <summary>
+        /// 後方互換性のために残しています。
+        /// json形式でシリアライズしていた時代にインポートされた情報はここに入ります。
+        /// </summary>
+        [FormerlySerializedAs("serializedCityObjects")] [SerializeField]
+        private string oldSerializedCityObjects;
+        public long OldSerializedCityObjectsLength => oldSerializedCityObjects?.Length ?? 0;
+
+        /// <summary>
+        /// シリアライズ方式のバージョンです。
+        /// json形式だった時代は0, 初めてMessagePackを導入した時は1です。
+        /// </summary>
+        [SerializeField] private int serializeVersion;
+        public int SerializeVersion => serializeVersion;
+        
+        /// <summary>
+        /// メインデータ
+        /// </summary>
         private CityObjectList cityObjects;
+        
         private CityObject outsideParent;
         private UnityEngine.Mesh currentMesh;
         
@@ -30,6 +55,8 @@ namespace PLATEAU.CityInfo
 
         [SerializeField] private MeshGranularity granularity;
         [SerializeField] private int lod;
+        
+        
         public CityObjectGroupInfoForToolkits InfoForToolkits => infoForToolkits;
         public MeshGranularity Granularity
         {
@@ -60,28 +87,35 @@ namespace PLATEAU.CityInfo
         {
             get
             {
-                if (this.cityObjects != null)
+                if (cityObjects != null && !cityObjects.IsEmpty())
                     return this.cityObjects;
 
-                if (!string.IsNullOrEmpty(serializedCityObjects))
-                    this.cityObjects = JsonConvert.DeserializeObject<CityObjectList>(serializedCityObjects);
-                else
-                    this.cityObjects = new CityObjectList();
+                cityObjects = CityObjectListSerializer.Deserialize(serializeVersion, cityObjectsMessagePack, oldSerializedCityObjects);
                 return this.cityObjects;               
             }
         }
         
-        public void Init(CityObjectList cityObjectSerializable, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
+        public void Init(CityObjectList serializableCityObject, CityObjectGroupInfoForToolkits cogInfoForToolkits, MeshGranularity granularityArg, int lodArg)
         {
-            serializedCityObjects = JsonConvert.SerializeObject(cityObjectSerializable, Formatting.Indented);
+            Serialize(serializableCityObject);
             infoForToolkits = cogInfoForToolkits; 
             granularity = granularityArg;
             Lod = lodArg;
+            serializeVersion = CityObjectListSerializer.CurrentSerializeVersion;
+        }
+
+        /// <summary>
+        /// シリアライズして保存します。
+        /// </summary>
+        private void Serialize(CityObjectList serializableCityObjectList)
+        {
+            cityObjectsMessagePack = CityObjectListSerializer.Serialize(serializableCityObjectList);
+            serializeVersion = CityObjectListSerializer.CurrentSerializeVersion;
         }
 
         public void CopyFrom(PLATEAUCityObjectGroup other)
         {
-            serializedCityObjects = other.serializedCityObjects;
+            cityObjectsMessagePack = other.cityObjectsMessagePack;
             infoForToolkits = other.infoForToolkits;
             granularity = other.granularity;
             lod = other.lod;
