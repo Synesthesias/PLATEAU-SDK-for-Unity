@@ -44,10 +44,11 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// <summary>
         /// fetch済みのGMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
+        /// GML1つを読んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> processors = null, int totalGmlCount = 0)
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null, int totalGmlCount = 0)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
@@ -84,13 +85,13 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
                 
-                // 新方式: processorsに処理を委譲
-                if (processors != null)
+                // 1つのGMLのインポート後の処理をprocessorsに委譲
+                if (postGmlProcessors != null)
                 {
                     var result = new GmlImportResult(placingResult.GeneratedObjs, totalGmlCount, fetchedGmlFile.GridCode.StringCode, fetchedGmlFile);
-                    foreach (var processor in processors)
+                    foreach (var processor in postGmlProcessors)
                     {
-                        await processor.ProcessAsync(result, token ?? CancellationToken.None);
+                        processor.OnGmlImported(result);
                     }
                 }
             }

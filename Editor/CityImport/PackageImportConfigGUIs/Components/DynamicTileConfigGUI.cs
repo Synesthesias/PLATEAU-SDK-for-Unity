@@ -70,6 +70,12 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         EditorGUILayout.EndHorizontal();
 
                         GUILayout.Space(5);
+                        
+                        // 警告表示
+                        if (string.IsNullOrEmpty(config.OutputPath))
+                        {
+                            EditorGUILayout.HelpBox("出力先を選択してください。", MessageType.Warning);
+                        }
 
                         // infoメッセージボックス
                         EditorGUILayout.HelpBox(
@@ -78,16 +84,13 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
 
                         GUILayout.Space(5);
 
-                        // LOD1の建物にテクスチャを貼る
-                        config.Lod1Texture = EditorGUILayout.Toggle("LOD1の建物にテクスチャを貼る", config.Lod1Texture);
+                        // LOD1の建物にテクスチャを貼るかのチェックです。
+                        // ここは2025年アルファ版では利用しないのでいったんコメントアウトします。その次のバージョンで利用します。
+                        // config.Lod1Texture = EditorGUILayout.Toggle("LOD1の建物にテクスチャを貼る", config.Lod1Texture);
 
                         GUILayout.Space(5);
 
-                        // 警告表示
-                        if (string.IsNullOrEmpty(config.OutputPath))
-                        {
-                            EditorGUILayout.HelpBox("出力先を選択してください。", MessageType.Warning);
-                        }
+                        
                     }
                 }
             }

@@ -1,7 +1,9 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
+using PLATEAU.CityImport.Import;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.Addressables;
+using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -15,22 +17,31 @@ using UnityEngine;
 namespace PLATEAU.DynamicTile
 {
     /// <summary>
-    /// 都市モデルをDynamicTile用にプレハブ化し、一括エクスポート処理を提供する。
+    /// 都市モデルをDynamicTile用にプレハブ化し、一括でアセットバンドルとして出力する。
     /// </summary>
-    public static class DynamicTileExporter
+    public class DynamicTileExporter : IPostGmlImportProcessor
     {
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
+        
+        public DynamicTileProcessingContext Context { get; private set; }
+        private IProgressDisplay progressDisplay;
+        
+        public DynamicTileExporter(IProgressDisplay progressDisplay)
+        {
+            this.progressDisplay = progressDisplay;
+        }
 
         /// <summary>
         /// 動的タイルの事前処理を行います。
+        /// 成否を返します。
         /// </summary>
-        public static DynamicTileProcessingContext SetupPreProcessing(DynamicTileImportConfig config)
+        public bool SetupPreProcessing(DynamicTileImportConfig config)
         {
             if (config == null)
             {
                 Debug.LogError("DynamicTileImportConfigがnullです。");
-                return null;
+                return false;
             }
             
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
@@ -42,28 +53,34 @@ namespace PLATEAU.DynamicTile
                 GameObject.DestroyImmediate(manager.gameObject);
             }
             
-            var context = new DynamicTileProcessingContext(config);
+            Context = new DynamicTileProcessingContext(config);
     
             // グループを削除
-            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, context.IsExcludeAssetFolder);
+            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, Context.IsExcludeAssetFolder);
 
             // グループを設定
-            if (context.IsExcludeAssetFolder)
+            if (Context.IsExcludeAssetFolder)
             {
                 // Remote用のプロファイルを作成
-                var profileID = AddressablesUtility.SetOrCreateProfile(context.AddressableGroupName);
+                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
                 if (!string.IsNullOrEmpty(profileID))
                 {
-                    AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
-                    AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
+                    AddressablesUtility.SetRemoteProfileSettings(Context.BuildFolderPath, Context.AddressableGroupName);
+                    AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
                 }
             }
             else
             {
                 // プロファイルをデフォルトに設定
-                AddressablesUtility.SetDefaultProfileSettings(context.AddressableGroupName);
+                AddressablesUtility.SetDefaultProfileSettings(Context.AddressableGroupName);
             }
-            return context;
+
+            if (!Context.IsValid())
+            {
+                Debug.LogError("context is invalid.");
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -262,11 +279,10 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 新しい都市オブジェクト処理メソッド（コールバック付き）
         /// </summary>
-        public static void ProcessCityObjects(
+        private void ProcessCityObjects(
             List<GameObject> placedObjects,
             DynamicTileProcessingContext context,
-            string meshCode,
-            Action<string> onProgressUpdate = null)
+            string meshCode)
         {
             if (placedObjects == null || !placedObjects.Any() || context == null || !context.IsValid()) return;
 
@@ -296,7 +312,11 @@ namespace PLATEAU.DynamicTile
                 cityObject.name = meshCode + "_" + cityObject.name;
 
                 // 進捗更新を通知
-                onProgressUpdate?.Invoke(cityObject.name);
+                // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
+                int loadedGmlCount = Context.IncrementAndGetLoadedGmlCount();
+                float progress = 10f + ((float)loadedGmlCount / Context.GmlCount) * 70f;
+                progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
+                    $"動的タイルを生成中... {cityObject.name}");
 
                 // 個別のオブジェクトを処理
                 ProcessCityObject(
@@ -311,21 +331,20 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
+        /// 成否を返します。
         /// </summary>
-        /// <param name="context">DynamicTile処理コンテキスト</param>
-        public static void CompleteProcessing(
-            DynamicTileProcessingContext context)
+        public bool CompleteProcessing()
         {
-            if (context == null || !context.IsValid())
+            if (Context == null || !Context.IsValid())
             {
                 Debug.LogError("DynamicTileProcessingContextが無効です。");
-                return;
+                return false;
             }
 
             try
             {
                 // メタデータを保存
-                SaveAndRegisterMetaData(context.MetaStore, context.AssetConfig.AssetPath, context.AddressableGroupName);
+                SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(true);
@@ -334,14 +353,14 @@ namespace PLATEAU.DynamicTile
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
-                if (context.IsExcludeAssetFolder)
+                if (Context.IsExcludeAssetFolder)
                 {
                     // カタログファイルのパスを取得
-                    var catalogFiles = Directory.GetFiles(context.BuildFolderPath, "catalog_*.json");
+                    var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json");
                     if (catalogFiles.Length == 0)
                     {
                         Debug.LogError("カタログファイルが見つかりません");
-                        return;
+                        return false;
                     }
                     var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
                     manager.SaveCatalogPath(catalogPath);
@@ -351,10 +370,12 @@ namespace PLATEAU.DynamicTile
                 }
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
+                return false;
             }
             finally
             {
@@ -390,6 +411,46 @@ namespace PLATEAU.DynamicTile
             else
             {
                 Debug.LogWarning($"一時フォルダーの削除に失敗しました: {assetPath}");
+            }
+        }
+
+        /// <summary>
+        /// インポートしつつ動的タイルにするモードにおいて、GML1つがインポートされた後に呼ばれます。
+        /// 動的タイルにします。
+        /// <see cref="IPostGmlImportProcessor"/>を実装するものです。
+        /// </summary>
+        public void OnGmlImported(GmlImportResult importResult)
+        {
+            var placedObjects = importResult.GeneratedObjects;
+            var meshCode = importResult.GridCode;
+            int totalGmlCount = importResult.TotalGmlCount;
+            if (placedObjects == null || !placedObjects.Any() || Context == null || !Context.IsValid()) return;
+            Context.GmlCount = totalGmlCount;
+
+            // 実際の処理委譲
+            ProcessCityObjects(
+                placedObjects,
+                Context,
+                meshCode);
+        }
+
+        /// <summary>
+        /// 進行中のAddressable化をキャンセルします。
+        /// </summary>
+        public void Cancel()
+        {
+
+            // Contextの破棄
+            if (Context != null)
+            {
+                // 作成途中のAddressableグループを削除
+                if (!string.IsNullOrEmpty(Context.AddressableGroupName))
+                {
+                    AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
+                }
+                
+                // 一時フォルダーを削除
+                CleanupTempFolder();
             }
         }
     }

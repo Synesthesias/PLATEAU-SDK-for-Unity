@@ -1,3 +1,4 @@
+using PLATEAU.Dataset;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,11 +7,11 @@ using UnityEngine;
 namespace PLATEAU.CityImport.Import
 {
     /// <summary>
-    /// GMLインポート後の処理を行うインターフェース
+    /// GMLを1つインポートした後の処理を行うインターフェースです。
     /// </summary>
     public interface IPostGmlImportProcessor
     {
-        Task ProcessAsync(GmlImportResult result, CancellationToken token);
+        void OnGmlImported(GmlImportResult result);
     }
 
     /// <summary>
@@ -21,9 +22,9 @@ namespace PLATEAU.CityImport.Import
         public List<GameObject> GeneratedObjects { get; }
         public int TotalGmlCount { get; }
         public string GridCode { get; }
-        public object GmlFile { get; } // 型は必要に応じてGmlFile等に変更
+        public GmlFile GmlFile { get; }
 
-        public GmlImportResult(List<GameObject> generatedObjects, int totalGmlCount, string gridCode, object gmlFile)
+        public GmlImportResult(List<GameObject> generatedObjects, int totalGmlCount, string gridCode, GmlFile gmlFile)
         {
             GeneratedObjects = generatedObjects;
             TotalGmlCount = totalGmlCount;

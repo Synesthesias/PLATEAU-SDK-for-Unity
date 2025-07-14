@@ -26,8 +26,10 @@ namespace PLATEAU.CityImport.Import
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
+        /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token, IEnumerable<IPostGmlImportProcessor> processors = null)
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
             if (config == null)
             {
@@ -119,7 +121,7 @@ namespace PLATEAU.CityImport.Import
                                 // GMLを1つインポートします。
                                 // ここはメインスレッドで呼ぶ必要があります。
                                 await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
-                                    processors, fetchedGmls.Count);
+                                    postGmlProcessors, fetchedGmls.Count);
                             }
                             catch(OperationCanceledException)
                             {

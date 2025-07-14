@@ -5,6 +5,8 @@ using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -127,6 +129,25 @@ namespace PLATEAU.CityImport.Config
         {
             return package != PredefinedCityModelPackage.Relief;
         }
-        
+
+        /// <summary>
+        /// 動的タイル生成モードでのインポートに適した設定かどうかを検証して返します。
+        /// </summary>
+        public bool ValidateForTile()
+        {
+            if (DynamicTileImportConfig == null)
+            {
+                Debug.LogError("CityImportConfigまたはDynamicTileImportConfigがnullです。");
+                return false;
+            }
+            
+            if (string.IsNullOrEmpty(DynamicTileImportConfig.OutputPath))
+            {
+                Dialogue.Display("動的タイル（Addressable出力）を選択する場合は、出力先を指定してください", "OK");
+                return false;
+            }
+
+            return true;
+        }
     }
 }
