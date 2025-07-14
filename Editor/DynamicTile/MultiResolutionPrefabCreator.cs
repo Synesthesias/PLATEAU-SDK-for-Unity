@@ -41,6 +41,10 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public string CreateUniqueResourcePath(string srcName, int zoomLevel)
         {
+            //上書きする場合はフォルダ生成しない
+            if (overwriteExisting) 
+                return string.Empty;
+
             // 保存先のディレクトリを作成
             string directoryPath = AssetPathUtil.GetFullPath(Path.Combine(savePath, srcName) + $"_{zoomLevel}");
             return AssetPathUtil.GetAssetPath(AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(AssetPathUtil.GetFullPath(directoryPath)));
@@ -319,7 +323,7 @@ namespace PLATEAU.DynamicTile
             var newName = $"{prefabName}.prefab";
             var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
             var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
-            var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
+            var created = overwriteExisting ? target : PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
             var bounds = new Bounds();
             foreach (var b in boundsList)
             {
