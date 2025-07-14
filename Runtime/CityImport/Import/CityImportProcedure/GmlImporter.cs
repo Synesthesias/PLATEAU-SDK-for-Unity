@@ -47,7 +47,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token, Action<List<GameObject>> onGmlImported = null)
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> processors = null, int totalGmlCount = 0)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
@@ -84,14 +84,14 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
                 
-                // コールバックが設定されている場合は安全に実行
-                try
+                // 新方式: processorsに処理を委譲
+                if (processors != null)
                 {
-                    onGmlImported?.Invoke(placingResult.GeneratedObjs);
-                }
-                catch (System.Exception ex)
-                {
-                    UnityEngine.Debug.LogError($"GML import callback error: {ex.Message}");
+                    var result = new GmlImportResult(placingResult.GeneratedObjs, totalGmlCount, fetchedGmlFile.GridCode.StringCode, fetchedGmlFile);
+                    foreach (var processor in processors)
+                    {
+                        await processor.ProcessAsync(result, token ?? CancellationToken.None);
+                    }
                 }
             }
             else

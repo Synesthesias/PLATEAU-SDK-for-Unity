@@ -52,10 +52,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 
                         if (config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile)
                         {
+                            // 動的タイル形式でのインポートを実行します。
                             ExecuteDynamicTileImport(config, progressDisplay);
                         }
                         else
                         {
+                            // シーン上へのインポートを実行します。
                             ExecuteNormalImport(config, progressDisplay);
                         }
                     }
@@ -121,11 +123,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 return;
             }
             
-            // 安全なコールバックを作成
-            var safeCallback = CreateDynamicTileCallback(currentAddressableContext, progressDisplay);
+            // GMLを1つインポートした事後処理として、動的タイル化を指定
+            var postGmlImport = new List<IPostGmlImportProcessor>
+            {
+                new DynamicTilePostGmlImportProcessor(currentAddressableContext, progressDisplay)
+            };
             
             // インポートを実行
-            var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, safeCallback);
+            var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlImport);
 
             // 事後処理を設定
             DynamicTileImportProcessor.HandleCompletionAsync(
@@ -139,42 +144,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 });
             
             task.ContinueWithErrorCatch();
-        }
-
-        /// <summary>
-        /// インポート処理完了後の動的タイル登録のコールバックを作成します
-        /// </summary>
-        private static Action<List<GameObject>, int, string> CreateDynamicTileCallback(
-            DynamicTileProcessingContext context, 
-            IProgressDisplay progressDisplay)
-        {
-            // コールバック内で使用する変数をキャプチャ
-            var capturedContext = context;
-            var capturedDisplay = progressDisplay;
-            
-            return (placedObjects, totalGmls, meshCode) =>
-            {
-                try
-                {
-                    if (capturedContext == null || placedObjects == null)
-                        return;
-                        
-                    capturedContext.GmlCount = totalGmls;
-                    var currentCount = capturedContext.IncrementAndGetLoadedGmlCount();
-
-                    // 各GMLファイルのインポート完了時に都市オブジェクトを処理
-                    DynamicTileImportProcessor.ProcessCityObjects(
-                        placedObjects,
-                        capturedContext,
-                        capturedDisplay,
-                        meshCode,
-                        currentCount);
-                }
-                catch (System.Exception ex)
-                {
-                    UnityEngine.Debug.LogError($"Dynamic tile callback error: {ex.Message}");
-                }
-            };
         }
     }
 }

@@ -8,6 +8,8 @@ using PLATEAU.CityInfo;
 using PLATEAU.Editor.Addressables;
 using PLATEAU.Util;
 using UnityEngine;
+using PLATEAU.CityImport.Import;
+using System.Threading.Tasks;
 
 namespace PLATEAU.DynamicTile
 {
@@ -138,6 +140,38 @@ namespace PLATEAU.DynamicTile
                 // 一時フォルダーを削除
                 DynamicTileExporter.CleanupTempFolder();
             }
+        }
+    }
+
+    /// <summary>
+    /// GMLインポート後の動的タイル処理を行うプロセッサ
+    /// </summary>
+    public class DynamicTilePostGmlImportProcessor : IPostGmlImportProcessor
+    {
+        private readonly DynamicTileProcessingContext context;
+        private readonly IProgressDisplay progressDisplay;
+
+        public DynamicTilePostGmlImportProcessor(DynamicTileProcessingContext context, IProgressDisplay progressDisplay)
+        {
+            this.context = context;
+            this.progressDisplay = progressDisplay;
+        }
+
+        public Task ProcessAsync(GmlImportResult result, CancellationToken token)
+        {
+            if (context == null || result.GeneratedObjects == null)
+                return Task.CompletedTask;
+
+            context.GmlCount = result.TotalGmlCount;
+            var currentCount = context.IncrementAndGetLoadedGmlCount();
+
+            DynamicTileImportProcessor.ProcessCityObjects(
+                result.GeneratedObjects,
+                context,
+                progressDisplay,
+                result.GridCode,
+                currentCount);
+            return Task.CompletedTask;
         }
     }
 }
