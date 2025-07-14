@@ -241,8 +241,11 @@ namespace PLATEAU.CityImport.Import.Tile
                 var gml = cityModelGml[cityModel];
                 var gmlName = Path.GetFileName(gml.Path);
 
+                // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+                // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+                var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{gmlName.TrimEnd('.','g','m','l')}" ;
                 //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
-                var gmlTrans = new GameObject($"{gmlName}_{zoomLevel}").transform;
+                var gmlTrans = new GameObject(gameObjectName).transform;
 
                 if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, gml, progressDisplay, gmlName, zoomLevel,
                         out var meshExtractOptions))
@@ -267,6 +270,27 @@ namespace PLATEAU.CityImport.Import.Tile
                 {
                     progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                 }
+
+                if(zoomLevel > 10)
+                {
+                    // Grid GameObject名変更
+                    // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+                    // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+                    for ( int i = 0; i <  gmlTrans.childCount; i++)
+                    {
+                        var child = gmlTrans.GetChild(i);
+                        if(child?.name.StartsWith("GRID") ?? false)
+                        {
+                            var gridNum = child.name.TrimStart('G', 'R', 'I', 'D');
+                            var splittedGml = gmlName.Split('_').ToList();
+                            splittedGml[0] = $"{splittedGml.First()}{gridNum}"; // GML名にグリッド番号を追加
+                            child.name = $"tile_zoom_{zoomLevel}_grid_{splittedGml.ToArray().Join2String("_").TrimEnd('.','g','m','l')}" ;
+                        }
+                    }
+                }
+
+                // TODO : Prefab生成して Addressablesに登録する処理を追加する
+                // gmlTrans をそのままPrefab化する？
             }
         }
 
@@ -309,7 +333,11 @@ namespace PLATEAU.CityImport.Import.Tile
 
                     var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
                     var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
-                    var gmlTrans = new GameObject($"{firstGmlName}_{zoomLevel}").transform;
+
+                    // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+                    // 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+                    var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{firstGmlName.TrimEnd('.', 'g', 'm', 'l')}";
+                    var gmlTrans = new GameObject(gameObjectName).transform;
 
                     if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
                         out var meshExtractOptions))
@@ -337,6 +365,10 @@ namespace PLATEAU.CityImport.Import.Tile
                             progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                         }
                     }
+
+                    // TODO : Prefab生成して Addressablesに登録する処理を追加する
+                    // gmlTrans をそのままPrefab化する？
+
                 }
             }
         }
@@ -478,9 +510,12 @@ namespace PLATEAU.CityImport.Import.Tile
             }
 
             var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
+
+            // TODO : Prefab生成して Addressablesに登録する処理を追加する ? 
+            //　ここで追加するか不明？
+
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
-
             return await PlateauToUnityModelConverter.PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf,
                 plateauModel, attributeDataHelper, true, startProgress, endProgress);
@@ -533,7 +568,8 @@ namespace PLATEAU.CityImport.Import.Tile
             bool success = false;
             try
             {
-                gmlTrans.parent = rootTrans;
+                // TODO : ここの設定はPrefab生成時は不要？
+                gmlTrans.parent = rootTrans; 
                 meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
                 success = true;
             }
