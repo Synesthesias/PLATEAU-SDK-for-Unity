@@ -35,7 +35,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Failed to initialize PLATEAURuntimeCameraTracker: {e.Message}");
+                Debug.LogError($"Failed to initialize PLATEAURuntimeCameraTracker: {e}");
                 return;
             }
 
