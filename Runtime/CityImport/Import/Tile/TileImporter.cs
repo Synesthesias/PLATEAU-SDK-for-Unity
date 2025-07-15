@@ -14,7 +14,6 @@ using PLATEAU.Util;
 using UnityEngine;
 using PLATEAU.CityImport.Import.CityImportProcedure;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
-using static PlasticGui.LaunchDiffParameters;
 
 namespace PLATEAU.CityImport.Import.Tile
 {
@@ -33,6 +32,10 @@ namespace PLATEAU.CityImport.Import.Tile
         private Dictionary<CityModel, GmlFile> cityModelGml;
 
         private readonly object cityModelLock = new object();
+
+        private IProgressDisplay progressDisplay;
+        private Transform rootTransform;
+        private CityImportConfig importConfig;
 
         /// <summary>
         /// TileImporterの初期化を行います。
@@ -74,15 +77,19 @@ namespace PLATEAU.CityImport.Import.Tile
         {
             Initialize();
 
+            this.progressDisplay = progressDisplay;
+            this.rootTransform = rootTrans;
+            this.importConfig = conf;
+
             try
             {
                 token?.ThrowIfCancellationRequested();
 
-                await ImportGmlParallel(fetchedGmlFiles, conf, rootTrans, progressDisplay, 10f, 40f, token); // GML読込
+                await ImportGmlParallel(fetchedGmlFiles, 10f, 30f, token); // GML読込
 
-                await ImportTiles(conf, 11, rootTrans, progressDisplay, 40f, 60f, token);
-                await ImportTiles(conf, 10, rootTrans, progressDisplay, 60f, 80f, token);
-                await ImportTiles(conf, 9, rootTrans, progressDisplay, 80f, 100f, token);
+                await ImportTiles(11, 40f, 60f, token);
+                await ImportTiles(10, 60f, 80f, token);
+                await ImportTiles(9, 80f, 100f, token);
 
             }
             catch (Exception ex) when (!(ex is OperationCanceledException))
@@ -104,14 +111,12 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportGml(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportGml(List<GmlFile> fetchedGmlFiles, float startProgess, float endProgress, CancellationToken? token)
         {
             foreach (var fetchedGmlFile in fetchedGmlFiles)
             {
                 token?.ThrowIfCancellationRequested();
-                await ImportGmlInner(fetchedGmlFile, conf, rootTrans, progressDisplay, startProgess, endProgress, token);
+                await ImportGmlInner(fetchedGmlFile, startProgess, endProgress, token);
             }
 
             Debug.Log($"GMLファイルのロードが完了しました。{cityModels.Count} 個のパッケージが見つかりました。");
@@ -126,9 +131,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportGmlParallel(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportGmlParallel(List<GmlFile> fetchedGmlFiles, float startProgess, float endProgress, CancellationToken? token)
         {
             // GMLファイルを同時に処理する最大数です。
             // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
@@ -142,7 +145,7 @@ namespace PLATEAU.CityImport.Import.Tile
                 await semGmlProcess.WaitAsync();
                 try
                 {
-                    await ImportGmlInner(fetchedGml, conf, rootTrans, progressDisplay, startProgess, endProgress, token);
+                    await ImportGmlInner(fetchedGml, startProgess, endProgress, token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -171,9 +174,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportGmlInner(GmlFile fetchedGmlFile, CityImportConfig conf,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgess, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportGmlInner(GmlFile fetchedGmlFile, float startProgess, float endProgress, CancellationToken? token)
         {
             token?.ThrowIfCancellationRequested();
 
@@ -206,17 +207,15 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportTiles(CityImportConfig conf, int zoomLevel,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
             if (zoomLevel <= 9)
             {
-                await ImportCombinedTiles(conf, zoomLevel, rootTrans, progressDisplay, startProgress, endProgress, token);
+                await ImportCombinedTiles(zoomLevel, startProgress, endProgress, token);
             }
             else
             {
-                await ImportEachTiles(conf, zoomLevel, rootTrans, progressDisplay, startProgress, endProgress, token);
+                await ImportEachTiles(zoomLevel, startProgress, endProgress, token);
             }
         }
 
@@ -229,9 +228,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportEachTiles(CityImportConfig conf, int zoomLevel,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportEachTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
             foreach (var cityModel in cityModels.Values.SelectMany(models => models))
             {
@@ -243,19 +240,19 @@ namespace PLATEAU.CityImport.Import.Tile
                 //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
                 var gmlTrans = new GameObject(gameObjectName).transform;
 
-                if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, gml, progressDisplay, gmlName, zoomLevel,
+                if (!TryCreateMeshExtractOptions(gmlTrans, gml, gmlName, zoomLevel,
                         out var meshExtractOptions))
                 {
                     return;
                 }
 
-                var packageConf = conf.GetConfigForPackage(gml.Package);
+                var packageConf = importConfig.GetConfigForPackage(gml.Package);
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
                 // ここはメインスレッドで呼ぶ必要があります。
-                var placingResult = await CityModelToScene(
-                    new List<CityModel>() { cityModel }, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, gmlName,
+                var placingResult = await CityModelToGameObject(
+                    new List<CityModel>() { cityModel }, meshExtractOptions, importConfig.AreaGridCodes, gmlTrans, gmlName,
                     packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, endProgress
+                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f)
                 );
 
                 if (placingResult.IsSucceed)
@@ -292,9 +289,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportCombinedTiles(CityImportConfig conf, int zoomLevel,
-            Transform rootTrans, IProgressDisplay progressDisplay, float startProgress, float endProgress,
-            CancellationToken? token)
+        internal async Task ImportCombinedTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
             foreach (var kv in cityModels)
             {
@@ -311,7 +306,7 @@ namespace PLATEAU.CityImport.Import.Tile
 
                 Debug.Log($"パッケージ: {package}, EPSG: {epsg} のモデルを配置します。");
 
-                var packageConf = conf.GetConfigForPackage(package);
+                var packageConf = importConfig.GetConfigForPackage(package);
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
 
                 var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
@@ -325,20 +320,20 @@ namespace PLATEAU.CityImport.Import.Tile
                     var gameObjectName = GetTileName(zoomLevel, firstGmlName);
                     var gmlTrans = new GameObject(gameObjectName).transform;
 
-                    if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
+                    if (!TryCreateMeshExtractOptions(gmlTrans, firstGml, firstGmlName, zoomLevel,
                         out var meshExtractOptions))
                     {
                         return;
                     }
 
                     // ここはメインスレッドで呼ぶ必要があります。
-                    var placingResult = await CityModelToScene(
-                        cityModelsInTile, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, firstGmlName,
+                    var placingResult = await CityModelToGameObject(
+                        cityModelsInTile, meshExtractOptions, importConfig.AreaGridCodes, gmlTrans, firstGmlName,
                         packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                        infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, endProgress
+                        infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f)
                     );
 
-                    foreach (var cityModel in cityModels)
+                    foreach (var cityModel in cityModelsInTile)
                     {
                         var gml = cityModelGml[cityModel];
                         string gmlName = Path.GetFileName(gml.Path);
@@ -454,7 +449,7 @@ namespace PLATEAU.CityImport.Import.Tile
         }
 
         /// <summary>
-        /// タイル結合時のシーン配置
+        /// CityModelをUnityのGameObjectに変換
         /// </summary>
         /// <param name="cityModels"></param>
         /// <param name="meshExtractOptions"></param>
@@ -469,9 +464,9 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="infoForToolkits"></param>
         /// <param name="granularity"></param>
         /// <returns></returns>
-        public async Task<GranularityConvertResult> CityModelToScene(
+        public async Task<GranularityConvertResult> CityModelToGameObject(
             List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
-            Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
+            Transform parentTrans, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token, UnityEngine.Material fallbackMaterial,
             CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity,
             int zoomLevel, float startProgress, float endProgress
@@ -502,13 +497,13 @@ namespace PLATEAU.CityImport.Import.Tile
 
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
-            return await PlateauToUnityModelConverter.PlateauModelToScene(
+             return await PlateauToUnityModelConverter.PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf,
                 plateauModel, attributeDataHelper, true, startProgress, endProgress);
         }
 
         /// <summary>
-        /// タイル結合時のメッシュ抽出処理です。
+        /// メッシュ抽出処理です。
         /// </summary>
         /// <param name="cityModels"></param>
         /// <param name="meshExtractOptions"></param>
@@ -524,7 +519,7 @@ namespace PLATEAU.CityImport.Import.Tile
                 var extent = code.Extent;
                 extent.Min.Height = -999999.0;
                 extent.Max.Height = 999999.0;
-                code.Dispose(); // 廃棄を明示
+                code.Dispose(); // 廃棄
                 return extent;
             }).ToList();
 
@@ -549,15 +544,15 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <param name="zoomLevel"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private bool TryCreateMeshExtractOptions(Transform gmlTrans, Transform rootTrans, CityImportConfig conf, GmlFile fetchedGmlFile, IProgressDisplay progressDisplay, string gmlName, int zoomLevel, out MeshExtractOptions result)
+        private bool TryCreateMeshExtractOptions(Transform gmlTrans, GmlFile fetchedGmlFile, string gmlName, int zoomLevel, out MeshExtractOptions result)
         {
             MeshExtractOptions meshExtractOptions;
             bool success = false;
             try
             {
                 // TODO : ここの設定はPrefab生成時は不要？
-                gmlTrans.parent = rootTrans;
-                meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
+                gmlTrans.parent = rootTransform;
+                meshExtractOptions = importConfig.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
                 success = true;
             }
             catch (Exception e)
