@@ -160,6 +160,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
         /// </summary>
         public void OnGmlImported(GmlImportResult result)
         {
+            if (result?.GeneratedObjects == null || !result.GeneratedObjects.Any())
+            {
+                Debug.LogWarning("No generated objects found in GmlImportResult. Skipping.");
+                return;
+            }
             var gml = new UniqueParentTransformList(result.GeneratedObjects.Select(obj => obj.transform)).CalcCommonParent();
             if (gml == null || !gml.name.EndsWith(".gml"))
             {
