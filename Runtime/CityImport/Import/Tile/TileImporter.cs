@@ -14,6 +14,7 @@ using PLATEAU.Util;
 using UnityEngine;
 using PLATEAU.CityImport.Import.CityImportProcedure;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
+using static PlasticGui.LaunchDiffParameters;
 
 namespace PLATEAU.CityImport.Import.Tile
 {
@@ -80,9 +81,7 @@ namespace PLATEAU.CityImport.Import.Tile
                 await ImportGmlParallel(fetchedGmlFiles, conf, rootTrans, progressDisplay, 10f, 40f, token); // GML読込
 
                 await ImportTiles(conf, 11, rootTrans, progressDisplay, 40f, 60f, token);
-
                 await ImportTiles(conf, 10, rootTrans, progressDisplay, 60f, 80f, token);
-
                 await ImportTiles(conf, 9, rootTrans, progressDisplay, 80f, 100f, token);
 
             }
@@ -240,9 +239,7 @@ namespace PLATEAU.CityImport.Import.Tile
 
                 var gml = cityModelGml[cityModel];
                 var gmlName = Path.GetFileName(gml.Path);
-
-                // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{gmlName.TrimEnd('.','g','m','l')}" ;
+                var gameObjectName = GetTileName(zoomLevel, gmlName);
                 //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
                 var gmlTrans = new GameObject(gameObjectName).transform;
 
@@ -270,20 +267,14 @@ namespace PLATEAU.CityImport.Import.Tile
                     progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                 }
 
-                if(zoomLevel > 10)
+                if (zoomLevel > 10)
                 {
                     // Grid GameObject名変更
-                    // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                    for ( int i = 0; i <  gmlTrans.childCount; i++)
+                    for (int i = 0; i < gmlTrans.childCount; i++)
                     {
                         var child = gmlTrans.GetChild(i);
-                        if(child?.name.StartsWith("GRID") ?? false)
-                        {
-                            var gridNum = child.name.TrimStart('G', 'R', 'I', 'D');
-                            var splittedGml = gmlName.Split('_').ToList();
-                            splittedGml[0] = $"{splittedGml.First()}{gridNum}"; // GML名にグリッド番号を追加
-                            child.name = $"tile_zoom_{zoomLevel}_grid_{splittedGml.ToArray().Join2String("_").TrimEnd('.','g','m','l')}" ;
-                        }
+                        var gridName = child.name;
+                        child.name = GetTileName(zoomLevel, gmlName, gridName);
                     }
                 }
 
@@ -308,7 +299,7 @@ namespace PLATEAU.CityImport.Import.Tile
             foreach (var kv in cityModels)
             {
                 token?.ThrowIfCancellationRequested();
-                
+
                 var (package, epsg) = kv.Key;
                 var cityModels = kv.Value;
 
@@ -330,10 +321,8 @@ namespace PLATEAU.CityImport.Import.Tile
                     token?.ThrowIfCancellationRequested();
 
                     var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
-                    var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString();
-
-                    // GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-                    var gameObjectName = $"tile_zoom_{zoomLevel}_grid_{firstGmlName.TrimEnd('.', 'g', 'm', 'l')}";
+                    var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString(); // 結合する場合は、最初のGML名、又は パッケージ名を使用
+                    var gameObjectName = GetTileName(zoomLevel, firstGmlName);
                     var gmlTrans = new GameObject(gameObjectName).transform;
 
                     if (!TryCreateMeshExtractOptions(gmlTrans, rootTrans, conf, firstGml, progressDisplay, firstGmlName, zoomLevel,
@@ -384,7 +373,7 @@ namespace PLATEAU.CityImport.Import.Tile
             Dictionary<string, List<(int, CityModel)>> CodeDict = new(); //key:３次メッシュコード value: List (グループIndex , CityModel)
 
             // 全て結合する場合は zoomLevel 0
-            if (zoomLevel == 0) 
+            if (zoomLevel == 0)
             {
                 tileGroup.Add(cityModels);
                 return tileGroup;
@@ -484,7 +473,7 @@ namespace PLATEAU.CityImport.Import.Tile
             List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token, UnityEngine.Material fallbackMaterial,
-            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity, 
+            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity,
             int zoomLevel, float startProgress, float endProgress
         )
         {
@@ -530,7 +519,8 @@ namespace PLATEAU.CityImport.Import.Tile
         {
             var model = Model.Create();
             if (cityModels.Count == 0) return model;
-            var extents = selectedGridCodes.GridCodes.Select(code => {
+            var extents = selectedGridCodes.GridCodes.Select(code =>
+            {
                 var extent = code.Extent;
                 extent.Min.Height = -999999.0;
                 extent.Max.Height = 999999.0;
@@ -538,12 +528,12 @@ namespace PLATEAU.CityImport.Import.Tile
                 return extent;
             }).ToList();
 
-            if(zoomLevel <= 9)
+            if (zoomLevel <= 9)
                 TileExtractor.ExtractWithCombine(ref model, cityModels, meshExtractOptions, extents); //結合
             else
-                TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents);　//分割、又はエリア単位
+                TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
 
-                Debug.Log("model extracted.");
+            Debug.Log("model extracted.");
             return model;
         }
 
@@ -566,7 +556,7 @@ namespace PLATEAU.CityImport.Import.Tile
             try
             {
                 // TODO : ここの設定はPrefab生成時は不要？
-                gmlTrans.parent = rootTrans; 
+                gmlTrans.parent = rootTrans;
                 meshExtractOptions = conf.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
                 success = true;
             }
@@ -599,6 +589,30 @@ namespace PLATEAU.CityImport.Import.Tile
 
             result = meshExtractOptions;
             return success;
+        }
+
+        /// <summary>
+        /// タイルのGameObject名を取得します。
+        /// GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+        /// 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+        /// meshcodeは、gameobjectnameに含まれている
+        /// 同名の場合の処理は別処理
+        /// </summary>
+        /// <param name="zoomLevel">9,10,11</param>
+        /// <param name="gmlName">CityGML名</param>
+        /// <param name="gridName">Grid分割されている場合のグリッド名(GRID1, GRID2...)</param>
+        /// <returns></returns>
+        public static string GetTileName(int zoomLevel, string gmlName, string gridName = null)
+        {
+            if (gridName?.StartsWith("GRID") ?? false)
+            {
+                // GRID名がある場合は、グリッド番号を抽出してGML名に追加
+                var gridNum = gridName.TrimStart('G', 'R', 'I', 'D');
+                var splittedGml = gmlName.Split('_').ToList();
+                splittedGml[0] = $"{splittedGml.First()}{gridNum}"; // GML名にグリッド番号を追加
+                gmlName = splittedGml.ToArray().Join2String("_");
+            }
+            return $"tile_zoom_{zoomLevel}_grid_{gmlName.TrimEnd('.', 'g', 'm', 'l')}";
         }
     }
 }

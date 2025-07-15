@@ -89,7 +89,6 @@ namespace PLATEAU.DynamicTile
             }
             TextureImporterCompression compression = TextureImporterCompression.Uncompressed;
             TextureImporterType textureType = TextureImporterType.Default;
-            bool mipmapEnabled = true;
             if (textureImporter != null)
             {
                 compression = textureImporter.textureCompression;
@@ -98,11 +97,10 @@ namespace PLATEAU.DynamicTile
                 //設定変更
                 textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
                 textureImporter.textureType = TextureImporterType.Default;
-                mipmapEnabled = textureImporter.mipmapEnabled;
                 textureImporter.SaveAndReimport();
             }
 
-            var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, mipmapEnabled);
+            var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, false);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
             ResizeTextureAsync(sourceTexture, newTexture);
 
@@ -179,7 +177,14 @@ namespace PLATEAU.DynamicTile
                     return;
                 }
                 // データをTexture2Dにロードします。
-                dest.LoadRawTextureData(request.GetData<byte>());
+                var data = request.GetData<byte>();
+                if(data.Length != dest.width * dest.height * 4)
+                {
+                    Debug.LogError($"Data size mismatch: expected {dest.width * dest.height * 4} bytes, got {data.Length} bytes.");
+                    RenderTexture.ReleaseTemporary(rt);
+                    return;
+                }
+                dest.LoadRawTextureData(data);
             }
             else
             {
