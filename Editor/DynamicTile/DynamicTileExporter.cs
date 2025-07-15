@@ -137,7 +137,10 @@ namespace PLATEAU.DynamicTile
             var prefab2Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 2, 10);
             var prefab4Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 4, 9);
 
-            RegisterAssets(new List<MultiResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data }, groupName, cityObject, metaStore);
+            var prefabs = new List<MultiResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data };
+            prefabs = prefabs.Where(p => p != null && p.Prefab != null).ToList();
+
+            RegisterAssets(prefabs, groupName, cityObject, metaStore);
 
             // シーン上のオブジェクトを削除
             GameObject.DestroyImmediate(convertedObject);
@@ -162,7 +165,7 @@ namespace PLATEAU.DynamicTile
             {
                 if (res == null || res.Prefab == null)
                 {
-                    Debug.LogWarning("変換結果がnullまたはプレハブがnullです。");
+                    Debug.Log($"Skipped null prefab.");
                     continue;
                 }
 
