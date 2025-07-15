@@ -141,7 +141,7 @@ namespace PLATEAU.CityImport.Config
                 return false;
             }
             
-            if (string.IsNullOrEmpty(DynamicTileImportConfig.OutputPath))
+            if (DynamicTileImportConfig.OutputPath.IsNullOrEmpty())
             {
                 Dialogue.Display("動的タイル（Addressable出力）を選択する場合は、出力先を指定してください", "OK");
                 return false;

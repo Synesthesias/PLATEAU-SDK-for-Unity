@@ -103,7 +103,8 @@ namespace PLATEAU.DynamicTile
                 // Assets外のパスを指定する場合はグループを分ける
                 var directoryName = Path.GetFileName(
                     BuildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-                groupName += "_" + directoryName;
+                var sanitizedDirectoryName = System.Text.RegularExpressions.Regex.Replace(directoryName, @"[^\w\-_]", "_");
+                groupName += "_" + sanitizedDirectoryName;
             }
             return groupName;
         }

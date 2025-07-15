@@ -32,7 +32,7 @@ namespace PLATEAU.Editor.DynamicTile
             // 動的タイルのバリデーション
             if (!config.ValidateForTile())
             {
-                Debug.LogError("validation failed.");
+                Debug.LogError($"validation failed.");
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace PLATEAU.Editor.DynamicTile
         public void CancelImport()
         {
             progressDisplay?.SetProgress(TileProgressTitle, 0f, "キャンセルされました。");
-            dynamicTileExporter.Cancel();
+            dynamicTileExporter?.Cancel();
         }
     }
     

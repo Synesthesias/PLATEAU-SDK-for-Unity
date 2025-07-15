@@ -108,8 +108,6 @@ namespace PLATEAU.CityAdjust.ChangeActive
         /// </summary>
         public static void EnableOnlyLargestLODInDuplicate(PLATEAUInstancedCityModel city)
         {
-            // var cityTrans = city.transform;
-            // SetActiveAll(cityTrans, true);
             var gmlTransforms = city.GmlTransforms;
             // 各GMLについて
             foreach (var gmlTrans in gmlTransforms)

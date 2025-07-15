@@ -64,7 +64,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                             string selected = EditorUtility.OpenFolderPanel("出力先フォルダを選択", "Assets", "");
                             if (!string.IsNullOrEmpty(selected))
                             {
-                                config.OutputPath = selected;
+                                config.OutputPath = selected.Replace('\\', '/');
                             }
                         }
                         EditorGUILayout.EndHorizontal();

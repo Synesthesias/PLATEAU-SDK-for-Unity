@@ -251,17 +251,7 @@ namespace PLATEAU.DynamicTile
             }
 
             // assetPathが既に相対パスであることを確認し、必要に応じて変換
-            string normalizedAssetPath = assetPath;
-            if (Path.IsPathRooted(assetPath))
-            {
-                // 絶対パスの場合は相対パスに変換
-                normalizedAssetPath = AssetPathUtil.GetAssetPath(assetPath);
-            }
-            else if (!assetPath.StartsWith("Assets"))
-            {
-                // Assetsで始まらない相対パスの場合は、Assetsからの相対パスに変換
-                normalizedAssetPath = AssetPathUtil.GetAssetPathFromRelativePath(assetPath);
-            }
+            string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(assetPath);
 
             string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset");
             // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
@@ -442,7 +432,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void Cancel()
         {
-
+            PLATEAUEditorEventListener.disableProjectChangeEvent = false;
             // Contextの破棄
             if (Context != null)
             {

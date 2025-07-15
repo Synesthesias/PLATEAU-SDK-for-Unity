@@ -1,3 +1,4 @@
+using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ namespace PLATEAU.DynamicTile
             {
                 // カタログから取得
                 var metaStorePath = await LoadCatalog(catalogPath, DynamicTileLabelName);
-                if (string.IsNullOrEmpty(metaStorePath))
+                if (metaStorePath.IsNullOrEmpty())
                 {
                     Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
                     return null;
@@ -144,7 +145,7 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(removedProtocolPath) || !File.Exists(removedProtocolPath))
             {
                 Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
-                return "";
+                return null;
             }
 
             // カタログファイルをロード
@@ -155,7 +156,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
                 Addressables.Release(catalogHandle);
-                return "";
+                return null;
             }
 
             // DynamicTileメタ情報のアドレスを取得
@@ -190,7 +191,7 @@ namespace PLATEAU.DynamicTile
 
             Addressables.Release(catalogHandle);
 
-            return "";
+            return null;
         }
 
 
