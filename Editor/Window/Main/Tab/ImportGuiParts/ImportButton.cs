@@ -1,10 +1,12 @@
-﻿using PLATEAU.CityImport.Config;
+﻿using PLATEAU.CityAdjust.ChangeActive;
+using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
@@ -89,7 +91,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         /// </summary>
         private void ExecuteNormalImport(CityImportConfig config, IProgressDisplay progressDisplay)
         {
-            var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, null);
+
+            var postGmlProcessors = new List<IPostGmlImportProcessor>
+            {
+                new CityDuplicateProcessor() // 重複した低LODを非表示にします。
+            };
+            var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
             
             task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
             task.ContinueWithErrorCatch();

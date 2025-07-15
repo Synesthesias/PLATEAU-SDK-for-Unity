@@ -145,7 +145,6 @@ namespace PLATEAU.CityImport.Import
                 }));
 
                 // インポート完了後の処理
-                CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }

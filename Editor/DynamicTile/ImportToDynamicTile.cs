@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
@@ -46,10 +47,11 @@ namespace PLATEAU.Editor.DynamicTile
             }
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
             
-            // GMLを1つインポートした事後処理として、動的タイルを作る処理を登録します。
+            // GMLを1つインポート完了したときの処理を登録します。
             var postGmlImport = new List<IPostGmlImportProcessor>
             {
-                dynamicTileExporter
+                new CityDuplicateProcessor(), // 重複した低LODを非表示にします
+                dynamicTileExporter // 動的タイル化します
             };
             
             // インポートを実行
