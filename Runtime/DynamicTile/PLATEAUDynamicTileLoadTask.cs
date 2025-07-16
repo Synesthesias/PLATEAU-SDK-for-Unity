@@ -76,7 +76,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
         {
-            return await tileLoader?.Load(tile, timeoutSeconds);
+            if (tileLoader != null)
+            {
+                return await tileLoader.Load(tile, timeoutSeconds);
+            }
+
+            return LoadResult.Failure;
         }
 
         /// <summary>
@@ -88,7 +93,12 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public async Task<LoadResult> LoadWithRetry(PLATEAUDynamicTile tile, int maxRetryCount = 2, float delaySeconds = 0.3f)
         {
-            return await tileLoader?.LoadWithRetry(tile, maxRetryCount, delaySeconds);
+            if (tileLoader != null)
+            {
+                return await tileLoader.LoadWithRetry(tile, maxRetryCount, delaySeconds);
+            }
+
+            return LoadResult.Failure;
         }
 
         /// <summary>

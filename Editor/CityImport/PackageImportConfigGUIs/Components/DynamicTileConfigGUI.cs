@@ -29,6 +29,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
         public void Draw()
         {
             var config = conf.DynamicTileImportConfig;
+            bool folderButtonClicked = false;
 
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -61,26 +62,22 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         config.OutputPath = EditorGUILayout.TextField(config.OutputPath ?? "");
                         if (GUILayout.Button("参照...", GUILayout.Width(60)))
                         {
-                            string selected = EditorUtility.OpenFolderPanel("出力先フォルダを選択", "Assets", "");
-                            if (!string.IsNullOrEmpty(selected))
-                            {
-                                config.OutputPath = selected.Replace('\\', '/');
-                            }
+                            folderButtonClicked = true;
                         }
                         EditorGUILayout.EndHorizontal();
 
                         GUILayout.Space(5);
+                        
+                        // infoメッセージボックス
+                        EditorGUILayout.HelpBox(
+                            "[info] Assetsフォルダ内ならビルドに含めます。Assetsフォルダ外ならビルドに含めません",
+                            MessageType.Info);
                         
                         // 警告表示
                         if (string.IsNullOrEmpty(config.OutputPath))
                         {
                             EditorGUILayout.HelpBox("出力先を選択してください。", MessageType.Warning);
                         }
-
-                        // infoメッセージボックス
-                        EditorGUILayout.HelpBox(
-                            "[info] Assetsフォルダ内ならビルドに含めます。Assetsフォルダ外ならビルドに含めません",
-                            MessageType.Info);
 
                         GUILayout.Space(5);
 
@@ -92,6 +89,18 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
 
                         
                     }
+                    
+                }
+            }
+            
+            // タイル出力先のフォルダ選択パネルを表示します。これはVerticalScopeの外で行わないとエラーログが出ます。
+            if (folderButtonClicked)
+            {
+                string selected = EditorUtility.OpenFolderPanel("出力先フォルダを選択", "Assets", "");
+                GUI.FocusControl(null);
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    config.OutputPath = selected.Replace('\\', '/');
                 }
             }
         }

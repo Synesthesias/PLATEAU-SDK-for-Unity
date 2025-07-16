@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.CityImport
             guiComponents = new IEditorDrawable[]
             {
                 new DynamicTileConfigGUI(cityImportConf, packageConfigGUIList),
+                new HeaderElementGroup("", "地物別設定", HeaderType.HeaderNum3),
                 packageConfigGUIList,
                 new PositionConfGUI(cityImportConf)
             };
@@ -36,18 +37,8 @@ namespace PLATEAU.Editor.CityImport
         /// </summary>
         public void Draw()
         {
-            // 動的タイルの設定GUIを最初に描画
-            guiComponents[0].Draw();
-            
-            PlateauEditorStyle.Heading("地物別設定", "num3.png");
-
             foreach (var guiComponent in guiComponents)
             {
-                if (guiComponent is DynamicTileConfigGUI)
-                {
-                    // すでに描画済みなのでスキップ
-                    continue;
-                }
                 guiComponent.Draw();
             }
         }

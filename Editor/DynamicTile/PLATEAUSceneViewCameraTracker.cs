@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using PLATEAU.Util.Async;
+using System.Threading.Tasks;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -97,7 +99,7 @@ namespace PLATEAU.DynamicTile
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
 
-            InitView();
+            InitView().ContinueWithErrorCatch();
 
             IsRunning = true;
         }
@@ -118,7 +120,7 @@ namespace PLATEAU.DynamicTile
             Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
-            InitView();
+            InitView().ContinueWithErrorCatch();
         }
 
         static void OnProjectChanged()
@@ -128,7 +130,7 @@ namespace PLATEAU.DynamicTile
 
             Log("Project Changed");
 
-            InitView();
+            InitView().ContinueWithErrorCatch();
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
@@ -151,7 +153,7 @@ namespace PLATEAU.DynamicTile
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
                 Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
-                InitView();
+                InitView().ContinueWithErrorCatch();
             }
         }
 
@@ -162,10 +164,10 @@ namespace PLATEAU.DynamicTile
                 return;
 
             Log($"Scene Opened: {scene.name}");
-            InitView();
+            InitView().ContinueWithErrorCatch();
         }
 
-        static async void InitView()
+        private static async Task InitView()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 return;
