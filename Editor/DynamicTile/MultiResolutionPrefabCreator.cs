@@ -165,8 +165,11 @@ namespace PLATEAU.DynamicTile
             var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
-            Debug.Log($"Prefab Created for : {target.name}");
-
+            if (result != null)
+            {
+                Debug.Log($"Prefab Created for : {target.name}"); 
+            }
+            
             //破棄
             Object.DestroyImmediate(clone);
 
@@ -183,52 +186,50 @@ namespace PLATEAU.DynamicTile
         /// <returns>各解像度ごとのsharedMaterialsリスト</returns>
         private Material[] CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
         {
-            Material[] materials = new Material[0]; // 空の配列で初期化
+            Material[] materials = Array.Empty<Material>(); // 空の配列で初期化
 
             var renderer = source.GetComponentInChildren<Renderer>();
-            if (renderer != null)
+            if (renderer == null)
             {
-                if (renderer.sharedMaterials.Length > 0)
+                return materials; // なければ空配列
+            }
+
+            if (renderer.sharedMaterials.Length > 0)
+            {
+                //元のMaterial複製
+                materials = new Material[renderer.sharedMaterials.Length];
+                Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
+
+                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
                 {
-                    //元のMaterial複製
-                    materials = new Material[renderer.sharedMaterials.Length];
-                    Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
-
-                    for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+                    var material = renderer.sharedMaterials[i];
+                    if (material != null && material.HasMainTextureAttribute())
                     {
-                        var material = renderer.sharedMaterials[i];
-                        if (material != null && material.HasMainTextureAttribute())
+                        Texture2D albedoTexture = material.mainTexture as Texture2D;
+                        if (albedoTexture != null)
                         {
-                            Texture2D albedoTexture = material.mainTexture as Texture2D;
-                            if (albedoTexture != null)
-                            {
-                                // Texture生成
-                                var textureResizer = new PrefabTextureResizer(saveDirectory);
-                                var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
+                            // Texture生成
+                            var textureResizer = new PrefabTextureResizer(saveDirectory);
+                            var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
 
-                                // Material差替え 保存　
-                                var newMaterial = new Material(material);
-                                newMaterial.mainTexture = newTexture;
+                            // Material差替え 保存　
+                            var newMaterial = new Material(material);
+                            newMaterial.mainTexture = newTexture;
 
-                                var materialName = $"{newMaterial.name}_{zoomLevel}";
-                                SaveMaterialAsset(newMaterial, saveDirectory, materialName);
+                            var materialName = $"{newMaterial.name}_{zoomLevel}";
+                            SaveMaterialAsset(newMaterial, saveDirectory, materialName);
 
-                                materials[i] = newMaterial; // 変更後のマテリアルをセット    
-                            }
-                            else
-                                Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
+                            materials[i] = newMaterial; // 変更後のマテリアルをセット    
                         }
-                        else if (material == null)
-                            Debug.LogWarning($"Material at index {i} is null in {source.name}");
+                        else
+                            Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
                     }
+                    else if (material == null)
+                        Debug.LogWarning($"Material at index {i} is null in {source.name}");
                 }
-                else
-                    Debug.LogWarning($"No shared materials found in renderer for {source.name}");
             }
             else
-            {
-                Debug.LogError($"renderer is null!!　{source.name}");
-            }
+                Debug.LogWarning($"No shared materials found in renderer for {source.name}");
 
             return materials;
         }
@@ -249,7 +250,7 @@ namespace PLATEAU.DynamicTile
             var renderer = target.GetComponentInChildren<Renderer>();
             if (renderer == null)
             {
-                Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
+                Debug.Log($"Skipping {target.name} because there is no Renderer component.");
                 return null;
             }
 

@@ -14,16 +14,28 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
 
         public override void Draw()
         {
-            Conf.MeshGranularity = GranularityGUI.Draw("モデル結合", Conf.MeshGranularity);
+            Conf.MeshGranularity = GranularityGUI.Draw("モデル結合", Conf.MeshGranularity, Conf.ForcePerCityModelArea);
         }
     }
 
     internal static class GranularityGUI
     {
-        public static MeshGranularity Draw(string label, MeshGranularity current)
+        public static MeshGranularity Draw(string label, MeshGranularity current, bool forcePerCityModelArea)
         {
-            return (MeshGranularity)EditorGUILayout.Popup(label,
-                (int)current, new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" });
+            var options = new[] { "最小地物単位(壁面,屋根面等)", "主要地物単位(建築物,道路等)", "地域単位" };
+            int selectedIndex = (int)current;
+            
+            if (forcePerCityModelArea)
+            {
+                // 地域単位のみを選択可能にする
+                options = new[] { "地域単位" };
+                selectedIndex = 0; // 地域単位のみなので常に0
+                EditorGUILayout.Popup(label, selectedIndex, options);
+                return MeshGranularity.PerCityModelArea; // 常に地域単位を返す
+            }
+            
+            selectedIndex = EditorGUILayout.Popup(label, selectedIndex, options);
+            return (MeshGranularity)selectedIndex;
         }
     }
 }
