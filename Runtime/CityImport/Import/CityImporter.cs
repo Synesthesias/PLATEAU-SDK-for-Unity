@@ -8,7 +8,6 @@ using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.CityImport.Import.CityImportProcedure;
-using PLATEAU.CityImport.Import.Tile;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -22,14 +21,15 @@ namespace PLATEAU.CityImport.Import
     /// </summary>
     public static class CityImporter
     {
-        public static bool tileImport = true;
-      
+        
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
+        /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token)
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
             if (config == null)
             {
@@ -104,57 +104,47 @@ namespace PLATEAU.CityImport.Import
             try
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
-
-                if (tileImport)
+                
+                // GMLファイルを同時に処理する最大数です。
+                // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+                // ただしメモリ使用量が増えます。
+                var semGmlProcess = new SemaphoreSlim(4);
+                await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
                 {
-                    // タイルインポート処理を行います。
-                    using var tileImporter = new TileImporter();
-                    await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token);
-                }
-                else 
-                {
-                    // GMLファイルを同時に処理する最大数です。
-                    // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-                    // ただしメモリ使用量が増えます。
-                    var semGmlProcess = new SemaphoreSlim(4);
-                    await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+                    await semGmlProcess.WaitAsync(); 
+                    try
                     {
-                        await semGmlProcess.WaitAsync();
-                        try
+                        if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                         {
-
-                            if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                            try
                             {
-                                try
-                                {
-                                    // GMLを1つインポートします。
-                                    // ここはメインスレッドで呼ぶ必要があります。
-                                    await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
-                                }
-                                catch (OperationCanceledException)
-                                {
-                                    progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                                }
-                                catch (Exception e)
-                                {
-                                    Debug.LogError(e);
-                                }
+                                // GMLを1つインポートします。
+                                // ここはメインスレッドで呼ぶ必要があります。
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
+                                    postGmlProcessors, fetchedGmls.Count);
+                            }
+                            catch(OperationCanceledException)
+                            {
+                                progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError(e);
                             }
                         }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-                        finally
-                        {
-                            semGmlProcess.Release();
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                    finally
+                    {
+                        semGmlProcess.Release();
+                    }
 
-                    }));
-                    CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-                }
+                }));
 
-                // インポート完了後の処理  
+                // インポート完了後の処理
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }
@@ -209,6 +199,7 @@ namespace PLATEAU.CityImport.Import
                     string gmlName = Path.GetFileName(gml.Path);
                     try
                     {
+                        
                         fetchedGmls.Add(await GmlImporter.Fetch(gml, remoteDownloadPath, config, progressDisplay, token));
                         progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
                     }

@@ -11,6 +11,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Import.CityImportProcedure
@@ -45,10 +46,11 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// <summary>
         /// fetch済みのGMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
+        /// GML1つを読んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token)
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null, int totalGmlCount = 0)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
@@ -84,6 +86,16 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             if (placingResult.IsSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
+                
+                // 1つのGMLのインポート後の処理をprocessorsに委譲
+                if (postGmlProcessors != null)
+                {
+                    var result = new GmlImportResult(placingResult.GeneratedObjs, totalGmlCount, fetchedGmlFile.GridCode.StringCode, fetchedGmlFile);
+                    foreach (var processor in postGmlProcessors)
+                    {
+                        processor.OnGmlImported(result);
+                    }
+                }
             }
             else
             {

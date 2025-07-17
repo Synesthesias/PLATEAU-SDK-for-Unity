@@ -5,6 +5,8 @@ using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -34,6 +36,11 @@ namespace PLATEAU.CityImport.Config
         /// 都市モデル読み込みの、パッケージ種ごとの設定です。
         /// </summary>
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
+
+        /// <summary>
+        /// 動的タイルの設定項目です。
+        /// </summary>
+        public DynamicTileImportConfig DynamicTileImportConfig { get; set; } = new DynamicTileImportConfig();
 
         private CityImportConfig(){}
 
@@ -115,13 +122,32 @@ namespace PLATEAU.CityImport.Config
         internal MeshExtractOptions CreateNativeConfigFor(PredefinedCityModelPackage package, GmlFile gml)
         {
             var packageConf = GetConfigForPackage(package);
-            var opt = packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID, gml);
-            return opt;
+            return packageConf.ConvertToNativeOption(ReferencePoint, ConfBeforeAreaSelect.CoordinateZoneID, gml);
         } 
         
         private static bool ShouldExcludeCityObjectOutsideExtent(PredefinedCityModelPackage package)
         {
             return package != PredefinedCityModelPackage.Relief;
-        }       
+        }
+
+        /// <summary>
+        /// 動的タイル生成モードでのインポートに適した設定かどうかを検証して返します。
+        /// </summary>
+        public bool ValidateForTile()
+        {
+            if (DynamicTileImportConfig == null)
+            {
+                Debug.LogError("CityImportConfigまたはDynamicTileImportConfigがnullです。");
+                return false;
+            }
+            
+            if (DynamicTileImportConfig.OutputPath.IsNullOrEmpty())
+            {
+                Dialogue.Display("動的タイル（Addressable出力）を選択する場合は、出力先を指定してください", "OK");
+                return false;
+            }
+
+            return true;
+        }
     }
 }

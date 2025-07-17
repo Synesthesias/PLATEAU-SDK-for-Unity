@@ -206,8 +206,11 @@ namespace PLATEAU.DynamicTile
             var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
-            Debug.Log($"Prefab Created for : {target.name}");
-
+            if (result != null)
+            {
+                Debug.Log($"Prefab Created for : {target.name}"); 
+            }
+            
             //破棄
             Object.DestroyImmediate(clone);
 
@@ -224,8 +227,7 @@ namespace PLATEAU.DynamicTile
         /// <returns>各解像度ごとのsharedMaterialsリスト</returns>
         private Material[] CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
         {
-            Material[] materials = new Material[0]; // 空の配列で初期化
-
+            Material[] materials = Array.Empty<Material>(); // 空の配列で初期化
             var renderers = source.GetComponentsInChildren<Renderer>();
             if (renderers == null || renderers.Length == 0)
             {
@@ -302,7 +304,7 @@ namespace PLATEAU.DynamicTile
             var renderers = target.GetComponentsInChildren<Renderer>();
             if (renderers == null || renderers.Length == 0)
             {
-                Debug.LogError($"Renderer is null in {target.name}. Cannot save prefab without Renderer.");
+                Debug.Log($"Skipping {target.name} because there is no Renderer component.");
                 return null;
             }
             else

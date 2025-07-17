@@ -93,5 +93,22 @@ namespace PLATEAU.Util
             return incrementalPathName;
         }
 
+        public static string NormalizeAssetPath(string assetPath)
+        {
+            string normalizedAssetPath = assetPath;
+            if (Path.IsPathRooted(assetPath))
+            {
+                // 絶対パスの場合は相対パスに変換
+                normalizedAssetPath = AssetPathUtil.GetAssetPath(assetPath);
+            }
+            else if (!assetPath.StartsWith("Assets"))
+            {
+                // Assetsで始まらない相対パスの場合は、Assetsからの相対パスに変換
+                normalizedAssetPath = AssetPathUtil.GetAssetPathFromRelativePath(assetPath);
+            }
+
+            return normalizedAssetPath;
+        }
+
     }
 }

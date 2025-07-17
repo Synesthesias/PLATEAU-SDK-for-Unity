@@ -1,3 +1,4 @@
+using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -53,17 +54,19 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError("Addressablesの初期化に失敗しました。");
                 return null;
             }
+
             Addressables.Release(init);
-            
+
             if (!string.IsNullOrEmpty(catalogPath))
             {
                 // カタログから取得
                 var metaStorePath = await LoadCatalog(catalogPath, DynamicTileLabelName);
-                if (string.IsNullOrEmpty(metaStorePath))
+                if (metaStorePath.IsNullOrEmpty())
                 {
                     Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
                     return null;
                 }
+
                 // meta情報をロード
                 var metaStore = LoadMetaStore(metaStorePath);
                 if (metaStore == null)
@@ -76,37 +79,35 @@ namespace PLATEAU.DynamicTile
             else
             {
                 // catalogPathが空なのでUnityプロジェクト内のAddressable Groupから取得
-                var handle = Addressables.LoadResourceLocationsAsync(DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
+                var handle =
+                    Addressables.LoadResourceLocationsAsync(DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
                 await WaitForCompletionAsync(handle);
-                
+
                 if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result.Count == 0)
                 {
                     Debug.LogError($"ラベル '{DynamicTileLabelName}' の PLATEAUDynamicTileMetaStore が見つかりません");
                     Addressables.Release(handle);
                     return null;
                 }
-                
+
                 // 最初に見つかったメタストアを直接ロード
                 var metaStoreHandle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(handle.Result[0]);
                 await WaitForCompletionAsync(metaStoreHandle);
-                
+
                 Addressables.Release(handle);
-                
+
                 if (metaStoreHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError("PLATEAUDynamicTileMetaStore のロードに失敗しました");
                     Addressables.Release(metaStoreHandle);
                     return null;
                 }
-                
+
                 var metaStore = metaStoreHandle.Result;
                 Addressables.Release(metaStoreHandle);
-                
+
                 return metaStore;
             }
-            
-
-            
         }
 
         /// <summary>
@@ -140,6 +141,14 @@ namespace PLATEAU.DynamicTile
                 catalogPath = "file://" + catalogPath;
             }
 
+            var removedProtocolPath = RemoveFileProtocol(catalogPath);
+            if (string.IsNullOrEmpty(removedProtocolPath) || !File.Exists(removedProtocolPath))
+            {
+                Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
+                return null;
+            }
+
+            // カタログファイルをロード
             var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
             await WaitForCompletionAsync(catalogHandle);
 
@@ -147,7 +156,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
                 Addressables.Release(catalogHandle);
-                return "";
+                return null;
             }
 
             // DynamicTileメタ情報のアドレスを取得
@@ -163,21 +172,31 @@ namespace PLATEAU.DynamicTile
 
                     if (bundlePath != null)
                     {
-                        Addressables.Release(catalogHandle);
                         // メタ情報のパスを返す
-                        return Path.Combine(bundlePath, location.Dependencies[0].PrimaryKey);
+                        foreach (var iResourceLocation in location.Dependencies)
+                        {
+                            var fullPath = iResourceLocation.InternalId;
+                            var dirName = Path.GetDirectoryName(fullPath);
+
+                            // ディレクトリ名が一致するか確認
+                            if (dirName != null && dirName.Contains(bundlePath))
+                            {
+                                Addressables.Release(catalogHandle);
+                                return iResourceLocation.InternalId;
+                            }
+                        }
                     }
                 }
             }
 
             Addressables.Release(catalogHandle);
 
-            return "";
+            return null;
         }
-        
+
 
         /// <summary>
-        /// meta情報をロードします。
+        /// パスをもとに、meta情報をロードします。
         /// </summary>
         /// <returns></returns>
         private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStorePath)
@@ -203,6 +222,7 @@ namespace PLATEAU.DynamicTile
                         Debug.LogWarning($"バンドル内にアセットが見つかりません: {metaStorePath}");
                         return null;
                     }
+
                     metaStore = bundle.LoadAsset<PLATEAUDynamicTileMetaStore>(assetNames[0]);
                     bundle.Unload(false);
                 }
@@ -215,7 +235,8 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"MetaStoreのロード中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
             }
+
             return metaStore;
         }
     }
-} 
+}

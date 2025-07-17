@@ -1,5 +1,6 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -194,18 +195,24 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 破棄時にすべてのロード済みオブジェクトをアンロード
         /// </summary>
-        private async void OnDestroy()
+        private void OnDestroy()
         {
-            await loadTask?.DestroyTask();
+            if (loadTask != null)
+            {
+                loadTask.DestroyTask().ContinueWithErrorCatch();
+            }
             ClearTiles();
         }
 
         /// <summary>
         /// Job Systemを使用している場合、OnDisableでDisposeする
         /// </summary>
-        private async void OnDisable()
+        private void OnDisable()
         {
-            await loadTask?.DestroyTask();
+            if (loadTask != null)
+            {
+                loadTask.DestroyTask().ContinueWithErrorCatch();
+            }
         }
 
         /// <summary>
@@ -326,7 +333,6 @@ namespace PLATEAU.DynamicTile
         public bool CheckIfCameraPositionHasChanged(Vector3 position, float threshold = 0.01f)
         {
             return Vector3.Distance(LastCameraPosition, position) > threshold;
-            //return (position != LastCameraPosition);
         }
 
         /// <summary>
@@ -342,7 +348,8 @@ namespace PLATEAU.DynamicTile
             if (DynamicTiles.Count <= 0)
                 return;
 
-            await loadTask?.UpdateAssetsByCameraPosition(position, useJobSystem, timeoutSeconds); 
+            if (loadTask == null) return;
+            await loadTask.UpdateAssetsByCameraPosition(position, useJobSystem, timeoutSeconds); 
         }
 
         /// <summary>
@@ -350,7 +357,10 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public async Task CancelLoadTask()
         {
-            await loadTask?.CancelLoadTask(); // タスクのキャンセルをタスクに委譲
+            if (loadTask != null)
+            {
+                await loadTask.CancelLoadTask().ContinueWithErrorCatch(); // タスクのキャンセルをタスクに委譲
+            }
         }
 
         /// <summary>
@@ -360,7 +370,12 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         internal async Task<LoadResult> PrepareLoadTile(PLATEAUDynamicTile tile)
         {
-            return await loadTask?.PrepareLoadTile(tile);
+            if (loadTask != null)
+            {
+                return await loadTask.PrepareLoadTile(tile);
+            }
+
+            return LoadResult.Failure;
         }
 
         /// <summary>

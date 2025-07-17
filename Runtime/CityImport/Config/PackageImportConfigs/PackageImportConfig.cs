@@ -60,6 +60,12 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
             set => ConfExtendable.DoSetAttrInfo = value;
         }
 
+        public bool ForcePerCityModelArea
+        {
+            get => ConfExtendable.ForcePerCityModelArea;
+            set => ConfExtendable.ForcePerCityModelArea = value;
+        }
+
 
         public LODRange LODRange { get; set; }
 
@@ -69,13 +75,15 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
 
         private PackageImportConfig(PredefinedCityModelPackage package, bool importPackage, bool includeTexture,
             LODRange lodRange, MeshGranularity meshGranularity, bool doSetMeshCollider, bool doSetAttrInfo,
-            Material fallbackMaterial, bool enableTexturePacking, TexturePackingResolution texturePackingResolution)
+            Material fallbackMaterial, bool enableTexturePacking, TexturePackingResolution texturePackingResolution,
+            bool forcePerCityModelArea = false)
         {
             Package = package;
             ImportPackage = importPackage;
             ConfExtendable = new PackageImportConfigExtendable(
                 includeTexture, meshGranularity, doSetMeshCollider,
-                doSetAttrInfo, enableTexturePacking, texturePackingResolution
+                doSetAttrInfo, enableTexturePacking, texturePackingResolution,
+                forcePerCityModelArea
             );
             LODRange = lodRange;
             FallbackMaterial = fallbackMaterial;
@@ -86,7 +94,8 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
             src.Package, src.ImportPackage, src.IncludeTexture, src.LODRange,
             src.MeshGranularity, src.DoSetMeshCollider,
             src.DoSetAttrInfo, src.FallbackMaterial,
-            src.EnableTexturePacking, src.TexturePackingResolution
+            src.EnableTexturePacking, src.TexturePackingResolution,
+            src.ForcePerCityModelArea
         )
         {
         }
@@ -114,12 +123,12 @@ namespace PLATEAU.CityImport.Config.PackageImportConfigs
                 importPackage: availableMaxLOD >= 0, // 存在しないものはロードしません
                 includeTexture: predefined.hasAppearance,
                 lodRange: lodRange,
-                MeshGranularity.PerPrimaryFeatureObject,
+                meshGranularity: MeshGranularity.PerPrimaryFeatureObject,
                 doSetMeshCollider: true,
                 doSetAttrInfo: true,
+                fallbackMaterial: Util.FallbackMaterial.LoadByPackage(package),
                 enableTexturePacking: true,
-                texturePackingResolution: TexturePackingResolution.W4096H4096,
-                fallbackMaterial: Util.FallbackMaterial.LoadByPackage(package));
+                texturePackingResolution: TexturePackingResolution.W4096H4096);
 
             // パッケージ種に応じてクラスを分けます。
             // これと似たロジックが PackageLoadSettingGUI.PackageLoadSettingGUIList にあるので、変更時はそちらも合わせて変更をお願いします。

@@ -37,7 +37,6 @@ namespace PLATEAU.CityImport.Import.Convert
             CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
             )
         {
-            Debug.Log($"load started");
 
             token?.ThrowIfCancellationRequested();
             AttributeDataHelper attributeDataHelper =
@@ -147,7 +146,6 @@ namespace PLATEAU.CityImport.Import.Convert
                 return extent;
             }).ToList();
             MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);
-            Debug.Log("model extracted.");
             return model;
         }
     }
