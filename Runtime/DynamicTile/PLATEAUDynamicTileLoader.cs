@@ -54,8 +54,15 @@ namespace PLATEAU.DynamicTile
                     try
                     {
                         await tile.LoadHandle.Task;
+                    }  
+                    //catch (OperationCanceledException){ /*キャンセル済みタスクの完了待機時の例外は無視*/ }
+                    catch (Exception ex)
+                    {
+                        if (ex is OperationCanceledException)
+                        { /*キャンセル済みタスクの完了待機時の例外は無視*/}
+                        else
+                            DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");                    
                     }
-                    catch (OperationCanceledException){ /*キャンセル済みタスクの完了待機時の例外は無視*/ }
 
                     tile.LoadHandleCancellationTokenSource.Dispose();
                     tile.LoadHandleCancellationTokenSource = null;

@@ -14,11 +14,121 @@ using PLATEAU.Util;
 using UnityEngine;
 using PLATEAU.CityImport.Import.CityImportProcedure;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
+using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.Geometries;
 
 namespace PLATEAU.CityImport.Import.Tile
 {
     internal class TileImporter : IDisposable
     {
+
+        /// <summary>
+        /// <see cref="CityImporter"/> クラスのメインメソッドです。
+        /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
+        /// メインスレッドで呼ぶ必要があります。
+        /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
+        /// </summary>
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
+        {
+            if (config == null)
+            {
+                Debug.LogError("CityImportConfig が null です。");
+                return;
+            }
+
+            progressDisplay ??= new DummyProgressDisplay();
+            var datasetSourceConfig = config.ConfBeforeAreaSelect.DatasetSourceConfig;
+
+
+            if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
+            {
+                Debug.LogError($"インポート元パスが存在しません。 sourcePath = {localConf.LocalSourcePath}");
+                return;
+            }
+
+            progressDisplay.SetProgress("GMLファイル検索", 10f, "");
+            List<GmlFile> targetGmls = null;
+            try
+            {
+                targetGmls = await Task.Run(() => config.SearchMatchingGMLList(token));
+            }
+            catch (OperationCanceledException)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "キャンセルされました");
+            }
+            catch (Exception)
+            {
+                progressDisplay.SetProgress("GMLファイル検索", 0f, "失敗 : GMLファイルを検索できませんでした。");
+                throw;
+            }
+
+            progressDisplay.SetProgress("GMLファイル検索", 100f, "完了");
+
+            if (targetGmls == null || targetGmls.Count <= 0)
+            {
+                Debug.LogError("該当するGMLファイルがありません。");
+                return;
+            }
+
+            foreach (var gml in targetGmls)
+            {
+                progressDisplay.SetProgress(Path.GetFileName(gml.Path), 0f, "未処理");
+            }
+
+            // 都市ゲームオブジェクト階層のルートを生成します。
+            // ここで指定するゲームオブジェクト名は仮であり、あとからインポートしたGMLファイルパスに応じてふさわしいものに変更します。
+            var rootTrans = new GameObject("インポート中です...").transform;
+
+            // 基準点を設定します。基準点はどのGMLファイルでも共通です。（そうでないと複数のGMLファイル間で位置が合わないため。）
+            var referencePoint = config.ReferencePoint;
+
+            // ルートのGameObjectにコンポーネントを付けます。 
+            var cityModelComponent = rootTrans.gameObject.AddComponent<PLATEAUInstancedCityModel>();
+            cityModelComponent.GeoReference =
+                GeoReference.Create(referencePoint, PackageImportConfig.UnitScale, PackageImportConfig.MeshAxes, config.ConfBeforeAreaSelect.CoordinateZoneID);
+
+            // ローカルインポートの場合は Fetch（ファイルコピー）を省略し、直接 GML ファイルパスを使用します。
+            // リモートインポートの場合はFetch（ダウンロード） します。
+
+            // リモートインポートの場合は一時フォルダを作成
+            bool isRemoteImport = datasetSourceConfig is DatasetSourceConfigRemote;
+            string remoteDownloadPath = datasetSourceConfig is DatasetSourceConfigRemote ? PathUtil.GetTempImportDir() : "";
+            if (isRemoteImport && !Directory.Exists(remoteDownloadPath))
+            {
+                Directory.CreateDirectory(remoteDownloadPath);
+            }
+
+            bool isLocalImport = datasetSourceConfig is DatasetSourceConfigLocal;
+
+            try
+            {
+                var fetchedGmls = await CityImporter.Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
+
+                // タイルインポート処理を行います。
+                using var tileImporter = new TileImporter();
+                await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token, postGmlProcessors);
+
+                // インポート完了後の処理
+                string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
+                rootTrans.name = Path.GetFileName(finalGmlRootPath);
+            }
+            finally
+            {
+                // インポートの成否にかかわらず、リモートインポートでできた一時フォルダを削除します。
+                if (isRemoteImport && !string.IsNullOrEmpty(remoteDownloadPath) && Directory.Exists(remoteDownloadPath))
+                {
+                    try
+                    {
+                        Directory.Delete(remoteDownloadPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"一時フォルダの削除に失敗しました: {remoteDownloadPath}\n{e.Message}");
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// GMLファイルから読み込んだ<see cref="CityModel"/>を格納する辞書です。
@@ -36,6 +146,7 @@ namespace PLATEAU.CityImport.Import.Tile
         private IProgressDisplay progressDisplay;
         private Transform rootTransform;
         private CityImportConfig importConfig;
+        private IEnumerable<IPostGmlImportProcessor> postGmlProcessors;
 
         /// <summary>
         /// TileImporterの初期化を行います。
@@ -73,13 +184,14 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <returns></returns>
         internal async Task Import(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token)
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
             Initialize();
 
             this.progressDisplay = progressDisplay;
             this.rootTransform = rootTrans;
             this.importConfig = conf;
+            this.postGmlProcessors = postGmlProcessors;
 
             try
             {
@@ -133,9 +245,7 @@ namespace PLATEAU.CityImport.Import.Tile
         /// <returns></returns>
         internal async Task ImportGmlParallel(List<GmlFile> fetchedGmlFiles, float startProgess, float endProgress, CancellationToken? token)
         {
-            // GMLファイルを同時に処理する最大数です。
-            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-            // ただしメモリ使用量が増えます。
+            // CityImporterと同様に並列数4で処理
             var semGmlProcess = new SemaphoreSlim(4);
             async Task ProcessGmlAsync(GmlFile fetchedGml)
             {
@@ -257,23 +367,24 @@ namespace PLATEAU.CityImport.Import.Tile
 
                 if (placingResult.IsSucceed)
                 {
+                    if (zoomLevel > 10)
+                    {
+                        // Grid GameObject名変更
+                        for (int i = 0; i < gmlTrans.childCount; i++)
+                        {
+                            var child = gmlTrans.GetChild(i);
+                            var gridName = child.name;
+                            child.name = GetTileName(zoomLevel, gmlName, gridName);
+                        }
+                    }
                     progressDisplay.SetProgress(gmlName, endProgress, $"ズームレベル:{zoomLevel} 完了");
+                    HandlePostProcessors(placingResult, gml, zoomLevel);
                 }
                 else
                 {
                     progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                 }
 
-                if (zoomLevel > 10)
-                {
-                    // Grid GameObject名変更
-                    for (int i = 0; i < gmlTrans.childCount; i++)
-                    {
-                        var child = gmlTrans.GetChild(i);
-                        var gridName = child.name;
-                        child.name = GetTileName(zoomLevel, gmlName, gridName);
-                    }
-                }
 
                 // TODO : Prefab生成して Addressablesに登録する処理を追加する
                 // gmlTrans をそのままPrefab化する？
@@ -345,6 +456,11 @@ namespace PLATEAU.CityImport.Import.Tile
                         {
                             progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                         }
+                    }
+
+                    if (placingResult.IsSucceed)
+                    {
+                        HandlePostProcessors(placingResult, firstGml, zoomLevel);
                     }
 
                     // TODO : Prefab生成して Addressablesに登録する処理を追加する
@@ -584,6 +700,26 @@ namespace PLATEAU.CityImport.Import.Tile
 
             result = meshExtractOptions;
             return success;
+        }
+
+        /// <summary>
+        /// GMLインポート後に、PostGmlImportProcessorの処理を呼び出します。
+        /// </summary>
+        /// <param name="convertResult"></param>
+        /// <param name="gml"></param>
+        private void HandlePostProcessors(GranularityConvertResult convertResult, GmlFile gml, int zoomLevel)
+        {
+            if (postGmlProcessors != null)
+            {
+                var result = new TileImportResult(convertResult.GeneratedObjs, 0, gml.GridCode.StringCode, gml, convertResult.GeneratedRootTransforms.CalcCommonParent()?.gameObject, zoomLevel);
+                foreach (var processor in postGmlProcessors)
+                {
+                    if(processor is IPostTileImportProcessor)
+                        (processor as IPostTileImportProcessor).OnTileImported(result);
+                    else
+                        processor.OnGmlImported(result);
+                }
+            }
         }
 
         /// <summary>

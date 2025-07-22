@@ -19,7 +19,8 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// 都市モデルをDynamicTile用にプレハブ化し、一括でアセットバンドルとして出力する。
     /// </summary>
-    public class DynamicTileExporter : IPostGmlImportProcessor
+    public class DynamicTileExporter : IPostTileImportProcessor
+    //public class DynamicTileExporter : IPostGmlImportProcessor
     {
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
@@ -146,6 +147,123 @@ namespace PLATEAU.DynamicTile
             GameObject.DestroyImmediate(convertedObject);
             
             return true;
+        }
+
+        /// <summary>
+        /// ズームレベルから解像度の分母を取得します。
+        /// </summary>
+        /// <param name="zoomLevel"></param>
+        /// <returns></returns>
+        public static int GetDenominatorFromZoomLevel(int zoomLevel)
+        {
+            new Dictionary<int, int>
+            {
+                { 9, 1 },
+                { 10, 2 },
+                { 11, 4 }
+            }.TryGetValue(zoomLevel, out var denominator);
+            return denominator;
+        }
+        public static bool ProcessGameObjects(
+            IEnumerable<GameObject> targets,
+            int zoomLevel,
+            DynamicTileProcessingContext context,
+            Action<string> onError = null)
+        {
+            foreach(var target in targets)
+            {
+                if (target == null) continue;
+                Debug.Log($"<color=yellow>Processing child object: {target.name} </color>");
+                ProcessGameObject(
+                    target,
+                    zoomLevel,
+                    context,
+                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+            }
+            return true;
+        }
+
+        public static bool ProcessGameObject(
+            GameObject target,
+            int zoomLevel,
+            DynamicTileProcessingContext context,
+            Action<string> onError = null)
+        {
+            if (target == null)
+            {
+                Debug.LogWarning($"GameObjectがnullです。");
+                return false;
+            }
+
+            Debug.Log($"<color=red>Processing GameObject: {target.name} with zoom level: {zoomLevel}</color>");
+
+            //string outputPath = context.AssetConfig?.AssetPath ?? AssetPathUtil.GetFullPath("Assets/PLATEAUPrefabs/");
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+
+            // ディレクトリの存在確認
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+
+            context.AssetConfig.SrcGameObj = target;
+
+            var baseFolderPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
+            var saveFolderPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderPath);
+
+            var convertedObject = PrepareAndConvert(context.AssetConfig, saveFolderPath, onError);
+            if (convertedObject == null)
+            {
+                Debug.LogWarning($"{target.name} の変換に失敗しました。");
+                return false;
+            }
+
+            string prefabPath = saveFolderPath + ".prefab";
+            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
+                return false;
+            }
+
+
+            var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, GetDenominatorFromZoomLevel(zoomLevel), zoomLevel, true);
+            //var prefabData = new MultiResolutionPrefabCreator.Result { SavePath = prefabPath, Prefab = prefabAsset, Bounds = convertedObject.GetComponentInChildren<Renderer>() == null ? default : convertedObject.GetComponentInChildren<Renderer>().bounds, ZoomLevel = zoomLevel }; // 画像変換なしテスト
+
+            RegisterAsset(prefabAsset, prefabPath, prefabData, context.AddressableGroupName, context.MetaStore);
+
+            // シーン上のオブジェクトを削除
+            GameObject.DestroyImmediate(convertedObject);
+
+            return true;
+        }
+
+        private static void RegisterAsset(
+            GameObject prefab,
+            string savePath,
+            MultiResolutionPrefabCreator.Result result,
+            string groupName,
+            PLATEAUDynamicTileMetaStore metaStore)
+        {
+            var prefabPath = AssetPathUtil.GetAssetPath(savePath);
+            var bounds = result.Bounds;
+            var zoomLevel = result.ZoomLevel;
+            //var lod = cityObject.Lod;
+
+            // プレハブをAddressableに登録
+            // TODO : タイルごとにAddress名を設定する
+            var address = prefab.name;
+            AddressablesUtility.RegisterAssetAsAddressable(
+                prefabPath,
+                address,
+                groupName,
+                new List<string> { AddressableLabel });
+
+            Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
+
+            // メタ情報を登録
+            metaStore.AddMetaInfo(address, bounds, 0, zoomLevel);
+            
         }
 
         /// <summary>
@@ -287,7 +405,7 @@ namespace PLATEAU.DynamicTile
 
             if (cityObjectGroups.Count == 0) return;
 
-            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            string outputPath = context.AssetConfig?.AssetPath ?? AssetPathUtil.GetFullPath("Assets/PLATEAUPrefabs/");
 
             // ディレクトリの存在確認
             if (!Directory.Exists(outputPath))
@@ -414,6 +532,8 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void OnGmlImported(GmlImportResult importResult)
         {
+            Debug.Log($"<color=red>OnGmlImported called with {importResult.GeneratedObjects.Count} objects</color>");
+
             var placedObjects = importResult.GeneratedObjects;
             var meshCode = importResult.GridCode;
             int totalGmlCount = importResult.TotalGmlCount;
@@ -425,6 +545,55 @@ namespace PLATEAU.DynamicTile
                 placedObjects,
                 Context,
                 meshCode);
+        }
+
+        public void OnTileImported(TileImportResult importResult)
+        {
+            Debug.Log($"<color=red>OnTileImported called with {importResult.GeneratedObjects.Count} objects</color>");
+
+            var placedObject = importResult.RootObject;
+            var zoomLevel = importResult.ZoomLevel;
+            int totalGmlCount = importResult.TotalGmlCount;
+            if (placedObject == null ) return;
+            Context.GmlCount = totalGmlCount;
+
+            if (zoomLevel == 11)
+            {
+                Debug.Log($"<color=green>Processing root object: {placedObject.name} children : {placedObject.transform.childCount}</color>");
+                //for (int i = 0; i < placedObject.transform.childCount; i++)
+                //{
+                //    var child = placedObject.transform.GetChild(i)?.gameObject;
+                //    if (child == null) continue;
+
+                //    Debug.Log($"<color=yellow>Processing child object: {child.name} </color>");
+                //    ProcessGameObject(
+                //        child,
+                //        zoomLevel,
+                //        Context,
+                //        errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+                //}
+
+                var childObjects = placedObject.transform.Cast<Transform>()
+                                           .Select(t => t.gameObject)
+                                           .ToArray();
+                ProcessGameObjects(
+                    childObjects,
+                    zoomLevel,
+                    Context,
+                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+
+
+
+            }
+            else
+            {
+                // 処理
+                ProcessGameObject(
+                    placedObject,
+                    zoomLevel,
+                    Context,
+                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+            }
         }
 
         /// <summary>

@@ -170,7 +170,7 @@ namespace PLATEAU.CityImport.Import
         /// GMLファイルの取得処理を行います。
         /// ローカルインポートの場合は元のパスをそのまま使用し、リモートインポートの場合はダウンロードします。
         /// </summary>
-        private static async Task<List<GmlFile>> Fetch(
+        internal static async Task<List<GmlFile>> Fetch(
             List<GmlFile> targetGmls,
             bool isLocalImport,
             string remoteDownloadPath,

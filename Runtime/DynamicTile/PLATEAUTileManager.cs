@@ -303,7 +303,20 @@ namespace PLATEAU.DynamicTile
         /// (TileからのUnloadでは消去されない場合があるため)
         /// </summary>
         private void ClearLodChildren()
-        { 
+        {
+            // 暫定
+            for(int i = 0; i< transform.childCount; i++)
+            {
+                var child = transform.GetChild(i);
+                if (child != null)
+                {
+                    DeleteGameObjectInstance(child.gameObject);
+                }
+            }
+
+            return;
+
+
             var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
             if (instance == null)
                 instance = this.gameObject;
@@ -452,6 +465,8 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         private Transform FindParent(int lod)
         {
+            return transform; //暫定
+
             if (lodParentDict.TryGetValue(lod, out var parentTransform))
             {
                 if (parentTransform != null)

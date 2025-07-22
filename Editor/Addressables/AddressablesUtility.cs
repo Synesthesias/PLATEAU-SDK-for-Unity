@@ -82,12 +82,14 @@ namespace PLATEAU.Editor.Addressables
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
+                Debug.LogError("AddressableAssetSettingsが見つかりません。");
                 return;
             }
 
             var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 
@@ -119,6 +121,8 @@ namespace PLATEAU.Editor.Addressables
                     entry.SetLabel(label, true);
                 }
             }
+
+            Debug.Log($"<color=red>アセットをAddressableとして登録しました: {assetPath} -> {address} (グループ: {groupName})</color>");
         }
 
         /// <summary>
