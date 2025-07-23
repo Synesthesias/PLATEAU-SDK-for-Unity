@@ -2,6 +2,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
@@ -52,7 +53,17 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// タイルの範囲を示すBoundsを保持する。
         /// </summary>
-        public Bounds Extent { get; private set; }
+        public Bounds Extent { get; set; }
+
+        /// <summary>
+        /// 上位ZoomLevelのタイルを保持する。
+        /// </summary>
+        public PLATEAUDynamicTile ParentTile { get; set; }
+
+        /// <summary>
+        /// 下位ZoomLevelのタイルを保持する。
+        /// </summary>
+        public List<PLATEAUDynamicTile> ChildrenTiles { get; set; }
 
         /// <summary>
         /// カメラからの距離を保持する。デバッグ用。

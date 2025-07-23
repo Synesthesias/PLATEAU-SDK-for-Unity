@@ -45,10 +45,17 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public Dictionary<int, (float, float)> loadDistances = new Dictionary<int, (float, float)>
         {
+            //{ 11, (-10000f, 500f) },
+            //{ 10, (500f, 1500f) },
+            //{ 9, (1500f, 10000f) },
+
+            // Marginを考慮して、距離を調整
             { 11, (-10000f, 500f) },
-            { 10, (500f, 1500f) },
-            { 9, (1500f, 10000f) },
-        }; 
+            { 10, (500f, 1000f) },
+            { 9, (1000f, 10000f) },
+        };
+
+        public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
 
         [SerializeField]
         private string catalogPath;
@@ -121,6 +128,8 @@ namespace PLATEAU.DynamicTile
                 var tile = new PLATEAUDynamicTile(tileMeta);
                 AddTile(tile);
             }
+
+            DynamicTileBoundsTool.AssignParentTiles(DynamicTiles); // タイルの親子関係を設定
 
             loadTask = new(this);
             LastCameraPosition = Vector3.zero; 
@@ -362,7 +371,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (loadTask == null) return;
-            await loadTask.UpdateAssetsByCameraPosition(position, useJobSystem, timeoutSeconds); 
+            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, useJobSystem, timeoutSeconds); 
         }
 
         /// <summary>
@@ -454,6 +463,19 @@ namespace PLATEAU.DynamicTile
             if(loadDistances.TryGetValue(tile.ZoomLevel, out var minmax)){
                 var (min, max) = minmax;
                 return (distance >= min && distance <= max);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 指定された距離がタイルのロード最大範囲内にあるかどうかを判定
+        /// </summary>
+        internal bool WithinMaxRange(float distance, PLATEAUDynamicTile tile)
+        {
+            if (loadDistances.TryGetValue(tile.ZoomLevel, out var minmax))
+            {
+                var (min, max) = minmax;
+                return distance <= max;
             }
             return false;
         }

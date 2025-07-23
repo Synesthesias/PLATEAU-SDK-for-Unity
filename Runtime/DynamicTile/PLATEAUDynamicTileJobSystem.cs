@@ -180,10 +180,10 @@ namespace PLATEAU.DynamicTile
         /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
-        public async Task UpdateAssetsByCameraPosition(Vector3 position)
+        public async Task UpdateAssetsByCameraPosition(Vector3 position, bool ignoreY)
         {
             // 距離計算
-            TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = false };
+            TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = ignoreY };
             JobHandle distHandle = job.Schedule(NativeTileBounds.Length, 64);
             distHandle.Complete();
 
@@ -231,20 +231,28 @@ namespace PLATEAU.DynamicTile
 
                 tile.DistanceFromCamera = distance;
                 tile.NextLoadState = nextLoadState;
+                token.ThrowIfCancellationRequested();
+            }
 
-                if (nextLoadState == LoadState.None)
+            // タイルの穴埋め処理
+            await loadTask.FillTileHoles(token);
+
+            // タイルのロード状態に応じて、非同期でロードまたはアンロードを実行
+            foreach (var tile in dynamicTiles)
+            {
+                if (tile.NextLoadState == LoadState.None)
                 {
                     // 何もしない
                     continue;
                 }
-                else if (nextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
+                else if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
                 {
                     var result = await loadTask.PrepareLoadTile(tile);
                     if (result != PLATEAUTileManager.LoadResult.Success)
                         loadFailCount++;
-                    
+
                 }
-                else if (nextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
+                else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
                     loadTask.PrepareUnloadTile(tile);
                 }
