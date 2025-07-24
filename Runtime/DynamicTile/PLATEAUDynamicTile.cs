@@ -57,6 +57,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// 上位ZoomLevelのタイルを保持する。
+        /// (現状未使用）
         /// </summary>
         public PLATEAUDynamicTile ParentTile { get; set; }
 

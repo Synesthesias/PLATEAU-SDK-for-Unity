@@ -79,7 +79,9 @@ namespace PLATEAU.Editor.DynamicTile
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
+                //Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
+                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.StackTrace}");
+
                 return;
             }
             
