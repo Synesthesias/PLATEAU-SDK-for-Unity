@@ -93,7 +93,7 @@ namespace PLATEAU.DynamicTile
                 }
 
                 // Tile情報の表示
-                var dynamicTiles = tileManager.DynamicTiles;
+                var dynamicTiles = tileManager.TileCollection;
                 EditorGUILayout.LabelField($"State: ", tileManager.State.ToString());
                 EditorGUILayout.LabelField($"TileCreationInProgress: ", PLATEAUEditorEventListener.disableProjectChangeEvent.ToString());
                 EditorGUILayout.IntField($"Tile num: ", dynamicTiles.Count);
@@ -101,13 +101,12 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.LabelField($"Instantiate Coroutine: ", tileManager.IsCoroutineRunning? "Running" : "Complete", new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsCoroutineRunning ? Color.red : Color.green } });
 
                 // Zoom Levelごとのロード距離
-                foreach (var dist in tileManager.loadDistances)
+                foreach (var dist in tileManager.loadDistances.LoadDistances)
                 {
-                    var zoomLevel = dist.Key;
-                    var (min, max) = dist.Value;
+                    var zoomLevel = dist.ZoomLevel;
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
                     EditorGUILayout.IntField($"ZoomLevel: ", zoomLevel);
-                    EditorGUILayout.Vector2Field($"Load Distance: ", new Vector2(min, max));
+                    EditorGUILayout.Vector2Field($"Load Distance: ", new Vector2(dist.MinDistance, dist.MaxDistance));
                 }
 
                 // 各タイルの情報を表示
@@ -147,7 +146,7 @@ namespace PLATEAU.DynamicTile
             isShowingZoomLevel = false;
         }
 
-        private Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
+        private readonly Dictionary<int, Color> zoomLevelColors = new Dictionary<int, Color>
         {
             { 9, Color.red },
             { 10, Color.yellow },
@@ -171,7 +170,7 @@ namespace PLATEAU.DynamicTile
             }
 
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-            foreach (var tile in tileManager.DynamicTiles)
+            foreach (var tile in tileManager.TileCollection)
             {
                 if (tile.NextLoadState == LoadState.Load )
                 {
@@ -197,7 +196,7 @@ namespace PLATEAU.DynamicTile
         private void ShowBounds()
         {
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-            foreach (var tile in tileManager.DynamicTiles)
+            foreach (var tile in tileManager.TileCollection)
             {
                 DebugEx.DrawBounds(tile.Extent, Color.red, 3f);
             }

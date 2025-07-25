@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,11 +15,10 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     internal class PLATEAUDynamicTileInstantiation : IDisposable
     {
-        private readonly PLATEAUDynamicTileLoadTask loadTask;
-        private readonly MonoBehaviour mono;
 
-        private Queue<PLATEAUDynamicTile> loadQueue = new Queue<PLATEAUDynamicTile>();
-        private Queue<PLATEAUDynamicTile> unloadQueue = new Queue<PLATEAUDynamicTile>();
+        private readonly Queue<PLATEAUDynamicTile> loadQueue = new Queue<PLATEAUDynamicTile>();
+        private readonly Queue<PLATEAUDynamicTile> unloadQueue = new Queue<PLATEAUDynamicTile>();
+        private readonly ConditionalLogger logger;
 
         // Runtimeコルーチン停止用に保持
         private Coroutine instantiationFromQueueCoroutine;
@@ -26,11 +26,12 @@ namespace PLATEAU.DynamicTile
         private bool isInstantiationFromQueueRunning = false;
 
         public bool IsRunning => isInstantiationFromQueueRunning;
+        private readonly PLATEAUTileManager tileManager;
 
-        internal PLATEAUDynamicTileInstantiation(PLATEAUDynamicTileLoadTask loadTask)
+        internal PLATEAUDynamicTileInstantiation(ConditionalLogger logger, PLATEAUTileManager tileManager)
         {
-            this.loadTask = loadTask;
-            this.mono = loadTask.TileManager as MonoBehaviour;
+            this.logger = logger;
+            this.tileManager = tileManager;
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace PLATEAU.DynamicTile
 #if UNITY_EDITOR
             if (Application.isPlaying)
             {
-                instantiationFromQueueCoroutine = mono.StartCoroutine(InstantiationFromQueueRoutine());
+                instantiationFromQueueCoroutine = tileManager.StartCoroutine(InstantiationFromQueueRoutine());
             }
             else
             {
@@ -69,7 +70,7 @@ namespace PLATEAU.DynamicTile
             }
 
 #else
-                instantiationFromQueueCoroutine = mono.StartCoroutine(InstantiationFromQueueRoutine());
+                instantiationFromQueueCoroutine = tileManager.StartCoroutine(InstantiationFromQueueRoutine());
 #endif
         }
 
@@ -87,9 +88,9 @@ namespace PLATEAU.DynamicTile
                 if (tile == null)
                     continue;
 
-                if (!loadTask.TileManager.InstantiateFromTile(tile))
+                if (!tileManager.InstantiateFromTile(tile))
                 {
-                    loadTask.DebugLog($"タイルのインスタンス化に失敗しました: {tile.Address}");
+                    logger.LogWarn($"タイルのインスタンス化に失敗しました: {tile.Address}");
                     tile.LastLoadResult = PLATEAUTileManager.LoadResult.Failure;
                 }
 
@@ -110,7 +111,7 @@ namespace PLATEAU.DynamicTile
                 if (tile == null)
                     continue;
 
-                loadTask.Unload(tile);
+                tile.Unload();
             }
 
             unloadQueue.Clear();
@@ -119,7 +120,7 @@ namespace PLATEAU.DynamicTile
         public void Dispose()
         {
             if (instantiationFromQueueCoroutine != null)
-                mono.StopCoroutine(instantiationFromQueueCoroutine);
+                tileManager.StopCoroutine(instantiationFromQueueCoroutine);
 
 #if UNITY_EDITOR
             EditorCoroutineRunner.StopAllEditorCoroutines();

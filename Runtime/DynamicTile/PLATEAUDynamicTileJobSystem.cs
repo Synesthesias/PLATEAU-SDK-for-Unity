@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -95,7 +96,7 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public struct TileDistanceCheckJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<TileBounds> TileStates;
+        [Unity.Collections.ReadOnly] public NativeArray<TileBounds> TileStates;
         [WriteOnly] public NativeArray<DistanceWithIndex> Distances;
 
         public Vector3 CameraPosition;
@@ -130,8 +131,10 @@ namespace PLATEAU.DynamicTile
         private NativeArray<TileBounds> NativeTileBounds;
         private NativeArray<DistanceWithIndex> NativeDistances;
 
-        private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
+        private DynamicTileCollection dynamicTiles; // タイルリスト
         private PLATEAUDynamicTileLoadTask loadTask;
+        private TileLoadDistanceCollection tileLoadDistances;
+        private ConditionalLogger logger;
 
         public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
 
@@ -144,10 +147,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="tiles"></param>
-        internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, List<PLATEAUDynamicTile> tiles)
+        internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, TileLoadDistanceCollection tileLoadDistancesArg, DynamicTileCollection tiles, ConditionalLogger loggerArg)
         {
             dynamicTiles = tiles;
+            tileLoadDistances = tileLoadDistancesArg;
             this.loadTask = loadTask;
+            logger = loggerArg;
 
             if (!NativeTileBounds.IsCreated || NativeTileBounds.Length != dynamicTiles.Count)
             {
@@ -160,11 +165,7 @@ namespace PLATEAU.DynamicTile
             if (!NativeDistances.IsCreated)
                 NativeDistances = new NativeArray<DistanceWithIndex>(dynamicTiles.Count, Allocator.Persistent);
 
-            for (int i = 0; i < dynamicTiles.Count; i++)
-            {
-                var tile = dynamicTiles[i];
-                NativeTileBounds[i] = tile.GetTileBoundsStruct();
-            }
+            dynamicTiles.ComposeTileBounds(NativeTileBounds);
         }
 
         // NativeArray PersistentなのでDispose必須　（メモリリーク防止のため）
@@ -197,7 +198,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (OperationCanceledException)
             {
-                loadTask.DebugLog("タイルのロードTaskがキャンセルされました。");
+                logger.LogWarn("タイルのロードTaskがキャンセルされました。");
             }
             finally
             {
@@ -217,10 +218,10 @@ namespace PLATEAU.DynamicTile
                 var distanceWithIndex = NativeDistances[i];
                 var distance = distanceWithIndex.Distance;
                 var index = distanceWithIndex.Index;
-                var tile = dynamicTiles[index];
+                var tile = dynamicTiles.At(index);
 
                 var nextLoadState = LoadState.None;
-                if (loadTask.TileManager.WithinTheRange(distance, tile))
+                if (tileLoadDistances.IsWithinRange(distance, tile.ZoomLevel))
                 {
                     nextLoadState = LoadState.Load;
                 }
@@ -251,7 +252,7 @@ namespace PLATEAU.DynamicTile
                 token.ThrowIfCancellationRequested();
             }
 
-            loadTask.DebugLog($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
+            logger.Log($"タイルのロードTaskが完了しました。ロード失敗数: {loadFailCount}");
         }
     }
 

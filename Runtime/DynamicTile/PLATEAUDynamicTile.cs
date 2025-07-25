@@ -1,10 +1,12 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
+using PLATEAU.Util;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
@@ -32,7 +34,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressablesのロードハンドルを保持する。
         /// </summary>
-        public AsyncOperationHandle<GameObject> LoadHandle { get; internal set; } = default;
+        public AsyncOperationHandle<GameObject> LoadHandle { get; internal set; } = default; 
 
         /// <summary>
         /// Addressablesのロードハンドルのキャンセルトークンを保持する。
@@ -65,6 +67,7 @@ namespace PLATEAU.DynamicTile
         public LoadState NextLoadState { get; set; } = LoadState.None;
 
         public PLATEAUTileManager.LoadResult LastLoadResult { get; set; } = PLATEAUTileManager.LoadResult.None;
+        private ConditionalLogger logger;
 
         // Job Systemで使用するための構造体を返す
         public TileBounds GetTileBoundsStruct()
@@ -77,11 +80,12 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
-        public PLATEAUDynamicTile(string address, int lod, Bounds bounds, int zoomLevel)
+        public PLATEAUDynamicTile(string address, int lod, Bounds bounds, int zoomLevel, ConditionalLogger logger)
         {
             Address = address;
             Lod = lod;
             ZoomLevel = zoomLevel;
+            this.logger = logger;
 
             if (bounds.size != Vector3.zero)
             {
@@ -107,12 +111,13 @@ namespace PLATEAU.DynamicTile
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
         /// <param name="info">Scriptable Object データ</param>
-        public PLATEAUDynamicTile(PLATEAUDynamicTileMetaInfo info)
+        public PLATEAUDynamicTile(PLATEAUDynamicTileMetaInfo info, ConditionalLogger logger)
         {
             Address = info.AddressName;
             Lod = info.LOD;
             Extent = info.Extent;
             ZoomLevel = info.ZoomLevel;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -200,6 +205,43 @@ namespace PLATEAU.DynamicTile
             }
             Debug.LogError("メッシュコードが見つかりません");
             return null;
+        }
+        
+        /// <summary>
+        /// Addressablesからアンロード後、インスタンスを削除します。
+        /// </summary>
+        internal bool Unload()
+        {
+            string address = Address;
+            if (string.IsNullOrEmpty(address))
+            {
+                logger.LogWarn($"指定したアドレスが見つかりません: {address}");
+                return false;
+            }
+            try
+            {
+                if (LoadHandle.IsValid())
+                {
+                    if (!LoadHandle.IsDone)
+                    {
+                        // ロードが完了していない場合はキャンセル
+                        LoadHandleCancellationTokenSource?.Cancel();
+                        return false;
+                    }
+                    Addressables.Release(LoadHandle);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarn($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
+            }
+            finally
+            {
+                // Instance削除
+                DynamicTileCollection.DeleteGameObjectInstance(LoadedObject);
+                Reset(); // タイルの状態をリセット
+            }
+            return true;
         }
     }
 } 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,19 +13,20 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     internal class PLATEAUDynamicTileLoadTask : IAsyncDisposable
     {
-        private readonly PLATEAUTileManager tileManager;
 
         // 全タイルのロードタスク実行時のCancellationTokenSource
         internal CancellationTokenSource LoadTaskCancellationTokenSource { get; private set; } = new();
 
-        private PLATEAUDynamicTileLoader tileLoader; // Addressablesからタイルをロード/アンロードするクラス
-        private PLATEAUDynamicTileInstantiation tileInstantiation; // ロード時インスタンス化とアンロードをキューで管理してコルーチンでインスタンス化を実行するクラス
+        private readonly PLATEAUDynamicTileLoader tileLoader; // Addressablesからタイルをロード/アンロードするクラス
+        private readonly PLATEAUDynamicTileInstantiation tileInstantiation; // ロード時インスタンス化とアンロードをキューで管理してコルーチンでインスタンス化を実行するクラス
         private PLATEAUDynamicTileJobSystem jobSystem; // JobSystemで距離判定を行う場合に使用
 
         // 実行中のUpdateAssetsByCameraPosition内のTask
         private Task CurrentTask;
-
-        public PLATEAUTileManager TileManager => tileManager;
+        
+        private readonly DynamicTileCollection dynamicTiles;
+        private readonly TileLoadDistanceCollection tileLoadDistances;
+        private readonly ConditionalLogger logger;
 
         /// <summary>
         /// 現在タスクが実行中かどうかを示すプロパティ。
@@ -36,11 +38,13 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public bool IsCoroutineRunning => tileInstantiation != null && tileInstantiation.IsRunning;
 
-        public PLATEAUDynamicTileLoadTask(PLATEAUTileManager tileManager)
+        public PLATEAUDynamicTileLoadTask(PLATEAUTileManager tileManager, ConditionalLogger logger)
         {
-            this.tileManager = tileManager;
-            tileLoader = new(this);
-            tileInstantiation = new(this);
+            this.tileLoadDistances = tileManager.loadDistances;
+            this.logger = logger;
+            dynamicTiles = tileManager.TileCollection;
+            tileLoader = new(this, logger);
+            tileInstantiation = new(logger, tileManager);
         }
 
         public async ValueTask DisposeAsync()
@@ -102,24 +106,16 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// Tileを指定してAddressablesからアンロードする
-        /// </summary>
-        /// <param name="address"></param>
-        public bool Unload(PLATEAUDynamicTile tile)
-        {
-            return tileLoader?.Unload(tile) ?? false;
-        }
-
-        /// <summary>
         /// カメラの位置に応じてタイルのロード状態を更新する。
         /// </summary>
         /// <param name="position"></param>
         /// <param name="timeoutSeconds">完了まで待機する際のタイムアウト秒数</param>
-        public async Task UpdateAssetsByCameraPosition(Vector3 position, bool useJobSystem, float timeoutSeconds = 10f)
+        /// <returns>処理を行ったかどうか</returns>
+        public async Task<bool> UpdateAssetsByCameraPosition(Vector3 position, bool useJobSystem, float timeoutSeconds = 10f)
         {
             // 前回のタスクがまだ完了していない場合処理しない
             if (CurrentTask != null && !CurrentTask.IsCompleted)
-                return;
+                return false;
 
             await CancelLoadTask();
             LoadTaskCancellationTokenSource?.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds)); // タイムアウト設定
@@ -127,7 +123,7 @@ namespace PLATEAU.DynamicTile
             if (useJobSystem)
             {
                 // Job Systemを使用する場合
-                if (jobSystem != null && jobSystem?.TileCount != tileManager.DynamicTiles.Count)
+                if (jobSystem != null && jobSystem?.TileCount != dynamicTiles.Count)
                 {
                     // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
                     await CancelLoadTask();
@@ -138,7 +134,7 @@ namespace PLATEAU.DynamicTile
                 if (jobSystem == null)
                 {
                     jobSystem = new PLATEAUDynamicTileJobSystem();
-                    jobSystem.Initialize(this, tileManager?.DynamicTiles);
+                    jobSystem.Initialize(this, tileLoadDistances, dynamicTiles, logger);
                 }
 
                 CurrentTask = jobSystem.UpdateAssetsByCameraPosition(position);
@@ -149,9 +145,8 @@ namespace PLATEAU.DynamicTile
                 CurrentTask = UpdateAssetsByCameraPositionInternal(position);
             }
 
-            tileManager.UpdateCameraPosition(position); // 最後のカメラ位置を更新
-
             await CurrentTask;
+            return true;
         }
 
         /// <summary>
@@ -161,13 +156,13 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPositionInternal(Vector3 position)
         {
-            var sortByDistance = new List<PLATEAUDynamicTile>(tileManager.DynamicTiles);
+            var sortByDistance = dynamicTiles.ToList();
             sortByDistance.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // Distance順にソート
 
             foreach (var tile in sortByDistance)
             {
                 var distance = tile.GetDistance(position, true);
-                if (tileManager.WithinTheRange(distance, tile))
+                if (tileLoadDistances.IsWithinRange(distance, tile.ZoomLevel))
                 {
                     if (tile.LoadHandle.IsValid())
                         tile.NextLoadState = LoadState.None;
@@ -189,7 +184,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (OperationCanceledException)
             {
-                tileManager.DebugLog("タイルのロードTaskがキャンセルされました。");
+                logger.LogWarn("タイルのロードTaskがキャンセルされました。");
             }
             finally
             {
@@ -203,7 +198,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async Task ExecuteLoadTask(CancellationToken token)
         {
-            foreach (var tile in tileManager.DynamicTiles)
+            foreach (var tile in dynamicTiles)
             {
                 if (tile.NextLoadState == LoadState.None)
                 {
@@ -275,9 +270,5 @@ namespace PLATEAU.DynamicTile
             tileInstantiation?.DeleteFromQueue(); // キューからGameObjectインスタンス削除
         }
 
-        public void DebugLog(string message, bool warn = true)
-        {
-            TileManager.DebugLog(message, warn);
-        }
     }
 }
