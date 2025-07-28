@@ -104,7 +104,20 @@ namespace PLATEAU.DynamicTile
 
             State = ManagerState.Initializing;
 
-            TileParent = transform; // タイルの親Transformを自身に設定
+            if (TileParent == null)
+            {
+                if(!(TileParent = transform.Find("DynamicTileParent")))
+                {
+                    TileParent = new GameObject("DynamicTileParent").transform; // タイルの親Transformを作成
+                    TileParent.transform.SetParent(transform, false); // マネージャーのTransformの子として設定
+
+                    //　暫定的にシーン上のPLATEAUInstancedCityModelを利用
+                    //　TODO: 予めScriptableObjectで設定できるようにする
+                    var cityModel = FindFirstObjectByType<PLATEAUInstancedCityModel>(); // PLATEAUInstancedCityModelを追加
+                    if (cityModel != null)
+                        TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
+                }
+            }         
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             var metaStore = await addressableLoader.InitializeAsync(catalogPath);

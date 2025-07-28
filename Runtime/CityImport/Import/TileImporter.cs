@@ -17,7 +17,7 @@ using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Geometries;
 
-namespace PLATEAU.CityImport.Import.Tile
+namespace PLATEAU.CityImport.Import
 {
     internal class TileImporter : IDisposable
     {
@@ -462,10 +462,6 @@ namespace PLATEAU.CityImport.Import.Tile
                     {
                         HandlePostProcessors(placingResult, firstGml, zoomLevel);
                     }
-
-                    // TODO : Prefab生成して Addressablesに登録する処理を追加する
-                    // gmlTrans をそのままPrefab化する？
-
                 }
             }
         }
@@ -525,8 +521,6 @@ namespace PLATEAU.CityImport.Import.Tile
                 var x = subdividedGridSquareCode.Substring(0, 1); // 分割地域メッシュコード 1桁目
                 var y = subdividedGridSquareCode.Substring(1, 1); // 分割地域メッシュコード 2桁目
                 var groupIndex = groups.FindIndex(g => g.Any(c => c.x.ToString() == x && c.y.ToString() == y)); // ↑で作成したグループの該当するIndexを取得
-
-                Debug.Log($"CityModelのGridCode: {gridCode} {x} {y} {groupIndex}");
 
                 if (CodeDict.ContainsKey(tertiaryMesh))
                 {
@@ -588,8 +582,6 @@ namespace PLATEAU.CityImport.Import.Tile
             int zoomLevel, float startProgress, float endProgress
         )
         {
-            Debug.Log($"load started");
-
             token?.ThrowIfCancellationRequested();
 
             AttributeDataHelper attributeDataHelper =
@@ -608,9 +600,7 @@ namespace PLATEAU.CityImport.Import.Tile
 
             var materialConverter = new DllSubMeshToUnityMaterialByTextureMaterial();
 
-            // TODO : Prefab生成して Addressablesに登録する処理を追加する ? 
-            //　ここで追加するか不明？
-
+            // 一旦シーンに配置
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
              return await PlateauToUnityModelConverter.PlateauModelToScene(
@@ -644,7 +634,7 @@ namespace PLATEAU.CityImport.Import.Tile
             else
                 TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
 
-            Debug.Log("model extracted.");
+            //Debug.Log("model extracted.");
             return model;
         }
 
@@ -666,8 +656,7 @@ namespace PLATEAU.CityImport.Import.Tile
             bool success = false;
             try
             {
-                // TODO : ここの設定はPrefab生成時は不要？
-                gmlTrans.parent = rootTransform;
+                //gmlTrans.parent = rootTransform; // 読込時にタイルをシーンに表示したい場合は設定する
                 meshExtractOptions = importConfig.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
                 success = true;
             }
@@ -704,6 +693,8 @@ namespace PLATEAU.CityImport.Import.Tile
 
         /// <summary>
         /// GMLインポート後に、PostGmlImportProcessorの処理を呼び出します。
+        /// この処理でAddressablesの生成、登録を行います。
+        /// <see cref="DynamicTileExporter"/>DynamicTileExporterの処理がここで呼び出されます。
         /// </summary>
         /// <param name="convertResult"></param>
         /// <param name="gml"></param>
