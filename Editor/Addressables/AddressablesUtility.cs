@@ -119,6 +119,10 @@ namespace PLATEAU.Editor.Addressables
                     entry.SetLabel(label, true);
                 }
             }
+            
+            EditorUtility.SetDirty(settings);
+            EditorUtility.SetDirty(group);
+            AssetDatabase.SaveAssets();
         }
 
         /// <summary>

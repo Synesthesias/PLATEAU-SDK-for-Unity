@@ -10,9 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.Initialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -258,7 +262,6 @@ namespace PLATEAU.DynamicTile
             dataPath = dataPath.Replace('\\', '/');
             
             AssetDatabase.CreateAsset(metaStore, dataPath);
-            AssetDatabase.SaveAssets();
 
             // メタデータをAddressableに登録
             AddressablesUtility.RegisterAssetAsAddressable(
