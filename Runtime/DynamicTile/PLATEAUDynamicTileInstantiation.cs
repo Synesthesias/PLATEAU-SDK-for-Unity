@@ -134,7 +134,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// Unityエディタ上でコルーチンを実行するためのクラス。
     /// </summary>
-    internal class EditorCoroutineRunner
+    internal static class EditorCoroutineRunner
     {
         private static List<IEnumerator> coroutines = new List<IEnumerator>();
 

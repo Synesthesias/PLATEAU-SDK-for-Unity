@@ -55,9 +55,7 @@ namespace PLATEAU.Editor.DynamicTile
             };
             
             // インポートを実行
-            var task = CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
-
-            await task;
+            await CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             
             // 事後処理
             try

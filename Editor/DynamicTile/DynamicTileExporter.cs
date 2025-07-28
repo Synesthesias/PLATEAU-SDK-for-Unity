@@ -46,7 +46,7 @@ namespace PLATEAU.DynamicTile
             
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
             
-            // DynamicTile管理用Managerを破棄
+            // DynamicTile管理用Managerがすでにあるなら、後で作り直すので破棄
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (manager != null)
             {
@@ -374,8 +374,12 @@ namespace PLATEAU.DynamicTile
             {
                 PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定
 
-                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (manager != null)
+                var manager = GameObject.FindObjectsOfType<PLATEAUTileManager>().FirstOrDefault(m => m!= null);
+                if (manager == null)
+                {
+                    Debug.LogError("manager is null.");
+                }
+                else
                 {
                     PLATEAUSceneViewCameraTracker.Initialize();
                     manager.InitializeTiles().ContinueWithErrorCatch(); // タイルの初期化

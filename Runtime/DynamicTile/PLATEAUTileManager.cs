@@ -1,16 +1,17 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
+    /// <summary>
+    /// 動的タイルの管理を行うMonoBehaviourです。
+    /// シーンを開いたときやPlayモード切替などのタイミングでは<see cref="PLATEAUSceneViewCameraTracker"/>, <see cref="PLATEAUEditorEventListener"/>から処理を呼び出されます。
+    /// </summary>
     public class PLATEAUTileManager : MonoBehaviour
     {
         /// <summary>
@@ -98,6 +99,11 @@ namespace PLATEAU.DynamicTile
         {
             if (State == ManagerState.Initializing)
                 return;
+
+            if (!loadDistances.Validate())
+            {
+                return;
+            }
 
             State = ManagerState.Initializing;
 

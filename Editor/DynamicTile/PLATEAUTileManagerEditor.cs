@@ -101,7 +101,7 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.LabelField($"Instantiate Coroutine: ", tileManager.IsCoroutineRunning? "Running" : "Complete", new GUIStyle(EditorStyles.label) { normal = { textColor = tileManager.IsCoroutineRunning ? Color.red : Color.green } });
 
                 // Zoom Levelごとのロード距離
-                foreach (var dist in tileManager.loadDistances.LoadDistances)
+                foreach (var dist in tileManager.loadDistances.loadDistances)
                 {
                     var zoomLevel = dist.ZoomLevel;
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));

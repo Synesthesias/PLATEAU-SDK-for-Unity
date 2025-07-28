@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -13,7 +15,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// ロード距離設定のリスト
         /// </summary>
-        public List<TileLoadDistance> LoadDistances = new List<TileLoadDistance>
+        public List<TileLoadDistance> loadDistances = new List<TileLoadDistance>
         {
             new TileLoadDistance(11, -10000f, 500f),
             new TileLoadDistance(10, 500f, 1500f),
@@ -28,7 +30,7 @@ namespace PLATEAU.DynamicTile
         /// <returns>ロード距離設定、見つからない場合はnull</returns>
         public TileLoadDistance GetLoadDistance(int zoomLevel)
         {
-            return LoadDistances.FirstOrDefault(ld => ld.ZoomLevel == zoomLevel);
+            return loadDistances.FirstOrDefault(ld => ld.ZoomLevel == zoomLevel);
         }
 
         /// <summary>
@@ -43,6 +45,21 @@ namespace PLATEAU.DynamicTile
             return loadDistance?.IsWithinRange(distance) ?? false;
         }
 
+        public bool Validate()
+        {
+            bool hasData =
+                loadDistances.Any(d => d.ZoomLevel == 9) &&
+                loadDistances.Any(d => d.ZoomLevel == 10) &&
+                loadDistances.Any(d => d.ZoomLevel == 11);
+            if (!hasData)
+            {
+                Debug.LogError("TileLoadDistanceCollectionの設定が正しくありません。ズームレベル9, 10, 11の設定が必要です。");
+                return false;
+            }
+
+            return true;
+        }
+
         
         
         /// <summary>
@@ -54,17 +71,24 @@ namespace PLATEAU.DynamicTile
             /// <summary>
             /// ズームレベル
             /// </summary>
-            public int ZoomLevel { get; set; }
+            public int ZoomLevel;
 
             /// <summary>
             /// 最小ロード距離
             /// </summary>
-            public float MinDistance { get; set; }
+            public float MinDistance;
 
             /// <summary>
             /// 最大ロード距離
             /// </summary>
-            public float MaxDistance { get; set; }
+            public float MaxDistance;
+
+            /// <summary>
+            /// デフォルトコンストラクタ（Unityのシリアライザー用）
+            /// </summary>
+            public TileLoadDistance()
+            {
+            }
 
             /// <summary>
             /// コンストラクタ

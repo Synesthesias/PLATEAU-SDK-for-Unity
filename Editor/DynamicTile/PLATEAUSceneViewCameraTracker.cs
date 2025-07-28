@@ -1,6 +1,9 @@
 ﻿using PLATEAU.Util.Async;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -85,19 +88,20 @@ namespace PLATEAU.DynamicTile
             Initialize();
         }
 
-        public static void Initialize()
+        private static void Initialize()
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
-
-            EditorApplication.projectChanged -= OnProjectChanged; // コード更新時
-            EditorApplication.projectChanged += OnProjectChanged;
 
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
 
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
+            
+            // コード更新前にリセットすることでドメインリロード後も動作するようにします
+            CompilationPipeline.compilationStarted -= BeforeScriptCompile;
+            CompilationPipeline.compilationStarted += BeforeScriptCompile;
 
             InitView().ContinueWithErrorCatch();
 
@@ -125,7 +129,7 @@ namespace PLATEAU.DynamicTile
 
         static void OnProjectChanged()
         {
-            if (disableProjectChangeEvent) 
+            if (disableProjectChangeEvent)
                 return;
 
             Log("Project Changed");
@@ -155,6 +159,14 @@ namespace PLATEAU.DynamicTile
                 Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
                 InitView().ContinueWithErrorCatch();
             }
+        }
+
+        private static void BeforeScriptCompile(object _)
+        {
+            Log("BeforeScriptCompile");
+            var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null) return;
+            tileManager.ClearTileAssets();
         }
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -189,5 +201,6 @@ namespace PLATEAU.DynamicTile
                 Debug.Log(message);
             }
         }
+
     }
 }
