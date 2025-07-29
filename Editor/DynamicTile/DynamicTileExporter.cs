@@ -343,7 +343,7 @@ namespace PLATEAU.DynamicTile
                 SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
 
                 // Addressablesのビルドを実行
-                AddressablesUtility.BuildAddressables(true);
+                AddressablesUtility.BuildAddressables(false);
 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
