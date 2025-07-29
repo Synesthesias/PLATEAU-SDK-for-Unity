@@ -226,8 +226,10 @@ namespace PLATEAU.DynamicTile
         {
             var originalState = State == ManagerState.CleaningUp ? ManagerState.Operating : State;
             State = ManagerState.CleaningUp;
-
+            
             TileCollection.ClearTileAssets();
+            loadTask?.DisposeAsync().AsTask().ContinueWithErrorCatch();
+            
             State = originalState;
         }
 

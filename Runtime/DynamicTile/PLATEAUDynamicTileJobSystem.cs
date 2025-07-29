@@ -126,6 +126,7 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class PLATEAUDynamicTileJobSystem : IDisposable
     {
+        
         private NativeArray<TileBounds> NativeTileBounds;
         private NativeArray<DistanceWithIndex> NativeDistances;
 
@@ -138,13 +139,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// NativeArrayを初期化し、タイルマネージャーとタイルリストを設定する。
-        /// 
-        /// [Leak Detected : Persistent allocates 2 individual allocations.]
-        /// Unity Editor上でNativeArrayをAllocator.Persistentで確保すると、Leak Detectedという警告が表示されるのは仕様です。
-        /// これは、Unityのメモリ管理システムがEditor環境でのメモリリークを検出するための仕組みとして動作しているためです。
         /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="tiles"></param>
         internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, TileLoadDistanceCollection tileLoadDistancesArg, DynamicTileCollection tiles, ConditionalLogger loggerArg)
         {
             dynamicTiles = tiles;
@@ -152,27 +147,34 @@ namespace PLATEAU.DynamicTile
             this.loadTask = loadTask;
             logger = loggerArg;
 
-            if (!NativeTileBounds.IsCreated || NativeTileBounds.Length != dynamicTiles.Count)
-            {
-                // 既存の配列を破棄
-                Dispose();
-            }
+            // 既存の配列を破棄（リーク防止）
+            DisposeNativeArrays();
 
-            if (!NativeTileBounds.IsCreated)
-                NativeTileBounds = new NativeArray<TileBounds>(dynamicTiles.Count, Allocator.Persistent);
-            if (!NativeDistances.IsCreated)
-                NativeDistances = new NativeArray<DistanceWithIndex>(dynamicTiles.Count, Allocator.Persistent);
-
+            NativeTileBounds = new NativeArray<TileBounds>(dynamicTiles.Count, Allocator.Persistent);
+            NativeDistances = new NativeArray<DistanceWithIndex>(dynamicTiles.Count, Allocator.Persistent);
             dynamicTiles.ComposeTileBounds(NativeTileBounds);
         }
 
-        // NativeArray PersistentなのでDispose必須　（メモリリーク防止のため）
-        public void Dispose()
+        /// <summary>
+        /// NativeArrayを破棄します。
+        /// </summary>
+        private void DisposeNativeArrays()
         {
             if (NativeTileBounds.IsCreated)
+            {
                 NativeTileBounds.Dispose();
+                NativeTileBounds = default;
+            }
             if (NativeDistances.IsCreated)
+            {
                 NativeDistances.Dispose();
+                NativeDistances = default;
+            }
+        }
+
+        public void Dispose()
+        {
+            DisposeNativeArrays();
         }
 
         /// <summary>
@@ -181,22 +183,39 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
-            // 距離計算
-            TileDistanceCheckJob job = new TileDistanceCheckJob { TileStates = NativeTileBounds, Distances = NativeDistances, CameraPosition = position, IgnoreY = false };
-            JobHandle distHandle = job.Schedule(NativeTileBounds.Length, 64);
-            distHandle.Complete();
-
-            // 距離が近い順にソート
-            JobHandle sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule(distHandle);
-            sortHandle.Complete();
+            // NativeArrayが初期化されていない場合は早期リターン
+            if (!NativeTileBounds.IsCreated || !NativeDistances.IsCreated)
+            {
+                logger?.LogWarn("NativeArrayが初期化されていません。");
+                return;
+            }
 
             try
             {
+                // 距離計算
+                TileDistanceCheckJob job = new TileDistanceCheckJob 
+                { 
+                    TileStates = NativeTileBounds, 
+                    Distances = NativeDistances, 
+                    CameraPosition = position, 
+                    IgnoreY = false 
+                };
+                var distHandle = job.Schedule(NativeTileBounds.Length, 64);
+                distHandle.Complete();
+
+                // 距離が近い順にソート
+                var sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule(distHandle);
+                sortHandle.Complete();
+
                 await ExecuteLoadTask(loadTask.LoadTaskCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
-                logger.LogWarn("タイルのロードTaskがキャンセルされました。");
+                logger?.LogWarn("タイルのロードTaskがキャンセルされました。");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"タイルの更新中にエラーが発生しました: {ex.Message}");
             }
             finally
             {
