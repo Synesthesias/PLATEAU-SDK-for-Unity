@@ -121,8 +121,6 @@ namespace PLATEAU.Editor.Addressables
                     entry.SetLabel(label, true);
                 }
             }
-
-            Debug.Log($"<color=red>アセットをAddressableとして登録しました: {assetPath} -> {address} (グループ: {groupName})</color>");
         }
 
         /// <summary>

@@ -21,12 +21,12 @@ namespace PLATEAU.CityImport.Import
 {
     internal class TileImporter : IDisposable
     {
-
         /// <summary>
-        /// <see cref="CityImporter"/> クラスのメインメソッドです。
-        /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
+        /// <see cref="CityImporter"/> のインポート処理に代わるタイル用インポート処理です。
+        /// GMLファイルから都市モデルを読み、Tile用のメッシュ、GameObjectを生成します。
         /// メインスレッドで呼ぶ必要があります。
         /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
+        /// postGmlProcessorsに<see cref="DynamicTileExporter"/>を渡す事でAddressablesが生成されます。
         /// </summary>
         public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
             CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
@@ -39,7 +39,6 @@ namespace PLATEAU.CityImport.Import
 
             progressDisplay ??= new DummyProgressDisplay();
             var datasetSourceConfig = config.ConfBeforeAreaSelect.DatasetSourceConfig;
-
 
             if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
@@ -147,6 +146,7 @@ namespace PLATEAU.CityImport.Import
         private Transform rootTransform;
         private CityImportConfig importConfig;
         private IEnumerable<IPostGmlImportProcessor> postGmlProcessors;
+        private int combinedTileCount = 0; // 結合タイル数(Progress標示用) 結合タイルのみ未確定なため値を保持
 
         /// <summary>
         /// TileImporterの初期化を行います。
@@ -155,6 +155,7 @@ namespace PLATEAU.CityImport.Import
         {
             cityModels = new();
             cityModelGml = new();
+            combinedTileCount = 0;
         }
 
         /// <summary>
@@ -384,10 +385,6 @@ namespace PLATEAU.CityImport.Import
                 {
                     progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
                 }
-
-
-                // TODO : Prefab生成して Addressablesに登録する処理を追加する
-                // gmlTrans をそのままPrefab化する？
             }
         }
 
@@ -421,6 +418,7 @@ namespace PLATEAU.CityImport.Import
                 var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
 
                 var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
+                combinedTileCount += tileGroups.Count; // 結合タイル数をカウント
 
                 foreach (var cityModelsInTile in tileGroups)
                 {
@@ -702,7 +700,7 @@ namespace PLATEAU.CityImport.Import
         {
             if (postGmlProcessors != null)
             {
-                var result = new TileImportResult(convertResult.GeneratedObjs, 0, gml.GridCode.StringCode, gml, convertResult.GeneratedRootTransforms.CalcCommonParent()?.gameObject, zoomLevel);
+                var result = new TileImportResult(convertResult.GeneratedObjs, GetTotalTileCount(), gml.GridCode.StringCode, gml, convertResult.GeneratedRootTransforms.CalcCommonParent()?.gameObject, zoomLevel);
                 foreach (var processor in postGmlProcessors)
                 {
                     if(processor is IPostTileImportProcessor)
@@ -711,6 +709,18 @@ namespace PLATEAU.CityImport.Import
                         processor.OnGmlImported(result);
                 }
             }
+        }
+
+        /// <summary>
+        /// タイルの総数を取得します。
+        /// zoomLevel9以下は読込タイル数が最初は未確定なため、値加算後に変動
+        /// </summary>
+        /// <returns></returns>
+        private int GetTotalTileCount()
+        {
+            int gmlCount = cityModelGml.Count;
+            int estimatedTileCount = gmlCount + (gmlCount * 4); // ズームレベル10 + ズームレベル11 (9は未確定）
+            return estimatedTileCount + (combinedTileCount == 0 ? gmlCount : combinedTileCount);
         }
 
         /// <summary>

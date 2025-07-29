@@ -162,28 +162,6 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPositionInternal(Vector3 position, bool ignoreY)
         {
-            //var sortByDistance = new List<PLATEAUDynamicTile>(tileManager.DynamicTiles);
-            //sortByDistance.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // Distance順にソート
-
-            //foreach (var tile in sortByDistance)
-            //{
-            //    var distance = tile.GetDistance(position, ignoreY);
-            //    if (tileManager.WithinTheRange(distance, tile))
-            //    {
-            //        if (tile.LoadHandle.IsValid())
-            //            tile.NextLoadState = LoadState.None;
-            //        else
-            //            tile.NextLoadState = LoadState.Load;
-            //    }
-            //    else
-            //    {
-            //        if (tile.LoadHandle.IsValid())
-            //            tile.NextLoadState = LoadState.Unload;
-            //        else
-            //            tile.NextLoadState = LoadState.None;
-            //    }
-            //}
-
             await Task.Run(() =>
             {
                 var sortByDistance = new List<PLATEAUDynamicTile>(tileManager.DynamicTiles);
@@ -194,17 +172,11 @@ namespace PLATEAU.DynamicTile
                     var distance = tile.GetDistance(position, ignoreY);
                     if (tileManager.WithinTheRange(distance, tile))
                     {
-                        if (tile.LoadHandle.IsValid())
-                            tile.NextLoadState = LoadState.None;
-                        else
-                            tile.NextLoadState = LoadState.Load;
+                        tile.NextLoadState = LoadState.Load;
                     }
                     else
                     {
-                        if (tile.LoadHandle.IsValid())
-                            tile.NextLoadState = LoadState.Unload;
-                        else
-                            tile.NextLoadState = LoadState.None;
+                        tile.NextLoadState = LoadState.Unload;
                     }
                 }
             }, LoadTaskCancellationTokenSource.Token);

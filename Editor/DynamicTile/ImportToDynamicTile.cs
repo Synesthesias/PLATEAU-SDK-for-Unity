@@ -47,19 +47,12 @@ namespace PLATEAU.Editor.DynamicTile
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
 
             // GMLを1つインポート完了したときの処理を登録します。
-            //var postGmlImport = new List<IPostGmlImportProcessor>
-            //{
-            //    new CityDuplicateProcessor(), // 重複した低LODを非表示にします
-            //    dynamicTileExporter // 動的タイル化します
-            //};
-
             var postGmlImport = new List<IPostGmlImportProcessor>
             {
                 dynamicTileExporter // 動的タイル化します
             };
 
             // インポートを実行
-            //var task = CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             var task = TileImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
 
             await task;

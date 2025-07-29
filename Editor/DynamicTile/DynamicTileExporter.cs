@@ -285,6 +285,7 @@ namespace PLATEAU.DynamicTile
                 var childObjects = placedObject.transform.Cast<Transform>()
                                            .Select(t => t.gameObject)
                                            .ToArray();
+                // 複数GameObject処理
                 ProcessGameObjects(
                     childObjects,
                     zoomLevel,
@@ -313,7 +314,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="context">コンテキスト</param>
         /// <param name="onError">エラー時のコールバック</param>
         /// <returns>処理が成功した場合はtrue</returns>
-        public static bool ProcessGameObjects(
+        private bool ProcessGameObjects(
             IEnumerable<GameObject> targets,
             int zoomLevel,
             DynamicTileProcessingContext context,
@@ -340,7 +341,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="context">コンテキスト</param>
         /// <param name="onError">エラー時のコールバック</param>
         /// <returns>処理が成功した場合はtrue</returns>
-        public static bool ProcessGameObject(
+        private bool ProcessGameObject(
             GameObject target,
             int zoomLevel,
             DynamicTileProcessingContext context,
@@ -360,6 +361,13 @@ namespace PLATEAU.DynamicTile
             {
                 Directory.CreateDirectory(outputPath);
             }
+
+            // 進捗更新を通知
+            // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
+            int loadedGmlCount = context.IncrementAndGetLoadedGmlCount();
+            float progress = 10f + ((float)loadedGmlCount / context.GmlCount) * 70f;
+            progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
+                $"動的タイルを生成中... {target.name}");
 
             context.AssetConfig.SrcGameObj = target;
 
@@ -397,7 +405,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="groupName"></param>
         /// <param name="cityObject"></param>
         /// <param name="metaStore"></param>
-        private static void RegisterAsset(
+        private void RegisterAsset(
             GameObject prefab,
             string savePath,
             MultiResolutionPrefabCreator.Result result,

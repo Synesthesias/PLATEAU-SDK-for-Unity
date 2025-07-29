@@ -37,6 +37,7 @@ namespace PLATEAU.DynamicTile
             Timeout
         }
 
+        public static readonly string TILE_PARENT_NAME = "DynamicTileRoot"; // タイルの親Transformの名前
         private Transform TileParent { get; set; } // タイルの親Transform
 
         /// <summary>
@@ -106,13 +107,14 @@ namespace PLATEAU.DynamicTile
 
             if (TileParent == null)
             {
-                if(!(TileParent = transform.Find("DynamicTileParent")))
+                TileParent = transform.Find(TILE_PARENT_NAME);
+                if (TileParent == null)
                 {
-                    TileParent = new GameObject("DynamicTileParent").transform; // タイルの親Transformを作成
+                    TileParent = new GameObject(TILE_PARENT_NAME).transform; // タイルの親Transformを作成
                     TileParent.transform.SetParent(transform, false); // マネージャーのTransformの子として設定
 
                     //　暫定的にシーン上のPLATEAUInstancedCityModelを利用
-                    //　TODO: 予めScriptableObjectで設定できるようにする
+                    //　TODO: 予めScriptableObjectか、Addressablesで設定できるようにする
                     var cityModel = FindFirstObjectByType<PLATEAUInstancedCityModel>(); // PLATEAUInstancedCityModelを追加
                     if (cityModel != null)
                         TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
