@@ -112,6 +112,7 @@ namespace PLATEAU.DynamicTile
 
             if (!loadDistances.Validate())
             {
+                logger.LogWarn("Load distances validation failed.");
                 return;
             }
 

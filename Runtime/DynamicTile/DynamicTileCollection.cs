@@ -55,15 +55,15 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            if (tiles.Contains(tile))
-            {
-                logger.LogWarn("既に追加済みのタイルです");
-                return false;
-            }
-
             if (tileAddressesDict.ContainsKey(tile.Address))
             {
                 logger.LogWarn("既に追加済みのタイルAddressです");
+                return false;
+            }
+            
+            if (tiles.Contains(tile))
+            {
+                logger.LogWarn("既に追加済みのタイルです");
                 return false;
             }
 
@@ -83,14 +83,21 @@ namespace PLATEAU.DynamicTile
         }
         
         /// <summary>
-        /// タイルのメタ情報からタイルリストを構築します。すでに存在するタイルはクリアされます。
+        /// タイルのメタ情報からタイルリストを構築します。すでに存在するタイルはリソース解放後クリアされます。
         /// </summary>
         public void RefreshByTileMetas(IEnumerable<PLATEAUDynamicTileMetaInfo> metas, PLATEAUInstancedCityModel cityModel)
         {
-            ClearTiles(cityModel); // 既存のタイルリストをクリア
+
+            var newTiles = new List<PLATEAUDynamicTile>();
             foreach (var meta in metas)
             {
                 var tile = new PLATEAUDynamicTile(meta, logger);
+                newTiles.Add(tile);
+            }
+            
+            ClearTiles(cityModel); // 既存のタイルリストをクリア
+            foreach (var tile in newTiles)
+            {
                 AddTile(tile);
             }
         }
@@ -169,6 +176,12 @@ namespace PLATEAU.DynamicTile
         /// <returns>LODの親Transform</returns>
         public Transform FindParent(int lod, Transform parentTransform)
         {
+            if (parentTransform == null)
+            {
+                logger.LogWarn("親Transformがnullです。LODの親Transformを取得できません。");
+                return null;
+            }
+            
             if (lodParentDict.TryGetValue(lod, out var existingParent))
             {
                 if (existingParent != null)
@@ -196,6 +209,7 @@ namespace PLATEAU.DynamicTile
                 return lodObject.transform;
             }
 
+            logger.LogWarn("LOD親オブジェクトの作成に失敗しました。");
             return null;
         }
 
@@ -241,7 +255,7 @@ namespace PLATEAU.DynamicTile
         {
             if (outBounds.Length != tiles.Count)
             {
-                throw new ArgumentException("array size didn't match.");
+                throw new ArgumentException($"配列サイズが一致しません。必要: {tiles.Count}, 実際: {outBounds.Length}");
             }
             
             for (int i = 0; i < tiles.Count; i++)
