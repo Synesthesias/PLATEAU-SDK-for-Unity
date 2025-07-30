@@ -28,13 +28,14 @@ namespace PLATEAU.CityImport.Import
         /// メインスレッドで呼ぶ必要があります。
         /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+        /// <returns>設置したゲームオブジェクトのルート</returns>
+        public static async Task<Transform> ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
             CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
             if (config == null)
             {
                 Debug.LogError("CityImportConfig が null です。");
-                return;
+                return null;
             }
             
             progressDisplay ??= new DummyProgressDisplay();
@@ -44,7 +45,7 @@ namespace PLATEAU.CityImport.Import
             if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
                 Debug.LogError($"インポート元パスが存在しません。 sourcePath = {localConf.LocalSourcePath}");
-                return;
+                return null;
             }
             
             progressDisplay.SetProgress("GMLファイル検索", 10f, "");
@@ -68,7 +69,7 @@ namespace PLATEAU.CityImport.Import
             if (targetGmls == null || targetGmls.Count <= 0)
             {
                 Debug.LogError("該当するGMLファイルがありません。");
-                return;
+                return null;
             }
 
             foreach (var gml in targetGmls)
@@ -163,6 +164,8 @@ namespace PLATEAU.CityImport.Import
                     }
                 }
             }
+
+            return rootTrans;
         }
         
         

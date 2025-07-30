@@ -6,7 +6,6 @@ using System.Linq;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace PLATEAU.Editor.RoadNetwork
 {

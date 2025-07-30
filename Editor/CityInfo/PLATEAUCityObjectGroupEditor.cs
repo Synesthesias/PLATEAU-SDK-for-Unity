@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;

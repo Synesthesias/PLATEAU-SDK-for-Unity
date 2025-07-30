@@ -19,5 +19,10 @@ namespace PLATEAU.Util
         {
             if(this.condition()) Debug.Log(logText);
         }
+
+        public void LogWarn(string logText)
+        {
+            if(condition()) Debug.LogWarning(logText);
+        }
     }
 }

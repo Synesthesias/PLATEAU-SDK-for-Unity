@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using PLATEAU.CityInfo;
 using PLATEAU.Native;
 using PLATEAU.RoadNetwork.Data;
 

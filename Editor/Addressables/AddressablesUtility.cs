@@ -3,7 +3,6 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
@@ -119,6 +118,10 @@ namespace PLATEAU.Editor.Addressables
                     entry.SetLabel(label, true);
                 }
             }
+            
+            EditorUtility.SetDirty(settings);
+            EditorUtility.SetDirty(group);
+            AssetDatabase.SaveAssets();
         }
 
         /// <summary>
@@ -313,15 +316,28 @@ namespace PLATEAU.Editor.Addressables
                 Debug.Log("Addressablesのキャッシュをクリアしました。");
             }
 
-            // Addressablesのビルドを実行
-            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
-            if (!string.IsNullOrEmpty(result.Error))
+            // Addressablesのバージョン1.22の既知のバグを回避するため、GenerateBuildLayoutを一時的にオフにします。
+            // これをしないとビルドに成功しているのにエラーメッセージが出現します。
+            // バージョン2.0.8以降であればこの処理は不要です。
+            bool prevGenerateBuildLayout = ProjectConfigData.GenerateBuildLayout;
+            ProjectConfigData.GenerateBuildLayout = false;
+
+            try
             {
-                Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+                // Addressablesのビルドを実行
+                AddressableAssetSettings.BuildPlayerContent(out var result);
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+                }
+                else
+                {
+                    Debug.Log("Addressablesのビルドが完了しました。");
+                }
             }
-            else
+            finally
             {
-                Debug.Log("Addressablesのビルドが完了しました。");
+                ProjectConfigData.GenerateBuildLayout = prevGenerateBuildLayout;
             }
         }
 

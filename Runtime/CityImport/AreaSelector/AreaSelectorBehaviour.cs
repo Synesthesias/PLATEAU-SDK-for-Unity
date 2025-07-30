@@ -26,15 +26,26 @@ namespace PLATEAU.CityImport.AreaSelector
     internal class AreaSelectorBehaviour : MonoBehaviour
     {
         [SerializeField] private string prevScenePath;
+        
+        // インポート設定
         private ConfigBeforeAreaSelect confBeforeAreaSelect;
+        
+        // ギズモ表示
         private AreaSelectGizmosDrawer gizmosDrawer;
+        
+        // 範囲選択画面の返し先
         private IAreaSelectResultReceiver areaSelectResultReceiver;
+        
         private GeoReference geoReference;
         private bool prevSceneCameraRotationLocked;
+        
+        // カメラ位置に応じて地図を切り替え
         private GSIMapLoaderZoomSwitch mapLoader;
         private Extent entireExtent;
         #if UNITY_EDITOR
         private EditorWindow prevEditorWindow;
+        
+        // 「メッシュコードから検索」機能
         private GridCodeSearchWindow gridSearchWindow;
         #endif
 

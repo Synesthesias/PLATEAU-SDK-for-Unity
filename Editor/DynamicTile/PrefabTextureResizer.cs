@@ -1,11 +1,8 @@
 ﻿using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
-using System.Threading.Tasks;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile

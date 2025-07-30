@@ -46,7 +46,7 @@ namespace PLATEAU.DynamicTile
             
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
             
-            // DynamicTile管理用Managerを破棄
+            // DynamicTile管理用Managerがすでにあるなら、後で作り直すので破棄
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             if (manager != null)
             {
@@ -258,7 +258,6 @@ namespace PLATEAU.DynamicTile
             dataPath = dataPath.Replace('\\', '/');
             
             AssetDatabase.CreateAsset(metaStore, dataPath);
-            AssetDatabase.SaveAssets();
 
             // メタデータをAddressableに登録
             AddressablesUtility.RegisterAssetAsAddressable(
@@ -326,7 +325,7 @@ namespace PLATEAU.DynamicTile
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// 成否を返します。
         /// </summary>
-        public bool CompleteProcessing()
+        public bool CompleteProcessing(PLATEAUInstancedCityModel sourceModel)
         {
             if (Context == null || !Context.IsValid())
             {
@@ -338,13 +337,21 @@ namespace PLATEAU.DynamicTile
             {
                 // メタデータを保存
                 SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
-
-                // Addressablesのビルドを実行
-                AddressablesUtility.BuildAddressables(true);
-
+                
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
+                manager.Init(sourceModel);
+                
+                // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
+                // 保存については処理前にダイアログでユーザーに了承を得ています。
+                EditorUtility.SetDirty(manager);
+                EditorSceneManager.SaveOpenScenes();                
+
+                // Addressablesのビルドを実行
+                AddressablesUtility.BuildAddressables(false);
+
+                
 
                 if (Context.IsExcludeAssetFolder)
                 {
@@ -360,6 +367,9 @@ namespace PLATEAU.DynamicTile
                     
                     // 一時フォルダーを削除
                     CleanupTempFolder();
+
+                    // 上で自動保存しておいてカタログパスを保存しないのは中途半端なのでここでも保存します。
+                    EditorSceneManager.SaveOpenScenes();
                 }
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
@@ -374,8 +384,12 @@ namespace PLATEAU.DynamicTile
             {
                 PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定
 
-                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (manager != null)
+                var manager = GameObject.FindObjectsOfType<PLATEAUTileManager>().FirstOrDefault(m => m!= null);
+                if (manager == null)
+                {
+                    Debug.LogError("manager is null.");
+                }
+                else
                 {
                     PLATEAUSceneViewCameraTracker.Initialize();
                     manager.InitializeTiles().ContinueWithErrorCatch(); // タイルの初期化

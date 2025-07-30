@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLATEAU.Util;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,10 +16,12 @@ namespace PLATEAU.DynamicTile
     {
 
         private readonly PLATEAUDynamicTileLoadTask loadTask;
+        private readonly ConditionalLogger logger;
 
-        internal PLATEAUDynamicTileLoader(PLATEAUDynamicTileLoadTask loadTask)
+        internal PLATEAUDynamicTileLoader(PLATEAUDynamicTileLoadTask loadTask, ConditionalLogger logger)
         {
             this.loadTask = loadTask;
+            this.logger = logger;
         }
 
         public void Dispose()
@@ -36,13 +39,13 @@ namespace PLATEAU.DynamicTile
             string address = tile.Address;
             if (string.IsNullOrEmpty(address))
             {
-                DebugLog($"指定したアドレスが見つかりません: {address}");
+                logger.LogWarn($"指定したアドレスが見つかりません: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.Failure);
             }
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
-                DebugLog($"Already loaded: {address}", false);
+                logger.Log($"Already loaded: {address}");
                 return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
             }
 
@@ -100,7 +103,7 @@ namespace PLATEAU.DynamicTile
                         Addressables.Release(tile.LoadHandle);
 
                     tile.Reset();
-                    DebugLog($"アセットのロードに失敗しました: {address}");
+                    logger.LogWarn($"アセットのロードに失敗しました: {address}");
                     return LoadResult.Failure;
                 }
             }
@@ -109,17 +112,17 @@ namespace PLATEAU.DynamicTile
                 var loadResult = LoadResult.Failure;
                 if (ex is OperationCanceledException)
                 {
-                    DebugLog($"アセットのロードがキャンセルされました: {address}");
+                    logger.LogWarn($"アセットのロードがキャンセルされました: {address}");
                     loadResult = LoadResult.Cancelled;
                 }
                 else if (ex is TimeoutException)
                 {
-                    DebugLog($"アセットのロードがタイムアウトしました: {address}");
+                    logger.LogWarn($"アセットのロードがタイムアウトしました: {address}");
                     loadResult = LoadResult.Timeout;
                 }
                 else
                 {
-                    DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
+                    logger.LogWarn($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");
                 }
 
                 if (tile.LoadHandle.IsValid())
@@ -145,7 +148,7 @@ namespace PLATEAU.DynamicTile
                 int retryCount = 0;
                 while (retryCount < maxRetryCount)
                 {
-                    DebugLog($"タイルのロードに失敗しました。リトライします: {tile.Address} Count: {retryCount}");
+                    logger.LogWarn($"タイルのロードに失敗しました。リトライします: {tile.Address} Count: {retryCount}");
 
                     if (tile.LoadHandleCancellationTokenSource == null)
                         throw new OperationCanceledException("LoadHandleCancellationTokenSource is null.");
@@ -165,53 +168,10 @@ namespace PLATEAU.DynamicTile
                 return result;
             }
 
-            DebugLog($"タイルのロードのリトライに失敗しました: {tile.Address}", true);
+            logger.Log($"タイルのロードのリトライに失敗しました: {tile.Address}");
 
             tile.LastLoadResult = result; // 最後のロード結果を保存
             return result;
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからアンロード後、インスタンスを削除します。
-        /// </summary>
-        /// <param name="address"></param>
-        internal bool Unload(PLATEAUDynamicTile tile)
-        {
-            string address = tile.Address;
-            if (string.IsNullOrEmpty(address))
-            {
-                DebugLog($"指定したアドレスが見つかりません: {address}");
-                return false;
-            }
-            try
-            {
-                if (tile.LoadHandle.IsValid())
-                {
-                    if (!tile.LoadHandle.IsDone)
-                    {
-                        // ロードが完了していない場合はキャンセル
-                        tile.LoadHandleCancellationTokenSource?.Cancel();
-                        return false;
-                    }
-                    Addressables.Release(tile.LoadHandle);
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLog($"アセットのRelease中にエラーが発生しました: {address} {ex.Message}");
-            }
-            finally
-            {
-                // Instance削除
-                loadTask.TileManager.DeleteGameObjectInstance(tile.LoadedObject);
-                tile.Reset(); // タイルの状態をリセット
-            }
-            return true;
-        }
-
-        private void DebugLog(string message, bool warn = true)
-        {
-            loadTask?.DebugLog(message, warn);
         }
 
     }

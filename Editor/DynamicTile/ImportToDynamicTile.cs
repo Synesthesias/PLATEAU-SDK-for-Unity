@@ -1,12 +1,15 @@
 using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
+using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Editor.DynamicTile
 {
@@ -29,6 +32,23 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
+            // アセットバンドルのビルド時はシーンの保存が求められますが、
+            // 処理の途中で「保存しますか」と聞くよりも最初に聞いた方が良いので聞きます。
+            if (SceneManager.GetActiveScene().isDirty)
+            {
+                bool saveScene = Dialogue.Display("シーンの保存が必要です。保存して続行しますか？", "続行", "キャンセル");
+                
+                if (saveScene)
+                {
+                    EditorSceneManager.SaveOpenScenes();
+                }
+                else
+                {
+                    Debug.Log("シーンの保存が拒否されたため処理を中止します。");
+                    return;
+                }
+            }
+            
             // 動的タイルのバリデーション
             if (!config.ValidateForTile())
             {
@@ -55,16 +75,15 @@ namespace PLATEAU.Editor.DynamicTile
             };
             
             // インポートを実行
-            var task = CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
-
-            await task;
+            var rootTrans = await CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             
             // 事後処理
             try
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                dynamicTileExporter.CompleteProcessing();
+                var cityModel = rootTrans.GetComponent<PLATEAUInstancedCityModel>();
+                dynamicTileExporter.CompleteProcessing(cityModel);
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");
