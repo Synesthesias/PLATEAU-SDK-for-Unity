@@ -325,7 +325,7 @@ namespace PLATEAU.DynamicTile
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// 成否を返します。
         /// </summary>
-        public bool CompleteProcessing()
+        public bool CompleteProcessing(PLATEAUInstancedCityModel sourceModel)
         {
             if (Context == null || !Context.IsValid())
             {
@@ -338,16 +338,20 @@ namespace PLATEAU.DynamicTile
                 // メタデータを保存
                 SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
                 
+                // managerを生成
+                var managerObj = new GameObject("DynamicTileManager");
+                var manager = managerObj.AddComponent<PLATEAUTileManager>();
+                manager.Init(sourceModel);
+                
                 // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
                 // 保存については処理前にダイアログでユーザーに了承を得ています。
+                EditorUtility.SetDirty(manager);
                 EditorSceneManager.SaveOpenScenes();                
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(false);
 
-                // managerを生成
-                var managerObj = new GameObject("DynamicTileManager");
-                var manager = managerObj.AddComponent<PLATEAUTileManager>();
+                
 
                 if (Context.IsExcludeAssetFolder)
                 {
@@ -364,7 +368,7 @@ namespace PLATEAU.DynamicTile
                     // 一時フォルダーを削除
                     CleanupTempFolder();
 
-                    // 上で自動保存しておいてTileManagerの生成を保存しないのは中途半端なのでここでも保存します。
+                    // 上で自動保存しておいてカタログパスを保存しないのは中途半端なのでここでも保存します。
                     EditorSceneManager.SaveOpenScenes();
                 }
 

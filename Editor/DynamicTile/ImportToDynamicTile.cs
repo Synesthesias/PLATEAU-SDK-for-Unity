@@ -1,6 +1,7 @@
 using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
+using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
 using PLATEAU.Util;
 using System.Collections.Generic;
@@ -74,14 +75,15 @@ namespace PLATEAU.Editor.DynamicTile
             };
             
             // インポートを実行
-            await CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
+            var rootTrans = await CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             
             // 事後処理
             try
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                dynamicTileExporter.CompleteProcessing();
+                var cityModel = rootTrans.GetComponent<PLATEAUInstancedCityModel>();
+                dynamicTileExporter.CompleteProcessing(cityModel);
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");

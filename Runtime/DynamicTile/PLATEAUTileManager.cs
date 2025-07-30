@@ -59,6 +59,8 @@ namespace PLATEAU.DynamicTile
         [SerializeField]
         private bool showDebugLog = false; // ログを表示するか
 
+        [SerializeField] private PLATEAUInstancedCityModel sourceModel;
+
         // タイルコレクション
         internal DynamicTileCollection TileCollection { get; }
 
@@ -94,6 +96,11 @@ namespace PLATEAU.DynamicTile
             TileCollection = new DynamicTileCollection(logger);
         }
 
+        public void Init(PLATEAUInstancedCityModel sourceModelArg)
+        {
+            sourceModel = sourceModelArg;
+        }
+
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
@@ -121,7 +128,7 @@ namespace PLATEAU.DynamicTile
 
             logger.Log($"InitializeTiles: {metaStore.TileMetaInfos.Count} tiles found in meta store.");
             
-            TileCollection.RefreshByTileMetas(metaStore.TileMetaInfos);
+            TileCollection.RefreshByTileMetas(metaStore.TileMetaInfos, sourceModel);
             
 
             loadTask = new(this, logger);
@@ -181,7 +188,7 @@ namespace PLATEAU.DynamicTile
             {
                 loadTask.DestroyTask().ContinueWithErrorCatch();
             }
-            TileCollection?.ClearTiles();
+            TileCollection?.ClearTiles(sourceModel);
         }
 
         /// <summary>
@@ -218,7 +225,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTiles()
         {
-            TileCollection.ClearTiles();
+            TileCollection.ClearTiles(sourceModel);
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -230,7 +237,7 @@ namespace PLATEAU.DynamicTile
             var originalState = State == ManagerState.CleaningUp ? ManagerState.Operating : State;
             State = ManagerState.CleaningUp;
             
-            TileCollection.ClearTileAssets();
+            TileCollection.ClearTileAssets(sourceModel);
             loadTask?.DisposeAsync().AsTask().ContinueWithErrorCatch();
             
             State = originalState;
@@ -339,9 +346,16 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         private Transform FindParent(int lod)
         {
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
-                instance = this.gameObject;
+            GameObject instance;
+            if (sourceModel == null)
+            {
+                instance = gameObject;
+            }
+            else
+            {
+                instance = sourceModel.gameObject;
+            }
+            
 
             return TileCollection.FindParent(lod, instance.transform);
         }

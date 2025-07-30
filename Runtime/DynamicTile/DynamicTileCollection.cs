@@ -85,9 +85,9 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// タイルのメタ情報からタイルリストを構築します。すでに存在するタイルはクリアされます。
         /// </summary>
-        public void RefreshByTileMetas(IEnumerable<PLATEAUDynamicTileMetaInfo> metas)
+        public void RefreshByTileMetas(IEnumerable<PLATEAUDynamicTileMetaInfo> metas, PLATEAUInstancedCityModel cityModel)
         {
-            ClearTiles(); // 既存のタイルリストをクリア
+            ClearTiles(cityModel); // 既存のタイルリストをクリア
             foreach (var meta in metas)
             {
                 var tile = new PLATEAUDynamicTile(meta, logger);
@@ -98,9 +98,9 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// すべてのタイルをクリアします。
         /// </summary>
-        public void ClearTiles()
+        public void ClearTiles(PLATEAUInstancedCityModel cityModel)
         {
-            ClearTileAssets();
+            ClearTileAssets(cityModel);
             tiles.Clear();
             tileAddressesDict.Clear();
             lodParentDict.Clear();
@@ -109,7 +109,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// すべてのロード済みオブジェクトをアンロードします。
         /// </summary>
-        public void ClearTileAssets()
+        public void ClearTileAssets(PLATEAUInstancedCityModel cityModel)
         {
             foreach (var tile in tiles)
             {
@@ -131,22 +131,21 @@ namespace PLATEAU.DynamicTile
                 }
             }
 
-            ClearLodChildren();
+            ClearLodChildren(cityModel);
         }
 
         /// <summary>
         /// LOD直下の子オブジェクトをすべてアンロードします。
         /// </summary>
-        private void ClearLodChildren()
+        private void ClearLodChildren(PLATEAUInstancedCityModel cityModel)
         {
-            var instance = Object.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
+            if (cityModel == null)
                 return;
 
             for (int lod = 0; lod <= MaxLodLevel; lod++)
             {
                 var lodName = $"LOD{lod}";
-                var lodParent = instance.transform.Find(lodName)?.gameObject;
+                var lodParent = cityModel.transform.Find(lodName)?.gameObject;
                 if (lodParent != null)
                 {
                     for (int i = lodParent.transform.childCount - 1; i >= 0; i--)
@@ -242,7 +241,7 @@ namespace PLATEAU.DynamicTile
         {
             if (outBounds.Length != tiles.Count)
             {
-                throw new ArgumentException("arrow size didn't match.");
+                throw new ArgumentException("array size didn't match.");
             }
             
             for (int i = 0; i < tiles.Count; i++)
