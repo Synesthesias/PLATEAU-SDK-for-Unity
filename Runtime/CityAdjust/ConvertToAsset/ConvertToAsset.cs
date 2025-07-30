@@ -73,31 +73,18 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
             progress.Display("FBXに出力中...", 0.6f);
 
+
             // FBXに出力します。
             var fullPath = Path.GetFullPath(conf.AssetPath);
             string fbxNameWithoutExtension = conf.SrcGameObj.name;
-            
+
             new CityExporterFbx().Export(Path.GetFullPath(conf.AssetPath), fbxNameWithoutExtension, model);
-            
-            // FBXのインポート設定を適切に直したうえでインポートします。
+
+
             var assetPath = PathUtil.FullPathToAssetsPath(fullPath);
-            PLATEAUAssetPostProcessor.PostProcessHandler assetProcess = () =>
-            {
-                AdjustFbxImportSettings(assetPath);
-            };
-            PLATEAUAssetPostProcessor.OnPostProcess += assetProcess;
-            AssetDatabase.Refresh();
-            PLATEAUAssetPostProcessor.OnPostProcess -= assetProcess;
-            
-            // FBXのインポート設定をします。
-            string fbxPath = Path.Combine(conf.AssetPath, fbxNameWithoutExtension + ".fbx");
-            ModelImporter modelImporter = AssetImporter.GetAtPath(fbxPath)  as ModelImporter;
-            if (modelImporter != null)
-            {
-                modelImporter.globalScale = 100;
-                modelImporter.isReadable = true;
-                modelImporter.SaveAndReimport();
-            }
+
+            // インポートします。
+            ImportAndAdjustFbxAssets(conf, fbxNameWithoutExtension);
 
             progress.Display("FBXをシーンに配置中...", 0.8f);
 
@@ -154,7 +141,53 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
 #endif
         }
-        
+
+        /// <summary>
+        /// アセットに保存されたファイルをインポートします。
+        /// </summary>
+        private void ImportAndAdjustFbxAssets(ConvertToAssetConfig conf, string fbxNameWithoutExtension)
+        {
+            var allAssets = GetAllAssetsInDirectory(conf.AssetPath);
+            
+            PLATEAUAssetPostProcessor.PostProcessHandler assetProcess = () =>
+            {
+                AdjustFbxImportSettings(conf.AssetPath);
+            };
+            
+            // バッチ処理モードでインポートすることで、インポートの時間を短縮し、プログレスバーが全体的な状況を表すようにします。
+            AssetDatabase.StartAssetEditing();
+            
+            try
+            {
+                
+                PLATEAUAssetPostProcessor.OnPostProcess += assetProcess;
+                for (var i = 0; i < allAssets.Count; i++)
+                {
+                    var assetFile = allAssets[i];
+                    var path = PathUtil.FullPathToAssetsPath(assetFile);
+                    AssetDatabase.ImportAsset(path);
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+                PLATEAUAssetPostProcessor.OnPostProcess -= assetProcess;
+            }
+            
+            // FBXのインポート設定をします。
+            string fbxPath = Path.Combine(conf.AssetPath, fbxNameWithoutExtension + ".fbx");
+            ModelImporter modelImporter = AssetImporter.GetAtPath(fbxPath) as ModelImporter;
+            if (modelImporter != null)
+            {
+                modelImporter.globalScale = 100;
+                modelImporter.isReadable = true;
+                modelImporter.SaveAndReimport();
+            }
+            
+
+            AssetDatabase.Refresh();
+        }
+
         /// <summary>
         /// FBX設定を調整します。
         /// </summary>
@@ -197,6 +230,49 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
 
                 return NextSearchFlow.Continue;
             });
+        }
+
+        /// <summary>
+        /// 指定されたディレクトリ内のすべてのアセットファイルを再帰的に列挙します。
+        /// </summary>
+        /// <param name="directoryPath">検索対象のディレクトリパス</param>
+        /// <returns>アセットファイルのフルパスのリスト</returns>
+        private List<string> GetAllAssetsInDirectory(string directoryPath)
+        {
+            var assets = new List<string>();
+            var fullPath = Path.GetFullPath(directoryPath);
+            
+            if (!Directory.Exists(fullPath))
+            {
+                Debug.LogError("指定されたディレクトリが存在しません: " + fullPath);
+                return assets;
+            }
+
+            // 再帰的にディレクトリ内のファイルを検索
+            var allFiles = Directory.GetFiles(fullPath, "*", SearchOption.AllDirectories);
+            
+            foreach (var file in allFiles)
+            {
+                // Unityで認識されるアセットファイルの拡張子をチェック
+                var extension = Path.GetExtension(file).ToLower();
+                if (IsAssetFile(extension))
+                {
+                    assets.Add(file);
+                }
+            }
+
+            return assets;
+        }
+
+        /// <summary>
+        /// 指定された拡張子がUnityアセットファイルかどうかを判定します。
+        /// </summary>
+        /// <param name="extension">ファイル拡張子（小文字）</param>
+        /// <returns>アセットファイルの場合true</returns>
+        private bool IsAssetFile(string extension)
+        {
+            // .metaファイル以外をアセットとして扱う
+            return extension != ".meta";
         }
     }
 }
