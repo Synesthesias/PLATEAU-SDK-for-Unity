@@ -67,6 +67,8 @@ namespace PLATEAU.DynamicTile
         public LoadState NextLoadState { get; set; } = LoadState.None;
 
         public PLATEAUTileManager.LoadResult LastLoadResult { get; set; } = PLATEAUTileManager.LoadResult.None;
+        
+        /// <summary> ログを出す設定の時だけ出す用 </summary>
         private ConditionalLogger logger;
 
         // Job Systemで使用するための構造体を返す
@@ -226,6 +228,7 @@ namespace PLATEAU.DynamicTile
                     {
                         // ロードが完了していない場合はキャンセル
                         LoadHandleCancellationTokenSource?.Cancel();
+                        Addressables.Release(LoadHandle);
                         return false;
                     }
                     Addressables.Release(LoadHandle);

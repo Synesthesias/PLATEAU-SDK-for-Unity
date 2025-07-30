@@ -1,5 +1,6 @@
 
 using System;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,9 +8,9 @@ using UnityEditor;
 namespace PLATEAU.Util
 {
     /// <summary>
-    /// Editorの場合、<see cref="Display"/>でプログレスバーを表示し、廃棄時にプログレスバーを消します。
+    /// Editorの場合、<see cref="UnityEngine.Display"/>でプログレスバーを表示し、廃棄時にプログレスバーを消します。
     /// Editorでない場合、何もしません。
-    /// <see cref="Display"/>にinfo文字列を与えない場合に表示されるデフォルト文字列をコンストラクタで指定できます。
+    /// <see cref="UnityEngine.Display"/>にinfo文字列を与えない場合に表示されるデフォルト文字列をコンストラクタで指定できます。
     /// 指定しない場合は空文字列がデフォルトになります。
     /// </summary>
     public class ProgressBar : IProgressBar
@@ -31,7 +32,7 @@ namespace PLATEAU.Util
         public void Display(string info, float progress)
         {
             #if UNITY_EDITOR
-            EditorUtility.DisplayProgressBar("PLATEAU", info, progress);
+            EditorUtility.DisplayProgressBar("PLATEAU", info, Mathf.Clamp01(progress));
             #endif
         }
 

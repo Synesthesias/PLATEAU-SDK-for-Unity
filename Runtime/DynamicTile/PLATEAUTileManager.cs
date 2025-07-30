@@ -87,6 +87,9 @@ namespace PLATEAU.DynamicTile
 
         public PLATEAUTileManager()
         {
+            // 通常のMonoBehaviourではデフォルトコンストラクタは非推奨ですが、
+            // 動的タイル機能はエディタ時・ランタイム時を問わず様々なタイミングで実行する必要があることから、
+            // 通常のAwakeやStartだけでは不足です。様々なタイミングで動作開始させるために必要です。
             logger = new ConditionalLogger(() => this.showDebugLog);
             TileCollection = new DynamicTileCollection(logger);
         }
@@ -311,6 +314,10 @@ namespace PLATEAU.DynamicTile
 
                         return true;
                     }
+                }
+                else
+                {
+                    logger.Log($"LOD {tile.Lod} の親Transformがありません。タイル: {tile.Address}");
                 }
             }
             return false;

@@ -74,6 +74,7 @@ namespace PLATEAU.DynamicTile
                 if (!Directory.Exists(folderBuild))
                 {
                     Debug.LogError("folder not found: " + folderBuild);
+                    return null;
                 }
 
                 var catalogFiles = Directory.GetFiles(folderBuild, "catalog_*.json", SearchOption.AllDirectories);
@@ -81,6 +82,7 @@ namespace PLATEAU.DynamicTile
                 if (catalogFiles.Length == 0)
                 {
                     Debug.LogError("catalog file is not found.");
+                    return null;
                 }
 
                 catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
@@ -89,11 +91,13 @@ namespace PLATEAU.DynamicTile
                     if (!Directory.Exists(folderRuntime))
                     {
                         Debug.LogError("folder not found: " + folderRuntime);
+                        return null;
                     }
                     var files = Directory.GetFiles(folderRuntime, "catalog_*.json", SearchOption.AllDirectories);
                     if (files.Length == 0)
                     {
                         Debug.LogError("catalog file is not found.");
+                        return null;
                     }
                     catalogPathToUse = files.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
 #endif
@@ -231,6 +235,7 @@ namespace PLATEAU.DynamicTile
                 else
                 {
                     Debug.LogError($"MetaStoreのロードに失敗しました: {metaStorePath}");
+                    return null;
                 }
             }
             catch (System.Exception ex)

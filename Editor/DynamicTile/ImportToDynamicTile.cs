@@ -3,7 +3,6 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

@@ -20,12 +20,12 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 操作の結果
         /// </summary>
-        public T Result => handle.Result;
+        public T Result => handle.IsValid() ? handle.Result : default;
 
         /// <summary>
         /// 操作の状態
         /// </summary>
-        public AsyncOperationStatus Status => handle.Status;
+        public AsyncOperationStatus Status => handle.IsValid() ? handle.Status : AsyncOperationStatus.None;
         
 
         /// <summary>

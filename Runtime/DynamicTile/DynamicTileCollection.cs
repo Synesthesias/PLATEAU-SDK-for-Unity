@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
 {
@@ -17,17 +18,17 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// タイルのリスト
         /// </summary>
-        private List<PLATEAUDynamicTile> Tiles { get; } = new();
+        private readonly List<PLATEAUDynamicTile> tiles = new();
 
         /// <summary>
         /// タイルのアドレスとタイルのマッピング
         /// </summary>
-        private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
+        private readonly Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
 
         /// <summary>
         /// LODごとの親Transformを管理する辞書
         /// </summary>
-        private Dictionary<int, Transform> lodParentDict = new();
+        private readonly Dictionary<int, Transform> lodParentDict = new();
 
         /// <summary>
         /// 最大LODレベル
@@ -54,7 +55,7 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            if (Tiles.Contains(tile))
+            if (tiles.Contains(tile))
             {
                 logger.LogWarn("既に追加済みのタイルです");
                 return false;
@@ -66,7 +67,7 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            Tiles.Add(tile);
+            tiles.Add(tile);
             tileAddressesDict[tile.Address] = tile;
             return true;
         }
@@ -100,7 +101,7 @@ namespace PLATEAU.DynamicTile
         public void ClearTiles()
         {
             ClearTileAssets();
-            Tiles.Clear();
+            tiles.Clear();
             tileAddressesDict.Clear();
             lodParentDict.Clear();
         }
@@ -110,7 +111,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void ClearTileAssets()
         {
-            foreach (var tile in Tiles)
+            foreach (var tile in tiles)
             {
                 try
                 {
@@ -121,7 +122,7 @@ namespace PLATEAU.DynamicTile
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarn($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}");
+                    logger.LogWarn($"タイルのアンロード中にエラーが発生しました: {tile.Address} {ex.Message}\n{ex.StackTrace}");
                 }
                 finally
                 {
@@ -138,7 +139,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void ClearLodChildren()
         {
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
+            var instance = Object.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
             if (instance == null)
                 return;
 
@@ -173,6 +174,8 @@ namespace PLATEAU.DynamicTile
             {
                 if (existingParent != null)
                     return existingParent;
+                else
+                    lodParentDict.Remove(lod); // nullエントリをキャッシュから削除
             }
 
             var lodName = $"LOD{lod}";
@@ -207,46 +210,51 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (Application.isPlaying)
-                UnityEngine.Object.Destroy(obj);
+                Object.Destroy(obj);
             else
-                UnityEngine.Object.DestroyImmediate(obj);
+                Object.DestroyImmediate(obj);
         }
 
         /// <summary>
         /// コレクション内のタイル数を取得します。
         /// </summary>
         /// <returns>タイル数</returns>
-        public int Count => Tiles.Count;
+        public int Count => tiles.Count;
 
         /// <summary>
         /// コレクションが空かどうかを確認します。
         /// </summary>
         /// <returns>空の場合true</returns>
-        public bool IsEmpty => Tiles.Count == 0;
+        public bool IsEmpty => tiles.Count == 0;
 
         public PLATEAUDynamicTile At(int index)
         {
-            return Tiles[index];
+            return tiles[index];
         }
 
         public List<PLATEAUDynamicTile> ToList()
         {
-            return new List<PLATEAUDynamicTile>(Tiles);
+            return new List<PLATEAUDynamicTile>(tiles);
         }
         
 
         public void ComposeTileBounds(NativeArray<TileBounds> outBounds)
         {
-            for (int i = 0; i < Tiles.Count; i++)
+            if (outBounds.Length != tiles.Count)
             {
-                var tile = Tiles[i];
+                throw new ArgumentException("arrow size didn't match.");
+            }
+            
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                var tile = tiles[i];
                 outBounds[i] = tile.GetTileBoundsStruct();
             }
         }
         
         public IEnumerator<PLATEAUDynamicTile> GetEnumerator()
         {
-            return Tiles.GetEnumerator();
+            return tiles.GetEnumerator();
         }
         
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

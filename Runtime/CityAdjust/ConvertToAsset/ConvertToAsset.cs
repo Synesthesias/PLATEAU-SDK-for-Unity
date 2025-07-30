@@ -275,7 +275,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// <returns>アセットファイルの場合true</returns>
         private bool IsAssetFile(string extension)
         {
-            // .metaファイル以外をアセットとして扱う
+            // 漏れがないほうが重要なので、.metaファイル以外はすべてアセットとみなします
             return extension != ".meta";
         }
     }
