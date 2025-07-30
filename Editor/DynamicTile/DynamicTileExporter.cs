@@ -265,6 +265,7 @@ namespace PLATEAU.DynamicTile
             }
         }
 
+        // IPostTileImportProcessor による処理
         #region IPostTileImportProcessor
 
         /// <summary>
@@ -415,7 +416,6 @@ namespace PLATEAU.DynamicTile
             var prefabPath = AssetPathUtil.GetAssetPath(savePath);
             var bounds = result.Bounds;
             var zoomLevel = result.ZoomLevel;
-            //var lod = cityObject.Lod;
 
             // プレハブをAddressableに登録
             // TODO : タイルごとにAddress名を設定する
@@ -451,7 +451,7 @@ namespace PLATEAU.DynamicTile
 
         #endregion 
 
-        //　レガシー処理
+        //　IPostGmlImportProcessorによる処理(レガシー)
         #region IPostGmlImportProcessor
 
         /// <summary>

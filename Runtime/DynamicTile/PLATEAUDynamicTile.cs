@@ -142,7 +142,6 @@ namespace PLATEAU.DynamicTile
             {}
             LoadHandleCancellationTokenSource?.Dispose();
             LoadHandleCancellationTokenSource = null;
-            //NextLoadState = LoadState.None;
         }
 
         /// <summary>
