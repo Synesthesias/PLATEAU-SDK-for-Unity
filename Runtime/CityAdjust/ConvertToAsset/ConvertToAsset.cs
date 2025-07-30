@@ -147,6 +147,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// </summary>
         private void ImportAndAdjustFbxAssets(ConvertToAssetConfig conf, string fbxNameWithoutExtension)
         {
+#if UNITY_EDITOR
             var allAssets = GetAllAssetsInDirectory(conf.AssetPath);
             
             PLATEAUAssetPostProcessor.PostProcessHandler assetProcess = () =>
@@ -186,6 +187,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             
 
             AssetDatabase.Refresh();
+#else 
+            throw new NotImplementedException("ConvertToAssetはランタイムでの実行には未対応です。");
+#endif
         }
 
         /// <summary>
