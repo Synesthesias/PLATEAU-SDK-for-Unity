@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -47,6 +48,9 @@ namespace PLATEAU.DynamicTile
 
         [SerializeField]
         private string catalogPath;
+
+        [SerializeField]
+        private string metaAddress;
 
         [SerializeField]
         private bool showDebugTileInfo = true; // Debug情報を表示するかどうか
@@ -96,9 +100,10 @@ namespace PLATEAU.DynamicTile
             TileCollection = new DynamicTileCollection(logger);
         }
 
-        public void Init(PLATEAUInstancedCityModel sourceModelArg)
+        public void Init(PLATEAUInstancedCityModel sourceModelArg, string metaAddressArg)
         {
             sourceModel = sourceModelArg;
+            metaAddress = metaAddressArg;
         }
 
         /// <summary>
@@ -119,7 +124,7 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Initializing;
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath, metaAddress);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
                 logger.LogWarn("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
@@ -140,7 +145,6 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// カタログパスを保存します。
         /// </summary>
-        /// <param name="path"></param>
         public void SaveCatalogPath(string path)
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）

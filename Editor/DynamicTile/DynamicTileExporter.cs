@@ -23,6 +23,7 @@ namespace PLATEAU.DynamicTile
     {
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
+        private const string AddressableAddressBase = "PLATEAUTileMeta";
         
         public DynamicTileProcessingContext Context { get; private set; }
         private IProgressDisplay progressDisplay;
@@ -54,9 +55,7 @@ namespace PLATEAU.DynamicTile
             }
             
             Context = new DynamicTileProcessingContext(config);
-    
-            // グループを削除
-            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, Context.IsExcludeAssetFolder);
+            
 
             // グループを設定
             if (Context.IsExcludeAssetFolder)
@@ -232,16 +231,17 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// メタデータを保存し、Addressableとして登録する
         /// </summary>
-        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
+        /// <returns>登録されたmetaStoreのアドレスを返します</returns>
+        private static string SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
         {
             if (metaStore == null)
             {
                 Debug.LogWarning("メタデータがnullです。");
-                return;
+                return null;
             }
 
             // メタデータをアセットとして保存
-            string addressName = nameof(PLATEAUDynamicTileMetaStore);
+            string addressName = AddressableAddressBase;
 
             // metaStoreの名前をグループ名に基づいて変更
             if (groupName.IndexOf('_') >= 0)
@@ -249,7 +249,7 @@ namespace PLATEAU.DynamicTile
                 var groupNameSplit = groupName.Split('_');
                 addressName += "_" + groupNameSplit[1];
             }
-
+            
             // assetPathが既に相対パスであることを確認し、必要に応じて変換
             string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(assetPath);
 
@@ -265,6 +265,7 @@ namespace PLATEAU.DynamicTile
                 addressName,
                 groupName,
                 new List<string> { AddressableLabel });
+            return addressName;
         }
 
 
@@ -336,12 +337,12 @@ namespace PLATEAU.DynamicTile
             try
             {
                 // メタデータを保存
-                SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
+                var metaAddress = SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
                 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
-                manager.Init(sourceModel);
+                manager.Init(sourceModel, metaAddress);
                 
                 // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
                 // 保存については処理前にダイアログでユーザーに了承を得ています。
@@ -368,9 +369,11 @@ namespace PLATEAU.DynamicTile
                     // 一時フォルダーを削除
                     CleanupTempFolder();
 
-                    // 上で自動保存しておいてカタログパスを保存しないのは中途半端なのでここでも保存します。
-                    EditorSceneManager.SaveOpenScenes();
+                    
                 }
+                
+                // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
+                EditorSceneManager.SaveOpenScenes();
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
                 return true;
