@@ -107,6 +107,7 @@ namespace PLATEAU.DynamicTile
         public readonly int tile2;
         public readonly int tile3;
         public readonly int tile4;
+        public readonly int Length;
 
         public ChildrenTiles(IEnumerable<int> tiles)
         {
@@ -114,11 +115,24 @@ namespace PLATEAU.DynamicTile
             tile2 = tiles.Count() > 1 ? tiles.ElementAt(1) : 0;
             tile3 = tiles.Count() > 2 ? tiles.ElementAt(2) : 0;
             tile4 = tiles.Count() > 3 ? tiles.ElementAt(3) : 0;
+            Length = tiles.Count() > 4 ? 4 : tiles.Count(); // 最大4つの子タイルを保持する
         }
 
         public int[] ToArray()
         {
-            return new int[] { tile1, tile2, tile3, tile4 };
+            int[] array = new int[Length];
+            for (int i = 0; i < Length; i++)
+            {
+                array[i] = i switch
+                {
+                    0 => tile1,
+                    1 => tile2,
+                    2 => tile3,
+                    3 => tile4,
+                    _ => 0 // それ以上のインデックスは存在しない
+                };
+            }
+            return array;
         }
     }
 
@@ -193,19 +207,26 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// タイルの穴埋め処理を行うJobSystemのJob
     /// FillTileHolesと同様の処理
+    /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
     /// </summary>
     public struct FillTileHolesJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
+
+        [NativeDisableParallelForRestriction]
         public NativeArray<DistanceWithIndex> Distances;
 
         private DistanceWithIndex[] GetChildren(int[] indices)
         {
+            var distArray = Distances.ToArray();
             DistanceWithIndex[] children = new DistanceWithIndex[indices.Length];
-            int index = 0;
-            foreach (var idx in indices)
+            for (int i = 0; i < indices.Length; i++)
             {
-                children[index++] = Distances[idx];
+                if (indices[i] < 0 || indices[i] >= Distances.Length)
+                {
+                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
+                }
+                children[i] = distArray[indices[i]];
             }
             return children;
         }
@@ -218,12 +239,12 @@ namespace PLATEAU.DynamicTile
             {
                 // indexから子タイル情報を取得
                 var z10Children = GetChildren(Childrens[z9Unloaded.Index].ToArray());
-                var z10UnloadedTiles = z10Children.Where(t => t.State == LoadState.Unload).ToArray();
-                foreach (var z10Unloaded in z10UnloadedTiles)
+                var z10ChildrenUnloaded = z10Children.Where(t => t.State == LoadState.Unload).ToArray();
+                foreach (var z10Unloaded in z10ChildrenUnloaded)
                 { 
                     Span<DistanceWithIndex> z11Children = GetChildren(Childrens[z10Unloaded.Index].ToArray());
-                    var z11UnloadedTiles = z11Children.ToArray().Where(t => t.State == LoadState.Unload).ToArray();
-                    if (z11UnloadedTiles.Length == 4) // 子が全てUnloadの場合
+                    var z11ChildrenUnloaded = z11Children.ToArray().Where(t => t.State == LoadState.Unload).ToArray();
+                    if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
                     {
                         // 上位タイルをロード状態にする
                         var item = Distances[z10Unloaded.Index];
@@ -233,7 +254,7 @@ namespace PLATEAU.DynamicTile
                     else
                     {
                         // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
-                        foreach (var z11Unloaded in z11UnloadedTiles)
+                        foreach (var z11Unloaded in z11ChildrenUnloaded)
                         {
                             var item = Distances[z11Unloaded.Index];
                             item.State = LoadState.Load; // 子タイルをロード状態にする
