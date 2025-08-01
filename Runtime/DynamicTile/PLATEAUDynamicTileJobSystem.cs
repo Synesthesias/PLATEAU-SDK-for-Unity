@@ -425,38 +425,21 @@ namespace PLATEAU.DynamicTile
         {
             int loadFailCount = 0;
 
+            // タイルのロード状態に応じて、非同期でロードまたはアンロードを実行
             for (int i = 0; i < NativeDistances.Length; i++)
             {
                 var distanceWithIndex = NativeDistances[i];
-                var distance = distanceWithIndex.Distance;
                 var index = distanceWithIndex.Index;
                 var tile = dynamicTiles[index];
 
-                var nextLoadState = LoadState.None;
-                //if (loadTask.TileManager.WithinTheRange(distance, tile))
-                //{
-                //    nextLoadState = LoadState.Load;
-                //}
-                //else
-                //{
-                //    nextLoadState = LoadState.Unload;
-                //}
-                nextLoadState = distanceWithIndex.State;
+                if (tile == null)
+                    continue;
 
-                tile.DistanceFromCamera = distance;
-                tile.NextLoadState = nextLoadState;
-                token.ThrowIfCancellationRequested();
-            }
+                tile.DistanceFromCamera = distanceWithIndex.Distance;
+                tile.NextLoadState = distanceWithIndex.State;
 
-            // タイルの穴埋め処理
-            //await loadTask.FillTileHoles(token);
-
-            // タイルのロード状態に応じて、非同期でロードまたはアンロードを実行
-            foreach (var tile in dynamicTiles)
-            {
                 if (tile.NextLoadState == LoadState.None)
                 {
-                    // 何もしない
                     continue;
                 }
                 else if (tile.NextLoadState == LoadState.Load && !tile.LoadHandle.IsValid())
@@ -464,12 +447,12 @@ namespace PLATEAU.DynamicTile
                     var result = await loadTask.PrepareLoadTile(tile);
                     if (result != PLATEAUTileManager.LoadResult.Success)
                         loadFailCount++;
-
                 }
                 else if (tile.NextLoadState == LoadState.Unload && tile.LoadHandle.IsValid())
                 {
                     loadTask.PrepareUnloadTile(tile);
                 }
+
                 token.ThrowIfCancellationRequested();
             }
 
