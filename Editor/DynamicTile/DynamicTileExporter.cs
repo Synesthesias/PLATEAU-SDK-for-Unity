@@ -24,6 +24,7 @@ namespace PLATEAU.DynamicTile
         private const string AddressableGroupName = "PLATEAUCityObjectGroup";
         private const string AddressableLabel = "DynamicTile";
         private const string AddressableAddressBase = "PLATEAUTileMeta";
+        private const string ManagerIdKey = "PLATEAU_ManagerID";
         
         public DynamicTileProcessingContext Context { get; private set; }
         private IProgressDisplay progressDisplay;
@@ -334,6 +335,9 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
+            PLATEAUTileManager manager = null; // managerの参照を保持
+            string managerGameObjectName = null; // managerのGameObject名を保持
+
             try
             {
                 // メタデータを保存
@@ -341,16 +345,27 @@ namespace PLATEAU.DynamicTile
                 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
-                var manager = managerObj.AddComponent<PLATEAUTileManager>();
+                managerGameObjectName = managerObj.name; // GameObject名を保持
+                manager = managerObj.AddComponent<PLATEAUTileManager>();
                 manager.Init(sourceModel, metaAddress);
                 
                 // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
                 // 保存については処理前にダイアログでユーザーに了承を得ています。
-                EditorUtility.SetDirty(manager);
-                EditorSceneManager.SaveOpenScenes();                
+                EditorUtility.SetDirty(manager.gameObject);
+                EditorSceneManager.SaveOpenScenes();
+
+                // 下のビルドによりドメインリロードが入るため、ビルド後にmanagerがnullになります。
+                // なのでGlobalIDを保存して取得し直します。
+                SaveManagerGlobalId(manager);
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(false);
+                
+                manager = RestoreManagerFromGlobalId();
+                
+
+                // ビルド後にアセットデータベースを更新してGameObjectの再読み込みを確実にする
+                AssetDatabase.Refresh();
 
                 
 
@@ -364,7 +379,14 @@ namespace PLATEAU.DynamicTile
                         return false;
                     }
                     var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
-                    manager.SaveCatalogPath(catalogPath);
+                    if (manager == null)
+                    {
+                        Debug.LogError("manager is null. Addressablesビルド後にGameObjectが見つかりません。");
+                    }
+                    else
+                    {
+                        manager.SaveCatalogPath(catalogPath);
+                    }
                     
                     // 一時フォルダーを削除
                     CleanupTempFolder();
@@ -373,6 +395,7 @@ namespace PLATEAU.DynamicTile
                 }
                 
                 // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
+                EditorUtility.SetDirty(manager);
                 EditorSceneManager.SaveOpenScenes();
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
@@ -380,17 +403,29 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}");
+                Debug.LogError($"動的タイルのエクスポート中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
                 return false;
             }
             finally
             {
                 PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定
 
-                var manager = GameObject.FindObjectsOfType<PLATEAUTileManager>().FirstOrDefault(m => m!= null);
+                // BuildAddressablesの前で取得したmanagerの参照を保持して使用
+                // もしmanagerが破棄されている場合は、同じGameObject名で再取得を試行
                 if (manager == null)
                 {
-                    Debug.LogError("manager is null.");
+                    // 元のmanagerの名前を使って同じオブジェクトを探す
+                    var managerName = managerGameObjectName ?? "DynamicTileManager";
+                    var managerObj = GameObject.Find(managerName);
+                    if (managerObj != null)
+                    {
+                        manager = managerObj.GetComponent<PLATEAUTileManager>();
+                    }
+                }
+                
+                if (manager == null)
+                {
+                    Debug.LogError("manager is null. Addressablesビルド後にGameObjectが見つかりません。");
                 }
                 else
                 {
@@ -462,6 +497,41 @@ namespace PLATEAU.DynamicTile
                 // 一時フォルダーを削除
                 CleanupTempFolder();
             }
+        }
+
+        private void SaveManagerGlobalId(PLATEAUTileManager manager)
+        {
+            var managerId = GlobalObjectId.GetGlobalObjectIdSlow(manager.gameObject);
+            EditorPrefs.SetString(ManagerIdKey, managerId.ToString());
+        }
+
+        /// <summary>
+        /// 保存されたGlobalIDからPLATEAUTileManagerを復元します。
+        /// </summary>
+        private PLATEAUTileManager RestoreManagerFromGlobalId()
+        {
+            if (GlobalObjectId.TryParse(EditorPrefs.GetString(ManagerIdKey), out var managerGId))
+            {
+                var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(managerGId) as GameObject;
+                if (obj != null)
+                {
+                    var mgr = obj.GetComponent<PLATEAUTileManager>();
+                    if (mgr != null)
+                    {
+                        return mgr;
+                    }
+                    else
+                    {
+                        Debug.LogError("manager component is not found.");
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("manager global id is not found.");
+            }
+
+            return null;
         }
     }
 }

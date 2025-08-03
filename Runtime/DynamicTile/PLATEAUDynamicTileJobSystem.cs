@@ -134,6 +134,7 @@ namespace PLATEAU.DynamicTile
         private PLATEAUDynamicTileLoadTask loadTask;
         private TileLoadDistanceCollection tileLoadDistances;
         private ConditionalLogger logger;
+        private bool disposed = false; // 破棄フラグを追加
 
         public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
 
@@ -142,6 +143,11 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, TileLoadDistanceCollection tileLoadDistancesArg, DynamicTileCollection tiles, ConditionalLogger loggerArg)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(nameof(PLATEAUDynamicTileJobSystem));
+            }
+
             dynamicTiles = tiles;
             tileLoadDistances = tileLoadDistancesArg;
             this.loadTask = loadTask;
@@ -174,7 +180,28 @@ namespace PLATEAU.DynamicTile
 
         public void Dispose()
         {
-            DisposeNativeArrays();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // マネージドリソースの破棄
+                    DisposeNativeArrays();
+                }
+                
+                disposed = true;
+            }
+        }
+
+        // ファイナライザーを追加（安全のため）
+        ~PLATEAUDynamicTileJobSystem()
+        {
+            Dispose(false);
         }
 
         /// <summary>
@@ -183,6 +210,11 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPosition(Vector3 position)
         {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(nameof(PLATEAUDynamicTileJobSystem));
+            }
+
             // NativeArrayが初期化されていない場合は早期リターン
             if (!NativeTileBounds.IsCreated || !NativeDistances.IsCreated)
             {
