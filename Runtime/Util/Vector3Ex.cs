@@ -81,6 +81,16 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// new Vector2(self.x, self.y);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Yx(this Vector3 self)
+        {
+            return new Vector2(self.y, self.x);
+        }
+
+        /// <summary>
         /// new Vector2(self.x, self.z);
         /// </summary>
         /// <param name="self"></param>
@@ -89,7 +99,15 @@ namespace PLATEAU.Util
         {
             return new Vector2(self.x, self.z);
         }
-
+        /// <summary>
+        /// new Vector2(self.x, self.z);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Zx(this Vector3 self)
+        {
+            return new Vector2(self.z, self.x);
+        }
 
         /// <summary>
         /// new Vector2(self.x, self.z);
@@ -99,6 +117,16 @@ namespace PLATEAU.Util
         public static Vector2 Yz(this Vector3 self)
         {
             return new Vector2(self.y, self.z);
+        }
+
+        /// <summary>
+        /// new Vector2(self.x, self.y);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector2 Zy(this Vector3 self)
+        {
+            return new Vector2(self.z, self.y);
         }
 
         /// <summary>
@@ -180,6 +208,17 @@ namespace PLATEAU.Util
             self.y /= div.y;
             self.z /= div.z;
             return self;
+        }
+
+        /// <summary>
+        /// new Vector3(1f / self.x, 1f / self.y, 1f / self.z);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="div"></param>
+        /// <returns></returns>
+        public static Vector3 RevScaled(this Vector3 self)
+        {
+            return RevScale(Vector3.one, self);
         }
 
         /// <summary> Vector3.Scaleの逆数版 a / b </summary>
