@@ -81,7 +81,13 @@ namespace PLATEAU.DynamicTile
                 // プロジェクト内であれば一見カタログなど求めなくてもロード可能に思えますが、
                 // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
                 // Localビルド(StreamingAssets) からカタログを探索
-                var folderStreaming = Path.Combine(Application.streamingAssetsPath, AddressableLocalBuildFolderName);
+                var directoryFromAssets = Path.GetDirectoryName(catalogPath);
+                if (directoryFromAssets == null)
+                {
+                    Debug.LogError("failed to find catalog.");
+                    return null;
+                }
+                var folderStreaming = Path.GetFullPath(directoryFromAssets);
 
                 if (!Directory.Exists(folderStreaming))
                 {
