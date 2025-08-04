@@ -25,6 +25,7 @@ namespace PLATEAU.DynamicTile
         private const string AddressableLabel = "DynamicTile";
         private const string AddressableAddressBase = "PLATEAUTileMeta";
         
+        
         public DynamicTileProcessingContext Context { get; private set; }
         private IProgressDisplay progressDisplay;
         
@@ -57,22 +58,36 @@ namespace PLATEAU.DynamicTile
             Context = new DynamicTileProcessingContext(config);
             
 
-            // グループを設定
+            // プロファイルを作成
+            var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
+            if (string.IsNullOrEmpty(profileID))
+            {
+                Debug.LogError("プロファイルの作成に失敗しました。");
+                return false;
+            }
+
+            // ビルド先パスを決定
+            string bundleOutputPath;
             if (Context.IsExcludeAssetFolder)
             {
-                // Remote用のプロファイルを作成
-                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
-                if (!string.IsNullOrEmpty(profileID))
-                {
-                    AddressablesUtility.SetRemoteProfileSettings(Context.BuildFolderPath, Context.AddressableGroupName);
-                    AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
-                }
+                // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
+                bundleOutputPath = Context.BuildFolderPath;
             }
             else
             {
-                // プロファイルをデフォルトに設定
-                AddressablesUtility.SetDefaultProfileSettings(Context.AddressableGroupName);
+                // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
+                bundleOutputPath = Path.Combine(
+                    Application.streamingAssetsPath,
+                    AddressableLoader.AddressableLocalBuildFolderName,
+                    Context.AddressableGroupName);
+                bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
+                Context.BuildFolderPath = bundleOutputPath;
             }
+
+            
+            // Remote(任意パス) でビルド設定を行います。
+            AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
+            AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
 
             if (!Context.IsValid())
             {
@@ -352,22 +367,21 @@ namespace PLATEAU.DynamicTile
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
-                if (Context.IsExcludeAssetFolder)
+
+                // カタログファイルのパスを取得
+                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json");
+                if (catalogFiles.Length == 0)
                 {
-                    // カタログファイルのパスを取得
-                    var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json");
-                    if (catalogFiles.Length == 0)
-                    {
-                        Debug.LogError("カタログファイルが見つかりません");
-                        return false;
-                    }
-                    var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
-                    manager.SaveCatalogPath(catalogPath);
-                    
-                    // 一時フォルダーを削除
-                    CleanupTempFolder();
-                    
+                    Debug.LogError("カタログファイルが見つかりません");
+                    return false;
                 }
+
+                var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
+                manager.SaveCatalogPath(catalogPath);
+
+                // 一時フォルダーを削除
+                CleanupTempFolder();
+
 
                 manager.SaveMetaAddress(metaAddress);
                 

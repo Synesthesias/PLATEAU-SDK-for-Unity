@@ -1,5 +1,6 @@
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
 using System.Linq;
 
 
@@ -18,12 +19,18 @@ namespace PLATEAU.DynamicTile
     {
         // DynamicTileのラベル名
         private const string DynamicTileLabelName = "DynamicTile";
+        internal const string AddressableLocalBuildFolderName = "PLATEAUBundles";
 
         /// <summary>
         /// 非同期処理を制御します
         /// </summary>
         private async Task<T> WaitForCompletionAsync<T>(AsyncOperationHandle<T> handle)
         {
+            if (!handle.IsValid())
+            {
+                throw new Exception("AsyncOperationHandle is invalid.");
+            }
+            
             // エディタプレイ以外は同期で処理
             if (Application.isEditor && !Application.isPlaying)
             {
@@ -63,7 +70,7 @@ namespace PLATEAU.DynamicTile
 
             // カタログから取得
             string catalogPathToUse;
-            if (!string.IsNullOrEmpty(catalogPath))
+            if (!catalogPath.StartsWith("Assets/"))
             {
                 // プロジェクトの外からカタログを取得する場合
                 catalogPathToUse = catalogPath;
@@ -73,16 +80,15 @@ namespace PLATEAU.DynamicTile
                 // 設定されたcatalogPathが空のときはプロジェクトの中からカタログを取得します。
                 // プロジェクト内であれば一見カタログパスなど求めなくてもロード可能に思えますが、
                 // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
-#if UNITY_EDITOR
-                var folderProject = Path.GetDirectoryName(Application.dataPath);
-                var folderBuild = Path.GetFullPath(Path.Combine(folderProject, Addressables.BuildPath));
+                // Localビルド(StreamingAssets) からカタログを探索
+                var folderStreaming = Path.Combine(Application.streamingAssetsPath, AddressableLocalBuildFolderName);
 
-                if (!Directory.Exists(folderBuild))
+                if (!Directory.Exists(folderStreaming))
                 {
-                    Debug.LogError("folder not found: " + folderBuild);
+                    Debug.LogError("folder not found: " + folderStreaming);
                 }
 
-                var catalogFiles = Directory.GetFiles(folderBuild, "catalog_*.json", SearchOption.AllDirectories);
+                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
 
                 if (catalogFiles.Length == 0)
                 {
@@ -90,19 +96,6 @@ namespace PLATEAU.DynamicTile
                 }
 
                 catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
-#else
-                    var folderRuntime = Addressables.RuntimePath;
-                    if (!Directory.Exists(folderRuntime))
-                    {
-                        Debug.LogError("folder not found: " + folderRuntime);
-                    }
-                    var files = Directory.GetFiles(folderRuntime, "catalog_*.json", SearchOption.AllDirectories);
-                    if (files.Length == 0)
-                    {
-                        Debug.LogError("catalog file is not found.");
-                    }
-                    catalogPathToUse = files.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
-#endif
             }
 
             await LoadCatalog(catalogPathToUse);
@@ -173,7 +166,7 @@ namespace PLATEAU.DynamicTile
         private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStoreAddress)
         {
             var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(metaStoreAddress);
-            WaitForCompletionAsync(handle).ContinueWithErrorCatch();
+            handle.WaitForCompletion(); // 必ず同期的にする
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError("Failed to load PLATEAUDynamicTileMetaStore: " + metaStoreAddress);
