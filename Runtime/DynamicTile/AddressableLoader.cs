@@ -1,6 +1,7 @@
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -55,59 +56,68 @@ namespace PLATEAU.DynamicTile
                 return null;
             }
 
+
             Addressables.Release(init);
 
+            // カタログから取得
+            string catalogPathToUse;
             if (!string.IsNullOrEmpty(catalogPath))
             {
-                // カタログから取得
-                var metaStorePath = await LoadCatalog(catalogPath, DynamicTileLabelName);
-                if (metaStorePath.IsNullOrEmpty())
-                {
-                    Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
-                    return null;
-                }
-
-                // meta情報をロード
-                var metaStore = LoadMetaStore(metaStorePath);
-                if (metaStore == null)
-                {
-                    return null;
-                }
-
-                return metaStore;
+                // プロジェクトの外からカタログを取得する場合
+                catalogPathToUse = catalogPath;
             }
             else
             {
-                // catalogPathが空なのでUnityプロジェクト内のAddressable Groupから取得
-                var handle =
-                    Addressables.LoadResourceLocationsAsync(DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
-                await WaitForCompletionAsync(handle);
+                // 設定されたcatalogPathが空のときはプロジェクトの中からカタログを取得します。
+                // プロジェクト内であれば一見カタログパスなど求めなくてもロード可能に思えますが、
+                // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
+#if UNITY_EDITOR
+                var folderProject = Path.GetDirectoryName(Application.dataPath);
+                var folderBuild = Path.GetFullPath(Path.Combine(folderProject, Addressables.BuildPath));
 
-                if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result.Count == 0)
+                if (!Directory.Exists(folderBuild))
                 {
-                    Debug.LogError($"ラベル '{DynamicTileLabelName}' の PLATEAUDynamicTileMetaStore が見つかりません");
-                    Addressables.Release(handle);
-                    return null;
+                    Debug.LogError("folder not found: " + folderBuild);
                 }
 
-                // 最初に見つかったメタストアを直接ロード
-                var metaStoreHandle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(handle.Result[0]);
-                await WaitForCompletionAsync(metaStoreHandle);
+                var catalogFiles = Directory.GetFiles(folderBuild, "catalog_*.json", SearchOption.AllDirectories);
 
-                Addressables.Release(handle);
-
-                if (metaStoreHandle.Status != AsyncOperationStatus.Succeeded)
+                if (catalogFiles.Length == 0)
                 {
-                    Debug.LogError("PLATEAUDynamicTileMetaStore のロードに失敗しました");
-                    Addressables.Release(metaStoreHandle);
-                    return null;
+                    Debug.LogError("catalog file is not found.");
                 }
 
-                var metaStore = metaStoreHandle.Result;
-                Addressables.Release(metaStoreHandle);
-
-                return metaStore;
+                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+#else
+                    var folderRuntime = Addressables.RuntimePath;
+                    if (!Directory.Exists(folderRuntime))
+                    {
+                        Debug.LogError("folder not found: " + folderRuntime);
+                    }
+                    var files = Directory.GetFiles(folderRuntime, "catalog_*.json", SearchOption.AllDirectories);
+                    if (files.Length == 0)
+                    {
+                        Debug.LogError("catalog file is not found.");
+                    }
+                    catalogPathToUse = files.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+#endif
             }
+
+            var metaStorePath = await LoadCatalog(catalogPathToUse, DynamicTileLabelName);
+            if (metaStorePath.IsNullOrEmpty())
+            {
+                Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
+                return null;
+            }
+
+            // meta情報をロード
+            var metaStore = LoadMetaStore(metaStorePath);
+            if (metaStore == null)
+            {
+                return null;
+            }
+
+            return metaStore;
         }
 
         /// <summary>
@@ -175,7 +185,7 @@ namespace PLATEAU.DynamicTile
                         // メタ情報のパスを返す
                         foreach (var iResourceLocation in location.Dependencies)
                         {
-                            var fullPath = iResourceLocation.InternalId;
+                            var fullPath = Path.GetFullPath(iResourceLocation.InternalId);
                             var dirName = Path.GetDirectoryName(fullPath);
 
                             // ディレクトリ名が一致するか確認
