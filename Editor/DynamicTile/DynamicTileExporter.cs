@@ -338,6 +338,10 @@ namespace PLATEAU.DynamicTile
             {
                 // メタデータを保存
                 SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
+                
+                // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
+                // 保存については処理前にダイアログでユーザーに了承を得ています。
+                EditorSceneManager.SaveOpenScenes();                
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(true);
@@ -360,6 +364,9 @@ namespace PLATEAU.DynamicTile
                     
                     // 一時フォルダーを削除
                     CleanupTempFolder();
+
+                    // 上で自動保存しておいてTileManagerの生成を保存しないのは中途半端なのでここでも保存します。
+                    EditorSceneManager.SaveOpenScenes();
                 }
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");

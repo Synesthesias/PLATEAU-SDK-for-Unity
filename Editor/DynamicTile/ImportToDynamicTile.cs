@@ -6,7 +6,9 @@ using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Editor.DynamicTile
 {
@@ -29,6 +31,23 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
+            // アセットバンドルのビルド時はシーンの保存が求められますが、
+            // 処理の途中で「保存しますか」と聞くよりも最初に聞いた方が良いので聞きます。
+            if (SceneManager.GetActiveScene().isDirty)
+            {
+                bool saveScene = Dialogue.Display("シーンの保存が必要です。保存して続行しますか？", "続行", "キャンセル");
+                
+                if (saveScene)
+                {
+                    EditorSceneManager.SaveOpenScenes();
+                }
+                else
+                {
+                    Debug.Log("シーンの保存が拒否されたため処理を中止します。");
+                    return;
+                }
+            }
+            
             // 動的タイルのバリデーション
             if (!config.ValidateForTile())
             {
