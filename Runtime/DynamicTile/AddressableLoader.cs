@@ -68,7 +68,7 @@ namespace PLATEAU.DynamicTile
 
             Addressables.Release(init);
 
-            // カタログから取得
+            // カタログをロード
             string catalogPathToUse;
             if (!catalogPath.StartsWith("Assets/"))
             {
@@ -77,8 +77,8 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
-                // 設定されたcatalogPathが空のときはプロジェクトの中からカタログを取得します。
-                // プロジェクト内であれば一見カタログパスなど求めなくてもロード可能に思えますが、
+                // プロジェクトの中からカタログを取得します。
+                // プロジェクト内であれば一見カタログなど求めなくてもロード可能に思えますが、
                 // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
                 // Localビルド(StreamingAssets) からカタログを探索
                 var folderStreaming = Path.Combine(Application.streamingAssetsPath, AddressableLocalBuildFolderName);

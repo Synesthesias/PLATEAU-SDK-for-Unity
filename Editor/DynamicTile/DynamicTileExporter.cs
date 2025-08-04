@@ -57,7 +57,10 @@ namespace PLATEAU.DynamicTile
             
             Context = new DynamicTileProcessingContext(config);
             
-
+            // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
+            // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
+            // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
+            
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
             if (string.IsNullOrEmpty(profileID))
@@ -85,7 +88,7 @@ namespace PLATEAU.DynamicTile
             }
 
             
-            // Remote(任意パス) でビルド設定を行います。
+            // ビルド設定を行います。
             AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
             AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
 
