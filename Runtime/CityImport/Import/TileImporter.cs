@@ -183,10 +183,12 @@ namespace PLATEAU.CityImport.Import
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task Import(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
+        internal async Task<bool> Import(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
             CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
+            var tcs = new TaskCompletionSource<bool>();
+
             Initialize();
 
             this.progressDisplay = progressDisplay;
@@ -204,15 +206,21 @@ namespace PLATEAU.CityImport.Import
                 await ImportTiles(10, 60f, 80f, token);
                 await ImportTiles(9, 80f, 100f, token);
 
+                await Task.Delay(100, token ?? CancellationToken.None); // Progressの反映待機用の遅延
+
+                tcs.SetResult(true);
             }
             catch (Exception ex) when (!(ex is OperationCanceledException))
             {
                 Debug.LogError($"都市モデルのインポート中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
+                tcs.SetResult(false);
             }
             finally
             {
                 Dispose();
             }
+
+            return await tcs.Task;
         }
 
         /// <summary>
@@ -291,7 +299,7 @@ namespace PLATEAU.CityImport.Import
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, startProgess);
+            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, startProgess); //　別スレッドでGMLを読み込みます。
 
             if (cityModel != null)
             {
@@ -348,7 +356,6 @@ namespace PLATEAU.CityImport.Import
                 var gml = cityModelGml[cityModel];
                 var gmlName = Path.GetFileName(gml.Path);
                 var gameObjectName = GetTileName(zoomLevel, gmlName);
-                //var gmlTrans = GmlImporter.CreateGmlGameObject(gml).transform;
                 var gmlTrans = new GameObject(gameObjectName).transform;
 
                 if (!TryCreateMeshExtractOptions(gmlTrans, gml, gmlName, zoomLevel,
@@ -632,7 +639,6 @@ namespace PLATEAU.CityImport.Import
             else
                 TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
 
-            //Debug.Log("model extracted.");
             return model;
         }
 
@@ -654,7 +660,7 @@ namespace PLATEAU.CityImport.Import
             bool success = false;
             try
             {
-                //gmlTrans.parent = rootTransform; // 読込時にタイルをシーンに表示したい場合は設定する
+                gmlTrans.parent = rootTransform; // Import中にタイルをシーン上に表示したい場合は設定する（必要なければコメントアウト）
                 meshExtractOptions = importConfig.CreateNativeConfigFor(fetchedGmlFile.Package, fetchedGmlFile);
                 success = true;
             }

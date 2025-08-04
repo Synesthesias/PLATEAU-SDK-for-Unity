@@ -324,7 +324,6 @@ namespace PLATEAU.DynamicTile
             foreach (var target in targets)
             {
                 if (target == null) continue;
-                Debug.Log($"<color=yellow>Processing child object: {target.name} </color>");
                 ProcessGameObject(
                     target,
                     zoomLevel,
