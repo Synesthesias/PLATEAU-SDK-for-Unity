@@ -275,7 +275,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// <returns>アセットファイルの場合true</returns>
         private bool IsAssetFile(string extension)
         {
-            // .metaファイル以外をアセットとして扱う
+            // Unityのメタファイル（.meta）はアセットではないため除外
             return extension != ".meta";
         }
     }

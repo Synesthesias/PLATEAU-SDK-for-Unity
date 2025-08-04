@@ -371,15 +371,17 @@ namespace PLATEAU.DynamicTile
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
 
-                // カタログファイルのパスを取得
-                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json");
+                // 最新のカタログファイルのパスを取得
+                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json")
+                    .OrderByDescending(File.GetLastWriteTimeUtc)
+                    .ToArray();
                 if (catalogFiles.Length == 0)
                 {
                     Debug.LogError("カタログファイルが見つかりません");
                     return false;
                 }
 
-                var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
+                var catalogPath = catalogFiles[0];
                 manager.SaveCatalogPath(catalogPath);
 
                 // 一時フォルダーを削除

@@ -1,9 +1,6 @@
 using PLATEAU.Util;
-using PLATEAU.Util.Async;
 using System;
 using System.Linq;
-
-
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -54,7 +51,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <returns></returns>
         public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath, string metaStoreAddress)
-        
         {
             var init = Addressables.InitializeAsync(false);
             await WaitForCompletionAsync(init);
