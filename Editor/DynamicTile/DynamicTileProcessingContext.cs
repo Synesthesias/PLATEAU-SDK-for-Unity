@@ -20,7 +20,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressableグループのベース名
         /// </summary>
-        private const string AddressableGroupBaseName = "PLATEAUCityObjectGroup";
+        public const string AddressableGroupBaseName = "PLATEAUCityObjectGroup";
         
         /// <summary>
         /// Addressableグループ名
@@ -98,14 +98,11 @@ namespace PLATEAU.DynamicTile
         private string GenerateAddressableGroupName()
         {
             var groupName = AddressableGroupBaseName;
-            if (IsExcludeAssetFolder)
-            {
-                // Assets外のパスを指定する場合はグループを分ける
-                var directoryName = Path.GetFileName(
-                    BuildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
-                var sanitizedDirectoryName = System.Text.RegularExpressions.Regex.Replace(directoryName, @"[^\w\-_]", "_");
-                groupName += "_" + sanitizedDirectoryName;
-            }
+
+            var directoryName = Path.GetFileName(
+                BuildFolderPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+            var sanitizedDirectoryName = System.Text.RegularExpressions.Regex.Replace(directoryName, @"[^\w\-_]", "_");
+            groupName += "_" + sanitizedDirectoryName;
             return groupName;
         }
         

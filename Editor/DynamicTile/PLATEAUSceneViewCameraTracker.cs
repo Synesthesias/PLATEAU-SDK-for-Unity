@@ -1,6 +1,7 @@
 ﻿using PLATEAU.Util.Async;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -98,6 +99,10 @@ namespace PLATEAU.DynamicTile
 
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
+            
+            // コード更新前にリセットすることでドメインリロード後も動作するようにします
+            CompilationPipeline.compilationStarted -= BeforeScriptCompile;
+            CompilationPipeline.compilationStarted += BeforeScriptCompile;
 
             InitView().ContinueWithErrorCatch();
 
@@ -165,6 +170,14 @@ namespace PLATEAU.DynamicTile
 
             Log($"Scene Opened: {scene.name}");
             InitView().ContinueWithErrorCatch();
+        }
+        
+        private static void BeforeScriptCompile(object _)
+        {
+            Log("BeforeScriptCompile");
+            var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null) return;
+            tileManager.ClearTileAssets();
         }
 
         private static async Task InitView()

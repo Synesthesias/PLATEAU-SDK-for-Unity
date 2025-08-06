@@ -21,8 +21,10 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class DynamicTileExporter : IPostTileImportProcessor
     {
-        private const string AddressableGroupName = "PLATEAUCityObjectGroup";
+
         private const string AddressableLabel = "DynamicTile";
+        private const string AddressableAddressBase = "PLATEAUTileMeta";
+        
         
         public DynamicTileProcessingContext Context { get; private set; }
         private IProgressDisplay progressDisplay;
@@ -54,26 +56,41 @@ namespace PLATEAU.DynamicTile
             }
             
             Context = new DynamicTileProcessingContext(config);
-    
-            // グループを削除
-            AddressablesUtility.RemoveNonDefaultGroups(AddressableLabel, Context.IsExcludeAssetFolder);
+            
+            // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
+            // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
+            // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
+            
+            // プロファイルを作成
+            var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
+            if (string.IsNullOrEmpty(profileID))
+            {
+                Debug.LogError("プロファイルの作成に失敗しました。");
+                return false;
+            }
 
-            // グループを設定
+            // ビルド先パスを決定
+            string bundleOutputPath;
             if (Context.IsExcludeAssetFolder)
             {
-                // Remote用のプロファイルを作成
-                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
-                if (!string.IsNullOrEmpty(profileID))
-                {
-                    AddressablesUtility.SetRemoteProfileSettings(Context.BuildFolderPath, Context.AddressableGroupName);
-                    AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
-                }
+                // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
+                bundleOutputPath = Context.BuildFolderPath;
             }
             else
             {
-                // プロファイルをデフォルトに設定
-                AddressablesUtility.SetDefaultProfileSettings(Context.AddressableGroupName);
+                // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
+                bundleOutputPath = Path.Combine(
+                    Application.streamingAssetsPath,
+                    AddressableLoader.AddressableLocalBuildFolderName,
+                    Context.AddressableGroupName);
+                bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
+                Context.BuildFolderPath = bundleOutputPath;
             }
+
+            
+            // ビルド設定を行います。
+            AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
+            AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
 
             if (!Context.IsValid())
             {
@@ -124,24 +141,19 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// メタデータを保存し、Addressableとして登録する
         /// </summary>
-        private static void SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
+        /// <returns>登録されたmetaStoreのアドレスを返します</returns>
+        private static string SaveAndRegisterMetaData(PLATEAUDynamicTileMetaStore metaStore, string assetPath, string groupName)
         {
             if (metaStore == null)
             {
                 Debug.LogWarning("メタデータがnullです。");
-                return;
+                return null;
             }
-
-            // メタデータをアセットとして保存
-            string addressName = nameof(PLATEAUDynamicTileMetaStore);
 
             // metaStoreの名前をグループ名に基づいて変更
-            if (groupName.IndexOf('_') >= 0)
-            {
-                var groupNameSplit = groupName.Split('_');
-                addressName += "_" + groupNameSplit[1];
-            }
-
+            string shorterGroupName = groupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_", "");
+            string addressName = $"{AddressableAddressBase}_{shorterGroupName}";
+            
             // assetPathが既に相対パスであることを確認し、必要に応じて変換
             string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(assetPath);
 
@@ -158,6 +170,7 @@ namespace PLATEAU.DynamicTile
                 addressName,
                 groupName,
                 new List<string> { AddressableLabel });
+            return addressName;
         }
 
         /// <summary>
@@ -175,30 +188,42 @@ namespace PLATEAU.DynamicTile
             try
             {
                 // メタデータを保存
-                SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
+                var metaAddress = SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
+                
+
+                // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
+                // 保存については処理前にダイアログでユーザーに了承を得ています。
+                EditorSceneManager.SaveOpenScenes();                
 
                 // Addressablesのビルドを実行
-                AddressablesUtility.BuildAddressables(true);
+                AddressablesUtility.BuildAddressables(false);
 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
-                if (Context.IsExcludeAssetFolder)
+
+                // 最新のカタログファイルのパスを取得
+                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json")
+                    .OrderByDescending(File.GetLastWriteTimeUtc)
+                    .ToArray();
+                if (catalogFiles.Length == 0)
                 {
-                    // カタログファイルのパスを取得
-                    var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json");
-                    if (catalogFiles.Length == 0)
-                    {
-                        Debug.LogError("カタログファイルが見つかりません");
-                        return false;
-                    }
-                    var catalogPath = catalogFiles[0]; // 最新のカタログファイルを使用
-                    manager.SaveCatalogPath(catalogPath);
-                    
-                    // 一時フォルダーを削除
-                    CleanupTempFolder();
+                    Debug.LogError("カタログファイルが見つかりません");
+                    return false;
                 }
+
+                var catalogPath = catalogFiles[0];
+                manager.SaveCatalogPath(catalogPath);
+
+                // 一時フォルダーを削除
+                CleanupTempFolder();
+
+
+                manager.SaveMetaAddress(metaAddress);
+                
+                // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
+                EditorSceneManager.SaveOpenScenes();
 
                 Dialogue.Display("動的タイルの保存が完了しました！", "OK");
                 return true;
