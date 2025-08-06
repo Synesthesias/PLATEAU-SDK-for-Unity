@@ -55,6 +55,9 @@ namespace PLATEAU.DynamicTile
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
+        /// <summary>
+        /// <see cref="addressableLoader"/>にタイルのメタ情報のアドレスを渡すことで、複数のメタがあっても識別できるようにします。
+        /// </summary>
         [SerializeField]
         private string metaAddress;
 

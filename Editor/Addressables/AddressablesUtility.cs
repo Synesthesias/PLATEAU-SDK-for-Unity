@@ -1,3 +1,4 @@
+using PLATEAU.DynamicTile;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -439,7 +440,7 @@ namespace PLATEAU.Editor.Addressables
                         continue;
                     }
                     
-                    if (isExcludeAssetFolder && group.Name == "PLATEAUCityObjectGroup")
+                    if (isExcludeAssetFolder && group.Name == DynamicTileProcessingContext.AddressableGroupBaseName)
                     {
                         // ローカルビルド用（ビルドに含める）のグループは削除しない
                         // 削除するとLibrary配下から削除されるため

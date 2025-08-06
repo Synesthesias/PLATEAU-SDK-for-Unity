@@ -20,7 +20,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// Addressableグループのベース名
         /// </summary>
-        private const string AddressableGroupBaseName = "PLATEAUCityObjectGroup";
+        public const string AddressableGroupBaseName = "PLATEAUCityObjectGroup";
         
         /// <summary>
         /// Addressableグループ名

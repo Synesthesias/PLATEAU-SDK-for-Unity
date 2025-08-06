@@ -21,7 +21,7 @@ namespace PLATEAU.DynamicTile
     /// </summary>
     public class DynamicTileExporter : IPostGmlImportProcessor
     {
-        private const string AddressableGroupName = "PLATEAUCityObjectGroup";
+
         private const string AddressableLabel = "DynamicTile";
         private const string AddressableAddressBase = "PLATEAUTileMeta";
         
@@ -258,15 +258,9 @@ namespace PLATEAU.DynamicTile
                 return null;
             }
 
-            // メタデータをアセットとして保存
-            string addressName = AddressableAddressBase;
-
             // metaStoreの名前をグループ名に基づいて変更
-            if (groupName.IndexOf('_') >= 0)
-            {
-                var groupNameSplit = groupName.Split('_');
-                addressName += "_" + groupNameSplit[1];
-            }
+            string shorterGroupName = groupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_", "");
+            string addressName = $"{AddressableAddressBase}_{shorterGroupName}";
             
             // assetPathが既に相対パスであることを確認し、必要に応じて変換
             string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(assetPath);
