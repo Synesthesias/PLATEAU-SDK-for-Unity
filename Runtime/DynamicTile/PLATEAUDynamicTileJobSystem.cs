@@ -228,70 +228,7 @@ namespace PLATEAU.DynamicTile
     /// タイルの穴埋め処理を行うJobSystemのJob
     /// FillTileHolesと同様の処理
     /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
-    /// Burst非対応（対応させるにはArray=>NativeArray, LINQ=>forループに変更）
-    /// </summary>
-    public struct FillTileHolesJob : IJobParallelFor
-    {
-        [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
-
-        [NativeDisableParallelForRestriction]
-        public NativeArray<DistanceWithIndex> Distances;
-
-        private DistanceWithIndex[] GetChildren(int[] indices)
-        {
-            var distArray = Distances.ToArray();
-            DistanceWithIndex[] children = new DistanceWithIndex[indices.Length];
-            for (int i = 0; i < indices.Length; i++)
-            {
-                if (indices[i] < 0 || indices[i] >= Distances.Length)
-                {
-                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
-                }
-                children[i] = distArray[indices[i]];
-            }
-            return children;
-        }
-
-        public void Execute(int index)
-        {
-            // タイルの穴埋め処理
-            var z9UnloadedTiles = Distances.ToArray().Where(t => t.ZoomLevel == 9 && t.State == LoadState.Unload && t.WithinMaxRange == true).ToArray();
-            foreach (var z9Unloaded in z9UnloadedTiles)
-            {
-                // indexから子タイル情報を取得
-                var z10Children = GetChildren(Childrens[z9Unloaded.Index].ToArray());
-                var z10ChildrenUnloaded = z10Children.Where(t => t.State == LoadState.Unload).ToArray();
-                foreach (var z10Unloaded in z10ChildrenUnloaded)
-                { 
-                    Span<DistanceWithIndex> z11Children = GetChildren(Childrens[z10Unloaded.Index].ToArray());
-                    var z11ChildrenUnloaded = z11Children.ToArray().Where(t => t.State == LoadState.Unload).ToArray();
-                    if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
-                    {
-                        // 上位タイルをロード状態にする
-                        var item = Distances[z10Unloaded.Index];
-                        item.State = LoadState.Load; // 上位タイルをロード状態にする
-                        Distances[z10Unloaded.Index] = item; // 更新
-                    }
-                    else
-                    {
-                        // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
-                        foreach (var z11Unloaded in z11ChildrenUnloaded)
-                        {
-                            var item = Distances[z11Unloaded.Index];
-                            item.State = LoadState.Load; // 子タイルをロード状態にする
-                            Distances[z11Unloaded.Index] = item; // 更新
-                        }
-                　   }  
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// タイルの穴埋め処理を行うJobSystemのJob
-    /// FillTileHolesと同様の処理
-    /// Burst対応（LINQを使用せず、NativeArrayを使用）
-    /// NativeArrayの生成が頻繁に行われるため、オーバーヘッドが発生するので、一長一短で、Burst非対応版の方が高速な可能性がある。
+    /// Burst対応（LINQを使用せず、NativeArrayを使用）NativeArrayの生成が頻繁に行われるため、オーバーヘッドが発生するので一長一短で、Burst非対応版の方が高速な可能性がある。
     /// </summary>
     [BurstCompile]
     public struct FillTileHolesJob_Burst : IJobParallelFor
@@ -345,24 +282,6 @@ namespace PLATEAU.DynamicTile
             return children;
         }
 
-        /// <summary>
-        /// 子タイルの情報を取得するメソッド。
-        /// </summary>
-        private NativeArray<DistanceWithIndex> GetAllChildren(NativeArray<int> indices, Allocator allocator)
-        {
-            NativeArray<DistanceWithIndex> children = new NativeArray<DistanceWithIndex>(indices.Length, allocator);
-            for (int i = 0; i < indices.Length; i++)
-            {
-                if (indices[i] < 0 || indices[i] >= Distances.Length)
-                {
-                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
-                }
-                var dist = Distances[indices[i]];
-                children[i] = dist;
-            }
-            return children;
-        }
-
         public void Execute(int index)
         {
             var allocator = Allocator.TempJob;
@@ -398,6 +317,69 @@ namespace PLATEAU.DynamicTile
                 z10ChildrenUnloaded.Dispose();
             }
             z9UnloadedTiles.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// タイルの穴埋め処理を行うJobSystemのJob
+    /// FillTileHolesと同様の処理
+    /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
+    /// Burst非対応 (上の処理だとオーバーヘッドが発生するのでこちらの処理も残しておく）
+    /// </summary>
+    public struct FillTileHolesJob : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
+
+        [NativeDisableParallelForRestriction]
+        public NativeArray<DistanceWithIndex> Distances;
+
+        private DistanceWithIndex[] GetChildren(int[] indices)
+        {
+            var distArray = Distances.ToArray();
+            DistanceWithIndex[] children = new DistanceWithIndex[indices.Length];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                if (indices[i] < 0 || indices[i] >= Distances.Length)
+                {
+                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
+                }
+                children[i] = distArray[indices[i]];
+            }
+            return children;
+        }
+
+        public void Execute(int index)
+        {
+            // タイルの穴埋め処理
+            var z9UnloadedTiles = Distances.ToArray().Where(t => t.ZoomLevel == 9 && t.State == LoadState.Unload && t.WithinMaxRange == true).ToArray();
+            foreach (var z9Unloaded in z9UnloadedTiles)
+            {
+                // indexから子タイル情報を取得
+                var z10Children = GetChildren(Childrens[z9Unloaded.Index].ToArray());
+                var z10ChildrenUnloaded = z10Children.Where(t => t.State == LoadState.Unload).ToArray();
+                foreach (var z10Unloaded in z10ChildrenUnloaded)
+                {
+                    Span<DistanceWithIndex> z11Children = GetChildren(Childrens[z10Unloaded.Index].ToArray());
+                    var z11ChildrenUnloaded = z11Children.ToArray().Where(t => t.State == LoadState.Unload).ToArray();
+                    if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
+                    {
+                        // 上位タイルをロード状態にする
+                        var item = Distances[z10Unloaded.Index];
+                        item.State = LoadState.Load; // 上位タイルをロード状態にする
+                        Distances[z10Unloaded.Index] = item; // 更新
+                    }
+                    else
+                    {
+                        // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
+                        foreach (var z11Unloaded in z11ChildrenUnloaded)
+                        {
+                            var item = Distances[z11Unloaded.Index];
+                            item.State = LoadState.Load; // 子タイルをロード状態にする
+                            Distances[z11Unloaded.Index] = item; // 更新
+                        }
+                    }
+                }
+            }
         }
     }
 
