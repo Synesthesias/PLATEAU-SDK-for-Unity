@@ -1,5 +1,6 @@
 using PLATEAU.Util;
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -15,12 +16,18 @@ namespace PLATEAU.DynamicTile
     {
         // DynamicTileのラベル名
         private const string DynamicTileLabelName = "DynamicTile";
+        internal const string AddressableLocalBuildFolderName = "PLATEAUBundles";
 
         /// <summary>
         /// 非同期処理を制御します
         /// </summary>
         private async Task<T> WaitForCompletionAsync<T>(AsyncOperationHandle<T> handle)
         {
+            if (!handle.IsValid())
+            {
+                throw new Exception("AsyncOperationHandle is invalid.");
+            }
+            
             // エディタプレイ以外は同期で処理
             if (Application.isEditor && !Application.isPlaying)
             {
@@ -42,9 +49,8 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 初期化処理
         /// </summary>
-        /// <param name="catalogPath"></param>
         /// <returns></returns>
-        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath)
+        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath, string metaStoreAddress)
         {
             var init = Addressables.InitializeAsync(false);
             await WaitForCompletionAsync(init);
@@ -55,59 +61,60 @@ namespace PLATEAU.DynamicTile
                 return null;
             }
 
+
             Addressables.Release(init);
 
-            if (!string.IsNullOrEmpty(catalogPath))
+            // カタログをロード
+            string catalogPathToUse;
+            if (!catalogPath.StartsWith("Assets/"))
             {
-                // カタログから取得
-                var metaStorePath = await LoadCatalog(catalogPath, DynamicTileLabelName);
-                if (metaStorePath.IsNullOrEmpty())
-                {
-                    Debug.LogError("カタログのロードに失敗しました。アドレスが見つかりません。");
-                    return null;
-                }
-
-                // meta情報をロード
-                var metaStore = LoadMetaStore(metaStorePath);
-                if (metaStore == null)
-                {
-                    return null;
-                }
-
-                return metaStore;
+                // プロジェクトの外からカタログを取得する場合
+                catalogPathToUse = catalogPath;
             }
             else
             {
-                // catalogPathが空なのでUnityプロジェクト内のAddressable Groupから取得
-                var handle =
-                    Addressables.LoadResourceLocationsAsync(DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
-                await WaitForCompletionAsync(handle);
-
-                if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result.Count == 0)
+                // プロジェクトの中からカタログを取得します。
+                // プロジェクト内であれば一見カタログなど求めなくてもロード可能に思えますが、
+                // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
+                // Localビルド(StreamingAssets) からカタログを探索
+                var directoryFromAssets = Path.GetDirectoryName(catalogPath);
+                if (directoryFromAssets == null)
                 {
-                    Debug.LogError($"ラベル '{DynamicTileLabelName}' の PLATEAUDynamicTileMetaStore が見つかりません");
-                    Addressables.Release(handle);
+                    Debug.LogError("failed to find catalog.");
                     return null;
                 }
+                var folderStreaming = Path.GetFullPath(directoryFromAssets);
 
-                // 最初に見つかったメタストアを直接ロード
-                var metaStoreHandle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(handle.Result[0]);
-                await WaitForCompletionAsync(metaStoreHandle);
-
-                Addressables.Release(handle);
-
-                if (metaStoreHandle.Status != AsyncOperationStatus.Succeeded)
+                if (!Directory.Exists(folderStreaming))
                 {
-                    Debug.LogError("PLATEAUDynamicTileMetaStore のロードに失敗しました");
-                    Addressables.Release(metaStoreHandle);
-                    return null;
+                    Debug.LogError("folder not found: " + folderStreaming);
                 }
 
-                var metaStore = metaStoreHandle.Result;
-                Addressables.Release(metaStoreHandle);
+                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
 
-                return metaStore;
+                if (catalogFiles.Length == 0)
+                {
+                    Debug.LogError("catalog file is not found.");
+                }
+
+                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
             }
+
+            await LoadCatalog(catalogPathToUse);
+            if (metaStoreAddress.IsNullOrEmpty())
+            {
+                Debug.LogError("MetaStoreのアドレスがありません。");
+                return null;
+            }
+
+            // meta情報をロード
+            var metaStore = LoadMetaStore(metaStoreAddress);
+            if (metaStore == null)
+            {
+                return null;
+            }
+
+            return metaStore;
         }
 
         /// <summary>
@@ -123,17 +130,11 @@ namespace PLATEAU.DynamicTile
         /// カタログファイルをロードします
         /// </summary>
         /// <param name="catalogPath">カタログファイルのパス</param>
-        /// <param name="label">ラベル</param>
-        /// <returns>ロードされたGameObjectのリスト</returns>
-        private async Task<string> LoadCatalog(string catalogPath, string label)
+        private async Task LoadCatalog(string catalogPath)
         {
-            var bundlePath = string.Empty;
 
             // パスを正規化（バックスラッシュをスラッシュに変換）
             catalogPath = catalogPath.Replace('\\', '/');
-
-            // bundlePathを保持
-            bundlePath = Path.GetDirectoryName(catalogPath);
 
             // file://プロトコルを追加
             if (!catalogPath.StartsWith("file://"))
@@ -145,8 +146,12 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(removedProtocolPath) || !File.Exists(removedProtocolPath))
             {
                 Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
-                return null;
+                return;
             }
+            
+            // カタログファイルのロード前に古いロケーターを削除しておかないと、
+            // 同じフォルダを対象に2回タイル化したケースで1回目のデータが読み込まれてしまう不具合が起きます。
+            Addressables.ClearResourceLocators();
 
             // カタログファイルをロード
             var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
@@ -155,88 +160,29 @@ namespace PLATEAU.DynamicTile
             if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
             {
                 Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                Addressables.Release(catalogHandle);
-                return null;
             }
-
-            // DynamicTileメタ情報のアドレスを取得
-            if (catalogHandle.Result.Locate(label, typeof(PLATEAUDynamicTileMetaStore),
-                    out var scriptableObjectLocations))
-            {
-                foreach (var location in scriptableObjectLocations)
-                {
-                    if (location.Dependencies.Count <= 0)
-                    {
-                        continue;
-                    }
-
-                    if (bundlePath != null)
-                    {
-                        // メタ情報のパスを返す
-                        foreach (var iResourceLocation in location.Dependencies)
-                        {
-                            var fullPath = iResourceLocation.InternalId;
-                            var dirName = Path.GetDirectoryName(fullPath);
-
-                            // ディレクトリ名が一致するか確認
-                            if (dirName != null && dirName.Contains(bundlePath))
-                            {
-                                Addressables.Release(catalogHandle);
-                                return iResourceLocation.InternalId;
-                            }
-                        }
-                    }
-                }
-            }
-
             Addressables.Release(catalogHandle);
-
-            return null;
         }
 
 
         /// <summary>
-        /// パスをもとに、meta情報をロードします。
+        /// meta情報をロードします。
         /// </summary>
         /// <returns></returns>
-        private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStorePath)
+        private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStoreAddress)
         {
-            PLATEAUDynamicTileMetaStore metaStore = null;
-            try
+            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(metaStoreAddress);
+            handle.WaitForCompletion(); // 必ず同期的にする
+            if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                // ファイルの存在確認
-                if (!File.Exists(metaStorePath))
-                {
-                    Debug.LogError($"ファイルが存在しません: {metaStorePath}");
-                    return null;
-                }
-
-                // Addressable経由だとロードできないので、直接ファイルシステムから読み込み
-                var bundle = AssetBundle.LoadFromFile(metaStorePath);
-                if (bundle != null)
-                {
-                    // バンドル内のアセット名をログ出力
-                    string[] assetNames = bundle.GetAllAssetNames();
-                    if (assetNames.Length == 0)
-                    {
-                        Debug.LogWarning($"バンドル内にアセットが見つかりません: {metaStorePath}");
-                        return null;
-                    }
-
-                    metaStore = bundle.LoadAsset<PLATEAUDynamicTileMetaStore>(assetNames[0]);
-                    bundle.Unload(false);
-                }
-                else
-                {
-                    Debug.LogError($"MetaStoreのロードに失敗しました: {metaStorePath}");
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"MetaStoreのロード中にエラーが発生しました: {ex.Message}\n{ex.StackTrace}");
+                Debug.LogError("Failed to load PLATEAUDynamicTileMetaStore: " + metaStoreAddress);
+                Addressables.Release(handle);
+                return null;
             }
 
-            return metaStore;
+            var ret = handle.Result;
+            Addressables.Release(handle);
+            return ret;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -54,6 +55,12 @@ namespace PLATEAU.DynamicTile
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
+        /// <summary>
+        /// <see cref="addressableLoader"/>にタイルのメタ情報のアドレスを渡すことで、複数のメタがあっても識別できるようにします。
+        /// </summary>
+        [SerializeField]
+        private string metaAddress;
+
         [SerializeField]
         private bool showDebugTileInfo = true; // Debug情報を表示するかどうか
 
@@ -94,6 +101,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public bool IsCoroutineRunning => loadTask != null && loadTask.IsCoroutineRunning;
 
+
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
         /// </summary>
@@ -106,7 +114,7 @@ namespace PLATEAU.DynamicTile
             State = ManagerState.Initializing;
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath, metaAddress);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
                 Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
@@ -130,11 +138,15 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// カタログパスを保存します。
         /// </summary>
-        /// <param name="path"></param>
         public void SaveCatalogPath(string path)
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）
             catalogPath = path.Replace('\\', '/');
+        }
+        
+        public void SaveMetaAddress(string address)
+        {
+            metaAddress = address;
         }
 
         /// <summary>

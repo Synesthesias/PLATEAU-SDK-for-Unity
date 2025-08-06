@@ -23,6 +23,11 @@ namespace PLATEAU.Util
         
         public ProgressBar() : this(""){}
         
+        /// <summary>
+        /// プログレスバーを表示します。
+        /// </summary>
+        /// <param name="info">ユーザーに提示する文字列</param>
+        /// <param name="progress">0f～1fでの進捗</param>
         public void Display(string info, float progress)
         {
             #if UNITY_EDITOR
