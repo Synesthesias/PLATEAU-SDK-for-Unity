@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.Jobs;
 using UnityEngine;
 using Unity.Collections;
+using Unity.Burst;
 
 namespace PLATEAU.DynamicTile
 {
@@ -158,6 +159,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// タイルの距離を計算するJobSystemのJob
     /// </summary>
+    [BurstCompile]
     public struct TileDistanceCheckJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<TileBounds> TileStates;
@@ -178,6 +180,7 @@ namespace PLATEAU.DynamicTile
     /// タイルの範囲をチェックするJobSystemのJob
     /// 範囲内であればLoadStateをLoadに設定し、範囲外であればUnloadに設定する。
     /// </summary>
+    [BurstCompile]
     public struct TileRangeCheckJob : IJobParallelFor
     {
         [ReadOnly] public NativeHashMap<int, FloatMinMax> LoadDistances;
@@ -208,6 +211,7 @@ namespace PLATEAU.DynamicTile
     /// タイルの穴埋め処理を行うJobSystemのJob
     /// FillTileHolesと同様の処理
     /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
+    /// Burst非対応（対応させるにはArray=>NativeArray, LINQ=>forループに変更する必要がある）
     /// </summary>
     public struct FillTileHolesJob : IJobParallelFor
     {
@@ -269,6 +273,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// タイルの距離でソートするJobSystemのJob
     /// </summary>
+    [BurstCompile]
     public struct SortDistancesJob : IJob
     {
         public NativeArray<DistanceWithIndex> Distances;

@@ -8,6 +8,7 @@
         "Unity.Addressables",
         "Unity.ResourceManager",
         "Unity.Collections",
+        "Unity.Burst",
         "LibTessDotNetAssemblyDefinition",
         "MessagePackAssemblyDefinition"
     ],
