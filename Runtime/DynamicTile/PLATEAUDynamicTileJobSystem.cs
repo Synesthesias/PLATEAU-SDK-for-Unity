@@ -135,6 +135,23 @@ namespace PLATEAU.DynamicTile
             }
             return array;
         }
+
+        public NativeArray<int> ToNativeArray(Allocator allocator)
+        {
+            var nativeArray = new NativeArray<int>(Length, allocator);
+            for (int i = 0; i < Length; i++)
+            {
+                nativeArray[i] = i switch
+                {
+                    0 => tile1,
+                    1 => tile2,
+                    2 => tile3,
+                    3 => tile4,
+                    _ => 0
+                };
+            }
+            return nativeArray;
+        }
     }
 
     /// <summary>
@@ -211,7 +228,7 @@ namespace PLATEAU.DynamicTile
     /// タイルの穴埋め処理を行うJobSystemのJob
     /// FillTileHolesと同様の処理
     /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
-    /// Burst非対応（対応させるにはArray=>NativeArray, LINQ=>forループに変更する必要がある）
+    /// Burst非対応（対応させるにはArray=>NativeArray, LINQ=>forループに変更）
     /// </summary>
     public struct FillTileHolesJob : IJobParallelFor
     {
@@ -271,6 +288,120 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
+    /// タイルの穴埋め処理を行うJobSystemのJob
+    /// FillTileHolesと同様の処理
+    /// Burst対応（LINQを使用せず、NativeArrayを使用）
+    /// NativeArrayの生成が頻繁に行われるため、オーバーヘッドが発生するので、一長一短で、Burst非対応版の方が高速な可能性がある。
+    /// </summary>
+    [BurstCompile]
+    public struct FillTileHolesJob_Burst : IJobParallelFor
+    {
+        [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
+
+        [NativeDisableParallelForRestriction]
+        public NativeArray<DistanceWithIndex> Distances;
+
+        /// <summary>
+        /// ZoomLevelとLoadStateでフィルタリングされたタイルを取得するメソッド。
+        /// </summary>
+        /// <param name="allocator"></param>
+        /// <param name="zoomLevel"></param>
+        /// <param name="loadState"></param>
+        /// <returns></returns>
+        private NativeList<DistanceWithIndex> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool witinMaxRange)
+        {
+            NativeList<DistanceWithIndex> filtered = new NativeList<DistanceWithIndex>(allocator);
+            for (int i = 0; i < Distances.Length; i++)
+            {
+                var dist = Distances[i];
+                if (dist.State == loadState && dist.ZoomLevel == zoomLevel && dist.WithinMaxRange == witinMaxRange)
+                    filtered.Add(dist);
+            }
+            return filtered;
+        }
+
+        /// <summary>
+        /// ZoomLevelとLoadStateでフィルタリングされた子タイルの情報を取得するメソッド。
+        /// </summary>
+        /// <param name="indices"></param>
+        /// <param name="allocator"></param>
+        /// <param name="zoomLevel"></param>
+        /// <param name="loadState"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        private NativeList<DistanceWithIndex> GetChildrenByFiltering(NativeArray<int> indices, Allocator allocator, LoadState loadState)
+        {
+            NativeList<DistanceWithIndex> children = new NativeList<DistanceWithIndex>(allocator);
+            for (int i = 0; i < indices.Length; i++)
+            {
+                if (indices[i] < 0 || indices[i] >= Distances.Length)
+                {
+                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
+                }
+                var dist = Distances[indices[i]];
+                if (dist.State == loadState)
+                    children.Add(dist);
+            }
+            return children;
+        }
+
+        /// <summary>
+        /// 子タイルの情報を取得するメソッド。
+        /// </summary>
+        private NativeArray<DistanceWithIndex> GetAllChildren(NativeArray<int> indices, Allocator allocator)
+        {
+            NativeArray<DistanceWithIndex> children = new NativeArray<DistanceWithIndex>(indices.Length, allocator);
+            for (int i = 0; i < indices.Length; i++)
+            {
+                if (indices[i] < 0 || indices[i] >= Distances.Length)
+                {
+                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
+                }
+                var dist = Distances[indices[i]];
+                children[i] = dist;
+            }
+            return children;
+        }
+
+        public void Execute(int index)
+        {
+            var allocator = Allocator.TempJob;
+
+            // タイルの穴埋め処理
+            var z9UnloadedTiles = Filter(allocator, 9, LoadState.Unload, true);
+            foreach (var z9Unloaded in z9UnloadedTiles)
+            {
+                // indexから子タイル情報を取得
+                var z10ChildrenUnloaded = GetChildrenByFiltering(Childrens[z9Unloaded.Index].ToNativeArray(Allocator.Temp), allocator, LoadState.Unload);
+                foreach (var z10Unloaded in z10ChildrenUnloaded)
+                {
+                    var z11ChildrenUnloaded = GetChildrenByFiltering(Childrens[z10Unloaded.Index].ToNativeArray(Allocator.Temp), allocator, LoadState.Unload);
+                    if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
+                    {
+                        // 上位タイルをロード状態にする
+                        var item = Distances[z10Unloaded.Index];
+                        item.State = LoadState.Load; // 上位タイルをロード状態にする
+                        Distances[z10Unloaded.Index] = item; // 更新
+                    }
+                    else
+                    {
+                        // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
+                        foreach (var z11Unloaded in z11ChildrenUnloaded)
+                        {
+                            var item = Distances[z11Unloaded.Index];
+                            item.State = LoadState.Load; // 子タイルをロード状態にする
+                            Distances[z11Unloaded.Index] = item; // 更新
+                        }
+                    }
+                    z11ChildrenUnloaded.Dispose();
+                }
+                z10ChildrenUnloaded.Dispose();
+            }
+            z9UnloadedTiles.Dispose();
+        }
+    }
+
+    /// <summary>
     /// タイルの距離でソートするJobSystemのJob
     /// </summary>
     [BurstCompile]
@@ -286,7 +417,6 @@ namespace PLATEAU.DynamicTile
 
     /// <summary>
     /// Jobsystemを使用したタイルロード処理
-    /// 今のところカメラ距離計算、SortのみJob Systemを使用する。
     /// </summary>
     public class PLATEAUDynamicTileJobSystem : IDisposable
     {
@@ -397,7 +527,8 @@ namespace PLATEAU.DynamicTile
             rangeHandle.Complete();
 
             // タイルの穴埋め処理
-            FillTileHolesJob fillHolesJob = new FillTileHolesJob
+            //FillTileHolesJob fillHolesJob = new FillTileHolesJob
+            FillTileHolesJob_Burst fillHolesJob = new FillTileHolesJob_Burst
             {
                 Childrens = NativeChildrens,
                 Distances = NativeDistances
