@@ -148,6 +148,10 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
                 return;
             }
+            
+            // カタログファイルのロード前に古いロケーターを削除しておかないと、
+            // 同じフォルダを対象に2回タイル化したケースで1回目のデータが読み込まれてしまう不具合が起きます。
+            Addressables.ClearResourceLocators();
 
             // カタログファイルをロード
             var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
