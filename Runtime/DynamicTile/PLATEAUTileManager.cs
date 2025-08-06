@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -545,6 +546,39 @@ namespace PLATEAU.DynamicTile
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// タイルが存在する範囲を取得します。
+        /// Extentが無効 (sizeが0) なタイルや除外タイルは無視します。
+        /// 有効なタイルが存在しない場合、sizeが(0,0,0)のBoundsを返します。
+        /// </summary>
+        /// <returns>タイルが存在する範囲のBounds</returns>
+        public Bounds GetTileBounds()
+        {
+            Bounds combinedBounds = new Bounds();
+            bool hasInit = false;
+
+            foreach (var tile in DynamicTiles)
+            {
+                if (tile == null) continue;
+                if (tile.IsExcludeTile) continue;
+
+                var extent = tile.Extent;
+                if (extent.size == Vector3.zero) continue;
+
+                if (!hasInit)
+                {
+                    combinedBounds = extent;
+                    hasInit = true;
+                }
+                else
+                {
+                    combinedBounds.Encapsulate(extent);
+                }
+            }
+
+            return combinedBounds;
         }
     }
 }

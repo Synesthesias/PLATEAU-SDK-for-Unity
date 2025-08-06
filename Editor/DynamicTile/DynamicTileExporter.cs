@@ -380,9 +380,12 @@ namespace PLATEAU.DynamicTile
 
                 // 一時フォルダーを削除
                 CleanupTempFolder();
-
-
+                
                 manager.SaveMetaAddress(metaAddress);
+                
+                // タイルのある場所にシーンビューカメラをフォーカスします。
+                manager.InitializeTiles().Wait();
+                FocusSceneViewCameraToTiles(manager);
                 
                 // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
                 EditorSceneManager.SaveOpenScenes();
@@ -403,7 +406,7 @@ namespace PLATEAU.DynamicTile
                 if (manager != null)
                 {
                     PLATEAUSceneViewCameraTracker.Initialize();
-                    manager.InitializeTiles().ContinueWithErrorCatch(); // タイルの初期化
+                    manager.InitializeTiles().Wait(); // タイルの初期化
                 }
 
                 // シーンをEdit
@@ -470,6 +473,65 @@ namespace PLATEAU.DynamicTile
                 // 一時フォルダーを削除
                 CleanupTempFolder();
             }
+        }
+        
+        /// <summary>
+        /// <see cref="PLATEAUTileManager"/>が保持するタイル範囲がSceneViewカメラにぴったり収まるようなカメラ位置を計算して返します。
+        /// シーンビューのカメラは真下を向きます。
+        /// ただし、離れすぎて見えない場合は見える程度の距離にします。
+        /// </summary>
+        private static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager)
+        {
+            if (manager == null)
+            {
+                Debug.LogWarning("PLATEAUTileManagerがnullです。");
+                return;
+            }
+
+            var bounds = manager.GetTileBounds();
+            if (bounds.size == Vector3.zero)
+            {
+                Debug.LogWarning("有効なタイルBoundsが存在しません。");
+                return;
+            }
+
+            // SceneViewカメラ情報を取得
+            SceneView sceneView = SceneView.lastActiveSceneView;
+            if (sceneView == null || sceneView.camera == null)
+            {
+                Debug.LogWarning("シーンビューまたはシーンビューカメラが見つからないため、タイルへのカメラのフォーカスを中止します。");
+                return;
+            }
+
+            Camera cam = sceneView.camera;
+            float verticalFov = cam.fieldOfView;
+            float aspect = cam.aspect;
+
+            // XZ平面上での半サイズ
+            float halfWidth = bounds.size.x * 0.5f;
+            float halfDepth = bounds.size.z * 0.5f;
+
+            // バウンディング球半径 (XZ 上で計算)
+            float radius = Mathf.Sqrt(halfWidth * halfWidth + halfDepth * halfDepth);
+
+            // 縦 FOV から必要距離を計算
+            float distanceVertical = radius / Mathf.Tan(Mathf.Deg2Rad * verticalFov * 0.5f);
+
+            // 横 FOV も考慮 (aspect から計算)
+            float horizontalFov = 2f * Mathf.Atan(Mathf.Tan(Mathf.Deg2Rad * verticalFov * 0.5f) * aspect);
+            float distanceHorizontal = radius / Mathf.Tan(horizontalFov * 0.5f);
+
+            // 離れすぎてタイルが隠れないように
+            float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.6f;
+
+            // 横か縦か大きい方を採用
+            float distance = Mathf.Max(distanceVertical, distanceHorizontal);
+            distance = Mathf.Min(distance, maxDistance);
+            
+            // シーンビューの視点をタイルにフォーカス
+            sceneView.pivot = bounds.center;
+            sceneView.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
+            sceneView.size = distance;
         }
     }
 }
