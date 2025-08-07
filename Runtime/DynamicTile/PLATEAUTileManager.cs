@@ -52,8 +52,6 @@ namespace PLATEAU.DynamicTile
             { 9, (1500f, 10000f) },
         };
 
-        public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
-
         [SerializeField]
         private string catalogPath;
         public string CatalogPath => catalogPath;
@@ -70,6 +68,10 @@ namespace PLATEAU.DynamicTile
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
         private bool useJobSystem = true; // Job Systemを使用するかどうか
+
+        [ConditionalShow("showDebugTileInfo")]
+        [SerializeField]
+        public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
