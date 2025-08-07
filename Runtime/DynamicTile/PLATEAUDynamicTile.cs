@@ -10,6 +10,13 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
 {
+    public enum LoadState
+    {
+        None,
+        Load,
+        Unload
+    }
+
     /// <summary>
     /// DynamicTileの情報を保持するクラス。
     /// </summary>

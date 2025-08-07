@@ -10,13 +10,6 @@ using Unity.Burst;
 
 namespace PLATEAU.DynamicTile
 {
-    public enum LoadState
-    {
-        None,
-        Load,
-        Unload
-    }
-
     /// <summary>
     /// タイルの範囲を表す構造体。
     /// </summary>
@@ -228,10 +221,10 @@ namespace PLATEAU.DynamicTile
     /// タイルの穴埋め処理を行うJobSystemのJob
     /// FillTileHolesと同様の処理
     /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
-    /// Burst対応（LINQを使用せず、NativeArrayを使用）NativeArrayの生成が頻繁に行われるため、オーバーヘッドが発生するので一長一短で、Burst非対応版の方が高速な可能性がある。
+    /// Burst対応（LINQ/Arrayを使用せず、NativeArray/NativeListを使用）
     /// </summary>
     [BurstCompile]
-    public struct FillTileHolesJob_Burst : IJobParallelFor
+    public struct FillTileHolesJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
 
@@ -241,9 +234,6 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// ZoomLevelとLoadStateでフィルタリングされたタイルを取得するメソッド。
         /// </summary>
-        /// <param name="allocator"></param>
-        /// <param name="zoomLevel"></param>
-        /// <param name="loadState"></param>
         /// <returns></returns>
         private NativeList<DistanceWithIndex> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool witinMaxRange)
         {
@@ -260,12 +250,6 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// ZoomLevelとLoadStateでフィルタリングされた子タイルの情報を取得するメソッド。
         /// </summary>
-        /// <param name="indices"></param>
-        /// <param name="allocator"></param>
-        /// <param name="zoomLevel"></param>
-        /// <param name="loadState"></param>
-        /// <returns></returns>
-        /// <exception cref="IndexOutOfRangeException"></exception>
         private NativeList<DistanceWithIndex> GetChildrenByFiltering(NativeArray<int> indices, Allocator allocator, LoadState loadState)
         {
             NativeList<DistanceWithIndex> children = new NativeList<DistanceWithIndex>(allocator);
@@ -317,69 +301,6 @@ namespace PLATEAU.DynamicTile
                 z10ChildrenUnloaded.Dispose();
             }
             z9UnloadedTiles.Dispose();
-        }
-    }
-
-    /// <summary>
-    /// タイルの穴埋め処理を行うJobSystemのJob
-    /// FillTileHolesと同様の処理
-    /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
-    /// Burst非対応 (上の処理だとオーバーヘッドが発生するのでこちらの処理も残しておく）
-    /// </summary>
-    public struct FillTileHolesJob : IJobParallelFor
-    {
-        [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
-
-        [NativeDisableParallelForRestriction]
-        public NativeArray<DistanceWithIndex> Distances;
-
-        private DistanceWithIndex[] GetChildren(int[] indices)
-        {
-            var distArray = Distances.ToArray();
-            DistanceWithIndex[] children = new DistanceWithIndex[indices.Length];
-            for (int i = 0; i < indices.Length; i++)
-            {
-                if (indices[i] < 0 || indices[i] >= Distances.Length)
-                {
-                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
-                }
-                children[i] = distArray[indices[i]];
-            }
-            return children;
-        }
-
-        public void Execute(int index)
-        {
-            // タイルの穴埋め処理
-            var z9UnloadedTiles = Distances.ToArray().Where(t => t.ZoomLevel == 9 && t.State == LoadState.Unload && t.WithinMaxRange == true).ToArray();
-            foreach (var z9Unloaded in z9UnloadedTiles)
-            {
-                // indexから子タイル情報を取得
-                var z10Children = GetChildren(Childrens[z9Unloaded.Index].ToArray());
-                var z10ChildrenUnloaded = z10Children.Where(t => t.State == LoadState.Unload).ToArray();
-                foreach (var z10Unloaded in z10ChildrenUnloaded)
-                {
-                    Span<DistanceWithIndex> z11Children = GetChildren(Childrens[z10Unloaded.Index].ToArray());
-                    var z11ChildrenUnloaded = z11Children.ToArray().Where(t => t.State == LoadState.Unload).ToArray();
-                    if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
-                    {
-                        // 上位タイルをロード状態にする
-                        var item = Distances[z10Unloaded.Index];
-                        item.State = LoadState.Load; // 上位タイルをロード状態にする
-                        Distances[z10Unloaded.Index] = item; // 更新
-                    }
-                    else
-                    {
-                        // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
-                        foreach (var z11Unloaded in z11ChildrenUnloaded)
-                        {
-                            var item = Distances[z11Unloaded.Index];
-                            item.State = LoadState.Load; // 子タイルをロード状態にする
-                            Distances[z11Unloaded.Index] = item; // 更新
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -488,6 +409,8 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPosition(Vector3 position, bool ignoreY)
         {
+            //var sw = System.Diagnostics.Stopwatch.StartNew(); // 処理時間計測用
+
             // 距離計算
             TileDistanceCheckJob distJob = new TileDistanceCheckJob 
             { 
@@ -509,8 +432,7 @@ namespace PLATEAU.DynamicTile
             rangeHandle.Complete();
 
             // タイルの穴埋め処理
-            //FillTileHolesJob fillHolesJob = new FillTileHolesJob
-            FillTileHolesJob_Burst fillHolesJob = new FillTileHolesJob_Burst
+            FillTileHolesJob fillHolesJob = new FillTileHolesJob
             {
                 Childrens = NativeChildrens,
                 Distances = NativeDistances
@@ -521,6 +443,8 @@ namespace PLATEAU.DynamicTile
             // 距離が近い順にソート
             JobHandle sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle, fillHolesHandle));
             sortHandle.Complete();
+
+            //loadTask.DebugLog($"JobSystem Elapsed Time: {sw.Elapsed.TotalMilliseconds:F4} ms");
 
             try
             {

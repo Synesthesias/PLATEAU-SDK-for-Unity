@@ -162,6 +162,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="position"></param>
         public async Task UpdateAssetsByCameraPositionInternal(Vector3 position, bool ignoreY)
         {
+            //var sw = System.Diagnostics.Stopwatch.StartNew(); // 処理時間計測用
             await Task.Run(() =>
             {
                 var sortByDistance = new List<PLATEAUDynamicTile>(tileManager.DynamicTiles);
@@ -182,6 +183,8 @@ namespace PLATEAU.DynamicTile
             }, LoadTaskCancellationTokenSource.Token);
 
             await FillTileHoles(LoadTaskCancellationTokenSource.Token); // タイルの穴埋め処理
+
+            //DebugLog($"Compute Task Elapsed Time: {sw.Elapsed.TotalMilliseconds:F4} ms");
 
             try
             {
