@@ -160,7 +160,7 @@ namespace PLATEAU.DynamicTile
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
 
-            var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
+            var materialList = (denominator == 1 && overwriteExisting) ? Array.Empty<Material>() : CreateMaterialList(content, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             Debug.Log($"Prefabs Created for : {content.name}");
@@ -203,7 +203,7 @@ namespace PLATEAU.DynamicTile
 
             var clone = Object.Instantiate(target);
             clone.name = target.name;
-            var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
+            var materialList = (denominator == 1 && overwriteExisting) ? Array.Empty<Material>() : CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             if (result != null)
