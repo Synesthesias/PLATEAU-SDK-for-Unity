@@ -27,12 +27,12 @@ namespace PLATEAU.DynamicTile
         }
 
         // カメラからの距離を計算するメソッド。
-        public float CalcDistance(Vector3 cameraPosition, bool ignoreY, bool useLight = false)
+        public float CalcDistance(Vector3 cameraPosition, bool ignoreY, bool lightweight = false)
         {
             if (ignoreY)
             {
                 Vector3 position2d = new(cameraPosition.x, 0, cameraPosition.z);
-                Vector3 closestPoint3d = useLight ? 
+                Vector3 closestPoint3d = lightweight ? 
                     ClosestPointOnBoundsLight(cameraPosition, BoundsMin, BoundsMax) : 
                     ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
                 Vector3 closestPoint2d = new(closestPoint3d.x, 0, closestPoint3d.z);
@@ -40,7 +40,7 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
-                Vector3 closestPoint = useLight ? 
+                Vector3 closestPoint = lightweight ? 
                     ClosestPointOnBoundsLight(cameraPosition, BoundsMin, BoundsMax) : 
                     ClosestPointOnBounds(cameraPosition, BoundsMin, BoundsMax);
                 return Vector3.Distance(cameraPosition, closestPoint);
@@ -66,9 +66,10 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
-    /// タイルの距離とインデックスを保持する構造体。
+    /// タイルの距離、元のインデックス、ロード状態を保持する構造体。
+    /// <see cref="SortDistancesJob"/>でのソート用にIComparableを実装。
     /// </summary>
-    public struct DistanceWithIndex : IComparable<DistanceWithIndex>
+    public struct TileDistanceInfo : IComparable<TileDistanceInfo>
     {
         public readonly float Distance;
         public readonly int Index;
@@ -76,15 +77,28 @@ namespace PLATEAU.DynamicTile
         public LoadState State;
         public bool WithinMaxRange;
 
-        public DistanceWithIndex(float distance, int index, int zoomLevel)
+        public TileDistanceInfo(float distance, int index, int zoomLevel)
         {
             Distance = distance;
             Index = index;
             ZoomLevel = zoomLevel;
             State = LoadState.None; // 初期状態はNone
-            WithinMaxRange = false;
+            WithinMaxRange = false;　// 最大範囲内かどうかのフラグ
         }
-        public int CompareTo(DistanceWithIndex other)
+
+        /// <summary>
+        /// タイルの状態を更新するメソッド。
+        /// </summary>
+        public TileDistanceInfo WithUpdatedState(LoadState state)
+        {
+            this.State = state;
+            return this;
+        }
+
+        /// <summary>
+        /// <see cref="SortDistancesJob"/>でのSort用の比較メソッド。
+        /// </summary>
+        public int CompareTo(TileDistanceInfo other)
         {
             return Distance.CompareTo(other.Distance);
         }
@@ -92,10 +106,10 @@ namespace PLATEAU.DynamicTile
 
     /// <summary>
     /// タイルの子タイル(下位ズームレベル)を保持する構造体。
-    /// PLATEAUDynamicTile.ChildrenTilesの情報を配列indexで保持する。
+    /// <see cref="PLATEAUDynamicTile.ChildrenTiles"/>の情報を配列indexで保持する。
     /// fixed配列だとunsafeにする必要があるため、構造体で保持する。
     /// </summary>
-    public readonly struct ChildrenTiles
+    public readonly struct ChildTileIndices
     {
         public readonly int tile1;
         public readonly int tile2;
@@ -103,7 +117,7 @@ namespace PLATEAU.DynamicTile
         public readonly int tile4;
         public readonly int Length;
 
-        public ChildrenTiles(IEnumerable<int> tiles)
+        public ChildTileIndices(IEnumerable<int> tiles)
         {
             tile1 = tiles.Count() > 0 ? tiles.ElementAt(0) : 0;
             tile2 = tiles.Count() > 1 ? tiles.ElementAt(1) : 0;
@@ -173,7 +187,7 @@ namespace PLATEAU.DynamicTile
     public struct TileDistanceCheckJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<TileBounds> TileStates;
-        [WriteOnly] public NativeArray<DistanceWithIndex> Distances;
+        [WriteOnly] public NativeArray<TileDistanceInfo> Distances;
 
         public Vector3 CameraPosition;
         public bool IgnoreY;
@@ -182,7 +196,7 @@ namespace PLATEAU.DynamicTile
         {
             var tile = TileStates[index];
             var zoomLevel = tile.ZoomLevel;
-            Distances[index] = new DistanceWithIndex(tile.CalcDistance(CameraPosition, IgnoreY), index, zoomLevel);
+            Distances[index] = new TileDistanceInfo(tile.CalcDistance(CameraPosition, IgnoreY), index, zoomLevel);
         }
     }
 
@@ -194,7 +208,7 @@ namespace PLATEAU.DynamicTile
     public struct TileRangeCheckJob : IJobParallelFor
     {
         [ReadOnly] public NativeHashMap<int, FloatMinMax> LoadDistances;
-        public NativeArray<DistanceWithIndex> Distances;
+        public NativeArray<TileDistanceInfo> Distances;
 
         void IJobParallelFor.Execute(int index)
         {
@@ -219,25 +233,25 @@ namespace PLATEAU.DynamicTile
 
     /// <summary>
     /// タイルの穴埋め処理を行うJobSystemのJob
-    /// FillTileHolesと同様の処理
+    /// <see cref="PLATEAUDynamicTileLoadTask.FillTileHoles"/>と同様の処理
     /// 注意：ソート処理でNativeArray<DistanceWithIndex>のindexが変更される前に実行する必要がある。
     /// Burst対応（LINQ/Arrayを使用せず、NativeArray/NativeListを使用）
     /// </summary>
     [BurstCompile]
     public struct FillTileHolesJob : IJobParallelFor
     {
-        [ReadOnly] public NativeArray<ChildrenTiles> Childrens;
+        [ReadOnly] public NativeArray<ChildTileIndices> Childrens;
 
         [NativeDisableParallelForRestriction]
-        public NativeArray<DistanceWithIndex> Distances;
+        public NativeArray<TileDistanceInfo> Distances;
 
         /// <summary>
         /// ZoomLevelとLoadStateでフィルタリングされたタイルを取得するメソッド。
         /// </summary>
         /// <returns></returns>
-        private NativeList<DistanceWithIndex> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool witinMaxRange)
+        private NativeList<TileDistanceInfo> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool witinMaxRange)
         {
-            NativeList<DistanceWithIndex> filtered = new NativeList<DistanceWithIndex>(allocator);
+            NativeList<TileDistanceInfo> filtered = new NativeList<TileDistanceInfo>(allocator);
             for (int i = 0; i < Distances.Length; i++)
             {
                 var dist = Distances[i];
@@ -248,11 +262,11 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// ZoomLevelとLoadStateでフィルタリングされた子タイルの情報を取得するメソッド。
+        /// LoadStateでフィルタリングされた子タイルの情報を取得するメソッド。
         /// </summary>
-        private NativeList<DistanceWithIndex> GetChildrenByFiltering(NativeArray<int> indices, Allocator allocator, LoadState loadState)
+        private NativeList<TileDistanceInfo> GetChildrenByFiltering(NativeArray<int> indices, Allocator allocator, LoadState loadState)
         {
-            NativeList<DistanceWithIndex> children = new NativeList<DistanceWithIndex>(allocator);
+            NativeList<TileDistanceInfo> children = new NativeList<TileDistanceInfo>(allocator);
             for (int i = 0; i < indices.Length; i++)
             {
                 if (indices[i] < 0 || indices[i] >= Distances.Length)
@@ -281,19 +295,14 @@ namespace PLATEAU.DynamicTile
                     var z11ChildrenUnloaded = GetChildrenByFiltering(Childrens[z10Unloaded.Index].ToNativeArray(Allocator.Temp), allocator, LoadState.Unload);
                     if (z11ChildrenUnloaded.Length == Childrens[z10Unloaded.Index].Length) // 子が全てUnloadの場合
                     {
-                        // 上位タイルをロード状態にする
-                        var item = Distances[z10Unloaded.Index];
-                        item.State = LoadState.Load; // 上位タイルをロード状態にする
-                        Distances[z10Unloaded.Index] = item; // 更新
+                        Distances[z10Unloaded.Index] = Distances[z10Unloaded.Index].WithUpdatedState(LoadState.Load); // 上位タイルをロード状態に更新
                     }
                     else
                     {
                         // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
                         foreach (var z11Unloaded in z11ChildrenUnloaded)
                         {
-                            var item = Distances[z11Unloaded.Index];
-                            item.State = LoadState.Load; // 子タイルをロード状態にする
-                            Distances[z11Unloaded.Index] = item; // 更新
+                            Distances[z11Unloaded.Index] = Distances[z11Unloaded.Index].WithUpdatedState(LoadState.Load); // 子タイルをロード状態に更新
                         }
                     }
                     z11ChildrenUnloaded.Dispose();
@@ -310,7 +319,7 @@ namespace PLATEAU.DynamicTile
     [BurstCompile]
     public struct SortDistancesJob : IJob
     {
-        public NativeArray<DistanceWithIndex> Distances;
+        public NativeArray<TileDistanceInfo> Distances;
 
         public void Execute()
         {
@@ -324,13 +333,13 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUDynamicTileJobSystem : IDisposable
     {
         private NativeArray<TileBounds> NativeTileBounds;
-        private NativeArray<DistanceWithIndex> NativeDistances;
+        private NativeArray<TileDistanceInfo> NativeTileDistances;
+
+        // タイルの子タイル(下位ズームレベル)を保持する配列
+        private NativeArray<ChildTileIndices> NativeChildrens;
 
         // 各Zoomレベルごとのカメラからのロード距離 Dictionary<int, (float, float)> loadDistances
         private NativeHashMap<int, FloatMinMax> NativeLoadDistances;
-
-        // タイルの子タイル(下位ズームレベル)を保持する配列
-        private NativeArray<ChildrenTiles> NativeChildrens;
 
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUDynamicTileLoadTask loadTask;
@@ -359,10 +368,10 @@ namespace PLATEAU.DynamicTile
 
             if (!NativeTileBounds.IsCreated)
                 NativeTileBounds = new NativeArray<TileBounds>(dynamicTiles.Count, Allocator.Persistent);
-            if (!NativeDistances.IsCreated)
-                NativeDistances = new NativeArray<DistanceWithIndex>(dynamicTiles.Count, Allocator.Persistent);
+            if (!NativeTileDistances.IsCreated)
+                NativeTileDistances = new NativeArray<TileDistanceInfo>(dynamicTiles.Count, Allocator.Persistent);
             if (!NativeChildrens.IsCreated)
-                NativeChildrens = new NativeArray<ChildrenTiles>(dynamicTiles.Count, Allocator.Persistent);
+                NativeChildrens = new NativeArray<ChildTileIndices>(dynamicTiles.Count, Allocator.Persistent);
 
             if (!NativeLoadDistances.IsCreated) 
             {
@@ -383,9 +392,9 @@ namespace PLATEAU.DynamicTile
 
                 // 子タイルのインデックスを取得
                 if (tile.ChildrenTiles == null || tile.ChildrenTiles.Count == 0)
-                    NativeChildrens[i] = new ChildrenTiles(new int[0]);
+                    NativeChildrens[i] = new ChildTileIndices(new int[0]);
                 else
-                    NativeChildrens[i] = new ChildrenTiles(tile.ChildrenTiles.Where(t => t != null).Select(t => dynamicTiles.IndexOf(t)));
+                    NativeChildrens[i] = new ChildTileIndices(tile.ChildrenTiles.Where(t => t != null).Select(t => dynamicTiles.IndexOf(t)));
             }
         }
 
@@ -394,13 +403,12 @@ namespace PLATEAU.DynamicTile
         {
             if (NativeTileBounds.IsCreated)
                 NativeTileBounds.Dispose();
-            if (NativeDistances.IsCreated)
-                NativeDistances.Dispose();
-
-            if (NativeLoadDistances.IsCreated)
-                NativeLoadDistances.Dispose();
+            if (NativeTileDistances.IsCreated)
+                NativeTileDistances.Dispose();
             if (NativeChildrens.IsCreated)
                 NativeChildrens.Dispose();
+            if (NativeLoadDistances.IsCreated)
+                NativeLoadDistances.Dispose();
         }
 
         /// <summary>
@@ -415,7 +423,7 @@ namespace PLATEAU.DynamicTile
             TileDistanceCheckJob distJob = new TileDistanceCheckJob 
             { 
                 TileStates = NativeTileBounds, 
-                Distances = NativeDistances, 
+                Distances = NativeTileDistances, 
                 CameraPosition = position, 
                 IgnoreY = ignoreY 
             };
@@ -426,7 +434,7 @@ namespace PLATEAU.DynamicTile
             TileRangeCheckJob rangeCheckJob = new TileRangeCheckJob
             {
                 LoadDistances = NativeLoadDistances,
-                Distances = NativeDistances
+                Distances = NativeTileDistances
             };
             JobHandle rangeHandle = rangeCheckJob.Schedule(NativeTileBounds.Length, 64, distHandle);
             rangeHandle.Complete();
@@ -435,13 +443,13 @@ namespace PLATEAU.DynamicTile
             FillTileHolesJob fillHolesJob = new FillTileHolesJob
             {
                 Childrens = NativeChildrens,
-                Distances = NativeDistances
+                Distances = NativeTileDistances
             };
             JobHandle fillHolesHandle = fillHolesJob.Schedule(NativeTileBounds.Length, 64, JobHandle.CombineDependencies(distHandle, rangeHandle));
             fillHolesHandle.Complete();
 
             // 距離が近い順にソート
-            JobHandle sortHandle = new SortDistancesJob { Distances = NativeDistances }.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle, fillHolesHandle));
+            JobHandle sortHandle = new SortDistancesJob { Distances = NativeTileDistances }.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle, fillHolesHandle));
             sortHandle.Complete();
 
             //loadTask.DebugLog($"JobSystem Elapsed Time: {sw.Elapsed.TotalMilliseconds:F4} ms");
@@ -468,9 +476,9 @@ namespace PLATEAU.DynamicTile
             int loadFailCount = 0;
 
             // タイルのロード状態に応じて、非同期でロードまたはアンロードを実行
-            for (int i = 0; i < NativeDistances.Length; i++)
+            for (int i = 0; i < NativeTileDistances.Length; i++)
             {
-                var distanceWithIndex = NativeDistances[i];
+                var distanceWithIndex = NativeTileDistances[i];
                 var index = distanceWithIndex.Index;
                 var tile = dynamicTiles[index];
 
