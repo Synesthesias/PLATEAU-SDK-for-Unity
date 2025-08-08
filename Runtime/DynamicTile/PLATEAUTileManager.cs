@@ -225,14 +225,22 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// 現在のロードタスクを破棄します。
         /// </summary>
-        private void OnDestroy()
+        public void DestroyLoadTask()
         {
             if (loadTask != null)
             {
                 loadTask.DestroyTask().ContinueWithErrorCatch();
             }
+        }
+
+        /// <summary>
+        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// </summary>
+        private void OnDestroy()
+        {
+            DestroyLoadTask();
             ClearTiles();
         }
 
@@ -241,10 +249,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDisable()
         {
-            if (loadTask != null)
-            {
-                loadTask.DestroyTask().ContinueWithErrorCatch();
-            }
+            DestroyLoadTask();
         }
 
         /// <summary>
