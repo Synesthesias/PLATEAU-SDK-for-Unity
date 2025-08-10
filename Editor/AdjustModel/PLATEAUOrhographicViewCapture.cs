@@ -1,5 +1,6 @@
 using PlasticGui.WorkspaceWindow.Locks;
 using PLATEAU.CityInfo;
+using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
 using PLATEAU.RoadNetwork.Graph;
 using PLATEAU.Util;
@@ -14,22 +15,31 @@ using UnityEngine;
 
 public class PLATEAUOrthographicViewCapture : EditorWindow
 {
+    /// <summary>
+    /// 変換対象のオブジェクト
+    /// </summary>
     private static List<PLATEAUInstancedCityModel> targetObjects = new();
-    private GameObject triplanarTarget;
+    /// <summary>
+    /// テクスチャの解像度. 1m当たりのピクセル数
+    /// </summary>
     private static float pixelsPerMeter = 1f;
-    private static string savePath = "Assets/Screenshots/";
-    private static float textureScale = 1.0f;
-    private static float blendSharpness = 3.0f;
-    private static float brightness = 1.0f;
-    // キャプチャしたテクスチャを保存
-    private static string lastFrontTexPath;
-    private static string lastSideTexPath;
-    private static string lastTopTexPath;
+    /// <summary>
+    /// 保存先
+    /// </summary>
+    private static string savePath = "Assets/PLATEAU/Lod1";
+    /// <summary>
+    /// カメラの背景設定
+    /// </summary>
     private static CameraClearFlags cameraClearFlag = CameraClearFlags.Nothing;
+    /// <summary>
+    /// カメラの背景色
+    /// </summary>
     private static Color cameraClearColor = Color.black;
-    //private static int layerIndex = 6;
+    /// <summary>
+    /// LOD1のマテリアルを戻すための物
+    /// </summary>
+    private static Material defaultMaterial;
 
-    //private static Shader triplanarShader;
     enum Face
     {
         Front,
@@ -47,15 +57,20 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         /// </summary>
         public record FaceRequest
         {
-            public string TexturePath { get; }
-
+            /// <summary>
+            /// 面の法線方向
+            /// </summary>
             public Vector3 Direction { get; }
 
+            /// <summary>
+            /// Upベクトル
+            /// </summary>
             public Vector3 Up { get; }
 
+            /// <summary>
+            /// 画像サイズ
+            /// </summary>
             public Vector2Int ImageSize { get; }
-
-            public Vector3 Coef { get; }
 
             public FaceRequest(Vector3 direction, Vector3 up, Vector2 imageSize)
             {
@@ -75,12 +90,26 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         /// </summary>
         public Bounds Bounds { get; }
 
+        /// <summary>
+        /// シェーダパラメータ) X方向の正規化係数
+        /// </summary>
         public Vector3 XCoef { get; }
 
+        /// <summary>
+        /// シェーダパラメータ) Y方向の正規化係数
+        /// </summary>
         public Vector3 YCoef { get; }
+
+        /// <summary>
+        /// シェーダパラメータ) X方向の正規化係数
+        /// </summary>
         public Vector3 ZCoef { get; }
 
+        /// <summary>
+        /// 解像度用
+        /// </summary>
         public float PixelsPerMeter { get; }
+
         /// <summary>
         /// 各面ごとの情報
         /// </summary>
@@ -93,11 +122,6 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             PixelsPerMeter = pixelsPerMeter;
 
             var size = Bounds.size;
-#if false
-            XCoef = size.Zy().RevScaled().Axy(0f) * pixelsPerMeter;
-            YCoef = size.Xz().RevScaled().Xay(0f) * pixelsPerMeter;
-            ZCoef = size.Xy().RevScaled().Xya(0f) * pixelsPerMeter;
-#endif
             XCoef = size.RevScaled();
             YCoef = size.RevScaled();
             ZCoef = size.RevScaled();
@@ -134,7 +158,6 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         return $"{GetFolderPath(meshCode)}/{face.ToString()}.png";
     }
 
-
     /// <summary>
     /// メッシュコード/面によるTriplanarマテリアルパス
     /// </summary>
@@ -149,7 +172,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     [MenuItem("Tools/Orthographic View Capture")]
     public static void ShowWindow()
     {
-        GetWindow<PLATEAUOrthographicViewCapture>("3面図キャプチャ & Triplanar適用");
+        GetWindow<PLATEAUOrthographicViewCapture>("LOD1 5面図キャプチャ");
     }
 
     /// <summary>
@@ -173,7 +196,14 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
     class BuildingInfo
     {
+        /// <summary>
+        /// 建物名
+        /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// LOD情報
+        /// </summary>
         public Dictionary<float, GameObject> Lods { get; } = new Dictionary<float, GameObject>();
 
         public BuildingInfo(string name)
@@ -188,7 +218,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
-    private Dictionary<string, List<BuildingInfo>> GetBuildings(PLATEAUInstancedCityModel model)
+    static private Dictionary<string, List<BuildingInfo>> GetBuildings(PLATEAUInstancedCityModel model)
     {
         var ret = new Dictionary<string, List<BuildingInfo>>();
         foreach (var tr in model.transform.GetChildren())
@@ -238,6 +268,23 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         return ret;
     }
 
+    /// <summary>
+    /// modelのLod1建物にdefaultMaterialを設定する
+    /// </summary>
+    /// <param name="model"></param>
+    private static void SetDefaultBuildingMaterial(PLATEAUInstancedCityModel model)
+    {
+        var buildings = GetBuildings(model);
+        foreach (var b in buildings)
+        {
+            SetLod1Material(b.Value, defaultMaterial);
+        }
+    }
+
+    /// <summary>
+    /// LOD1オブジェクト/LOD2以上のオブジェクトのビジブル切り替えを行う
+    /// </summary>
+    /// <param name="isLod1Visible"></param>
     private void SwitchLod1Visible(bool isLod1Visible)
     {
         foreach (var model in targetObjects)
@@ -268,7 +315,12 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         }
     }
 
-    private void Capture(Camera camera, PLATEAUInstancedCityModel model)
+    /// <summary>
+    /// 5面図キャプチャ処理からマテリアルの生成まで行う
+    /// </summary>
+    /// <param name="camera"></param>
+    /// <param name="model"></param>
+    private void Execute(Camera camera, PLATEAUInstancedCityModel model)
     {
         // 現在表示されていて, 非表示にするゲームオブジェクト
         var invisibleObjects = new HashSet<GameObject>();
@@ -276,11 +328,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         // キャプチャが終わった後に非表示に戻すゲームオブジェクト
         var afterInvisibleObjects = new HashSet<GameObject>();
 
-        Vector3 boundMax = Vector3.one * float.MinValue;
-        Vector3 boundMin = Vector3.one * float.MaxValue;
-
-
-        Dictionary<string, GameObject> targetObjects = new Dictionary<string, GameObject>();
+        var targetObjects = new Dictionary<string, GameObject>();
 
         SwitchLod1Visible(false);
 
@@ -296,35 +344,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 continue;
             }
 
-            // レンダー対象だったら削除する
             targetObjects[meshCode] = tr.gameObject;
-
-            //foreach (var child in tr.GetChildren())
-            //{
-            //    var m = Regex.Match(child.name, @"LOD(\d+)");
-            //    if (m.Success == false)
-            //    {
-            //        continue;
-            //    }
-
-            //    var lod = int.Parse(m.Groups[1].Value);
-
-            //    if (lod <= 1)
-            //    {
-            //        if (child.gameObject.activeInHierarchy)
-            //        {
-            //            invisibleObjects.Add(child.gameObject);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (child.gameObject.activeInHierarchy == false)
-            //        {
-            //            child.gameObject.SetActive(true);
-            //            afterInvisibleObjects.Add(child.gameObject);
-            //        }
-            //    }
-            //}
         }
 
         // 一旦全部非表示にする
@@ -340,7 +360,17 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             item.Value.SetActive(true);
 
             var bound = CalculateCombinedBounds(item.Value);
-            CaptureOrthographicViews(item.Key, item.Value, camera);
+
+            // 全オブジェクトの統合バウンディングボックスを計算
+            Bounds combinedBounds = CalculateCombinedBounds(item.Value);
+
+            var request = new CaptureRequest(item.Key, combinedBounds, pixelsPerMeter);
+
+            // テクスチャのキャプチャ
+            CaptureAllFaces(request, camera);
+
+            // マテリアルの作成
+            CreateTriplanarMaterial(request);
         }
 
         foreach (var obj in invisibleObjects)
@@ -351,52 +381,64 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
         var buildings = GetBuildings(model);
 
-        //foreach (var build in buildings)
-        //{
-        //    var matPath = GetMaterialPath(build.Key);
-        //    var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
-        //    foreach (var b in build.Value)
-        //    {
-        //        var lod1 = b.Lods.GetValueOrDefault(1);
-        //        if (lod1 == null)
-        //            continue;
-        //        var mesh = lod1.GetComponent<MeshRenderer>();
-        //        if (mesh == null)
-        //            continue;
-        //        mesh.materials[0] = mat;
-        //    }
-        //}
+        foreach (var build in buildings)
+        {
+            var matPath = GetMaterialPath(build.Key);
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            SetLod1Material(build.Value, mat);
+        }
+
+        // アセットデータベースを更新
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
-    private static void CaptureOrthographicViews(string meshCode, GameObject obj, Camera camera)
+    static private void SetLod1Material(List<BuildingInfo> buildings, Material mat)
+    {
+        foreach (var b in buildings)
+        {
+            var lod1 = b.Lods.GetValueOrDefault(1);
+            if (lod1 == null)
+                continue;
+
+            // 対象オブジェクトのRendererにマテリアルを適用
+            Renderer[] renderers = lod1.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                renderer.material = mat;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 全ての面をキャプチャ
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="camera"></param>
+    private static void CaptureAllFaces(CaptureRequest request, Camera camera)
     {
         // 保存ディレクトリの作成
 
-        if (!Directory.Exists(GetFolderPath(meshCode)))
+        if (!Directory.Exists(GetFolderPath(request.MeshCode)))
         {
-            Directory.CreateDirectory(GetFolderPath(meshCode));
+            Directory.CreateDirectory(GetFolderPath(request.MeshCode));
         }
-
-        // 全オブジェクトの統合バウンディングボックスを計算
-        Bounds combinedBounds = CalculateCombinedBounds(obj);
-
-        var request = new CaptureRequest(meshCode, combinedBounds, pixelsPerMeter);
 
         // テクスチャの作成
         foreach (var f in request.Faces)
         {
-            CaptureView(camera, request, f.Key);
+            CaptureFace(camera, request, f.Key);
         }
-
-        // マテリアルの作成
-        CreateTriplanarMaterial(request);
-
-
-        // アセットデータベースを更新
-        AssetDatabase.Refresh();
     }
 
-    private static string CaptureView(
+    /// <summary>
+    /// 1面のキャプチャ
+    /// </summary>
+    /// <param name="camera"></param>
+    /// <param name="req"></param>
+    /// <param name="face"></param>
+    /// <returns></returns>
+    private static string CaptureFace(
         Camera camera
         , CaptureRequest req
         , Face face)
@@ -412,6 +454,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         Vector3 center = bounds.center;
         float distance = Mathf.Abs(Vector3.Dot(bounds.size, direction));
 
+        // 法線方向にずらすして中心を見るようにする
         camera.transform.position = center + direction * (distance + 1f);
         camera.transform.LookAt(center, up);
 
@@ -447,13 +490,12 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         DestroyImmediate(screenshot);
 
         Debug.Log($"{face}面図を保存しました: {filePath}");
-
         return filePath;
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("3面図キャプチャ & Triplanar適用ツール", EditorStyles.boldLabel);
+        GUILayout.Label("LOD1マテリアル生成", EditorStyles.boldLabel);
 
         // 対象オブジェクトの設定
         GUILayout.Label("キャプチャ対象オブジェクト:", EditorStyles.boldLabel);
@@ -471,20 +513,6 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 }
             }
         }
-
-        using (var _ = new EditorGUILayout.HorizontalScope())
-        {
-            if (GUILayout.Button("Show LOD1"))
-            {
-                SwitchLod1Visible(true);
-            }
-            if (GUILayout.Button("Show LOD2"))
-            {
-                SwitchLod1Visible(false);
-            }
-        }
-
-
         // オブジェクトリストの表示
         for (int i = 0; i < targetObjects.Count; i++)
         {
@@ -503,6 +531,19 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             targetObjects.Clear();
         }
 
+
+        using (var _ = new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Show LOD1"))
+            {
+                SwitchLod1Visible(true);
+            }
+            if (GUILayout.Button("Show LOD2"))
+            {
+                SwitchLod1Visible(false);
+            }
+        }
+
         GUILayout.Space(10);
 
         // キャプチャ設定
@@ -513,55 +554,17 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         cameraClearColor = EditorGUILayout.ColorField("Camera Clear Color", cameraClearColor);
         //layerIndex = EditorGUILayout.IntField("Layer Index", layerIndex);
         //triplanarShader = (Shader)EditorGUILayout.ObjectField("TriplanarShader", triplanarShader, typeof(Shader), true);
+        defaultMaterial = (Material)EditorGUILayout.ObjectField("DefaultMaterial", defaultMaterial, typeof(Material), true);
         GUILayout.Space(10);
 
         // キャプチャボタン
-        if (GUILayout.Button("キャプチャ"))
+        if (GUILayout.Button("実行"))
         {
-            CaptureOrthographicViews();
-        }
-
-        GUILayout.Space(20);
-
-        // Triplanar適用設定
-        GUILayout.Label("Triplanar適用設定:", EditorStyles.boldLabel);
-        triplanarTarget = (GameObject)EditorGUILayout.ObjectField("適用対象オブジェクト", triplanarTarget, typeof(GameObject), true);
-
-        textureScale = EditorGUILayout.FloatField("テクスチャスケール", textureScale);
-        blendSharpness = EditorGUILayout.Slider("ブレンドシャープネス", blendSharpness, 1f, 10f);
-        brightness = EditorGUILayout.Slider("明度", brightness, 0f, 2f);
-
-        var boundingBox = CalculateCombinedBounds();
-        EditorGUILayout.Vector3Field("バウンディングボックス[min]", boundingBox.min);
-        EditorGUILayout.Vector3Field("バウンディングボックス[max]", boundingBox.max);
-        EditorGUILayout.Vector3Field("バウンディングボックス[size]", boundingBox.size);
-        EditorGUILayout.Vector3Field("バウンディングボックス[center]", boundingBox.center);
-
-        var xy = (boundingBox.size.Xy() * pixelsPerMeter).FloorToInt();
-        var zy = (boundingBox.size.Zy() * pixelsPerMeter).FloorToInt();
-        var xz = (boundingBox.size.Xz() * pixelsPerMeter).FloorToInt();
-
-        EditorGUILayout.Vector2Field("サイズ[xy]", xy);
-        EditorGUILayout.Vector2Field("サイズ逆数[xy]", Vector2.one.RevScaled(xy.ToVector2()));
-        EditorGUILayout.Vector2Field("サイズ[zy]", zy);
-        EditorGUILayout.Vector2Field("サイズ逆数[zy]", Vector2.one.RevScaled(zy.ToVector2()));
-        EditorGUILayout.Vector2Field("サイズ[xz]", xz);
-        EditorGUILayout.Vector2Field("サイズ逆数[xz]", Vector2.one.RevScaled(xz.ToVector2()));
-
-        GUI.enabled = triplanarTarget != null && !string.IsNullOrEmpty(lastFrontTexPath);
-        if (GUILayout.Button("Triplanar投影を適用"))
-        {
-            // ApplyTriplanarProjection();
-        }
-        GUI.enabled = true;
-
-        if (triplanarTarget != null && string.IsNullOrEmpty(lastFrontTexPath))
-        {
-            EditorGUILayout.HelpBox("先に3面図をキャプチャしてください", MessageType.Warning);
+            Execute();
         }
     }
 
-    private void CaptureOrthographicViews()
+    private void Execute()
     {
         if (targetObjects.Count == 0)
         {
@@ -575,9 +578,6 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             Directory.CreateDirectory(savePath);
         }
 
-        // 全オブジェクトの統合バウンディングボックスを計算
-        Bounds combinedBounds = CalculateCombinedBounds();
-
         // 一時的なカメラを作成
         GameObject cameraObj = new GameObject("TempOrthographicCamera");
         Camera camera = cameraObj.AddComponent<Camera>();
@@ -590,12 +590,11 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         {
             foreach (var obj in targetObjects)
             {
-                Capture(camera, obj);
+                Execute(camera, obj);
             }
             // アセットデータベースを更新
             AssetDatabase.Refresh();
-
-            EditorUtility.DisplayDialog("完了", $"3面図を {savePath} に保存しました", "OK");
+            EditorUtility.DisplayDialog("完了", $"マテリアルを {savePath} に保存しました", "OK");
         }
         finally
         {
@@ -604,33 +603,11 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         }
     }
 
-    private Bounds CalculateCombinedBounds()
-    {
-        Bounds bounds = new Bounds();
-        bool boundsInitialized = false;
-
-        foreach (GameObject obj in targetObjects.Select(x => x.gameObject))
-        {
-            if (obj == null) continue;
-
-            Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in renderers)
-            {
-                if (!boundsInitialized)
-                {
-                    bounds = renderer.bounds;
-                    boundsInitialized = true;
-                }
-                else
-                {
-                    bounds.Encapsulate(renderer.bounds);
-                }
-            }
-        }
-
-        return bounds;
-    }
-
+    /// <summary>
+    /// 対象を包括するバウンディングボックスを取得
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     private static Bounds CalculateCombinedBounds(GameObject obj)
     {
         Bounds bounds = new Bounds();
@@ -651,30 +628,21 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         return bounds;
     }
 
+    /// <summary>
+    /// マテリアル生成
+    /// </summary>
+    /// <param name="req"></param>
     private static void CreateTriplanarMaterial(CaptureRequest req)
     {
-        //if (triplanarTarget == null)
-        //{
-        //    EditorUtility.DisplayDialog("エラー", "適用対象オブジェクトが設定されていません", "OK");
-        //    return;
-        //}
-
-        //// Triplanarシェーダーを読み込み
-        //if (triplanarShader == null)
-        //{
-        //    EditorUtility.DisplayDialog("エラー", "TriplanarProjectionシェーダーが見つかりません", "OK");
-        //    return;
-        //}
-
         // マテリアルを作成
 
         var triplanarShader = Shader.Find("Shader Graphs/PLATEAULod1TriplanarShader");
         Material triplanarMaterial = new Material(triplanarShader);
 
         // テクスチャを読み込み
-
         triplanarMaterial.SetFloat("_Tile", 1f);
-        triplanarMaterial.SetVector("_Offset", req.Bounds.min);
+        triplanarMaterial.SetVector("_Min", req.Bounds.min);
+        triplanarMaterial.SetVector("_Max", req.Bounds.max);
         triplanarMaterial.SetFloat("_PixelsPerMeter", req.PixelsPerMeter);
         foreach (var face in EnumEx.GetValues<Face>())
         {
@@ -689,19 +657,6 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
         // マテリアルを保存
         string materialPath = GetMaterialPath(req.MeshCode);
-
         AssetDatabase.CreateAsset(triplanarMaterial, materialPath);
-
-        //// 対象オブジェクトのRendererにマテリアルを適用
-        //Renderer[] renderers = triplanarTarget.GetComponentsInChildren<Renderer>();
-        //foreach (Renderer renderer in renderers)
-        //{
-        //    renderer.material = triplanarMaterial;
-        //}
-
-        //AssetDatabase.SaveAssets();
-        //AssetDatabase.Refresh();
-
-        //EditorUtility.DisplayDialog("完了", $"Triplanar投影を適用しました\nマテリアル: {materialPath}", "OK");
     }
 }
