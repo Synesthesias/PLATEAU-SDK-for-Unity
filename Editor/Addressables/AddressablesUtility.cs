@@ -1,8 +1,10 @@
+using PLATEAU.DynamicTile;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
@@ -56,6 +58,12 @@ namespace PLATEAU.Editor.Addressables
             {
                 bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
             }
+
+            // FIXME: 動的タイルロード時のパフォーマンス向上のため、将来的に非圧縮を検討
+            //bundledSchema.Compression = BundledAssetGroupSchema.BundleCompressionMode.Uncompressed;
+            //EditorUtility.SetDirty(bundledSchema);
+            //AssetDatabase.SaveAssets();
+
             return group;
         }
         
@@ -126,10 +134,10 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
 
-            var group = settings.FindGroup(groupName);
+            var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 
@@ -216,10 +224,10 @@ namespace PLATEAU.Editor.Addressables
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, "Local.BuildPath");
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, "Local.LoadPath");
 
-            var group = settings.FindGroup(groupName);
+            var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 
@@ -306,23 +314,89 @@ namespace PLATEAU.Editor.Addressables
                 Debug.Log("Addressablesのキャッシュをクリアしました。");
             }
 
-            // Addressablesのビルドを実行
-            UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.BuildPlayerContent(out var result);
-            if (!string.IsNullOrEmpty(result.Error))
+            // Addressablesのバージョン1.22の既知のバグを回避するため、GenerateBuildLayoutを一時的にオフにします。
+            // これをしないとビルドに成功しているのにエラーメッセージが出現します。
+            // バージョン2.0.8以降であればこの処理は不要です。
+            bool prevGenerateBuildLayout = ProjectConfigData.GenerateBuildLayout;
+            ProjectConfigData.GenerateBuildLayout = false;
+
+            try
             {
-                Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+                // Addressablesのビルドを実行
+                AddressableAssetSettings.BuildPlayerContent(out var result);
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
+                }
+                else
+                {
+                    Debug.Log("Addressablesのビルドが完了しました。");
+                }
             }
-            else
+            finally
             {
-                Debug.Log("Addressablesのビルドが完了しました。");
+                // 設定を元に戻します
+                ProjectConfigData.GenerateBuildLayout = prevGenerateBuildLayout;
             }
         }
 
         /// <summary>
+        /// 指定したグループを削除します。
+        /// </summary>
+        /// <param name="groupName">削除するグループ名</param>
+        /// <returns>削除に成功した場合はtrue</returns>
+        public static bool RemoveGroup(string groupName)
+        {
+            if (string.IsNullOrEmpty(groupName))
+            {
+                Debug.LogWarning("グループ名が指定されていません。");
+                return false;
+            }
+            
+            try
+            {
+                var settings = RequireAddressableSettings();
+                if (settings == null)
+                {
+                    return false;
+                }
+                
+                var group = settings.FindGroup(groupName);
+                if (group == null)
+                {
+                    Debug.LogWarning($"グループが見つかりません: {groupName}");
+                    return false;
+                }
+                
+                if (group == settings.DefaultGroup)
+                {
+                    Debug.LogWarning("デフォルトグループは削除できません。");
+                    return false;
+                }
+                
+                settings.RemoveGroup(group);
+                Debug.Log($"Addressableグループを削除しました: {groupName}");
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"Addressableグループの削除中にエラーが発生しました: {ex.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
         /// デフォルトグループ以外のグループを削除します。
         /// </summary>
-        public static void RemoveNonDefaultGroups(string targetLabel = "")
+        public static void RemoveNonDefaultGroups(string targetLabel, bool isExcludeAssetFolder)
         {
+            // パラメータ検証
+            if (string.IsNullOrEmpty(targetLabel))
+            {
+                Debug.LogError("targetLabelが無効です。");
+                return;
+            }
+
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
@@ -340,18 +414,48 @@ namespace PLATEAU.Editor.Addressables
             var groups = settings.groups.ToList();
             foreach (var group in groups)
             {
-                if (!string.IsNullOrEmpty(targetLabel) &&
-                    !group.entries.Any(e => e.labels.Contains(targetLabel)))
+                if (group == null ||
+                    group == defaultGroup ||
+                    group.entries == null ||
+                    !group.entries.Any())
                 {
                     continue;
                 }
-                
-                if (group == defaultGroup)
+
+                try
                 {
-                    continue;
+                    // 指定されたラベルを持つエントリがない場合はスキップ
+                    bool hasTargetLabel = false;
+                    foreach (var entry in group.entries)
+                    {
+                        if (entry != null && entry.labels != null && entry.labels.Contains(targetLabel))
+                        {
+                            hasTargetLabel = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasTargetLabel)
+                    {
+                        continue;
+                    }
+                    
+                    if (isExcludeAssetFolder && group.Name == DynamicTileProcessingContext.AddressableGroupBaseName)
+                    {
+                        // ローカルビルド用（ビルドに含める）のグループは削除しない
+                        // 削除するとLibrary配下から削除されるため
+                        continue;
+                    }
+    
+                    // グループを削除
+                    string groupName = group.Name; // 削除前に名前を保存
+                    settings.RemoveGroup(group);
+                    Debug.Log($"グループを削除しました: {groupName}");
                 }
-                settings.RemoveGroup(group);
-                Debug.Log($"グループを削除しました: {group.Name}");
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"グループ '{group.Name}' の処理中にエラーが発生しました: {ex.Message}");
+                }
             }
         }
     }

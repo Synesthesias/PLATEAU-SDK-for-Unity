@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using PLATEAU.Util.Async;
+using System.Threading.Tasks;
+using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,9 +16,19 @@ namespace PLATEAU.DynamicTile
     {
         private static PLATEAUTileManager tileManager;
 
+        public static bool IsRunning { get; private set; }
+
         static PLATEAUSceneViewCameraTracker()
         {
             Initialize();
+        }
+
+        public static void Release()
+        {
+            SceneView.duringSceneGui -= OnSceneGUI;
+            tileManager = null;
+
+            IsRunning = false;
         }
 
         public static void Initialize()
@@ -31,6 +44,8 @@ namespace PLATEAU.DynamicTile
             SceneView.duringSceneGui += OnSceneGUI;
 
             tileManager.ClearTileAssets();
+
+            IsRunning = true;
         }
 
         private static async void OnSceneGUI(SceneView sceneView)
@@ -45,7 +60,7 @@ namespace PLATEAU.DynamicTile
             if (sceneCamera != null)
             {
                 Vector3 currentPosition = sceneCamera.transform.position;
-                if (currentPosition != tileManager.LastCameraPosition)
+                if (tileManager.CheckIfCameraPositionHasChanged(currentPosition))
                 {
                     await tileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }
@@ -62,14 +77,21 @@ namespace PLATEAU.DynamicTile
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
 
-        public static volatile bool IsTileCreationInProgress = false;
+        public static volatile bool disableProjectChangeEvent = false;
+
+        public static bool IsRunning { get; private set; }
 
         static PLATEAUEditorEventListener()
+        {
+            Initialize();
+        }
+
+        public static void Initialize()
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
 
-            EditorApplication.projectChanged -= OnProjectChanged; // プロジェクトが変更されたときにOnEditorUpdateを呼び出す
+            EditorApplication.projectChanged -= OnProjectChanged; // コード更新時
             EditorApplication.projectChanged += OnProjectChanged;
 
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
@@ -77,11 +99,25 @@ namespace PLATEAU.DynamicTile
 
             EditorSceneManager.sceneOpened -= OnSceneOpened;
             EditorSceneManager.sceneOpened += OnSceneOpened;
+            
+            // コード更新前にリセットすることでドメインリロード後も動作するようにします
+            CompilationPipeline.compilationStarted -= BeforeScriptCompile;
+            CompilationPipeline.compilationStarted += BeforeScriptCompile;
 
-            EditorSceneManager.sceneSaving -= OnSceneSaving;
-            EditorSceneManager.sceneSaving += OnSceneSaving;
+            InitView().ContinueWithErrorCatch();
 
-            InitView();
+            IsRunning = true;
+        }
+
+        public static void Release()
+        {
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.projectChanged -= OnProjectChanged;
+            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
+            EditorSceneManager.sceneOpened -= OnSceneOpened;
+            PLATEAUSceneViewCameraTracker.Release();
+
+            IsRunning = false;
         }
 
         static void OnEditorUpdate()
@@ -89,29 +125,17 @@ namespace PLATEAU.DynamicTile
             Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
-            InitView();
+            InitView().ContinueWithErrorCatch();
         }
 
         static void OnProjectChanged()
         {
-            if (IsTileCreationInProgress) 
+            if (disableProjectChangeEvent) 
                 return;
 
             Log("Project Changed");
 
-            InitView();
-        }
-
-        private static void OnSceneSaving(Scene scene, string path)
-        {
-            var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (tileManager == null)
-                return;
-
-            Log($"Scene Saving : {scene.name}, save path : {path}");
-
-            // Addressablesのアンロード処理を実行
-            tileManager.ClearTileAssets();
+            InitView().ContinueWithErrorCatch();
         }
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
@@ -134,7 +158,7 @@ namespace PLATEAU.DynamicTile
             else if (state == PlayModeStateChange.EnteredEditMode)
             {
                 Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
-                InitView();
+                InitView().ContinueWithErrorCatch();
             }
         }
 
@@ -145,9 +169,18 @@ namespace PLATEAU.DynamicTile
                 return;
 
             Log($"Scene Opened: {scene.name}");
-            InitView();
+            InitView().ContinueWithErrorCatch();
         }
-        static async void InitView()
+        
+        private static void BeforeScriptCompile(object _)
+        {
+            Log("BeforeScriptCompile");
+            var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
+            if (tileManager == null) return;
+            tileManager.ClearTileAssets();
+        }
+
+        private static async Task InitView()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 return;

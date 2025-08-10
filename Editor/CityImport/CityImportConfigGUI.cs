@@ -13,14 +13,21 @@ namespace PLATEAU.Editor.CityImport
     internal class CityImportConfigGUI
     {
         private readonly IEditorDrawable[] guiComponents;
+        private readonly PackageImportConfigGUIList packageConfigGUIList;
 
         public CityImportConfigGUI(CityImportConfig cityImportConf, PackageToLodDict availablePackageLodsArg)
         {
             if(cityImportConf == null) throw new ArgumentNullException(nameof(cityImportConf));
+            
+            // パッケージ設定GUIListを保持
+            packageConfigGUIList = new PackageImportConfigGUIList(availablePackageLodsArg, cityImportConf);
+            
             // パッケージ種ごとの設定GUI、その下に基準座標設定GUIが表示されるようにGUIコンポーネントを置きます。
             guiComponents = new IEditorDrawable[]
             {
-                new PackageImportConfigGUIList(availablePackageLodsArg, cityImportConf),
+                new DynamicTileConfigGUI(cityImportConf, packageConfigGUIList),
+                new HeaderElementGroup("", "地物別設定", HeaderType.HeaderNum3),
+                packageConfigGUIList,
                 new PositionConfGUI(cityImportConf)
             };
         }

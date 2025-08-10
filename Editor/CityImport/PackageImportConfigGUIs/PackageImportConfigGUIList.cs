@@ -24,6 +24,9 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
         /// <summary> 一括設定です。 </summary>
         private readonly PackageImportConfigExtendable masterConf = new ();
         private bool masterConfFoldOut = true;
+        
+        /// <summary> 一括設定への参照を取得します。 </summary>
+        public PackageImportConfigExtendable MasterConf => masterConf;
 
         public PackageImportConfigGUIList(PackageToLodDict availablePackageLODDict, CityImportConfig cityImportConf)
         {
