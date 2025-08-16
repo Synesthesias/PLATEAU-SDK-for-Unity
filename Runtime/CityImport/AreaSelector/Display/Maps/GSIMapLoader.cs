@@ -109,7 +109,11 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Maps
 
         private static Material LoadMapMaterial()
         {
+#if UNITY_EDITOR
             string matFileName = MaterialPathUtil.GetMapMatName();
+#else
+            string matFileName = "MapUnlitMaterial_HDRP";
+#endif
             var material = Resources.Load<Material>(matFileName);
             return new Material(material);
         }
