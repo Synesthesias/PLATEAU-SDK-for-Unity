@@ -16,12 +16,14 @@ namespace PLATEAU.CityAdjust.NonLibData
     {
         private NonLibDictionary<Material[]> data = new();
         private UnityMeshToDllSubMeshWithTexture subMeshConverter;
+        private string assetPath;
         
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
 
-        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter)
+        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath)
         {
             this.subMeshConverter = subMeshConverter;
+            this.assetPath = assetPath;
         }
 
         /// <summary>
@@ -133,9 +135,20 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 }
                             }
 
-
                             if (!shouldUseFbxMaterial)
                             {
+#if UNITY_EDITOR
+                                // マテリアルが保存されていない場合は、アセットとして保存します。(Veg等のマテリアル色変更アセット用）
+                                var srcMatPath = AssetDatabase.GetAssetPath(srcMat);
+                                if (string.IsNullOrEmpty(srcMatPath))
+                                {
+                                    var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
+                                    AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
+                                    var basePath = AssetPathUtil.GetAssetPathFromRelativePath($"{assetPath}/{srcMat.name}.mat");
+                                    AssetDatabase.CreateAsset(srcMat, basePath);
+                                    AssetDatabase.SaveAssets();
+                                }
+#endif
                                 nextMaterials[i] = srcMat;
                             }
                         }
