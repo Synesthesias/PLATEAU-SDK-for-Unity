@@ -58,7 +58,7 @@ namespace PLATEAU.Editor.DynamicTile
             // 事前処理を実行
             progressDisplay?.SetProgress(TileProgressTitle, 0f, "動的タイル生成を開始中...");
             dynamicTileExporter = new DynamicTileExporter(progressDisplay);
-            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config.DynamicTileImportConfig);
+            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config);
             if (!preProcessSucceed)
             {
                 Debug.LogError("動的タイルの事前処理に失敗しました。");

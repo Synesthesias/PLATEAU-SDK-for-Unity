@@ -2,8 +2,10 @@ using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.CityInfo;
+using PLATEAU.Geometries;
 using PLATEAU.Editor.Addressables;
 using PLATEAU.Editor.DynamicTile;
+using PLATEAU.Native;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -37,14 +39,16 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 動的タイルの事前処理を行います。
         /// 成否を返します。
+        /// 既存メタがあれば、共通ReferencePointを事前にCityImportConfigへ反映します。
         /// </summary>
-        public bool SetupPreProcessing(DynamicTileImportConfig config)
+        public bool SetupPreProcessing(CityImportConfig cityConfig)
         {
-            if (config == null)
+            if (cityConfig == null)
             {
-                Debug.LogError("DynamicTileImportConfigがnullです。");
+                Debug.LogError("CityImportConfigがnullです。");
                 return false;
             }
+            var config = cityConfig.DynamicTileImportConfig;
             
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
             
@@ -97,6 +101,10 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError("context is invalid.");
                 return false;
             }
+
+            // 同じフォルダに複数回タイル化したとき、前と位置を合わせるため、既存メタのReferencePointを反映します（存在すれば）
+            SetReferencePointSameAsOldMetaIfExist(cityConfig);
+            
             return true;
         }
 
@@ -192,6 +200,7 @@ namespace PLATEAU.DynamicTile
                 var zoomLevel = res.ZoomLevel;
                 var lod = cityObject.Lod;
 
+
                 // プレハブをAddressableに登録
                 // TODO : タイルごとにAddress名を設定する
                 var address = prefabAsset.name;
@@ -268,9 +277,14 @@ namespace PLATEAU.DynamicTile
             string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset");
             // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
             dataPath = dataPath.Replace('\\', '/');
-            
-            AssetDatabase.CreateAsset(metaStore, dataPath);
-            AssetDatabase.SaveAssets();
+
+            // 既に存在する場合は新規作成を行わない（前と同じフォルダに追加で生成するケースが該当）
+            var existing = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
+            if (existing == null)
+            {
+                AssetDatabase.CreateAsset(metaStore, dataPath);
+                AssetDatabase.SaveAssets();
+            }
 
             // メタデータをAddressableに登録
             AddressablesUtility.RegisterAssetAsAddressable(
@@ -349,6 +363,9 @@ namespace PLATEAU.DynamicTile
 
             try
             {
+                // 保存先にすでにメタデータがあるなら、上書きではなく追加します
+                AddTilesToOldMetaIfOldMetaExist();
+
                 // メタデータを保存
                 var metaAddress = SaveAndRegisterMetaData(Context.MetaStore, Context.AssetConfig.AssetPath, Context.AddressableGroupName);
                 
@@ -532,6 +549,123 @@ namespace PLATEAU.DynamicTile
             sceneView.pivot = bounds.center;
             sceneView.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
             sceneView.size = distance;
+        }
+        
+        /// <summary>
+        /// 保存先にすでにメタデータがあるなら、そこに新規のタイル情報を追加します。
+        /// これにより上書きの代わりに新規追加になるようにします。
+        /// </summary>
+        private void AddTilesToOldMetaIfOldMetaExist()
+        {
+            string shorterGroupName = Context.AddressableGroupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_", "");
+            string addressName = $"{AddressableAddressBase}_{shorterGroupName}";
+            string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(Context.AssetConfig.AssetPath);
+            string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset").Replace('\\', '/');
+
+            var existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
+            if (existingMeta != null && Context.MetaStore != null && Context.MetaStore.TileMetaInfos != null)
+            {
+                // Assets内のケースで、既存に新規分を追加
+                foreach (var info in Context.MetaStore.TileMetaInfos)
+                {
+                    if (info == null) continue;
+                    existingMeta.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+                }
+                
+                EditorUtility.SetDirty(existingMeta);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.ImportAsset(dataPath, ImportAssetOptions.ForceUpdate);
+                
+                Context.MetaStore = existingMeta;
+            }
+            else
+            {
+                // 既存メタが Assets 内に無い場合は、ビルドフォルダのカタログから Addressables 経由で旧メタを読み出してマージする
+                try
+                {
+                    if (!string.IsNullOrEmpty(Context.BuildFolderPath) && Directory.Exists(Context.BuildFolderPath))
+                    {
+                        var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json", SearchOption.AllDirectories)
+                            .OrderByDescending(File.GetLastWriteTimeUtc)
+                            .ToArray();
+                        if (catalogFiles.Length > 0)
+                        {
+                            var latestCatalog = catalogFiles[0];
+                            var loader = new AddressableLoader();
+                            var oldMeta = loader.InitializeAsync(latestCatalog, addressName).GetAwaiter().GetResult();
+                            if (oldMeta != null && oldMeta.TileMetaInfos != null && Context.MetaStore != null)
+                            {
+                                foreach (var info in oldMeta.TileMetaInfos)
+                                {
+                                    if (info == null) continue;
+                                    Context.MetaStore.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"旧メタデータの読み込みに失敗しました: {ex.Message}");
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 保存先にすでにメタデータがあるのなら、ReferencePointを既存のメタデータに合わせます。
+        /// なければ範囲選択後のデフォルト値が使われます。
+        /// これにより、同じフォルダに複数回タイルを生成した場合でも位置が合うようになります。
+        /// </summary>
+        private void SetReferencePointSameAsOldMetaIfExist(CityImportConfig cityConfig)
+        {
+            Vector3 rp = cityConfig.ReferencePoint.ToUnityVector(); // デフォルト値
+            try
+            {
+
+                string shorterGroupName =
+                    Context.AddressableGroupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_",
+                        "");
+                string addressName = $"{AddressableAddressBase}_{shorterGroupName}";
+
+                // 1) Assets 内にメタがある場合
+                string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(Context.AssetConfig.AssetPath);
+                string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset").Replace('\\', '/');
+                var existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
+                if (existingMeta != null)
+                {
+                    rp = existingMeta.ReferencePoint;
+                }
+                else
+                {
+                    // 2) 外部出力先のカタログからAddressables経由で読み込み
+                    if (!string.IsNullOrEmpty(Context.BuildFolderPath) && Directory.Exists(Context.BuildFolderPath))
+                    {
+                        var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json",
+                                SearchOption.AllDirectories)
+                            .OrderByDescending(File.GetLastWriteTimeUtc)
+                            .ToArray();
+                        if (catalogFiles.Length > 0)
+                        {
+                            var latestCatalog = catalogFiles[0];
+                            var loader = new AddressableLoader();
+                            var oldMeta = loader.InitializeAsync(latestCatalog, addressName).GetAwaiter().GetResult();
+                            if (oldMeta != null)
+                            {
+                                rp = oldMeta.ReferencePoint;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"既存メタからReferencePointの取得に失敗しました: {ex.Message}");
+            }
+            finally
+            {
+                Context.MetaStore.ReferencePoint = rp;
+                cityConfig.ReferencePoint = rp.ToPlateauVector();
+            }
         }
     }
 }
