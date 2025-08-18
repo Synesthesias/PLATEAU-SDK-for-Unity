@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Windows
         {
             Handles.BeginGUI();
             currentLodLegendWindowRect.y = sceneView.position.height - currentLodLegendWindowRect.height - 40;
-            currentLodLegendWindowRect = GUILayout.Window(2, currentLodLegendWindowRect, DrawLodLegendInsideWindow, "LOD");
+            currentLodLegendWindowRect = GUILayout.Window(2, currentLodLegendWindowRect, DrawLodLegendInsideWindow, "LODアイコン表示切替");
             Handles.EndGUI();
         }
 #endif
