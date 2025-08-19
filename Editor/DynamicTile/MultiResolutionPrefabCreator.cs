@@ -159,11 +159,11 @@ namespace PLATEAU.DynamicTile
 
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
-
-            var materialList = (denominator == 1 && overwriteExisting) ? Array.Empty<Material>() : CreateMaterialList(content, resourcePath, denominator, zoomLevel);
+            var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
-            Debug.Log($"Prefabs Created for : {content.name}");
+            if (result != null)
+                Debug.Log($"Prefab Created : {content.name}　zoomLevel{zoomLevel}");
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
@@ -203,13 +203,11 @@ namespace PLATEAU.DynamicTile
 
             var clone = Object.Instantiate(target);
             clone.name = target.name;
-            var materialList = (denominator == 1 && overwriteExisting) ? Array.Empty<Material>() : CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
+            var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             if (result != null)
-            {
-                Debug.Log($"Prefab Created for : {target.name}"); 
-            }
+                Debug.Log($"Prefab Created : {target.name}　zoomLevel{zoomLevel}"); 
             
             //破棄
             Object.DestroyImmediate(clone);
@@ -225,14 +223,14 @@ namespace PLATEAU.DynamicTile
         /// <param name="saveDirectory">保存パス</param>
         /// <param name="denominator">分母</param>
         /// <returns>各解像度ごとのsharedMaterialsリスト</returns>
-        private Material[] CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
+        private List<Material[]> CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
         {
-            Material[] materials = Array.Empty<Material>(); // 空の配列で初期化
+            List<Material[]> materialsInRenderers = new List<Material[]>();
             var renderers = source.GetComponentsInChildren<Renderer>();
             if (renderers == null || renderers.Length == 0)
             {
                 Debug.LogError($"No Renderer found in {source.name}");
-                return materials;
+                return materialsInRenderers;
             }
             else
             {
@@ -243,7 +241,7 @@ namespace PLATEAU.DynamicTile
                         if (renderer.sharedMaterials.Length > 0)
                         {
                             //元のMaterial複製
-                            materials = new Material[renderer.sharedMaterials.Length];
+                            Material[] materials = new Material[renderer.sharedMaterials.Length];
                             Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
 
                             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
@@ -254,6 +252,10 @@ namespace PLATEAU.DynamicTile
                                     Texture2D albedoTexture = material.mainTexture as Texture2D;
                                     if (albedoTexture != null)
                                     {
+                                        // 上書きかつ等倍の場合はスキップ
+                                        if (overwriteExisting && denominator == 1)
+                                            continue;
+
                                         // Texture生成
                                         var textureResizer = new PrefabTextureResizer(saveDirectory, overwriteExisting);
                                         var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
@@ -277,14 +279,18 @@ namespace PLATEAU.DynamicTile
                                 else if (material == null)
                                     Debug.LogWarning($"Material at index {i} is null in {source.name}");
                             }
+                            materialsInRenderers.Add(materials); // 各Rendererのマテリアルリストを追加
                         }
                         else
+                        {
+                            // Rendererにマテリアルがない場合は空の配列を追加
+                            materialsInRenderers.Add(Array.Empty<Material>());
                             Debug.LogWarning($"No shared materials found in renderer for {source.name}");
+                        }     
                     }
                 }
             }
-
-            return materials;
+            return materialsInRenderers;
         }
 
         /// <summary>
@@ -295,7 +301,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private Result SavePrefabFromGameObject(GameObject target, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromGameObject(GameObject target, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
@@ -309,13 +315,14 @@ namespace PLATEAU.DynamicTile
             }
             else
             {
-                foreach (var renderer in renderers)
+                for (int i = 0; i < renderers.Length; i++)
                 {
+                    var renderer = renderers[i];
                     if (renderer != null)
                     {
                         // マテリアルアサイン
-                        if (materialList != null)
-                            renderer.sharedMaterials = materialList;
+                        if (materialList != null && materialList.Count >= i)
+                            renderer.sharedMaterials = materialList[i];
                         boundsList.Add(renderer.bounds);
                     }
                 }
@@ -348,7 +355,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private Result SavePrefabFromPrefab(GameObject prefab, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromPrefab(GameObject prefab, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             var path = AssetDatabase.GetAssetPath(prefab);
             var content = PrefabUtility.LoadPrefabContents(path);
