@@ -415,6 +415,12 @@ namespace PLATEAU.DynamicTile
             }
 
             var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, GetDenominatorFromZoomLevel(zoomLevel), zoomLevel, true);
+            if (prefabData == null)
+            {
+                Debug.LogWarning($"{convertedObject.name} の低解像度プレハブ生成に失敗しました。");
+                GameObject.DestroyImmediate(convertedObject);
+                return false;
+            }
             RegisterAsset(prefabAsset, prefabPath, prefabData, context.AddressableGroupName, context.MetaStore);
 
             // シーン上のオブジェクトを削除
@@ -464,13 +470,13 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public static int GetDenominatorFromZoomLevel(int zoomLevel)
         {
-            new Dictionary<int, int>
+            return zoomLevel switch
             {
-                { 9, 4 },
-                { 10, 2 },
-                { 11, 1 }
-            }.TryGetValue(zoomLevel, out var denominator);
-            return denominator;
+                9 => 4,
+                10 => 2,
+                11 => 1,
+                _ => 0
+            };
         }
 
         #endregion 

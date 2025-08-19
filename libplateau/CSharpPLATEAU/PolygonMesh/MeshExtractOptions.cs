@@ -228,6 +228,7 @@ namespace PLATEAU.PolygonMesh
 
         public int epsgCode;
 
+        [MarshalAs(UnmanagedType.U1)]
         public bool highestLodOnly;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
