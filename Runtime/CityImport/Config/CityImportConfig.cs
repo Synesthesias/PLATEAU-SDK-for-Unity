@@ -38,9 +38,12 @@ namespace PLATEAU.CityImport.Config
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
 
         /// <summary>
-        /// 動的タイルの設定項目です。
+        /// 動的タイルの設定項目です。実体は<see cref="ConfBeforeAreaSelect"/>の中にあります。
         /// </summary>
-        public DynamicTileImportConfig DynamicTileImportConfig { get; set; } = new DynamicTileImportConfig();
+        public DynamicTileImportConfig DynamicTileImportConfig
+        {
+            get => ConfBeforeAreaSelect.DynamicTileImportConfig;
+        }
 
         private CityImportConfig(){}
 

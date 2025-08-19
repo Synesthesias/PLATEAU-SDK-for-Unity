@@ -27,11 +27,9 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Extendables.Componen
             
             if (forcePerCityModelArea)
             {
-                // 地域単位のみを選択可能にする
-                options = new[] { "地域単位" };
-                selectedIndex = 0; // 地域単位のみなので常に0
-                EditorGUILayout.Popup(label, selectedIndex, options);
-                return MeshGranularity.PerCityModelArea; // 常に地域単位を返す
+                // 地域単位で固定表示（ドロップダウンにしない）
+                EditorGUILayout.LabelField(label, "地域単位（動的タイルモード）");
+                return MeshGranularity.PerCityModelArea;
             }
             
             selectedIndex = EditorGUILayout.Popup(label, selectedIndex, options);
