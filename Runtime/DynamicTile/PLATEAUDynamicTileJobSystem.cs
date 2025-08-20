@@ -249,13 +249,13 @@ namespace PLATEAU.DynamicTile
         /// ZoomLevelとLoadStateでフィルタリングされたタイルを取得するメソッド。
         /// </summary>
         /// <returns></returns>
-        private NativeList<TileDistanceInfo> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool witinMaxRange)
+        private NativeList<TileDistanceInfo> Filter(Allocator allocator, int zoomLevel, LoadState loadState, bool withinMaxRange)
         {
             NativeList<TileDistanceInfo> filtered = new NativeList<TileDistanceInfo>(allocator);
             for (int i = 0; i < Distances.Length; i++)
             {
                 var dist = Distances[i];
-                if (dist.State == loadState && dist.ZoomLevel == zoomLevel && dist.WithinMaxRange == witinMaxRange)
+                if (dist.State == loadState && dist.ZoomLevel == zoomLevel && dist.WithinMaxRange == withinMaxRange)
                     filtered.Add(dist);
             }
             return filtered;

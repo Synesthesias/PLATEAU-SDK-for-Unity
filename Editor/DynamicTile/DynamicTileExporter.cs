@@ -453,13 +453,24 @@ namespace PLATEAU.DynamicTile
             string groupName,
             PLATEAUDynamicTileMetaStore metaStore)
         {
-            var prefabPath = AssetPathUtil.GetAssetPath(savePath);
+            string prefabPath;
+            if (string.IsNullOrEmpty(savePath))
+            {
+                // フォールバック: Prefab から AssetPath を取得
+                prefabPath = AssetDatabase.GetAssetPath(prefab);
+            }
+            else
+            {
+                prefabPath = Path.IsPathRooted(savePath)
+                ? AssetPathUtil.GetAssetPath(savePath)      // フルパス → Assetパス
+                : AssetPathUtil.NormalizeAssetPath(savePath); // 既にAssetパス
+            }
             var bounds = result.Bounds;
             var zoomLevel = result.ZoomLevel;
 
             // プレハブをAddressableに登録
-            // TODO : タイルごとにAddress名を設定する
-            var address = prefab.name;
+            var address = prefab != null ? prefab.name : Path.GetFileNameWithoutExtension(prefabPath);
+
             AddressablesUtility.RegisterAssetAsAddressable(
                 prefabPath,
                 address,
