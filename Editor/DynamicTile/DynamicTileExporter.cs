@@ -300,6 +300,12 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public void OnTileImported(TileImportResult importResult)
         {
+            if (Context == null || !Context.IsValid())
+            {
+                Debug.LogError("DynamicTileProcessingContextが無効です。SetupPreProcessingが呼ばれているか確認してください。");
+                return;
+            }
+
             var placedObject = importResult.RootObject;
             var zoomLevel = importResult.ZoomLevel;
             int totalGmlCount = importResult.TotalGmlCount;
@@ -318,7 +324,7 @@ namespace PLATEAU.DynamicTile
                     Context,
                     errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
 
-                // シーン上のオブジェクトを削除
+                // childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
                 GameObject.DestroyImmediate(placedObject);
             }
             else

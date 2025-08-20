@@ -328,12 +328,15 @@ namespace PLATEAU.DynamicTile
             }
 
             // Transformの子オブジェクトをすべて削除
-            for (int i = 0; i < TileParent?.childCount; i++)
+            if (TileParent != null)
             {
-                var child = TileParent.GetChild(i);
-                if (child != null)
+                for (int i = TileParent.childCount - 1; i >= 0; i--)
                 {
-                    DeleteGameObjectInstance(child.gameObject);
+                    var child = TileParent.GetChild(i);
+                    if (child != null)
+                    {
+                        DeleteGameObjectInstance(child.gameObject);
+                    }
                 }
             }
 

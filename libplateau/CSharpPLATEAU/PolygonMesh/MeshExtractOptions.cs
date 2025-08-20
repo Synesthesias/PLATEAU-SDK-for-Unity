@@ -90,8 +90,8 @@ namespace PLATEAU.PolygonMesh
             this.AttachMapTile = attachMapTile;
             this.MapTileZoomLevel = mapTileZoomLevel;
             this.mapTileURL = mapTileURL;
-            this.epsgCode = epsgCode;
-            this.highestLodOnly = highestLodOnly;
+            this.EpsgCode = epsgCode;
+            this.HighestLodOnly = highestLodOnly;
 
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
@@ -226,10 +226,10 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
-        public int epsgCode;
+        public int EpsgCode;
 
         [MarshalAs(UnmanagedType.U1)]
-        public bool highestLodOnly;
+        public bool HighestLodOnly;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()

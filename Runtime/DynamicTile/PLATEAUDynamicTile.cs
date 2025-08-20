@@ -101,6 +101,7 @@ namespace PLATEAU.DynamicTile
             Address = address;
             Lod = lod;
             ZoomLevel = zoomLevel;
+            ChildrenTiles = new List<PLATEAUDynamicTile>();
 
             if (bounds.size != Vector3.zero)
             {
@@ -132,6 +133,7 @@ namespace PLATEAU.DynamicTile
             Lod = info.LOD;
             Extent = info.Extent;
             ZoomLevel = info.ZoomLevel;
+            ChildrenTiles = new List<PLATEAUDynamicTile>();
         }
 
         /// <summary>
@@ -164,20 +166,21 @@ namespace PLATEAU.DynamicTile
                 return float.MaxValue;
             }
 
+            float distance = 0f;
             if (ignoreY)
             {
                 var extent2d = new Bounds(new Vector3(Extent.center.x, 0, Extent.center.z), new Vector3(Extent.size.x, 0, Extent.size.z));
                 var position2d = new Vector3(position.x, 0, position.z);
                 Vector3 closestPoint2d = extent2d.ClosestPoint(position2d);
-                return Vector2.Distance(new Vector2(position2d.x, position2d.z),new Vector2(closestPoint2d.x, closestPoint2d.z));
+                distance = Vector2.Distance(new Vector2(position2d.x, position2d.z),new Vector2(closestPoint2d.x, closestPoint2d.z));
+            }
+            else
+            {
+                Vector3 closestPoint = Extent.ClosestPoint(position);
+                distance = Vector3.Distance(position, closestPoint);
             }
 
-            Vector3 closestPoint = Extent.ClosestPoint(position);
-            var distance = Vector3.Distance(position, closestPoint);
-
-            //debug用
             DistanceFromCamera = distance;
-
             return distance;
         }
 

@@ -321,7 +321,7 @@ namespace PLATEAU.DynamicTile
                     if (renderer != null)
                     {
                         // マテリアルアサイン
-                        if (materialList != null && materialList.Count >= i)
+                        if (materialList != null && i < materialList.Count && materialList[i] != null)
                             renderer.sharedMaterials = materialList[i];
                         boundsList.Add(renderer.bounds);
                     }
@@ -329,10 +329,6 @@ namespace PLATEAU.DynamicTile
             }
 
             // 保存
-            var newName = $"{prefabName}.prefab";
-            var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
-            var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
-            var created = overwriteExisting ? target : PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
             var bounds = new Bounds();
             foreach (var b in boundsList)
             {
@@ -342,7 +338,23 @@ namespace PLATEAU.DynamicTile
                     bounds.Encapsulate(b);
             }
 
+            string uniquePath = string.Empty;
+            GameObject created;
+            if (overwriteExisting)
+            {
+                // 上書き時は新規保存しない
+                created = target;
+            }
+            else
+            {
+                var newName = $"{prefabName}.prefab";
+                var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
+                uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
+                created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
+            }
+
             var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
+
             createdResults.Add(result);
             return result;
         }

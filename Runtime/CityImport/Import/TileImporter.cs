@@ -102,7 +102,21 @@ namespace PLATEAU.CityImport.Import
 
             try
             {
-                var fetchedGmls = await CityImporter.Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
+                List < GmlFile > fetchedGmls;
+                try
+                {
+                    fetchedGmls = await CityImporter.Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    progressDisplay.SetProgress("GMLファイル取得", 0f, "キャンセルされました");
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    progressDisplay.SetProgress("GMLファイル取得", 0f, $"失敗: {ex.Message}");
+                    throw;
+                }
 
                 // タイルインポート処理を行います。
                 using var tileImporter = new TileImporter();
@@ -521,6 +535,12 @@ namespace PLATEAU.CityImport.Import
 
                 var gml = cityModelGml[cityModel];
                 var gridCode = gml.GridCode.StringCode;
+                if (gridCode.Length < 2)
+                {
+                    Debug.LogWarning($"Invalid grid code: {gridCode}");
+                    continue;
+                }
+
                 var tertiaryMesh = gridCode.Substring(0, gridCode.Length - 2); // ３次メッシュ
                 var subdividedGridSquareCode = gridCode.Substring(gridCode.Length - 2, 2); // 分割地域メッシュコード
                 var x = subdividedGridSquareCode.Substring(0, 1); // 分割地域メッシュコード 1桁目
@@ -676,19 +696,19 @@ namespace PLATEAU.CityImport.Import
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 2; // 11の時は2x2グリッドに分割
-                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
+                meshExtractOptions.HighestLodOnly = true; // 高精細メッシュのみを抽出
             }
             else if (zoomLevel == 10)
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 1; // 分割しない
-                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
+                meshExtractOptions.HighestLodOnly = true; // 高精細メッシュのみを抽出
             }
             else if (zoomLevel == 9)
             {
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 1;
-                meshExtractOptions.highestLodOnly = true; // 高精細メッシュのみを抽出
+                meshExtractOptions.HighestLodOnly = true; // 高精細メッシュのみを抽出
             }
 
             result = meshExtractOptions;

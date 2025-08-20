@@ -41,7 +41,7 @@ namespace PLATEAU.DynamicTile
 
         //zoomLevelごとにタイルのBoundsを更新するメソッド
         //上位zoomLevelのBoundsが下位zoomLevelのBoundsを包含する場合は、上位のものを利用
-        public static void UpdateBounds(List<PLATEAUDynamicTile>　tiles)
+        public static void UpdateBounds(List<PLATEAUDynamicTile> tiles)
         {
             List<PLATEAUDynamicTile> z11 = tiles.Where(t => t.ZoomLevel == 11).ToList();
             List<PLATEAUDynamicTile> z10 = tiles.Where(t => t.ZoomLevel == 10).ToList();

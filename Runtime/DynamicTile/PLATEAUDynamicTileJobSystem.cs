@@ -215,7 +215,7 @@ namespace PLATEAU.DynamicTile
             var distanceWithIndex = Distances[index];
             var zoomLevel = distanceWithIndex.ZoomLevel;
 
-            if (LoadDistances[zoomLevel].WithinTheRange(distanceWithIndex.Distance))
+            if (LoadDistances.TryGetValue(zoomLevel, out var range) && range.WithinTheRange(distanceWithIndex.Distance))
             {
                 // 距離が範囲内の場合はLoadStateをLoadに設定
                 distanceWithIndex.State = LoadState.Load;
@@ -225,7 +225,7 @@ namespace PLATEAU.DynamicTile
             {
                 // 距離が範囲外の場合はLoadStateをUnloadに設定
                 distanceWithIndex.State = LoadState.Unload;
-                distanceWithIndex.WithinMaxRange = LoadDistances[zoomLevel].WithinMaxRange(distanceWithIndex.Distance);
+                distanceWithIndex.WithinMaxRange = range.WithinMaxRange(distanceWithIndex.Distance);
             }
             Distances[index] = distanceWithIndex;
         }
@@ -271,7 +271,8 @@ namespace PLATEAU.DynamicTile
             {
                 if (indices[i] < 0 || indices[i] >= Distances.Length)
                 {
-                    throw new IndexOutOfRangeException($"Invalid index {indices[i]} for Distances array.");
+                    // 不正なインデックスはスキップ
+                    continue;
                 }
                 var dist = Distances[indices[i]];
                 if (dist.State == loadState)
