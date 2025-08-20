@@ -238,7 +238,7 @@ namespace PLATEAU.DynamicTile
     /// Burst対応（LINQ/Arrayを使用せず、NativeArray/NativeListを使用）
     /// </summary>
     [BurstCompile]
-    public struct FillTileHolesJob : IJobParallelFor
+    public struct FillTileHolesJob : IJob
     {
         [ReadOnly] public NativeArray<ChildTileIndices> Childrens;
 
@@ -281,7 +281,7 @@ namespace PLATEAU.DynamicTile
             return children;
         }
 
-        public void Execute(int index)
+        public void Execute()
         {
             var allocator = Allocator.TempJob;
 
@@ -446,7 +446,7 @@ namespace PLATEAU.DynamicTile
                 Childrens = NativeChildrens,
                 Distances = NativeTileDistances
             };
-            JobHandle fillHolesHandle = fillHolesJob.Schedule(NativeTileBounds.Length, 64, JobHandle.CombineDependencies(distHandle, rangeHandle));
+            JobHandle fillHolesHandle = fillHolesJob.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle));
             fillHolesHandle.Complete();
 
             // 距離が近い順にソート

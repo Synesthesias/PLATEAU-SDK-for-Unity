@@ -43,6 +43,7 @@ namespace PLATEAU.DynamicTile
             if (config == null)
             {
                 Debug.LogError("DynamicTileImportConfigがnullです。");
+                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 return false;
             }
             
@@ -66,6 +67,7 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(profileID))
             {
                 Debug.LogError("プロファイルの作成に失敗しました。");
+                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 return false;
             }
 
@@ -95,6 +97,7 @@ namespace PLATEAU.DynamicTile
             if (!Context.IsValid())
             {
                 Debug.LogError("context is invalid.");
+                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 return false;
             }
             return true;
@@ -402,17 +405,18 @@ namespace PLATEAU.DynamicTile
 
             context.AssetConfig.SrcGameObj = target;
 
-            var baseFolderPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
-            var saveFolderPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderPath);
+            var baseFolderAssetPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
+            var saveFolderAssetPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderAssetPath);
+            var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
 
-            var convertedObject = PrepareAndConvert(context.AssetConfig, saveFolderPath, onError);
+            var convertedObject = PrepareAndConvert(context.AssetConfig, saveFolderFullPath, onError);
             if (convertedObject == null)
             {
                 Debug.LogWarning($"{target.name} の変換に失敗しました。");
                 return false;
             }
 
-            string prefabPath = saveFolderPath + ".prefab";
+            string prefabPath = saveFolderAssetPath + ".prefab";
             var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
             if (prefabAsset == null)
             {
@@ -481,7 +485,7 @@ namespace PLATEAU.DynamicTile
                 9 => 4,
                 10 => 2,
                 11 => 1,
-                _ => 0
+                _ => 1 // デフォルトは1（オリジナル解像度）
             };
         }
 
@@ -587,24 +591,26 @@ namespace PLATEAU.DynamicTile
 
             assetConfig.SrcGameObj = cityObject.gameObject;
 
-            var baseFolderPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11"); // 解像度オリジナルなので_11を付ける
-            var saveFolderPath = baseFolderPath;
+            var baseFolderAssetPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11"); // 解像度オリジナルなので_11を付ける
+            var saveFolderAssetPath = baseFolderAssetPath;
+
             int count = 1;
             // 同名のディレクトリが存在する場合は、_1, _2, ... のように連番を付けて保存
-            while (Directory.Exists(saveFolderPath))
+            while (Directory.Exists(saveFolderAssetPath))
             {
-                saveFolderPath = $"{baseFolderPath}_{count}";
+                saveFolderAssetPath = $"{baseFolderAssetPath}_{count}";
                 count++;
             }
 
-            var convertedObject = PrepareAndConvert(assetConfig, saveFolderPath, onError);
+            var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
+            var convertedObject = PrepareAndConvert(assetConfig, saveFolderFullPath, onError);
             if (convertedObject == null)
             {
                 Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
                 return false;
             }
 
-            string prefabPath = saveFolderPath + ".prefab";
+            string prefabPath = saveFolderAssetPath + ".prefab";
             var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
             if (prefabAsset == null)
             {

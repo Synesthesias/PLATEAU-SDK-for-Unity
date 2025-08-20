@@ -153,7 +153,7 @@ namespace PLATEAU.PolygonMesh
             get => this.unitScale;
             set
             {
-                if (Math.Abs(this.UnitScale) < 0.00000001)
+                if (Math.Abs(value) < 0.00000001)
                 {
                     throw new ArgumentException($"Validate failed : {nameof(this.UnitScale)} is too small.");
                 }
