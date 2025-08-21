@@ -83,7 +83,7 @@ namespace PLATEAU.DynamicTile
             Index = index;
             ZoomLevel = zoomLevel;
             State = LoadState.None; // 初期状態はNone
-            WithinMaxRange = false;　// 最大範囲内かどうかのフラグ
+            WithinMaxRange = false; // 最大範囲内かどうかのフラグ
         }
 
         /// <summary>
@@ -119,11 +119,27 @@ namespace PLATEAU.DynamicTile
 
         public ChildTileIndices(IEnumerable<int> tiles)
         {
-            tile1 = tiles.Count() > 0 ? tiles.ElementAt(0) : 0;
-            tile2 = tiles.Count() > 1 ? tiles.ElementAt(1) : 0;
-            tile3 = tiles.Count() > 2 ? tiles.ElementAt(2) : 0;
-            tile4 = tiles.Count() > 3 ? tiles.ElementAt(3) : 0;
-            Length = tiles.Count() > 4 ? 4 : tiles.Count(); // 最大4つの子タイルを保持する
+            int t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+            int len = 0;
+            if (tiles != null)
+            {
+                using (var e = tiles.GetEnumerator())
+                {
+                    while (len< 4 && e.MoveNext())
+                    {
+                        switch (len)
+                        {
+                            case 0: t1 = e.Current; break;
+                            case 1: t2 = e.Current; break;
+                            case 2: t3 = e.Current; break;
+                            case 3: t4 = e.Current; break;
+                        }
+                        len++;
+                    }
+                }
+            }
+            tile1 = t1; tile2 = t2; tile3 = t3; tile4 = t4; 
+            Length = len; // 最大4つの子タイルを保持する
         }
 
         public int[] ToArray()
@@ -242,7 +258,6 @@ namespace PLATEAU.DynamicTile
     {
         [ReadOnly] public NativeArray<ChildTileIndices> Childrens;
 
-        [NativeDisableParallelForRestriction]
         public NativeArray<TileDistanceInfo> Distances;
 
         /// <summary>
@@ -385,7 +400,10 @@ namespace PLATEAU.DynamicTile
                     NativeLoadDistances.TryAdd(loadDist.Key, new FloatMinMax { min = min, max = max });
                 }
             }
-   
+
+            // タイル -> インデックス マップを事前構築
+            var indexMap = new Dictionary<PLATEAUDynamicTile, int>(dynamicTiles.Count);
+            for (int i = 0; i < dynamicTiles.Count; i++) indexMap[dynamicTiles[i]] = i;          
             for (int i = 0; i < dynamicTiles.Count; i++)
             {
                 var tile = dynamicTiles[i];
@@ -395,7 +413,7 @@ namespace PLATEAU.DynamicTile
                 if (tile.ChildrenTiles == null || tile.ChildrenTiles.Count == 0)
                     NativeChildrens[i] = new ChildTileIndices(new int[0]);
                 else
-                    NativeChildrens[i] = new ChildTileIndices(tile.ChildrenTiles.Where(t => t != null).Select(t => dynamicTiles.IndexOf(t)));
+                    NativeChildrens[i] = new ChildTileIndices(tile.ChildrenTiles.Where(t => t != null).Select(t => indexMap[t]));
             }
         }
 
@@ -429,7 +447,6 @@ namespace PLATEAU.DynamicTile
                 IgnoreY = ignoreY 
             };
             JobHandle distHandle = distJob.Schedule(NativeTileBounds.Length, 64);
-            distHandle.Complete();
 
             // 範囲チェック
             TileRangeCheckJob rangeCheckJob = new TileRangeCheckJob
@@ -438,7 +455,6 @@ namespace PLATEAU.DynamicTile
                 Distances = NativeTileDistances
             };
             JobHandle rangeHandle = rangeCheckJob.Schedule(NativeTileBounds.Length, 64, distHandle);
-            rangeHandle.Complete();
 
             // タイルの穴埋め処理
             FillTileHolesJob fillHolesJob = new FillTileHolesJob
@@ -446,11 +462,10 @@ namespace PLATEAU.DynamicTile
                 Childrens = NativeChildrens,
                 Distances = NativeTileDistances
             };
-            JobHandle fillHolesHandle = fillHolesJob.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle));
-            fillHolesHandle.Complete();
+            JobHandle fillHolesHandle = fillHolesJob.Schedule(rangeHandle);
 
             // 距離が近い順にソート
-            JobHandle sortHandle = new SortDistancesJob { Distances = NativeTileDistances }.Schedule(JobHandle.CombineDependencies(distHandle, rangeHandle, fillHolesHandle));
+            JobHandle sortHandle = new SortDistancesJob { Distances = NativeTileDistances }.Schedule(fillHolesHandle);
             sortHandle.Complete();
 
             //loadTask.DebugLog($"JobSystem Elapsed Time: {sw.Elapsed.TotalMilliseconds:F4} ms");

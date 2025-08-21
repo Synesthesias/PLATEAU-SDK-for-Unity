@@ -362,7 +362,7 @@ namespace PLATEAU.DynamicTile
                     target,
                     zoomLevel,
                     context,
-                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+                    onError);
             }
             return true;
         }
