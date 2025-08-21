@@ -17,6 +17,8 @@ namespace PLATEAU.PolygonMesh
 
         /// <summary>
         /// <see cref="CityModel"/> からタイル分割された <see cref="Model"/> を抽出します。
+        /// Grid分割する場合は、<paramref name="options"/> の <see cref="MeshExtractOptions.GridCountOfSide"/> を2以上に 
+        /// <see cref="MeshExtractOptions.HighestLodOnly"/> をtrueに設定してください。
         /// 結果は <paramref name="outModel"/> に格納されます。
         /// 通常、<paramref name="outModel"/> には new したばかりの Model を渡してください。
         /// </summary>

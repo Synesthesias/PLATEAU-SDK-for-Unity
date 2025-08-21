@@ -46,61 +46,70 @@ namespace PLATEAU.DynamicTile
                 PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 return false;
             }
-            
+
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
-            
-            // DynamicTile管理用Managerを破棄
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (manager != null)
+            try
             {
-                GameObject.DestroyImmediate(manager.gameObject);
-            }
-            
-            Context = new DynamicTileProcessingContext(config);
-            
-            // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
-            // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
-            // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
-            
-            // プロファイルを作成
-            var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
-            if (string.IsNullOrEmpty(profileID))
-            {
-                Debug.LogError("プロファイルの作成に失敗しました。");
-                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
-                return false;
-            }
+                // DynamicTile管理用Managerを破棄
+                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+                if (manager != null)
+                {
+                    GameObject.DestroyImmediate(manager.gameObject);
+                }
 
-            // ビルド先パスを決定
-            string bundleOutputPath;
-            if (Context.IsExcludeAssetFolder)
-            {
-                // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
-                bundleOutputPath = Context.BuildFolderPath;
-            }
-            else
-            {
-                // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
-                bundleOutputPath = Path.Combine(
-                    Application.streamingAssetsPath,
-                    AddressableLoader.AddressableLocalBuildFolderName,
-                    Context.AddressableGroupName);
-                bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
-                Context.BuildFolderPath = bundleOutputPath;
-            }
+                Context = new DynamicTileProcessingContext(config);
 
-            
-            // ビルド設定を行います。
-            AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
-            AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
+                // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
+                // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
+                // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
 
-            if (!Context.IsValid())
-            {
-                Debug.LogError("context is invalid.");
-                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
-                return false;
+                // プロファイルを作成
+                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
+                if (string.IsNullOrEmpty(profileID))
+                {
+                    Debug.LogError("プロファイルの作成に失敗しました。");
+                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
+                    return false;
+                }
+
+                // ビルド先パスを決定
+                string bundleOutputPath;
+                if (Context.IsExcludeAssetFolder)
+                {
+                    // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
+                    bundleOutputPath = Context.BuildFolderPath;
+                }
+                else
+                {
+                    // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
+                    bundleOutputPath = Path.Combine(
+                        Application.streamingAssetsPath,
+                        AddressableLoader.AddressableLocalBuildFolderName,
+                        Context.AddressableGroupName);
+                    bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
+                    Context.BuildFolderPath = bundleOutputPath;
+                }
+
+                // ビルド設定を行います。
+                AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
+                AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
+
+                if (!Context.IsValid())
+                {
+                    Debug.LogError("context is invalid.");
+                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
+                    return false;
+                }
+                return true;
             }
-            return true;
+            finally
+            {
+                // 失敗した場合のみここで false に戻す（成功時は CompleteProcessing 側の finally で戻す）
+                if (Context == null || !Context.IsValid())
+                {
+                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
+                }
+            }
         }
 
         private static GameObject PrepareAndConvert(
@@ -117,8 +126,8 @@ namespace PLATEAU.DynamicTile
                 {
                     Directory.CreateDirectory(saveFolderPath);
                 }
-                
-                // AssetDatabase用のパスに変換
+
+                // 変換処理が要求するフルパスを設定
                 config.SetByFullPath(saveFolderPath);
 
                 // 変換
@@ -163,7 +172,10 @@ namespace PLATEAU.DynamicTile
             string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset");
             // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
             dataPath = dataPath.Replace('\\', '/');
-            
+
+            // 既存アセットとの衝突を回避
+            dataPath = AssetDatabase.GenerateUniqueAssetPath(dataPath);
+
             AssetDatabase.CreateAsset(metaStore, dataPath);
             AssetDatabase.SaveAssets();
 
@@ -205,9 +217,11 @@ namespace PLATEAU.DynamicTile
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
-
-                // 最新のカタログファイルのパスを取得
-                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json")
+                // 最新のカタログファイルのパスを取得（Asset相対/フルの両方に対応）
+                var catalogSearchDir = Path.IsPathRooted(Context.BuildFolderPath)
+                ? Context.BuildFolderPath
+                : AssetPathUtil.GetFullPath(Context.BuildFolderPath);
+                var catalogFiles = Directory.GetFiles(catalogSearchDir, "catalog_*.json")
                     .OrderByDescending(File.GetLastWriteTimeUtc)
                     .ToArray();
                 if (catalogFiles.Length == 0)
@@ -355,16 +369,18 @@ namespace PLATEAU.DynamicTile
             DynamicTileProcessingContext context,
             Action<string> onError = null)
         {
+            bool allSucceeded = true;
             foreach (var target in targets)
             {
                 if (target == null) continue;
-                ProcessGameObject(
+                var success = ProcessGameObject(
                     target,
                     zoomLevel,
                     context,
                     onError);
+                allSucceeded &= success;
             }
-            return true;
+            return allSucceeded;
         }
 
         /// <summary>
@@ -424,7 +440,14 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, GetDenominatorFromZoomLevel(zoomLevel), zoomLevel, true);
+            var denominator = GetDenominatorFromZoomLevel(zoomLevel);
+            if (zoomLevel is < 9 or > 11)
+            {
+                Debug.LogWarning($"未対応のズームレベルです: {zoomLevel}");
+                GameObject.DestroyImmediate(convertedObject);
+                return false;
+            }
+            var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, denominator, zoomLevel, true);
             if (prefabData == null)
             {
                 Debug.LogWarning($"{convertedObject.name} の低解像度プレハブ生成に失敗しました。");
@@ -486,6 +509,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// ズームレベルから解像度の分母を取得します。
+        /// [9: 1/4, 10: 1/2, 11: 1/1]
         /// </summary>
         /// <param name="zoomLevel"></param>
         /// <returns></returns>
@@ -602,16 +626,8 @@ namespace PLATEAU.DynamicTile
 
             assetConfig.SrcGameObj = cityObject.gameObject;
 
-            var baseFolderAssetPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11"); // 解像度オリジナルなので_11を付ける
-            var saveFolderAssetPath = baseFolderAssetPath;
-
-            int count = 1;
-            // 同名のディレクトリが存在する場合は、_1, _2, ... のように連番を付けて保存
-            while (Directory.Exists(saveFolderAssetPath))
-            {
-                saveFolderAssetPath = $"{baseFolderAssetPath}_{count}";
-                count++;
-            }
+            var baseFolderAssetPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11");
+            var saveFolderAssetPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderAssetPath);
 
             var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
             var convertedObject = PrepareAndConvert(assetConfig, saveFolderFullPath, onError);

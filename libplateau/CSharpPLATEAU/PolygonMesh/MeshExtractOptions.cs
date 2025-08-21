@@ -155,7 +155,7 @@ namespace PLATEAU.PolygonMesh
             {
                 if (Math.Abs(value) < 0.00000001)
                 {
-                    throw new ArgumentException($"Validate failed : {nameof(this.UnitScale)} is too small.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "UnitScale is too small.");
                 }
                 this.unitScale = value;
             }
@@ -228,6 +228,11 @@ namespace PLATEAU.PolygonMesh
 
         public int EpsgCode;
 
+        /// <summary>
+        /// 最高LODのみを抽出するかどうかを指定します。        
+        /// true の場合、minLOD..maxLOD のうち最大LODに相当するポリゴンのみを抽出します。
+        /// false の場合、minLOD から maxLOD までの範囲のポリゴンを抽出します。
+        /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool HighestLodOnly;
 
