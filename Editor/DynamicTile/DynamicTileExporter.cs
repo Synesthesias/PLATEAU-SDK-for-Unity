@@ -340,9 +340,6 @@ namespace PLATEAU.DynamicTile
                     zoomLevel,
                     Context,
                     errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
-
-                // childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
-                GameObject.DestroyImmediate(placedObject);
             }
             else
             {
@@ -352,6 +349,12 @@ namespace PLATEAU.DynamicTile
                     zoomLevel,
                     Context,
                     errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+            }
+
+            if (placedObject != null)
+            {
+                // ProcessGameObjectsで、childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
+                GameObject.DestroyImmediate(placedObject);
             }
         }
 
@@ -403,12 +406,14 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            string outputPath = context.AssetConfig?.AssetPath ?? AssetPathUtil.GetFullPath("Assets/PLATEAUPrefabs/");
-
-            // ディレクトリの存在確認
-            if (!Directory.Exists(outputPath))
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            var outputDirFullPath = Path.IsPathRooted(outputPath)
+                ? outputPath
+                : AssetPathUtil.GetFullPath(outputPath);
+            // ディレクトリの存在確認（フルパスで）
+            if (!Directory.Exists(outputDirFullPath))
             {
-                Directory.CreateDirectory(outputPath);
+                Directory.CreateDirectory(outputDirFullPath);
             }
 
             // 進捗更新を通知
@@ -682,7 +687,18 @@ namespace PLATEAU.DynamicTile
                 }
 
                 var prefabAsset = res.Prefab;
-                var prefabPath = AssetPathUtil.GetAssetPath(res.SavePath);
+                string prefabPath;
+                if (string.IsNullOrEmpty(res.SavePath))
+                {
+                    prefabPath = AssetDatabase.GetAssetPath(prefabAsset);
+                }
+                else
+                {
+                    prefabPath = Path.IsPathRooted(res.SavePath)
+                    ? AssetPathUtil.GetAssetPath(res.SavePath)
+                    : AssetPathUtil.NormalizeAssetPath(res.SavePath);
+                }
+
                 var bounds = res.Bounds;
                 var zoomLevel = res.ZoomLevel;
                 var lod = cityObject.Lod;
