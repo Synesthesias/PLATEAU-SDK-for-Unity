@@ -43,7 +43,6 @@ namespace PLATEAU.DynamicTile
             if (config == null)
             {
                 Debug.LogError("DynamicTileImportConfigがnullです。");
-                PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 return false;
             }
 
@@ -340,6 +339,9 @@ namespace PLATEAU.DynamicTile
                     zoomLevel,
                     Context,
                     errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+
+                // ProcessGameObjectsで、childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
+                GameObject.DestroyImmediate(placedObject);
             }
             else
             {
@@ -349,12 +351,6 @@ namespace PLATEAU.DynamicTile
                     zoomLevel,
                     Context,
                     errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
-            }
-
-            if (placedObject != null)
-            {
-                // ProcessGameObjectsで、childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
-                GameObject.DestroyImmediate(placedObject);
             }
         }
 
@@ -445,12 +441,13 @@ namespace PLATEAU.DynamicTile
             }
 
             var denominator = GetDenominatorFromZoomLevel(zoomLevel);
-            if (denominator == 0 || zoomLevel is < 9 or > 11)
+            if (denominator == 0)
             {
                 Debug.LogWarning($"未対応のズームレベルです: {zoomLevel}");
                 GameObject.DestroyImmediate(convertedObject);
                 return false;
             }
+
             var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, denominator, zoomLevel, true);
             if (prefabData == null)
             {
@@ -571,12 +568,15 @@ namespace PLATEAU.DynamicTile
 
             if (cityObjectGroups.Count == 0) return;
 
-            string outputPath = context.AssetConfig?.AssetPath ?? AssetPathUtil.GetFullPath("Assets/PLATEAUPrefabs/");
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            var outputDirFullPath = Path.IsPathRooted(outputPath)
+                            ? outputPath
+                            : AssetPathUtil.GetFullPath(outputPath);
 
             // ディレクトリの存在確認
-            if (!Directory.Exists(outputPath))
+            if (!Directory.Exists(outputDirFullPath))
             {
-                Directory.CreateDirectory(outputPath);
+                Directory.CreateDirectory(outputDirFullPath);
             }
 
             // 都市オブジェクトを個別に処理
