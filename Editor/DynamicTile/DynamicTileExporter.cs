@@ -48,6 +48,7 @@ namespace PLATEAU.DynamicTile
             }
 
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
+            var succeeded = false;
             try
             {
                 // DynamicTile管理用Managerを破棄
@@ -98,12 +99,13 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError("context is invalid.");
                     return false;
                 }
-                return true;
+                succeeded = true;
+                return true; 
             }
             finally
             {
-                // 失敗した場合のみここで false に戻す（成功時は CompleteProcessing 側の finally で戻す）
-                if (Context == null || !Context.IsValid())
+                // 失敗時は常にフラグを戻す（成功時は CompleteProcessing 側の finally で戻す）
+                if (!succeeded)
                 {
                     PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                 }
