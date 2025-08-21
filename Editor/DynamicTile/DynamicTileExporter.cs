@@ -68,7 +68,6 @@ namespace PLATEAU.DynamicTile
                 if (string.IsNullOrEmpty(profileID))
                 {
                     Debug.LogError("プロファイルの作成に失敗しました。");
-                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                     return false;
                 }
 
@@ -97,7 +96,6 @@ namespace PLATEAU.DynamicTile
                 if (!Context.IsValid())
                 {
                     Debug.LogError("context is invalid.");
-                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
                     return false;
                 }
                 return true;
@@ -404,7 +402,6 @@ namespace PLATEAU.DynamicTile
             }
 
             string outputPath = context.AssetConfig?.AssetPath ?? AssetPathUtil.GetFullPath("Assets/PLATEAUPrefabs/");
-            //string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
 
             // ディレクトリの存在確認
             if (!Directory.Exists(outputPath))
@@ -441,7 +438,7 @@ namespace PLATEAU.DynamicTile
             }
 
             var denominator = GetDenominatorFromZoomLevel(zoomLevel);
-            if (zoomLevel is < 9 or > 11)
+            if (denominator == 0 || zoomLevel is < 9 or > 11)
             {
                 Debug.LogWarning($"未対応のズームレベルです: {zoomLevel}");
                 GameObject.DestroyImmediate(convertedObject);
@@ -520,7 +517,7 @@ namespace PLATEAU.DynamicTile
                 9 => 4,
                 10 => 2,
                 11 => 1,
-                _ => 1 // デフォルトは1（オリジナル解像度）
+                _ => 0 // 未対応
             };
         }
 

@@ -24,7 +24,7 @@ namespace PLATEAU.PolygonMesh
         /// </summary>
         public static void ExtractWithGrid(ref Model outModel, CityModel cityModel, MeshExtractOptions options, List<Extent> extents)
         {
-            var nativeExtents = NativeVectorExtent.Create();
+            using var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
             {
                 nativeExtents.Add(extent);
@@ -45,7 +45,7 @@ namespace PLATEAU.PolygonMesh
         /// <param name="extents"></param>
         public static void ExtractWithCombine(ref Model outModel, List<CityModel> cityModels, MeshExtractOptions options, List<Extent> extents)
         {
-            var nativeExtents = NativeVectorExtent.Create();
+            using var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
             {
                 nativeExtents.Add(extent);
