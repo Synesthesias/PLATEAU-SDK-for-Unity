@@ -24,7 +24,7 @@ namespace PLATEAU.PolygonMesh
         /// </summary>
         public static void ExtractWithGrid(ref Model outModel, CityModel cityModel, MeshExtractOptions options, List<Extent> extents)
         {
-            using var nativeExtents = NativeVectorExtent.Create();
+            var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
             {
                 nativeExtents.Add(extent);
@@ -33,6 +33,7 @@ namespace PLATEAU.PolygonMesh
             var result = NativeMethods.plateau_tile_extractor_extract_with_grid(
                 cityModel.Handle, options, nativeExtents.Handle, outModel.Handle
             );
+            nativeExtents.Dispose();
             DLLUtil.CheckDllError(result);
         }
 
@@ -45,7 +46,7 @@ namespace PLATEAU.PolygonMesh
         /// <param name="extents"></param>
         public static void ExtractWithCombine(ref Model outModel, List<CityModel> cityModels, MeshExtractOptions options, List<Extent> extents)
         {
-            using var nativeExtents = NativeVectorExtent.Create();
+            var nativeExtents = NativeVectorExtent.Create();
             foreach (var extent in extents)
             {
                 nativeExtents.Add(extent);
@@ -56,6 +57,7 @@ namespace PLATEAU.PolygonMesh
             var result = NativeMethods.plateau_tile_extractor_extract_with_combine(
                 nativePtrs, cityModelCount, options, nativeExtents.Handle, outModel.Handle
             );
+            nativeExtents.Dispose();
             DLLUtil.CheckDllError(result);
         }
 

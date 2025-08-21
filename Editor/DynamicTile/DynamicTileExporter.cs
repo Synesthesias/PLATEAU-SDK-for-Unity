@@ -312,7 +312,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// インポートしつつ動的タイルにするモードにおいて、GML1つがインポートされた後に呼ばれます。
         /// 動的タイルにします。
-        /// <see cref="IPostGmlImportProcessor"/>を実装するものです。
+        /// <see cref="IPostTileImportProcessor"/> のコールバック実装です。
         /// </summary>
         public void OnTileImported(TileImportResult importResult)
         {
