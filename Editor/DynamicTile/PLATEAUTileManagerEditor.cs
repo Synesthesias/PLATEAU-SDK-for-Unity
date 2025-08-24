@@ -18,6 +18,11 @@ namespace PLATEAU.DynamicTile
             
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             DrawCatalogPathWithOpenButton(tileManager);
+            if (GUILayout.Button("シーンビューで都市にフォーカス"))
+            {
+                DynamicTileExporter.FocusSceneViewCameraToTiles(tileManager);
+                SceneView.lastActiveSceneView?.Repaint();
+            }
 
             // デバッグ表示トグル
             var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
