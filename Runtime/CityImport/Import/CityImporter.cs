@@ -105,7 +105,7 @@ namespace PLATEAU.CityImport.Import
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
                 
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                 // GMLファイルを同時に処理する最大数です。
                 // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
                 // ただしメモリ使用量が増えます。
