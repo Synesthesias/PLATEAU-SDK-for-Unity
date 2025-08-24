@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_f40d47a9-d55f-4821-8b8c-e7dbdeb5f744">
+<gml:name>C0401_floorArea</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_1">
+<gml:description>50m2以下</gml:description>
+<gml:name>801</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_2">
+<gml:description>75m2以下</gml:description>
+<gml:name>802</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_3">
+<gml:description>150m2以下</gml:description>
+<gml:name>803</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_4">
+<gml:description>500m2以下</gml:description>
+<gml:name>804</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_5">
+<gml:description>1500m2以下</gml:description>
+<gml:name>805</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_6">
+<gml:description>3000m2以下</gml:description>
+<gml:name>806</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_7">
+<gml:description>3000m2超</gml:description>
+<gml:name>807</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_8">
+<gml:description>不明</gml:description>
+<gml:name>811</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_9">
+<gml:description>合計面積</gml:description>
+<gml:name>821</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floorArea_10">
+<gml:description>平均面積</gml:description>
+<gml:name>822</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

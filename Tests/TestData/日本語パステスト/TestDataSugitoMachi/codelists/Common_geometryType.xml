@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_693224fa-ce0d-49c1-a97f-20fcae64165a">
+<gml:name>Common_geometryType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_geometryType_1">
+<gml:description>面</gml:description>
+<gml:name>E1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_geometryType_2">
+<gml:description>線</gml:description>
+<gml:name>E2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_geometryType_3">
+<gml:description>点</gml:description>
+<gml:name>E5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_geometryType_4">
+<gml:description>方向</gml:description>
+<gml:name>E6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_geometryType_5">
+<gml:description>注記</gml:description>
+<gml:name>E7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

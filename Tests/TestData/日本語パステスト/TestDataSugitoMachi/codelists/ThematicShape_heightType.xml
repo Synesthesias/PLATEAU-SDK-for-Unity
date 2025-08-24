@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_5c1f3df0-5451-49cd-a191-eedff93d51b7">
+<gml:name>ThematicShape_heightType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ThematicShape_heightType_1">
+<gml:description>地下埋設物の中心の高さ</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ThematicShape_heightType_2">
+<gml:description>地表の高さ</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ThematicShape_heightType_3">
+<gml:description>土被り</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

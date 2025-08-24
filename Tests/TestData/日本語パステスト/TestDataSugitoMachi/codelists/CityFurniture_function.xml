@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_1f914cfc-8a48-4ab9-aa4f-dd1c3a9145a3">
+<gml:name>CityFurniture_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_1">
+<gml:description>道路標示</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_2">
+<gml:description>区画線</gml:description>
+<gml:name>1010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_3">
+<gml:description>車道中央線</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_4">
+<gml:description>車線境界線</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_5">
+<gml:description>車道外側線</gml:description>
+<gml:name>1040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_6">
+<gml:description>指示標示</gml:description>
+<gml:name>1100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_7">
+<gml:description>横断歩道</gml:description>
+<gml:name>1110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_8">
+<gml:description>停止線</gml:description>
+<gml:name>1120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_9">
+<gml:description>規制標示</gml:description>
+<gml:name>1200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_10">
+<gml:description>柵・壁</gml:description>
+<gml:name>2000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_11">
+<gml:description>道路標識</gml:description>
+<gml:name>3000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_12">
+<gml:description>案内標識</gml:description>
+<gml:name>3110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_13">
+<gml:description>警戒標識</gml:description>
+<gml:name>3120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_14">
+<gml:description>規制標識</gml:description>
+<gml:name>3130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_15">
+<gml:description>指示標識</gml:description>
+<gml:name>3140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_16">
+<gml:description>補助標識</gml:description>
+<gml:name>3150</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_17">
+<gml:description>建造物</gml:description>
+<gml:name>4000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_18">
+<gml:description>上屋</gml:description>
+<gml:name>4010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_19">
+<gml:description>地下出入口</gml:description>
+<gml:name>4020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_20">
+<gml:description>アーケード</gml:description>
+<gml:name>4030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_21">
+<gml:description>視線誘導標</gml:description>
+<gml:name>4100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_22">
+<gml:description>道路反射鏡</gml:description>
+<gml:name>4120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_23">
+<gml:description>照明施設</gml:description>
+<gml:name>4200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_24">
+<gml:description>道路情報管理施設</gml:description>
+<gml:name>4300</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_25">
+<gml:description>災害検知器</gml:description>
+<gml:name>4400</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_26">
+<gml:description>気象観測装置</gml:description>
+<gml:name>4500</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_27">
+<gml:description>道路情報板</gml:description>
+<gml:name>4600</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_28">
+<gml:description>光ファイバー</gml:description>
+<gml:name>4700</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_29">
+<gml:description>柱</gml:description>
+<gml:name>4800</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_30">
+<gml:description>路側</gml:description>
+<gml:name>4810</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_31">
+<gml:description>片持</gml:description>
+<gml:name>4820</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_32">
+<gml:description>門型</gml:description>
+<gml:name>4830</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_33">
+<gml:description>電柱</gml:description>
+<gml:name>4840</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_34">
+<gml:description>交通信号機</gml:description>
+<gml:name>4900</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_35">
+<gml:description>階段</gml:description>
+<gml:name>5000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_36">
+<gml:description>通路</gml:description>
+<gml:name>5010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_37">
+<gml:description>エレベータ</gml:description>
+<gml:name>5020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_38">
+<gml:description>エスカレータ</gml:description>
+<gml:name>5030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_39">
+<gml:description>管理用地上施設</gml:description>
+<gml:name>5100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_40">
+<gml:description>電線共同溝</gml:description>
+<gml:name>5200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_41">
+<gml:description>CAB</gml:description>
+<gml:name>5300</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_42">
+<gml:description>情報BOX</gml:description>
+<gml:name>5400</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_43">
+<gml:description>管路</gml:description>
+<gml:name>5500</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_44">
+<gml:description>管理用開口部</gml:description>
+<gml:name>5600</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_45">
+<gml:description>マンホール</gml:description>
+<gml:name>5610</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_46">
+<gml:description>ハンドホール</gml:description>
+<gml:name>5620</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_47">
+<gml:description>入孔</gml:description>
+<gml:name>5630</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_48">
+<gml:description>距離標</gml:description>
+<gml:name>6000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_49">
+<gml:description>境界標識</gml:description>
+<gml:name>6010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_50">
+<gml:description>道路元標・里程標</gml:description>
+<gml:name>6020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_51">
+<gml:description>料金徴収施設</gml:description>
+<gml:name>6100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_52">
+<gml:description>融雪施設</gml:description>
+<gml:name>6200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_53">
+<gml:description>排水施設</gml:description>
+<gml:name>7000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_54">
+<gml:description>集水桝</gml:description>
+<gml:name>7100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_55">
+<gml:description>排水溝</gml:description>
+<gml:name>7200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_56">
+<gml:description>側溝</gml:description>
+<gml:name>7300</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_57">
+<gml:description>排水管</gml:description>
+<gml:name>7400</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_58">
+<gml:description>排水ポンプ</gml:description>
+<gml:name>7500</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_59">
+<gml:description>停留所</gml:description>
+<gml:name>8010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_60">
+<gml:description>消火栓</gml:description>
+<gml:name>8020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_61">
+<gml:description>郵便ポスト</gml:description>
+<gml:name>8030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_62">
+<gml:description>電話ボックス</gml:description>
+<gml:name>8040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_63">
+<gml:description>輸送管</gml:description>
+<gml:name>8050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_64">
+<gml:description>軌道</gml:description>
+<gml:name>8060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_65">
+<gml:description>架空線</gml:description>
+<gml:name>8070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_66">
+<gml:description>自動販売機</gml:description>
+<gml:name>8080</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_67">
+<gml:description>墓碑</gml:description>
+<gml:name>4201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_68">
+<gml:description>記念碑</gml:description>
+<gml:name>4202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_69">
+<gml:description>立像</gml:description>
+<gml:name>4203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_70">
+<gml:description>路傍祠</gml:description>
+<gml:name>4204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_71">
+<gml:description>灯ろう</gml:description>
+<gml:name>4205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_72">
+<gml:description>鳥居</gml:description>
+<gml:name>4207</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_73">
+<gml:description>自然災害伝承碑</gml:description>
+<gml:name>4208</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_74">
+<gml:description>噴水</gml:description>
+<gml:name>4223</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_75">
+<gml:description>井戸</gml:description>
+<gml:name>4224</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_76">
+<gml:description>油井・ガス井</gml:description>
+<gml:name>4225</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_77">
+<gml:description>起重機</gml:description>
+<gml:name>4228</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_78">
+<gml:description>タンク</gml:description>
+<gml:name>4231</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_79">
+<gml:description>煙突</gml:description>
+<gml:name>4234</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_80">
+<gml:description>高塔</gml:description>
+<gml:name>4235</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_81">
+<gml:description>電波塔</gml:description>
+<gml:name>4236</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_82">
+<gml:description>風車</gml:description>
+<gml:name>4239</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_83">
+<gml:description>灯台</gml:description>
+<gml:name>4241</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_84">
+<gml:description>灯標</gml:description>
+<gml:name>4243</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_85">
+<gml:description>ヘリポート</gml:description>
+<gml:name>4245</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_86">
+<gml:description>水位観測所</gml:description>
+<gml:name>4251</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_87">
+<gml:description>掲示板</gml:description>
+<gml:name>8140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_88">
+<gml:description>点字ブロック</gml:description>
+<gml:name>8150</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_89">
+<gml:description>ベンチ</gml:description>
+<gml:name>8160</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_90">
+<gml:description>テーブル</gml:description>
+<gml:name>8170</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_91">
+<gml:description>その他</gml:description>
+<gml:name>9000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_92">
+<gml:description>看板（自立式）</gml:description>
+<gml:name>9001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurniture_function_93">
+<gml:description>水飲み</gml:description>
+<gml:name>9002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

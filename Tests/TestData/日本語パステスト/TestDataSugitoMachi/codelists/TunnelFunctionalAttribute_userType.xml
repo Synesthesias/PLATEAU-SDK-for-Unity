@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_bbf01e74-b468-4374-9ef9-4f136770bf1c">
+<gml:name>TunnelFunctionalAttribute_userType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_1">
+<gml:description>車道</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_2">
+<gml:description>歩行者専用</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_3">
+<gml:description>自転車専用</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_4">
+<gml:description>自転車歩行者専用</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_5">
+<gml:description>車道＋自歩道併用</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_6">
+<gml:description>横断水路</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_7">
+<gml:description>車道＋横断水路併用</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_8">
+<gml:description>車道・自歩道＋横断水路併用</gml:description>
+<gml:name>08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_9">
+<gml:description>自歩道＋横断水路併用</gml:description>
+<gml:name>09</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelFunctionalAttribute_userType_10">
+<gml:description>鉄道</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

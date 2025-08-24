@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_364d5c73-6751-4d98-85fa-82d8ca3bf6c0">
+<gml:name>ZonalDisasterPreventionFacility_facilityType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ZonalDisasterPreventionFacility_facilityType_1">
+<gml:description>地区防災施設</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ZonalDisasterPreventionFacility_facilityType_2">
+<gml:description>特定地区防災施設</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

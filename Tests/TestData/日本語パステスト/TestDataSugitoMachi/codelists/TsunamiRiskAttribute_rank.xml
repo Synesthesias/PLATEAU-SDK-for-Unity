@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_540a5f27-0364-4344-a3f7-ec501f0c4774">
+<gml:name>TsunamiRiskAttribute_rank</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_1">
+<gml:description>0.5m未満</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_2">
+<gml:description>0.5m以上3m未満</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_3">
+<gml:description>3m以上5m未満</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_4">
+<gml:description>5m以上10m未満</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_5">
+<gml:description>10m以上20m未満</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TsunamiRiskAttribute_rank_6">
+<gml:description>20m以上</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

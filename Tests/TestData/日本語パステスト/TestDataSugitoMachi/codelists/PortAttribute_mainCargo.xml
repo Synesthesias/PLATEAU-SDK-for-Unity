@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_46cbe6c3-cb58-4b9a-895d-8d4cd3b38297">
+<gml:name>PortAttribute_mainCargo</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_1">
+<gml:description>麦</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_2">
+<gml:description>米</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_3">
+<gml:description>とうもろこし</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_4">
+<gml:description>豆類</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_5">
+<gml:description>その他雑穀</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_6">
+<gml:description>野菜・果物</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_7">
+<gml:description>綿花</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_8">
+<gml:description>その他農産品</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_9">
+<gml:description>羊毛</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_10">
+<gml:description>その他畜産品</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_11">
+<gml:description>水産品</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_12">
+<gml:description>原木</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_13">
+<gml:description>製材</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_14">
+<gml:description>樹脂類</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_15">
+<gml:description>木材チップ</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_16">
+<gml:description>その他林産品</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_17">
+<gml:description>薪炭</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_18">
+<gml:description>石炭</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_19">
+<gml:description>鉄鉱石</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_20">
+<gml:description>金属鉱</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_21">
+<gml:description>砂利・砂</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_22">
+<gml:description>石材</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_23">
+<gml:description>原油</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_24">
+<gml:description>りん鉱石</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_25">
+<gml:description>石灰石</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_26">
+<gml:description>原塩</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_27">
+<gml:description>非金属鉱物</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_28">
+<gml:description>鉄鋼</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_29">
+<gml:description>鋼材</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_30">
+<gml:description>非鉄金属</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_31">
+<gml:description>金属製品</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_32">
+<gml:description>鉄道車両</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_33">
+<gml:description>完成自動車</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_34">
+<gml:description>その他輪送用車両</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_35">
+<gml:description>二輪自動車</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_36">
+<gml:description>自動車部品</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_37">
+<gml:description>その他輸送機械</gml:description>
+<gml:name>37</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_38">
+<gml:description>産業機械</gml:description>
+<gml:name>38</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_39">
+<gml:description>電気機械</gml:description>
+<gml:name>39</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_40">
+<gml:description>測量・光学・医療用機械</gml:description>
+<gml:name>40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_41">
+<gml:description>事務用機器</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_42">
+<gml:description>その他機械</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_43">
+<gml:description>陶磁器</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_44">
+<gml:description>セメント</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_45">
+<gml:description>ガラス類</gml:description>
+<gml:name>45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_46">
+<gml:description>窯業品</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_47">
+<gml:description>重油</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_48">
+<gml:description>揮発油</gml:description>
+<gml:name>48</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_49">
+<gml:description>その他の石油</gml:description>
+<gml:name>49</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_50">
+<gml:description>ＬＮＧ（液化天然ガス）</gml:description>
+<gml:name>50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_51">
+<gml:description>ＬＰＧ（液化石油ガス）</gml:description>
+<gml:name>51</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_52">
+<gml:description>その他石油製品</gml:description>
+<gml:name>52</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_53">
+<gml:description>コークス</gml:description>
+<gml:name>53</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_54">
+<gml:description>石炭製品</gml:description>
+<gml:name>54</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_55">
+<gml:description>化学薬品</gml:description>
+<gml:name>55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_56">
+<gml:description>化学肥料</gml:description>
+<gml:name>56</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_57">
+<gml:description>染料・塗料・合成樹脂・その他化学工業品</gml:description>
+<gml:name>57</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_58">
+<gml:description>紙・パルプ</gml:description>
+<gml:name>58</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_59">
+<gml:description>糸及び紡績半製品</gml:description>
+<gml:name>59</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_60">
+<gml:description>その他繊維工業品</gml:description>
+<gml:name>60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_61">
+<gml:description>砂糖</gml:description>
+<gml:name>61</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_62">
+<gml:description>製造食品</gml:description>
+<gml:name>62</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_63">
+<gml:description>飲料</gml:description>
+<gml:name>63</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_64">
+<gml:description>水</gml:description>
+<gml:name>64</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_65">
+<gml:description>たばこ</gml:description>
+<gml:name>65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_66">
+<gml:description>その他食料工業品</gml:description>
+<gml:name>66</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_67">
+<gml:description>がん具</gml:description>
+<gml:name>67</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_68">
+<gml:description>衣服・身廻品・はきもの</gml:description>
+<gml:name>68</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_69">
+<gml:description>文房具・運動娯楽用品・楽器</gml:description>
+<gml:name>69</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_70">
+<gml:description>家具装備品</gml:description>
+<gml:name>70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_71">
+<gml:description>その他日用品</gml:description>
+<gml:name>71</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_72">
+<gml:description>ゴム製品</gml:description>
+<gml:name>72</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_73">
+<gml:description>木製品</gml:description>
+<gml:name>73</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_74">
+<gml:description>その他製造工業品</gml:description>
+<gml:name>74</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_75">
+<gml:description>金属くず</gml:description>
+<gml:name>75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_76">
+<gml:description>再利用資材</gml:description>
+<gml:name>76</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_77">
+<gml:description>動植物性製造飼肥料</gml:description>
+<gml:name>77</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_78">
+<gml:description>廃棄物</gml:description>
+<gml:name>78</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_79">
+<gml:description>廃土砂</gml:description>
+<gml:name>79</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_80">
+<gml:description>輸送用容器</gml:description>
+<gml:name>80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_81">
+<gml:description>取合せ品</gml:description>
+<gml:name>81</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_82">
+<gml:description>分類不能のもの</gml:description>
+<gml:name>82</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_mainCargo_83">
+<gml:description>フェリー（自航）</gml:description>
+<gml:name>83</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

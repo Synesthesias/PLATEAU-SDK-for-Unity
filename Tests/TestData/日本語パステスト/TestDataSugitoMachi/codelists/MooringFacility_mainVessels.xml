@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_f583bdba-5675-4cd6-bd77-81a34ef8a82f">
+<gml:name>MooringFacility_mainVessels</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_1">
+<gml:description>一般貨物船（荷役）</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_2">
+<gml:description>旅客船（その他）</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_3">
+<gml:description>フェリー（荷役）</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_4">
+<gml:description>貨客船（荷役）</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_5">
+<gml:description>ＲＯＲＯ船（荷役）</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_6">
+<gml:description>コンテナ船（荷役）</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_7">
+<gml:description>原油タンカー（荷役）</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_8">
+<gml:description>自動車専用船（荷役）</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_9">
+<gml:description>鉄鋼石専用船（荷役）</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_10">
+<gml:description>石炭船（荷役）</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_11">
+<gml:description>ＬＮＧ船（荷役）</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_12">
+<gml:description>ＬＰＧ船（荷役）</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_13">
+<gml:description>木材専用船（荷役）</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_14">
+<gml:description>穀物専用船（荷役）</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_15">
+<gml:description>セメント専用船(荷役)</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_16">
+<gml:description>その他専用船（荷役）</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_17">
+<gml:description>漁船（荷役）</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_18">
+<gml:description>プレジャーボート船(その他)</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_19">
+<gml:description>自衛艦（その他）</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_20">
+<gml:description>官公庁船（その他）</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_21">
+<gml:description>水中翼船（その他）</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_22">
+<gml:description>エアークッション艇(その他)</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_23">
+<gml:description>遊漁船（その他）</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_24">
+<gml:description>その他の船舶（荷役）</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_25">
+<gml:description>一般貨物船（その他）</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_26">
+<gml:description>フェリー（その他）</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_27">
+<gml:description>貨客船（その他）</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_28">
+<gml:description>ＲＯＲＯ船（その他）</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_29">
+<gml:description>コンテナ船（その他）</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_30">
+<gml:description>原油タンカー（その他）</gml:description>
+<gml:name>37</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_31">
+<gml:description>自動車専用船（その他）</gml:description>
+<gml:name>38</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_32">
+<gml:description>鉄鋼石専用船（その他）</gml:description>
+<gml:name>39</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_33">
+<gml:description>石炭船（その他）</gml:description>
+<gml:name>40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_34">
+<gml:description>ＬＮＧ船（その他）</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_35">
+<gml:description>ＬＰＧ船（その他）</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_36">
+<gml:description>木材専用船（その他）</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_37">
+<gml:description>穀物専用船（その他）</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_38">
+<gml:description>セメント専用船(その他)</gml:description>
+<gml:name>45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_39">
+<gml:description>その他専用船（その他）</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_40">
+<gml:description>漁船（その他）</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_41">
+<gml:description>その他の船舶（その他）</gml:description>
+<gml:name>54</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="MooringFacility_mainVessels_42">
+<gml:description>不明</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_da5257ee-1271-4dde-9740-41954ee91f80">
+<gml:name>OtherConstruction_lodType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_lodType_1">
+<gml:description>構造物の形状を、主要な部分の外形を構成する特徴点から構成する面を境界面とする立体として表現する。</gml:description>
+<gml:name>3.0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_lodType_2">
+<gml:description>構造物の形状を、主要な部分の外形を構成する特徴点から構成する面を境界面とする立体として表現し、構造上不可欠ではない付属物（手すり、柵、構造物と一体ではない階段）を表現する。</gml:description>
+<gml:name>3.1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -411,8 +411,7 @@ namespace PLATEAU.DynamicTile
                 
                 // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
                 EditorSceneManager.SaveOpenScenes();
-
-                Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+                
                 return true;
             }
             catch (Exception ex)
@@ -502,7 +501,7 @@ namespace PLATEAU.DynamicTile
         /// シーンビューのカメラは真下を向きます。
         /// ただし、離れすぎて見えない場合は見える程度の距離にします。
         /// </summary>
-        public static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager)
+        public static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager) 
         {
             if (manager == null)
             {

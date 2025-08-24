@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_21e132ed-0839-4a00-9a76-a1f6b9e47d8f">
+<gml:name>UrbanRoadAttribute_routeSizeNumber</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_1">
+<gml:description>幅員40m以上</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_2">
+<gml:description>幅員30m以上40m未満</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_3">
+<gml:description>幅員22m以上30m未満</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_4">
+<gml:description>幅員16m以上22m未満</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_5">
+<gml:description>幅員12m以上16m未満</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_6">
+<gml:description>幅員8m以上12m未満</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanRoadAttribute_routeSizeNumber_7">
+<gml:description>幅員8m未満</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

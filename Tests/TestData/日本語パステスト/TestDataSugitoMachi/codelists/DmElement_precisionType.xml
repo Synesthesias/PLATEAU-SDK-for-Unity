@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_6b8ec9f7-0bb1-47cf-969b-6ce426385f70">
+<gml:name>DmElement_precisionType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_1">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="1～50"</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_2">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～100"</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_3">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～250"</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_4">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～500"</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_5">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～1000"</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_6">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～2500"</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_7">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～5000"</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_8">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="～10000"</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_9">
+<gml:description>数値図化区分="基準点測量を用いる方法"_"地図情報レベル="その他"</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_10">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="1～50"</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_11">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～100"</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_12">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～250"</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_13">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～500"</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_14">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～1000"</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_15">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～2500"</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_16">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～5000"</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_17">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="～10000"</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_18">
+<gml:description>数値図化区分="TS等を用いた数値実測"_"地図情報レベル="その他"</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_19">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="1～50"</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_20">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～100"</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_21">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～250"</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_22">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～500"</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_23">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～1000"</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_24">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～2500"</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_25">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～5000"</gml:description>
+<gml:name>37</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_26">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="～10000"</gml:description>
+<gml:name>38</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_27">
+<gml:description>数値図化区分="数値図化法・他の数値地形図データの利用"_"地図情報レベル="その他"</gml:description>
+<gml:name>39</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_28">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="1～50"</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_29">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～100"</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_30">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～250"</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_31">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～500"</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_32">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～1000"</gml:description>
+<gml:name>45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_33">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～2500"</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_34">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～5000"</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_35">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="～10000"</gml:description>
+<gml:name>48</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_36">
+<gml:description>数値図化区分="既成図数値化（無伸縮図面を使用）"_"地図情報レベル="その他"</gml:description>
+<gml:name>49</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_37">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="1～50"</gml:description>
+<gml:name>51</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_38">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～100"</gml:description>
+<gml:name>52</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_39">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～250"</gml:description>
+<gml:name>53</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_40">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～500"</gml:description>
+<gml:name>54</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_41">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～1000"</gml:description>
+<gml:name>55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_42">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～2500"</gml:description>
+<gml:name>56</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_43">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～5000"</gml:description>
+<gml:name>57</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_44">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="～10000"</gml:description>
+<gml:name>58</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_45">
+<gml:description>数値図化区分="既成図数値化（伸縮図面を使用）"_"地図情報レベル="その他"</gml:description>
+<gml:name>59</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_46">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="1～50"</gml:description>
+<gml:name>61</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_47">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～100"</gml:description>
+<gml:name>62</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_48">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～250"</gml:description>
+<gml:name>63</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_49">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～500"</gml:description>
+<gml:name>64</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_50">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～1000"</gml:description>
+<gml:name>65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_51">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～2500"</gml:description>
+<gml:name>66</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_52">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～5000"</gml:description>
+<gml:name>67</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_53">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="～10000"</gml:description>
+<gml:name>68</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_54">
+<gml:description>数値図化区分="航空レーザ測量成果を用いる方法"_"地図情報レベル="その他"</gml:description>
+<gml:name>69</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_55">
+<gml:description>数値図化区分="その他"_"地図情報レベル="1～50"</gml:description>
+<gml:name>91</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_56">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～100"</gml:description>
+<gml:name>92</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_57">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～250"</gml:description>
+<gml:name>93</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_58">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～500"</gml:description>
+<gml:name>94</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_59">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～1000"</gml:description>
+<gml:name>95</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_60">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～2500"</gml:description>
+<gml:name>96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_61">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～5000"</gml:description>
+<gml:name>97</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_62">
+<gml:description>数値図化区分="その他"_"地図情報レベル="～10000"</gml:description>
+<gml:name>98</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_precisionType_63">
+<gml:description>数値図化区分="その他"_"地図情報レベル="その他"</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c60fc579-f207-49e2-9b09-79a534207230">
+<gml:name>UrbanPlanningBasicSurvey_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_1">
+<gml:description>人口</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_2">
+<gml:description>産業</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_3">
+<gml:description>土地利用</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_4">
+<gml:description>建物</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_5">
+<gml:description>都市施設</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_6">
+<gml:description>交通</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_7">
+<gml:description>地価</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_8">
+<gml:description>自然環境等</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_9">
+<gml:description>災害</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurvey_class_10">
+<gml:description>その他（景観・歴史資源等）</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>
