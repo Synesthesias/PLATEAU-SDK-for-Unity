@@ -105,6 +105,7 @@ namespace PLATEAU.CityImport.Import
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
                 
+#if UNITY_EDITOR
                 // GMLファイルを同時に処理する最大数です。
                 // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
                 // ただしメモリ使用量が増えます。
@@ -143,7 +144,35 @@ namespace PLATEAU.CityImport.Import
                     }
 
                 }));
+#else 
+                // 一つずつタスクを実行し、完了すればメモリを解放
+                foreach (var fetchedGml in fetchedGmls)
+                {
+                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                    {
+                        try
+                        {
+                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token, postGmlProcessors, fetchedGmls.Count);
 
+                            // 少しだけタイミングをずらす
+                            await Task.Yield();
+                            await Task.Yield();
+                            await Task.Yield();
+
+                            // メモリ開放
+                            GC.Collect();
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+                    }
+                }
+#endif
                 // インポート完了後の処理
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);

@@ -62,6 +62,12 @@ namespace PLATEAU.Util.Async
             // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
             var compressedTex = Compress(texture);
 
+            // 一時テクスチャを即座に解放
+            GameObject.DestroyImmediate(texture);
+            
+            // 画面のカクツキを防止用
+            await Task.Delay(200);
+            
             compressedTex.name = Path.GetFileName(texturePath);
             return compressedTex;
         }
