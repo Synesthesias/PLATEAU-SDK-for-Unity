@@ -544,7 +544,7 @@ namespace PLATEAU.DynamicTile
             float distanceHorizontal = radius / Mathf.Tan(horizontalFov * 0.5f);
 
             // 離れすぎてタイルが隠れないように
-            float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.6f;
+            float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.4f; // 0.4の根拠は勘
 
             // 横か縦か大きい方を採用
             float distance = Mathf.Max(distanceVertical, distanceHorizontal);

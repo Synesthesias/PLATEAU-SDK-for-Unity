@@ -14,11 +14,23 @@ namespace PLATEAU.DynamicTile
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
-            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-            SerializedProperty debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
+            serializedObject.Update();
             
+            PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
             DrawCatalogPathWithOpenButton(tileManager);
+
+            // デバッグ表示トグル
+            var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
+            EditorGUILayout.PropertyField(debugInfoProperty, new GUIContent("SDKデバッグ用情報を表示"));
+
+            // デバッグON時のみ付随オプションを表示
+            if (debugInfoProperty.boolValue)
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("useJobSystem"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("showDebugLog"));
+            }
+
+            serializedObject.ApplyModifiedProperties();
 
             if (debugInfoProperty.boolValue)
             {
@@ -139,7 +151,7 @@ namespace PLATEAU.DynamicTile
         {
             var catalogProp = serializedObject.FindProperty("catalogPath");
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(catalogProp);
+            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス(json)"));
             bool clickedOpen = GUILayout.Button("参照", GUILayout.Width(64));
             EditorGUILayout.EndHorizontal();
             if (clickedOpen)
