@@ -98,10 +98,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             };
             var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
             PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
+            window.Repaint();
             
             task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
             task.ContinueWithErrorCatch();
-            window.Repaint();
         }
         
     }
