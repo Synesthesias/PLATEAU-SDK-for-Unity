@@ -97,9 +97,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 new CityDuplicateProcessor() // 重複した低LODを非表示にします。
             };
             var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
+            PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
             
             task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
             task.ContinueWithErrorCatch();
+            window.Repaint();
         }
         
     }
