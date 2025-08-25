@@ -104,27 +104,70 @@ namespace PLATEAU.CityImport.Import
             try
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
-                
-#if !UNITY_EDITOR
-                // GMLファイルを同時に処理する最大数です。
-                // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-                // ただしメモリ使用量が増えます。
-                var semGmlProcess = new SemaphoreSlim(4);
-                await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+
+                // Editor拡張での処理
+                if (!Application.isPlaying)
                 {
-                    await semGmlProcess.WaitAsync(); 
-                    try
+                    // GMLファイルを同時に処理する最大数です。
+                    // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+                    // ただしメモリ使用量が増えます。
+                    var semGmlProcess = new SemaphoreSlim(4);
+                    await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+                    {
+                        await semGmlProcess.WaitAsync(); 
+                        try
+                        {
+                            if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                            {
+                                try
+                                {
+                                    // GMLを1つインポートします。
+                                    // ここはメインスレッドで呼ぶ必要があります。
+                                    await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
+                                        postGmlProcessors, fetchedGmls.Count);
+                                }
+                                catch(OperationCanceledException)
+                                {
+                                    progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError(e);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+                        finally
+                        {
+                            semGmlProcess.Release();
+                        }
+
+                    }));
+                }
+                else
+                {
+                    Debug.Log("ok");
+                    // 一つずつタスクを実行し、完了すればメモリを解放
+                    foreach (var fetchedGml in fetchedGmls)
                     {
                         if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                         {
                             try
                             {
-                                // GMLを1つインポートします。
-                                // ここはメインスレッドで呼ぶ必要があります。
-                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
-                                    postGmlProcessors, fetchedGmls.Count);
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token, postGmlProcessors, fetchedGmls.Count);
+
+                                // 少しだけタイミングをずらす
+                                await Task.Yield();
+                                await Task.Yield();
+                                await Task.Yield();
+
+                                // メモリ開放
+                                GC.Collect();
                             }
-                            catch(OperationCanceledException)
+                            catch (OperationCanceledException)
                             {
                                 progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
                             }
@@ -134,45 +177,8 @@ namespace PLATEAU.CityImport.Import
                             }
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e);
-                    }
-                    finally
-                    {
-                        semGmlProcess.Release();
-                    }
-
-                }));
-#else 
-                // 一つずつタスクを実行し、完了すればメモリを解放
-                foreach (var fetchedGml in fetchedGmls)
-                {
-                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
-                    {
-                        try
-                        {
-                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token, postGmlProcessors, fetchedGmls.Count);
-
-                            // 少しだけタイミングをずらす
-                            await Task.Yield();
-                            await Task.Yield();
-                            await Task.Yield();
-
-                            // メモリ開放
-                            GC.Collect();
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-                    }
                 }
-#endif
+                
                 // インポート完了後の処理
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
