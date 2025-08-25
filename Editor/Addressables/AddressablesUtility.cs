@@ -83,12 +83,14 @@ namespace PLATEAU.Editor.Addressables
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
+                Debug.LogError("AddressableAssetSettingsが見つかりません。");
                 return;
             }
 
             var group = GetOrCreateGroup(groupName);
             if (group == null)
             {
+                Debug.LogError($"グループの作成に失敗しました: {groupName}");
                 return;
             }
 

@@ -1,11 +1,8 @@
 ﻿using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
-using System.Threading.Tasks;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile
@@ -25,12 +22,19 @@ namespace PLATEAU.DynamicTile
         private string savePath;
 
         /// <summary>
+        /// 既存のファイルを上書きするかどうか
+        /// </summary>
+        private bool overwriteExisting;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="savePath_">保存先パス</param>
-        public PrefabTextureResizer(string savePath_)
+        /// <param name="overwrite">上書きするかどうか</param>
+        public PrefabTextureResizer(string savePath_, bool overwrite)
         {
             savePath = savePath_;
+            overwriteExisting = overwrite;
         }
 
         /// <summary>
@@ -67,7 +71,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="denominator">サイズ比の分母</param>
         /// <param name="saveDirectory">保存フォルダ名</param>
         /// <returns>再読み込み後のTexture</returns>
-        private (Texture2D,string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
+        private (Texture2D, string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
         {
             //サイズ
             var proportion = 1f / denominator;
@@ -78,16 +82,20 @@ namespace PLATEAU.DynamicTile
             var textureImporter = GetTextureImporter(sourceTexture);
             if (textureImporter == null)
             {
-                Debug.LogError("TextureImporter is not suppoerted.");
-                return (null,null);
+                Debug.LogError($"TextureImporter is not suppoerted. {sourceTexture?.name}");
             }
-            var compression = textureImporter.textureCompression;
-            var textureType = textureImporter.textureType;
+            TextureImporterCompression compression = TextureImporterCompression.Uncompressed;
+            TextureImporterType textureType = TextureImporterType.Default;
+            if (textureImporter != null)
+            {
+                compression = textureImporter.textureCompression;
+                textureType = textureImporter.textureType;
 
-            //設定変更
-            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
-            textureImporter.textureType = TextureImporterType.Default;
-            textureImporter.SaveAndReimport();
+                //設定変更
+                textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+                textureImporter.textureType = TextureImporterType.Default;
+                textureImporter.SaveAndReimport();
+            }
 
             var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, false);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
@@ -104,12 +112,21 @@ namespace PLATEAU.DynamicTile
             // 新しいファイルとして保存
             string newPath = Path.Combine(directoryPath, newAssetName);
 
+            // 上書きする場合はAssetDatabaseのパスを指定
+            if (overwriteExisting && textureImporter != null)
+            {
+                newPath = AssetPathUtil.GetAssetPath(textureImporter.assetPath);
+            }
+
             SaveTexture(newTexture, newPath, fileExtension.TrimStart('.'));
 
-            //設定を元に戻す
-            textureImporter.textureType = textureType;
-            textureImporter.textureCompression = compression;
-            textureImporter.SaveAndReimport();
+            if (textureImporter != null) 
+            {
+                //設定を元に戻す
+                textureImporter.textureType = textureType;
+                textureImporter.textureCompression = compression;
+                textureImporter.SaveAndReimport();
+            }
 
             //Texture再読み込み (AssetDatabaseにインポート)
             return (LoadTexture(newPath), newPath);
@@ -154,7 +171,14 @@ namespace PLATEAU.DynamicTile
                     return;
                 }
                 // データをTexture2Dにロードします。
-                dest.LoadRawTextureData(request.GetData<byte>());
+                var data = request.GetData<byte>();
+                if(data.Length != dest.width * dest.height * 4)
+                {
+                    Debug.LogError($"Data size mismatch: expected {dest.width * dest.height * 4} bytes, got {data.Length} bytes.");
+                    RenderTexture.ReleaseTemporary(rt);
+                    return;
+                }
+                dest.LoadRawTextureData(data);
             }
             else
             {

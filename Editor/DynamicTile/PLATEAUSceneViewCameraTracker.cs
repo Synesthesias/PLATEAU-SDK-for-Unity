@@ -148,6 +148,7 @@ namespace PLATEAU.DynamicTile
             {
                 Log("Play Mode about to start");
                 tileManager.ClearTileAssets();
+                tileManager.DestroyLoadTask();
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {

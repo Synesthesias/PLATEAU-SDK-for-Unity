@@ -6,6 +6,7 @@ namespace PLATEAU.DynamicTile
 {
     /// <summary>
     /// Addressに紐づく情報を保持するデータクラス。
+    /// TODO : lodは使用しないので、将来的に削除する可能性があります。
     /// </summary>
     [Serializable]
     public class PLATEAUDynamicTileMetaInfo
@@ -46,6 +47,7 @@ namespace PLATEAU.DynamicTile
 
         /// <summary>
         /// meta情報を追加します。
+        /// TODO : lodは使用しないので、将来的に削除する可能性があります。
         /// </summary>
         /// <param name="addressName"></param>
         /// <param name="extent"></param>

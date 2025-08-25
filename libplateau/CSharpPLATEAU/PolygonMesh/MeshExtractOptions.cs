@@ -72,7 +72,7 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, int epsgCode, bool highestLodOnly)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -90,7 +90,8 @@ namespace PLATEAU.PolygonMesh
             this.AttachMapTile = attachMapTile;
             this.MapTileZoomLevel = mapTileZoomLevel;
             this.mapTileURL = mapTileURL;
-            this.epsgCode = epsgCode;
+            this.EpsgCode = epsgCode;
+            this.HighestLodOnly = highestLodOnly;
 
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
@@ -152,9 +153,9 @@ namespace PLATEAU.PolygonMesh
             get => this.unitScale;
             set
             {
-                if (Math.Abs(this.UnitScale) < 0.00000001)
+                if (Math.Abs(value) < 0.00000001)
                 {
-                    throw new ArgumentException($"Validate failed : {nameof(this.UnitScale)} is too small.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "UnitScale is too small.");
                 }
                 this.unitScale = value;
             }
@@ -225,7 +226,15 @@ namespace PLATEAU.PolygonMesh
             }
         }
 
-        public int epsgCode;
+        public int EpsgCode;
+
+        /// <summary>
+        /// 最高LODのみを抽出するかどうかを指定します。        
+        /// true の場合、minLOD..maxLOD のうち最大LODに相当するポリゴンのみを抽出します。
+        /// false の場合、minLOD から maxLOD までの範囲のポリゴンを抽出します。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool HighestLodOnly;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()

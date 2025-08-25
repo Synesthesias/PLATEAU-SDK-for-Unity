@@ -38,7 +38,8 @@ namespace PLATEAU.DynamicTile
             Timeout
         }
 
-        private const int MaxLodLevel = 4; // 最大LODレベル (最小LODは0とする)
+        public static readonly string TILE_PARENT_NAME = "DynamicTileRoot"; // タイルの親Transformの名前
+        private Transform TileParent { get; set; } // タイルの親Transform
 
         /// <summary>
         /// 各Zoomレベルごとのカメラからのロード距離を定義します。
@@ -49,7 +50,7 @@ namespace PLATEAU.DynamicTile
             { 11, (-10000f, 500f) },
             { 10, (500f, 1500f) },
             { 9, (1500f, 10000f) },
-        }; 
+        };
 
         [SerializeField]
         private string catalogPath;
@@ -70,6 +71,10 @@ namespace PLATEAU.DynamicTile
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
+        public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
+
+        [ConditionalShow("showDebugTileInfo")]
+        [SerializeField]
         private bool showDebugLog = false; // ログを表示するか
 
         // 使用中のタイルリスト
@@ -83,9 +88,6 @@ namespace PLATEAU.DynamicTile
 
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
-
-        // Parent TransformをLODごとに管理する辞書
-        private Dictionary<int, Transform> lodParentDict = new();
 
         private AddressableLoader addressableLoader = new ();
 
@@ -113,6 +115,22 @@ namespace PLATEAU.DynamicTile
 
             State = ManagerState.Initializing;
 
+            if (TileParent == null)
+            {
+                TileParent = transform.Find(TILE_PARENT_NAME);
+                if (TileParent == null)
+                {
+                    TileParent = new GameObject(TILE_PARENT_NAME).transform; // タイルの親Transformを作成
+                    TileParent.transform.SetParent(transform, false); // マネージャーのTransformの子として設定
+
+                    //　暫定的にシーン上のPLATEAUInstancedCityModelを利用
+                    //　TODO: 予めScriptableObjectか、Addressablesで設定できるようにする
+                    var cityModel = FindFirstObjectByType<PLATEAUInstancedCityModel>(); // PLATEAUInstancedCityModelを追加
+                    if (cityModel != null)
+                        TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
+                }
+            }         
+
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             var metaStore = await addressableLoader.InitializeAsync(catalogPath, metaAddress);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
@@ -129,6 +147,8 @@ namespace PLATEAU.DynamicTile
                 var tile = new PLATEAUDynamicTile(tileMeta);
                 AddTile(tile);
             }
+
+            DynamicTileBoundsTool.AssignParentTiles(DynamicTiles); // タイルの親子関係を設定
 
             loadTask = new(this);
             LastCameraPosition = Vector3.zero; 
@@ -205,14 +225,22 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// 現在のロードタスクを破棄します。
         /// </summary>
-        private void OnDestroy()
+        public void DestroyLoadTask()
         {
             if (loadTask != null)
             {
                 loadTask.DestroyTask().ContinueWithErrorCatch();
             }
+        }
+
+        /// <summary>
+        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// </summary>
+        private void OnDestroy()
+        {
+            DestroyLoadTask();
             ClearTiles();
         }
 
@@ -221,10 +249,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDisable()
         {
-            if (loadTask != null)
-            {
-                loadTask.DestroyTask().ContinueWithErrorCatch();
-            }
+            DestroyLoadTask();
         }
 
         /// <summary>
@@ -270,10 +295,6 @@ namespace PLATEAU.DynamicTile
             ClearTileAssets();
             DynamicTiles.Clear();
             tileAddressesDict.Clear();
-
-            // LODの親Transformもクリア
-            lodParentDict.Clear();
-
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -306,40 +327,20 @@ namespace PLATEAU.DynamicTile
                 }
             }
 
-            ClearLodChildren();
-            State = originalState;
-        }
-
-        /// <summary>
-        /// LOD直下の子オブジェクトをすべてアンロードします。
-        /// (TileからのUnloadでは消去されない場合があるため)
-        /// </summary>
-        private void ClearLodChildren()
-        { 
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
-                instance = this.gameObject;
-
-            // Lod直下の子オブジェクトをすべてアンロード
-            for (int lod = 0; lod <= MaxLodLevel; lod++)
+            // Transformの子オブジェクトをすべて削除
+            if (TileParent != null)
             {
-                var lodName = $"LOD{lod}";
-                var lodParent = instance.transform.Find(lodName)?.gameObject;
-                if (lodParent != null)
+                for (int i = TileParent.childCount - 1; i >= 0; i--)
                 {
-                    for (int i = lodParent.transform.childCount - 1; i >= 0; i--)
+                    var child = TileParent.GetChild(i);
+                    if (child != null)
                     {
-                        var child = lodParent.transform.GetChild(i);
-                        if (child != null)
-                        {
-                            // 子オブジェクトを削除
-                            DeleteGameObjectInstance(child.gameObject);
-                        }
+                        DeleteGameObjectInstance(child.gameObject);
                     }
-                    // LODの親Transformも削除
-                    DeleteGameObjectInstance(lodParent);
                 }
             }
+
+            State = originalState;
         }
 
         public bool CheckIfCameraPositionHasChanged(Vector3 position, float threshold = 0.01f)
@@ -361,7 +362,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (loadTask == null) return;
-            await loadTask.UpdateAssetsByCameraPosition(position, useJobSystem, timeoutSeconds); 
+            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, useJobSystem, timeoutSeconds); 
         }
 
         /// <summary>
@@ -413,7 +414,7 @@ namespace PLATEAU.DynamicTile
                 var instance = Instantiate(tile.LoadHandle.Result);
                 if (instance != null)
                 {
-                    instance.transform.SetParent(FindParent(tile.Lod), false); // LODごとの親Transformに設定
+                    instance.transform.SetParent(TileParent, false); // LODごとの親Transformに設定
                     instance.name = tile.Address;
                     instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
                     DeleteGameObjectInstance(tile.LoadedObject); // 既存のオブジェクトが存在する場合削除
@@ -458,33 +459,16 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 指定されたLODから親Transformを取得または作成します。
+        /// 指定された距離がタイルのロード最大範囲内にあるかどうかを判定
         /// </summary>
-        /// <param name="lod"></param>
-        /// <returns></returns>
-        private Transform FindParent(int lod)
+        internal bool WithinMaxRange(float distance, PLATEAUDynamicTile tile)
         {
-            if (lodParentDict.TryGetValue(lod, out var parentTransform))
+            if (loadDistances.TryGetValue(tile.ZoomLevel, out var minmax))
             {
-                if (parentTransform != null)
-                    return parentTransform;
+                var (min, max) = minmax;
+                return distance <= max;
             }
-
-            var lodName = $"LOD{lod}";
-            GameObject lodObject = null;
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
-                instance = this.gameObject;
-
-            lodObject = instance.transform.Find(lodName)?.gameObject;
-            if (lodObject == null)
-            {
-                lodObject = new GameObject(lodName);
-                lodObject.transform.SetParent(instance?.transform, false);
-            }
-
-            lodParentDict[lod] = lodObject.transform;
-            return lodObject.transform;
+            return false;
         }
 
         /// <summary>

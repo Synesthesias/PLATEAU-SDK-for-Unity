@@ -19,7 +19,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// 都市モデルをDynamicTile用にプレハブ化し、一括でアセットバンドルとして出力する。
     /// </summary>
-    public class DynamicTileExporter : IPostGmlImportProcessor
+    public class DynamicTileExporter : IPostTileImportProcessor
     {
 
         private const string AddressableLabel = "DynamicTile";
@@ -45,166 +45,69 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError("DynamicTileImportConfigがnullです。");
                 return false;
             }
-            
+
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
-            
-            // DynamicTile管理用Managerを破棄
-            var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-            if (manager != null)
+            var succeeded = false;
+            try
             {
-                GameObject.DestroyImmediate(manager.gameObject);
-            }
-            
-            Context = new DynamicTileProcessingContext(config);
-            
-            // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
-            // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
-            // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
-            
-            // プロファイルを作成
-            var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
-            if (string.IsNullOrEmpty(profileID))
-            {
-                Debug.LogError("プロファイルの作成に失敗しました。");
-                return false;
-            }
-
-            // ビルド先パスを決定
-            string bundleOutputPath;
-            if (Context.IsExcludeAssetFolder)
-            {
-                // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
-                bundleOutputPath = Context.BuildFolderPath;
-            }
-            else
-            {
-                // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
-                bundleOutputPath = Path.Combine(
-                    Application.streamingAssetsPath,
-                    AddressableLoader.AddressableLocalBuildFolderName,
-                    Context.AddressableGroupName);
-                bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
-                Context.BuildFolderPath = bundleOutputPath;
-            }
-
-            
-            // ビルド設定を行います。
-            AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
-            AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
-
-            if (!Context.IsValid())
-            {
-                Debug.LogError("context is invalid.");
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 都市オブジェクト１つを処理し、プレハブ化・Addressable登録を行う
-        /// </summary>
-        /// <param name="cityObject">処理対象の都市オブジェクト</param>
-        /// <param name="assetConfig">変換設定</param>
-        /// <param name="groupName">Addressableグループ名</param>
-        /// <param name="metaStore">メタデータストア</param>
-        /// <param name="onError">エラー時のコールバック</param>
-        /// <returns>処理が成功した場合はtrue</returns>
-        public static bool ProcessCityObject(
-            PLATEAUCityObjectGroup cityObject,
-            ConvertToAssetConfig assetConfig,
-            string groupName,
-            PLATEAUDynamicTileMetaStore metaStore,
-            Action<string> onError = null)
-        {
-            if (cityObject == null || cityObject.gameObject == null)
-            {
-                Debug.LogWarning($"GameObjectがnullです。");
-                return false;
-            }
-
-            assetConfig.SrcGameObj = cityObject.gameObject;
-
-            var baseFolderPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11"); // 解像度オリジナルなので_11を付ける
-            var saveFolderPath = baseFolderPath;
-            int count = 1;
-            // 同名のディレクトリが存在する場合は、_1, _2, ... のように連番を付けて保存
-            while (Directory.Exists(saveFolderPath))
-            {
-                saveFolderPath = $"{baseFolderPath}_{count}";
-                count++;
-            }
-
-            var convertedObject = PrepareAndConvert(assetConfig, saveFolderPath, onError);
-            if (convertedObject == null)
-            {
-                Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
-                return false;
-            }
-
-            string prefabPath = saveFolderPath + ".prefab";
-            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
-            if (prefabAsset == null)
-            {
-                Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
-                return false;
-            }
-
-            //低解像度のプレハブを生成 (Tile生成処理追加後に仕様が変わるのでとりあえずベタ実装）
-            var prefab1Data = new MultiResolutionPrefabCreator.Result { SavePath = prefabPath, Prefab = prefabAsset, Bounds = convertedObject.GetComponentInChildren<Renderer>() == null ? default : convertedObject.GetComponentInChildren<Renderer>().bounds, ZoomLevel = 11 }; // ↑で生成済みなのでResultのみ
-            var prefab2Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 2, 10);
-            var prefab4Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 4, 9);
-
-            var prefabs = new List<MultiResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data };
-            prefabs = prefabs.Where(p => p != null && p.Prefab != null).ToList();
-
-            RegisterAssets(prefabs, groupName, cityObject, metaStore);
-
-            // シーン上のオブジェクトを削除
-            GameObject.DestroyImmediate(convertedObject);
-            
-            return true;
-        }
-
-        /// <summary>
-        /// アセット登録
-        /// </summary>
-        /// <param name="results"></param>
-        /// <param name="groupName"></param>
-        /// <param name="cityObject"></param>
-        /// <param name="metaStore"></param>
-        private static void RegisterAssets(
-            IList<MultiResolutionPrefabCreator.Result> results,
-            string groupName,
-            PLATEAUCityObjectGroup cityObject,
-            PLATEAUDynamicTileMetaStore metaStore)
-        {
-            foreach(var res in results)
-            {
-                if (res == null || res.Prefab == null)
+                // DynamicTile管理用Managerを破棄
+                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
+                if (manager != null)
                 {
-                    Debug.Log($"Skipped null prefab.");
-                    continue;
+                    GameObject.DestroyImmediate(manager.gameObject);
                 }
 
-                var prefabAsset = res.Prefab;
-                var prefabPath = AssetPathUtil.GetAssetPath(res.SavePath);
-                var bounds = res.Bounds;
-                var zoomLevel = res.ZoomLevel;
-                var lod = cityObject.Lod;
+                Context = new DynamicTileProcessingContext(config);
 
-                // プレハブをAddressableに登録
-                // TODO : タイルごとにAddress名を設定する
-                var address = prefabAsset.name;
-                AddressablesUtility.RegisterAssetAsAddressable(
-                    prefabPath,
-                    address,
-                    groupName,
-                    new List<string> { AddressableLabel });
+                // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
+                // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
+                // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
 
-                Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
+                // プロファイルを作成
+                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
+                if (string.IsNullOrEmpty(profileID))
+                {
+                    Debug.LogError("プロファイルの作成に失敗しました。");
+                    return false;
+                }
 
-                // メタ情報を登録
-                metaStore.AddMetaInfo(address, bounds, lod, zoomLevel);
+                // ビルド先パスを決定
+                string bundleOutputPath;
+                if (Context.IsExcludeAssetFolder)
+                {
+                    // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
+                    bundleOutputPath = Context.BuildFolderPath;
+                }
+                else
+                {
+                    // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
+                    bundleOutputPath = Path.Combine(
+                        Application.streamingAssetsPath,
+                        AddressableLoader.AddressableLocalBuildFolderName,
+                        Context.AddressableGroupName);
+                    bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
+                    Context.BuildFolderPath = bundleOutputPath;
+                }
+
+                // ビルド設定を行います。
+                AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
+                AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
+
+                if (!Context.IsValid())
+                {
+                    Debug.LogError("context is invalid.");
+                    return false;
+                }
+                succeeded = true;
+                return true; 
+            }
+            finally
+            {
+                // 失敗時は常にフラグを戻す（成功時は CompleteProcessing 側の finally で戻す）
+                if (!succeeded)
+                {
+                    PLATEAUEditorEventListener.disableProjectChangeEvent = false;
+                }
             }
         }
 
@@ -222,8 +125,8 @@ namespace PLATEAU.DynamicTile
                 {
                     Directory.CreateDirectory(saveFolderPath);
                 }
-                
-                // AssetDatabase用のパスに変換
+
+                // 変換処理が要求するフルパスを設定
                 config.SetByFullPath(saveFolderPath);
 
                 // 変換
@@ -268,7 +171,10 @@ namespace PLATEAU.DynamicTile
             string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset");
             // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
             dataPath = dataPath.Replace('\\', '/');
-            
+
+            // 既存アセットとの衝突を回避
+            dataPath = AssetDatabase.GenerateUniqueAssetPath(dataPath);
+
             AssetDatabase.CreateAsset(metaStore, dataPath);
             AssetDatabase.SaveAssets();
 
@@ -279,60 +185,6 @@ namespace PLATEAU.DynamicTile
                 groupName,
                 new List<string> { AddressableLabel });
             return addressName;
-        }
-
-
-        /// <summary>
-        /// 新しい都市オブジェクト処理メソッド（コールバック付き）
-        /// </summary>
-        private void ProcessCityObjects(
-            List<GameObject> placedObjects,
-            DynamicTileProcessingContext context,
-            string meshCode)
-        {
-            if (placedObjects == null || !placedObjects.Any() || context == null || !context.IsValid()) return;
-
-            // 都市オブジェクトを取得
-            var cityObjectGroups = placedObjects
-                .Select(obj => obj.GetComponent<PLATEAUCityObjectGroup>())
-                .Where(group => group != null)
-                .ToList();
-
-            if (cityObjectGroups.Count == 0) return;
-
-            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
-
-            // ディレクトリの存在確認
-            if (!Directory.Exists(outputPath))
-            {
-                Directory.CreateDirectory(outputPath);
-            }
-
-            // 都市オブジェクトを個別に処理
-            for (int i = 0; i < cityObjectGroups.Count; i++)
-            {
-                var cityObject = cityObjectGroups[i];
-                if (cityObject == null) continue;
-
-                // オブジェクト名にメッシュコードを追加
-                cityObject.name = meshCode + "_" + cityObject.name;
-
-                // 進捗更新を通知
-                // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
-                int loadedGmlCount = Context.IncrementAndGetLoadedGmlCount();
-                float progress = 10f + ((float)loadedGmlCount / Context.GmlCount) * 70f;
-                progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
-                    $"動的タイルを生成中... {cityObject.name}");
-
-                // 個別のオブジェクトを処理
-                ProcessCityObject(
-                    cityObject,
-                    context.AssetConfig,
-                    context.AddressableGroupName,
-                    context.MetaStore,
-                    errorMessage => Debug.LogError($"DynamicTileExporter error: {errorMessage}")
-                );
-            }
         }
 
         /// <summary>
@@ -364,9 +216,11 @@ namespace PLATEAU.DynamicTile
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
 
-
-                // 最新のカタログファイルのパスを取得
-                var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json")
+                // 最新のカタログファイルのパスを取得（Asset相対/フルの両方に対応）
+                var catalogSearchDir = Path.IsPathRooted(Context.BuildFolderPath)
+                ? Context.BuildFolderPath
+                : AssetPathUtil.GetFullPath(Context.BuildFolderPath);
+                var catalogFiles = Directory.GetFiles(catalogSearchDir, "catalog_*.json")
                     .OrderByDescending(File.GetLastWriteTimeUtc)
                     .ToArray();
                 if (catalogFiles.Length == 0)
@@ -433,6 +287,250 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 進行中のAddressable化をキャンセルします。
+        /// </summary>
+        public void Cancel()
+        {
+            PLATEAUEditorEventListener.disableProjectChangeEvent = false;
+            // Contextの破棄
+            if (Context != null)
+            {
+                // 作成途中のAddressableグループを削除
+                if (!string.IsNullOrEmpty(Context.AddressableGroupName))
+                {
+                    AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
+                }
+
+                // 一時フォルダーを削除
+                CleanupTempFolder();
+            }
+        }
+
+        // IPostTileImportProcessor による処理
+        #region IPostTileImportProcessor
+
+        /// <summary>
+        /// インポートしつつ動的タイルにするモードにおいて、GML1つがインポートされた後に呼ばれます。
+        /// 動的タイルにします。
+        /// <see cref="IPostTileImportProcessor"/> のコールバック実装です。
+        /// </summary>
+        public void OnTileImported(TileImportResult importResult)
+        {
+            if (Context == null || !Context.IsValid())
+            {
+                Debug.LogError("DynamicTileProcessingContextが無効です。SetupPreProcessingが呼ばれているか確認してください。");
+                return;
+            }
+
+            var placedObject = importResult.RootObject;
+            var zoomLevel = importResult.ZoomLevel;
+            int totalGmlCount = importResult.TotalGmlCount;
+            if (placedObject == null) return;
+            Context.GmlCount = totalGmlCount;
+
+            if (zoomLevel == 11)
+            {
+                var childObjects = placedObject.transform.Cast<Transform>()
+                                           .Select(t => t.gameObject)
+                                           .ToArray();
+                // 複数GameObject処理
+                ProcessGameObjects(
+                    childObjects,
+                    zoomLevel,
+                    Context,
+                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+
+                // ProcessGameObjectsで、childObjectsはProcessGameObjects内で削除されるがParentが残るため、ここで削除
+                GameObject.DestroyImmediate(placedObject);
+            }
+            else
+            {
+                // 処理
+                ProcessGameObject(
+                    placedObject,
+                    zoomLevel,
+                    Context,
+                    errorMessage => Debug.LogError($"DynamicTileExporter ProcessGameObject error: {errorMessage}"));
+            }
+        }
+
+        /// <summary>
+        /// GameObject複数を処理し、プレハブ化・Addressable登録を行う
+        /// </summary>
+        /// <param name="targets">処理対象のゲームオブジェクト</param>
+        /// <param name="zoomLevel">ズームレベル</param>
+        /// <param name="context">コンテキスト</param>
+        /// <param name="onError">エラー時のコールバック</param>
+        /// <returns>処理が成功した場合はtrue</returns>
+        private bool ProcessGameObjects(
+            IEnumerable<GameObject> targets,
+            int zoomLevel,
+            DynamicTileProcessingContext context,
+            Action<string> onError = null)
+        {
+            bool allSucceeded = true;
+            foreach (var target in targets)
+            {
+                if (target == null) continue;
+                var success = ProcessGameObject(
+                    target,
+                    zoomLevel,
+                    context,
+                    onError);
+                allSucceeded &= success;
+            }
+            return allSucceeded;
+        }
+
+        /// <summary>
+        /// GameObject１つを処理し、プレハブ化・Addressable登録を行う
+        /// </summary>
+        /// <param name="target">処理対象のゲームオブジェクト</param>
+        /// <param name="zoomLevel">ズームレベル</param>
+        /// <param name="context">コンテキスト</param>
+        /// <param name="onError">エラー時のコールバック</param>
+        /// <returns>処理が成功した場合はtrue</returns>
+        private bool ProcessGameObject(
+            GameObject target,
+            int zoomLevel,
+            DynamicTileProcessingContext context,
+            Action<string> onError = null)
+        {
+            if (target == null)
+            {
+                Debug.LogWarning($"GameObjectがnullです。");
+                return false;
+            }
+
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            var outputDirFullPath = Path.IsPathRooted(outputPath)
+                ? outputPath
+                : AssetPathUtil.GetFullPath(outputPath);
+            // ディレクトリの存在確認（フルパスで）
+            if (!Directory.Exists(outputDirFullPath))
+            {
+                Directory.CreateDirectory(outputDirFullPath);
+            }
+
+            // 進捗更新を通知
+            // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
+            int loadedGmlCount = context.IncrementAndGetLoadedGmlCount();
+            float progress = 10f + ((float)loadedGmlCount / context.GmlCount) * 70f;
+            progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
+                $"動的タイルを生成中... {target.name}");
+
+            context.AssetConfig.SrcGameObj = target;
+
+            var baseFolderAssetPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
+            var saveFolderAssetPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderAssetPath);
+            var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
+
+            var convertedObject = PrepareAndConvert(context.AssetConfig, saveFolderFullPath, onError);
+            if (convertedObject == null)
+            {
+                Debug.LogWarning($"{target.name} の変換に失敗しました。");
+                return false;
+            }
+
+            string prefabPath = saveFolderAssetPath + ".prefab";
+            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
+                return false;
+            }
+
+            var denominator = GetDenominatorFromZoomLevel(zoomLevel);
+            if (denominator == 0)
+            {
+                Debug.LogWarning($"未対応のズームレベルです: {zoomLevel}");
+                GameObject.DestroyImmediate(convertedObject);
+                return false;
+            }
+
+            var prefabData = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, context.AssetConfig.AssetPath, denominator, zoomLevel, true);
+            if (prefabData == null)
+            {
+                Debug.LogWarning($"{convertedObject.name} の低解像度プレハブ生成に失敗しました。");
+                GameObject.DestroyImmediate(convertedObject);
+                return false;
+            }
+            RegisterAsset(prefabAsset, prefabPath, prefabData, context.AddressableGroupName, context.MetaStore);
+
+            // シーン上のオブジェクトを削除
+            GameObject.DestroyImmediate(convertedObject);
+
+            return true;
+        }
+
+        /// <summary>
+        /// アセット登録
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="groupName"></param>
+        /// <param name="cityObject"></param>
+        /// <param name="metaStore"></param>
+        private void RegisterAsset(
+            GameObject prefab,
+            string savePath,
+            MultiResolutionPrefabCreator.Result result,
+            string groupName,
+            PLATEAUDynamicTileMetaStore metaStore)
+        {
+            string prefabPath;
+            if (string.IsNullOrEmpty(savePath))
+            {
+                // フォールバック: Prefab から AssetPath を取得
+                prefabPath = AssetDatabase.GetAssetPath(prefab);
+            }
+            else
+            {
+                prefabPath = Path.IsPathRooted(savePath)
+                ? AssetPathUtil.GetAssetPath(savePath)      // フルパス → Assetパス
+                : AssetPathUtil.NormalizeAssetPath(savePath); // 既にAssetパス
+            }
+            var bounds = result.Bounds;
+            var zoomLevel = result.ZoomLevel;
+
+            // プレハブをAddressableに登録
+            var address = prefab != null ? prefab.name : Path.GetFileNameWithoutExtension(prefabPath);
+
+            AddressablesUtility.RegisterAssetAsAddressable(
+                prefabPath,
+                address,
+                groupName,
+                new List<string> { AddressableLabel });
+
+            Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
+
+            // メタ情報を登録
+            metaStore.AddMetaInfo(address, bounds, 0, zoomLevel);
+
+        }
+
+        /// <summary>
+        /// ズームレベルから解像度の分母を取得します。
+        /// [9: 1/4, 10: 1/2, 11: 1/1]
+        /// </summary>
+        /// <param name="zoomLevel"></param>
+        /// <returns></returns>
+        public static int GetDenominatorFromZoomLevel(int zoomLevel)
+        {
+            return zoomLevel switch
+            {
+                9 => 4,
+                10 => 2,
+                11 => 1,
+                _ => 0 // 未対応
+            };
+        }
+
+        #endregion 
+
+        //　IPostGmlImportProcessorによる処理(レガシー)
+        #region IPostGmlImportProcessor
+
+        /// <summary>
         /// インポートしつつ動的タイルにするモードにおいて、GML1つがインポートされた後に呼ばれます。
         /// 動的タイルにします。
         /// <see cref="IPostGmlImportProcessor"/>を実装するものです。
@@ -453,23 +551,175 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 進行中のAddressable化をキャンセルします。
+        /// 新しい都市オブジェクト処理メソッド（コールバック付き）
         /// </summary>
-        public void Cancel()
+        private void ProcessCityObjects(
+            List<GameObject> placedObjects,
+            DynamicTileProcessingContext context,
+            string meshCode)
         {
-            PLATEAUEditorEventListener.disableProjectChangeEvent = false;
-            // Contextの破棄
-            if (Context != null)
+            if (placedObjects == null || !placedObjects.Any() || context == null || !context.IsValid()) return;
+
+            // 都市オブジェクトを取得
+            var cityObjectGroups = placedObjects
+                .Select(obj => obj.GetComponent<PLATEAUCityObjectGroup>())
+                .Where(group => group != null)
+                .ToList();
+
+            if (cityObjectGroups.Count == 0) return;
+
+            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            var outputDirFullPath = Path.IsPathRooted(outputPath)
+                            ? outputPath
+                            : AssetPathUtil.GetFullPath(outputPath);
+
+            // ディレクトリの存在確認
+            if (!Directory.Exists(outputDirFullPath))
             {
-                // 作成途中のAddressableグループを削除
-                if (!string.IsNullOrEmpty(Context.AddressableGroupName))
-                {
-                    AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
-                }
-                
-                // 一時フォルダーを削除
-                CleanupTempFolder();
+                Directory.CreateDirectory(outputDirFullPath);
+            }
+
+            // 都市オブジェクトを個別に処理
+            for (int i = 0; i < cityObjectGroups.Count; i++)
+            {
+                var cityObject = cityObjectGroups[i];
+                if (cityObject == null) continue;
+
+                // オブジェクト名にメッシュコードを追加
+                cityObject.name = meshCode + "_" + cityObject.name;
+
+                // 進捗更新を通知
+                // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
+                int loadedGmlCount = Context.IncrementAndGetLoadedGmlCount();
+                float progress = 10f + ((float)loadedGmlCount / Context.GmlCount) * 70f;
+                progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
+                    $"動的タイルを生成中... {cityObject.name}");
+
+                // 個別のオブジェクトを処理
+                ProcessCityObject(
+                    cityObject,
+                    context.AssetConfig,
+                    context.AddressableGroupName,
+                    context.MetaStore,
+                    errorMessage => Debug.LogError($"DynamicTileExporter error: {errorMessage}")
+                );
             }
         }
+
+        /// <summary>
+        /// 都市オブジェクト１つを処理し、プレハブ化・Addressable登録を行う
+        /// </summary>
+        /// <param name="cityObject">処理対象の都市オブジェクト</param>
+        /// <param name="assetConfig">変換設定</param>
+        /// <param name="groupName">Addressableグループ名</param>
+        /// <param name="metaStore">メタデータストア</param>
+        /// <param name="onError">エラー時のコールバック</param>
+        /// <returns>処理が成功した場合はtrue</returns>
+        public static bool ProcessCityObject(
+            PLATEAUCityObjectGroup cityObject,
+            ConvertToAssetConfig assetConfig,
+            string groupName,
+            PLATEAUDynamicTileMetaStore metaStore,
+            Action<string> onError = null)
+        {
+            if (cityObject == null || cityObject.gameObject == null)
+            {
+                Debug.LogWarning($"GameObjectがnullです。");
+                return false;
+            }
+
+            assetConfig.SrcGameObj = cityObject.gameObject;
+
+            var baseFolderAssetPath = Path.Combine(assetConfig.AssetPath, $"{cityObject.gameObject.name}_11");
+            var saveFolderAssetPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderAssetPath);
+
+            var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
+            var convertedObject = PrepareAndConvert(assetConfig, saveFolderFullPath, onError);
+            if (convertedObject == null)
+            {
+                Debug.LogWarning($"{cityObject.gameObject.name} の変換に失敗しました。");
+                return false;
+            }
+
+            string prefabPath = saveFolderAssetPath + ".prefab";
+            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObject, prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"{convertedObject.name} プレハブの保存に失敗しました。");
+                return false;
+            }
+
+            //低解像度のプレハブを生成 (Tile生成処理追加後に仕様が変わるのでとりあえずベタ実装）
+            var prefab1Data = new MultiResolutionPrefabCreator.Result { SavePath = prefabPath, Prefab = prefabAsset, Bounds = convertedObject.GetComponentInChildren<Renderer>() == null ? default : convertedObject.GetComponentInChildren<Renderer>().bounds, ZoomLevel = 11 }; // ↑で生成済みなのでResultのみ
+            var prefab2Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 2, 10);
+            var prefab4Data = MultiResolutionPrefabCreator.CreateFromGameObject(convertedObject, assetConfig.AssetPath, 4, 9);
+
+            var prefabs = new List<MultiResolutionPrefabCreator.Result> { prefab1Data, prefab2Data, prefab4Data };
+            prefabs = prefabs.Where(p => p != null && p.Prefab != null).ToList();
+
+            RegisterAssets(prefabs, groupName, cityObject, metaStore);
+
+            // シーン上のオブジェクトを削除
+            GameObject.DestroyImmediate(convertedObject);
+
+            return true;
+        }
+
+        /// <summary>
+        /// アセット登録
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="groupName"></param>
+        /// <param name="cityObject"></param>
+        /// <param name="metaStore"></param>
+        private static void RegisterAssets(
+            IList<MultiResolutionPrefabCreator.Result> results,
+            string groupName,
+            PLATEAUCityObjectGroup cityObject,
+            PLATEAUDynamicTileMetaStore metaStore)
+        {
+            foreach (var res in results)
+            {
+                if (res == null || res.Prefab == null)
+                {
+                    Debug.Log($"Skipped null prefab.");
+                    continue;
+                }
+
+                var prefabAsset = res.Prefab;
+                string prefabPath;
+                if (string.IsNullOrEmpty(res.SavePath))
+                {
+                    prefabPath = AssetDatabase.GetAssetPath(prefabAsset);
+                }
+                else
+                {
+                    prefabPath = Path.IsPathRooted(res.SavePath)
+                    ? AssetPathUtil.GetAssetPath(res.SavePath)
+                    : AssetPathUtil.NormalizeAssetPath(res.SavePath);
+                }
+
+                var bounds = res.Bounds;
+                var zoomLevel = res.ZoomLevel;
+                var lod = cityObject.Lod;
+
+                // プレハブをAddressableに登録
+                // TODO : タイルごとにAddress名を設定する
+                var address = prefabAsset.name;
+                AddressablesUtility.RegisterAssetAsAddressable(
+                    prefabPath,
+                    address,
+                    groupName,
+                    new List<string> { AddressableLabel });
+
+                Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
+
+                // メタ情報を登録
+                metaStore.AddMetaInfo(address, bounds, lod, zoomLevel);
+            }
+        }
+
+        #endregion 
+
     }
 }

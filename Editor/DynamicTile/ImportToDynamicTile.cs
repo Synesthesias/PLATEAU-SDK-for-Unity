@@ -1,4 +1,3 @@
-using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
@@ -65,17 +64,15 @@ namespace PLATEAU.Editor.DynamicTile
                 return;
             }
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
-            
+
             // GMLを1つインポート完了したときの処理を登録します。
             var postGmlImport = new List<IPostGmlImportProcessor>
             {
-                new CityDuplicateProcessor(), // 重複した低LODを非表示にします
                 dynamicTileExporter // 動的タイル化します
             };
-            
-            // インポートを実行
-            var task = CityImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
 
+            // インポートを実行
+            var task = TileImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             await task;
             
             // 事後処理
@@ -91,7 +88,9 @@ namespace PLATEAU.Editor.DynamicTile
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
+                //Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
+                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.StackTrace}");
+
                 return;
             }
             

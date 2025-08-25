@@ -28,6 +28,11 @@ namespace PLATEAU.DynamicTile
         private string savePath;
 
         /// <summary>
+        /// 既存のファイルを上書きするかどうか
+        /// </summary>
+        private bool overwriteExisting;
+
+        /// <summary>
         /// Material, Textureの保存用フォルダ生成
         /// 存在する場合は連番を付与して生成
         /// </summary>
@@ -36,6 +41,10 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public string CreateUniqueResourcePath(string srcName, int zoomLevel)
         {
+            //上書きする場合はフォルダ生成しない
+            if (overwriteExisting) 
+                return string.Empty;
+
             // 保存先のディレクトリを作成
             string directoryPath = AssetPathUtil.GetFullPath(Path.Combine(savePath, srcName) + $"_{zoomLevel}");
             return AssetPathUtil.GetAssetPath(AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(AssetPathUtil.GetFullPath(directoryPath)));
@@ -57,9 +66,19 @@ namespace PLATEAU.DynamicTile
         /// <param name="denominator">テクスチャ解像度分母 (1/2 : 2 , 1/4 : 4 )</param>
         /// <param name="zoomLevel"> 9, 10 , 11 </param>
         /// <returns></returns>
-        public static Result CreateFromGameObject(GameObject target, string savePath, int denominator, int zoomLevel)
+        public static Result CreateFromGameObject(GameObject target, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
+            return creator.CreateFromGameObject(target, denominator, zoomLevel);
+        }
+
+        /// <summary>
+        /// 既存のGameObjectのTextureを異なる解像度に変更して上書き
+        /// 解像度、ZoomLevelを指定して生成
+        /// </summary>
+        public static Result OverwriteGameObject(GameObject target, int denominator, int zoomLevel)
+        {
+            var creator = new MultiResolutionPrefabCreator();
             return creator.CreateFromGameObject(target, denominator, zoomLevel);
         }
 
@@ -68,28 +87,50 @@ namespace PLATEAU.DynamicTile
         /// 解像度、ZoomLevelを指定して生成
         /// 名前はGameObject名を利用
         /// </summary>
-        public static Result CreateFromPrefab(GameObject target, string savePath, int denominator, int zoomLevel)
+        public static Result CreateFromPrefab(GameObject target, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromPrefab(target, denominator, zoomLevel);
         }
 
         /// <summary>
         /// 異なる解像度のTextureを持つPrefabを生成（ソース：Prefab）複数ターゲット対応版
         /// </summary>
-        public static List<Result> CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel)
+        public static List<Result> CreateFromPrefabs(List<GameObject> prefabs, string savePath, int denominator, int zoomLevel, bool overwrite = false)
         {
-            var creator = new MultiResolutionPrefabCreator(savePath);
+            var creator = new MultiResolutionPrefabCreator(savePath, overwrite);
             return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
+        }
+
+        /// <summary>
+        /// 既存のPrefabのTextureを異なる解像度に変更して上書き
+        /// 解像度、ZoomLevelを指定して生成
+        /// </summary>
+        public static List<Result> OverwritePrefabs(List<GameObject> prefabs, int denominator, int zoomLevel)
+        {
+            var creator = new MultiResolutionPrefabCreator();
+            return creator.CreateFromPrefabs(prefabs, denominator, zoomLevel);
+        }
+
+        /// <summary>
+        /// constructor (上書きのみ）
+        /// </summary>
+        public MultiResolutionPrefabCreator()
+        {
+            savePath = string.Empty;
+            overwriteExisting = true;
+            createdResults = new();
         }
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="savePath_">保存先パス</param>
-        public MultiResolutionPrefabCreator(string savePath_)
+        /// <param name="overwrite">上書きするかどうか</param>
+        public MultiResolutionPrefabCreator(string savePath_, bool overwrite)
         {
             savePath = savePath_;
+            overwriteExisting = overwrite;
             createdResults = new();
         }
 
@@ -118,11 +159,11 @@ namespace PLATEAU.DynamicTile
 
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
-
             var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
-            Debug.Log($"Prefabs Created for : {content.name}");
+            if (result != null)
+                Debug.Log($"Prefab Created : {content.name}　zoomLevel{zoomLevel}");
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
@@ -166,9 +207,7 @@ namespace PLATEAU.DynamicTile
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             if (result != null)
-            {
-                Debug.Log($"Prefab Created for : {target.name}"); 
-            }
+                Debug.Log($"Prefab Created : {target.name}　zoomLevel{zoomLevel}"); 
             
             //破棄
             Object.DestroyImmediate(clone);
@@ -184,54 +223,74 @@ namespace PLATEAU.DynamicTile
         /// <param name="saveDirectory">保存パス</param>
         /// <param name="denominator">分母</param>
         /// <returns>各解像度ごとのsharedMaterialsリスト</returns>
-        private Material[] CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
+        private List<Material[]> CreateMaterialList(GameObject source, string saveDirectory, int denominator, int zoomLevel)
         {
-            Material[] materials = Array.Empty<Material>(); // 空の配列で初期化
-
-            var renderer = source.GetComponentInChildren<Renderer>();
-            if (renderer == null)
+            List<Material[]> materialsInRenderers = new List<Material[]>();
+            var renderers = source.GetComponentsInChildren<Renderer>();
+            if (renderers == null || renderers.Length == 0)
             {
-                return materials; // なければ空配列
-            }
-
-            if (renderer.sharedMaterials.Length > 0)
-            {
-                //元のMaterial複製
-                materials = new Material[renderer.sharedMaterials.Length];
-                Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
-
-                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
-                {
-                    var material = renderer.sharedMaterials[i];
-                    if (material != null && material.HasMainTextureAttribute())
-                    {
-                        Texture2D albedoTexture = material.mainTexture as Texture2D;
-                        if (albedoTexture != null)
-                        {
-                            // Texture生成
-                            var textureResizer = new PrefabTextureResizer(saveDirectory);
-                            var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
-
-                            // Material差替え 保存　
-                            var newMaterial = new Material(material);
-                            newMaterial.mainTexture = newTexture;
-
-                            var materialName = $"{newMaterial.name}_{zoomLevel}";
-                            SaveMaterialAsset(newMaterial, saveDirectory, materialName);
-
-                            materials[i] = newMaterial; // 変更後のマテリアルをセット    
-                        }
-                        else
-                            Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
-                    }
-                    else if (material == null)
-                        Debug.LogWarning($"Material at index {i} is null in {source.name}");
-                }
+                Debug.LogError($"No Renderer found in {source.name}");
+                return materialsInRenderers;
             }
             else
-                Debug.LogWarning($"No shared materials found in renderer for {source.name}");
+            {
+                foreach (var renderer in renderers)
+                {
+                    if (renderer != null)
+                    {
+                        if (renderer.sharedMaterials.Length > 0)
+                        {
+                            //元のMaterial複製
+                            Material[] materials = new Material[renderer.sharedMaterials.Length];
+                            Array.Copy(renderer.sharedMaterials, materials, renderer.sharedMaterials.Length);
 
-            return materials;
+                            for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+                            {
+                                var material = renderer.sharedMaterials[i];
+                                if (material != null && material.HasMainTextureAttribute() && material.mainTexture != null && !FallbackMaterial.ByMainTextureName(material.mainTexture.name))
+                                {
+                                    Texture2D albedoTexture = material.mainTexture as Texture2D;
+                                    if (albedoTexture != null)
+                                    {
+                                        // 上書きかつ等倍の場合はスキップ
+                                        if (overwriteExisting && denominator == 1)
+                                            continue;
+
+                                        // Texture生成
+                                        var textureResizer = new PrefabTextureResizer(saveDirectory, overwriteExisting);
+                                        var newTexture = textureResizer.CreateSingleResizedTexture(albedoTexture, denominator, zoomLevel);
+
+                                        // 上書きする場合はTexture更新のみ
+                                        if(overwriteExisting)
+                                            continue;
+
+                                        // Material差替え 保存　
+                                        var newMaterial = new Material(material);
+                                        newMaterial.mainTexture = newTexture;
+
+                                        var materialName = $"{newMaterial.name}_{zoomLevel}";
+                                        SaveMaterialAsset(newMaterial, saveDirectory, materialName);
+
+                                        materials[i] = newMaterial; // 変更後のマテリアルをセット    
+                                    }
+                                    else
+                                        Debug.LogWarning($"MainTexture is null for material {material.name} in {source.name}");
+                                }
+                                else if (material == null)
+                                    Debug.LogWarning($"Material at index {i} is null in {source.name}");
+                            }
+                            materialsInRenderers.Add(materials); // 各Rendererのマテリアルリストを追加
+                        }
+                        else
+                        {
+                            // Rendererにマテリアルがない場合は空の配列を追加
+                            materialsInRenderers.Add(Array.Empty<Material>());
+                            Debug.LogWarning($"No shared materials found in renderer for {source.name}");
+                        }     
+                    }
+                }
+            }
+            return materialsInRenderers;
         }
 
         /// <summary>
@@ -242,30 +301,60 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private Result SavePrefabFromGameObject(GameObject target, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromGameObject(GameObject target, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
 
-            var renderer = target.GetComponentInChildren<Renderer>();
-            if (renderer == null)
+            List<Bounds> boundsList = new List<Bounds>();
+            var renderers = target.GetComponentsInChildren<Renderer>();
+            if (renderers == null || renderers.Length == 0)
             {
                 Debug.Log($"Skipping {target.name} because there is no Renderer component.");
                 return null;
             }
-
-            // マテリアルアサイン
-            if (materialList != null)
-                renderer.sharedMaterials = materialList;
+            else
+            {
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    var renderer = renderers[i];
+                    if (renderer != null)
+                    {
+                        // マテリアルアサイン
+                        if (materialList != null && i < materialList.Count && materialList[i] != null)
+                            renderer.sharedMaterials = materialList[i];
+                        boundsList.Add(renderer.bounds);
+                    }
+                }
+            }
 
             // 保存
-            var newName = $"{prefabName}.prefab";
-            var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
-            var uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
-            var created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
-            var bounds = renderer.bounds;
+            var bounds = new Bounds();
+            foreach (var b in boundsList)
+            {
+                if (bounds.size == Vector3.zero)
+                    bounds = b;
+                else
+                    bounds.Encapsulate(b);
+            }
+
+            string uniquePath = string.Empty;
+            GameObject created;
+            if (overwriteExisting)
+            {
+                // 上書き時は新規保存しない
+                created = target;
+            }
+            else
+            {
+                var newName = $"{prefabName}.prefab";
+                var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
+                uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
+                created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
+            }
 
             var result = new Result() { Bounds = bounds, Prefab = created, SavePath = uniquePath, ZoomLevel = zoomLevel };
+
             createdResults.Add(result);
             return result;
         }
@@ -278,7 +367,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private Result SavePrefabFromPrefab(GameObject prefab, Material[] materialList, int zoomLevel, string prefabName, string saveDirectory)
+        private Result SavePrefabFromPrefab(GameObject prefab, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory)
         {
             var path = AssetDatabase.GetAssetPath(prefab);
             var content = PrefabUtility.LoadPrefabContents(path);
