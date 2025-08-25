@@ -81,7 +81,7 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// new Vector2(self.x, self.y);
+        /// new Vector2(self.y, self.x);
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -100,7 +100,7 @@ namespace PLATEAU.Util
             return new Vector2(self.x, self.z);
         }
         /// <summary>
-        /// new Vector2(self.x, self.z);
+        /// new Vector2(self.z, self.x);
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -110,7 +110,7 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// new Vector2(self.x, self.z);
+        /// new Vector2(self.y, self.z);
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -120,7 +120,7 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// new Vector2(self.x, self.y);
+        /// new Vector2(self.z, self.y);
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
@@ -214,7 +214,6 @@ namespace PLATEAU.Util
         /// new Vector3(1f / self.x, 1f / self.y, 1f / self.z);
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="div"></param>
         /// <returns></returns>
         public static Vector3 RevScaled(this Vector3 self)
         {

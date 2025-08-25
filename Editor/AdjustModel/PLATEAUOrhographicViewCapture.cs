@@ -1,4 +1,4 @@
-using PlasticGui.WorkspaceWindow.Locks;
+ï»¿using PlasticGui.WorkspaceWindow.Locks;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.PolygonMesh;
@@ -16,27 +16,27 @@ using UnityEngine;
 public class PLATEAUOrthographicViewCapture : EditorWindow
 {
     /// <summary>
-    /// •ÏŠ·‘ÎÛ‚ÌƒIƒuƒWƒFƒNƒg
+    /// å¤‰æ›å¯¾è±¡ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
     /// </summary>
     private static List<PLATEAUInstancedCityModel> targetObjects = new();
     /// <summary>
-    /// ƒeƒNƒXƒ`ƒƒ‚Ì‰ğ‘œ“x. 1m“–‚½‚è‚ÌƒsƒNƒZƒ‹”
+    /// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è§£åƒåº¦. 1må½“ãŸã‚Šã®ãƒ”ã‚¯ã‚»ãƒ«æ•°
     /// </summary>
     private static float pixelsPerMeter = 1f;
     /// <summary>
-    /// •Û‘¶æ
+    /// ä¿å­˜å…ˆ
     /// </summary>
     private static string savePath = "Assets/PLATEAU/Lod1";
     /// <summary>
-    /// ƒJƒƒ‰‚Ì”wŒiİ’è
+    /// ã‚«ãƒ¡ãƒ©ã®èƒŒæ™¯è¨­å®š
     /// </summary>
     private static CameraClearFlags cameraClearFlag = CameraClearFlags.Nothing;
     /// <summary>
-    /// ƒJƒƒ‰‚Ì”wŒiF
+    /// ã‚«ãƒ¡ãƒ©ã®èƒŒæ™¯è‰²
     /// </summary>
     private static Color cameraClearColor = Color.black;
     /// <summary>
-    /// LOD1‚Ìƒ}ƒeƒŠƒAƒ‹‚ğ–ß‚·‚½‚ß‚Ì•¨
+    /// LOD1ã®ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’æˆ»ã™ãŸã‚ã®ç‰©
     /// </summary>
     private static Material defaultMaterial;
 
@@ -53,22 +53,22 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     class CaptureRequest
     {
         /// <summary>
-        /// ˆê‚Â‚Ì–Ê‚ÉŠÖ‚·‚éƒŠƒNƒGƒXƒgî•ñ
+        /// ä¸€ã¤ã®é¢ã«é–¢ã™ã‚‹ãƒªã‚¯ã‚¨ã‚¹ãƒˆæƒ…å ±
         /// </summary>
         public record FaceRequest
         {
             /// <summary>
-            /// –Ê‚Ì–@ü•ûŒü
+            /// é¢ã®æ³•ç·šæ–¹å‘
             /// </summary>
             public Vector3 Direction { get; }
 
             /// <summary>
-            /// UpƒxƒNƒgƒ‹
+            /// Upãƒ™ã‚¯ãƒˆãƒ«
             /// </summary>
             public Vector3 Up { get; }
 
             /// <summary>
-            /// ‰æ‘œƒTƒCƒY
+            /// ç”»åƒã‚µã‚¤ã‚º
             /// </summary>
             public Vector2Int ImageSize { get; }
 
@@ -81,37 +81,37 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         }
 
         /// <summary>
-        /// ƒƒbƒVƒ…ƒR[ƒh
+        /// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰
         /// </summary>
         public string MeshCode { get; }
 
         /// <summary>
-        /// ƒoƒEƒ“ƒfƒBƒ“ƒOƒ{ƒbƒNƒX
+        /// ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãƒœãƒƒã‚¯ã‚¹
         /// </summary>
         public Bounds Bounds { get; }
 
         /// <summary>
-        /// ƒVƒF[ƒ_ƒpƒ‰ƒ[ƒ^) X•ûŒü‚Ì³‹K‰»ŒW”
+        /// ã‚·ã‚§ãƒ¼ãƒ€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿) Xæ–¹å‘ã®æ­£è¦åŒ–ä¿‚æ•°
         /// </summary>
         public Vector3 XCoef { get; }
 
         /// <summary>
-        /// ƒVƒF[ƒ_ƒpƒ‰ƒ[ƒ^) Y•ûŒü‚Ì³‹K‰»ŒW”
+        /// ã‚·ã‚§ãƒ¼ãƒ€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿) Yæ–¹å‘ã®æ­£è¦åŒ–ä¿‚æ•°
         /// </summary>
         public Vector3 YCoef { get; }
 
         /// <summary>
-        /// ƒVƒF[ƒ_ƒpƒ‰ƒ[ƒ^) X•ûŒü‚Ì³‹K‰»ŒW”
+        /// ã‚·ã‚§ãƒ¼ãƒ€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿) Xæ–¹å‘ã®æ­£è¦åŒ–ä¿‚æ•°
         /// </summary>
         public Vector3 ZCoef { get; }
 
         /// <summary>
-        /// ‰ğ‘œ“x—p
+        /// è§£åƒåº¦ç”¨
         /// </summary>
         public float PixelsPerMeter { get; }
 
         /// <summary>
-        /// Še–Ê‚²‚Æ‚Ìî•ñ
+        /// å„é¢ã”ã¨ã®æƒ…å ±
         /// </summary>
         public IReadOnlyDictionary<Face, FaceRequest> Faces { get; }
 
@@ -121,7 +121,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             Bounds = bounds;
             PixelsPerMeter = pixelsPerMeter;
 
-            var size = Bounds.size;
+            var size = Vector3.Max(Bounds.size, Vector3.one * 1e-6f);
             XCoef = size.RevScaled();
             YCoef = size.RevScaled();
             ZCoef = size.RevScaled();
@@ -138,7 +138,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
 
     /// <summary>
-    /// ƒƒbƒVƒ…ƒR[ƒh‚²‚Æ‚Ìƒ[ƒNƒtƒHƒ‹ƒ_
+    /// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰ã”ã¨ã®ãƒ¯ãƒ¼ã‚¯ãƒ•ã‚©ãƒ«ãƒ€
     /// </summary>
     /// <param name="meshCode"></param>
     /// <returns></returns>
@@ -148,7 +148,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// ƒƒbƒVƒ…ƒR[ƒh/–Ê‚É‚æ‚éƒeƒNƒXƒ`ƒƒƒpƒX
+    /// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰/é¢ã«ã‚ˆã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ã‚¹
     /// </summary>
     /// <param name="meshCode"></param>
     /// <param name="face"></param>
@@ -159,7 +159,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// ƒƒbƒVƒ…ƒR[ƒh/–Ê‚É‚æ‚éTriplanarƒ}ƒeƒŠƒAƒ‹ƒpƒX
+    /// ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰/é¢ã«ã‚ˆã‚‹Triplanarãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‘ã‚¹
     /// </summary>
     /// <param name="meshCode"></param>
     /// <param name="face"></param>
@@ -172,11 +172,11 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     [MenuItem("Tools/Orthographic View Capture")]
     public static void ShowWindow()
     {
-        GetWindow<PLATEAUOrthographicViewCapture>("LOD1 5–Ê}ƒLƒƒƒvƒ`ƒƒ");
+        GetWindow<PLATEAUOrthographicViewCapture>("LOD1 5é¢å›³ã‚­ãƒ£ãƒ—ãƒãƒ£");
     }
 
     /// <summary>
-    /// PLATEAUInstancedCityModel‚Ì’¼‰º‚Ìq‚Ì–¼‘O‚©‚ç, ƒLƒƒƒvƒ`ƒƒ‘ÎÛ‚ÌƒIƒuƒWƒFƒNƒg‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
+    /// PLATEAUInstancedCityModelã®ç›´ä¸‹ã®å­ã®åå‰ã‹ã‚‰, ã‚­ãƒ£ãƒ—ãƒãƒ£å¯¾è±¡ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã©ã†ã‹ã‚’å–å¾—ã™ã‚‹
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="meshCode"></param>
@@ -188,7 +188,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         var names = obj.name.Split("_");
         if (names.Length < 2)
             return false;
-        // meshCode_ƒ^ƒCƒv_XXXX_YY.gml‚Æ‚¢‚¤Œ`®
+        // meshCode_ã‚¿ã‚¤ãƒ—_XXXX_YY.gmlã¨ã„ã†å½¢å¼
         meshCode = names[0];
         var type = names[1];
         return type == "bldg";
@@ -197,12 +197,12 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     class BuildingInfo
     {
         /// <summary>
-        /// Œš•¨–¼
+        /// å»ºç‰©å
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// LODî•ñ
+        /// LODæƒ…å ±
         /// </summary>
         public Dictionary<float, GameObject> Lods { get; } = new Dictionary<float, GameObject>();
 
@@ -214,7 +214,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
     /// <summary>
     /// key   : MeshCode
-    /// value : ‚»‚ÌƒƒbƒVƒ…ƒR[ƒh‚ÌŒš•¨î•ñ
+    /// value : ãã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰ã®å»ºç‰©æƒ…å ±
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
@@ -231,10 +231,9 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 continue;
             }
 
-            ret[meshCode] = new List<BuildingInfo>();
-
-            // key : gameObject–¼
-            // value : { key : LOD”Ô†, value : ‚»‚ÌGameObject}
+            var list = ret.GetValueOrCreate(meshCode);
+            // key : gameObjectå
+            // value : { key : LODç•ªå·, value : ãã®GameObject}
             Dictionary<string, Dictionary<float, GameObject>> objectLodTable = new();
             foreach (var child in tr.GetChildren())
             {
@@ -262,14 +261,14 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 {
                     b.Lods[x.Key] = x.Value;
                 }
-                ret[meshCode].Add(b);
+                list.Add(b);
             }
         }
         return ret;
     }
 
     /// <summary>
-    /// model‚ÌLod1Œš•¨‚ÉdefaultMaterial‚ğİ’è‚·‚é
+    /// modelã®Lod1å»ºç‰©ã«defaultMaterialã‚’è¨­å®šã™ã‚‹
     /// </summary>
     /// <param name="model"></param>
     private static void SetDefaultBuildingMaterial(PLATEAUInstancedCityModel model)
@@ -282,7 +281,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// LOD1ƒIƒuƒWƒFƒNƒg/LOD2ˆÈã‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒrƒWƒuƒ‹Ø‚è‘Ö‚¦‚ğs‚¤
+    /// LOD1ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ/LOD2ä»¥ä¸Šã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ“ã‚¸ãƒ–ãƒ«åˆ‡ã‚Šæ›¿ãˆã‚’è¡Œã†
     /// </summary>
     /// <param name="isLod1Visible"></param>
     private void SwitchLod1Visible(bool isLod1Visible)
@@ -293,7 +292,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             foreach (var m in buildings.Values.SelectMany(x => x))
             {
 
-                // LOD1‚ğ•\¦‚·‚éê‡
+                // LOD1ã‚’è¡¨ç¤ºã™ã‚‹å ´åˆ
                 if (isLod1Visible)
                 {
                     var maxLod = m.Lods.Keys.Where(l => l <= 1).Max();
@@ -302,7 +301,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                         x.Value.SetActive(x.Key == maxLod);
                     }
                 }
-                // ‚»‚¤‚¶‚á‚È‚¢ê‡‚ÍÅ‘å‚ÌLOD‚ğ•\¦‚·‚é
+                // ãã†ã˜ã‚ƒãªã„å ´åˆã¯æœ€å¤§ã®LODã‚’è¡¨ç¤ºã™ã‚‹
                 else
                 {
                     var maxLod = m.Lods.Keys.Max();
@@ -316,16 +315,16 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// 5–Ê}ƒLƒƒƒvƒ`ƒƒˆ—‚©‚çƒ}ƒeƒŠƒAƒ‹‚Ì¶¬‚Ü‚Ås‚¤
+    /// 5é¢å›³ã‚­ãƒ£ãƒ—ãƒãƒ£å‡¦ç†ã‹ã‚‰ãƒãƒ†ãƒªã‚¢ãƒ«ã®ç”Ÿæˆã¾ã§è¡Œã†
     /// </summary>
     /// <param name="camera"></param>
     /// <param name="model"></param>
     private void Execute(Camera camera, PLATEAUInstancedCityModel model)
     {
-        // Œ»İ•\¦‚³‚ê‚Ä‚¢‚Ä, ”ñ•\¦‚É‚·‚éƒQ[ƒ€ƒIƒuƒWƒFƒNƒg
+        // ç¾åœ¨è¡¨ç¤ºã•ã‚Œã¦ã„ã¦, éè¡¨ç¤ºã«ã™ã‚‹ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
         var invisibleObjects = new HashSet<GameObject>();
 
-        // ƒLƒƒƒvƒ`ƒƒ‚ªI‚í‚Á‚½Œã‚É”ñ•\¦‚É–ß‚·ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg
+        // ã‚­ãƒ£ãƒ—ãƒãƒ£ãŒçµ‚ã‚ã£ãŸå¾Œã«éè¡¨ç¤ºã«æˆ»ã™ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
         var afterInvisibleObjects = new HashSet<GameObject>();
 
         var targetObjects = new Dictionary<string, GameObject>();
@@ -339,7 +338,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
             if (IsTargetBuilding(tr.gameObject, out var meshCode) == false)
             {
-                // ‘ÎÛ‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒgˆÈŠO‚Í”ñ•\¦‚É
+                // å¯¾è±¡ã®ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä»¥å¤–ã¯éè¡¨ç¤ºã«
                 invisibleObjects.Add(tr.gameObject);
                 continue;
             }
@@ -347,7 +346,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             targetObjects[meshCode] = tr.gameObject;
         }
 
-        // ˆê’U‘S•””ñ•\¦‚É‚·‚é
+        // ä¸€æ—¦å…¨éƒ¨éè¡¨ç¤ºã«ã™ã‚‹
         foreach (var obj in invisibleObjects)
             obj.SetActive(false);
 
@@ -356,20 +355,20 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
         foreach (var item in targetObjects)
         {
-            // •\¦‚É–ß‚·
+            // è¡¨ç¤ºã«æˆ»ã™
             item.Value.SetActive(true);
 
             var bound = CalculateCombinedBounds(item.Value);
 
-            // ‘SƒIƒuƒWƒFƒNƒg‚Ì“‡ƒoƒEƒ“ƒfƒBƒ“ƒOƒ{ƒbƒNƒX‚ğŒvZ
+            // å…¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çµ±åˆãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãƒœãƒƒã‚¯ã‚¹ã‚’è¨ˆç®—
             Bounds combinedBounds = CalculateCombinedBounds(item.Value);
 
             var request = new CaptureRequest(item.Key, combinedBounds, pixelsPerMeter);
 
-            // ƒeƒNƒXƒ`ƒƒ‚ÌƒLƒƒƒvƒ`ƒƒ
+            // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚­ãƒ£ãƒ—ãƒãƒ£
             CaptureAllFaces(request, camera);
 
-            // ƒ}ƒeƒŠƒAƒ‹‚Ìì¬
+            // ãƒãƒ†ãƒªã‚¢ãƒ«ã®ä½œæˆ
             CreateTriplanarMaterial(request);
         }
 
@@ -388,7 +387,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             SetLod1Material(build.Value, mat);
         }
 
-        // ƒAƒZƒbƒgƒf[ƒ^ƒx[ƒX‚ğXV
+        // ã‚¢ã‚»ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’æ›´æ–°
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -401,7 +400,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             if (lod1 == null)
                 continue;
 
-            // ‘ÎÛƒIƒuƒWƒFƒNƒg‚ÌRenderer‚Éƒ}ƒeƒŠƒAƒ‹‚ğ“K—p
+            // å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®Rendererã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’é©ç”¨
             Renderer[] renderers = lod1.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
             {
@@ -411,20 +410,20 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// ‘S‚Ä‚Ì–Ê‚ğƒLƒƒƒvƒ`ƒƒ
+    /// å…¨ã¦ã®é¢ã‚’ã‚­ãƒ£ãƒ—ãƒãƒ£
     /// </summary>
     /// <param name="request"></param>
     /// <param name="camera"></param>
     private static void CaptureAllFaces(CaptureRequest request, Camera camera)
     {
-        // •Û‘¶ƒfƒBƒŒƒNƒgƒŠ‚Ìì¬
+        // ä¿å­˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä½œæˆ
 
         if (!Directory.Exists(GetFolderPath(request.MeshCode)))
         {
             Directory.CreateDirectory(GetFolderPath(request.MeshCode));
         }
 
-        // ƒeƒNƒXƒ`ƒƒ‚Ìì¬
+        // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä½œæˆ
         foreach (var f in request.Faces)
         {
             CaptureFace(camera, request, f.Key);
@@ -432,7 +431,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// 1–Ê‚ÌƒLƒƒƒvƒ`ƒƒ
+    /// 1é¢ã®ã‚­ãƒ£ãƒ—ãƒãƒ£
     /// </summary>
     /// <param name="camera"></param>
     /// <param name="req"></param>
@@ -443,7 +442,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         , CaptureRequest req
         , Face face)
     {
-        // ƒJƒƒ‰‚ÌˆÊ’u‚ÆŒü‚«‚ğİ’è
+        // ã‚«ãƒ¡ãƒ©ã®ä½ç½®ã¨å‘ãã‚’è¨­å®š
         var bounds = req.Bounds;
         var faceReq = req.Faces[face];
 
@@ -454,53 +453,53 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         Vector3 center = bounds.center;
         float distance = Mathf.Abs(Vector3.Dot(bounds.size, direction));
 
-        // –@ü•ûŒü‚É‚¸‚ç‚·‚µ‚Ä’†S‚ğŒ©‚é‚æ‚¤‚É‚·‚é
+        // æ³•ç·šæ–¹å‘ã«ãšã‚‰ã™ã—ã¦ä¸­å¿ƒã‚’è¦‹ã‚‹ã‚ˆã†ã«ã™ã‚‹
         camera.transform.position = center + direction * (distance + 1f);
         camera.transform.LookAt(center, up);
 
-        // ’¼Œğ“Š‰e‚ÌƒTƒCƒY‚ğİ’è
+        // ç›´äº¤æŠ•å½±ã®ã‚µã‚¤ã‚ºã‚’è¨­å®š
         camera.orthographicSize = imageSize.Min() * 0.5f;
         //camera.rect = cameraRect;
-        // ƒjƒAƒNƒŠƒbƒv‚Æƒtƒ@[ƒNƒŠƒbƒv‚ğİ’è
+        // ãƒ‹ã‚¢ã‚¯ãƒªãƒƒãƒ—ã¨ãƒ•ã‚¡ãƒ¼ã‚¯ãƒªãƒƒãƒ—ã‚’è¨­å®š
         camera.nearClipPlane = 0.1f;
         camera.farClipPlane = distance * 2f;
 
-        // ƒŒƒ“ƒ_[ƒeƒNƒXƒ`ƒƒ‚ğì¬
+        // ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ
         imageSize = (imageSize.ToVector2() * pixelsPerMeter).ToVector2Int();
         RenderTexture renderTexture = new RenderTexture(imageSize.x, imageSize.y, 24);
         camera.targetTexture = renderTexture;
-        // ƒŒƒ“ƒ_ƒŠƒ“ƒOÀs
+        // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°å®Ÿè¡Œ
         camera.Render();
 
-        // ƒeƒNƒXƒ`ƒƒ‚ğ“Ç‚İæ‚è
+        // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’èª­ã¿å–ã‚Š
         RenderTexture.active = renderTexture;
         Texture2D screenshot = new Texture2D(imageSize.x, imageSize.y, TextureFormat.RGBA32, false);
         screenshot.ReadPixels(new Rect(0, 0, imageSize.x, imageSize.y), 0, 0);
         screenshot.Apply();
 
-        // ƒtƒ@ƒCƒ‹‚É•Û‘¶
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜
         byte[] data = screenshot.EncodeToPNG();
         string filePath = GetTexturePath(req.MeshCode, face);
         File.WriteAllBytes(filePath, data);
 
-        // ƒNƒŠ[ƒ“ƒAƒbƒv
+        // ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—
         RenderTexture.active = null;
         camera.targetTexture = null;
         DestroyImmediate(renderTexture);
         DestroyImmediate(screenshot);
 
-        Debug.Log($"{face}–Ê}‚ğ•Û‘¶‚µ‚Ü‚µ‚½: {filePath}");
+        Debug.Log($"{face}é¢å›³ã‚’ä¿å­˜ã—ã¾ã—ãŸ: {filePath}");
         return filePath;
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("LOD1ƒ}ƒeƒŠƒAƒ‹¶¬", EditorStyles.boldLabel);
+        GUILayout.Label("LOD1ãƒãƒ†ãƒªã‚¢ãƒ«ç”Ÿæˆ", EditorStyles.boldLabel);
 
-        // ‘ÎÛƒIƒuƒWƒFƒNƒg‚Ìİ’è
-        GUILayout.Label("ƒLƒƒƒvƒ`ƒƒ‘ÎÛƒIƒuƒWƒFƒNƒg:", EditorStyles.boldLabel);
+        // å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¨­å®š
+        GUILayout.Label("ã‚­ãƒ£ãƒ—ãƒãƒ£å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ:", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("‘I‘ğ’†‚ÌƒIƒuƒWƒFƒNƒg‚ğ’Ç‰Á"))
+        if (GUILayout.Button("é¸æŠä¸­ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ "))
         {
             foreach (GameObject obj in Selection.gameObjects)
             {
@@ -513,12 +512,12 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 }
             }
         }
-        // ƒIƒuƒWƒFƒNƒgƒŠƒXƒg‚Ì•\¦
+        // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆã®è¡¨ç¤º
         for (int i = 0; i < targetObjects.Count; i++)
         {
             EditorGUILayout.BeginHorizontal();
             targetObjects[i] = (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(targetObjects[i], typeof(PLATEAUInstancedCityModel), true);
-            if (GUILayout.Button("íœ", GUILayout.Width(50)))
+            if (GUILayout.Button("å‰Šé™¤", GUILayout.Width(50)))
             {
                 targetObjects.RemoveAt(i);
                 i--;
@@ -526,7 +525,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             EditorGUILayout.EndHorizontal();
         }
 
-        if (GUILayout.Button("ƒŠƒXƒg‚ğƒNƒŠƒA"))
+        if (GUILayout.Button("ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢"))
         {
             targetObjects.Clear();
         }
@@ -546,10 +545,10 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
 
         GUILayout.Space(10);
 
-        // ƒLƒƒƒvƒ`ƒƒİ’è
-        GUILayout.Label("ƒLƒƒƒvƒ`ƒƒİ’è:", EditorStyles.boldLabel);
+        // ã‚­ãƒ£ãƒ—ãƒãƒ£è¨­å®š
+        GUILayout.Label("ã‚­ãƒ£ãƒ—ãƒãƒ£è¨­å®š:", EditorStyles.boldLabel);
         pixelsPerMeter = EditorGUILayout.FloatField("Pixels per Meter", pixelsPerMeter);
-        savePath = EditorGUILayout.TextField("•Û‘¶ƒpƒX", savePath);
+        savePath = EditorGUILayout.TextField("ä¿å­˜ãƒ‘ã‚¹", savePath);
         cameraClearFlag = (CameraClearFlags)EditorGUILayout.EnumPopup("Camera Clear Flag", cameraClearFlag);
         cameraClearColor = EditorGUILayout.ColorField("Camera Clear Color", cameraClearColor);
         //layerIndex = EditorGUILayout.IntField("Layer Index", layerIndex);
@@ -557,8 +556,8 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         defaultMaterial = (Material)EditorGUILayout.ObjectField("DefaultMaterial", defaultMaterial, typeof(Material), true);
         GUILayout.Space(10);
 
-        // ƒLƒƒƒvƒ`ƒƒƒ{ƒ^ƒ“
-        if (GUILayout.Button("Às"))
+        // ã‚­ãƒ£ãƒ—ãƒãƒ£ãƒœã‚¿ãƒ³
+        if (GUILayout.Button("å®Ÿè¡Œ"))
         {
             Execute();
         }
@@ -568,17 +567,17 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     {
         if (targetObjects.Count == 0)
         {
-            EditorUtility.DisplayDialog("ƒGƒ‰[", "‘ÎÛƒIƒuƒWƒFƒNƒg‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ", "OK");
+            EditorUtility.DisplayDialog("ã‚¨ãƒ©ãƒ¼", "å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“", "OK");
             return;
         }
 
-        // •Û‘¶ƒfƒBƒŒƒNƒgƒŠ‚Ìì¬
+        // ä¿å­˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä½œæˆ
         if (!Directory.Exists(savePath))
         {
             Directory.CreateDirectory(savePath);
         }
 
-        // ˆê“I‚ÈƒJƒƒ‰‚ğì¬
+        // ä¸€æ™‚çš„ãªã‚«ãƒ¡ãƒ©ã‚’ä½œæˆ
         GameObject cameraObj = new GameObject("TempOrthographicCamera");
         Camera camera = cameraObj.AddComponent<Camera>();
         camera.orthographic = true;
@@ -592,19 +591,19 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             {
                 Execute(camera, obj);
             }
-            // ƒAƒZƒbƒgƒf[ƒ^ƒx[ƒX‚ğXV
+            // ã‚¢ã‚»ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’æ›´æ–°
             AssetDatabase.Refresh();
-            EditorUtility.DisplayDialog("Š®—¹", $"ƒ}ƒeƒŠƒAƒ‹‚ğ {savePath} ‚É•Û‘¶‚µ‚Ü‚µ‚½", "OK");
+            EditorUtility.DisplayDialog("å®Œäº†", $"ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’ {savePath} ã«ä¿å­˜ã—ã¾ã—ãŸ", "OK");
         }
         finally
         {
-            // ˆê“I‚ÈƒJƒƒ‰‚ğíœ
+            // ä¸€æ™‚çš„ãªã‚«ãƒ¡ãƒ©ã‚’å‰Šé™¤
             DestroyImmediate(cameraObj);
         }
     }
 
     /// <summary>
-    /// ‘ÎÛ‚ğ•ïŠ‡‚·‚éƒoƒEƒ“ƒfƒBƒ“ƒOƒ{ƒbƒNƒX‚ğæ“¾
+    /// å¯¾è±¡ã‚’åŒ…æ‹¬ã™ã‚‹ãƒã‚¦ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ãƒœãƒƒã‚¯ã‚¹ã‚’å–å¾—
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -629,17 +628,17 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     }
 
     /// <summary>
-    /// ƒ}ƒeƒŠƒAƒ‹¶¬
+    /// ãƒãƒ†ãƒªã‚¢ãƒ«ç”Ÿæˆ
     /// </summary>
     /// <param name="req"></param>
     private static void CreateTriplanarMaterial(CaptureRequest req)
     {
-        // ƒ}ƒeƒŠƒAƒ‹‚ğì¬
+        // ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’ä½œæˆ
 
         var triplanarShader = Shader.Find("Shader Graphs/PLATEAULod1TriplanarShader");
         Material triplanarMaterial = new Material(triplanarShader);
 
-        // ƒeƒNƒXƒ`ƒƒ‚ğ“Ç‚İ‚İ
+        // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’èª­ã¿è¾¼ã¿
         triplanarMaterial.SetFloat("_Tile", 1f);
         triplanarMaterial.SetVector("_Min", req.Bounds.min);
         triplanarMaterial.SetVector("_Max", req.Bounds.max);
@@ -655,7 +654,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         triplanarMaterial.SetVector("_YCoef", req.YCoef);
         triplanarMaterial.SetVector("_ZCoef", req.ZCoef);
 
-        // ƒ}ƒeƒŠƒAƒ‹‚ğ•Û‘¶
+        // ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’ä¿å­˜
         string materialPath = GetMaterialPath(req.MeshCode);
         AssetDatabase.CreateAsset(triplanarMaterial, materialPath);
     }

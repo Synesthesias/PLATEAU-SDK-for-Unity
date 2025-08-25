@@ -175,10 +175,9 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
-        /// new Vector3(1f / self.x, 1f / self.y, 1f / self.z);
+        /// new Vector4(1f / self.x, 1f / self.y, 1f / self.z, 1f / self.w);
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="div"></param>
         /// <returns></returns>
         public static Vector4 RevScaled(this Vector4 self)
         {
