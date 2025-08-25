@@ -256,7 +256,7 @@ namespace PLATEAU.Editor.Addressables
             groupSchema.UseUnityWebRequestForLocalBundles = true;
 
             // bundleを個別にパックする
-            groupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+            groupSchema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
         }
 
         /// <summary>

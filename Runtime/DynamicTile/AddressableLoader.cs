@@ -54,6 +54,18 @@ namespace PLATEAU.DynamicTile
         /// <returns></returns>
         public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath)
         {
+            // ランタイム（プレイヤー）では、Assets/StreamingAssets を実ディレクトリにマッピング
+            if (!Application.isEditor && !string.IsNullOrEmpty(catalogPath))
+            {
+                var normalizedPath = catalogPath.Replace('\\', '/');
+                const string assetsStreamingPrefix = "Assets/StreamingAssets/";
+                if (normalizedPath.StartsWith(assetsStreamingPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    var subPath = normalizedPath.Substring(assetsStreamingPrefix.Length);
+                    var mapped = Path.Combine(Application.streamingAssetsPath, subPath).Replace('\\', '/');
+                    catalogPath = mapped;
+                }
+            }
             var init = Addressables.InitializeAsync(false);
             await WaitForCompletionAsync(init);
             if (init.Status != AsyncOperationStatus.Succeeded)
@@ -128,8 +140,7 @@ namespace PLATEAU.DynamicTile
         private async Task<string> ResolveMetaStoreAddressAsync(string catalogPath)
         {
             var locationsHandle = Addressables.LoadResourceLocationsAsync(
-                DynamicTileLabelName,
-                typeof(PLATEAUDynamicTileMetaStore));
+                DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
             try
             {
                 await WaitForCompletionAsync(locationsHandle);
@@ -143,17 +154,30 @@ namespace PLATEAU.DynamicTile
                     return null;
                 }
                 var catalogDirFull = Path.GetFullPath(catalogDir).Replace('\\', '/');
+                var catalogDirName = new DirectoryInfo(catalogDirFull).Name;
 
+                bool isInAssets = PathUtil.IsSubDirectoryOfAssets(catalogPath);
+                if (isInAssets)
+                {
+                    var sanitizedDir = System.Text.RegularExpressions.Regex.Replace(catalogDirName, @"[^\w\-_]", "_");
+                    sanitizedDir = sanitizedDir.Replace("PLATEAUCityObjectGroup_", "");
+                    var expectedAddress = $"PLATEAUTileMeta_{sanitizedDir}";
+                    return expectedAddress;
+                }
+                
+                
+                
+                // ディレクトリ名でマッチ（アプリビルド後にフルパスは変わるが、親ディレクトリ名は変わらない）
                 var candidates = allLocations
                     .Where(loc =>
                         loc != null && !string.IsNullOrEmpty(loc.PrimaryKey) &&
-                        BelongsToCatalogDirectory(loc, catalogDirFull)
-                        )
+                        InternalIdContainsDirectoryName(loc, catalogDirName)
+                    )
                     .ToList();
 
-                if (candidates.Count == 0)
+                if (candidates == null || candidates.Count == 0)
                 {
-                    Debug.LogError("PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressablesのビルドとラベル設定を確認してください。");
+                    Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressables のビルド/ラベル設定/カタログ指定を確認してください。");
                     return null;
                 }
 
@@ -166,7 +190,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (Exception ex)
             {
-                Debug.LogError($"MetaStore アドレスの自動解決に失敗しました: {ex.Message}");
+                Debug.LogError($"MetaStore アドレスの自動解決に失敗しました: {ex}");
                 return null;
             }
             finally
@@ -179,14 +203,15 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// IResourceLocationが指定カタログのあるディレクトリに属しているかどうか判定します。
+        /// IResourceLocation が内部ID文字列上で指定ディレクトリ名を含むか（依存を辿りながら）を判定します。
+        /// アプリビルドでフルパスは変わるが、親ディレクトリ名は変わらないため。
         /// </summary>
-        private bool BelongsToCatalogDirectory(IResourceLocation rootLocation, string catalogDirFull)
+        private bool InternalIdContainsDirectoryName(IResourceLocation rootLocation, string dirName)
         {
+            if (string.IsNullOrEmpty(dirName)) return false;
             var queue = new Queue<IResourceLocation>();
             var visited = new HashSet<IResourceLocation>();
             queue.Enqueue(rootLocation);
-            // dependenciesまで見ないとディレクトリを判別できないので辿るループです
             while (queue.Count > 0)
             {
                 var loc = queue.Dequeue();
@@ -196,14 +221,9 @@ namespace PLATEAU.DynamicTile
                 var internalId = loc.InternalId;
                 if (!string.IsNullOrEmpty(internalId))
                 {
-                    var normalized = internalId.Replace('\\', '/');
-                    var resolvedPath = normalized;
-                    if (resolvedPath.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..")).Replace('\\', '/');
-                        resolvedPath = Path.GetFullPath(Path.Combine(projectRoot, resolvedPath)).Replace('\\', '/');
-                    }
-                    if (resolvedPath.StartsWith(catalogDirFull, StringComparison.OrdinalIgnoreCase))
+                    var normalized = Path.GetFileName(internalId.Replace('\\', '/'));
+                    normalized = normalized.Replace("PLATEAUTileMeta_", "");
+                    if (normalized.Contains(dirName))
                     {
                         return true;
                     }
@@ -249,6 +269,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
             }
+
             Addressables.Release(catalogHandle);
         }
 

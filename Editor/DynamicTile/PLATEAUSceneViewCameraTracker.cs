@@ -126,6 +126,7 @@ namespace PLATEAU.DynamicTile
             Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
         
@@ -136,6 +137,7 @@ namespace PLATEAU.DynamicTile
 
             Log("Project Changed");
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
         
@@ -169,6 +171,7 @@ namespace PLATEAU.DynamicTile
             if (tileManager == null)
                 return;
 
+            if (BuildPipeline.isBuildingPlayer) return;
             Log($"Scene Opened: {scene.name}");
             InitView().ContinueWithErrorCatch();
         }
@@ -176,6 +179,7 @@ namespace PLATEAU.DynamicTile
         private static void BeforeScriptCompile(object _) 
         {
             Log("BeforeScriptCompile"); 
+            if (BuildPipeline.isBuildingPlayer) return;
             var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (tileManager == null) return;
             tileManager.ClearTileAssets();
@@ -186,9 +190,9 @@ namespace PLATEAU.DynamicTile
         {
             var handle = Addressables.InitializeAsync();
             handle.WaitForCompletion();
-            Addressables.ClearResourceLocators();
-            AssetBundle.UnloadAllAssetBundles(true);
-            Resources.UnloadUnusedAssets();
+            // Addressables.ClearResourceLocators();
+            // AssetBundle.UnloadAllAssetBundles(true); 
+            // Resources.UnloadUnusedAssets();
         }
 
         private static async Task InitView()

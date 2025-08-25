@@ -48,7 +48,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         
                         // infoメッセージボックス
                         EditorGUILayout.HelpBox(
-                            "[info] Assetsフォルダ内ならビルドに含めます。Assetsフォルダ外ならビルドに含めません",
+                            "Assetsフォルダ内またはUnityプロジェクト外の任意のフォルダを選択してください。",
                             MessageType.Info);
                         
                         // 警告表示
