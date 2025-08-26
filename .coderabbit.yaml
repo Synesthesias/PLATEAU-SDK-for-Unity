@@ -1,5 +1,5 @@
 # AIレビューCodeRabbitの設定
-language: "ja-jp"
+language: "ja"
 
 review:
   ignore:
