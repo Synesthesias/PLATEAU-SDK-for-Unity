@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util.Async;
@@ -20,6 +21,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityChangeActiveGui : ITabContent
     {
         private PLATEAUInstancedCityModel adjustTarget;
+        private PLATEAUTileManager tileManager;
         private readonly FilterConditionGui filterConditionGUI = new FilterConditionGui();
         // private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
         private bool disableDuplicate = true;
@@ -66,28 +68,36 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     
                     this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     
-
                     using (new EditorGUI.DisabledScope(isFilterTaskRunning))
                     {
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
-                                }, TaskScheduler.FromCurrentSynchronizationContext())
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
-                                    SceneView.RepaintAll();
-                                    isFilterTaskRunning = false;
-                                }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
+
+                            if(this.tileManager != null)
+                            {
+                                //TileMangerが存在する場合は、TileManager側でFilteringします。
+                                this.tileManager.FilterByCityObjectTypeAndLod(this.filterConditionGUI.SelectionDict, this.filterConditionGUI.PackageLodSliderResult);
+                                isFilterTaskRunning = false;
+                            }
+                            else
+                            {
+                                this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
+                                    .ContinueWithErrorCatch()
+                                    .ContinueWith(_ =>
+                                    {
+                                        this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
+                                    }, TaskScheduler.FromCurrentSynchronizationContext())
+                                    .ContinueWithErrorCatch()
+                                    .ContinueWith(_ =>
+                                    {
+                                        if (this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);
+                                        SceneView.RepaintAll();
+                                        isFilterTaskRunning = false;
+                                    }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
+                            }
                         }
                     }
-
                 }
             }
         }
@@ -98,22 +108,43 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
         {
             if (cityModel == null) return;
-            // シーン上に存在するパッケージとLODを求めます。
-            this.packageToLodMinMax = new PackageToLodMinMax();
-            var gmls = cityModel.GmlTransforms;
-            foreach (var gml in gmls)
+
+            // PLATEAUInstancedCityModelのParentがTileMangerの場合は、TileManager側でFilteringします。
+            this.tileManager = null;
+            if (cityModel.transform.parent?.GetComponent<PLATEAUTileManager>() != null)
             {
-                var gmlFile = GmlFile.Create(gml.name);
-                var package = gmlFile.Package;
-                var lods = PLATEAUInstancedCityModel.GetLods(gml);
-                if (lods.Count > 0)
+                this.packageToLodMinMax = new PackageToLodMinMax();
+                this.tileManager = cityModel.transform.parent.GetComponent<PLATEAUTileManager>();
+                var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
+                foreach (var package in packages)
                 {
-                    this.packageToLodMinMax.AddOrMerge(package, lods.Min(), lods.Max());
+                    if (package == PredefinedCityModelPackage.None)
+                        continue;
+                    var predefined = CityModelPackageInfo.GetPredefined(package);
+                    this.packageToLodMinMax.AddOrMerge(package, predefined.minLOD, predefined.maxLOD);
                 }
-                gmlFile.Dispose();
+                // GUIを更新します。
+                this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
             }
-            // GUIを更新します。
-            this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+            else
+            {
+                // シーン上に存在するパッケージとLODを求めます。
+                this.packageToLodMinMax = new PackageToLodMinMax();
+                var gmls = cityModel.GmlTransforms;
+                foreach (var gml in gmls)
+                {
+                    var gmlFile = GmlFile.Create(gml.name);
+                    var package = gmlFile.Package;
+                    var lods = PLATEAUInstancedCityModel.GetLods(gml);
+                    if (lods.Count > 0)
+                    {
+                        this.packageToLodMinMax.AddOrMerge(package, lods.Min(), lods.Max());
+                    }
+                    gmlFile.Dispose();
+                }
+                // GUIを更新します。
+                this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+            }
         }
 
         /// <summary> テストで利用する用 </summary>

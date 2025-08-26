@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Serialization;
+using System.Collections.ObjectModel;
+using PLATEAU.Dataset;
 
 namespace PLATEAU.DynamicTile
 {
@@ -167,6 +168,17 @@ namespace PLATEAU.DynamicTile
         public void SaveMetaAddress(string address)
         {
             metaAddress = address;
+        }
+
+        /// <summary>
+        /// GameObjectのON/OFFを行います
+        /// </summary>
+        /// <param name="selectionDict"></param>
+        public void FilterByCityObjectTypeAndLod(
+            ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict, 
+            ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> packageToLodRangeDict)
+        {
+            PLATEAUDynamicTileFilter.FilterByCityObjectTypeAndLod(DynamicTiles, selectionDict, packageToLodRangeDict);
         }
 
         /// <summary>
