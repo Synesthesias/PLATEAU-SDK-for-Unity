@@ -383,15 +383,6 @@ namespace PLATEAU.DynamicTile
                 AddressablesUtility.BuildAddressables(false);
                 
                 AddressablesUtility.BackToDefaultProfile();
-                
-                
-
-                // if (Context.IsExcludeAssetFolder)
-                // {
-                //     AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
-                //     AssetDatabase.SaveAssets();
-                // }
-                
 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
@@ -453,18 +444,17 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public static void CleanupTempFolder()
         {
-            // FIXME 現状、Assets外のアプリビルド後に動かすためにはここはコメントアウトする必要あり
             
-            // var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
-            // if (AssetDatabase.DeleteAsset(assetPath))
-            // {
-            //     AssetDatabase.Refresh();
-            //     Debug.Log($"一時フォルダーを削除しました: {assetPath}");
-            // }
-            // else
-            // {
-            //     Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
-            // }
+            var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            if (AssetDatabase.DeleteAsset(assetPath))
+            {
+                AssetDatabase.Refresh();
+                Debug.Log($"一時フォルダーを削除しました: {assetPath}");
+            }
+            else
+            {
+                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+            }
         }
 
         /// <summary>
