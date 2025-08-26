@@ -1,0 +1,6 @@
+# AIレビューCodeRabbitの設定
+language: "ja-jp"
+
+review:
+  ignore:
+    - "Tests/TestData/**"
