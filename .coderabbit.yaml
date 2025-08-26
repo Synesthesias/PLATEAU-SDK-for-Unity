@@ -1,6 +1,6 @@
 # AIレビューCodeRabbitの設定
 language: "ja"
 
-review:
-  ignore:
-    - "Tests/TestData/**"
+reviews:
+  path_filters:
+    - "!Tests/TestData/**"
