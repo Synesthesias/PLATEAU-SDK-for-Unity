@@ -265,8 +265,11 @@ namespace PLATEAU.Editor.Addressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, path);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
 
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameLoad);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
+            
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
         }
         
 
