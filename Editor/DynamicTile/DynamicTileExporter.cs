@@ -447,16 +447,16 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public static void CleanupTempFolder()
         {
-            var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
-            if (AssetDatabase.DeleteAsset(assetPath))
-            {
-                AssetDatabase.Refresh();
-                Debug.Log($"一時フォルダーを削除しました: {assetPath}");
-            }
-            else
-            {
-                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
-            }
+            // var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            // if (AssetDatabase.DeleteAsset(assetPath))
+            // {
+            //     AssetDatabase.Refresh();
+            //     Debug.Log($"一時フォルダーを削除しました: {assetPath}");
+            // }
+            // else
+            // {
+            //     Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+            // }
         }
 
         /// <summary>
