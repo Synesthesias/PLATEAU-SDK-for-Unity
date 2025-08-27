@@ -26,6 +26,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                 foreach (int lod in lods)
                 {
                     var cityObjTransforms = PLATEAUInstancedCityModel.GetCityObjects(gmlTrans, lod);
+                    if (cityObjTransforms == null) continue;
                     // 都市オブジェクトごとのループ
                     foreach (var cityObjTrans in cityObjTransforms)
                     {
@@ -88,7 +89,8 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             typeNode = typeNode.Parent;
                         } // 分類の階層構造をたどるループ  ここまで
                         
-                        cityObjTrans.gameObject.SetActive(shouldObjEnabled);
+                        var go = cityObjTrans.gameObject;
+                        if (go.activeSelf != shouldObjEnabled) go.SetActive(shouldObjEnabled);
                         
                     } // 都市オブジェクトごとのループ  ここまで
                 } // LODごとのループ  ここまで
