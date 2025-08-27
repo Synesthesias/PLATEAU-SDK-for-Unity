@@ -50,7 +50,7 @@ namespace PLATEAU.DynamicTile
         public Vector3 ReferencePoint
         {
             get => referencePoint;
-            set => referencePoint = value;
+            internal set => referencePoint = value;
         }
 
         /// <summary>

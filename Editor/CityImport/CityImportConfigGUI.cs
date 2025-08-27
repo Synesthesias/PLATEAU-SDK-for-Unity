@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.CityImport
         // DynamicTile <-> Scene 切替時に元の粒度設定を復元するためのバックアップです。
         private readonly Dictionary<PredefinedCityModelPackage, PolygonMesh.MeshGranularity> savedGranularityPerPackage = new ();
         private PolygonMesh.MeshGranularity? savedMasterGranularity;
-    
+        
         public CityImportConfigGUI(CityImportConfig cityImportConf, PackageToLodDict availablePackageLodsArg)
         {
             if (cityImportConf == null) throw new ArgumentNullException(nameof(cityImportConf));

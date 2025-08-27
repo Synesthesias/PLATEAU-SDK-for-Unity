@@ -72,11 +72,17 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            this.adjustTarget.FilterByCityObjectType(this.filterConditionGUI.SelectionDict);
-                            this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
-                            if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
-                            SceneView.RepaintAll();
-                            isFilterTaskRunning = false;
+                            try
+                            {
+                                this.adjustTarget.FilterByCityObjectType(this.filterConditionGUI.SelectionDict);
+                                this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
+                                if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
+                                SceneView.RepaintAll();
+                            }
+                            finally
+                            {
+                                isFilterTaskRunning = false;
+                            }
                         }
                     }
 

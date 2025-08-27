@@ -18,6 +18,8 @@ namespace PLATEAU.Editor.Addressables
         private const string TileBuildProfileName = "PLATEAU_TileBuildProfile";
         private const string ProfileVariableNameBuild = "PLATEAU_BuildPath";
         private const string ProfileVariableNameLoad = "PLATEAU_LoadPath";
+        private const string SafeDefaultPathLoad  = "[UnityEngine.AddressableAssets.Addressables.RuntimePath]/[BuildTarget]";
+        private const string SafeDefaultPathBuild = "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]";
         
         /// <summary>
         /// AddressableAssetSettingsを取得。nullの場合は警告を出す。
@@ -133,15 +135,25 @@ namespace PLATEAU.Editor.Addressables
 
             var profileSettings = addrSettings.profileSettings;
             var defaultProfileId = profileSettings.GetProfileId("Default");
-            if (string.IsNullOrEmpty(defaultProfileId)) return;
+            if (string.IsNullOrEmpty(defaultProfileId))
+            {
+                // フォールバック: アクティブなプロファイルを使用、無ければ作成
+                defaultProfileId = addrSettings.activeProfileId;
+                if (string.IsNullOrEmpty(defaultProfileId))
+                {
+                    defaultProfileId = profileSettings.AddProfile("Default", addrSettings.activeProfileId);
+                    if (string.IsNullOrEmpty(defaultProfileId))
+                    {
+                        Debug.LogWarning("Addressables のプロファイルが見つからず、フォールバック作成にも失敗しました。");
+                        return;
+                    }
+                }
+            }
 
             // Default に戻す
             addrSettings.activeProfileId = defaultProfileId;
 
             // ProfileVariableNameが空だと不安定になるのでデフォルトの安全な値を入れます
-            const string SafeDefaultPathLoad = "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]";
-            const string SafeDefaultPathBuild =
-                "[UnityEngine.AddressableAssets.Addressables.RuntimePath]/[BuildTarget]";
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
                 profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
@@ -167,6 +179,8 @@ namespace PLATEAU.Editor.Addressables
             // RemoteCatalog の参照先を揃える
             addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
             addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
+            EditorUtility.SetDirty(addrSettings);
+            AssetDatabase.SaveAssets();
         }
 
         /// <summary>
@@ -197,12 +211,12 @@ namespace PLATEAU.Editor.Addressables
             
             if (!settings.profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                settings.profileSettings.CreateValue(ProfileVariableNameLoad, "");
+                settings.profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad); // デフォルト値はあとで必要なパスに書き換えること
             }
 
             if (!settings.profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
             {
-                settings.profileSettings.CreateValue(ProfileVariableNameBuild, "");
+                settings.profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild); // デフォルト値はあとで必要なパスに書き換えること
             }
 
             // グループのBuildPathとLoadPathに変数名をセット
