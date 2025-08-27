@@ -32,7 +32,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         CityGML.CityObjectType cityObjType = 0;
                         var cityObjGrp = cityObjTrans.GetComponent<PLATEAUCityObjectGroup>();
 
-                        if (cityObjGrp == null) return;
+                        if (cityObjGrp == null) continue;
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
 
                         List<CityObjectList.CityObject> cityObjList =
