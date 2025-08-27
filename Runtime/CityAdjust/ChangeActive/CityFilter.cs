@@ -56,7 +56,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         }
                         catch(KeyNotFoundException e)
                         {
-                            Debug.LogError(e.Message);
+                            Debug.LogError(e);
                         }
 
                         bool shouldObjEnabled = true;
@@ -103,7 +103,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
             {
                 var gmlInfo = GmlFile.Create(gmlTrans.name);
                 var gmlPackage = gmlInfo.Package;
-                if (!packageToLodRangeDict.ContainsKey(gmlPackage)) continue; 
+                if (!packageToLodRangeDict.ContainsKey(gmlPackage))
+                {
+                    gmlInfo.Dispose();
+                    continue;
+                } 
                 var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
                 foreach (var lodTrans in lods)
                 {
