@@ -6,6 +6,8 @@
     href: Installation.md
   - name: 3D都市モデルのインポート
     href: ImportCityModels.md
+  - name: 動的タイル機能について
+    href: dynamicTile.md
   - name: 3D都市モデルのエクスポート
     href: ExportCityModels.md
   - name: 3D都市モデルの調整
