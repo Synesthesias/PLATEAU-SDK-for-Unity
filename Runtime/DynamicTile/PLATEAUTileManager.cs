@@ -1,4 +1,3 @@
-using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {

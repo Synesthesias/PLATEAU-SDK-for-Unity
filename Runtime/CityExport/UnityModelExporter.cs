@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Util;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos.LODIcons;

@@ -1,7 +1,5 @@
 using PLATEAU.Dataset;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Import
