@@ -53,10 +53,10 @@
 ### 生成されるアセット
 - 出力先フォルダをAssetsフォルダ内に設定した場合
   - 出力先にタイルのプレハブが生成されます。
-  - Assets/StreamingAssets/PLATEAUBundles/(出力先フォルダ名)にアセットバンドルがビルドされます。
+  - `Assets/StreamingAssets/PLATEAUBundles/(出力先フォルダ名)`にアセットバンドルがビルドされます。
 - 出力先フォルダをプロジェクト外に設定した場合
   - 出力先にアセットバンドルがビルドされます。
-  - Assets/PLATEAUBundles/(出力フォルダ名)にプレハブが生成されます。
+  - `Assets/PLATEAUBundles/(出力フォルダ名)`にプレハブが生成されます。
     - プロジェクト外への出力のケースでプレハブ非依存にする機能は今後実装予定です。
 
 ## DynamicTileManagerの操作
@@ -88,3 +88,5 @@ DynamicTileManagerのインスペクタから「SDKデバッグ用情報」に�
 - `各タイルの情報`: 各タイルのAddressableのアドレス、位置、ズームレベル、ゲームオブジェクト、カメラからの距離、読み込み状態が表示されます。
 - `Use Job System`: タイルとカメラの距離判定にJob Systemを利用します。
 - `Show Debug Log`: チェックを入れると詳細なログを表示します。
+  
+本機能は試験的機能のため、変更になる場合があります。
