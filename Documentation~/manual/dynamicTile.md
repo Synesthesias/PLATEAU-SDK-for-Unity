@@ -5,13 +5,13 @@
 広大な範囲を表示したいとき、描画負荷を抑えつつ表示できる機能です。  
 例えば、下図のように範囲選択画面で新宿区のすべての建物をインポートしたいとします。  
 
-![](../resources/manual/dynamicTile/areaSelectShinjukuAll.png)  
+![新宿区全域を範囲選択した例](../resources/manual/dynamicTile/areaSelectShinjukuAll.png)  
 
 通常のシーンへのインポートであれば、描画負荷が問題となり実用の難しさが課題でした。  
 そこで動的タイル機能を使えば、下図のとおりすべて表示できます。  
 ただしPCのスペックによります。  
 
-![](../resources/manual/dynamicTile/dynamicTileShinjuku.png)
+![動的タイルで新宿区の全建物を表示した例](../resources/manual/dynamicTile/dynamicTileShinjuku.png)
 
 ## 描画負荷が軽減される仕組み
 本機能は次の処理からなります。
@@ -35,14 +35,14 @@
 
 ## 動的タイル形式でのインポート方法
 
-![](../resources/manual/dynamicTile/tileImportConfig.png)  
+![動的タイルのインポート画面設定](../resources/manual/dynamicTile/tileImportConfig.png)  
 
 - インポートの設定画面で、インポート形式を`動的タイル（Addressable出力）`にします。
 - 出力先を指定します。プロジェクト外でも動作しますが、ビルドに含めたい場合はAssetsフォルダ内のお好みのフォルダを選びます。
 - 範囲選択など、他のインポート設定をしてインポートボタンを押します。
   - インポート設定については[こちら(3D都市モデルのインポート)](./ImportCityModels.md)とおおむね同じです。
   - ただし、モデル結合の粒度については地域単位に固定されます。
-- インポートが完了すると、3D都市モデルがタイル形式で読み込まれ表示されます。
+- インポートおよびAddressableのビルドが行われ、完了すると3D都市モデルがタイル形式で読み込まれ表示されます。
 
 ## 動的タイルの動作
 
@@ -50,14 +50,23 @@
 - プレイ中は、タイルとメインカメラの距離に応じたタイルが読み込まれます。
 - タイルの管理は、シーンに配置された`DynamicTileManager`が行います。
 
+### 生成されるアセット
+- 出力先フォルダをAssetsフォルダ内に設定した場合
+  - 出力先にタイルのプレハブが生成されます。
+  - Assets/StreamingAssets/PLATEAUBundles/(出力先フォルダ名)にアセットバンドルがビルドされます。
+- 出力先フォルダをプロジェクト外に設定した場合
+  - 出力先にアセットバンドルがビルドされます。
+  - Assets/PLATEAUBundles/(出力フォルダ名)にプレハブが生成されます。
+    - プロジェクト外への出力のケースでプレハブ非依存にする機能は今後実装予定です。
+
 ## DynamicTileManagerの操作
-![](../resources/manual/dynamicTile/showZoomLevel.png)  
+![ズームレベルを表示した例](../resources/manual/dynamicTile/showZoomLevel.png)  
 
 シーンに配置された`DynamicTileManager`を選択すると、インスペクターから次の操作ができます。
 - `Addressableカタログパス(json)`の指定
   - 参照ボタンからAddressableのカタログ(json)を指定することで、読み込む動的タイルのセットを変更できます。
-  - カタログファイルとはAddressableの仕様上、アセットバンドルのビルド時に生成されるものであり、  
-    インポート設定の「出力先」で指定したフォルダにあります。
+  - カタログファイルとはAddressableの仕様上、アセットバンドルのビルド時に生成されるものです。  
+    カタログの場所は上記「生成されるアセット」に記載のアセットバンドルのビルド先に生成されます。
 - `シーンビューで都市にフォーカス`ボタンを押すと、シーンビューの視点が都市を映す位置に移動します。
 - `SDKデバッグ用情報を表示`のチェックを入れると、インスペクタにデバッグ用の詳細情報が表示されます。詳しくは後述します。
 
