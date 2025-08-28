@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_994d48fc-441e-4b62-88a5-01c35be9c00c">
+<gml:name>C0401_height</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_1">
+<gml:description>5m以下</gml:description>
+<gml:name>1101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_2">
+<gml:description>10m以下</gml:description>
+<gml:name>1102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_3">
+<gml:description>12m以下</gml:description>
+<gml:name>1103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_4">
+<gml:description>15m以下</gml:description>
+<gml:name>1104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_5">
+<gml:description>20m以下</gml:description>
+<gml:name>1105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_6">
+<gml:description>25m以下</gml:description>
+<gml:name>1106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_7">
+<gml:description>30m以下</gml:description>
+<gml:name>1107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_8">
+<gml:description>35m以下</gml:description>
+<gml:name>1108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_9">
+<gml:description>40m以下</gml:description>
+<gml:name>1109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_10">
+<gml:description>45m以下</gml:description>
+<gml:name>1110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_11">
+<gml:description>45m超</gml:description>
+<gml:name>1111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_height_12">
+<gml:description>不明</gml:description>
+<gml:name>1112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

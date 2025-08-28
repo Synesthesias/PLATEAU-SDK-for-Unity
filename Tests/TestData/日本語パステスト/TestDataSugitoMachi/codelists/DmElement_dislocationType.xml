@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_55bc81ea-6ca0-484f-b078-8527cb4b3e4d">
+<gml:name>DmElement_dislocationType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_1">
+<gml:description>転位しない</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_2">
+<gml:description>座標列の方向に対して右側に転位する(1)</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_3">
+<gml:description>座標列の方向に対して右側に転位する(2)</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_4">
+<gml:description>座標列の方向に対して右側に転位する(3)</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_5">
+<gml:description>座標列の方向に対して右側に転位する(4)</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_6">
+<gml:description>座標列の方向に対して右側に転位する(5)</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_7">
+<gml:description>座標列の方向に対して右側に転位する(6)</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_8">
+<gml:description>座標列の方向に対して右側に転位する(7)</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_9">
+<gml:description>座標列の方向に対して右側に転位する(8)</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_10">
+<gml:description>座標列の方向に対して右側に転位する(9)</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_11">
+<gml:description>座標列の方向に対して左側に転位する(1)</gml:description>
+<gml:name>-1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_12">
+<gml:description>座標列の方向に対して左側に転位する(2)</gml:description>
+<gml:name>-2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_13">
+<gml:description>座標列の方向に対して左側に転位する(3)</gml:description>
+<gml:name>-3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_14">
+<gml:description>座標列の方向に対して左側に転位する(4)</gml:description>
+<gml:name>-4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_15">
+<gml:description>座標列の方向に対して左側に転位する(5)</gml:description>
+<gml:name>-5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_16">
+<gml:description>座標列の方向に対して左側に転位する(6)</gml:description>
+<gml:name>-6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_17">
+<gml:description>座標列の方向に対して左側に転位する(7)</gml:description>
+<gml:name>-7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_18">
+<gml:description>座標列の方向に対して左側に転位する(8)</gml:description>
+<gml:name>-8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dislocationType_19">
+<gml:description>座標列の方向に対して左側に転位する(9)</gml:description>
+<gml:name>-9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

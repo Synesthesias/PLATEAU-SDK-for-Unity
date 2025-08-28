@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Util;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,11 +14,28 @@ namespace PLATEAU.DynamicTile
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector(); // 通常のInspector表示
-
+            serializedObject.Update();
+            
             PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
-            SerializedObject serializedObject = new SerializedObject(target);
-            SerializedProperty debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
+            DrawCatalogPathWithOpenButton(tileManager);
+            if (GUILayout.Button("シーンビューで都市にフォーカス"))
+            {
+                DynamicTileExporter.FocusSceneViewCameraToTiles(tileManager);
+                SceneView.lastActiveSceneView?.Repaint();
+            }
+
+            // デバッグ表示トグル
+            var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
+            EditorGUILayout.PropertyField(debugInfoProperty, new GUIContent("SDKデバッグ用情報を表示"));
+
+            // デバッグON時のみ付随オプションを表示
+            if (debugInfoProperty.boolValue)
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("useJobSystem"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("showDebugLog"));
+            }
+
+            serializedObject.ApplyModifiedProperties();
 
             if (debugInfoProperty.boolValue)
             {
@@ -128,6 +146,34 @@ namespace PLATEAU.DynamicTile
 
                 if (dynamicTiles.Count > 0)
                     Repaint();
+            }
+        }
+
+        /// <summary>
+        /// カタログパスと、その横に「参照」ボタンを描画します。
+        /// </summary>
+        private void DrawCatalogPathWithOpenButton(PLATEAUTileManager tileManager)
+        {
+            var catalogProp = serializedObject.FindProperty("catalogPath");
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス(json)"));
+            bool clickedOpen = GUILayout.Button("参照", GUILayout.Width(64));
+            EditorGUILayout.EndHorizontal();
+            if (clickedOpen)
+            {
+                var initialDir = string.IsNullOrEmpty(catalogProp.stringValue)
+                    ? Application.dataPath
+                    : Path.GetDirectoryName(catalogProp.stringValue);
+                var selected = EditorUtility.OpenFilePanel("Addressablesのカタログ(JSON)を選択してください", initialDir, "json");
+                if (!string.IsNullOrEmpty(selected))
+                {
+                    selected = selected.Replace('\\', '/');
+                    catalogProp.stringValue = selected;
+                    serializedObject.ApplyModifiedProperties();
+
+                    tileManager.ClearTiles();
+                    tileManager.InitializeTiles().Wait();
+                }
             }
         }
 

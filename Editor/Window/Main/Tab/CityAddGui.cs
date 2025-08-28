@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
+    /// <summary>
+    /// インポート画面です。
+    /// </summary>
     internal class CityAddGui : ITabContent
     {
         private int importTabIndex;
@@ -12,6 +15,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public CityAddGui(UnityEditor.EditorWindow parentEditorWindow)
         {
+            // ローカルインポートとサーバーインポートのタブを作ります。
             this.importTabGUIArray = new IEditorDrawable[]
             {
                 CityImportConfigGui.CreateLocal(parentEditorWindow),

@@ -1,6 +1,7 @@
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components;
 using PLATEAU.Editor.Window.Main.Tab.ImportGuiParts;
 using PLATEAU.Editor.Window.ProgressDisplay;
 
@@ -21,8 +22,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private static ProgressDisplayGUI progressGUI;
 
         /// <summary>
-        /// コンストラクタです。、
-        /// 範囲選択するより前のインポート設定GUIはローカルかリモートかによって異なるので、引数によって処理を分けます。
+        /// コンストラクタです。
+        /// 範囲選択するより前のインポート設定GUIはローカルかリモートかによって異なるので、依存性注入で渡します。
         /// </summary>
         private CityImportConfigGui(IConfigGUIBeforeAreaSelect configGUIBeforeAreaSelect, UnityEditor.EditorWindow parentEditorWindow)
         {
@@ -48,14 +49,20 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public void Draw()
         {
+            // 範囲選択前のGUI
             config.ConfBeforeAreaSelect = this.configGUIBeforeAreaSelect.Draw();
 
+            // 動的タイル設定GUI（範囲選択ボタンの前に表示）
+            new DynamicTileConfigGUI(this.config).Draw();
+
+            // 範囲選択ボタン
             PlateauEditorStyle.Heading("マップ範囲選択", "num2.png");
 
             bool isAreaSelectComplete = AreaSelectButton.Draw(this.config.AreaGridCodes,
                 this.config.ConfBeforeAreaSelect,
                 this);
 
+            // 範囲選択後のGUI
             if (isAreaSelectComplete)
             {
                 this.guiAfterAreaSelect.Draw();

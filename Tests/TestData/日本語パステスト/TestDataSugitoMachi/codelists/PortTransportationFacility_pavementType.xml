@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_1443e979-76cc-4320-b251-214d9eb0cdf7">
+<gml:name>PortTransportationFacility_pavementType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortTransportationFacility_pavementType_1">
+<gml:description>砂利敷</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortTransportationFacility_pavementType_2">
+<gml:description>アスファルト舗装</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortTransportationFacility_pavementType_3">
+<gml:description>コンクリート舗装</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortTransportationFacility_pavementType_4">
+<gml:description>その他</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

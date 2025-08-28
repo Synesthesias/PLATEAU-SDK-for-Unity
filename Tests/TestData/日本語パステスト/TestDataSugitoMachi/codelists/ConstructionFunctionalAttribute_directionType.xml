@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_a3dadb1d-02c9-4af4-b0ed-33c05652f68d">
+<gml:name>ConstructionFunctionalAttribute_directionType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionFunctionalAttribute_directionType_1">
+<gml:description>上下線一体</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionFunctionalAttribute_directionType_2">
+<gml:description>上り線</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionFunctionalAttribute_directionType_3">
+<gml:description>下り線</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

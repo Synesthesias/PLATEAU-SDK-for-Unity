@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_74eaee63-8260-46ea-91f3-258e3f816a73">
+<gml:name>BuildingInstallation_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_1">
+<gml:description>外観の特徴</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_2">
+<gml:description>廃棄物管理</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_3">
+<gml:description>維持管理</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_4">
+<gml:description>通信設備</gml:description>
+<gml:name>1040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_5">
+<gml:description>保安施設</gml:description>
+<gml:name>1050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_class_6">
+<gml:description>その他</gml:description>
+<gml:name>1060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_4ba65a93-4d94-45bb-bb7d-ae80c8545c47">
+<gml:name>BridgeStructureAttribute_material</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_1">
+<gml:description>鋼溶接橋</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_2">
+<gml:description>鋼（鉄）リベット橋</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_3">
+<gml:description>RC橋</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_4">
+<gml:description>PC橋</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_5">
+<gml:description>SRC橋</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_6">
+<gml:description>石橋</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_7">
+<gml:description>木橋</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_8">
+<gml:description>H型鋼橋</gml:description>
+<gml:name>08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeStructureAttribute_material_9">
+<gml:description>その他</gml:description>
+<gml:name>90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

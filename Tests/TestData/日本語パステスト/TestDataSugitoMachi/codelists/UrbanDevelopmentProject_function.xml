@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_bd4237c6-39b8-4aee-ac48-1dc656ea24dd">
+<gml:name>UrbanDevelopmentProject_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_1">
+<gml:description>土地区画整理事業</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_2">
+<gml:description>新住宅市街地開発事業</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_3">
+<gml:description>工業団地造成事業</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_4">
+<gml:description>市街地再開発事業</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_5">
+<gml:description>新都市基盤整備事業</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanDevelopmentProject_function_6">
+<gml:description>住宅街区整備事業</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_eed11ee2-778d-4ab9-9a8a-d9be613bb2b2">
+<gml:name>Common_ageAndSex</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_1">
+<gml:description>総数、年齢「不詳」を含む</gml:description>
+<gml:name>0101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_2">
+<gml:description>総数0-4歳</gml:description>
+<gml:name>0102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_3">
+<gml:description>総数5-9歳</gml:description>
+<gml:name>0103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_4">
+<gml:description>総数10-14歳</gml:description>
+<gml:name>0104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_5">
+<gml:description>総数15-19歳</gml:description>
+<gml:name>0105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_6">
+<gml:description>総数20-24歳</gml:description>
+<gml:name>0106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_7">
+<gml:description>総数25-29歳</gml:description>
+<gml:name>0107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_8">
+<gml:description>総数30-34歳</gml:description>
+<gml:name>0108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_9">
+<gml:description>総数35-39歳</gml:description>
+<gml:name>0109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_10">
+<gml:description>総数40-44歳</gml:description>
+<gml:name>0110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_11">
+<gml:description>総数45-49歳</gml:description>
+<gml:name>0111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_12">
+<gml:description>総数50-54歳</gml:description>
+<gml:name>0112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_13">
+<gml:description>総数55-59歳</gml:description>
+<gml:name>0113</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_14">
+<gml:description>総数60-64歳</gml:description>
+<gml:name>0114</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_15">
+<gml:description>総数65-69歳</gml:description>
+<gml:name>0115</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_16">
+<gml:description>総数70-74歳</gml:description>
+<gml:name>0116</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_17">
+<gml:description>総数15歳未満</gml:description>
+<gml:name>0117</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_18">
+<gml:description>総数15～64歳</gml:description>
+<gml:name>0118</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_19">
+<gml:description>総数65歳以上</gml:description>
+<gml:name>0119</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_20">
+<gml:description>総数75歳以上</gml:description>
+<gml:name>0120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_21">
+<gml:description>男性総数、年齢「不詳」を含む</gml:description>
+<gml:name>2101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_22">
+<gml:description>男性0-4歳</gml:description>
+<gml:name>2102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_23">
+<gml:description>男性5-9歳</gml:description>
+<gml:name>2103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_24">
+<gml:description>男性10-14歳</gml:description>
+<gml:name>2104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_25">
+<gml:description>男性15-19歳</gml:description>
+<gml:name>2105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_26">
+<gml:description>男性20-24歳</gml:description>
+<gml:name>2106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_27">
+<gml:description>男性25-29歳</gml:description>
+<gml:name>2107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_28">
+<gml:description>男性30-34歳</gml:description>
+<gml:name>2108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_29">
+<gml:description>男性35-39歳</gml:description>
+<gml:name>2109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_30">
+<gml:description>男性40-44歳</gml:description>
+<gml:name>2110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_31">
+<gml:description>男性45-49歳</gml:description>
+<gml:name>2111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_32">
+<gml:description>男性50-54歳</gml:description>
+<gml:name>2112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_33">
+<gml:description>男性55-59歳</gml:description>
+<gml:name>2113</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_34">
+<gml:description>男性60-64歳</gml:description>
+<gml:name>2114</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_35">
+<gml:description>男性65-69歳</gml:description>
+<gml:name>2115</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_36">
+<gml:description>男性70-74歳</gml:description>
+<gml:name>2116</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_37">
+<gml:description>男性15歳未満</gml:description>
+<gml:name>2117</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_38">
+<gml:description>男性15～64歳</gml:description>
+<gml:name>2118</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_39">
+<gml:description>男性65歳以上</gml:description>
+<gml:name>2119</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_40">
+<gml:description>男性75歳以上</gml:description>
+<gml:name>2120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_41">
+<gml:description>女性総数、年齢「不詳」を含む</gml:description>
+<gml:name>3101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_42">
+<gml:description>女性0-4歳</gml:description>
+<gml:name>3102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_43">
+<gml:description>女性5-9歳</gml:description>
+<gml:name>3103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_44">
+<gml:description>女性10-14歳</gml:description>
+<gml:name>3104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_45">
+<gml:description>女性15-19歳</gml:description>
+<gml:name>3105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_46">
+<gml:description>女性20-24歳</gml:description>
+<gml:name>3106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_47">
+<gml:description>女性25-29歳</gml:description>
+<gml:name>3107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_48">
+<gml:description>女性30-34歳</gml:description>
+<gml:name>3108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_49">
+<gml:description>女性35-39歳</gml:description>
+<gml:name>3109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_50">
+<gml:description>女性40-44歳</gml:description>
+<gml:name>3110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_51">
+<gml:description>女性45-49歳</gml:description>
+<gml:name>3111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_52">
+<gml:description>女性50-54歳</gml:description>
+<gml:name>3112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_53">
+<gml:description>女性55-59歳</gml:description>
+<gml:name>3113</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_54">
+<gml:description>女性60-64歳</gml:description>
+<gml:name>3114</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_55">
+<gml:description>女性65-69歳</gml:description>
+<gml:name>3115</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_56">
+<gml:description>女性70-74歳</gml:description>
+<gml:name>3116</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_57">
+<gml:description>女性15歳未満</gml:description>
+<gml:name>3117</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_58">
+<gml:description>女性15～64歳</gml:description>
+<gml:name>3118</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_59">
+<gml:description>女性65歳以上</gml:description>
+<gml:name>3119</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_ageAndSex_60">
+<gml:description>女性75歳以上</gml:description>
+<gml:name>3120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="LandPricePerLandUseType_landuse"><gml:name>LandPricePerLandUseType_landuse</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>Residential area</gml:description><gml:name>1010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>Housing prospective area</gml:description><gml:name>1011</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>Industry area</gml:description><gml:name>5010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>Semi-industrial area</gml:description><gml:name>5011</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>Commertial area</gml:description><gml:name>5021</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6"><gml:description>Forestry</gml:description><gml:name>3030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id7"><gml:description>Residential in urbanization control area</gml:description><gml:name>6010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id8"><gml:description>Forestry in urbanization control area</gml:description><gml:name>6020</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

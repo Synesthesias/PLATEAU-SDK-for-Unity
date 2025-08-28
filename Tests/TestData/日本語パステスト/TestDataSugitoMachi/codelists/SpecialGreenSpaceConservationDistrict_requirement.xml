@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_458f7ba1-66ba-43ed-965a-7725228a06a4">
+<gml:name>SpecialGreenSpaceConservationDistrict_requirement</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="SpecialGreenSpaceConservationDistrict_requirement_1">
+<gml:description>無秩序な市街地化の防止、公害又は災害の防止等の為必要な遮断地帯、緩衝地帯又は非難地帯として適切な位置、規模及び形態を有するもの</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="SpecialGreenSpaceConservationDistrict_requirement_2">
+<gml:description>神社、寺院等の建造物、遺跡等と一体となって、又は伝承若しくは風俗慣習と結びついて当該地域において伝統的又は文化的意義を有するもの</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="SpecialGreenSpaceConservationDistrict_requirement_3">
+<gml:description>風致又は景観が優れていて、かつ当該地域の住民の健全な生活環境を確保するため必要なもの</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="SpecialGreenSpaceConservationDistrict_requirement_4">
+<gml:description>動植物の生息地又は生育地として適正に保全する必要があり、かつ当該地域の住民の健全な生活環境を確保するため必要なもの</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="SpecialGreenSpaceConservationDistrict_requirement_5">
+<gml:description>雨水の貯留浸透等のグリーンインフラとしての機能を有する緑地</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

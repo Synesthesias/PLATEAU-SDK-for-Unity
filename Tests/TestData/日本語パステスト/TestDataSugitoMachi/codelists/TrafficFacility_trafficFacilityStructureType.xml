@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_9c5821d2-b442-4cc9-bd9d-2787f64497e7">
+<gml:name>TrafficFacility_trafficFacilityStructureType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityStructureType_1">
+<gml:description>嵩上式</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityStructureType_2">
+<gml:description>地下式</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityStructureType_3">
+<gml:description>掘割式</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityStructureType_4">
+<gml:description>地表式</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_ef39e8f6-1346-4cf5-b35a-88aa1093d92e">
+<gml:name>RiverFloodingRiskAttribute_scale</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFloodingRiskAttribute_scale_1">
+<gml:description>L1（計画規模）</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFloodingRiskAttribute_scale_2">
+<gml:description>L2（想定最大規模）</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

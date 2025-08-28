@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c893fb62-97ca-4b04-9276-805ccc6a9cfa">
+<gml:name>UrbanPlanningBasicSurveyTable_dataItemNumber</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_1">
+<gml:description>人口規模</gml:description>
+<gml:name>C0101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_2">
+<gml:description>DID</gml:description>
+<gml:name>C0102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_3">
+<gml:description>将来人口</gml:description>
+<gml:name>C0103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_4">
+<gml:description>人口増減</gml:description>
+<gml:name>C0104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_5">
+<gml:description>通勤・通学移動</gml:description>
+<gml:name>C0105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_6">
+<gml:description>昼間人口</gml:description>
+<gml:name>C0106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_7">
+<gml:description>産業・職業分類別就業者数</gml:description>
+<gml:name>C0201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_8">
+<gml:description>事業所数・従業者数・売上金額</gml:description>
+<gml:name>C0202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_9">
+<gml:description>区域区分の状況</gml:description>
+<gml:name>C0301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_10">
+<gml:description>土地利用現況</gml:description>
+<gml:name>C0302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_11">
+<gml:description>国公有地の状況</gml:description>
+<gml:name>C0303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_12">
+<gml:description>宅地開発状況</gml:description>
+<gml:name>C0304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_13">
+<gml:description>農地転用状況</gml:description>
+<gml:name>C0305</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_14">
+<gml:description>林地転用状況</gml:description>
+<gml:name>C0306</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_15">
+<gml:description>新築動向</gml:description>
+<gml:name>C0307</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_16">
+<gml:description>条例・協定</gml:description>
+<gml:name>C0308</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_17">
+<gml:description>農林漁業関係施策適用状況</gml:description>
+<gml:name>C0309</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_18">
+<gml:description>建物利用現況</gml:description>
+<gml:name>C0401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_19">
+<gml:description>大規模小売店舗等の立地状況</gml:description>
+<gml:name>C0402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_20">
+<gml:description>住宅の所有関係別・建て方別世帯数</gml:description>
+<gml:name>C0403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_21">
+<gml:description>都市施設の位置・内容等</gml:description>
+<gml:name>C0501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_22">
+<gml:description>道路の状況</gml:description>
+<gml:name>C0502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_23">
+<gml:description>主要な幹線の断面交通量・混雑度・旅行速度</gml:description>
+<gml:name>C0601</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_24">
+<gml:description>自動車流動量</gml:description>
+<gml:name>C0602</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_25">
+<gml:description>鉄道・路面電車等の状況</gml:description>
+<gml:name>C0603</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_26">
+<gml:description>バスの状況</gml:description>
+<gml:name>C0604</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_27">
+<gml:description>地価の状況</gml:description>
+<gml:name>C0701</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_28">
+<gml:description>地形・水系・地質条件</gml:description>
+<gml:name>C0801</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_29">
+<gml:description>気象状況</gml:description>
+<gml:name>C0802</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_30">
+<gml:description>緑の状況</gml:description>
+<gml:name>C0803</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_31">
+<gml:description>動植物調査</gml:description>
+<gml:name>C0804</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_32">
+<gml:description>災害の発生状況</gml:description>
+<gml:name>C0901</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_33">
+<gml:description>防災施設の位置及び整備の状況</gml:description>
+<gml:name>C0902</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_34">
+<gml:description>観光の状況</gml:description>
+<gml:name>C1001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_35">
+<gml:description>景観・歴史資源等の状況</gml:description>
+<gml:name>C1002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_36">
+<gml:description>レクリエーション施設の状況</gml:description>
+<gml:name>C1003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlanningBasicSurveyTable_dataItemNumber_37">
+<gml:description>公害の発生状況</gml:description>
+<gml:name>C1004</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

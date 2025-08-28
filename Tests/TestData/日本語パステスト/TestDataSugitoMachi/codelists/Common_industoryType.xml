@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_baf8b751-65d1-4c0c-a8d2-ef4790fafa75">
+<gml:name>Common_industoryType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_1">
+<gml:description>A農業，林業</gml:description>
+<gml:name>A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_2">
+<gml:description>B漁業</gml:description>
+<gml:name>B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_3">
+<gml:description>C鉱業，採石業，砂利採取業</gml:description>
+<gml:name>C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_4">
+<gml:description>D建設業</gml:description>
+<gml:name>D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_5">
+<gml:description>E製造業</gml:description>
+<gml:name>E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_6">
+<gml:description>F電気・ガス・熱供給・水道業</gml:description>
+<gml:name>F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_7">
+<gml:description>G情報通信業</gml:description>
+<gml:name>G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_8">
+<gml:description>H運輸業，郵便業</gml:description>
+<gml:name>H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_9">
+<gml:description>I卸売業，小売業</gml:description>
+<gml:name>I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_10">
+<gml:description>J金融業，保険業</gml:description>
+<gml:name>J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_11">
+<gml:description>K不動産業，物品賃貸業</gml:description>
+<gml:name>K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_12">
+<gml:description>L学術研究，専門・技術サービス業</gml:description>
+<gml:name>L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_13">
+<gml:description>M宿泊業，飲食サービス業</gml:description>
+<gml:name>M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_14">
+<gml:description>N生活関連サービス業，娯楽業</gml:description>
+<gml:name>N</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_15">
+<gml:description>O教育，学習支援業</gml:description>
+<gml:name>O</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_16">
+<gml:description>P医療，福祉</gml:description>
+<gml:name>P</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_17">
+<gml:description>Q複合サービス事業</gml:description>
+<gml:name>Q</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_18">
+<gml:description>Rサービス業（他に分類されないもの）</gml:description>
+<gml:name>R</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_19">
+<gml:description>S公務（他に分類されるものを除く）</gml:description>
+<gml:name>S</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_industoryType_20">
+<gml:description>T分類不能の産業</gml:description>
+<gml:name>T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

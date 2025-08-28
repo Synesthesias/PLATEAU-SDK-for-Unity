@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_4002cb85-058f-4cbf-b5a5-057f209e8746">
+<gml:name>DistrictDevelopmentPlan_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_1">
+<gml:description>地区整備計画</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_2">
+<gml:description>特定建築物地区整備計画</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_3">
+<gml:description>防災街区整備地区整備計画</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_4">
+<gml:description>沿道地区整備計画</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_5">
+<gml:description>集落地区整備計画</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DistrictDevelopmentPlan_function_6">
+<gml:description>歴史的風致維持向上地区整備計画</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

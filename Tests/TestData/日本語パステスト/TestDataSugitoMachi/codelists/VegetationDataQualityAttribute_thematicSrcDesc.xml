@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_80676dbb-d9ca-4e0a-9227-1766fd91f437">
+<gml:name>VegetationDataQualityAttribute_thematicSrcDesc</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_1">
+<gml:description>道路基盤地図情報</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_2">
+<gml:description>道路台帳</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_3">
+<gml:description>道路施設台帳</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_4">
+<gml:description>統計調査</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_5">
+<gml:description>写真判読</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_6">
+<gml:description>現地調査</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_thematicSrcDesc_7">
+<gml:description>GISデータ演算</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

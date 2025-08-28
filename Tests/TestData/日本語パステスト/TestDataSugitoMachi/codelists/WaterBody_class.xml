@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_acfee7c0-d33d-42c5-9cc9-990e20acc078">
+<gml:name>WaterBody_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_1">
+<gml:description>sea（海）</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_2">
+<gml:description>tidal waterbody（潮汐水域）</gml:description>
+<gml:name>1010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_3">
+<gml:description>watercourse（水路）</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_4">
+<gml:description>river / stream（河川/小川）</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_5">
+<gml:description>lake / pond（湖）</gml:description>
+<gml:name>1060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_6">
+<gml:description>waterfall（滝）</gml:description>
+<gml:name>1090</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_7">
+<gml:description>swamp（湿地、沼地）</gml:description>
+<gml:name>1110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_8">
+<gml:description>flooded land（浸水域）</gml:description>
+<gml:name>1140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_9">
+<gml:description>reservior（貯水池）</gml:description>
+<gml:name>1190</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="WaterBody_class_10">
+<gml:description>unknown（不明）</gml:description>
+<gml:name>9999</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

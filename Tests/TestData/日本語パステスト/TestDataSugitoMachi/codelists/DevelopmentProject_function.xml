@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="DevelopmentProject_function"><gml:name>DevelopmentProject_function</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>urban redevelopment project</gml:description><gml:name>1010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>residential area improvement project</gml:description><gml:name>1020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>land readjustment project</gml:description><gml:name>1030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>new residential urban development project</gml:description><gml:name>1040</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>industrial construction project</gml:description><gml:name>1050</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6"><gml:description>distribution business complex reclamation project</gml:description><gml:name>1060</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id7"><gml:description>housing facility construction project</gml:description><gml:name>1070</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id8"><gml:description>public water surface landfill project</gml:description><gml:name>1080</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id9"><gml:description>new urban infrastructure development project</gml:description><gml:name>1090</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id10"><gml:description>residential area development project</gml:description><gml:name>1100</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id11"><gml:description>disaster control area development project</gml:description><gml:name>1110</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id12"><gml:description>other public residential development project</gml:description><gml:name>1120</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id13"><gml:description>irrigation and drainage project</gml:description><gml:name>2010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id14"><gml:description>field development project</gml:description><gml:name>2020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id15"><gml:description>farm road improvement project</gml:description><gml:name>2030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id16"><gml:description>other agricultural project</gml:description><gml:name>2040</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id17"><gml:description>urban highway</gml:description><gml:name>3010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id18"><gml:description>road</gml:description><gml:name>3020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id19"><gml:description>water supply</gml:description><gml:name>3030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id20"><gml:description>sewage</gml:description><gml:name>3040</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id21"><gml:description>park</gml:description><gml:name>3050</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id22"><gml:description>river</gml:description><gml:name>3060</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id23"><gml:description>other urban facilities</gml:description><gml:name>3070</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id24"><gml:description>unexamined</gml:description><gml:name>9000</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id25"><gml:description>exception</gml:description><gml:name>9010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id26"><gml:description>unknown</gml:description><gml:name>9020</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

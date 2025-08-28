@@ -8,6 +8,8 @@ using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 {
@@ -53,6 +55,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                 importToDynamicTile = new ImportToDynamicTile(progressDisplay);
                                 var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
                                 task.ContinueWith((_) => Interlocked.Decrement(ref numCurrentRunningTasks));
+                                task.ContinueWith(t =>
+                                {
+                                    if (t.Result)
+                                    {
+                                        EditorApplication.delayCall += () => Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+                                    }
+                                }, TaskContinuationOptions.OnlyOnRanToCompletion);
                                 task.ContinueWithErrorCatch();
                                 break;
                             default:
@@ -80,6 +89,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                             }
                             // 動的タイルインポートのクリーンアップ
                             importToDynamicTile?.CancelImport();
+                            importToDynamicTile = null;
                         }
                     }
                 }

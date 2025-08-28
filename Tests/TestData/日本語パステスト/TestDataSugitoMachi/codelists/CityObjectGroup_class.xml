@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_14e3bff7-3f8e-4de5-9330-c1f30e049f0d">
+<gml:name>CityObjectGroup_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityObjectGroup_class_1">
+<gml:description>assembly</gml:description>
+<gml:name>2000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

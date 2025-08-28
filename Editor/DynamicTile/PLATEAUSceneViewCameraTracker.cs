@@ -5,6 +5,7 @@ using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
 
 namespace PLATEAU.DynamicTile
 {
@@ -90,8 +91,8 @@ namespace PLATEAU.DynamicTile
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
-
-            EditorApplication.projectChanged -= OnProjectChanged; // コード更新時
+            
+            EditorApplication.projectChanged -= OnProjectChanged;
             EditorApplication.projectChanged += OnProjectChanged;
 
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
@@ -125,9 +126,10 @@ namespace PLATEAU.DynamicTile
             Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
-
+        
         static void OnProjectChanged()
         {
             if (disableProjectChangeEvent) 
@@ -135,9 +137,10 @@ namespace PLATEAU.DynamicTile
 
             Log("Project Changed");
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
-
+        
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
             var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -168,16 +171,29 @@ namespace PLATEAU.DynamicTile
             if (tileManager == null)
                 return;
 
+            if (BuildPipeline.isBuildingPlayer) return;
             Log($"Scene Opened: {scene.name}");
             InitView().ContinueWithErrorCatch();
         }
         
-        private static void BeforeScriptCompile(object _)
+        private static void BeforeScriptCompile(object _) 
         {
-            Log("BeforeScriptCompile");
+            Log("BeforeScriptCompile"); 
+            if (BuildPipeline.isBuildingPlayer) return;
             var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (tileManager == null) return;
             tileManager.ClearTileAssets();
+            ResetAddressables();
+        }
+
+        private static void ResetAddressables()
+        {
+            var handle = Addressables.InitializeAsync();
+            handle.WaitForCompletion();
+            if(handle.IsValid()) Addressables.Release(handle);
+            // Addressables.ClearResourceLocators();
+            // AssetBundle.UnloadAllAssetBundles(true); 
+            // Resources.UnloadUnusedAssets();
         }
 
         private static async Task InitView()

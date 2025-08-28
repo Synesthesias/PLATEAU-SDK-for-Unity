@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_7e47bba8-c488-47da-bbd4-d5c864e93ead">
+<gml:name>ConstructionStructureAttribute_slopeType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_1">
+<gml:description>階段式</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_2">
+<gml:description>押上式</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_3">
+<gml:description>スロープ式</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_4">
+<gml:description>平面式</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_5">
+<gml:description>各種併用</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_slopeType_6">
+<gml:description>その他</gml:description>
+<gml:name>90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>
