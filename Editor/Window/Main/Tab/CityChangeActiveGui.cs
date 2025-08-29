@@ -49,8 +49,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         "調整対象", this.adjustTarget,
                         typeof(PLATEAUInstancedCityModel), true);
                 if(EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
-                
-                if (this.adjustTarget == null) return;
+
+                EditorGUI.BeginChangeCheck();
+                this.tileManager =
+                    (PLATEAUTileManager)EditorGUILayout.ObjectField(
+                        "調整対象（動的タイル）", this.tileManager,
+                        typeof(PLATEAUTileManager), true);
+                if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
+
+                if (this.adjustTarget == null && this.tileManager == null) return;
 
                 PlateauEditorStyle.Separator(0);
 
@@ -108,44 +115,47 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
         {
             if (cityModel == null) return;
-
-            // PLATEAUInstancedCityModelのParentがTileMangerの場合は、TileManager側でFilteringします。
             this.tileManager = null;
-            if (cityModel.transform.parent?.GetComponent<PLATEAUTileManager>() != null)
+
+            // シーン上に存在するパッケージとLODを求めます。
+            this.packageToLodMinMax = new PackageToLodMinMax();
+            var gmls = cityModel.GmlTransforms;
+            foreach (var gml in gmls)
             {
-                this.packageToLodMinMax = new PackageToLodMinMax();
-                this.tileManager = cityModel.transform.parent.GetComponent<PLATEAUTileManager>();
-                var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
-                foreach (var package in packages)
+                var gmlFile = GmlFile.Create(gml.name);
+                var package = gmlFile.Package;
+                var lods = PLATEAUInstancedCityModel.GetLods(gml);
+                if (lods.Count > 0)
                 {
-                    if (package == PredefinedCityModelPackage.None)
-                        continue;
-                    var predefined = CityModelPackageInfo.GetPredefined(package);
-                    this.packageToLodMinMax.AddOrMerge(package, predefined.minLOD, predefined.maxLOD);
+                    this.packageToLodMinMax.AddOrMerge(package, lods.Min(), lods.Max());
                 }
-                // GUIを更新します。
-                this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+                gmlFile.Dispose();
             }
-            else
-            {
-                // シーン上に存在するパッケージとLODを求めます。
-                this.packageToLodMinMax = new PackageToLodMinMax();
-                var gmls = cityModel.GmlTransforms;
-                foreach (var gml in gmls)
-                {
-                    var gmlFile = GmlFile.Create(gml.name);
-                    var package = gmlFile.Package;
-                    var lods = PLATEAUInstancedCityModel.GetLods(gml);
-                    if (lods.Count > 0)
-                    {
-                        this.packageToLodMinMax.AddOrMerge(package, lods.Min(), lods.Max());
-                    }
-                    gmlFile.Dispose();
-                }
-                // GUIを更新します。
-                this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
-            }
+            // GUIを更新します。
+            this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
         }
+
+        /// <summary>
+        /// GUI上で調整対象のタイルマネージャーが新たに選択されたときに呼ばれます。
+        /// </summary>
+        private void OnChangeTargetTileManager(PLATEAUTileManager tileManager)
+        {
+            if (tileManager == null) return;
+            this.adjustTarget = null;
+
+            this.packageToLodMinMax = new PackageToLodMinMax();
+            var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
+            foreach (var package in packages)
+            {
+                if (package == PredefinedCityModelPackage.None)
+                    continue;
+                var predefined = CityModelPackageInfo.GetPredefined(package);
+                this.packageToLodMinMax.AddOrMerge(package, predefined.minLOD, predefined.maxLOD);
+            }
+            // GUIを更新します。
+            this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+        }
+
 
         /// <summary> テストで利用する用 </summary>
         internal const string NameOfOnChangeTargetCityModel = nameof(OnChangeTargetCityModel);
