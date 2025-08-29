@@ -247,7 +247,6 @@ namespace PLATEAU.DynamicTile
                             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
                             {
                                 var material = renderer.sharedMaterials[i];
-
                                 if (material != null && material.HasMainTextureAttribute() && material.mainTexture != null && !FallbackMaterial.ByMainTextureName(material.mainTexture.name))
                                 {
                                     Texture2D albedoTexture = material.mainTexture as Texture2D;
