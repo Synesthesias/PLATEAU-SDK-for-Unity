@@ -97,6 +97,18 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// xを指定してVector3にする
+        /// return new Vector3(x, self.x, self.y);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static Vector3 Axy(this Vector2 self, float x = 0f)
+        {
+            return new Vector3(x, self.x, self.y);
+        }
+
+        /// <summary>
         /// yを指定してVector3にする
         /// return new Vector3(self.x, y, self.y);
         /// </summary>
@@ -214,6 +226,16 @@ namespace PLATEAU.Util
             self.x /= div.x;
             self.y /= div.y;
             return self;
+        }
+        /// <summary>
+        /// new Vector2(1f / self.x, 1f / self.y)
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="div"></param>
+        /// <returns></returns>
+        public static Vector2 RevScaled(this Vector2 self)
+        {
+            return RevScale(Vector2.one, self);
         }
 
         /// <summary> Vector2.Scaleの逆数版 a / b </summary>

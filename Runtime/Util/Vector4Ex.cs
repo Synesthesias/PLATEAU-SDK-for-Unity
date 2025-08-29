@@ -174,10 +174,20 @@ namespace PLATEAU.Util
             return self;
         }
 
+        /// <summary>
+        /// new Vector4(1f / self.x, 1f / self.y, 1f / self.z, 1f / self.w);
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static Vector4 RevScaled(this Vector4 self)
+        {
+            return RevScale(Vector4.one, self);
+        }
+
         /// <summary> Vector4.Scaleの逆数版 a / b </summary>
         public static Vector4 RevScale(Vector4 a, Vector4 b)
         {
-            return new Vector4(a.x / b.x, a.y / b.y, a.z / b.z);
+            return new Vector4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
         }
 
         /// <summary>
