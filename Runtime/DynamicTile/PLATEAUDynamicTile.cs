@@ -64,6 +64,7 @@ namespace PLATEAU.DynamicTile
         /// Addressablesをロードする際の親Transform取得用。
         /// (現状未使用）
         /// </summary>
+        [Obsolete]
         public int Lod { get; private set; } = 0;
 
         public int ZoomLevel { get; private set; } = 0;
@@ -114,18 +115,28 @@ namespace PLATEAU.DynamicTile
             internal set
             {
                 filterCondition = value;
-                filterCondition.ApplyFilter(LoadedObject);
+                filterCondition?.ApplyFilter(LoadedObject);
             }
         }
 
         /// <summary>
         /// Addressからパッケージを取得する。
         /// </summary>
-        public PredefinedCityModelPackage Package => PLATEAUDynamicTileFilter.GetPackage(Address);
+        private PredefinedCityModelPackage? package = null;
+        public PredefinedCityModelPackage Package
+        {
+            get
+            {
+                if (package == null)
+                    package = PLATEAUDynamicTileFilter.GetPackage(Address);    
+                return package ?? PredefinedCityModelPackage.None;
+            }
+        }
 
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
+        [Obsolete]
         public PLATEAUDynamicTile(string address, int lod, Bounds bounds, int zoomLevel)
         {
             Address = address;

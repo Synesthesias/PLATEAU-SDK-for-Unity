@@ -1,4 +1,5 @@
-﻿using PLATEAU.CityInfo;
+﻿using PLATEAU.CityImport.Config.PackageImportConfigs;
+using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,6 +29,7 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// フィルター条件に基づいてGameObjectのアクティブ状態を設定します。
         /// 現状、最小地物には未対応
+        /// 地物変換実装後に、最小地物対応するか、最小地物のUIを省略するかを検討
         /// </summary>
         public void ApplyFilter(GameObject loadedObject)
         {
@@ -66,18 +68,24 @@ namespace PLATEAU.DynamicTile
             ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict,
             ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> packageToLodRangeDict)
         {
-            dynamicTiles.ForEach(tile =>
+            if (dynamicTiles == null || selectionDict == null || packageToLodRangeDict == null)
+                return;
+
+            foreach (var tile in dynamicTiles)
             {
                 var package = tile.Package;
-                if (selectionDict.TryGetValue(CityObjectTypeHierarchy.GetNodeByPackage(package), out var isActive))
+                var node = CityObjectTypeHierarchy.GetNodeByPackage(package);
+                if (node != null &&
+                    selectionDict.TryGetValue(node, out var isActive) &&
+                    packageToLodRangeDict.TryGetValue(package, out var lodRange))
                 {
-                    tile.FilterCondition = new FilterCondition(isActive, packageToLodRangeDict[package].minLod, packageToLodRangeDict[package].maxLod);
+                    tile.FilterCondition = new FilterCondition(isActive, lodRange.minLod, lodRange.maxLod);
                 }
                 else
                 {
                     tile.FilterCondition = null;
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -88,11 +96,13 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(address))
                 return PredefinedCityModelPackage.None;
 
-            Match match = Regex.Match(address, @"^tile_zoom_\d+_grid_\d+_(.+)$");
+            Match match = Regex.Match(address, @"^tile_zoom_\d+_grid_[^_]+_(.+)$");
             if (match.Success)
             {
                 string originalName = match.Groups[1].Value;
                 string type = originalName.Split('_').FirstOrDefault();
+                if (string.IsNullOrEmpty(type))
+                    return PredefinedCityModelPackage.None;
                 return DatasetAccessor.FeatureTypeToPackage(type);
             }
             else

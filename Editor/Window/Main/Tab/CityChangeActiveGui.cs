@@ -69,9 +69,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
                     PlateauEditorStyle.Heading("フィルタ条件指定", null);
                     
-                    var duplicateToggleContent =
-                        new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
-                    this.disableDuplicate = PlateauEditorStyle.Toggle(duplicateToggleContent, this.disableDuplicate);
+                    if(this.tileManager == null)
+                    {
+                        var duplicateToggleContent =
+                        new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。");
+                        this.disableDuplicate = PlateauEditorStyle.Toggle(duplicateToggleContent, this.disableDuplicate);
+                    }
                     
                     this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     
@@ -85,6 +88,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             {
                                 //TileMangerが存在する場合は、TileManager側でFilteringします。
                                 this.tileManager.FilterByCityObjectTypeAndLod(this.filterConditionGUI.SelectionDict, this.filterConditionGUI.PackageLodSliderResult);
+                                SceneView.RepaintAll();
                                 isFilterTaskRunning = false;
                             }
                             else
