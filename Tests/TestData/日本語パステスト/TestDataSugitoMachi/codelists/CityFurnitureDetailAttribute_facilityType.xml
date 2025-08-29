@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_e5b02965-8ecf-4294-90cb-61a7c64aefae">
+<gml:name>CityFurnitureDetailAttribute_facilityType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_1">
+<gml:description>基幹管路</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_2">
+<gml:description>支線</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_3">
+<gml:description>高圧管</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_4">
+<gml:description>中圧管</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_5">
+<gml:description>中低圧管</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_6">
+<gml:description>雨水</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_7">
+<gml:description>汚水</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_8">
+<gml:description>合流</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_9">
+<gml:description>共同溝</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CityFurnitureDetailAttribute_facilityType_10">
+<gml:description>法による共同溝</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_d7b0648b-d277-4d92-837e-ef03fa350d4d">
+<gml:name>IntBuildingInstallation_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_1">
+<gml:description>IfcBeam</gml:description>
+<gml:name>BE_01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_2">
+<gml:description>IfcColumn</gml:description>
+<gml:name>BE_02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_3">
+<gml:description>IfcPlate</gml:description>
+<gml:name>BE_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_4">
+<gml:description>IfcRailing</gml:description>
+<gml:name>BE_06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_5">
+<gml:description>IfcRamp</gml:description>
+<gml:name>BE_07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_6">
+<gml:description>IfcRampFlight</gml:description>
+<gml:name>BE_08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_7">
+<gml:description>IfcStair</gml:description>
+<gml:name>BE_11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_8">
+<gml:description>IfcStairFlight</gml:description>
+<gml:name>BE_12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_9">
+<gml:description>IfcBuildingElementProxy</gml:description>
+<gml:name>BE_16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IntBuildingInstallation_class_10">
+<gml:description>IfcTransportElement</gml:description>
+<gml:name>BE_17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

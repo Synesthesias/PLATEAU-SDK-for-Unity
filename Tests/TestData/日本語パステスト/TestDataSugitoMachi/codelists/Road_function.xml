@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_5c70efc2-4f4a-4ec1-8b9d-d9f7fa2ac62b">
+<gml:name>Road_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_1">
+<gml:description>高速自動車国道</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_2">
+<gml:description>一般国道</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_3">
+<gml:description>都道府県道</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_4">
+<gml:description>市町村道</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_5">
+<gml:description>建築基準法第42条1項2号道路</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_6">
+<gml:description>建築基準法第42条1項3号道路</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_7">
+<gml:description>建築基準法第42条1項4号道路</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_8">
+<gml:description>建築基準法第42条1項5号道路</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_9">
+<gml:description>建築基準法第42条2項道路</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_10">
+<gml:description>建築基準法第43条２項ただし書きの適用を受けたことがある道</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_11">
+<gml:description>未調査</gml:description>
+<gml:name>9000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_12">
+<gml:description>対象外</gml:description>
+<gml:name>9010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_function_13">
+<gml:description>不明</gml:description>
+<gml:name>9020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -8,8 +8,9 @@ using UnityEngine;
 namespace PLATEAU.CityImport.Import.CityImportProcedure
 {
     /// <summary>
-    /// PLATEAU インポート処理の1つとして、GMLと関連ファイルを
-    /// StreamingAssets フォルダにコピー(サーバーの場合はダウンロード)します。
+    /// PLATEAU インポート処理の1つとして、GMLと関連ファイルを取得します。
+    /// ローカルインポートの場合はコピー（今はコピーしないがかつてStreamingAssetsにコピーしていた時の名残）します。
+    /// サーバーインポートの場合はダウンロードします。
     /// </summary>
     internal static class GmlFetcher
     {

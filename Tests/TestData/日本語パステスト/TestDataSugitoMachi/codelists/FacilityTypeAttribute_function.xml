@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_b856be61-416e-4aef-8a03-fcd34c2932e1">
+<gml:name>FacilityTypeAttribute_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_1">
+<gml:description>港湾水域施設</gml:description>
+<gml:name>0501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_2">
+<gml:description>港湾外郭施設</gml:description>
+<gml:name>0502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_3">
+<gml:description>港湾係留施設</gml:description>
+<gml:name>0503</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_4">
+<gml:description>港湾臨港交通施設</gml:description>
+<gml:name>0504</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_5">
+<gml:description>港湾航行補助施設</gml:description>
+<gml:name>0505</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_6">
+<gml:description>港湾荷さばき施設</gml:description>
+<gml:name>0506</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_7">
+<gml:description>港湾旅客施設</gml:description>
+<gml:name>0507</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_8">
+<gml:description>港湾保管施設</gml:description>
+<gml:name>0508</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_9">
+<gml:description>港湾船舶役務用施設</gml:description>
+<gml:name>0509</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_10">
+<gml:description>港湾公害防止施設</gml:description>
+<gml:name>0510</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_11">
+<gml:description>港湾マリーナ及びPBS</gml:description>
+<gml:name>0511</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_12">
+<gml:description>港湾廃棄物処理施設</gml:description>
+<gml:name>0512</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_13">
+<gml:description>港湾環境整備施設</gml:description>
+<gml:name>0513</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_14">
+<gml:description>港湾厚生施設</gml:description>
+<gml:name>0514</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_15">
+<gml:description>港湾管理施設</gml:description>
+<gml:name>0515</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_16">
+<gml:description>漁港水域施設</gml:description>
+<gml:name>0801</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_17">
+<gml:description>漁港外郭施設</gml:description>
+<gml:name>0802</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_18">
+<gml:description>漁港係留施設</gml:description>
+<gml:name>0803</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_19">
+<gml:description>漁港輸送施設</gml:description>
+<gml:name>0804</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_20">
+<gml:description>漁港航行補助施設</gml:description>
+<gml:name>0805</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_21">
+<gml:description>漁船漁具保全施設</gml:description>
+<gml:name>0806</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_22">
+<gml:description>漁港補給施設</gml:description>
+<gml:name>0807</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_23">
+<gml:description>増殖及び養殖用施設</gml:description>
+<gml:name>0808</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_24">
+<gml:description>漁獲物の処理、保蔵及び加工施設</gml:description>
+<gml:name>0809</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_25">
+<gml:description>漁業用通信施設属性</gml:description>
+<gml:name>0810</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_26">
+<gml:description>漁港浄化施設属性</gml:description>
+<gml:name>0811</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_27">
+<gml:description>漁港廃油処理施設</gml:description>
+<gml:name>0812</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_28">
+<gml:description>漁港環境整備施設</gml:description>
+<gml:name>0813</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_29">
+<gml:description>漁港厚生施設</gml:description>
+<gml:name>0814</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_30">
+<gml:description>漁港管理施設</gml:description>
+<gml:name>0815</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_31">
+<gml:description>漁港施設用地</gml:description>
+<gml:name>0816</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_32">
+<gml:description>揚水機場</gml:description>
+<gml:name>0101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_33">
+<gml:description>排水機場</gml:description>
+<gml:name>0102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_34">
+<gml:description>上水</gml:description>
+<gml:name>9001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_35">
+<gml:description>下水</gml:description>
+<gml:name>9002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_36">
+<gml:description>ガス</gml:description>
+<gml:name>9003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_37">
+<gml:description>電力</gml:description>
+<gml:name>9004</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_38">
+<gml:description>通信</gml:description>
+<gml:name>9005</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FacilityTypeAttribute_function_39">
+<gml:description>熱供給</gml:description>
+<gml:name>9006</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

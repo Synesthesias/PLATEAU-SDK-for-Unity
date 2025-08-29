@@ -1,0 +1,730 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c41c5338-908f-4585-a6e5-ff1ab8c4e7a5">
+<gml:name>UrbanPlan_areaType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_1">
+<gml:description>都市計画区域</gml:description>
+<gml:name>1001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_2">
+<gml:description>準都市計画区域</gml:description>
+<gml:name>1002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_3">
+<gml:description>区域区分</gml:description>
+<gml:name>1100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_4">
+<gml:description>地域地区</gml:description>
+<gml:name>2000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_5">
+<gml:description>用途地域</gml:description>
+<gml:name>2100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_6">
+<gml:description>特別用途地区</gml:description>
+<gml:name>2200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_7">
+<gml:description>特定用途制限地域</gml:description>
+<gml:name>2201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_8">
+<gml:description>特例容積率適用地区</gml:description>
+<gml:name>2202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_9">
+<gml:description>高層住居誘導地区</gml:description>
+<gml:name>2203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_10">
+<gml:description>高度地区</gml:description>
+<gml:name>2204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_11">
+<gml:description>高度利用地区</gml:description>
+<gml:name>2205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_12">
+<gml:description>特定街区</gml:description>
+<gml:name>2206</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_13">
+<gml:description>都市再生特別地区</gml:description>
+<gml:name>2207</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_14">
+<gml:description>居住調整地域</gml:description>
+<gml:name>2208</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_15">
+<gml:description>特定用途誘導地区</gml:description>
+<gml:name>2209</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_16">
+<gml:description>防火地域又は準防火地域</gml:description>
+<gml:name>2210</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_17">
+<gml:description>特定防災街区整備地区</gml:description>
+<gml:name>2211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_18">
+<gml:description>景観地区</gml:description>
+<gml:name>2212</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_19">
+<gml:description>風致地区</gml:description>
+<gml:name>2213</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_20">
+<gml:description>駐車場整備地区</gml:description>
+<gml:name>2214</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_21">
+<gml:description>臨港地区</gml:description>
+<gml:name>2215</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_22">
+<gml:description>歴史的風土特別保存地区</gml:description>
+<gml:name>2216</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_23">
+<gml:description>第1種・第2種歴史的風土保存地区</gml:description>
+<gml:name>2217</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_24">
+<gml:description>緑地保全地域</gml:description>
+<gml:name>2218</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_25">
+<gml:description>特別緑地保存地区</gml:description>
+<gml:name>2219</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_26">
+<gml:description>緑化地域</gml:description>
+<gml:name>2220</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_27">
+<gml:description>流通業務地区</gml:description>
+<gml:name>2221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_28">
+<gml:description>生産緑地地区</gml:description>
+<gml:name>2222</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_29">
+<gml:description>伝統的建造物群保存地区</gml:description>
+<gml:name>2223</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_30">
+<gml:description>航空機騒音障害防止地区</gml:description>
+<gml:name>2224</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_31">
+<gml:description>航空機騒音障害防止特別地区</gml:description>
+<gml:name>2225</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_32">
+<gml:description>居住環境向上用途誘導地区</gml:description>
+<gml:name>2226</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_33">
+<gml:description>促進区域</gml:description>
+<gml:name>2300</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_34">
+<gml:description>市街地再開発促進区域</gml:description>
+<gml:name>2301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_35">
+<gml:description>土地区画整理促進区域</gml:description>
+<gml:name>2302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_36">
+<gml:description>住宅街区整備促進区域</gml:description>
+<gml:name>2303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_37">
+<gml:description>拠点業務市街地整備土地区画整理促進区域</gml:description>
+<gml:name>2304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_38">
+<gml:description>遊休土地転換利用促進地区</gml:description>
+<gml:name>2400</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_39">
+<gml:description>被災市街地復興推進地域</gml:description>
+<gml:name>2500</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_40">
+<gml:description>都市施設</gml:description>
+<gml:name>3000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_41">
+<gml:description>交通施設</gml:description>
+<gml:name>3010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_42">
+<gml:description>道路</gml:description>
+<gml:name>3011</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_43">
+<gml:description>都市高速鉄道</gml:description>
+<gml:name>3012</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_44">
+<gml:description>駐車場</gml:description>
+<gml:name>3013</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_45">
+<gml:description>自動車ターミナル</gml:description>
+<gml:name>3014</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_46">
+<gml:description>空港</gml:description>
+<gml:name>3015</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_47">
+<gml:description>港湾</gml:description>
+<gml:name>3016</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_48">
+<gml:description>軌道</gml:description>
+<gml:name>3017</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_49">
+<gml:description>公共空地</gml:description>
+<gml:name>3020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_50">
+<gml:description>公園</gml:description>
+<gml:name>3021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_51">
+<gml:description>緑地</gml:description>
+<gml:name>3022</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_52">
+<gml:description>広場</gml:description>
+<gml:name>3023</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_53">
+<gml:description>墓園</gml:description>
+<gml:name>3024</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_54">
+<gml:description>供給施設</gml:description>
+<gml:name>3030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_55">
+<gml:description>水道</gml:description>
+<gml:name>3031</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_56">
+<gml:description>電気供給施設</gml:description>
+<gml:name>3032</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_57">
+<gml:description>ガス供給施設</gml:description>
+<gml:name>3033</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_58">
+<gml:description>処理施設</gml:description>
+<gml:name>3040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_59">
+<gml:description>下水道</gml:description>
+<gml:name>3041</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_60">
+<gml:description>汚物処理場</gml:description>
+<gml:name>3042</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_61">
+<gml:description>ごみ焼却場</gml:description>
+<gml:name>3043</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_62">
+<gml:description>ごみ処理場</gml:description>
+<gml:name>3044</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_63">
+<gml:description>水路</gml:description>
+<gml:name>3050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_64">
+<gml:description>河川</gml:description>
+<gml:name>3051</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_65">
+<gml:description>運河</gml:description>
+<gml:name>3052</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_66">
+<gml:description>教育文化施設</gml:description>
+<gml:name>3060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_67">
+<gml:description>学校</gml:description>
+<gml:name>3061</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_68">
+<gml:description>図書館</gml:description>
+<gml:name>3062</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_69">
+<gml:description>研究施設</gml:description>
+<gml:name>3063</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_70">
+<gml:description>医療施設</gml:description>
+<gml:name>3070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_71">
+<gml:description>病院</gml:description>
+<gml:name>3071</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_72">
+<gml:description>社会福祉施設</gml:description>
+<gml:name>3080</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_73">
+<gml:description>保育所</gml:description>
+<gml:name>3081</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_74">
+<gml:description>市場、と畜場、火葬場</gml:description>
+<gml:name>3090</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_75">
+<gml:description>市場</gml:description>
+<gml:name>3091</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_76">
+<gml:description>と畜場</gml:description>
+<gml:name>3092</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_77">
+<gml:description>火葬場</gml:description>
+<gml:name>3093</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_78">
+<gml:description>一団地の住宅施設</gml:description>
+<gml:name>3100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_79">
+<gml:description>一団地の官公庁施設</gml:description>
+<gml:name>3110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_80">
+<gml:description>一団地の都市安全確保拠点施設</gml:description>
+<gml:name>3120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_81">
+<gml:description>流通業務団地</gml:description>
+<gml:name>3130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_82">
+<gml:description>一団地の津波防災拠点市街地形成施設</gml:description>
+<gml:name>3140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_83">
+<gml:description>一団地の復興再生拠点市街地形成施設</gml:description>
+<gml:name>3150</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_84">
+<gml:description>一団地の復興拠点市街地形成施設</gml:description>
+<gml:name>3160</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_85">
+<gml:description>政令で定める都市施設</gml:description>
+<gml:name>3170</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_86">
+<gml:description>電気通信施設</gml:description>
+<gml:name>3180</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_87">
+<gml:description>防風施設</gml:description>
+<gml:name>3190</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_88">
+<gml:description>防火施設</gml:description>
+<gml:name>3200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_89">
+<gml:description>防水施設</gml:description>
+<gml:name>3210</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_90">
+<gml:description>防雪施設</gml:description>
+<gml:name>3220</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_91">
+<gml:description>防潮施設</gml:description>
+<gml:name>3230</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_92">
+<gml:description>防砂施設</gml:description>
+<gml:name>3240</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_93">
+<gml:description>市街地開発事業</gml:description>
+<gml:name>4000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_94">
+<gml:description>土地区画整理事業</gml:description>
+<gml:name>4001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_95">
+<gml:description>新住宅市街地開発事業</gml:description>
+<gml:name>4002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_96">
+<gml:description>工業団地造成事業</gml:description>
+<gml:name>4003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_97">
+<gml:description>市街地再開発事業</gml:description>
+<gml:name>4004</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_98">
+<gml:description>新都市基盤整備事業</gml:description>
+<gml:name>4005</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_99">
+<gml:description>住宅街区整備事業</gml:description>
+<gml:name>4006</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_100">
+<gml:description>市街地開発事業等予定地域</gml:description>
+<gml:name>4100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_101">
+<gml:description>新住宅市街地開発事業の予定区域</gml:description>
+<gml:name>4102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_102">
+<gml:description>工業団地造成事業の予定区域</gml:description>
+<gml:name>4103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_103">
+<gml:description>新都市基盤整備事業の予定区域</gml:description>
+<gml:name>4105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_104">
+<gml:description>一団地の住宅施設の予定区域</gml:description>
+<gml:name>4107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_105">
+<gml:description>一団地の官公庁施設の予定区域</gml:description>
+<gml:name>4108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_106">
+<gml:description>流通業務団地の予定区域</gml:description>
+<gml:name>4109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_107">
+<gml:description>地区計画</gml:description>
+<gml:name>5000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_108">
+<gml:description>防災街区整備地区計画</gml:description>
+<gml:name>5010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_109">
+<gml:description>歴史的風致維持向上地区計画</gml:description>
+<gml:name>5020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_110">
+<gml:description>沿道地区計画</gml:description>
+<gml:name>5030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_111">
+<gml:description>集落地区計画</gml:description>
+<gml:name>5040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_112">
+<gml:description>地区整備計画</gml:description>
+<gml:name>5100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_113">
+<gml:description>特定建築物地区整備計画</gml:description>
+<gml:name>5110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_114">
+<gml:description>防災街区整備地区整備計画</gml:description>
+<gml:name>5111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_115">
+<gml:description>沿道地区整備計画</gml:description>
+<gml:name>5130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_116">
+<gml:description>集落地区整備計画</gml:description>
+<gml:name>5140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_117">
+<gml:description>歴史的風致維持向上地区整備計画</gml:description>
+<gml:name>5120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_118">
+<gml:description>地区</gml:description>
+<gml:name>5200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_119">
+<gml:description>地区施設</gml:description>
+<gml:name>5210</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_120">
+<gml:description>地区防災施設</gml:description>
+<gml:name>5220</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanPlan_areaType_121">
+<gml:description>特定地区防災施設</gml:description>
+<gml:name>5221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

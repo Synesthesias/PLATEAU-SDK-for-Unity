@@ -1,0 +1,724 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_3c3f02d3-ca4e-4bb3-a3b1-dd5efd54c8c3">
+<gml:name>Room_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_1">
+<gml:description>議会スペース</gml:description>
+<gml:name>SL_20_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_2">
+<gml:description>管理事務活動の空間</gml:description>
+<gml:name>SL_20_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_3">
+<gml:description>自動車整備および燃料補給空間</gml:description>
+<gml:name>SL_20_45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_4">
+<gml:description>商業活動の空間</gml:description>
+<gml:name>SL_20_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_5">
+<gml:description>郵便通信の空間</gml:description>
+<gml:name>SL_20_55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_6">
+<gml:description>軍事保安のための空間</gml:description>
+<gml:name>SL_20_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_7">
+<gml:description>パレード（行進）の空間</gml:description>
+<gml:name>SL_20_62</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_8">
+<gml:description>警察業務空間</gml:description>
+<gml:name>SL_20_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_9">
+<gml:description>司法活動の空間</gml:description>
+<gml:name>SL_20_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_10">
+<gml:description>拘置・勾留の空間</gml:description>
+<gml:name>SL_20_75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_11">
+<gml:description>射撃訓練の空間</gml:description>
+<gml:name>SL_20_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_12">
+<gml:description>セキュリティ活動の空間</gml:description>
+<gml:name>SL_20_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_13">
+<gml:description>事故災害支援のための空間</gml:description>
+<gml:name>SL_20_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_14">
+<gml:description>保護されたゾーン</gml:description>
+<gml:name>SL_20_95</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_15">
+<gml:description>記念空間</gml:description>
+<gml:name>SL_25_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_16">
+<gml:description>教育活動の空間</gml:description>
+<gml:name>SL_25_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_17">
+<gml:description>デザインする空間</gml:description>
+<gml:name>SL_25_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_18">
+<gml:description>科学および実験の空間</gml:description>
+<gml:name>SL_25_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_19">
+<gml:description>トレーニングスペース</gml:description>
+<gml:name>SL_25_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_20">
+<gml:description>展示空間</gml:description>
+<gml:name>SL_25_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_21">
+<gml:description>情報活動空間</gml:description>
+<gml:name>SL_25_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_22">
+<gml:description>学習リソーススペース</gml:description>
+<gml:name>SL_25_75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_23">
+<gml:description>準備スペース</gml:description>
+<gml:name>SL_25_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_24">
+<gml:description>礼拝空間</gml:description>
+<gml:name>SL_25_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_25">
+<gml:description>鉱物採掘の空間</gml:description>
+<gml:name>SL_30_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_26">
+<gml:description>原子力・化学物質管理の空間</gml:description>
+<gml:name>SL_30_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_27">
+<gml:description>鉱物処理の空間</gml:description>
+<gml:name>SL_30_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_28">
+<gml:description>農林水産植物加工空間</gml:description>
+<gml:name>SL_30_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_29">
+<gml:description>製造のための空間</gml:description>
+<gml:name>SL_30_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_30">
+<gml:description>清掃・メンテナンスの空間</gml:description>
+<gml:name>SL_30_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_31">
+<gml:description>機械式発電の空間</gml:description>
+<gml:name>SL_30_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_32">
+<gml:description>港湾保全の空間</gml:description>
+<gml:name>SL_30_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_33">
+<gml:description>倉庫・流通（配送）のための空間</gml:description>
+<gml:name>SL_30_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_34">
+<gml:description>農業・園芸空間</gml:description>
+<gml:name>SL_32_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_35">
+<gml:description>ダムスペース</gml:description>
+<gml:name>SL_32_35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_36">
+<gml:description>農地・園庭空間</gml:description>
+<gml:name>SL_32_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_37">
+<gml:description>土地管理用空間</gml:description>
+<gml:name>SL_32_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_38">
+<gml:description>海路・水路空間</gml:description>
+<gml:name>SL_32_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_39">
+<gml:description>自然空間</gml:description>
+<gml:name>SL_32_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_40">
+<gml:description>半自然空間</gml:description>
+<gml:name>SL_32_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_41">
+<gml:description>水管理・治水スペース</gml:description>
+<gml:name>SL_32_95</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_42">
+<gml:description>医療空間</gml:description>
+<gml:name>SL_35_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_43">
+<gml:description>福祉空間</gml:description>
+<gml:name>SL_35_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_44">
+<gml:description>食品管理空間</gml:description>
+<gml:name>SL_35_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_45">
+<gml:description>葬斎空間</gml:description>
+<gml:name>SL_35_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_46">
+<gml:description>健康衛生活動のための空間</gml:description>
+<gml:name>SL_35_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_47">
+<gml:description>動物のための空間</gml:description>
+<gml:name>SL_35_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_48">
+<gml:description>動物の医療、健康、福祉、葬儀の空間</gml:description>
+<gml:name>SL_35_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_49">
+<gml:description>アミューズメント空間</gml:description>
+<gml:name>SL_40_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_50">
+<gml:description>ダイニング（食事）空間</gml:description>
+<gml:name>SL_40_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_51">
+<gml:description>歴史的空間</gml:description>
+<gml:name>SL_40_35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_52">
+<gml:description>屋外の遊び場と社交場</gml:description>
+<gml:name>SL_40_55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_53">
+<gml:description>舞台芸術空間</gml:description>
+<gml:name>SL_40_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_54">
+<gml:description>舞台芸術の補助空間</gml:description>
+<gml:name>SL_40_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_55">
+<gml:description>コート、ピッチ、フィールドでのスポーツの空間</gml:description>
+<gml:name>SL_42_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_56">
+<gml:description>屋内アクティビティ用空間</gml:description>
+<gml:name>SL_42_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_57">
+<gml:description>屋外アクティビティ用空間</gml:description>
+<gml:name>SL_42_55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_58">
+<gml:description>スポーツとアクティビティの支援空間</gml:description>
+<gml:name>SL_42_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_59">
+<gml:description>水泳のための空間</gml:description>
+<gml:name>SL_42_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_60">
+<gml:description>ウォーターアクティビティ</gml:description>
+<gml:name>SL_42_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_61">
+<gml:description>ウィンタースポーツのための空間</gml:description>
+<gml:name>SL_42_95</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_62">
+<gml:description>生活空間</gml:description>
+<gml:name>SL_45_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_63">
+<gml:description>ガス廃棄物収集のための空間</gml:description>
+<gml:name>SL_50_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_64">
+<gml:description>非水系廃棄物収集空間</gml:description>
+<gml:name>SL_50_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_65">
+<gml:description>排水収集場所</gml:description>
+<gml:name>SL_50_25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_66">
+<gml:description>排水収集のための空間</gml:description>
+<gml:name>SL_50_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_67">
+<gml:description>排水収集の場所</gml:description>
+<gml:name>SL_50_35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_68">
+<gml:description>乾燥廃棄物収集のための空間</gml:description>
+<gml:name>SL_50_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_69">
+<gml:description>ガス廃棄物処理のための空間</gml:description>
+<gml:name>SL_50_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_70">
+<gml:description>非水系廃棄物の処理および処分空間</gml:description>
+<gml:name>SL_50_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_71">
+<gml:description>排水処理のための空間（排水処理場）</gml:description>
+<gml:name>SL_50_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_72">
+<gml:description>廃水処理・処分のための空間</gml:description>
+<gml:name>SL_50_75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_73">
+<gml:description>乾燥廃棄物処理・処分のための空間</gml:description>
+<gml:name>SL_50_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_74">
+<gml:description>ガス抽出処理のための空間</gml:description>
+<gml:name>SL_55_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_75">
+<gml:description>液体燃料抽出・処理のための空間</gml:description>
+<gml:name>SL_55_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_76">
+<gml:description>水抽出処理のための空間</gml:description>
+<gml:name>SL_55_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_77">
+<gml:description>ガス供給のための空間</gml:description>
+<gml:name>SL_55_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_78">
+<gml:description>消火供給のための空間</gml:description>
+<gml:name>SL_55_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_79">
+<gml:description>蒸気供給のための空間</gml:description>
+<gml:name>SL_55_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_80">
+<gml:description>液体燃料供給のための空間</gml:description>
+<gml:name>SL_55_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_81">
+<gml:description>処理液供給のための空間</gml:description>
+<gml:name>SL_55_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_82">
+<gml:description>換気および空調のための空間</gml:description>
+<gml:name>SL_55_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_83">
+<gml:description>給水のための空間</gml:description>
+<gml:name>SL_55_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_84">
+<gml:description>パイプ固形物供給のための空間</gml:description>
+<gml:name>SL_55_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_85">
+<gml:description>線路および舗装の融雪のための空間</gml:description>
+<gml:name>SL_60_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_86">
+<gml:description>室内冷暖房のための空間</gml:description>
+<gml:name>SL_60_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_87">
+<gml:description>冷凍（冷蔵）のための空間</gml:description>
+<gml:name>SL_60_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_88">
+<gml:description>乾燥のための空間</gml:description>
+<gml:name>SL_60_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_89">
+<gml:description>発電のための空間</gml:description>
+<gml:name>SL_70_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_90">
+<gml:description>配電・送電用の空間</gml:description>
+<gml:name>SL_70_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_91">
+<gml:description>通信のための空間</gml:description>
+<gml:name>SL_75_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_92">
+<gml:description>シグナルのための空間</gml:description>
+<gml:name>SL_75_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_93">
+<gml:description>電子セキュリティの空間</gml:description>
+<gml:name>SL_75_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_94">
+<gml:description>安全と保護のための空間</gml:description>
+<gml:name>SL_75_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_95">
+<gml:description>環境安全</gml:description>
+<gml:name>SL_75_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_96">
+<gml:description>制御・管理用の空間</gml:description>
+<gml:name>SL_75_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_97">
+<gml:description>保護用の空間</gml:description>
+<gml:name>SL_75_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_98">
+<gml:description>航空宇宙基地空間</gml:description>
+<gml:name>SL_80_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_99">
+<gml:description>荷物積込・乗船スペース</gml:description>
+<gml:name>SL_80_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_100">
+<gml:description>航空宇宙整備のための空間</gml:description>
+<gml:name>SL_80_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_101">
+<gml:description>ケーブルウェイ（索道）</gml:description>
+<gml:name>SL_80_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_102">
+<gml:description>ケーブル輸送の保管・メンテナンスの空間</gml:description>
+<gml:name>SL_80_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_103">
+<gml:description>道路空間</gml:description>
+<gml:name>SL_80_35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_104">
+<gml:description>歩道空間</gml:description>
+<gml:name>SL_80_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_105">
+<gml:description>車両保管のための空間</gml:description>
+<gml:name>SL_80_45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_106">
+<gml:description>鉄道空間</gml:description>
+<gml:name>SL_80_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_107">
+<gml:description>海上・水上輸送のための空間</gml:description>
+<gml:name>SL_80_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_108">
+<gml:description>輸送ハブ</gml:description>
+<gml:name>SL_80_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_109">
+<gml:description>グリッド（輸送網）システム</gml:description>
+<gml:name>SL_80_92</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_110">
+<gml:description>橋梁構造物の空間</gml:description>
+<gml:name>SL_80_94</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_111">
+<gml:description>トンネル・立て坑の空間</gml:description>
+<gml:name>SL_80_96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_112">
+<gml:description>交通施設の車両限界</gml:description>
+<gml:name>SL_80_98</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_113">
+<gml:description>乗客スペース</gml:description>
+<gml:name>SL_82_61</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_114">
+<gml:description>資源循環のための空間</gml:description>
+<gml:name>SL_90_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_115">
+<gml:description>共用空間（コモンスペース）</gml:description>
+<gml:name>SL_90_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_116">
+<gml:description>建設余地</gml:description>
+<gml:name>SL_90_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_117">
+<gml:description>一般レベル</gml:description>
+<gml:name>SL_90_40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_118">
+<gml:description>収納貯蔵のための空間</gml:description>
+<gml:name>SL_90_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_119">
+<gml:description>占有されていない開口</gml:description>
+<gml:name>SL_90_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Room_function_120">
+<gml:description>機械室及び制御室</gml:description>
+<gml:name>SL_90_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_05d94327-ff64-4943-a09e-937656ad24d0">
+<gml:name>Railway_lodType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Railway_lodType_1">
+<gml:description>軌道中心線（線）、軌間（面）及び道床（面）を取得する。横断方向に一律の高さとする。</gml:description>
+<gml:name>3.0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Railway_lodType_2">
+<gml:description>軌道中心線（線）、軌間（面）、レール、道床（面）及び交通補助領域を取得する。横断方向に15㎝以上の高さの差を取得する。</gml:description>
+<gml:name>3.1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Railway_lodType_3">
+<gml:description>軌道中心線（線）、軌間（面）、レール、道床（面）及び交通補助領域を取得する。横断方向に15㎝未満の高さの差を取得する。</gml:description>
+<gml:name>3.2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

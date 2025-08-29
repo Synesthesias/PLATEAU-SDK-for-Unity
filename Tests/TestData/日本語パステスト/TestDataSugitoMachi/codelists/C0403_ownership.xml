@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_3b02fd3f-65bd-4ffb-ac16-e72673527a8a">
+<gml:name>C0403_ownership</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_1">
+<gml:description>住宅に居住する一般世帯数</gml:description>
+<gml:name>04019</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_2">
+<gml:description>持ち家世帯数</gml:description>
+<gml:name>04020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_3">
+<gml:description>公営・都市機構・公社の借家</gml:description>
+<gml:name>04021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_4">
+<gml:description>民営の借家</gml:description>
+<gml:name>04022</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_5">
+<gml:description>給与住宅</gml:description>
+<gml:name>04023</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_6">
+<gml:description>間借り</gml:description>
+<gml:name>04017</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_ownership_7">
+<gml:description>その他</gml:description>
+<gml:name>04018</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

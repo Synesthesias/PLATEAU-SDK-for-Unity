@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="Households_ownershipType"><gml:name>Households_ownershipType</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>own occupation</gml:description><gml:name>1000</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>leased house (public)</gml:description><gml:name>1010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>leased house (private)</gml:description><gml:name>1020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>issued house</gml:description><gml:name>1030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>lodging</gml:description><gml:name>1040</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6"><gml:description>others</gml:description><gml:name>1050</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_6314c985-4deb-49ae-b119-412892ea812a">
+<gml:name>Tunnel_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_1">
+<gml:description>鉄道用トンネル</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_2">
+<gml:description>道路用トンネル</gml:description>
+<gml:name>1010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_3">
+<gml:description>水路トンネル</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_4">
+<gml:description>歩行者用トンネル</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_5">
+<gml:description>避難誘導設備</gml:description>
+<gml:name>09</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_6">
+<gml:description>避難連絡坑</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Tunnel_function_7">
+<gml:description>その他</gml:description>
+<gml:name>90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_2b0d9db1-62d9-4ecd-8083-8d6e21e357b7">
+<gml:name>DmElement_annotationType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_annotationType_1">
+<gml:description>区分しない</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_annotationType_2">
+<gml:description>漢字</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_annotationType_3">
+<gml:description>英数カナ文字</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

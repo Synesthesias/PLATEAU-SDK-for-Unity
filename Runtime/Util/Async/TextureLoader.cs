@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -46,10 +47,7 @@ namespace PLATEAU.Util.Async
         {
             if (string.IsNullOrEmpty(texturePath))
                 return null;
-
-            // .PLATEAU からの相対パスを求めます。
-            string pathToReplace = (PathUtil.PLATEAUSrcFetchDir + "/").Replace('\\', '/');
-            string relativePath = (texturePath.Replace('\\', '/')).Replace(pathToReplace, "");
+            
 
             Debug.Log($"Loading Texture : {texturePath}");
 
@@ -64,7 +62,7 @@ namespace PLATEAU.Util.Async
             // 画質は下がりますが、メモリ使用量を適正にするために必須と思われます。
             var compressedTex = Compress(texture);
 
-            compressedTex.name = relativePath;
+            compressedTex.name = Path.GetFileName(texturePath);
             return compressedTex;
         }
         

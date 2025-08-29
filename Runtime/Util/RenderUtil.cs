@@ -1,7 +1,6 @@
 ﻿#if  !UNITY_EDITOR
 using System;
 #endif
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -20,6 +19,23 @@ namespace PLATEAU.Util
                 var defaultMat = pipelineAsset == null ?
                     new Material(Shader.Find("Standard")) : // Built-in Render Pipeline のとき 
                     pipelineAsset.defaultMaterial; // Universal Render Pipeline または High Definition Render Pipeline のとき
+                
+                if (defaultMat == null) 
+                {
+                    // URPやHDRPであっても、ビルド後のアプリケーションでは上で取得するpipelineAssetがnullになることがあります。
+                    if (pipelineAsset.GetType().Name == "UniversalRenderPipelineAsset")
+                    {
+                        defaultMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    }
+                    else if (pipelineAsset.GetType().Name == "HDRenderPipelineAsset")
+                    {
+                        defaultMat = new Material(Shader.Find("HDRP/Lit"));
+                    }
+                    else
+                    {
+                        Debug.LogError($"No suitable shazzder found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.renderPipelineAsset}");
+                    }
+                }
                 return defaultMat;
             }
         }
@@ -42,14 +58,7 @@ namespace PLATEAU.Util
         {
             get
             {
-                #if UNITY_EDITOR
-                return new Material(
-                    (Material)AssetDatabase.LoadAssetAtPath(
-                        PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial.mat"),
-                        typeof(Material)));
-                #else
-                throw new NotImplementedException("This function is only supported in editor.");
-                #endif
+                return new Material(Resources.Load<Material>("PLATEAUX3DMaterial"));
             }
         }
 
@@ -60,14 +69,7 @@ namespace PLATEAU.Util
         {
             get
             {
-                #if UNITY_EDITOR
-                return new Material(
-                    (Material)AssetDatabase.LoadAssetAtPath(
-                        PathUtil.SdkPathToAssetPath("Materials/PLATEAUX3DMaterial_Transparent.mat"),
-                        typeof(Material)));
-                #else
-                throw new NotImplementedException("This function is only supported in editor.");
-                #endif
+                return new Material(Resources.Load<Material>("PLATEAUX3DMaterial_Transparent"));
             }
         }
 

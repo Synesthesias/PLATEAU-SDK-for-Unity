@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_1e7bad48-5d3c-42f2-853e-faec37ea3ba8">
+<gml:name>UtilityNetworkElement_occupierName</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_1">
+<gml:description>国土交通省</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_2">
+<gml:description>東京都</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_3">
+<gml:description>東京電力パワーグリッド株式会社</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_4">
+<gml:description>東京ガスネットワーク株式会社</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_5">
+<gml:description>東日本電信電話株式会社</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_6">
+<gml:description>丸の内熱供給株式会社</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNetworkElement_occupierName_7">
+<gml:description>東京熱供給株式会社</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

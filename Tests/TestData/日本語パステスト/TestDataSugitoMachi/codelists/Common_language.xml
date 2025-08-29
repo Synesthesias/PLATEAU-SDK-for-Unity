@@ -1,0 +1,1109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="Common_language">
+	<gml:description>2023-11-24 不要なスペース削除</gml:description>
+	<gml:name>Common_language</gml:name>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id1">
+			<gml:description>Afar</gml:description>
+			<gml:name>aa</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id2">
+			<gml:description>Abkhazian</gml:description>
+			<gml:name>ab</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id3">
+			<gml:description>Afrikaans</gml:description>
+			<gml:name>af</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id4">
+			<gml:description>Akan</gml:description>
+			<gml:name>ak</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id5">
+			<gml:description>Albanian</gml:description>
+			<gml:name>sq</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id6">
+			<gml:description>Amharic; Abyssinian</gml:description>
+			<gml:name>am</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id7">
+			<gml:description>Arabic</gml:description>
+			<gml:name>ar</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id8">
+			<gml:description>Aragonese</gml:description>
+			<gml:name>an</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id9">
+			<gml:description>Armenian</gml:description>
+			<gml:name>hy</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id10">
+			<gml:description>Assamese</gml:description>
+			<gml:name>as</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id11">
+			<gml:description>Avarish</gml:description>
+			<gml:name>av</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id12">
+			<gml:description>Avestan</gml:description>
+			<gml:name>ae</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id13">
+			<gml:description>Aymara</gml:description>
+			<gml:name>ay</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id14">
+			<gml:description>Azerbaijani</gml:description>
+			<gml:name>az</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id15">
+			<gml:description>Bashkir</gml:description>
+			<gml:name>ba</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id16">
+			<gml:description>Bambara</gml:description>
+			<gml:name>bm</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id17">
+			<gml:description>Basque</gml:description>
+			<gml:name>eu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id18">
+			<gml:description>Belarusian; Byelorussian</gml:description>
+			<gml:name>be</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id19">
+			<gml:description>Bengali; Bangla</gml:description>
+			<gml:name>bn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id20">
+			<gml:description>Bihari</gml:description>
+			<gml:name>bh</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id21">
+			<gml:description>Bislama</gml:description>
+			<gml:name>bi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id22">
+			<gml:description>Bosnian</gml:description>
+			<gml:name>bs</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id23">
+			<gml:description>Breton</gml:description>
+			<gml:name>br</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id24">
+			<gml:description>Bulgarian</gml:description>
+			<gml:name>bg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id25">
+			<gml:description>Myanmar; Burmese</gml:description>
+			<gml:name>my</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id26">
+			<gml:description>Catalan</gml:description>
+			<gml:name>ca</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id27">
+			<gml:description>Chamorro</gml:description>
+			<gml:name>ch</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id28">
+			<gml:description>Chechen</gml:description>
+			<gml:name>ce</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id29">
+			<gml:description>Chinese</gml:description>
+			<gml:name>zh</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id30">
+			<gml:description>Old Slavonic; Old Church Slavonic; Church Slavonic; Old Bulgarian</gml:description>
+			<gml:name>cu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id31">
+			<gml:description>Chuvash</gml:description>
+			<gml:name>cv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id32">
+			<gml:description>Cornish</gml:description>
+			<gml:name>kw</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id33">
+			<gml:description>Corsican</gml:description>
+			<gml:name>co</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id34">
+			<gml:description>Cree</gml:description>
+			<gml:name>cr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id35">
+			<gml:description>Czech</gml:description>
+			<gml:name>cs</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id36">
+			<gml:description>Danish</gml:description>
+			<gml:name>da</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id37">
+			<gml:description>Divehi; Maldivian</gml:description>
+			<gml:name>dv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id38">
+			<gml:description>Dutch</gml:description>
+			<gml:name>nl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id39">
+			<gml:description>Dzongkha; Bhutani; Butanese</gml:description>
+			<gml:name>dz</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id40">
+			<gml:description>English</gml:description>
+			<gml:name>en</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id41">
+			<gml:description>Esperanto</gml:description>
+			<gml:name>eo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id42">
+			<gml:description>Estonian</gml:description>
+			<gml:name>et</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id43">
+			<gml:description>Ewe</gml:description>
+			<gml:name>ee</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id44">
+			<gml:description>Faroese; Faeroese</gml:description>
+			<gml:name>fo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id45">
+			<gml:description>Fijian</gml:description>
+			<gml:name>fj</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id46">
+			<gml:description>Finnish</gml:description>
+			<gml:name>fi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id47">
+			<gml:description>French</gml:description>
+			<gml:name>fr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id48">
+			<gml:description>Frisian; Western Frisian</gml:description>
+			<gml:name>fy</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id49">
+			<gml:description>Fulah; Fula; Fulani; Fulfulde; Peul</gml:description>
+			<gml:name>ff</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id50">
+			<gml:description>Georgian</gml:description>
+			<gml:name>ka</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id51">
+			<gml:description>German</gml:description>
+			<gml:name>de</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id52">
+			<gml:description>Gaelic; Scottish Gaelic; Gaelic (Scots)</gml:description>
+			<gml:name>gd</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id53">
+			<gml:description>Irish</gml:description>
+			<gml:name>ga</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id54">
+			<gml:description>Galician; Gallegan</gml:description>
+			<gml:name>gl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id55">
+			<gml:description>Manx Gaelic</gml:description>
+			<gml:name>gv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id56">
+			<gml:description>Modern Greek (post 1453)</gml:description>
+			<gml:name>el</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id57">
+			<gml:description>Guarani</gml:description>
+			<gml:name>gn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id58">
+			<gml:description>Gujarati</gml:description>
+			<gml:name>gu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id59">
+			<gml:description>Haitian; Haitian Creole</gml:description>
+			<gml:name>ht</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id60">
+			<gml:description>Hausa</gml:description>
+			<gml:name>ha</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id61">
+			<gml:description>Hebrew</gml:description>
+			<gml:name>he</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id62">
+			<gml:description>Herero</gml:description>
+			<gml:name>hz</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id63">
+			<gml:description>Hindi</gml:description>
+			<gml:name>hi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id64">
+			<gml:description>Hiri Motu</gml:description>
+			<gml:name>ho</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id65">
+			<gml:description>Hungarian</gml:description>
+			<gml:name>hu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id66">
+			<gml:description>Igbo; Ibo</gml:description>
+			<gml:name>ig</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id67">
+			<gml:description>Icelandic</gml:description>
+			<gml:name>is</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id68">
+			<gml:description>Ido</gml:description>
+			<gml:name>io</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id69">
+			<gml:description>Sichuan Yi</gml:description>
+			<gml:name>ii</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id70">
+			<gml:description>Inuktitut</gml:description>
+			<gml:name>iu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id71">
+			<gml:description>Interlingue</gml:description>
+			<gml:name>ie</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id72">
+			<gml:description>Interlingua</gml:description>
+			<gml:name>ia</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id73">
+			<gml:description>Indonesian</gml:description>
+			<gml:name>id</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id74">
+			<gml:description>Inupiaq</gml:description>
+			<gml:name>ik</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id75">
+			<gml:description>Italian</gml:description>
+			<gml:name>it</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id76">
+			<gml:description>Javanese</gml:description>
+			<gml:name>jv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id77">
+			<gml:description>Japanese</gml:description>
+			<gml:name>ja</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id78">
+			<gml:description>Greenlandic; Kalaallisut</gml:description>
+			<gml:name>kl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id79">
+			<gml:description>Kannada</gml:description>
+			<gml:name>kn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id80">
+			<gml:description>Kashmiri</gml:description>
+			<gml:name>ks</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id81">
+			<gml:description>Kanuri</gml:description>
+			<gml:name>kr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id82">
+			<gml:description>Kazakh</gml:description>
+			<gml:name>kk</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id83">
+			<gml:description>Khmer; Cambodian</gml:description>
+			<gml:name>km</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id84">
+			<gml:description>Kikuyu; Gikuyu</gml:description>
+			<gml:name>ki</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id85">
+			<gml:description>Kinyarwanda; Rwanda</gml:description>
+			<gml:name>rw</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id86">
+			<gml:description>Kyrgyz; Kirghiz</gml:description>
+			<gml:name>ky</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id87">
+			<gml:description>Komi</gml:description>
+			<gml:name>kv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id88">
+			<gml:description>Kongo; Kikongo</gml:description>
+			<gml:name>kg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id89">
+			<gml:description>Korean</gml:description>
+			<gml:name>ko</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id90">
+			<gml:description>Kwanyama; Kuanyama</gml:description>
+			<gml:name>kj</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id91">
+			<gml:description>Kurdish</gml:description>
+			<gml:name>ku</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id92">
+			<gml:description>Laotian; Lao</gml:description>
+			<gml:name>lo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id93">
+			<gml:description>Latin</gml:description>
+			<gml:name>la</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id94">
+			<gml:description>Latvian; Lettish</gml:description>
+			<gml:name>lv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id95">
+			<gml:description>Limburgan; Limburger; Limburgish</gml:description>
+			<gml:name>li</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id96">
+			<gml:description>Lingala</gml:description>
+			<gml:name>ln</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id97">
+			<gml:description>Lithuanian</gml:description>
+			<gml:name>lt</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id98">
+			<gml:description>Luxembourgish</gml:description>
+			<gml:name>lb</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id99">
+			<gml:description>Luba-Katanga</gml:description>
+			<gml:name>lu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id100">
+			<gml:description>Luganda; Ganda</gml:description>
+			<gml:name>lg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id101">
+			<gml:description>Macedonian</gml:description>
+			<gml:name>mk</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id102">
+			<gml:description>Marshallese</gml:description>
+			<gml:name>mh</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id103">
+			<gml:description>Malayalam</gml:description>
+			<gml:name>ml</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id104">
+			<gml:description>Maori</gml:description>
+			<gml:name>mi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id105">
+			<gml:description>Marathi</gml:description>
+			<gml:name>mr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id106">
+			<gml:description>Malay</gml:description>
+			<gml:name>ms</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id107">
+			<gml:description>Malagasy</gml:description>
+			<gml:name>mg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id108">
+			<gml:description>Maltese</gml:description>
+			<gml:name>mt</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id109">
+			<gml:description>Mongolian</gml:description>
+			<gml:name>mn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id110">
+			<gml:description>Nauran</gml:description>
+			<gml:name>na</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id111">
+			<gml:description>Navajo</gml:description>
+			<gml:name>nv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id112">
+			<gml:description>South Ndebele</gml:description>
+			<gml:name>nr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id113">
+			<gml:description>North Ndebele</gml:description>
+			<gml:name>nd</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id114">
+			<gml:description>Ndonga</gml:description>
+			<gml:name>ng</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id115">
+			<gml:description>Nepali</gml:description>
+			<gml:name>ne</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id116">
+			<gml:description>Norwegian Nynorsk</gml:description>
+			<gml:name>nn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id117">
+			<gml:description>Norwegian Bokmal</gml:description>
+			<gml:name>nb</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id118">
+			<gml:description>Norwegian</gml:description>
+			<gml:name>no</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id119">
+			<gml:description>Chichewa; Chewa; Nyanja</gml:description>
+			<gml:name>ny</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id120">
+			<gml:description>Occitan (post 1500); Provencal (post 1500)</gml:description>
+			<gml:name>oc</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id121">
+			<gml:description>Ojibwa</gml:description>
+			<gml:name>oj</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id122">
+			<gml:description>Oriya</gml:description>
+			<gml:name>or</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id123">
+			<gml:description>Oromo; Afan Oromo; Galla</gml:description>
+			<gml:name>om</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id124">
+			<gml:description>Ossetian</gml:description>
+			<gml:name>os</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id125">
+			<gml:description>Punjabi; Panjabi</gml:description>
+			<gml:name>pa</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id126">
+			<gml:description>Farsi; Persian</gml:description>
+			<gml:name>fa</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id127">
+			<gml:description>Pali</gml:description>
+			<gml:name>pi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id128">
+			<gml:description>Polish</gml:description>
+			<gml:name>pl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id129">
+			<gml:description>Portuguese</gml:description>
+			<gml:name>pt</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id130">
+			<gml:description>Pashto; Pushto</gml:description>
+			<gml:name>ps</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id131">
+			<gml:description>Quechua</gml:description>
+			<gml:name>qu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id132">
+			<gml:description>Rhaeto-Romance</gml:description>
+			<gml:name>rm</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id133">
+			<gml:description>Romanian</gml:description>
+			<gml:name>ro</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id134">
+			<gml:description>Kirundi; Rundi</gml:description>
+			<gml:name>rn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id135">
+			<gml:description>Russian</gml:description>
+			<gml:name>ru</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id136">
+			<gml:description>Sangho</gml:description>
+			<gml:name>sg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id137">
+			<gml:description>Sanskrit</gml:description>
+			<gml:name>sa</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id138">
+			<gml:description>Serbian</gml:description>
+			<gml:name>sr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id139">
+			<gml:description>Croatian</gml:description>
+			<gml:name>hr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id140">
+			<gml:description>Sinhalese; Singhalese</gml:description>
+			<gml:name>si</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id141">
+			<gml:description>Slovak</gml:description>
+			<gml:name>sk</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id142">
+			<gml:description>Slovenian</gml:description>
+			<gml:name>sl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id143">
+			<gml:description>Northern Sami</gml:description>
+			<gml:name>se</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id144">
+			<gml:description>Samoan</gml:description>
+			<gml:name>sm</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id145">
+			<gml:description>Shona; Chishona</gml:description>
+			<gml:name>sn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id146">
+			<gml:description>Sindhi</gml:description>
+			<gml:name>sd</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id147">
+			<gml:description>Somali</gml:description>
+			<gml:name>so</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id148">
+			<gml:description>Sesotho; Southern Sotho</gml:description>
+			<gml:name>st</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id149">
+			<gml:description>Spanish; Castilian</gml:description>
+			<gml:name>es</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id150">
+			<gml:description>Sardinian</gml:description>
+			<gml:name>sc</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id151">
+			<gml:description>Swazi; Swati; Siswati</gml:description>
+			<gml:name>ss</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id152">
+			<gml:description>Sundanese</gml:description>
+			<gml:name>su</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id153">
+			<gml:description>Swahili; Kiswahili</gml:description>
+			<gml:name>sw</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id154">
+			<gml:description>Swedish</gml:description>
+			<gml:name>sv</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id155">
+			<gml:description>Tahitian</gml:description>
+			<gml:name>ty</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id156">
+			<gml:description>Tamil</gml:description>
+			<gml:name>ta</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id157">
+			<gml:description>Tatar</gml:description>
+			<gml:name>tt</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id158">
+			<gml:description>Telugu</gml:description>
+			<gml:name>te</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id159">
+			<gml:description>Tajiki</gml:description>
+			<gml:name>tg</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id160">
+			<gml:description>Tagalog</gml:description>
+			<gml:name>tl</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id161">
+			<gml:description>Thai</gml:description>
+			<gml:name>th</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id162">
+			<gml:description>Tibetan</gml:description>
+			<gml:name>bo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id163">
+			<gml:description>Tigrinya</gml:description>
+			<gml:name>ti</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id164">
+			<gml:description>Tongan (Tonga Islands)</gml:description>
+			<gml:name>to</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id165">
+			<gml:description>Setswana; Tswana</gml:description>
+			<gml:name>tn</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id166">
+			<gml:description>Tsonga</gml:description>
+			<gml:name>ts</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id167">
+			<gml:description>Turkmen</gml:description>
+			<gml:name>tk</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id168">
+			<gml:description>Turkish</gml:description>
+			<gml:name>tr</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id169">
+			<gml:description>Twi; Tshi</gml:description>
+			<gml:name>tw</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id170">
+			<gml:description>Uighur</gml:description>
+			<gml:name>ug</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id171">
+			<gml:description>Ukrainian</gml:description>
+			<gml:name>uk</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id172">
+			<gml:description>Urdu</gml:description>
+			<gml:name>ur</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id173">
+			<gml:description>Uzbek</gml:description>
+			<gml:name>uz</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id174">
+			<gml:description>Venda</gml:description>
+			<gml:name>ve</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id175">
+			<gml:description>Vietnamese</gml:description>
+			<gml:name>vi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id176">
+			<gml:description>Volapuk</gml:description>
+			<gml:name>vo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id177">
+			<gml:description>Welsh</gml:description>
+			<gml:name>cy</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id178">
+			<gml:description>Walloon</gml:description>
+			<gml:name>wa</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id179">
+			<gml:description>Wolof</gml:description>
+			<gml:name>wo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id180">
+			<gml:description>Xhosa</gml:description>
+			<gml:name>xh</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id181">
+			<gml:description>Yiddish</gml:description>
+			<gml:name>yi</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id182">
+			<gml:description>Yoruba</gml:description>
+			<gml:name>yo</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id183">
+			<gml:description>Zhuang; Chuang; Chwang</gml:description>
+			<gml:name>za</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id184">
+			<gml:description>Zulu</gml:description>
+			<gml:name>zu</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+</gml:Dictionary>

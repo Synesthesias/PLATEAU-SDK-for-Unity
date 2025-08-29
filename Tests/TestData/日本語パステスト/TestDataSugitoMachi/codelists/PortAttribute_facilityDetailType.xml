@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_17b74fe8-68e2-4224-95c5-142103f0e7ff">
+<gml:name>PortAttribute_facilityDetailType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_1">
+<gml:description>上屋</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_2">
+<gml:description>移動式</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_3">
+<gml:description>待合所</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_4">
+<gml:description>倉庫</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_5">
+<gml:description>野積場</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_6">
+<gml:description>貯油施設</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_7">
+<gml:description>危険物置場</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_8">
+<gml:description>貯木場</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_9">
+<gml:description>給水</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_10">
+<gml:description>給油</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_11">
+<gml:description>修理</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_12">
+<gml:description>保管</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_13">
+<gml:description>離着岸補助</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_14">
+<gml:description>廃棄物埋立護岸</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_15">
+<gml:description>焼却</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_16">
+<gml:description>廃油</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_17">
+<gml:description>廃棄物処理船舶・車両</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_18">
+<gml:description>海浜</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_19">
+<gml:description>緑地</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_20">
+<gml:description>休憩所</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_21">
+<gml:description>資材倉庫</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_22">
+<gml:description>事務所</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_23">
+<gml:description>通船</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_24">
+<gml:description>清掃船</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_25">
+<gml:description>離岸堤</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_26">
+<gml:description>車道</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_27">
+<gml:description>歩行者専用道</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_28">
+<gml:description>駐車場</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_29">
+<gml:description>橋梁</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_30">
+<gml:description>運河</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_31">
+<gml:description>防波堤</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_32">
+<gml:description>護岸</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_33">
+<gml:description>防潮堤</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_34">
+<gml:description>堤防</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_35">
+<gml:description>突堤</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_36">
+<gml:description>胸壁</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_37">
+<gml:description>防砂堤</gml:description>
+<gml:name>37</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_38">
+<gml:description>岸壁</gml:description>
+<gml:name>38</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_39">
+<gml:description>さん橋</gml:description>
+<gml:name>39</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_40">
+<gml:description>物揚場</gml:description>
+<gml:name>40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_41">
+<gml:description>浮さん橋</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_42">
+<gml:description>船揚場</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_43">
+<gml:description>係船くい</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_44">
+<gml:description>係船浮標</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_45">
+<gml:description>照明施設</gml:description>
+<gml:name>45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_46">
+<gml:description>信号施設</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_47">
+<gml:description>港務通信施設</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_48">
+<gml:description>航路標識</gml:description>
+<gml:name>48</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_49">
+<gml:description>固定式</gml:description>
+<gml:name>49</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_50">
+<gml:description>軌道走行式</gml:description>
+<gml:name>50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_facilityDetailType_51">
+<gml:description>その他施設</gml:description>
+<gml:name>51</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

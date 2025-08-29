@@ -1,29 +1,37 @@
-﻿using PLATEAU.CityImport.Config;
+﻿using PLATEAU.CityAdjust.ChangeActive;
+using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
+using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 {
     /// <summary>
     /// 「モデルをインポート」ボタンの描画と実行を行います。
     /// </summary>
-    internal static class ImportButton
+    internal class ImportButton
     {
         /// <summary>
         /// 「モデルをインポート」のキャンセル用Tokenソース
         /// インポートタスクは1本なので発行するトークンも１つ
         /// </summary>
-        private static CancellationTokenSource cancellationTokenSrc;
+        private CancellationTokenSource cancellationTokenSrc;
 
-        private static int numCurrentRunningTasks;
+        private int numCurrentRunningTasks;
+        private ImportToDynamicTile importToDynamicTile;
         
+
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
         /// </summary>
-        public static void Draw(CityImportConfig config, IProgressDisplay progressDisplay)
+        public void Draw(CityImportConfig config, IProgressDisplay progressDisplay)
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
@@ -32,16 +40,33 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
-                        // ボタンを実行します。
+                        // タスク数をインクリメントし、キャンセルトークンを初期化
                         Interlocked.Increment(ref numCurrentRunningTasks);
-
                         cancellationTokenSrc = new CancellationTokenSource();
 
-                        // ここでインポートします。
-                        var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token);
-
-                        task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
-                        task.ContinueWithErrorCatch();
+                        switch (config.DynamicTileImportConfig.ImportType)
+                        {
+                            case ImportType.Scene:
+                                // シーン上へのインポートを実行します。
+                                ExecuteNormalImport(config, progressDisplay);
+                                break;
+                            case ImportType.DynamicTile:
+                                // 動的タイル形式でのインポートを実行します。
+                                importToDynamicTile = new ImportToDynamicTile(progressDisplay);
+                                var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
+                                task.ContinueWith((_) => Interlocked.Decrement(ref numCurrentRunningTasks));
+                                task.ContinueWith(t =>
+                                {
+                                    if (t.Result)
+                                    {
+                                        EditorApplication.delayCall += () => Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+                                    }
+                                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                                task.ContinueWithErrorCatch();
+                                break;
+                            default:
+                                throw new Exception("invalid import type.");
+                        }
                     }
                 }
                 else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
@@ -57,10 +82,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                         if (dialogueResult)
                         {
                             cancellationTokenSrc?.Cancel();
+
+                            if (config.DynamicTileImportConfig.ImportType != ImportType.DynamicTile)
+                            {
+                                return;
+                            }
+                            // 動的タイルインポートのクリーンアップ
+                            importToDynamicTile?.CancelImport();
+                            importToDynamicTile = null;
                         }
                     }
                 }
             }
-        }        
+        }
+
+        /// <summary>
+        /// 通常のインポート処理を実行します
+        /// </summary>
+        private void ExecuteNormalImport(CityImportConfig config, IProgressDisplay progressDisplay)
+        {
+
+            var postGmlProcessors = new List<IPostGmlImportProcessor>
+            {
+                new CityDuplicateProcessor() // 重複した低LODを非表示にします。
+            };
+            var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
+            
+            task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+            task.ContinueWithErrorCatch();
+        }
+        
     }
 }

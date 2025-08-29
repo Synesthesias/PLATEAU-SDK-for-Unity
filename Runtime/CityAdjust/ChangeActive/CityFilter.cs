@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using UnityEngine;
@@ -11,7 +10,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
 {
     internal static class CityFilter
     {
-        public static async Task FilterByCityObjectTypeAsync(this PLATEAUInstancedCityModel cityModel,
+        public static void FilterByCityObjectType(this PLATEAUInstancedCityModel cityModel,
             ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict)
         {
             var gmlTransforms = cityModel.GmlTransforms;
@@ -26,43 +25,22 @@ namespace PLATEAU.CityAdjust.ChangeActive
                 foreach (int lod in lods)
                 {
                     var cityObjTransforms = PLATEAUInstancedCityModel.GetCityObjects(gmlTrans, lod);
+                    if (cityObjTransforms == null) continue;
                     // 都市オブジェクトごとのループ
                     foreach (var cityObjTrans in cityObjTransforms)
                     {
                         CityGML.CityObjectType cityObjType = 0;
                         var cityObjGrp = cityObjTrans.GetComponent<PLATEAUCityObjectGroup>();
 
+                        if (cityObjGrp == null) continue;
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
-                        if (cityObjGrp != null)
-                        {
-                            List<CityObjectList.CityObject> cityObjList = (List<CityObjectList.CityObject>)cityObjGrp.GetAllCityObjects();
-                            // 最小地物のみ処理
-                            if (cityObjList.Count == 1)
-                                cityObjType = cityObjList.First().CityObjectType;
-                        }
-                        // PLATEAUCityObjectGroupが存在しない場合、Modelを利用してタイプ判定
-                        else
-                        {
-                            // TODO GMLの中身をロードして CityObjectType を調べなくとも、パッケージ種だけで Activeにすべきか判断できる場合がある。
-                            //      建築物と植生以外はパッケージ種でしか分岐しないので、ロードを省いて高速化することができるはず。
-                            var gmlModel = await cityModel.LoadGmlAsync(gmlTrans);
-                            if (gmlModel == null)
-                            {
-                                Debug.LogError($"GMLファイルのロードに失敗しました: {gmlTrans.name}");
-                                return;
-                            }
 
-                            try
-                            {
-                                var cityObj = gmlModel.GetCityObjectById(cityObjTrans.name);
-                                cityObjType = cityObj.Type;
-                            }
-                            catch (KeyNotFoundException e)
-                            {
-                                Debug.LogError(e.Message);
-                            }
-                        }
-
+                        List<CityObjectList.CityObject> cityObjList =
+                            cityObjGrp.GetAllCityObjects().ToList();
+                        // 最小地物のみ処理
+                        if (cityObjList.Count == 1)
+                            cityObjType = cityObjList.First().CityObjectType;
+                        
                         var typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         try
                         {
@@ -78,7 +56,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         }
                         catch(KeyNotFoundException e)
                         {
-                            Debug.LogError(e.Message);
+                            Debug.LogError(e);
                         }
 
                         bool shouldObjEnabled = true;
@@ -110,7 +88,8 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             typeNode = typeNode.Parent;
                         } // 分類の階層構造をたどるループ  ここまで
                         
-                        cityObjTrans.gameObject.SetActive(shouldObjEnabled);
+                        var go = cityObjTrans.gameObject;
+                        if (go.activeSelf != shouldObjEnabled) go.SetActive(shouldObjEnabled);
                         
                     } // 都市オブジェクトごとのループ  ここまで
                 } // LODごとのループ  ここまで
@@ -125,7 +104,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
             {
                 var gmlInfo = GmlFile.Create(gmlTrans.name);
                 var gmlPackage = gmlInfo.Package;
-                if (!packageToLodRangeDict.ContainsKey(gmlPackage)) continue; 
+                if (!packageToLodRangeDict.ContainsKey(gmlPackage))
+                {
+                    gmlInfo.Dispose();
+                    continue;
+                } 
                 var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
                 foreach (var lodTrans in lods)
                 {

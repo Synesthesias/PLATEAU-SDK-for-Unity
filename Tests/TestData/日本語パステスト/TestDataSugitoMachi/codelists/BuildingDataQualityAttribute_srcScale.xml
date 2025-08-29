@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c4067464-fda6-4c39-8c24-81d0e9a3ea10">
+<gml:name>BuildingDataQualityAttribute_srcScale</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDataQualityAttribute_srcScale_1">
+<gml:description>地図情報レベル2500</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDataQualityAttribute_srcScale_2">
+<gml:description>地図情報レベル1000</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDataQualityAttribute_srcScale_3">
+<gml:description>地図情報レベル500</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

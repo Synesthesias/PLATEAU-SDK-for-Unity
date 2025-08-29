@@ -579,6 +579,45 @@ namespace PLATEAU.Util
         }
 
         /// <summary>
+        /// Boundsをデバッグ描画する. 底面と上面の4点を結ぶ線を描画する
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="color"></param>
+        /// <param name="duration"></param>
+        public static void DrawBounds(Bounds bounds, Color color, float duration = 0f)
+        {
+            // 底面の4点
+            Vector3 p1 = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
+            Vector3 p2 = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
+            Vector3 p3 = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
+            Vector3 p4 = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
+
+            // 上面の4点
+            Vector3 p5 = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
+            Vector3 p6 = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
+            Vector3 p7 = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z);
+            Vector3 p8 = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
+
+            // 底面の線
+            DrawLine(p1, p2, color, duration);
+            DrawLine(p2, p3, color, duration);
+            DrawLine(p3, p4, color, duration);
+            DrawLine(p4, p1, color, duration);
+
+            // 上面の線
+            DrawLine(p5, p6, color, duration);
+            DrawLine(p6, p7, color, duration);
+            DrawLine(p7, p8, color, duration);
+            DrawLine(p8, p5, color, duration);
+
+            // 側面の線
+            DrawLine(p1, p5, color, duration);
+            DrawLine(p2, p6, color, duration);
+            DrawLine(p3, p7, color, duration);
+            DrawLine(p4, p8, color, duration);
+        }
+
+        /// <summary>
         /// Debug.Logのラッパー. 後で切れるように
         /// </summary>
         /// <param name="message"></param>

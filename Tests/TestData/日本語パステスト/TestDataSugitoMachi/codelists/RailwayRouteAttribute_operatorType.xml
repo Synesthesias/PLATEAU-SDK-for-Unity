@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_de7bfa09-7cba-4f24-9b12-96c040547fc5">
+<gml:name>RailwayRouteAttribute_operatorType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayRouteAttribute_operatorType_1">
+<gml:description>新幹線</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayRouteAttribute_operatorType_2">
+<gml:description>JR在来線</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayRouteAttribute_operatorType_3">
+<gml:description>公営鉄道</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayRouteAttribute_operatorType_4">
+<gml:description>民間鉄道</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayRouteAttribute_operatorType_5">
+<gml:description>第三セクター</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

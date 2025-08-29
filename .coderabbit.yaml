@@ -1,0 +1,7 @@
+# AIレビューCodeRabbitの設定
+language: "ja"
+
+reviews:
+  profile: "chill"
+  path_filters:
+    - "!Tests/TestData/**"

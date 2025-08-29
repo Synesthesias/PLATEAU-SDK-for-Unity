@@ -41,9 +41,7 @@ namespace PLATEAU.Editor.Window.Main
                 // 属性情報
                 new TabElementWithImage("dark_icon_information.png", new CityAttributeGui(this)),
                 // 道路調整
-                new TabElementWithImage("dark_icon_road.png", new RoadAdjustGui())//,
-                // 動的タイル
-                // new TabElementWithImage("dark_icon_dynamic_tile.png", new DynamicTileGui())
+                new TabElementWithImage("dark_icon_road.png", new RoadAdjustGui())
             );
             
             return new VisualElementDisposable(tabs.CreateGui(), tabs.Dispose);

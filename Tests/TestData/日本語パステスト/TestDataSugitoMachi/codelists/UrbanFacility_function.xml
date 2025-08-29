@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_5acc22da-a749-4667-ac8c-99d6f01da76d">
+<gml:name>UrbanFacility_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_1">
+<gml:description>都市施設</gml:description>
+<gml:name>3000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_2">
+<gml:description>交通施設</gml:description>
+<gml:name>3010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_3">
+<gml:description>道路</gml:description>
+<gml:name>3011</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_4">
+<gml:description>都市高速鉄道</gml:description>
+<gml:name>3012</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_5">
+<gml:description>駐車場</gml:description>
+<gml:name>3013</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_6">
+<gml:description>自動車ターミナル</gml:description>
+<gml:name>3014</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_7">
+<gml:description>空港</gml:description>
+<gml:name>3015</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_8">
+<gml:description>港湾</gml:description>
+<gml:name>3016</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_9">
+<gml:description>軌道</gml:description>
+<gml:name>3017</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_10">
+<gml:description>公共空地</gml:description>
+<gml:name>3020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_11">
+<gml:description>公園</gml:description>
+<gml:name>3021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_12">
+<gml:description>緑地</gml:description>
+<gml:name>3022</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_13">
+<gml:description>広場</gml:description>
+<gml:name>3023</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_14">
+<gml:description>墓園</gml:description>
+<gml:name>3024</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_15">
+<gml:description>運動場</gml:description>
+<gml:name>3025</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_16">
+<gml:description>供給施設</gml:description>
+<gml:name>3030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_17">
+<gml:description>水道</gml:description>
+<gml:name>3031</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_18">
+<gml:description>電気供給施設</gml:description>
+<gml:name>3032</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_19">
+<gml:description>ガス供給施設</gml:description>
+<gml:name>3033</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_20">
+<gml:description>地域冷暖房施設</gml:description>
+<gml:name>3034</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_21">
+<gml:description>石油パイプライン</gml:description>
+<gml:name>3035</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_22">
+<gml:description>処理施設</gml:description>
+<gml:name>3040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_23">
+<gml:description>下水道</gml:description>
+<gml:name>3041</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_24">
+<gml:description>汚物処理場</gml:description>
+<gml:name>3042</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_25">
+<gml:description>ごみ焼却場</gml:description>
+<gml:name>3043</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_26">
+<gml:description>ごみ処理場</gml:description>
+<gml:name>3044</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_27">
+<gml:description>水路</gml:description>
+<gml:name>3050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_28">
+<gml:description>河川</gml:description>
+<gml:name>3051</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_29">
+<gml:description>運河</gml:description>
+<gml:name>3052</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_30">
+<gml:description>教育文化施設</gml:description>
+<gml:name>3060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_31">
+<gml:description>学校</gml:description>
+<gml:name>3061</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_32">
+<gml:description>図書館</gml:description>
+<gml:name>3062</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_33">
+<gml:description>研究施設</gml:description>
+<gml:name>3063</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_34">
+<gml:description>博物館</gml:description>
+<gml:name>3064</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_35">
+<gml:description>美術館</gml:description>
+<gml:name>3065</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_36">
+<gml:description>医療施設</gml:description>
+<gml:name>3070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_37">
+<gml:description>病院</gml:description>
+<gml:name>3071</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_38">
+<gml:description>診療所</gml:description>
+<gml:name>3072</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_39">
+<gml:description>保健所</gml:description>
+<gml:name>3073</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_40">
+<gml:description>助産所</gml:description>
+<gml:name>3074</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_41">
+<gml:description>社会福祉施設</gml:description>
+<gml:name>3080</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_42">
+<gml:description>保育所</gml:description>
+<gml:name>3081</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_43">
+<gml:description>乳児院</gml:description>
+<gml:name>3082</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_44">
+<gml:description>母子寮</gml:description>
+<gml:name>3083</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_45">
+<gml:description>養護老人ホーム</gml:description>
+<gml:name>3084</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_46">
+<gml:description>市場、と畜場、火葬場</gml:description>
+<gml:name>3090</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_47">
+<gml:description>市場</gml:description>
+<gml:name>3091</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_48">
+<gml:description>と畜場</gml:description>
+<gml:name>3092</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_49">
+<gml:description>火葬場</gml:description>
+<gml:name>3093</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_50">
+<gml:description>一団地の住宅施設</gml:description>
+<gml:name>3100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_51">
+<gml:description>一団地の官公庁施設</gml:description>
+<gml:name>3110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_52">
+<gml:description>一団地の都市安全確保拠点施設</gml:description>
+<gml:name>3120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_53">
+<gml:description>流通業務団地</gml:description>
+<gml:name>3130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_54">
+<gml:description>一団地の津波防災拠点市街地形成施設</gml:description>
+<gml:name>3140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_55">
+<gml:description>一団地の復興再生拠点市街地形成施設</gml:description>
+<gml:name>3150</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_56">
+<gml:description>一団地の復興拠点市街地形成施設</gml:description>
+<gml:name>3160</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_57">
+<gml:description>政令で定める都市施設</gml:description>
+<gml:name>3170</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_58">
+<gml:description>電気通信施設</gml:description>
+<gml:name>3180</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_59">
+<gml:description>防風施設</gml:description>
+<gml:name>3190</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_60">
+<gml:description>防火施設</gml:description>
+<gml:name>3200</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_61">
+<gml:description>防火水槽</gml:description>
+<gml:name>3201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_62">
+<gml:description>防水施設</gml:description>
+<gml:name>3210</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_63">
+<gml:description>河岸堤防</gml:description>
+<gml:name>3211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_64">
+<gml:description>防雪施設</gml:description>
+<gml:name>3220</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_65">
+<gml:description>防潮施設</gml:description>
+<gml:name>3230</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_66">
+<gml:description>防潮堤</gml:description>
+<gml:name>3231</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_67">
+<gml:description>防砂施設</gml:description>
+<gml:name>3240</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UrbanFacility_function_68">
+<gml:description>地滑り防止施設</gml:description>
+<gml:name>3241</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

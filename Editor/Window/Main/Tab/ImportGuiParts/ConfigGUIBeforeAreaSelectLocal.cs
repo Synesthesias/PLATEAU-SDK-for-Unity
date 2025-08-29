@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             
             PlateauEditorStyle.Separator(0);
             PlateauEditorStyle.SubTitle("モデルデータの配置を行います。");
-            PlateauEditorStyle.Heading("基準座標系の選択", "num1.png");
+            PlateauEditorStyle.Heading("基本設定", "num1.png");
             confBeforeAreaSelect.CoordinateZoneID = CoordinateZonePopup.Draw(confBeforeAreaSelect.CoordinateZoneID);
             return confBeforeAreaSelect;
         }

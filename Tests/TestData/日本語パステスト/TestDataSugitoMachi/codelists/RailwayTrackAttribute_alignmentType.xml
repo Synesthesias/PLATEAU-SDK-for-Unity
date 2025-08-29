@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_3b307349-b9ba-444f-84d1-2f4bd14c0e6e">
+<gml:name>RailwayTrackAttribute_alignmentType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayTrackAttribute_alignmentType_1">
+<gml:description>直線</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayTrackAttribute_alignmentType_2">
+<gml:description>円曲線</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayTrackAttribute_alignmentType_3">
+<gml:description>緩和曲線</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayTrackAttribute_alignmentType_4">
+<gml:description>中間緩和曲線</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RailwayTrackAttribute_alignmentType_5">
+<gml:description>腹心曲線</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,153 +1,297 @@
+using PLATEAU.Util;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace PLATEAU.DynamicTile
 {
+    /// <summary>
+    /// Addressableを使用してカタログとMeta情報をロードするクラス。
+    /// </summary>
     public class AddressableLoader
     {
+        // DynamicTileのラベル名
         private const string DynamicTileLabelName = "DynamicTile";
-        private string bundlePath;
+        internal const string AddressableLocalBuildFolderName = "PLATEAUBundles";
 
-        public async Task<List<string>> Initialize(string catalogPath)
-        {
-            Addressables.InternalIdTransformFunc = (location) =>
-            {
-                string originalPath = location.InternalId;
-                if (string.IsNullOrEmpty(bundlePath) ||
-                    !originalPath.EndsWith(".bundle"))
-                {
-                    return originalPath;
-                }
-                // bundlePathが設定されている場合は、パスを結合して返す
-                return Path.Combine(bundlePath, location.PrimaryKey);
-            };
-            
-            List<string> addresses;
-            if (!string.IsNullOrEmpty(catalogPath))
-            {
-                // カタログパスが指定されている場合は、カタログをロード
-                addresses = await LoadCatalogAsync(catalogPath, DynamicTileLabelName);
-            }
-            else
-            {
-                // ローカルのアドレスをロード
-                addresses = await LoadLocalAddresses(DynamicTileLabelName);
-            }
-            return addresses;
-        }
-        
         /// <summary>
-        /// Addressからアセットをインスタンス化します
-        /// 注意: 返されたGameObjectは呼び出し側でAddressables.ReleaseInstanceを使用して解放する必要があります
+        /// 非同期処理を制御します
         /// </summary>
-        public async Task<GameObject> InstantiateAssetAsync(string address, Transform parent = null)
+        private async Task<T> WaitForCompletionAsync<T>(AsyncOperationHandle<T> handle)
         {
-            var handle = Addressables.InstantiateAsync(address, parent);
-            await handle.Task;
-            if (handle.Status == AsyncOperationStatus.Succeeded)
+            if (!handle.IsValid())
             {
-                Debug.Log($"アセットのロードに成功しました: {address}");
-                handle.Result.name = address;
-                return handle.Result;
+                throw new Exception("AsyncOperationHandle is invalid.");
+            }
+            
+            // エディタプレイ以外は同期で処理
+            if (Application.isEditor && !Application.isPlaying)
+            {
+                handle.WaitForCompletion();
             }
             else
             {
-                Debug.LogError($"アセットのロードに失敗しました: {address}");
+                await handle.Task;
+            }
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                throw new System.Exception($"Operation failed with status: {handle.Status}");
+            }
+
+            return handle.Result;
+        }
+
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath)
+        {
+            // ランタイム（プレイヤー）では、Assets/StreamingAssets を実ディレクトリにマッピング
+            if (!Application.isEditor && !string.IsNullOrEmpty(catalogPath))
+            {
+                var normalizedPath = catalogPath.Replace('\\', '/');
+                const string assetsStreamingPrefix = "Assets/StreamingAssets/";
+                if (normalizedPath.StartsWith(assetsStreamingPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    var subPath = normalizedPath.Substring(assetsStreamingPrefix.Length);
+                    var mapped = Path.Combine(Application.streamingAssetsPath, subPath).Replace('\\', '/');
+                    catalogPath = mapped;
+                }
+            }
+            var init = Addressables.InitializeAsync(false);
+            await WaitForCompletionAsync(init);
+            if (init.Status != AsyncOperationStatus.Succeeded)
+            {
+                Addressables.Release(init);
+                Debug.LogError("Addressablesの初期化に失敗しました。");
                 return null;
             }
+
+
+            Addressables.Release(init);
+
+            // カタログをロード
+            string catalogPathToUse;
+            if (!catalogPath.StartsWith("Assets/"))
+            {
+                // プロジェクトの外からカタログを取得する場合
+                catalogPathToUse = catalogPath;
+            }
+            else
+            {
+                // プロジェクトの中からカタログを取得します。
+                // プロジェクト内であれば一見カタログなど求めなくてもロード可能に思えますが、
+                // 実際はAddressables.LoadContentCatalogAsync(catalogPath)からカタログを読み直さないと処理を2回したときに1回目のデータが残る不具合が起きます。
+                // Localビルド(StreamingAssets) からカタログを探索
+                var directoryFromAssets = Path.GetDirectoryName(catalogPath);
+                if (directoryFromAssets == null)
+                {
+                    Debug.LogError("failed to find catalog.");
+                    return null;
+                }
+                var folderStreaming = Path.GetFullPath(directoryFromAssets);
+
+                if (!Directory.Exists(folderStreaming))
+                {
+                    Debug.LogError("folder not found: " + folderStreaming);
+                }
+
+                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
+
+                if (catalogFiles.Length == 0)
+                {
+                    Debug.LogError("catalog file is not found.");
+                }
+
+                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+            }
+
+            await LoadCatalog(catalogPathToUse);
+
+            // MetaStoreアドレスを自動解決（同一カタログディレクトリ配下のものを優先）
+            var metaStoreAddress = await ResolveMetaStoreAddressAsync(catalogPathToUse);
+            if (string.IsNullOrEmpty(metaStoreAddress))
+            {
+                return null;
+            }
+
+            // meta情報をロード
+            var metaStore = LoadMetaStore(metaStoreAddress);
+            if (metaStore == null)
+            {
+                return null;
+            }
+
+            return metaStore;
         }
 
         /// <summary>
-        /// カタログファイルをロードし、Addressを読み込みます
+        /// Addressables から PLATEAUDynamicTileMetaStore の Address を自動解決します。
+        /// 同一カタログディレクトリ配下のロケーションを優先して選択します。
         /// </summary>
-        /// <param name="catalogPath">カタログファイルのパス</param>
-        /// <param name="label">ラベル</param>
-        /// <returns>ロードされたGameObjectのリスト</returns>
-        public async Task<List<string>> LoadCatalogAsync(string catalogPath, string label)
+        private async Task<string> ResolveMetaStoreAddressAsync(string catalogPath)
         {
-            var addresses = new List<string>();
+            var locationsHandle = Addressables.LoadResourceLocationsAsync(
+                DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
             try
             {
-                // パスを正規化（バックスラッシュをスラッシュに変換）
-                catalogPath = catalogPath.Replace('\\', '/');
+                await WaitForCompletionAsync(locationsHandle);
+                var allLocations = locationsHandle.Result;
+
+                // カタログのディレクトリを正規化
+                var catalogDir = Path.GetDirectoryName(catalogPath);
+                if (string.IsNullOrEmpty(catalogDir))
+                {
+                    Debug.LogError("カタログディレクトリの取得に失敗しました。");
+                    return null;
+                }
+                var catalogDirFull = Path.GetFullPath(catalogDir).Replace('\\', '/');
+                var catalogDirName = new DirectoryInfo(catalogDirFull).Name;
+
+                bool isInAssets = PathUtil.IsSubDirectoryOfAssets(catalogPath);
+                if (isInAssets)
+                {
+                    var sanitizedDir = System.Text.RegularExpressions.Regex.Replace(catalogDirName, @"[^\w\-_]", "_");
+                    sanitizedDir = sanitizedDir.Replace("PLATEAUCityObjectGroup_", "");
+                    var expectedAddress = $"PLATEAUTileMeta_{sanitizedDir}";
+                    return expectedAddress;
+                }
                 
-                // bundlePathを保持
-                bundlePath = Path.GetDirectoryName(catalogPath);
+                
+                
+                // ディレクトリ名でマッチ（アプリビルド後にフルパスは変わるが、親ディレクトリ名は変わらない）
+                var candidates = allLocations
+                    .Where(loc =>
+                        loc != null && !string.IsNullOrEmpty(loc.PrimaryKey) &&
+                        InternalIdContainsDirectoryName(loc, catalogDirName)
+                    )
+                    .ToList();
 
-                // file://プロトコルを追加
-                if (!catalogPath.StartsWith("file://"))
+                if (candidates == null || candidates.Count == 0)
                 {
-                    catalogPath = "file://" + catalogPath;
+                    Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressables のビルド/ラベル設定/カタログ指定を確認してください。");
+                    return null;
                 }
 
-                // カタログファイルをロード
-                var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
-                while (!catalogHandle.IsDone)
+                if (candidates.Count > 1)
                 {
-                    await Task.Yield();
+                    Debug.LogWarning($"複数の PLATEAUDynamicTileMetaStore が見つかりました（同一カタログ配下を優先）。先頭の1つを使用します。 count={candidates.Count}");
                 }
 
-                if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
+                return candidates[0].PrimaryKey;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"MetaStore アドレスの自動解決に失敗しました: {ex}");
+                return null;
+            }
+            finally
+            {
+                if (locationsHandle.IsValid())
                 {
-                    Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
-                    return addresses;
+                    Addressables.Release(locationsHandle);
                 }
-    
-                // カタログからアセットのアドレスを取得
-                IList<IResourceLocation> locations;
-                if (catalogHandle.Result.Locate(label, typeof(GameObject), out locations) && locations.Count > 0)
+            }
+        }
+
+        /// <summary>
+        /// IResourceLocation が内部ID文字列上で指定ディレクトリ名を含むか（依存を辿りながら）を判定します。
+        /// アプリビルドでフルパスは変わるが、親ディレクトリ名は変わらないため。
+        /// </summary>
+        private bool InternalIdContainsDirectoryName(IResourceLocation rootLocation, string dirName)
+        {
+            if (string.IsNullOrEmpty(dirName)) return false;
+            var queue = new Queue<IResourceLocation>();
+            var visited = new HashSet<IResourceLocation>();
+            queue.Enqueue(rootLocation);
+            while (queue.Count > 0)
+            {
+                var loc = queue.Dequeue();
+                if (loc == null || visited.Contains(loc)) continue;
+                visited.Add(loc);
+
+                var internalId = loc.InternalId;
+                if (!string.IsNullOrEmpty(internalId))
                 {
-                    // 各アセットのアドレスを取得
-                    foreach (var location in locations)
+                    var normalized = Path.GetFileName(internalId.Replace('\\', '/'));
+                    normalized = normalized.Replace("PLATEAUTileMeta_", "");
+                    if (normalized.Contains(dirName))
                     {
-                        addresses.Add(location.PrimaryKey);
+                        return true;
                     }
                 }
-                else
+
+                var deps = loc.Dependencies;
+                if (deps != null)
                 {
-                    Debug.LogError($"アセットのアドレスを取得できませんでした");
+                    foreach (var d in deps)
+                    {
+                        if (d != null && !visited.Contains(d)) queue.Enqueue(d);
+                    }
                 }
-                // カタログ用のhandleの解放
-                Addressables.Release(catalogHandle);
             }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"カタログのロード中にエラーが発生しました: {ex.Message}");
-            }
-            return addresses;
+            return false;
         }
-        
-        public async Task<List<string>> LoadLocalAddresses(string label)
+
+        /// <summary>
+        /// カタログファイルをロードします
+        /// </summary>
+        /// <param name="catalogPath">カタログファイルのパス</param>
+        private async Task LoadCatalog(string catalogPath)
         {
-            var addresses = new List<string>();
-            try
+
+            // パスを正規化（バックスラッシュをスラッシュに変換）
+            catalogPath = catalogPath.Replace('\\', '/');
+
+            if (string.IsNullOrEmpty(catalogPath) || !File.Exists(catalogPath))
             {
-                // ラベルでリソースロケーションを非同期取得
-                var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(GameObject));
-                await locationsHandle.Task;
-                if (locationsHandle.Status == AsyncOperationStatus.Succeeded && locationsHandle.Result.Count > 0)
-                {
-                    addresses = locationsHandle.Result.Select(x => x.PrimaryKey).ToList();
-                }
-                else
-                {
-                    Debug.LogError($"アセットのアドレスを取得できませんでした: {label}");
-                }
-                
-                // 取得したリソースの解放
-                Addressables.Release(locationsHandle);
+                Debug.LogError($"カタログファイルが見つかりません: {catalogPath}");
+                return;
             }
-            catch (System.Exception ex)
+            
+            // カタログファイルのロード前に古いロケーターを削除しておかないと、
+            // 同じフォルダを対象に2回タイル化したケースで1回目のデータが読み込まれてしまう不具合が起きます。
+            Addressables.ClearResourceLocators();
+
+            // カタログファイルをロード
+            var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
+            await WaitForCompletionAsync(catalogHandle);
+
+            if (catalogHandle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError($"アセットのロード中にエラーが発生しました: {ex.Message}");
+                Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
             }
-            return addresses;
+
+            Addressables.Release(catalogHandle);
+        }
+
+
+        /// <summary>
+        /// meta情報をロードします。
+        /// </summary>
+        /// <returns></returns>
+        private PLATEAUDynamicTileMetaStore LoadMetaStore(string metaStoreAddress)
+        {
+            var handle = Addressables.LoadAssetAsync<PLATEAUDynamicTileMetaStore>(metaStoreAddress);
+            handle.WaitForCompletion(); // 必ず同期的にする
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                Debug.LogError("Failed to load PLATEAUDynamicTileMetaStore: " + metaStoreAddress);
+                Addressables.Release(handle);
+                return null;
+            }
+
+            var ret = handle.Result;
+            Addressables.Release(handle);
+            return ret;
         }
     }
-} 
+}

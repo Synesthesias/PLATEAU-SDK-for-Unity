@@ -1,0 +1,508 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_a5737791-0621-4b4a-8df0-a129296f0a2d">
+<gml:name>C0202_item</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_1">
+<gml:description>事業所数;A農業，林業</gml:description>
+<gml:name>1A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_2">
+<gml:description>事業所数;B漁業</gml:description>
+<gml:name>1B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_3">
+<gml:description>事業所数;C鉱業，採石業，砂利採取業</gml:description>
+<gml:name>1C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_4">
+<gml:description>事業所数;D建設業</gml:description>
+<gml:name>1D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_5">
+<gml:description>事業所数;E製造業</gml:description>
+<gml:name>1E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_6">
+<gml:description>事業所数;F電気・ガス・熱供給・水道業</gml:description>
+<gml:name>1F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_7">
+<gml:description>事業所数;G情報通信業</gml:description>
+<gml:name>1G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_8">
+<gml:description>事業所数;H運輸業，郵便業</gml:description>
+<gml:name>1H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_9">
+<gml:description>事業所数;I卸売業，小売業</gml:description>
+<gml:name>1I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_10">
+<gml:description>事業所数;J金融業，保険業</gml:description>
+<gml:name>1J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_11">
+<gml:description>事業所数;K不動産業，物品賃貸業</gml:description>
+<gml:name>1K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_12">
+<gml:description>事業所数;L学術研究，専門・技術サービス業</gml:description>
+<gml:name>1L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_13">
+<gml:description>事業所数;M宿泊業，飲食サービス業</gml:description>
+<gml:name>1M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_14">
+<gml:description>事業所数;N生活関連サービス業，娯楽業</gml:description>
+<gml:name>1N</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_15">
+<gml:description>事業所数;O教育，学習支援業</gml:description>
+<gml:name>1O</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_16">
+<gml:description>事業所数;P医療，福祉</gml:description>
+<gml:name>1P</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_17">
+<gml:description>事業所数;Q複合サービス事業</gml:description>
+<gml:name>1Q</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_18">
+<gml:description>事業所数;Rサービス業（他に分類されないもの）</gml:description>
+<gml:name>1R</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_19">
+<gml:description>事業所数;S公務（他に分類されるものを除く）</gml:description>
+<gml:name>1S</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_20">
+<gml:description>事業所数;T分類不能の産業</gml:description>
+<gml:name>1T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_21">
+<gml:description>事業所数;総数</gml:description>
+<gml:name>1Total</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_22">
+<gml:description>従業者数;A農業，林業</gml:description>
+<gml:name>2A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_23">
+<gml:description>従業者数;B漁業</gml:description>
+<gml:name>2B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_24">
+<gml:description>従業者数;C鉱業，採石業，砂利採取業</gml:description>
+<gml:name>2C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_25">
+<gml:description>従業者数;D建設業</gml:description>
+<gml:name>2D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_26">
+<gml:description>従業者数;E製造業</gml:description>
+<gml:name>2E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_27">
+<gml:description>従業者数;F電気・ガス・熱供給・水道業</gml:description>
+<gml:name>2F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_28">
+<gml:description>従業者数;G情報通信業</gml:description>
+<gml:name>2G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_29">
+<gml:description>従業者数;H運輸業，郵便業</gml:description>
+<gml:name>2H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_30">
+<gml:description>従業者数;I卸売業，小売業</gml:description>
+<gml:name>2I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_31">
+<gml:description>従業者数;J金融業，保険業</gml:description>
+<gml:name>2J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_32">
+<gml:description>従業者数;K不動産業，物品賃貸業</gml:description>
+<gml:name>2K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_33">
+<gml:description>従業者数;L学術研究，専門・技術サービス業</gml:description>
+<gml:name>2L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_34">
+<gml:description>従業者数;M宿泊業，飲食サービス業</gml:description>
+<gml:name>2M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_35">
+<gml:description>従業者数;N生活関連サービス業，娯楽業</gml:description>
+<gml:name>2N</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_36">
+<gml:description>従業者数;O教育，学習支援業</gml:description>
+<gml:name>2O</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_37">
+<gml:description>従業者数;P医療，福祉</gml:description>
+<gml:name>2P</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_38">
+<gml:description>従業者数;Q複合サービス事業</gml:description>
+<gml:name>2Q</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_39">
+<gml:description>従業者数;Rサービス業（他に分類されないもの）</gml:description>
+<gml:name>2R</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_40">
+<gml:description>従業者数;S公務（他に分類されるものを除く）</gml:description>
+<gml:name>2S</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_41">
+<gml:description>従業者数;T分類不能の産業</gml:description>
+<gml:name>2T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_42">
+<gml:description>従業者数;総数</gml:description>
+<gml:name>2Total</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_43">
+<gml:description>小売販売額;A農業，林業</gml:description>
+<gml:name>3A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_44">
+<gml:description>小売販売額;B漁業</gml:description>
+<gml:name>3B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_45">
+<gml:description>小売販売額;C鉱業，採石業，砂利採取業</gml:description>
+<gml:name>3C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_46">
+<gml:description>小売販売額;D建設業</gml:description>
+<gml:name>3D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_47">
+<gml:description>小売販売額;E製造業</gml:description>
+<gml:name>3E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_48">
+<gml:description>小売販売額;F電気・ガス・熱供給・水道業</gml:description>
+<gml:name>3F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_49">
+<gml:description>小売販売額;G情報通信業</gml:description>
+<gml:name>3G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_50">
+<gml:description>小売販売額;H運輸業，郵便業</gml:description>
+<gml:name>3H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_51">
+<gml:description>小売販売額;I卸売業，小売業</gml:description>
+<gml:name>3I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_52">
+<gml:description>小売販売額;J金融業，保険業</gml:description>
+<gml:name>3J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_53">
+<gml:description>小売販売額;K不動産業，物品賃貸業</gml:description>
+<gml:name>3K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_54">
+<gml:description>小売販売額;L学術研究，専門・技術サービス業</gml:description>
+<gml:name>3L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_55">
+<gml:description>小売販売額;M宿泊業，飲食サービス業</gml:description>
+<gml:name>3M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_56">
+<gml:description>小売販売額;N生活関連サービス業，娯楽業</gml:description>
+<gml:name>3N</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_57">
+<gml:description>小売販売額;O教育，学習支援業</gml:description>
+<gml:name>3O</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_58">
+<gml:description>小売販売額;P医療，福祉</gml:description>
+<gml:name>3P</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_59">
+<gml:description>小売販売額;Q複合サービス事業</gml:description>
+<gml:name>3Q</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_60">
+<gml:description>小売販売額;Rサービス業（他に分類されないもの）</gml:description>
+<gml:name>3R</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_61">
+<gml:description>小売販売額;S公務（他に分類されるものを除く）</gml:description>
+<gml:name>3S</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_62">
+<gml:description>小売販売額;T分類不能の産業</gml:description>
+<gml:name>3T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_63">
+<gml:description>小売販売額;総数</gml:description>
+<gml:name>3Total</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_64">
+<gml:description>製造品出荷額;A農業，林業</gml:description>
+<gml:name>4A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_65">
+<gml:description>製造品出荷額;B漁業</gml:description>
+<gml:name>4B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_66">
+<gml:description>製造品出荷額;C鉱業，採石業，砂利採取業</gml:description>
+<gml:name>4C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_67">
+<gml:description>製造品出荷額;D建設業</gml:description>
+<gml:name>4D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_68">
+<gml:description>製造品出荷額;E製造業</gml:description>
+<gml:name>4E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_69">
+<gml:description>製造品出荷額;F電気・ガス・熱供給・水道業</gml:description>
+<gml:name>4F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_70">
+<gml:description>製造品出荷額;G情報通信業</gml:description>
+<gml:name>4G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_71">
+<gml:description>製造品出荷額;H運輸業，郵便業</gml:description>
+<gml:name>4H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_72">
+<gml:description>製造品出荷額;I卸売業，小売業</gml:description>
+<gml:name>4I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_73">
+<gml:description>製造品出荷額;J金融業，保険業</gml:description>
+<gml:name>4J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_74">
+<gml:description>製造品出荷額;K不動産業，物品賃貸業</gml:description>
+<gml:name>4K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_75">
+<gml:description>製造品出荷額;L学術研究，専門・技術サービス業</gml:description>
+<gml:name>4L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_76">
+<gml:description>製造品出荷額;M宿泊業，飲食サービス業</gml:description>
+<gml:name>4M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_77">
+<gml:description>製造品出荷額;N生活関連サービス業，娯楽業</gml:description>
+<gml:name>4N</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_78">
+<gml:description>製造品出荷額;O教育，学習支援業</gml:description>
+<gml:name>4O</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_79">
+<gml:description>製造品出荷額;P医療，福祉</gml:description>
+<gml:name>4P</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_80">
+<gml:description>製造品出荷額;Q複合サービス事業</gml:description>
+<gml:name>4Q</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_81">
+<gml:description>製造品出荷額;Rサービス業（他に分類されないもの）</gml:description>
+<gml:name>4R</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_82">
+<gml:description>製造品出荷額;S公務（他に分類されるものを除く）</gml:description>
+<gml:name>4S</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_83">
+<gml:description>製造品出荷額;T分類不能の産業</gml:description>
+<gml:name>4T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_item_84">
+<gml:description>製造品出荷額;総数</gml:description>
+<gml:name>4Total</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

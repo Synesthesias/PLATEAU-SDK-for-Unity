@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_7b1cca20-74fd-44d7-819c-65a6aad790f5">
+<gml:name>C0401_floor</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_1">
+<gml:description>地下階なし_地上1階</gml:description>
+<gml:name>501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_2">
+<gml:description>地下階なし_地上2階</gml:description>
+<gml:name>502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_3">
+<gml:description>地下階なし_地上3階</gml:description>
+<gml:name>503</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_4">
+<gml:description>地下階なし_地上4-5階</gml:description>
+<gml:name>504</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_5">
+<gml:description>地下階なし_地上6-7階</gml:description>
+<gml:name>505</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_6">
+<gml:description>地下階なし_地上8-10階</gml:description>
+<gml:name>506</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_7">
+<gml:description>地下階なし_地上11-15階</gml:description>
+<gml:name>507</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_8">
+<gml:description>地下階なし_地上16階以上</gml:description>
+<gml:name>508</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_9">
+<gml:description>地下階あり_地上1階</gml:description>
+<gml:name>511</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_10">
+<gml:description>地下階あり_地上2階</gml:description>
+<gml:name>512</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_11">
+<gml:description>地下階あり_地上3階</gml:description>
+<gml:name>513</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_12">
+<gml:description>地下階あり_地上4-5階</gml:description>
+<gml:name>514</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_13">
+<gml:description>地下階あり_地上6-7階</gml:description>
+<gml:name>515</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_14">
+<gml:description>地下階あり_地上8-10階</gml:description>
+<gml:name>516</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_15">
+<gml:description>地下階あり_地上11-15階</gml:description>
+<gml:name>517</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_16">
+<gml:description>地下階あり_地上16階以上</gml:description>
+<gml:name>518</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_floor_17">
+<gml:description>不明</gml:description>
+<gml:name>521</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

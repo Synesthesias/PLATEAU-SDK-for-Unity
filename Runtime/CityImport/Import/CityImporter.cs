@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.CityImport.Import.CityImportProcedure;
@@ -21,17 +20,25 @@ namespace PLATEAU.CityImport.Import
     /// </summary>
     public static class CityImporter
     {
-        static string  lastFetchedGmlRootPath = "";
+        
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
+        /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token)
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
+            if (config == null)
+            {
+                Debug.LogError("CityImportConfig が null です。");
+                return;
+            }
+            
             progressDisplay ??= new DummyProgressDisplay();
             var datasetSourceConfig = config.ConfBeforeAreaSelect.DatasetSourceConfig;
-            string destPath = PathUtil.PLATEAUSrcFetchDir;
+            
 
             if ((datasetSourceConfig is DatasetSourceConfigLocal localConf) && (!Directory.Exists(localConf.LocalSourcePath)))
             {
@@ -80,78 +87,134 @@ namespace PLATEAU.CityImport.Import
             cityModelComponent.GeoReference =
                 GeoReference.Create(referencePoint, PackageImportConfig.UnitScale, PackageImportConfig.MeshAxes, config.ConfBeforeAreaSelect.CoordinateZoneID);
 
-            // GMLファイルを fetch します。これは同期処理にします。
-            // なぜなら、ファイルコピー が並列で動くのはトラブルの元(特に同じ codelist を同時にコピーしようとしがち) だからです。
-
-            List<GmlFile> fetchedGmls = new List<GmlFile>();
-            foreach (var gml in targetGmls)
+            // ローカルインポートの場合は Fetch（ファイルコピー）を省略し、直接 GML ファイルパスを使用します。
+            // リモートインポートの場合はFetch（ダウンロード） します。
+            
+            // リモートインポートの場合は一時フォルダを作成
+            bool isRemoteImport = datasetSourceConfig is DatasetSourceConfigRemote;
+            string remoteDownloadPath = datasetSourceConfig is DatasetSourceConfigRemote ? PathUtil.GetTempImportDir() : "";
+            if (isRemoteImport && !Directory.Exists(remoteDownloadPath))
             {
-                string gmlName = Path.GetFileName(gml.Path);
-                try
-                {
-                    
-                    fetchedGmls.Add(await GmlImporter.Fetch(gml, destPath, config, progressDisplay, token));
-                    progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
-                }
-                catch (OperationCanceledException)
-                {
-                    progressDisplay.SetProgress(gmlName, 0f, "キャンセルされました");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                    progressDisplay.SetProgress(gmlName, 0f, "GMLファイルの取得に失敗しました。");
-                }
+                Directory.CreateDirectory(remoteDownloadPath);
             }
 
-            // GMLファイルを同時に処理する最大数です。
-            // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
-            // ただしメモリ使用量が増えます。
-            var semGmlProcess = new SemaphoreSlim(4);
-            await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
+            bool isLocalImport = datasetSourceConfig is DatasetSourceConfigLocal;
+
+            try
             {
-                await semGmlProcess.WaitAsync(); 
-                try
+                var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
+                
+                // GMLファイルを同時に処理する最大数です。
+                // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
+                // ただしメモリ使用量が増えます。
+                var semGmlProcess = new SemaphoreSlim(4);
+                await Task.WhenAll(fetchedGmls.Select(async fetchedGml =>
                 {
-
-                    if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
+                    await semGmlProcess.WaitAsync(); 
+                    try
                     {
-                        try
+                        if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                         {
-                            // GMLを1つインポートします。
-                            // ここはメインスレッドで呼ぶ必要があります。
-                            await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
-                        }
-                        catch(OperationCanceledException)
-                        {
-                            progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
-
-
-                        lock (lastFetchedGmlRootPath)
-                        {
-                            lastFetchedGmlRootPath = fetchedGml.CityRootPath();
+                            try
+                            {
+                                // GMLを1つインポートします。
+                                // ここはメインスレッドで呼ぶ必要があります。
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
+                                    postGmlProcessors, fetchedGmls.Count);
+                            }
+                            catch(OperationCanceledException)
+                            {
+                                progressDisplay.SetProgress(Path.GetFileName(fetchedGml.Path), 0f, "キャンセルされました");
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError(e);
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-                finally
-                {
-                    semGmlProcess.Release();
-                }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                    finally
+                    {
+                        semGmlProcess.Release();
+                    }
 
-            }));
+                }));
 
-            // インポート完了後の処理
-            CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
-            rootTrans.name = Path.GetFileName(lastFetchedGmlRootPath);
+                // インポート完了後の処理
+                string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
+                rootTrans.name = Path.GetFileName(finalGmlRootPath);
+            }
+            finally
+            {
+                // インポートの成否にかかわらず、リモートインポートでできた一時フォルダを削除します。
+                if (isRemoteImport && !string.IsNullOrEmpty(remoteDownloadPath) && Directory.Exists(remoteDownloadPath))
+                {
+                    try
+                    {
+                        Directory.Delete(remoteDownloadPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"一時フォルダの削除に失敗しました: {remoteDownloadPath}\n{e.Message}");
+                    }
+                }
+            }
+        }
+        
+        
+        /// <summary>
+        /// GMLファイルの取得処理を行います。
+        /// ローカルインポートの場合は元のパスをそのまま使用し、リモートインポートの場合はダウンロードします。
+        /// </summary>
+        private static async Task<List<GmlFile>> Fetch(
+            List<GmlFile> targetGmls,
+            bool isLocalImport,
+            string remoteDownloadPath,
+            CityImportConfig config,
+            IProgressDisplay progressDisplay,
+            CancellationToken? token)
+        {
+            var fetchedGmls = new List<GmlFile>();
+            
+            if (isLocalImport)
+            {
+                // ローカルインポートの場合：Fetch を省略し、元の GML ファイルパスをそのまま使用
+                foreach (var gml in targetGmls)
+                {
+                    gml.Path = gml.Path.Replace('\\', '/');
+                    string gmlName = Path.GetFileName(gml.Path);
+                    fetchedGmls.Add(gml);
+                    progressDisplay.SetProgress(gmlName, 15f, "ローカルファイル取得完了");
+                }
+            }
+            else
+            {
+                // リモートインポートの場合
+                foreach (var gml in targetGmls)
+                {
+                    string gmlName = Path.GetFileName(gml.Path);
+                    try
+                    {
+                        
+                        fetchedGmls.Add(await GmlImporter.Fetch(gml, remoteDownloadPath, config, progressDisplay, token));
+                        progressDisplay.SetProgress(gmlName, 15f, "GMLファイル取得完了");
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        progressDisplay.SetProgress(gmlName, 0f, "キャンセルされました");
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                        progressDisplay.SetProgress(gmlName, 0f, "GMLファイルの取得に失敗しました。");
+                    }
+                }
+            }
+            
+            return fetchedGmls;
         }
     }
 }

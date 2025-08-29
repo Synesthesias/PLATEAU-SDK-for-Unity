@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_0afa2557-9e4d-404b-9b33-da263401b2b4">
+<gml:name>Common_shapeType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_1">
+<gml:description>非区分（下記に該当しない全データ）</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_2">
+<gml:description>射影部の上端</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_3">
+<gml:description>射影部の下端</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_4">
+<gml:description>高欄</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_5">
+<gml:description>橋脚</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_6">
+<gml:description>親柱</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_7">
+<gml:description>ガードレール</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_8">
+<gml:description>ガードパイプ</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_9">
+<gml:description>中庭線</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_10">
+<gml:description>棟割線</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_11">
+<gml:description>階層線</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_12">
+<gml:description>外付階段</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_13">
+<gml:description>ポーチ・ひさし</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_14">
+<gml:description>両側敷地のへい</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_shapeType_15">
+<gml:description>輸送管（空間）</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

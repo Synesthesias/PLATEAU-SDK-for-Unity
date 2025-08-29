@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_23c580b4-2ca8-40ff-83c9-43f27433dc5e">
+<gml:name>VegetationDataQualityAttribute_appearanceSrcDesc</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_appearanceSrcDesc_1">
+<gml:description>空中写真</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_appearanceSrcDesc_2">
+<gml:description>MMS画像</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_appearanceSrcDesc_3">
+<gml:description>現地写真</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="VegetationDataQualityAttribute_appearanceSrcDesc_4">
+<gml:description>疑似テクスチャ</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>
