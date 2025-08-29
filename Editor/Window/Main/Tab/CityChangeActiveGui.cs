@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util.Async;
@@ -20,6 +21,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityChangeActiveGui : ITabContent
     {
         private PLATEAUInstancedCityModel adjustTarget;
+        private PLATEAUTileManager tileManager;
         private readonly FilterConditionGui filterConditionGUI = new FilterConditionGui();
         // private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
         private bool disableDuplicate = true;
@@ -47,8 +49,15 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         "調整対象", this.adjustTarget,
                         typeof(PLATEAUInstancedCityModel), true);
                 if(EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
-                
-                if (this.adjustTarget == null) return;
+
+                EditorGUI.BeginChangeCheck();
+                this.tileManager =
+                    (PLATEAUTileManager)EditorGUILayout.ObjectField(
+                        "調整対象（動的タイル）", this.tileManager,
+                        typeof(PLATEAUTileManager), true);
+                if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
+
+                if (this.adjustTarget == null && this.tileManager == null) return;
 
                 PlateauEditorStyle.Separator(0);
 
@@ -60,34 +69,46 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
                     PlateauEditorStyle.Heading("フィルタ条件指定", null);
                     
-                    var duplicateToggleContent =
-                        new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。"); 
-                    this.disableDuplicate = PlateauEditorStyle.Toggle(duplicateToggleContent, this.disableDuplicate);
+                    if(this.tileManager == null)
+                    {
+                        var duplicateToggleContent =
+                        new GUIContent("重複する地物を非表示", "有効な場合、重複した地物オブジェクトのうちLODが最大のもののみ残してそれ以外を非表示にします。");
+                        this.disableDuplicate = PlateauEditorStyle.Toggle(duplicateToggleContent, this.disableDuplicate);
+                    }
                     
                     this.filterConditionGUI.Draw(this.packageToLodMinMax);
                     
-
                     using (new EditorGUI.DisabledScope(isFilterTaskRunning))
                     {
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
-                                }, TaskScheduler.FromCurrentSynchronizationContext())
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
-                                    SceneView.RepaintAll();
-                                    isFilterTaskRunning = false;
-                                }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
+
+                            if(this.tileManager != null)
+                            {
+                                //TileMangerが存在する場合は、TileManager側でFilteringします。
+                                this.tileManager.FilterByCityObjectTypeAndLod(this.filterConditionGUI.SelectionDict, this.filterConditionGUI.PackageLodSliderResult);
+                                SceneView.RepaintAll();
+                                isFilterTaskRunning = false;
+                            }
+                            else
+                            {
+                                this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
+                                    .ContinueWithErrorCatch()
+                                    .ContinueWith(_ =>
+                                    {
+                                        this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
+                                    }, TaskScheduler.FromCurrentSynchronizationContext())
+                                    .ContinueWithErrorCatch()
+                                    .ContinueWith(_ =>
+                                    {
+                                        if (this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);
+                                        SceneView.RepaintAll();
+                                        isFilterTaskRunning = false;
+                                    }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
+                            }
                         }
                     }
-
                 }
             }
         }
@@ -98,6 +119,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
         {
             if (cityModel == null) return;
+            this.tileManager = null;
+
             // シーン上に存在するパッケージとLODを求めます。
             this.packageToLodMinMax = new PackageToLodMinMax();
             var gmls = cityModel.GmlTransforms;
@@ -115,6 +138,28 @@ namespace PLATEAU.Editor.Window.Main.Tab
             // GUIを更新します。
             this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
         }
+
+        /// <summary>
+        /// GUI上で調整対象のタイルマネージャーが新たに選択されたときに呼ばれます。
+        /// </summary>
+        private void OnChangeTargetTileManager(PLATEAUTileManager tileManager)
+        {
+            if (tileManager == null) return;
+            this.adjustTarget = null;
+
+            this.packageToLodMinMax = new PackageToLodMinMax();
+            var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
+            foreach (var package in packages)
+            {
+                if (package == PredefinedCityModelPackage.None)
+                    continue;
+                var predefined = CityModelPackageInfo.GetPredefined(package);
+                this.packageToLodMinMax.AddOrMerge(package, predefined.minLOD, predefined.maxLOD);
+            }
+            // GUIを更新します。
+            this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+        }
+
 
         /// <summary> テストで利用する用 </summary>
         internal const string NameOfOnChangeTargetCityModel = nameof(OnChangeTargetCityModel);
