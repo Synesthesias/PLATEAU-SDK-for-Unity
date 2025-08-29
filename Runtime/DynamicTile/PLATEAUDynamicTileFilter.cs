@@ -51,7 +51,10 @@ namespace PLATEAU.DynamicTile
         }
     }
 
-    public class PLATEAUDynamicTileFilter
+    /// <summary>
+    /// PLATEAUDynamicTileのフィルタリングを行う静的クラス。
+    /// </summary>
+    public static class PLATEAUDynamicTileFilter
     {
         /// <summary>
         /// GameObjectのON/OFFを行います
