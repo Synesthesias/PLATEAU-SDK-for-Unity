@@ -26,7 +26,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
         // private readonly AdjustPackageLodGUI adjustPackageLodGUI = new AdjustPackageLodGUI();
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
-        
+
+        string[] options = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
+        int selectedIndex = 0;
+
         /// <summary>
         /// 与えられた <see cref="PredefinedCityModelPackage"/> のうち、
         /// シーン上にゲームオブジェクトとして存在するパッケージとそのLODです。
@@ -37,25 +40,32 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             return new IMGUIContainer(Draw);
         }
-        
+
         private void Draw()
         {
             PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                EditorGUI.BeginChangeCheck();
-                this.adjustTarget =
-                    (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
-                        "調整対象", this.adjustTarget,
-                        typeof(PLATEAUInstancedCityModel), true);
-                if(EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
+                selectedIndex = EditorGUILayout.Popup("調整対象の種類", selectedIndex, options);
 
-                EditorGUI.BeginChangeCheck();
-                this.tileManager =
-                    (PLATEAUTileManager)EditorGUILayout.ObjectField(
-                        "調整対象（動的タイル）", this.tileManager,
-                        typeof(PLATEAUTileManager), true);
-                if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
+                if(selectedIndex == 0) 
+                {
+                    EditorGUI.BeginChangeCheck();
+                    this.adjustTarget =
+                        (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
+                            "調整対象", this.adjustTarget,
+                            typeof(PLATEAUInstancedCityModel), true);
+                    if (EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
+                }
+                else if (selectedIndex == 1)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    this.tileManager =
+                        (PLATEAUTileManager)EditorGUILayout.ObjectField(
+                            "調整対象", this.tileManager,
+                            typeof(PLATEAUTileManager), true);
+                    if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
+                }
 
                 if (this.adjustTarget == null && this.tileManager == null) return;
 
