@@ -38,6 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        (progressDisplay as ProgressDisplayGUI)?.Clear();
                         // タスク数をインクリメントし、キャンセルトークンを初期化
                         Interlocked.Increment(ref numCurrentRunningTasks);
                         cancellationTokenSrc = new CancellationTokenSource();
@@ -97,8 +98,38 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 new CityDuplicateProcessor() // 重複した低LODを非表示にします。
             };
             var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
+           //PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
             
-            task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+            //task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+            //task.ContinueWithErrorCatch();
+            // 完了後にUIスレッドでダイアログを出す
+            task.ContinueWith(t =>
+            {
+                try
+                {
+                    Interlocked.Decrement(ref numCurrentRunningTasks);
+                    if (t.IsCanceled)
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートをキャンセルしました", "OK");
+                        return;
+                    }
+                    if (t.IsFaulted)
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートに失敗しました。詳細はConsoleを確認してください。", "OK");
+                        return;
+                    }
+                    UnityEditor.EditorApplication.delayCall += () =>
+                        PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
+                    UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
+                }
+                finally
+                {
+                    cancellationTokenSrc?.Dispose();
+                    cancellationTokenSrc = null;
+                }
+            });
             task.ContinueWithErrorCatch();
         }
         
