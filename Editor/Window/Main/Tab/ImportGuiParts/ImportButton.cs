@@ -38,6 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        (progressDisplay as ProgressDisplayGUI)?.Clear();
                         // タスク数をインクリメントし、キャンセルトークンを初期化
                         Interlocked.Increment(ref numCurrentRunningTasks);
                         cancellationTokenSrc = new CancellationTokenSource();
