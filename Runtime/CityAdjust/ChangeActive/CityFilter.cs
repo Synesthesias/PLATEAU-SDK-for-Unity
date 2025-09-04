@@ -26,13 +26,14 @@ namespace PLATEAU.CityAdjust.ChangeActive
                 foreach (int lod in lods)
                 {
                     var cityObjTransforms = PLATEAUInstancedCityModel.GetCityObjects(gmlTrans, lod);
+                    if (cityObjTransforms == null) continue;
                     // 都市オブジェクトごとのループ
                     foreach (var cityObjTrans in cityObjTransforms)
                     {
                         CityGML.CityObjectType cityObjType = 0;
                         var cityObjGrp = cityObjTrans.GetComponent<PLATEAUCityObjectGroup>();
 
-                        if (cityObjGrp == null) return;
+                        if (cityObjGrp == null) continue;
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
 
                         List<CityObjectList.CityObject> cityObjList =
@@ -56,7 +57,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         }
                         catch(KeyNotFoundException e)
                         {
-                            Debug.LogError(e.Message);
+                            Debug.LogError(e);
                         }
 
                         bool shouldObjEnabled = true;
@@ -88,7 +89,8 @@ namespace PLATEAU.CityAdjust.ChangeActive
                             typeNode = typeNode.Parent;
                         } // 分類の階層構造をたどるループ  ここまで
                         
-                        cityObjTrans.gameObject.SetActive(shouldObjEnabled);
+                        var go = cityObjTrans.gameObject;
+                        if (go.activeSelf != shouldObjEnabled) go.SetActive(shouldObjEnabled);
                         
                     } // 都市オブジェクトごとのループ  ここまで
                 } // LODごとのループ  ここまで
@@ -103,7 +105,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
             {
                 var gmlInfo = GmlFile.Create(gmlTrans.name);
                 var gmlPackage = gmlInfo.Package;
-                if (!packageToLodRangeDict.ContainsKey(gmlPackage)) continue; 
+                if (!packageToLodRangeDict.ContainsKey(gmlPackage))
+                {
+                    gmlInfo.Dispose();
+                    continue;
+                } 
                 var lods = PLATEAUInstancedCityModel.GetLodTransforms(gmlTrans);
                 foreach (var lodTrans in lods)
                 {
