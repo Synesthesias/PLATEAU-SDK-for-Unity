@@ -1,7 +1,4 @@
-﻿using System;
-using PLATEAU.Interop;
-using System.Runtime.InteropServices;
-using PLATEAU.Native;
+﻿using System.Runtime.InteropServices;
 
 namespace PLATEAU.Dataset
 {

@@ -1,16 +1,11 @@
 using NUnit.Framework;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
-using System;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;

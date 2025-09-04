@@ -2,9 +2,7 @@ using MessagePack;
 using NUnit.Framework;
 using PLATEAU.CityGML;
 using PLATEAU.CityInfo;
-using System;
 using System.Collections.Generic;
-using UnityEditor.Compilation;
 using static PLATEAU.CityInfo.CityObjectList;
 
 namespace PLATEAU.Tests.EditModeTests

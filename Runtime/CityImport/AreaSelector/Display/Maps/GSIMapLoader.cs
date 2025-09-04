@@ -9,7 +9,6 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
 #else
