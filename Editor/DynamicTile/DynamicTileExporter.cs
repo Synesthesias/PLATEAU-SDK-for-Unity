@@ -260,6 +260,9 @@ namespace PLATEAU.DynamicTile
 
                 // 一時フォルダーを削除
                 CleanupTempFolder();
+                
+                // ビルドが終わったらAddressableGroup設定はもう不要です
+                AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
 
                 // タイルのある場所にシーンビューカメラをフォーカスします。
                 manager.InitializeTiles().Wait();
@@ -960,7 +963,7 @@ namespace PLATEAU.DynamicTile
                     }
                     if (registered) continue;
 
-                    // 2) Assets外のケースでは、Addressablleに認識させるために一時的にインポートしてプレハブにします。
+                    // 2) Assets外のケースでは、Addressableに認識させるために一時的にインポートしてプレハブにします。
                     if (!string.IsNullOrEmpty(catalogPath))
                     {
                         if (!catalogLoaded)
