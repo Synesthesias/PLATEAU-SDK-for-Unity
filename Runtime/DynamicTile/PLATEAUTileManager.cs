@@ -52,7 +52,7 @@ namespace PLATEAU.DynamicTile
             { 9, (1500f, 10000f) },
         };
 
-        [SerializeField]
+        [SerializeField, HideInInspector] // インスペクタ表示はEditorクラスに任せます
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
