@@ -191,6 +191,7 @@ namespace PLATEAU.DynamicTile
         {
             var handle = Addressables.InitializeAsync();
             handle.WaitForCompletion();
+            if(handle.IsValid()) Addressables.Release(handle);
             // Addressables.ClearResourceLocators();
             // AssetBundle.UnloadAllAssetBundles(true); 
             // Resources.UnloadUnusedAssets();

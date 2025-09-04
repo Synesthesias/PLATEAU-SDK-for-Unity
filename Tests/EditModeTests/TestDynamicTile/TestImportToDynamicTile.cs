@@ -123,12 +123,6 @@ namespace PLATEAU.Tests.TestDynamicTile
         public void TearDown()
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            // 生成物のうちテスト用出力先（Assets 配下）を掃除
-            if (AssetDatabase.IsValidFolder(TempScenePath))
-            {
-                AssetDatabase.DeleteAsset(TempScenePath);
-                AssetDatabase.Refresh();
-            }
             // 出力先フォルダを削除
             if (!string.IsNullOrEmpty(outputDir) && Directory.Exists(outputDir))
             {
@@ -143,7 +137,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             if (opened.path == TempScenePath)
             {
                 // 別シーンに切り替えてから削除
-                if (!string.IsNullOrEmpty(prevScenePath) && File.Exists(prevScenePath))
+                if (!string.IsNullOrEmpty(prevScenePath) && AssetDatabase.LoadAssetAtPath<SceneAsset>(prevScenePath) != null)
                 {
                     EditorSceneManager.OpenScene(prevScenePath, OpenSceneMode.Single);
                 }
@@ -243,6 +237,9 @@ namespace PLATEAU.Tests.TestDynamicTile
             var task = importer.ExecAsync(conf, cts.Token);
             yield return task.AsIEnumerator();
 
+            // Assert
+            Assert.IsTrue(task.Result, "動的タイルのエクスポートが成功");
+            
             // Assert: マネージャーが生成され、カタログが保存されていること
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             Assert.IsNotNull(manager, "PLATEAUTileManager が生成されている");
@@ -259,13 +256,32 @@ namespace PLATEAU.Tests.TestDynamicTile
             
             // タイルの読み込み
             var sceneView = SceneView.lastActiveSceneView;
-            sceneView.pivot = new Vector3(0, 50, 0);
+            if (sceneView == null)
+            {
+                sceneView = EditorWindow.GetWindow<SceneView>();
+                if (sceneView != null)
+                {
+                    sceneView.Show();
+                    // ウィンドウ初期化待ち
+                    for (int i = 0; i < 3; i++)
+                    {
+                        yield return null;
+                    }
+                }
+            }
+            if (sceneView != null)
+            {
+                sceneView.pivot = new Vector3(0, 50, 0);
+            }
             yield return manager.InitializeTiles().AsIEnumerator();
 
             // タイルを読み込ませるためシーンビューのループを回す
             for (int i = 0; i < 10; i++)
             {
-                sceneView.pivot += Vector3.forward * 0.05f;
+                if (sceneView != null)
+                {
+                    sceneView.pivot += Vector3.forward * 0.05f;
+                }
                 EditorApplication.QueuePlayerLoopUpdate();
                 for (int j = 0; j < 10; j++)
                 {
@@ -297,8 +313,9 @@ namespace PLATEAU.Tests.TestDynamicTile
                 var gridCodeAsserted = gridsAssertedToExist[i];
                 var tileObjects = Resources.FindObjectsOfTypeAll<PLATEAUCityObjectGroup>()
                     .Where(
-                        go => // 例: group6 -> 親 -> LOD1 -> 親 -> tile_zoom_11_grid_543905094_bldg_6697_op
-                            go.transform.parent.parent.name.Contains(gridCodeAsserted)
+                        go => 
+                            go.transform.parent.parent.name.Contains(gridCodeAsserted) && // 例: group6 -> 親 -> LOD1 -> 親 -> tile_zoom_11_grid_543905094_bldg_6697_op
+                            go.gameObject.scene.IsValid()
                     )
                     .ToArray();
                 

@@ -36,7 +36,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
 
                         List<CityObjectList.CityObject> cityObjList =
-                            (List<CityObjectList.CityObject>)cityObjGrp.GetAllCityObjects();
+                            cityObjGrp.GetAllCityObjects().ToList();
                         // 最小地物のみ処理
                         if (cityObjList.Count == 1)
                             cityObjType = cityObjList.First().CityObjectType;
