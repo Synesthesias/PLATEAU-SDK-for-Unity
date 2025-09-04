@@ -600,7 +600,9 @@ namespace PLATEAU.DynamicTile
                 Directory.CreateDirectory(outputDirFullPath);
             }
 
-            // 都市オブジェクトを個別に処理
+            // 進捗表示
+            int loadedGmlCount = Context.IncrementAndGetLoadedGmlCount();
+            float progress = 10f + ((float)loadedGmlCount / Context.GmlCount) * 70f;
             for (int i = 0; i < cityObjectGroups.Count; i++)
             {
                 var cityObject = cityObjectGroups[i];
@@ -609,10 +611,7 @@ namespace PLATEAU.DynamicTile
                 // オブジェクト名にメッシュコードを追加
                 cityObject.name = meshCode + "_" + cityObject.name;
 
-                // 進捗更新を通知
-                // 進捗計算: 10%から始まり、GML処理完了ごとに進む（最大80%）
-                int loadedGmlCount = Context.IncrementAndGetLoadedGmlCount();
-                float progress = 10f + ((float)loadedGmlCount / Context.GmlCount) * 70f;
+                // プログレスバー更新
                 progressDisplay?.SetProgress(ImportToDynamicTile.TileProgressTitle, progress,
                     $"動的タイルを生成中... {cityObject.name}");
 
