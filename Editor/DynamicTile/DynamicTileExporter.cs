@@ -249,8 +249,6 @@ namespace PLATEAU.DynamicTile
                 // 一時フォルダーを削除
                 CleanupTempFolder();
 
-                manager.SaveMetaAddress(metaAddress);
-
                 // タイルのある場所にシーンビューカメラをフォーカスします。
                 manager.InitializeTiles().Wait();
                 FocusSceneViewCameraToTiles(manager);
@@ -838,7 +836,7 @@ namespace PLATEAU.DynamicTile
                         {
                             var latestCatalog = catalogFiles[0];
                             var loader = new AddressableLoader();
-                            var oldMeta = loader.InitializeAsync(latestCatalog, addressName).GetAwaiter().GetResult();
+                            var oldMeta = loader.InitializeAsync(latestCatalog).GetAwaiter().GetResult();
                             if (oldMeta != null && oldMeta.TileMetaInfos != null && Context.MetaStore != null)
                             {
                                 foreach (var info in oldMeta.TileMetaInfos)
@@ -894,7 +892,7 @@ namespace PLATEAU.DynamicTile
                         {
                             var latestCatalog = catalogFiles[0];
                             var loader = new AddressableLoader();
-                            var oldMeta = loader.InitializeAsync(latestCatalog, addressName).GetAwaiter().GetResult();
+                            var oldMeta = loader.InitializeAsync(latestCatalog).GetAwaiter().GetResult();
                             if (oldMeta != null)
                             {
                                 rp = oldMeta.ReferencePoint;

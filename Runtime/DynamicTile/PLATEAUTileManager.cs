@@ -56,14 +56,8 @@ namespace PLATEAU.DynamicTile
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
-        /// <summary>
-        /// <see cref="addressableLoader"/>にタイルのメタ情報のアドレスを渡すことで、複数のメタがあっても識別できるようにします。
-        /// </summary>
         [SerializeField]
-        private string metaAddress;
-
-        [SerializeField]
-        private bool showDebugTileInfo = true; // Debug情報を表示するかどうか
+        private bool showDebugTileInfo = false; // Debug情報を表示するかどうか
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
@@ -132,7 +126,7 @@ namespace PLATEAU.DynamicTile
             }         
 
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            var metaStore = await addressableLoader.InitializeAsync(catalogPath, metaAddress);
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
                 Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
@@ -162,11 +156,6 @@ namespace PLATEAU.DynamicTile
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）
             catalogPath = path.Replace('\\', '/');
-        }
-        
-        public void SaveMetaAddress(string address)
-        {
-            metaAddress = address;
         }
 
         /// <summary>
