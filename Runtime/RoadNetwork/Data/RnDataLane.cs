@@ -47,6 +47,9 @@ namespace PLATEAU.RoadNetwork.Data
         [RoadNetworkSerializeMember]
         public bool IsReversed { get; set; }
 
+        // 後方互換性のためのプロパティ
+        [Obsolete("Use IsReversed instead")]
+        public bool IsReverse => IsReversed;
     }
 
 }
