@@ -69,7 +69,7 @@ namespace PLATEAU.DynamicTile
                 // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
 
                 // プロファイルを作成
-                var profileID = AddressablesUtility.SetOrCreateProfile(Context.AddressableGroupName);
+                var profileID = AddressablesUtility.SetOrCreateProfile();
                 if (string.IsNullOrEmpty(profileID))
                 {
                     Debug.LogError("プロファイルの作成に失敗しました。");
@@ -228,6 +228,8 @@ namespace PLATEAU.DynamicTile
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(false);
+                
+                AddressablesUtility.BackToDefaultProfile();
 
                 // if (Context.IsExcludeAssetFolder)
                 // {

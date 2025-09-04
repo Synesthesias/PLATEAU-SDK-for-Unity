@@ -15,6 +15,10 @@ namespace PLATEAU.Editor.Addressables
     /// </summary>
     public static class AddressablesUtility
     {
+        private const string TileBuildProfileName = "PLATEAU_TileBuildProfile";
+        private const string ProfileVariableNameBuild = "PLATEAU_BuildPath";
+        private const string ProfileVariableNameLoad = "PLATEAU_LoadPath";
+        
         /// <summary>
         /// AddressableAssetSettingsを取得。nullの場合は警告を出す。
         /// </summary>
@@ -123,6 +127,49 @@ namespace PLATEAU.Editor.Addressables
                 }
             }
         }
+        
+        public static void BackToDefaultProfile()
+        {
+            var addrSettings = AddressableAssetSettingsDefaultObject.Settings;
+            if (addrSettings == null) return;
+
+            var profileSettings = addrSettings.profileSettings;
+            var defaultProfileId = profileSettings.GetProfileId("Default");
+            if (string.IsNullOrEmpty(defaultProfileId)) return;
+
+            // Default に戻す
+            addrSettings.activeProfileId = defaultProfileId;
+
+            // ProfileVariableNameが空だと不安定になるのでデフォルトの安全な値を入れます
+            const string SafeDefaultPathLoad = "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]";
+            const string SafeDefaultPathBuild =
+                "[UnityEngine.AddressableAssets.Addressables.RuntimePath]/[BuildTarget]";
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
+            {
+                profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
+            }
+
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
+            {
+                profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
+            }
+
+            var currentLoad = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
+            if (string.IsNullOrEmpty(currentLoad))
+            {
+                profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, SafeDefaultPathLoad);
+            }
+
+            var currentBuild = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameBuild);
+            if (string.IsNullOrEmpty(currentBuild))
+            {
+                profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
+            }
+
+            // RemoteCatalog の参照先を揃える
+            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
+            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
+        }
 
         /// <summary>
         /// 指定したグループのロードパス(LoadPath)とビルドパス(buildPath)を変更します。
@@ -150,14 +197,19 @@ namespace PLATEAU.Editor.Addressables
                 return;
             }
             
-            if (!settings.profileSettings.GetVariableNames().Contains(groupName))
+            if (!settings.profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                settings.profileSettings.CreateValue(groupName, "");
+                settings.profileSettings.CreateValue(ProfileVariableNameLoad, "");
+            }
+
+            if (!settings.profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
+            {
+                settings.profileSettings.CreateValue(ProfileVariableNameBuild, "");
             }
 
             // グループのBuildPathとLoadPathに変数名をセット
-            bundledSchema.BuildPath.SetVariableByName(settings, groupName);
-            bundledSchema.LoadPath.SetVariableByName(settings, groupName);
+            bundledSchema.BuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            bundledSchema.LoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
 
             SetGroupSchema(bundledSchema);
         }
@@ -189,58 +241,20 @@ namespace PLATEAU.Editor.Addressables
             settings.BuildRemoteCatalog = true;
 
             var profileSettings = settings.profileSettings;
-            if (!profileSettings.GetVariableNames().Contains(pathVar))
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                profileSettings.CreateValue(pathVar, path);
-            }
-            profileSettings.SetValue(settings.activeProfileId, pathVar, path);
-
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, pathVar);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, pathVar);
-        }
-        
-        /// <summary>
-        /// デフォルトのプロファイル設定を行います。
-        /// </summary>
-        public static void SetDefaultProfileSettings(string groupName)
-        {
-            var settings = RequireAddressableSettings();
-            if (settings == null)
-            {
-                return;
+                profileSettings.CreateValue(ProfileVariableNameLoad, path);
             }
 
-            // デフォルトプロファイルの作成
-            var profileId = SetOrCreateProfile("Default");
-            if (string.IsNullOrEmpty(profileId))
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
             {
-                Debug.LogError("デフォルトプロファイルの作成に失敗しました。");
-                return;
+                profileSettings.CreateValue(ProfileVariableNameBuild, path);
             }
 
-            // プロファイルをアクティブに設定
-            settings.activeProfileId = profileId;
-            
-            settings.BuildRemoteCatalog = true;
-            var profileSettings = settings.profileSettings;
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, "Local.BuildPath");
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, "Local.LoadPath");
-
-            var group = GetOrCreateGroup(groupName);
-            if (group == null)
-            {
-                Debug.LogError($"グループの作成に失敗しました: {groupName}");
-                return;
-            }
-
-            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
-            if (bundledSchema == null)
-            {
-                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
-                return;
-            }
-
-            SetGroupSchema(bundledSchema);
+            profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, path);
+            profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameLoad);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameBuild);
         }
 
         private static void SetGroupSchema(BundledAssetGroupSchema groupSchema)
@@ -264,9 +278,8 @@ namespace PLATEAU.Editor.Addressables
         /// <summary>
         /// Addressablesのプロファイルを作成し、アクティブにします。
         /// </summary>
-        /// <param name="profileName">作成するプロファイル名</param>
         /// <returns>作成したプロファイルのID</returns>
-        public static string SetOrCreateProfile(string profileName)
+        public static string SetOrCreateProfile()
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
@@ -277,7 +290,7 @@ namespace PLATEAU.Editor.Addressables
 
             // プロファイルが既に存在するか確認
             var profileSettings = settings.profileSettings;
-            var existingProfileId = profileSettings.GetProfileId(profileName);
+            var existingProfileId = profileSettings.GetProfileId(TileBuildProfileName);
             if (!string.IsNullOrEmpty(existingProfileId))
             {
                 settings.activeProfileId = existingProfileId;
@@ -285,10 +298,10 @@ namespace PLATEAU.Editor.Addressables
             }
 
             // 新しいプロファイルを作成
-            var newProfileId = profileSettings.AddProfile(profileName, settings.activeProfileId);
+            var newProfileId = profileSettings.AddProfile(TileBuildProfileName, settings.activeProfileId);
             if (string.IsNullOrEmpty(newProfileId))
             {
-                Debug.LogError($"プロファイル '{profileName}' の作成に失敗しました。");
+                Debug.LogError($"プロファイル '{TileBuildProfileName}' の作成に失敗しました。");
                 return null;
             }
 
