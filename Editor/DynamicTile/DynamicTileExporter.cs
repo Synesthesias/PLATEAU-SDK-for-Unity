@@ -229,9 +229,12 @@ namespace PLATEAU.DynamicTile
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(false);
 
-                // ビルド後はAddressable Group設定を削除してOK
-                AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
-                AssetDatabase.SaveAssets();
+                // if (Context.IsExcludeAssetFolder)
+                // {
+                //     AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
+                //     AssetDatabase.SaveAssets();
+                // }
+                
 
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
@@ -295,16 +298,18 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public static void CleanupTempFolder()
         {
-            var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
-            if (AssetDatabase.DeleteAsset(assetPath))
-            {
-                AssetDatabase.Refresh();
-                Debug.Log($"一時フォルダーを削除しました: {assetPath}");
-            }
-            else
-            {
-                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
-            }
+            // FIXME 現状、Assets外のアプリビルド後に動かすためにはここはコメントアウトする必要あり
+            
+            // var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            // if (AssetDatabase.DeleteAsset(assetPath))
+            // {
+            //     AssetDatabase.Refresh();
+            //     Debug.Log($"一時フォルダーを削除しました: {assetPath}");
+            // }
+            // else
+            // {
+            //     Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+            // }
         }
 
         /// <summary>
@@ -798,6 +803,7 @@ namespace PLATEAU.DynamicTile
             sceneView.pivot = bounds.center;
             sceneView.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
             sceneView.size = distance;
+            SceneView.RepaintAll();
         }
         
         /// <summary>

@@ -24,6 +24,10 @@ using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.TestDynamicTile
 {
+    /// <summary>
+    /// 動的タイルのインポートのユニットテストです。
+    /// FIXME: アプリケーションのビルド後に動作するかまではカバーしないので注意。人力でも確認が必要。
+    /// </summary>
     [TestFixture]
     public class TestImportToDynamicTile
     {
