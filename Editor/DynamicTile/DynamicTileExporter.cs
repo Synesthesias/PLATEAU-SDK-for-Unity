@@ -231,13 +231,6 @@ namespace PLATEAU.DynamicTile
                 
                 AddressablesUtility.BackToDefaultProfile();
 
-                // if (Context.IsExcludeAssetFolder)
-                // {
-                //     AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
-                //     AssetDatabase.SaveAssets();
-                // }
-                
-
                 // managerを生成
                 var managerObj = new GameObject("DynamicTileManager");
                 var manager = managerObj.AddComponent<PLATEAUTileManager>();
