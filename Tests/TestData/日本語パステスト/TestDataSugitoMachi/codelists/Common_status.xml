@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_829c0062-c48c-4034-80a3-9f01f5561331">
+<gml:name>Common_status</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_status_1">
+<gml:description>計画</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_status_2">
+<gml:description>事業中</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

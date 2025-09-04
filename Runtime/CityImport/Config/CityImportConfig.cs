@@ -24,7 +24,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// 範囲選択で選択された範囲です。
         /// </summary>
-        public GridCodeList AreaGridCodes { get; private set; }
+        public GridCodeList AreaGridCodes { get; set; }
         
         
         /// <summary>

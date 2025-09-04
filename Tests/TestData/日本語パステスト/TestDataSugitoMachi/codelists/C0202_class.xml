@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_d3f47ece-0f44-4dd1-b0c1-eba97b94b18b">
+<gml:name>C0202_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_class_1">
+<gml:description>事業所数</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_class_2">
+<gml:description>従業者数</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_class_3">
+<gml:description>小売販売額</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0202_class_4">
+<gml:description>製造品出荷額</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -27,14 +27,15 @@ namespace PLATEAU.Editor.DynamicTile
         
         /// <summary>
         /// インポートしながら動的タイルを生成します。
+        /// 成否を返します。
         /// </summary>
-        public async Task ExecAsync(CityImportConfig config, CancellationToken cancelToken)
+        public async Task<bool> ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
             // 動的タイルのバリデーション
             if (!config.ValidateForTile())
             {
                 Debug.LogError($"validation failed.");
-                return;
+                return false;
             }
             
             // アセットバンドルのビルド時はシーンの保存が求められますが、
@@ -50,7 +51,7 @@ namespace PLATEAU.Editor.DynamicTile
                 else
                 {
                     Debug.Log("シーンの保存が拒否されたため処理を中止します。");
-                    return;
+                    return false;
                 }
             }
 
@@ -61,7 +62,7 @@ namespace PLATEAU.Editor.DynamicTile
             if (!preProcessSucceed)
             {
                 Debug.LogError("動的タイルの事前処理に失敗しました。");
-                return;
+                return false;
             }
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
 
@@ -76,25 +77,25 @@ namespace PLATEAU.Editor.DynamicTile
             await task;
             
             // 事後処理
+            bool succeed = false;
             try
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                dynamicTileExporter.CompleteProcessing();
+                succeed = dynamicTileExporter.CompleteProcessing();
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");
-                return;
+                return false;
             }
             catch (System.Exception ex)
             {
-                //Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
-                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.StackTrace}");
-
-                return;
+                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex}");
+                return false;
             }
             
             progressDisplay?.SetProgress(TileProgressTitle, 100f, "動的タイル生成完了");
+            return succeed;
         }
         
         /// <summary>

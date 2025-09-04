@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_8b079753-edc0-43aa-9f07-524de3ee4e97">
+<gml:name>UtilityNodeContainer_containerType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_1">
+<gml:description>制水弁室</gml:description>
+<gml:name>501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_2">
+<gml:description>泥吐室</gml:description>
+<gml:name>502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_3">
+<gml:description>量水器室</gml:description>
+<gml:name>503</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_4">
+<gml:description>防火水槽</gml:description>
+<gml:name>504</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_5">
+<gml:description>空気弁室</gml:description>
+<gml:name>505</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_6">
+<gml:description>消火栓</gml:description>
+<gml:name>506</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_7">
+<gml:description>排気（水）弁室</gml:description>
+<gml:name>507</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_8">
+<gml:description>人孔</gml:description>
+<gml:name>001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_9">
+<gml:description>特殊人孔</gml:description>
+<gml:name>002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_10">
+<gml:description>手孔</gml:description>
+<gml:name>003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_11">
+<gml:description>換気孔</gml:description>
+<gml:name>005</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_12">
+<gml:description>洞道</gml:description>
+<gml:name>004</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_13">
+<gml:description>気送室</gml:description>
+<gml:name>401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_14">
+<gml:description>ガバナ</gml:description>
+<gml:name>402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_15">
+<gml:description>バルブ・ボックス</gml:description>
+<gml:name>403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_16">
+<gml:description>防塵器室</gml:description>
+<gml:name>404</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_17">
+<gml:description>自記圧力計塔</gml:description>
+<gml:name>405</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_18">
+<gml:description>バルブ</gml:description>
+<gml:name>406</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="UtilityNodeContainer_containerType_19">
+<gml:description>変圧器</gml:description>
+<gml:name>301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="Pollution_class"><gml:name>Pollution_class</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>air pollution</gml:description><gml:name>1010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>water pollution</gml:description><gml:name>1020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>noise</gml:description><gml:name>1030</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>shocks, tremors or vibrations</gml:description><gml:name>1040</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>ground subsidence</gml:description><gml:name>1050</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id6"><gml:description>odious smell</gml:description><gml:name>1060</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id7"><gml:description>soil contamination</gml:description><gml:name>1070</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id8"><gml:description>other</gml:description><gml:name>1080</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

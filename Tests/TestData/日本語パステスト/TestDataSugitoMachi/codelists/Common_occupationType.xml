@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_0f8b31b9-c46a-43d8-8ab6-2aa21be1fd7a">
+<gml:name>Common_occupationType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_1">
+<gml:description>A管理的職業従事者</gml:description>
+<gml:name>A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_2">
+<gml:description>B専門的・技術的職業従事者</gml:description>
+<gml:name>B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_3">
+<gml:description>C事務従事者</gml:description>
+<gml:name>C</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_4">
+<gml:description>D販売従事者</gml:description>
+<gml:name>D</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_5">
+<gml:description>Eサービス職業従事者</gml:description>
+<gml:name>E</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_6">
+<gml:description>F保安職業従事者</gml:description>
+<gml:name>F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_7">
+<gml:description>G農林漁業従事者</gml:description>
+<gml:name>G</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_8">
+<gml:description>H生産工程従事者</gml:description>
+<gml:name>H</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_9">
+<gml:description>I輸送・機械運転従事者</gml:description>
+<gml:name>I</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_10">
+<gml:description>J建設・採掘従事者</gml:description>
+<gml:name>J</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_11">
+<gml:description>K運搬・清掃・包装等従事者</gml:description>
+<gml:name>K</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_occupationType_12">
+<gml:description>L分類不能の職業</gml:description>
+<gml:name>L</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

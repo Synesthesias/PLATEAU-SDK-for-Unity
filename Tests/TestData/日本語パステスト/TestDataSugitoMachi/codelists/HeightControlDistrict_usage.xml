@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_f5ad31ef-7601-41be-9a58-b2d1caefcce8">
+<gml:name>HeightControlDistrict_usage</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="HeightControlDistrict_usage_1">
+<gml:description>最高限高度地区</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="HeightControlDistrict_usage_2">
+<gml:description>最低限高度地区</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

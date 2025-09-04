@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_9251d8c6-a338-4f97-b30c-0c3999600c9f">
+<gml:name>AuxiliaryTrafficArea_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_1">
+<gml:description>車道部</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_2">
+<gml:description>非常駐車帯</gml:description>
+<gml:name>1060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_3">
+<gml:description>中央帯</gml:description>
+<gml:name>1080</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_4">
+<gml:description>側帯</gml:description>
+<gml:name>1090</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_5">
+<gml:description>路肩</gml:description>
+<gml:name>1100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_6">
+<gml:description>停車帯</gml:description>
+<gml:name>1110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_7">
+<gml:description>乗合自動車停車所</gml:description>
+<gml:name>1120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_8">
+<gml:description>島</gml:description>
+<gml:name>3000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_9">
+<gml:description>交通島</gml:description>
+<gml:name>3010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_10">
+<gml:description>分離帯</gml:description>
+<gml:name>3020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_11">
+<gml:description>路面電車停車所</gml:description>
+<gml:name>4000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_12">
+<gml:description>植栽</gml:description>
+<gml:name>5000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_13">
+<gml:description>植樹帯</gml:description>
+<gml:name>5010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_14">
+<gml:description>植樹ます</gml:description>
+<gml:name>5020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_15">
+<gml:description>自転車駐車場</gml:description>
+<gml:name>6000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="AuxiliaryTrafficArea_function_16">
+<gml:description>自動車駐車場</gml:description>
+<gml:name>7000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,976 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_e39cb3ac-8b5a-4a52-a0d8-d39799a8da91">
+<gml:name>BuildingDetailAttribute_detailedUsage</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_1">
+<gml:description>業務施設</gml:description>
+<gml:name>401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_2">
+<gml:description>事務所</gml:description>
+<gml:name>401101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_3">
+<gml:description>銀行</gml:description>
+<gml:name>401102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_4">
+<gml:description>会議場・展示場</gml:description>
+<gml:name>401103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_5">
+<gml:description>郵便局</gml:description>
+<gml:name>401104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_6">
+<gml:description>電話局</gml:description>
+<gml:name>401105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_7">
+<gml:description>民間研究所</gml:description>
+<gml:name>401106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_8">
+<gml:description>研修所</gml:description>
+<gml:name>401107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_9">
+<gml:description>商業施設</gml:description>
+<gml:name>402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_10">
+<gml:description>商業施設1（百貨店、小売店、卸売店、ガソリンスタンド等）</gml:description>
+<gml:name>4021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_11">
+<gml:description>百貨店</gml:description>
+<gml:name>402101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_12">
+<gml:description>小売店</gml:description>
+<gml:name>402102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_13">
+<gml:description>卸売店</gml:description>
+<gml:name>402103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_14">
+<gml:description>ガソリンスタンド</gml:description>
+<gml:name>402104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_15">
+<gml:description>商業施設2（食堂、喫茶店、弁当屋・宅配等）</gml:description>
+<gml:name>4022</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_16">
+<gml:description>食堂</gml:description>
+<gml:name>402201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_17">
+<gml:description>喫茶店</gml:description>
+<gml:name>402202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_18">
+<gml:description>弁当屋・宅配</gml:description>
+<gml:name>402203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_19">
+<gml:description>商業施設3（理容店、美容院、レンタル業、宴会場、結婚式場、習い事教室、予備校、自動車教習所、住宅展示場、その他のサービス施設）</gml:description>
+<gml:name>4023</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_20">
+<gml:description>理容店</gml:description>
+<gml:name>402301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_21">
+<gml:description>美容院</gml:description>
+<gml:name>402302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_22">
+<gml:description>レンタル業</gml:description>
+<gml:name>402303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_23">
+<gml:description>宴会場</gml:description>
+<gml:name>402304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_24">
+<gml:description>結婚式場</gml:description>
+<gml:name>402305</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_25">
+<gml:description>習い事教室</gml:description>
+<gml:name>402306</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_26">
+<gml:description>予備校</gml:description>
+<gml:name>402307</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_27">
+<gml:description>自動車教習所</gml:description>
+<gml:name>402308</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_28">
+<gml:description>住宅展示場</gml:description>
+<gml:name>402309</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_29">
+<gml:description>その他サービス施設</gml:description>
+<gml:name>402310</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_30">
+<gml:description>商業施設4（料理店、キャバレー、クラブ、バー、飲み屋等）</gml:description>
+<gml:name>4024</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_31">
+<gml:description>料理店</gml:description>
+<gml:name>402401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_32">
+<gml:description>キャバレー</gml:description>
+<gml:name>402402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_33">
+<gml:description>クラブ</gml:description>
+<gml:name>402403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_34">
+<gml:description>バー</gml:description>
+<gml:name>402404</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_35">
+<gml:description>飲み屋</gml:description>
+<gml:name>402405</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_36">
+<gml:description>商業施設5（劇場、映画館等）</gml:description>
+<gml:name>4025</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_37">
+<gml:description>劇場</gml:description>
+<gml:name>402501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_38">
+<gml:description>映画館</gml:description>
+<gml:name>402502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_39">
+<gml:description>商業施設6（ボーリング場、バッティングセンター、ゴルフ練習場、フィットネス、カラオケボックス、インターネットカフェ等）</gml:description>
+<gml:name>4026</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_40">
+<gml:description>ボーリング場</gml:description>
+<gml:name>402601</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_41">
+<gml:description>バッティングセンター</gml:description>
+<gml:name>402602</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_42">
+<gml:description>ゴルフ練習場</gml:description>
+<gml:name>402603</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_43">
+<gml:description>フィットネス</gml:description>
+<gml:name>402604</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_44">
+<gml:description>カラオケボックス</gml:description>
+<gml:name>402605</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_45">
+<gml:description>インターネットカフェ</gml:description>
+<gml:name>402606</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_46">
+<gml:description>商業施設7（マージャン屋、パチンコ屋、馬券・車券発売所等）</gml:description>
+<gml:name>4027</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_47">
+<gml:description>マージャン屋</gml:description>
+<gml:name>402701</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_48">
+<gml:description>パチンコ店</gml:description>
+<gml:name>402702</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_49">
+<gml:description>馬券・車券発売所</gml:description>
+<gml:name>402703</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_50">
+<gml:description>宿泊施設</gml:description>
+<gml:name>403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_51">
+<gml:description>ホテル</gml:description>
+<gml:name>403101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_52">
+<gml:description>旅館</gml:description>
+<gml:name>403102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_53">
+<gml:description>民宿</gml:description>
+<gml:name>403103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_54">
+<gml:description>ラブホテル</gml:description>
+<gml:name>403104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_55">
+<gml:description>商業系複合施設</gml:description>
+<gml:name>404</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_56">
+<gml:description>住宅</gml:description>
+<gml:name>411</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_57">
+<gml:description>専用住宅（住宅に付随する物置、車庫を含む）</gml:description>
+<gml:name>4111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_58">
+<gml:description>共同住宅</gml:description>
+<gml:name>412</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_59">
+<gml:description>アパート</gml:description>
+<gml:name>412101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_60">
+<gml:description>マンション</gml:description>
+<gml:name>412102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_61">
+<gml:description>長屋</gml:description>
+<gml:name>412103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_62">
+<gml:description>寮</gml:description>
+<gml:name>412104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_63">
+<gml:description>店舗等併用住宅</gml:description>
+<gml:name>413</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_64">
+<gml:description>店舗等併用共同住宅</gml:description>
+<gml:name>414</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_65">
+<gml:description>作業所併用住宅</gml:description>
+<gml:name>415</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_66">
+<gml:description>官公庁施設</gml:description>
+<gml:name>421</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_67">
+<gml:description>国県市町村庁舎</gml:description>
+<gml:name>421101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_68">
+<gml:description>裁判所</gml:description>
+<gml:name>421102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_69">
+<gml:description>税務署</gml:description>
+<gml:name>421103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_70">
+<gml:description>警察署</gml:description>
+<gml:name>421104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_71">
+<gml:description>消防署</gml:description>
+<gml:name>421105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_72">
+<gml:description>駐在所</gml:description>
+<gml:name>421106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_73">
+<gml:description>文教厚生施設</gml:description>
+<gml:name>422</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_74">
+<gml:description>文教厚生施設1（大学、高等専門学校、各種学校、公的研究所等）</gml:description>
+<gml:name>4221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_75">
+<gml:description>大学</gml:description>
+<gml:name>422101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_76">
+<gml:description>高等専門学校</gml:description>
+<gml:name>422102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_77">
+<gml:description>各種学校</gml:description>
+<gml:name>422103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_78">
+<gml:description>公的研究所</gml:description>
+<gml:name>422104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_79">
+<gml:description>文教厚生施設2（小・中・高等学校、保育所等）</gml:description>
+<gml:name>4222</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_80">
+<gml:description>小・中・高等学校</gml:description>
+<gml:name>422201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_81">
+<gml:description>保育所</gml:description>
+<gml:name>422202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_82">
+<gml:description>文教厚生施設3（図書館、博物館、文化ホール、集会所、動物園等）</gml:description>
+<gml:name>4223</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_83">
+<gml:description>図書館</gml:description>
+<gml:name>422301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_84">
+<gml:description>博物館</gml:description>
+<gml:name>422302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_85">
+<gml:description>文化ホール</gml:description>
+<gml:name>422303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_86">
+<gml:description>集会所</gml:description>
+<gml:name>422304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_87">
+<gml:description>動物園</gml:description>
+<gml:name>422305</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_88">
+<gml:description>文教厚生施設4（体育館、水泳場、野球場、陸上競技場その他のスポーツ施設（主に公共施設））</gml:description>
+<gml:name>4224</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_89">
+<gml:description>体育館</gml:description>
+<gml:name>422401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_90">
+<gml:description>水泳場</gml:description>
+<gml:name>422402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_91">
+<gml:description>野球場</gml:description>
+<gml:name>422403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_92">
+<gml:description>陸上競技場その他のスポーツ施設（主に公共施設）</gml:description>
+<gml:name>422404</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_93">
+<gml:description>文教厚生施設5（病院）</gml:description>
+<gml:name>4225</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_94">
+<gml:description>文教厚生施設6（診療所、老人ホーム、介護福祉施設、公衆浴場、公衆便所等）</gml:description>
+<gml:name>4226</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_95">
+<gml:description>診療所</gml:description>
+<gml:name>422601</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_96">
+<gml:description>老人ホーム</gml:description>
+<gml:name>422602</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_97">
+<gml:description>介護福祉施設</gml:description>
+<gml:name>422603</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_98">
+<gml:description>公衆浴場</gml:description>
+<gml:name>422604</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_99">
+<gml:description>公衆便所</gml:description>
+<gml:name>422605</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_100">
+<gml:description>文教厚生施設7（神社、寺院、教会等）</gml:description>
+<gml:name>4227</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_101">
+<gml:description>神社</gml:description>
+<gml:name>422701</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_102">
+<gml:description>寺院</gml:description>
+<gml:name>422702</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_103">
+<gml:description>教会</gml:description>
+<gml:name>422703</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_104">
+<gml:description>運輸倉庫施設</gml:description>
+<gml:name>431</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_105">
+<gml:description>運輸倉庫施設1（駅舎、電車車庫、バスターミナル、港湾・空港施設等）</gml:description>
+<gml:name>4311</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_106">
+<gml:description>駅舎</gml:description>
+<gml:name>431101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_107">
+<gml:description>電車車庫</gml:description>
+<gml:name>431102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_108">
+<gml:description>バスターミナル</gml:description>
+<gml:name>431103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_109">
+<gml:description>港湾・空港施設</gml:description>
+<gml:name>431104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_110">
+<gml:description>運輸倉庫施設2（卸売市場、倉庫、トラックターミナル等）</gml:description>
+<gml:name>4312</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_111">
+<gml:description>卸売市場</gml:description>
+<gml:name>431201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_112">
+<gml:description>倉庫</gml:description>
+<gml:name>431202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_113">
+<gml:description>トラックターミナル</gml:description>
+<gml:name>431203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_114">
+<gml:description>運輸倉庫施設3（立体駐車場、駐輪施設等）</gml:description>
+<gml:name>4313</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_115">
+<gml:description>立体駐車場</gml:description>
+<gml:name>431301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_116">
+<gml:description>駐輪施設</gml:description>
+<gml:name>431302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_117">
+<gml:description>工場</gml:description>
+<gml:name>441</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_118">
+<gml:description>工場1（危険物の製造、液化ガスの製造、塩素･臭素等の製造、肥料の製造、製紙、製革、アスファルトの精製、セメントの製造、金属の溶融等（準工業地域において立地不可））</gml:description>
+<gml:name>4411</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_119">
+<gml:description>危険物の製造</gml:description>
+<gml:name>441101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_120">
+<gml:description>液化ガスの製造</gml:description>
+<gml:name>441102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_121">
+<gml:description>塩素・臭素等の製造</gml:description>
+<gml:name>441103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_122">
+<gml:description>肥料の製造</gml:description>
+<gml:name>441104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_123">
+<gml:description>製紙</gml:description>
+<gml:name>441105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_124">
+<gml:description>製革</gml:description>
+<gml:name>441106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_125">
+<gml:description>アスファルトの精製</gml:description>
+<gml:name>441107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_126">
+<gml:description>セメントの製造</gml:description>
+<gml:name>441108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_127">
+<gml:description>金属の溶解</gml:description>
+<gml:name>441109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_128">
+<gml:description>工場2（原動機を使用する150㎡を超える工場、引火性溶剤を用いるドライクリーニング、原動機を使用する岩石の粉砕、レディミクストコンクリートの製造、陶磁器・ガラスの製造等（商業地域において立地不可））</gml:description>
+<gml:name>4412</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_129">
+<gml:description>原動機を使用する150㎡を超える工場</gml:description>
+<gml:name>441201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_130">
+<gml:description>引火性溶剤を用いるドライクリーニング</gml:description>
+<gml:name>441202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_131">
+<gml:description>原動機を使用する岩石の粉砕</gml:description>
+<gml:name>441203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_132">
+<gml:description>レディミクストコンクリートの製造</gml:description>
+<gml:name>441204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_133">
+<gml:description>陶磁器・ガラスの製造</gml:description>
+<gml:name>441205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_134">
+<gml:description>工場3（原動機を使用する50㎡を超える工場、原動機を使用する魚肉の練製品の製造･セメント製品の製造･金属の加工・印刷、木工所、めっき等（住居地域において立地不可）</gml:description>
+<gml:name>4413</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_135">
+<gml:description>原動機を使用する50㎡を超える工場</gml:description>
+<gml:name>441301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_136">
+<gml:description>原動機を使用する魚肉の練製品の製造･セメント製品の製造･金属の加工・印刷</gml:description>
+<gml:name>441302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_137">
+<gml:description>木工所</gml:description>
+<gml:name>441303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_138">
+<gml:description>めっき</gml:description>
+<gml:name>441304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_139">
+<gml:description>工場4（50㎡以内のパン屋、米屋、豆腐屋、菓子屋その他これらに類する食品製造業を営む工場等）</gml:description>
+<gml:name>4414</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_140">
+<gml:description>50㎡以内のパン屋</gml:description>
+<gml:name>441401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_141">
+<gml:description>米屋</gml:description>
+<gml:name>441402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_142">
+<gml:description>豆腐屋</gml:description>
+<gml:name>441403</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_143">
+<gml:description>菓子屋その他これらに類する食品製造業を営む工場</gml:description>
+<gml:name>441404</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_144">
+<gml:description>工場5（自動車修理工場）</gml:description>
+<gml:name>4415</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_145">
+<gml:description>農林漁業用施設</gml:description>
+<gml:name>451</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_146">
+<gml:description>農業用納屋</gml:description>
+<gml:name>451101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_147">
+<gml:description>畜舎</gml:description>
+<gml:name>451102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_148">
+<gml:description>温室</gml:description>
+<gml:name>451103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_149">
+<gml:description>船小屋</gml:description>
+<gml:name>451104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_150">
+<gml:description>農林漁業用作業場</gml:description>
+<gml:name>451105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_151">
+<gml:description>供給処理施設</gml:description>
+<gml:name>452</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_152">
+<gml:description>処理場</gml:description>
+<gml:name>452101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_153">
+<gml:description>浄水場</gml:description>
+<gml:name>452102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_154">
+<gml:description>ポンプ場</gml:description>
+<gml:name>452103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_155">
+<gml:description>火葬場</gml:description>
+<gml:name>452104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_156">
+<gml:description>発電所</gml:description>
+<gml:name>452105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_157">
+<gml:description>変電所</gml:description>
+<gml:name>452106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_158">
+<gml:description>ガス・熱供給施設</gml:description>
+<gml:name>452107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_159">
+<gml:description>防衛施設</gml:description>
+<gml:name>453</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_160">
+<gml:description>その他</gml:description>
+<gml:name>454</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_161">
+<gml:description>不明</gml:description>
+<gml:name>461</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_detailedUsage_162">
+<gml:description>空家</gml:description>
+<gml:name>471</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

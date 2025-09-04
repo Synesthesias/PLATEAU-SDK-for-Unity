@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c6654e23-75c1-43f6-aa94-cc728b3ccf8f">
+<gml:name>C1014_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_1">
+<gml:description>自然増減</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_2">
+<gml:description>出生数</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_3">
+<gml:description>死亡者数</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_4">
+<gml:description>社会増減</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_5">
+<gml:description>転入者数</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_6">
+<gml:description>転出者数</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_7">
+<gml:description>その他増減</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1014_class_8">
+<gml:description>人口増減計</gml:description>
+<gml:name>40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

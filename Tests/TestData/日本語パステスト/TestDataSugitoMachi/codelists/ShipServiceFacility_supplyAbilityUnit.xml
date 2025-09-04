@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_9cb2c489-1f7a-4178-bad9-150aa4ea01cd">
+<gml:name>ShipServiceFacility_supplyAbilityUnit</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ShipServiceFacility_supplyAbilityUnit_1">
+<gml:description>kl/時間</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ShipServiceFacility_supplyAbilityUnit_2">
+<gml:description>ton/時間</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

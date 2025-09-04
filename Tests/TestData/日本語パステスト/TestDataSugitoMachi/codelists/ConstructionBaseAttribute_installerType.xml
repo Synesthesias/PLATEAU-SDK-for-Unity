@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_92d5d0db-e83a-4cde-bbbe-823ab243fc7b">
+<gml:name>ConstructionBaseAttribute_installerType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_1">
+<gml:description>国土交通省（各地方整備局、北海道開発局含む）</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_2">
+<gml:description>沖縄開発庁</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_3">
+<gml:description>農林水産省（各地方農政局含む）</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_4">
+<gml:description>国土交通省気象庁</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_5">
+<gml:description>都道府県</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_6">
+<gml:description>市区町村</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_7">
+<gml:description>水資源開発公団</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_8">
+<gml:description>その他の公共企業体</gml:description>
+<gml:name>08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_9">
+<gml:description>土地改良区</gml:description>
+<gml:name>09</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_10">
+<gml:description>利水組合・用水組合</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_11">
+<gml:description>電力会社・電源開発株式会社</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_12">
+<gml:description>その他の企業</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_13">
+<gml:description>個人</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_14">
+<gml:description>その他</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionBaseAttribute_installerType_15">
+<gml:description>不明</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

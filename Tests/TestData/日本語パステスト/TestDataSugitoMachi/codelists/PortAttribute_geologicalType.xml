@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_45c1fdb3-f5dd-4d3c-9e40-aad510eb8cbc">
+<gml:name>PortAttribute_geologicalType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_1">
+<gml:description>岩</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_2">
+<gml:description>礫</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_3">
+<gml:description>砂</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_4">
+<gml:description>砂質土</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_5">
+<gml:description>シルト</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_6">
+<gml:description>粘性土</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_7">
+<gml:description>粘土</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_8">
+<gml:description>有機質土</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_geologicalType_9">
+<gml:description>その他</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

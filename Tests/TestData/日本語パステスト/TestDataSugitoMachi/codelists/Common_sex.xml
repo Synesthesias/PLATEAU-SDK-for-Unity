@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_0f01b163-6f77-4335-a1e2-394f10cd8f90">
+<gml:name>Common_sex</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_sex_1">
+<gml:description>総数</gml:description>
+<gml:name>T</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_sex_2">
+<gml:description>男性</gml:description>
+<gml:name>M</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_sex_3">
+<gml:description>女性</gml:description>
+<gml:name>F</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

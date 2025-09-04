@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_2aabe458-8c15-4b42-98e2-8bb8ef61175a">
+<gml:name>PortAttribute_structureType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_1">
+<gml:description>ケーソン（異形、消波ケーソンを含む）</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_2">
+<gml:description>ハイブリッドケーソン（異形、消波ケーソンを含む）</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_3">
+<gml:description>スリットケーソン（異形、消波ケーソンを含む）</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_4">
+<gml:description>コンクリートブロック（直立消波ブロックを含む）</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_5">
+<gml:description>セルラーブロック</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_6">
+<gml:description>コンクリート単塊</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_7">
+<gml:description>石枠</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_8">
+<gml:description>練石積</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_9">
+<gml:description>空石積</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_10">
+<gml:description>コンクリート杭</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_11">
+<gml:description>鋼矢板</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_12">
+<gml:description>その他</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_13">
+<gml:description>捨石</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_14">
+<gml:description>捨ブロック</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_15">
+<gml:description>異形ブロック</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_16">
+<gml:description>石張工</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_17">
+<gml:description>コンクリート張工</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_18">
+<gml:description>石積工</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_19">
+<gml:description>スリットケーソン（異形ケーソンを含む）</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_20">
+<gml:description>船舶駆体</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_21">
+<gml:description>直立消波ブロック</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_22">
+<gml:description>くい</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_23">
+<gml:description>浮き防波堤</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_24">
+<gml:description>鋼</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_25">
+<gml:description>鉄筋コンクリート</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_26">
+<gml:description>ケーソン</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_27">
+<gml:description>ハイブリッドケーソン</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_28">
+<gml:description>スリットケーソン</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_29">
+<gml:description>Ｌ型ブロック</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_30">
+<gml:description>鋼管矢板</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_31">
+<gml:description>鉄筋コンクリート矢板</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_32">
+<gml:description>プレストレストコンクリート矢板</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_33">
+<gml:description>木矢板</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_34">
+<gml:description>鋼ぐい</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_35">
+<gml:description>コンクリートぐい</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_36">
+<gml:description>鋼板</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_37">
+<gml:description>木</gml:description>
+<gml:name>37</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_38">
+<gml:description>木ぐい</gml:description>
+<gml:name>38</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_39">
+<gml:description>プレキャストコンクリート</gml:description>
+<gml:name>39</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_40">
+<gml:description>ハイブリッド</gml:description>
+<gml:name>40</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_41">
+<gml:description>場所打コンクリート</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_42">
+<gml:description>コンクリートブロック</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_43">
+<gml:description>砂利敷</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_44">
+<gml:description>アスファルト舗装</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_45">
+<gml:description>コンクリート舗装</gml:description>
+<gml:name>45</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_46">
+<gml:description>鉄骨鉄筋コンクリート</gml:description>
+<gml:name>46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_47">
+<gml:description>ブロック</gml:description>
+<gml:name>47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PortAttribute_structureType_48">
+<gml:description>木材</gml:description>
+<gml:name>48</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

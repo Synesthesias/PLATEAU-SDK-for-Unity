@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_d876d1ee-d5eb-49c6-9c89-d9c7b8a4f54d">
+<gml:name>C1004_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_1">
+<gml:description>大気汚染</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_2">
+<gml:description>水質汚濁</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_3">
+<gml:description>騒音</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_4">
+<gml:description>振動</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_5">
+<gml:description>地盤沈下</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_6">
+<gml:description>悪臭</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_7">
+<gml:description>土壌汚染</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C1004_function_8">
+<gml:description>その他</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

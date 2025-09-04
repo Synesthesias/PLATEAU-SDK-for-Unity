@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_fdb2b349-a1a9-4f32-96f4-21be3d64c63d">
+<gml:name>TrafficFacility_trafficFacilityCrossingType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityCrossingType_1">
+<gml:description>立体交差</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficFacility_trafficFacilityCrossingType_2">
+<gml:description>平面交差</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

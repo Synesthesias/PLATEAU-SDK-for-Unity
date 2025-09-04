@@ -204,6 +204,35 @@ namespace PLATEAU.Tests.TestUtils
             }), 9);
 
         /// <summary>
+        /// 杉戸町のテストデータの説明
+        /// </summary>
+        public static readonly TestCityDefinition SugitoMachi =
+            new TestCityDefinition("TestDataSugitoMachi", 
+                new TestGmlDefinition[]{
+                    new TestGmlDefinition("udx/bldg/54390565_bldg_6697_op.gml", "54390565_bldg_6697_op.gml", true,
+                        new string[]{
+                            "udx/bldg/54390566_bldg_6697_appearance/2f7028a7-51de-447c-827d-d1812ca9995a.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/5e01e573-ad1b-4211-8880-74d9d7dc25a5.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/7e45faf2-6586-4f1d-b74e-78bc424fb74c.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/43b0a174-92a8-4915-b44c-48cdd6091079.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/77de944c-c5fd-4876-a99e-936a198a5579.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/744e9aa5-ac58-40ed-8de9-3f30152cf285.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/985fb2b6-8fd9-4fde-97fe-3dcceffc7e8a.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/32700fb8-8855-4ed8-bbf9-6e255300c926.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/76591d5c-abcf-4dbe-aca0-6b8f6358be68.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/15425414-2694-45ac-b91e-1dc8f7f2732a.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/a5421cd6-2138-45e1-baa2-43ccbce94702.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/c7b7e60b-8988-4ec2-94e4-e2c935cd494c.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/c8362a4b-47e8-4798-a4c8-f565ddfb7de8.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/cd72fe36-70c2-4256-971a-0876e90f73d1.jpg",
+                            "udx/bldg/54390566_bldg_6697_appearance/fade1799-6c78-4b74-859d-7774b6a34fa6.jpg"
+                            }, 2),
+                    new TestGmlDefinition("udx/bldg/54390566_bldg_6697_op.gml", "54390565_bldg_6697_op.gml", true, null, 1)
+                },
+                GridCodeList.CreateFromGridCodesStr(new string[]{"54390565", "54390566"})
+                , 9);
+
+        /// <summary>
         /// テストデータ "TestServer23Ku" について、
         /// その内容を <see cref="TestCityDefinition"/> 形式で説明したものです。
         /// </summary>

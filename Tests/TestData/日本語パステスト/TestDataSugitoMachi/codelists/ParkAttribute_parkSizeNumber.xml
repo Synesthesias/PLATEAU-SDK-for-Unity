@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_d78967ad-97e1-481a-9ef5-4856b6ea95be">
+<gml:name>ParkAttribute_parkSizeNumber</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_1">
+<gml:description>面積1ha未満</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_2">
+<gml:description>面積1ha以上4ha未満</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_3">
+<gml:description>面積4ha以上10ha未満</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_4">
+<gml:description>面積10ha以上50ha未満</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_5">
+<gml:description>面積50ha以上300ha未満</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ParkAttribute_parkSizeNumber_6">
+<gml:description>面積300ha以上</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

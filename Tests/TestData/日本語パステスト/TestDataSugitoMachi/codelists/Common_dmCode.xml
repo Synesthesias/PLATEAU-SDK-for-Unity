@@ -1,0 +1,1108 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_f6c5cb18-c9d1-499d-91b3-096cd2be86d3">
+<gml:name>Common_dmCode</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_1">
+<gml:description>都府県界</gml:description>
+<gml:name>1101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_2">
+<gml:description>北海道の支庁界</gml:description>
+<gml:name>1102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_3">
+<gml:description>郡市・東京都の区界</gml:description>
+<gml:name>1103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_4">
+<gml:description>町村・指定都市の区界</gml:description>
+<gml:name>1104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_5">
+<gml:description>大字・町（丁）界</gml:description>
+<gml:name>1106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_6">
+<gml:description>所属界</gml:description>
+<gml:name>1110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_7">
+<gml:description>真幅道路</gml:description>
+<gml:name>2101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_8">
+<gml:description>徒歩道</gml:description>
+<gml:name>2103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_9">
+<gml:description>庭園路</gml:description>
+<gml:name>2106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_10">
+<gml:description>建設中の道路</gml:description>
+<gml:name>2109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_11">
+<gml:description>道路橋</gml:description>
+<gml:name>2203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_12">
+<gml:description>徒橋</gml:description>
+<gml:name>2205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_13">
+<gml:description>横断歩道橋</gml:description>
+<gml:name>2211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_14">
+<gml:description>歩道</gml:description>
+<gml:name>2213</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_15">
+<gml:description>石段</gml:description>
+<gml:name>2214</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_16">
+<gml:description>地下街・地下鉄等出入口</gml:description>
+<gml:name>2215</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_17">
+<gml:description>道路のトンネル</gml:description>
+<gml:name>2219</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_18">
+<gml:description>分離帯</gml:description>
+<gml:name>2226</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_19">
+<gml:description>道路の雪覆い等</gml:description>
+<gml:name>2228</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_20">
+<gml:description>並木</gml:description>
+<gml:name>2238</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_21">
+<gml:description>普通鉄道</gml:description>
+<gml:name>2301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_22">
+<gml:description>路面電車</gml:description>
+<gml:name>2303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_23">
+<gml:description>特殊鉄道</gml:description>
+<gml:name>2305</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_24">
+<gml:description>索道</gml:description>
+<gml:name>2306</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_25">
+<gml:description>建設中の鉄道</gml:description>
+<gml:name>2309</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_26">
+<gml:description>鉄道橋</gml:description>
+<gml:name>2401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_27">
+<gml:description>跨線橋</gml:description>
+<gml:name>2411</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_28">
+<gml:description>鉄道のトンネル</gml:description>
+<gml:name>2419</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_29">
+<gml:description>停留所</gml:description>
+<gml:name>2421</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_30">
+<gml:description>プラットホーム</gml:description>
+<gml:name>2424</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_31">
+<gml:description>鉄道の雪覆い等</gml:description>
+<gml:name>2428</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_32">
+<gml:description>分類しない建物</gml:description>
+<gml:name>3000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_33">
+<gml:description>普通建物</gml:description>
+<gml:name>3001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_34">
+<gml:description>堅ろう建物</gml:description>
+<gml:name>3002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_35">
+<gml:description>普通無壁舎</gml:description>
+<gml:name>3003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_36">
+<gml:description>堅ろう無壁舎</gml:description>
+<gml:name>3004</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_37">
+<gml:description>門</gml:description>
+<gml:name>3401</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_38">
+<gml:description>屋門</gml:description>
+<gml:name>3402</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_39">
+<gml:description>墓碑</gml:description>
+<gml:name>4201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_40">
+<gml:description>記念碑</gml:description>
+<gml:name>4202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_41">
+<gml:description>立像</gml:description>
+<gml:name>4203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_42">
+<gml:description>路傍祠</gml:description>
+<gml:name>4204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_43">
+<gml:description>灯ろう</gml:description>
+<gml:name>4205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_44">
+<gml:description>鳥居</gml:description>
+<gml:name>4207</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_45">
+<gml:description>自然災害伝承碑</gml:description>
+<gml:name>4208</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_46">
+<gml:description>坑口</gml:description>
+<gml:name>4219</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_47">
+<gml:description>独立樹（広葉樹）</gml:description>
+<gml:name>4221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_48">
+<gml:description>独立樹（針葉樹）</gml:description>
+<gml:name>4222</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_49">
+<gml:description>油井・ガス井</gml:description>
+<gml:name>4225</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_50">
+<gml:description>起重機</gml:description>
+<gml:name>4228</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_51">
+<gml:description>タンク</gml:description>
+<gml:name>4231</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_52">
+<gml:description>煙突</gml:description>
+<gml:name>4234</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_53">
+<gml:description>高塔</gml:description>
+<gml:name>4235</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_54">
+<gml:description>電波塔</gml:description>
+<gml:name>4236</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_55">
+<gml:description>灯台</gml:description>
+<gml:name>4241</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_56">
+<gml:description>灯標</gml:description>
+<gml:name>4243</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_57">
+<gml:description>水位観測所</gml:description>
+<gml:name>4251</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_58">
+<gml:description>輸送管（地上）</gml:description>
+<gml:name>4261</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_59">
+<gml:description>輸送管（空間）</gml:description>
+<gml:name>4262</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_60">
+<gml:description>送電線</gml:description>
+<gml:name>4265</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_61">
+<gml:description>水がい線（河川）(湖池等)（海岸線）</gml:description>
+<gml:name>5101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_62">
+<gml:description>一条河川</gml:description>
+<gml:name>5102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_63">
+<gml:description>桟橋（鉄、ｺﾝｸﾘｰﾄ）</gml:description>
+<gml:name>5299</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_64">
+<gml:description>桟橋（木製・浮桟橋）</gml:description>
+<gml:name>5203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_65">
+<gml:description>渡船発着所</gml:description>
+<gml:name>5221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_66">
+<gml:description>滝</gml:description>
+<gml:name>5226</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_67">
+<gml:description>せき</gml:description>
+<gml:name>5227</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_68">
+<gml:description>水門</gml:description>
+<gml:name>5228</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_69">
+<gml:description>透過水制</gml:description>
+<gml:name>5232</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_70">
+<gml:description>敷石斜坂</gml:description>
+<gml:name>5239</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_71">
+<gml:description>流水方向</gml:description>
+<gml:name>5241</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_72">
+<gml:description>人工斜面</gml:description>
+<gml:name>6101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_73">
+<gml:description>土堤等</gml:description>
+<gml:name>6102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_74">
+<gml:description>被覆</gml:description>
+<gml:name>6110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_75">
+<gml:description>かき</gml:description>
+<gml:name>6130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_76">
+<gml:description>へい</gml:description>
+<gml:name>6140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_77">
+<gml:description>区域界</gml:description>
+<gml:name>6201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_78">
+<gml:description>駐車場</gml:description>
+<gml:name>6212</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_79">
+<gml:description>園庭</gml:description>
+<gml:name>6214</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_80">
+<gml:description>墓地</gml:description>
+<gml:name>6215</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_81">
+<gml:description>材料置場</gml:description>
+<gml:name>6216</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_82">
+<gml:description>太陽光発電設備</gml:description>
+<gml:name>6217</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_83">
+<gml:description>噴火口・噴気口</gml:description>
+<gml:name>6221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_84">
+<gml:description>温泉・鉱泉</gml:description>
+<gml:name>6222</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_85">
+<gml:description>植生界</gml:description>
+<gml:name>6301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_86">
+<gml:description>耕地界</gml:description>
+<gml:name>6302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_87">
+<gml:description>田</gml:description>
+<gml:name>6311</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_88">
+<gml:description>畑</gml:description>
+<gml:name>6313</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_89">
+<gml:description>さとうきび畑</gml:description>
+<gml:name>6314</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_90">
+<gml:description>パイナップル畑</gml:description>
+<gml:name>6315</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_91">
+<gml:description>桑畑</gml:description>
+<gml:name>6317</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_92">
+<gml:description>茶畑</gml:description>
+<gml:name>6318</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_93">
+<gml:description>果樹園</gml:description>
+<gml:name>6319</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_94">
+<gml:description>その他の樹木畑</gml:description>
+<gml:name>6321</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_95">
+<gml:description>芝地</gml:description>
+<gml:name>6323</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_96">
+<gml:description>広葉樹林</gml:description>
+<gml:name>6331</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_97">
+<gml:description>針葉樹林</gml:description>
+<gml:name>6332</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_98">
+<gml:description>竹林</gml:description>
+<gml:name>6333</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_99">
+<gml:description>荒地</gml:description>
+<gml:name>6334</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_100">
+<gml:description>はい松地</gml:description>
+<gml:name>6335</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_101">
+<gml:description>しの地（笹地）</gml:description>
+<gml:name>6336</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_102">
+<gml:description>やし科樹林</gml:description>
+<gml:name>6337</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_103">
+<gml:description>湿地</gml:description>
+<gml:name>6338</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_104">
+<gml:description>砂れき地</gml:description>
+<gml:name>6340</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_105">
+<gml:description>等高線（計曲線）</gml:description>
+<gml:name>7101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_106">
+<gml:description>等高線（主曲線）</gml:description>
+<gml:name>7102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_107">
+<gml:description>等高線（補助曲線）</gml:description>
+<gml:name>7103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_108">
+<gml:description>凹地（計曲線）</gml:description>
+<gml:name>7105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_109">
+<gml:description>凹地（主曲線）</gml:description>
+<gml:name>7106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_110">
+<gml:description>凹地（補助曲線）</gml:description>
+<gml:name>7107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_111">
+<gml:description>凹地（矢印）</gml:description>
+<gml:name>7199</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_112">
+<gml:description>土がけ</gml:description>
+<gml:name>7201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_113">
+<gml:description>雨裂</gml:description>
+<gml:name>7202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_114">
+<gml:description>洞口</gml:description>
+<gml:name>7206</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_115">
+<gml:description>岩がけ</gml:description>
+<gml:name>7211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_116">
+<gml:description>露岩</gml:description>
+<gml:name>7212</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_117">
+<gml:description>散岩</gml:description>
+<gml:name>7213</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_118">
+<gml:description>さんご礁</gml:description>
+<gml:name>7214</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_119">
+<gml:description>三角点</gml:description>
+<gml:name>7301</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_120">
+<gml:description>水準点</gml:description>
+<gml:name>7302</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_121">
+<gml:description>多角点等</gml:description>
+<gml:name>7303</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_122">
+<gml:description>公共基準点（三角点）</gml:description>
+<gml:name>7304</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_123">
+<gml:description>公共基準点（水準点）</gml:description>
+<gml:name>7305</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_124">
+<gml:description>電子基準点</gml:description>
+<gml:name>7308</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_125">
+<gml:description>標石を有しない標高点</gml:description>
+<gml:name>7311</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_126">
+<gml:description>図化機測定による標高点</gml:description>
+<gml:name>7312</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_127">
+<gml:description>官公署</gml:description>
+<gml:name>3503</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_128">
+<gml:description>裁判所</gml:description>
+<gml:name>3504</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_129">
+<gml:description>検察庁</gml:description>
+<gml:name>3505</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_130">
+<gml:description>税務署</gml:description>
+<gml:name>3507</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_131">
+<gml:description>郵便局</gml:description>
+<gml:name>3509</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_132">
+<gml:description>森林管理署</gml:description>
+<gml:name>3510</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_133">
+<gml:description>交番・駐在所</gml:description>
+<gml:name>3515</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_134">
+<gml:description>消防署</gml:description>
+<gml:name>3516</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_135">
+<gml:description>職業安定所</gml:description>
+<gml:name>3517</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_136">
+<gml:description>役場支所及び出張所</gml:description>
+<gml:name>3519</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_137">
+<gml:description>神社</gml:description>
+<gml:name>3521</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_138">
+<gml:description>寺院</gml:description>
+<gml:name>3522</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_139">
+<gml:description>キリスト教会</gml:description>
+<gml:name>3523</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_140">
+<gml:description>学校</gml:description>
+<gml:name>3524</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_141">
+<gml:description>幼稚園・保育園</gml:description>
+<gml:name>3525</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_142">
+<gml:description>公会堂・公民館</gml:description>
+<gml:name>3526</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_143">
+<gml:description>老人ホーム</gml:description>
+<gml:name>3530</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_144">
+<gml:description>保健所</gml:description>
+<gml:name>3531</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_145">
+<gml:description>病院</gml:description>
+<gml:name>3532</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_146">
+<gml:description>銀行</gml:description>
+<gml:name>3534</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_147">
+<gml:description>協同組合</gml:description>
+<gml:name>3536</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_148">
+<gml:description>倉庫</gml:description>
+<gml:name>3545</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_149">
+<gml:description>火薬庫</gml:description>
+<gml:name>3546</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_150">
+<gml:description>工場</gml:description>
+<gml:name>3548</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_151">
+<gml:description>変電所</gml:description>
+<gml:name>3550</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_152">
+<gml:description>揚排水ポンプ場</gml:description>
+<gml:name>3556</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_153">
+<gml:description>ガソリンスタンド</gml:description>
+<gml:name>3560</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_154">
+<gml:description>注記（未分類）</gml:description>
+<gml:name>8100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_155">
+<gml:description>市・東京都の区</gml:description>
+<gml:name>8110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_156">
+<gml:description>町・村・指定都市の区</gml:description>
+<gml:name>8111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_157">
+<gml:description>市町村の飛び地</gml:description>
+<gml:name>8112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_158">
+<gml:description>大区域</gml:description>
+<gml:name>8113</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_159">
+<gml:description>大字・町・丁目</gml:description>
+<gml:name>8115</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_160">
+<gml:description>小字・丁目</gml:description>
+<gml:name>8116</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_161">
+<gml:description>その他の地名（大）</gml:description>
+<gml:name>8117</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_162">
+<gml:description>その他の地名（中）</gml:description>
+<gml:name>8118</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_163">
+<gml:description>その他の地名（小）</gml:description>
+<gml:name>8119</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_164">
+<gml:description>道路の路線名</gml:description>
+<gml:name>8121</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_165">
+<gml:description>道路施設、坂、峠、インターチェンジ</gml:description>
+<gml:name>8122</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_166">
+<gml:description>鉄道の路線名</gml:description>
+<gml:name>8123</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_167">
+<gml:description>鉄道施設、駅、操車場、信号所</gml:description>
+<gml:name>8124</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_168">
+<gml:description>橋</gml:description>
+<gml:name>8125</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_169">
+<gml:description>トンネル</gml:description>
+<gml:name>8126</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_170">
+<gml:description>建物の名称</gml:description>
+<gml:name>8131</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_171">
+<gml:description>建物の付属物</gml:description>
+<gml:name>8134</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_172">
+<gml:description>マンホール</gml:description>
+<gml:name>8140</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_173">
+<gml:description>電柱</gml:description>
+<gml:name>8141</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_174">
+<gml:description>その他小物体</gml:description>
+<gml:name>8142</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_175">
+<gml:description>水部</gml:description>
+<gml:name>8151</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_176">
+<gml:description>水部施設</gml:description>
+<gml:name>8152</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_177">
+<gml:description>地下水部</gml:description>
+<gml:name>8153</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_178">
+<gml:description>法面、構囲</gml:description>
+<gml:name>8161</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_179">
+<gml:description>諸地、場地</gml:description>
+<gml:name>8162</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_180">
+<gml:description>植生</gml:description>
+<gml:name>8163</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_181">
+<gml:description>山地</gml:description>
+<gml:name>8171</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_182">
+<gml:description>標高注記</gml:description>
+<gml:name>8173</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_183">
+<gml:description>説明注記</gml:description>
+<gml:name>8181</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_dmCode_184">
+<gml:description>指示点</gml:description>
+<gml:name>8199</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_21fa37b3-097e-4efc-8d86-ce6d978a4307">
+<gml:name>RiverFacilityIdAttribute_sideType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFacilityIdAttribute_sideType_1">
+<gml:description>左岸</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFacilityIdAttribute_sideType_2">
+<gml:description>右岸</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFacilityIdAttribute_sideType_3">
+<gml:description>中洲</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFacilityIdAttribute_sideType_4">
+<gml:description>その他</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RiverFacilityIdAttribute_sideType_5">
+<gml:description>不明</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_11395c96-d0b1-4f79-9cde-30a61a1f84de">
+<gml:name>RoadStructureAttribute_sectionType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_1">
+<gml:description>土工区間・通常区間</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_2">
+<gml:description>高架橋</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_3">
+<gml:description>橋梁</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_4">
+<gml:description>交差部</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_5">
+<gml:description>アンダーパス</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="RoadStructureAttribute_sectionType_6">
+<gml:description>トンネル</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

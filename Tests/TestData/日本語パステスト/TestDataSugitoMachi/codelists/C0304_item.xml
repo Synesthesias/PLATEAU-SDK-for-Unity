@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_80dc84c1-bdf6-4e89-b1ba-da229b9aeaf6">
+<gml:name>C0304_item</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_1">
+<gml:description>青地・件数</gml:description>
+<gml:name>1A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_2">
+<gml:description>青地・面積</gml:description>
+<gml:name>1B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_3">
+<gml:description>白地・件数</gml:description>
+<gml:name>2A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_4">
+<gml:description>白地・面積</gml:description>
+<gml:name>2B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_5">
+<gml:description>住宅用地・件数</gml:description>
+<gml:name>3A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_6">
+<gml:description>住宅用地・面積</gml:description>
+<gml:name>3B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_7">
+<gml:description>商業用地・件数</gml:description>
+<gml:name>4A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_8">
+<gml:description>商業用地・面積</gml:description>
+<gml:name>4B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_9">
+<gml:description>工業用地・件数</gml:description>
+<gml:name>5A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_10">
+<gml:description>工業用地・面積</gml:description>
+<gml:name>5B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_11">
+<gml:description>公共施設用地・件数</gml:description>
+<gml:name>6A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_12">
+<gml:description>公共施設用地・面積</gml:description>
+<gml:name>6B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_13">
+<gml:description>その他・件数</gml:description>
+<gml:name>7A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_14">
+<gml:description>その他・面積</gml:description>
+<gml:name>7B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_15">
+<gml:description>不明・件数</gml:description>
+<gml:name>8A</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_16">
+<gml:description>不明・面積</gml:description>
+<gml:name>8B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0304_item_17">
+<gml:description>前年末の農地面積</gml:description>
+<gml:name>9B</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_de5e7905-06af-4055-9e85-f1aa2dc938a5">
+<gml:name>PublicTransitFacility_railwayType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_1">
+<gml:description>普通鉄道JR</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_2">
+<gml:description>普通鉄道</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_3">
+<gml:description>鋼索鉄道</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_4">
+<gml:description>懸垂式鉄道</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_5">
+<gml:description>跨座式鉄道</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_6">
+<gml:description>案内軌条式鉄道</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_7">
+<gml:description>無軌条鉄道</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_8">
+<gml:description>軌道</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_9">
+<gml:description>懸垂式モノレール</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_10">
+<gml:description>跨子規モノレール</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_11">
+<gml:description>案内軌条式</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="PublicTransitFacility_railwayType_12">
+<gml:description>浮上式</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>
