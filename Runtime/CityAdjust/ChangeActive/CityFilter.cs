@@ -11,7 +11,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
 {
     internal static class CityFilter
     {
-        public static async Task FilterByCityObjectTypeAsync(this PLATEAUInstancedCityModel cityModel,
+        public static void FilterByCityObjectType(this PLATEAUInstancedCityModel cityModel,
             ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict)
         {
             var gmlTransforms = cityModel.GmlTransforms;
