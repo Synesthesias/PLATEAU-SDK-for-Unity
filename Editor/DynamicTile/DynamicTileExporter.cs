@@ -748,7 +748,7 @@ namespace PLATEAU.DynamicTile
         /// シーンビューのカメラは真下を向きます。
         /// ただし、離れすぎて見えない場合は見える程度の距離にします。
         /// </summary>
-        private static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager)
+        public static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager)
         {
             if (manager == null)
             {
