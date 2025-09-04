@@ -798,14 +798,51 @@ namespace PLATEAU.DynamicTile
             float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.4f; // 0.4の根拠は勘
 
             // 横か縦か大きい方を採用
-            float distance = Mathf.Max(distanceVertical, distanceHorizontal);
+            float distance = Mathf.Min(distanceVertical, distanceHorizontal);
             distance = Mathf.Min(distance, maxDistance);
             
             // シーンビューの視点をタイルにフォーカス
-            sceneView.pivot = bounds.center;
-            sceneView.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
-            sceneView.size = distance;
-            SceneView.RepaintAll();
+            var nextPivot = bounds.center;
+
+            // カメラ移動を反映させます。これがないと、手動でシーンを動かすまでタイルが出てきません。
+            EditorApplication.delayCall += () =>
+            {
+                // 1フレーム目
+                var sv = SceneView.lastActiveSceneView;
+                if (sv != null && sv.camera != null && manager != null)
+                {
+                    sv.pivot = nextPivot;
+                    sv.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
+                    sv.size = distance;
+                    
+                    var camPos = sv.camera.transform.position;
+                    manager.UpdateCameraPosition(camPos);
+                    manager.UpdateAssetsByCameraPosition(camPos).ContinueWithErrorCatch();
+                    sv.Repaint();
+
+					// 2フレーム目
+					void NudgeOnce()
+					{
+						var sv2 = SceneView.lastActiveSceneView;
+						if (sv2 == null || sv2.camera == null || manager == null)
+						{
+							EditorApplication.update -= NudgeOnce;
+							return;
+						}
+						var delta = 0.6f;
+						sv2.pivot = nextPivot + new Vector3(delta, 0f, 0f);
+						sv2.Repaint();
+						EditorApplication.QueuePlayerLoopUpdate();
+
+						var camPos2 = sv2.camera.transform.position;
+						manager.UpdateCameraPosition(camPos2);
+						manager.UpdateAssetsByCameraPosition(camPos2).ContinueWithErrorCatch();
+
+						EditorApplication.update -= NudgeOnce;
+					}
+					EditorApplication.update += NudgeOnce;
+                }
+            };
         }
         
         /// <summary>
