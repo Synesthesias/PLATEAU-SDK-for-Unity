@@ -30,6 +30,13 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
+            // 動的タイルのバリデーション
+            if (!config.ValidateForTile())
+            {
+                Debug.LogError($"validation failed.");
+                return;
+            }
+            
             // アセットバンドルのビルド時はシーンの保存が求められますが、
             // 処理の途中で「保存しますか」と聞くよりも最初に聞いた方が良いので聞きます。
             if (SceneManager.GetActiveScene().isDirty)
@@ -45,13 +52,6 @@ namespace PLATEAU.Editor.DynamicTile
                     Debug.Log("シーンの保存が拒否されたため処理を中止します。");
                     return;
                 }
-            }
-            
-            // 動的タイルのバリデーション
-            if (!config.ValidateForTile())
-            {
-                Debug.LogError($"validation failed.");
-                return;
             }
 
             // 事前処理を実行
