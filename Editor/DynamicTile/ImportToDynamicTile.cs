@@ -1,6 +1,7 @@
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
+using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading;
@@ -57,7 +58,27 @@ namespace PLATEAU.Editor.DynamicTile
 
             // 事前処理を実行
             progressDisplay?.SetProgress(TileProgressTitle, 0f, "動的タイル生成を開始中...");
-            dynamicTileExporter = new DynamicTileExporter(progressDisplay);
+
+            var context = new DynamicTileProcessingContext(config.DynamicTileImportConfig);
+            var tileManagerGenerator = new TileManagerGenerator(context);
+            var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
+            
+            // 動的タイル出力の事前処理を行うクラスを列挙します。
+            var beforeTileExports = new IBeforeTileExport[]
+            {
+                tileManagerGenerator, // 古いTileManagerを消します。
+                tileAddressableConfigMaker // Addressableの設定を行います。
+            };
+            
+            // タイルをビルドしたあとの処理を行うクラスを列挙します。
+            var afterTileAssetBuilds = new IAfterTileAssetBuild[]
+            {
+                tileManagerGenerator, // TileManagerを生成します。
+                tileAddressableConfigMaker // Addressableの設定を消去し元に戻します。
+            };
+            
+            dynamicTileExporter = new DynamicTileExporter(context, progressDisplay, beforeTileExports,afterTileAssetBuilds);
+            
             bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config);
             if (!preProcessSucceed)
             {

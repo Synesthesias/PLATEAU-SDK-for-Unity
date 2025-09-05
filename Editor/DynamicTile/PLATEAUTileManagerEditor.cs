@@ -1,4 +1,5 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.Editor.DynamicTile.TileModule;
+using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -20,7 +21,7 @@ namespace PLATEAU.DynamicTile
             DrawCatalogPathWithOpenButton(tileManager);
             if (GUILayout.Button("シーンビューで都市にフォーカス"))
             {
-                DynamicTileExporter.FocusSceneViewCameraToTiles(tileManager);
+                TileManagerGenerator.FocusSceneViewCameraToTiles(tileManager);
                 SceneView.lastActiveSceneView?.Repaint();
             }
 

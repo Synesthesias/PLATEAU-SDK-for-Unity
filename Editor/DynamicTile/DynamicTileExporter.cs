@@ -4,6 +4,7 @@ using PLATEAU.CityImport.Import;
 using PLATEAU.CityInfo;
 using PLATEAU.Editor.Addressables;
 using PLATEAU.Editor.DynamicTile;
+using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -22,7 +23,7 @@ namespace PLATEAU.DynamicTile
     /// <summary>
     /// 都市モデルをDynamicTile用にプレハブ化し、一括でアセットバンドルとして出力する。
     /// </summary>
-    public class DynamicTileExporter : IPostTileImportProcessor
+    internal class DynamicTileExporter : IPostTileImportProcessor
     {
 
         private const string AddressableLabel = "DynamicTile";
@@ -32,9 +33,18 @@ namespace PLATEAU.DynamicTile
         public DynamicTileProcessingContext Context { get; private set; }
         private IProgressDisplay progressDisplay;
         
-        public DynamicTileExporter(IProgressDisplay progressDisplay)
+        /// <summary> タイルエクスポートの事前処理を行うクラス </summary>
+        private IBeforeTileExport[] beforeTileExports;
+
+        /// <summary> タイルエクスポートの事後処理を行うクラス </summary>
+        private IAfterTileAssetBuild[] afterTileAssetBuilds;
+        
+        public DynamicTileExporter(DynamicTileProcessingContext context, IProgressDisplay progressDisplay, IBeforeTileExport[] beforeTileExports, IAfterTileAssetBuild[] afterTileAssetBuilds)
         {
+            Context = context;
             this.progressDisplay = progressDisplay;
+            this.beforeTileExports = beforeTileExports;
+            this.afterTileAssetBuilds = afterTileAssetBuilds;
         }
 
         /// <summary>
@@ -49,32 +59,15 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
 
-            var config = cityConfig.DynamicTileImportConfig;
-
             PLATEAUEditorEventListener.disableProjectChangeEvent = true; // タイル生成中フラグを設定
             var succeeded = false;
             try
             {
-                // DynamicTile管理用Managerを破棄
-                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (manager != null)
-                {
-                    GameObject.DestroyImmediate(manager.gameObject);
-                }
-
-                Context = new DynamicTileProcessingContext(config);
-
+                
                 // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
                 // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
                 // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
-
-                // プロファイルを作成
-                var profileID = AddressablesUtility.SetOrCreateProfile();
-                if (string.IsNullOrEmpty(profileID))
-                {
-                    Debug.LogError("プロファイルの作成に失敗しました。");
-                    return false;
-                }
+                
 
                 // ビルド先パスを決定
                 string bundleOutputPath;
@@ -93,10 +86,15 @@ namespace PLATEAU.DynamicTile
                     bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
                     Context.BuildFolderPath = bundleOutputPath;
                 }
-
-                // ビルド設定を行います。
-                AddressablesUtility.SetRemoteProfileSettings(bundleOutputPath, Context.AddressableGroupName);
-                AddressablesUtility.SetGroupLoadAndBuildPath(Context.AddressableGroupName);
+                
+                
+                // 与えられた事前処理を実装します。
+                foreach (var before in beforeTileExports)
+                {
+                    var result = before.BeforeTileExport();
+                    if (!result) return false;
+                }
+                
 
                 if (!Context.IsValid())
                 {
@@ -228,38 +226,17 @@ namespace PLATEAU.DynamicTile
 
                 // Addressablesのビルドを実行
                 AddressablesUtility.BuildAddressables(false);
-                
-                AddressablesUtility.BackToDefaultProfile();
 
-                // managerを生成
-                var managerObj = new GameObject("DynamicTileManager");
-                var manager = managerObj.AddComponent<PLATEAUTileManager>();
-
-                // 最新のカタログファイルのパスを取得（Asset相対/フルの両方に対応）
-                var catalogSearchDir = Path.IsPathRooted(Context.BuildFolderPath)
-                ? Context.BuildFolderPath
-                : AssetPathUtil.GetFullPath(Context.BuildFolderPath);
-                var catalogFiles = Directory.GetFiles(catalogSearchDir, "catalog_*.json")
-                    .OrderByDescending(File.GetLastWriteTimeUtc)
-                    .ToArray();
-                if (catalogFiles.Length == 0)
+                // ビルド後の処理で与えられたものを実行します
+                foreach (var after in afterTileAssetBuilds)
                 {
-                    Debug.LogError("カタログファイルが見つかりません");
-                    return false;
+                    bool result = after.AfterTileAssetBuild();
+                    if (!result) return false;
                 }
-
-                var catalogPath = catalogFiles[0];
-                manager.SaveCatalogPath(catalogPath);
-
+                
                 // 一時フォルダーを削除
                 CleanupTempFolder();
                 
-                // ビルドが終わったらAddressableGroup設定はもう不要です
-                AddressablesUtility.RemoveGroup(Context.AddressableGroupName);
-
-                // タイルのある場所にシーンビューカメラをフォーカスします。
-                manager.InitializeTiles().Wait();
-                FocusSceneViewCameraToTiles(manager);
                 
                 // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
                 EditorSceneManager.SaveOpenScenes();
@@ -274,14 +251,7 @@ namespace PLATEAU.DynamicTile
             finally
             {
                 PLATEAUEditorEventListener.disableProjectChangeEvent = false; // タイル生成中フラグを設定
-
-                var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
-                if (manager != null)
-                {
-                    PLATEAUSceneViewCameraTracker.Initialize();
-                    manager.InitializeTiles().Wait(); // タイルの初期化
-                }
-
+                
                 // シーンをEdit
                 var scene = EditorSceneManager.GetActiveScene();
                 if (!scene.isDirty)
@@ -744,102 +714,7 @@ namespace PLATEAU.DynamicTile
 
         #endregion
         
-        /// <summary>
-        /// <see cref="PLATEAUTileManager"/>が保持するタイル範囲がSceneViewカメラにぴったり収まるようなカメラ位置を計算して返します。
-        /// シーンビューのカメラは真下を向きます。
-        /// ただし、離れすぎて見えない場合は見える程度の距離にします。
-        /// </summary>
-        public static void FocusSceneViewCameraToTiles(PLATEAUTileManager manager) 
-        {
-            if (manager == null)
-            {
-                Debug.LogWarning("PLATEAUTileManagerがnullです。");
-                return;
-            }
-
-            var bounds = manager.GetTileBounds();
-            if (bounds.size == Vector3.zero)
-            {
-                Debug.LogWarning("有効なタイルBoundsが存在しません。");
-                return;
-            }
-
-            // SceneViewカメラ情報を取得
-            SceneView sceneView = SceneView.lastActiveSceneView;
-            if (sceneView == null || sceneView.camera == null)
-            {
-                Debug.LogWarning("シーンビューまたはシーンビューカメラが見つからないため、タイルへのカメラのフォーカスを中止します。");
-                return;
-            }
-
-            Camera cam = sceneView.camera;
-            float verticalFov = cam.fieldOfView;
-            float aspect = cam.aspect;
-
-            // XZ平面上での半サイズ
-            float halfWidth = bounds.size.x * 0.5f;
-            float halfDepth = bounds.size.z * 0.5f;
-
-            // バウンディング球半径 (XZ 上で計算)
-            float radius = Mathf.Sqrt(halfWidth * halfWidth + halfDepth * halfDepth);
-
-            // 縦 FOV から必要距離を計算
-            float distanceVertical = radius / Mathf.Tan(Mathf.Deg2Rad * verticalFov * 0.5f);
-
-            // 横 FOV も考慮 (aspect から計算)
-            float horizontalFov = 2f * Mathf.Atan(Mathf.Tan(Mathf.Deg2Rad * verticalFov * 0.5f) * aspect);
-            float distanceHorizontal = radius / Mathf.Tan(horizontalFov * 0.5f);
-
-            // 離れすぎてタイルが隠れないように
-            float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.4f; // 0.4の根拠は勘
-
-            // 横か縦か大きい方を採用
-            float distance = Mathf.Min(distanceVertical, distanceHorizontal);
-            distance = Mathf.Min(distance, maxDistance);
-            
-            // シーンビューの視点をタイルにフォーカス
-            var nextPivot = bounds.center;
-
-            // カメラ移動を反映させます。これがないと、手動でシーンを動かすまでタイルが出てきません。
-            EditorApplication.delayCall += () =>
-            {
-                // 1フレーム目
-                var sv = SceneView.lastActiveSceneView;
-                if (sv != null && sv.camera != null && manager != null)
-                {
-                    sv.pivot = nextPivot;
-                    sv.rotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
-                    sv.size = distance;
-                    
-                    var camPos = sv.camera.transform.position;
-                    manager.UpdateCameraPosition(camPos);
-                    manager.UpdateAssetsByCameraPosition(camPos).ContinueWithErrorCatch();
-                    sv.Repaint();
-
-					// 2フレーム目
-					void NudgeOnce()
-					{
-						var sv2 = SceneView.lastActiveSceneView;
-						if (sv2 == null || sv2.camera == null || manager == null)
-						{
-							EditorApplication.update -= NudgeOnce;
-							return;
-						}
-						var delta = 0.6f;
-						sv2.pivot = nextPivot + new Vector3(delta, 0f, 0f);
-						sv2.Repaint();
-						EditorApplication.QueuePlayerLoopUpdate();
-
-						var camPos2 = sv2.camera.transform.position;
-						manager.UpdateCameraPosition(camPos2);
-						manager.UpdateAssetsByCameraPosition(camPos2).ContinueWithErrorCatch();
-
-						EditorApplication.update -= NudgeOnce;
-					}
-					EditorApplication.update += NudgeOnce;
-                }
-            };
-        }
+        
         
         /// <summary>
         /// 保存先にすでにメタデータがあるなら、そこに新規のタイル情報を追加します。
