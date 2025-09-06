@@ -157,7 +157,7 @@ namespace PLATEAU.DynamicTile
         {
             var catalogProp = serializedObject.FindProperty("catalogPath");
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス(json)"));
+            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス"));
             bool clickedOpen = GUILayout.Button("参照", GUILayout.Width(64));
             EditorGUILayout.EndHorizontal();
             if (clickedOpen)
@@ -165,7 +165,11 @@ namespace PLATEAU.DynamicTile
                 var initialDir = string.IsNullOrEmpty(catalogProp.stringValue)
                     ? Application.dataPath
                     : Path.GetDirectoryName(catalogProp.stringValue);
-                var selected = EditorUtility.OpenFilePanel("Addressablesのカタログ(JSON)を選択してください", initialDir, "json");
+                var selected = EditorUtility.OpenFilePanelWithFilters(
+                    "Addressablesのカタログを選択してください",
+                    initialDir,
+                    new[] { "カタログファイル", "json,bin", "すべてのファイル", "*" }
+                );
                 if (!string.IsNullOrEmpty(selected))
                 {
                     selected = selected.Replace('\\', '/');
