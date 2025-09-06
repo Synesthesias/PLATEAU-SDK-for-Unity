@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PLATEAU.Util;
 
 namespace PLATEAU.DynamicTile
 {
@@ -47,13 +48,21 @@ namespace PLATEAU.DynamicTile
                     }
                     foreach (var f in files)
                     {
-                        yield return f;
+                        // プロジェクト内ならAssetsから始める
+                        if (PathUtil.IsSubDirectoryOfAssets(f))
+                        {
+                            yield return PathUtil.FullPathToAssetsPath(f);
+                        }
+                        else
+                        {
+                            yield return f;
+                        }
                     }
                 }
             }
 
             return EnumerateMatches()
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Distinct()
                 .OrderByDescending(File.GetLastWriteTimeUtc)
                 .ToArray();
         }

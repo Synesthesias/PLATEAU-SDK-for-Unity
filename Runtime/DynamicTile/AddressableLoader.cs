@@ -174,7 +174,7 @@ namespace PLATEAU.DynamicTile
                     )
                     .ToList();
 
-                if (candidates == null || candidates.Count == 0)
+                if (candidates.Count == 0)
                 {
                     Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressables のビルド/ラベル設定/カタログ指定を確認してください。");
                     return null;

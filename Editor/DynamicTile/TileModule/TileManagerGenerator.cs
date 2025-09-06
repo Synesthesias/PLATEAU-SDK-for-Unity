@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             var catalogSearchDir = Path.IsPathRooted(context.BuildFolderPath)
                 ? context.BuildFolderPath
                 : AssetPathUtil.GetFullPath(context.BuildFolderPath);
-            var catalogFiles = PLATEAU.DynamicTile.TileCatalogSearcher.FindCatalogFiles(catalogSearchDir, true);
+            var catalogFiles = TileCatalogSearcher.FindCatalogFiles(catalogSearchDir, true);
             if (catalogFiles.Length == 0)
             {
                 Debug.LogError($"カタログファイルが見つかりません。検索フォルダ={catalogSearchDir}");
@@ -54,6 +54,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
 
             var catalogPath = catalogFiles[0];
+            
             manager.SaveCatalogPath(catalogPath);
             
             // タイルのある場所にシーンビューカメラをフォーカスします。
