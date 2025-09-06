@@ -24,7 +24,7 @@ namespace PLATEAU.Util
 
         public static PipeLineType GetRenderPipelineType()
         {
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
+            var pipelineAsset = GraphicsSettings.defaultRenderPipeline;
             if (pipelineAsset == null)
             {   // Built-in Render Pipeline
                 return PipeLineType.BuildIn;

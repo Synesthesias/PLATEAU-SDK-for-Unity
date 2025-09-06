@@ -762,9 +762,7 @@ namespace PLATEAU.DynamicTile
                 {
                     if (!string.IsNullOrEmpty(Context.BuildFolderPath) && Directory.Exists(Context.BuildFolderPath))
                     {
-                        var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json", SearchOption.AllDirectories)
-                            .OrderByDescending(File.GetLastWriteTimeUtc)
-                            .ToArray();
+                        var catalogFiles = TileCatalogSearcher.FindCatalogFiles(Context.BuildFolderPath, true);
                         if (catalogFiles.Length > 0)
                         {
                             var latestCatalog = catalogFiles[0];
@@ -913,10 +911,7 @@ namespace PLATEAU.DynamicTile
                     // 2) 外部出力先のカタログからAddressables経由で読み込み
                     if (!string.IsNullOrEmpty(Context.BuildFolderPath) && Directory.Exists(Context.BuildFolderPath))
                     {
-                        var catalogFiles = Directory.GetFiles(Context.BuildFolderPath, "catalog_*.json",
-                                SearchOption.AllDirectories)
-                            .OrderByDescending(File.GetLastWriteTimeUtc)
-                            .ToArray();
+                        var catalogFiles = TileCatalogSearcher.FindCatalogFiles(Context.BuildFolderPath, true);
                         if (catalogFiles.Length > 0)
                         {
                             var latestCatalog = catalogFiles[0];

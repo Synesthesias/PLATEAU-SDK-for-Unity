@@ -104,14 +104,14 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError("folder not found: " + folderStreaming);
                 }
 
-                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
+                var catalogFiles = TileCatalogSearcher.FindCatalogFiles(folderStreaming, true);
 
                 if (catalogFiles.Length == 0)
                 {
                     Debug.LogError("catalog file is not found.");
                 }
 
-                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+                catalogPathToUse = catalogFiles.FirstOrDefault();
             }
 
             await LoadCatalog(catalogPathToUse);

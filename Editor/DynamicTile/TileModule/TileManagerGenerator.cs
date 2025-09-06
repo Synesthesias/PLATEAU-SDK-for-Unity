@@ -46,12 +46,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             var catalogSearchDir = Path.IsPathRooted(context.BuildFolderPath)
                 ? context.BuildFolderPath
                 : AssetPathUtil.GetFullPath(context.BuildFolderPath);
-            var catalogFiles = Directory.GetFiles(catalogSearchDir, "catalog_*.json")
-                .OrderByDescending(File.GetLastWriteTimeUtc)
-                .ToArray();
+            var catalogFiles = PLATEAU.DynamicTile.TileCatalogSearcher.FindCatalogFiles(catalogSearchDir, true);
             if (catalogFiles.Length == 0)
             {
-                Debug.LogError("カタログファイルが見つかりません");
+                Debug.LogError($"カタログファイルが見つかりません。検索フォルダ={catalogSearchDir}");
                 return false;
             }
 
