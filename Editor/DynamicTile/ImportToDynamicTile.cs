@@ -62,10 +62,12 @@ namespace PLATEAU.Editor.DynamicTile
             var context = new DynamicTileProcessingContext(config.DynamicTileImportConfig);
             var tileManagerGenerator = new TileManagerGenerator(context);
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
+            var setupBuildPath = new SetUpTileBuildPath(context);
             
             // 動的タイル出力の事前処理を行うクラスを列挙します。
             var beforeTileExports = new IBeforeTileExport[]
             {
+                setupBuildPath,
                 tileManagerGenerator, // 古いTileManagerを消します。
                 tileAddressableConfigMaker // Addressableの設定を行います。
             };
