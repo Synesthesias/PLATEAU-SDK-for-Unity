@@ -64,30 +64,6 @@ namespace PLATEAU.DynamicTile
             try
             {
                 
-                // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
-                // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
-                // プロジェクト外であればユーザー指定のフォルダをそのまま使用します。
-                
-
-                // ビルド先パスを決定
-                string bundleOutputPath;
-                if (Context.IsExcludeAssetFolder)
-                {
-                    // プロジェクト外: ユーザー指定のフォルダーをそのまま使用
-                    bundleOutputPath = Context.BuildFolderPath;
-                }
-                else
-                {
-                    // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
-                    bundleOutputPath = Path.Combine(
-                        Application.streamingAssetsPath,
-                        AddressableLoader.AddressableLocalBuildFolderName,
-                        Context.AddressableGroupName);
-                    bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
-                    Context.BuildFolderPath = bundleOutputPath;
-                }
-                
-                
                 // 与えられた事前処理を実装します。
                 foreach (var before in beforeTileExports)
                 {
