@@ -12,7 +12,7 @@ namespace PLATEAU.CityImport.Import
         void OnGmlImported(GmlImportResult result);
     }
 
-    public interface IPostTileImportProcessor : IPostGmlImportProcessor
+    public interface IPostTileImportProcessor
     {
         void OnTileImported(TileImportResult result);
     }

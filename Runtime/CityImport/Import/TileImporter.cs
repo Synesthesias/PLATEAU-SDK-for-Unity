@@ -29,7 +29,7 @@ namespace PLATEAU.CityImport.Import
         /// postGmlProcessorsに<see cref="DynamicTileExporter"/>を渡す事でAddressablesが生成されます。
         /// </summary>
         public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
-            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
+            CancellationToken? token, IEnumerable<IPostTileImportProcessor> postGmlProcessors = null)
         {
             if (config == null)
             {
@@ -159,7 +159,7 @@ namespace PLATEAU.CityImport.Import
         private IProgressDisplay progressDisplay;
         private Transform rootTransform;
         private CityImportConfig importConfig;
-        private IEnumerable<IPostGmlImportProcessor> postGmlProcessors;
+        private IEnumerable<IPostTileImportProcessor> postTileProcessors;
         private int combinedTileCount = 0; // 結合タイル数(Progress標示用) 結合タイルのみ未確定なため値を保持
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace PLATEAU.CityImport.Import
         /// <returns></returns>
         internal async Task<bool> Import(List<GmlFile> fetchedGmlFiles, CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
+            CancellationToken? token, IEnumerable<IPostTileImportProcessor> postGmlProcessors = null)
         {
             var tcs = new TaskCompletionSource<bool>();
 
@@ -208,7 +208,7 @@ namespace PLATEAU.CityImport.Import
             this.progressDisplay = progressDisplay;
             this.rootTransform = rootTrans;
             this.importConfig = conf;
-            this.postGmlProcessors = postGmlProcessors;
+            this.postTileProcessors = postGmlProcessors;
 
             try
             {
@@ -724,19 +724,12 @@ namespace PLATEAU.CityImport.Import
         /// <param name="gml"></param>
         private void HandlePostProcessors(GranularityConvertResult convertResult, GmlFile gml, int zoomLevel)
         {
-            if (postGmlProcessors != null)
+            if (postTileProcessors != null)
             {
                 var result = new TileImportResult(convertResult.GeneratedObjs, GetTotalTileCount(), gml.GridCode.StringCode, gml, convertResult.GeneratedRootTransforms.CalcCommonParent()?.gameObject, zoomLevel);
-                foreach (var processor in postGmlProcessors)
+                foreach (var processor in postTileProcessors)
                 {
-                    if(processor is IPostTileImportProcessor)
-                        (processor as IPostTileImportProcessor).OnTileImported(result);
-                    else
-                    {
-                        Debug.LogError("Legacy ImportProcessor is called.");
-                        processor.OnGmlImported(result);
-                    }
-                        
+                    processor.OnTileImported(result);
                 }
             }
         }

@@ -102,7 +102,7 @@ namespace PLATEAU.Editor.DynamicTile
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
 
             // GMLを1つインポート完了したときの処理を登録します。
-            var postGmlImport = new List<IPostGmlImportProcessor>
+            var postGmlImport = new List<IPostTileImportProcessor>
             {
                 dynamicTileExporter // 動的タイル化します
             };
