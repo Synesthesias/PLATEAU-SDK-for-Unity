@@ -63,23 +63,35 @@ namespace PLATEAU.Editor.DynamicTile
             var tileManagerGenerator = new TileManagerGenerator(context);
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
             var setupBuildPath = new SetUpTileBuildPath(context);
+            var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
+            var setReferencePointToSameIfExist = new SetReferencePointSameIfExist(config, context);
+            var generateOneTile = new GenerateOneTile(context, progressDisplay);
             
-            // 動的タイル出力の事前処理を行うクラスを列挙します。
-            var beforeTileExports = new IBeforeTileExport[]
+            // 動的タイル出力の事前処理を列挙します。
+            var onTileGenerateStarts = new IOnTileGenerateStart[]
             {
                 setupBuildPath,
                 tileManagerGenerator, // 古いTileManagerを消します。
-                tileAddressableConfigMaker // Addressableの設定を行います。
+                tileAddressableConfigMaker, // Addressableの設定を行います。
+                setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
             };
             
-            // タイルをビルドしたあとの処理を行うクラスを列挙します。
+            var onOneTileImported = new IOnOneTileImported[]
+            {
+                generateOneTile // 1タイル生成ごとに呼ばれます。
+            };
+            
+            // タイルをビルドする直前の処理を列挙します。
+            var beforeTileAssetsBuilds = new IBeforeTileAssetBuild[] { addTilesToOldMetaIfExist };
+            
+            // タイルをビルドしたあとの処理を列挙します。
             var afterTileAssetBuilds = new IAfterTileAssetBuild[]
             {
                 tileManagerGenerator, // TileManagerを生成します。
                 tileAddressableConfigMaker // Addressableの設定を消去し元に戻します。
             };
             
-            dynamicTileExporter = new DynamicTileExporter(context, progressDisplay, beforeTileExports,afterTileAssetBuilds);
+            dynamicTileExporter = new DynamicTileExporter(context, progressDisplay, onTileGenerateStarts, onOneTileImported, beforeTileAssetsBuilds, afterTileAssetBuilds);
             
             bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config);
             if (!preProcessSucceed)

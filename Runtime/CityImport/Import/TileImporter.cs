@@ -732,7 +732,11 @@ namespace PLATEAU.CityImport.Import
                     if(processor is IPostTileImportProcessor)
                         (processor as IPostTileImportProcessor).OnTileImported(result);
                     else
+                    {
+                        Debug.LogError("Legacy ImportProcessor is called.");
                         processor.OnGmlImported(result);
+                    }
+                        
                 }
             }
         }

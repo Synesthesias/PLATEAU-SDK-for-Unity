@@ -7,9 +7,9 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// <summary>
     /// 動的タイルインポートについて、Addressableの設定を行います。
     /// </summary>
-    internal class TileAddressableConfigMaker : IBeforeTileExport, IAfterTileAssetBuild
+    internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild
     {
-        public DynamicTileProcessingContext context;
+        public readonly DynamicTileProcessingContext context;
 
         public TileAddressableConfigMaker(DynamicTileProcessingContext context)
         {
@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// <summary>
         /// エクスポートの事前処理で、タイルのビルドに必要なAddressable設定を行います。
         /// </summary>
-        public bool BeforeTileExport()
+        public bool OnTileGenerateStart()
         {
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile();

@@ -11,9 +11,9 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// <summary>
     /// 動的タイルインポートについて、<see cref="PLATEAUTileManager"/>の生成方法を記述します。
     /// </summary>
-    public class TileManagerGenerator : IBeforeTileExport, IAfterTileAssetBuild
+    public class TileManagerGenerator : IOnTileGenerateStart, IAfterTileAssetBuild
     {
-        private DynamicTileProcessingContext context;
+        private readonly DynamicTileProcessingContext context;
 
         public TileManagerGenerator(DynamicTileProcessingContext context)
         {
@@ -21,7 +21,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         }
         
         /// <summary> タイル生成前、古い<see cref="PLATEAUTileManager"/>を削除します。 </summary>
-        public bool BeforeTileExport()
+        public bool OnTileGenerateStart()
         {
             var manager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (manager != null)

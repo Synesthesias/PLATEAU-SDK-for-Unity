@@ -8,16 +8,16 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// <summary>
     /// 動的タイルインポートでのビルドパスを設定します。
     /// </summary>
-    internal class SetUpTileBuildPath : IBeforeTileExport
+    internal class SetUpTileBuildPath : IOnTileGenerateStart
     {
-        private DynamicTileProcessingContext context;
+        private readonly DynamicTileProcessingContext context;
 
         public SetUpTileBuildPath(DynamicTileProcessingContext context)
         {
             this.context = context;
         }
         
-        public bool BeforeTileExport()
+        public bool OnTileGenerateStart()
         {
             // プロジェクト内であればアセットバンドルをStreamingAssets以下に出力します。
             // なぜならデフォルトのローカルビルドパスであるLibrary以下は、2回目にプロジェクト外に出力した時にクリアされカタログが読めなくなるためです。
