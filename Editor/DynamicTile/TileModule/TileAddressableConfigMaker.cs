@@ -39,6 +39,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // ビルド設定を行います。
             AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
             AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
+            AddressablesUtility.SaveAddressableSettings();
             
             return true;
         }
