@@ -31,6 +31,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             return true;
         }
 
+        public void OnTileGenerateStartFailed()
+        {
+            // noop
+        }
+
         /// <summary>
         /// タイル生成後、<see cref="PLATEAUTileManager"/>を生成し、
         /// シーンビューのカメラをタイルにフォーカスします。

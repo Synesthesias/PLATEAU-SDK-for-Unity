@@ -1,7 +1,7 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
-using PLATEAU.Editor.Addressables;
+using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -113,7 +113,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 return false;
             }
 
-            string outputPath = context.AssetConfig?.AssetPath ?? "Assets/PLATEAUPrefabs/";
+            string outputPath = context.AssetConfig?.AssetPath ?? DynamicTileProcessingContext.PrefabsTempSavePath;
             var outputDirFullPath = Path.IsPathRooted(outputPath)
                 ? outputPath
                 : AssetPathUtil.GetFullPath(outputPath);

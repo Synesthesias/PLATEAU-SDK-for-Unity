@@ -1,15 +1,14 @@
 using PLATEAU.DynamicTile;
-using PLATEAU.Editor.Addressables;
-using PLATEAU.Util;
+using PLATEAU.Editor.TileAddressables;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
@@ -32,73 +31,193 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// </summary>
         public bool BeforeTileAssetBuild()
         {
-            string shorterGroupName = context.AddressableGroupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_", "");
-            string addressName = $"{DynamicTileExporter.AddressableAddressBase}_{shorterGroupName}";
-            string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
-            string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset").Replace('\\', '/');
-
-            var existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
-            if (existingMeta != null && context.MetaStore != null && context.MetaStore.TileMetaInfos != null)
+            if (IsMetaExistInAssets())
             {
-                // Assets内のケースで、既存のメタに新規分を追加します。
-                foreach (var info in context.MetaStore.TileMetaInfos)
-                {
-                    if (info == null) continue;
-                    existingMeta.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
-                }
-                
-                EditorUtility.SetDirty(existingMeta);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.ImportAsset(dataPath, ImportAssetOptions.ForceUpdate);
-                
-                context.MetaStore = existingMeta;
-
-                // 追加前のアセットバンドルをAddressable Groupに登録
-                try
-                {
-                    var addresses = GetDistinctAddressesFromMeta(existingMeta);
-                    EnsureAddressesInGroup(addresses, context.AddressableGroupName, null);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning($"既存メタのアドレス取り込みに失敗しました: {ex.Message}");
-                }
+                // Assets内のケース
+                AddExistingMetaInAssets();
             }
             else
             {
-                // Assets外のケースで、既存のメタに新規分を追加します。
-                try
-                {
-                    if (!string.IsNullOrEmpty(context.BuildFolderPath) && Directory.Exists(context.BuildFolderPath))
-                    {
-                        var catalogFiles = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true);
-                        if (catalogFiles.Length > 0)
-                        {
-                            var latestCatalog = catalogFiles[0];
-                            var loader = new AddressableLoader();
-                            var oldMeta = loader.InitializeAsync(latestCatalog).GetAwaiter().GetResult();
-                            if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)
-                            {
-                                foreach (var info in oldMeta.TileMetaInfos)
-                                {
-                                    if (info == null) continue;
-                                    context.MetaStore.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
-                                }
+                // Assets外のケース
+                AddExistingMetaOutsideAssets();
+            }
+            
+            Save();
+            return true;
+        }
 
-                                // 追加前のアセットバンドルをAddressable Groupに登録
-                                var addresses = GetDistinctAddressesFromMeta(oldMeta);
-                                EnsureAddressesInGroup(addresses, context.AddressableGroupName, latestCatalog);
+        private void Save()
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// 追加処理で、メタがAssets内にあるケースです。
+        /// </summary>
+        private void AddExistingMetaInAssets()
+        {
+            var existingMeta = GetExistingMetaInAssets();
+            foreach (var info in context.MetaStore.TileMetaInfos)
+            {
+                if (info == null) continue;
+                existingMeta.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+            }
+                
+            EditorUtility.SetDirty(existingMeta);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ImportAsset(context.DataPath, ImportAssetOptions.ForceUpdate);
+                
+            context.MetaStore = existingMeta;
+
+            // 追加前のアセットバンドルをAddressable Groupに登録
+            try
+            {
+                var addresses = GetDistinctAddressesFromMeta(existingMeta);
+
+                if (addresses == null) return;
+
+                var groupName = context.AddressableGroupName;
+                var tempRoot = Path.Combine("Assets", AddressableLoader.AddressableLocalBuildFolderName, groupName)
+                    .Replace('\\', '/');
+                if (!Directory.Exists(tempRoot)) Directory.CreateDirectory(tempRoot);
+
+                foreach (var address in addresses)
+                {
+                    if (string.IsNullOrEmpty(address)) continue;
+                    try
+                    {
+                        var guids = AssetDatabase.FindAssets($"t:Prefab {address}");
+                        if (guids != null && guids.Length > 0)
+                        {
+                            foreach (var guid in guids)
+                            {
+                                var path = AssetDatabase.GUIDToAssetPath(guid);
+                                if (string.IsNullOrEmpty(path)) continue;
+                                var name = Path.GetFileNameWithoutExtension(path);
+                                if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
+                                AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName,
+                                    new List<string> { DynamicTileExporter.AddressableLabel });
+                                break;
                             }
                         }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex}");
                     }
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"既存メタのアドレス取り込みに失敗しました: {ex}");
+            }
+        }
+
+        /// <summary>
+        /// 追加処理で、メタがAssets外にあるケースです。
+        /// </summary>
+        private void AddExistingMetaOutsideAssets()
+        {
+            // Assets外のケースで、既存のメタに新規分を追加します。
+            try
+            {
+                if (string.IsNullOrEmpty(context.BuildFolderPath) || !Directory.Exists(context.BuildFolderPath))
                 {
-                    Debug.LogWarning($"旧メタデータの読み込みに失敗しました: {ex.Message}");
+                    return;
+                }
+
+                var catalogFiles = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true);
+                if (catalogFiles.Length <= 0)
+                {
+                    return;
+                }
+
+                var latestCatalog = catalogFiles[0];
+                var loader = new AddressableLoader();
+                var oldMeta = loader.InitializeAsync(latestCatalog).GetAwaiter().GetResult();
+                if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)
+                {
+                    foreach (var info in oldMeta.TileMetaInfos)
+                    {
+                        if (info == null) continue;
+                        context.MetaStore.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+                    }
+
+                    // 追加前のアセットバンドルをAddressable Groupに登録
+                    var addresses = GetDistinctAddressesFromMeta(oldMeta);
+
+                    if (addresses == null) return;
+                    
+                    AsyncOperationHandle<IResourceLocator>? catalogHandle = null;
+                    bool catalogLoaded = false;
+
+                    var groupName = context.AddressableGroupName;
+
+                    var tempRoot = Path.Combine("Assets", AddressableLoader.AddressableLocalBuildFolderName, groupName)
+                        .Replace('\\', '/');
+                    if (!Directory.Exists(tempRoot)) Directory.CreateDirectory(tempRoot);
+
+                    foreach (var address in addresses)
+                    {
+                        if (string.IsNullOrEmpty(address)) continue;
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(latestCatalog))
+                            {
+                                if (!catalogLoaded)
+                                {
+                                    var ch = Addressables.LoadContentCatalogAsync(latestCatalog);
+                                    ch.WaitForCompletion();
+                                    catalogHandle = ch;
+                                    catalogLoaded = true;
+                                }
+
+                                var handle = Addressables.LoadAssetAsync<GameObject>(address);
+                                handle.WaitForCompletion();
+                                if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
+                                {
+                                    var go = handle.Result;
+                                    var savePath = Path.Combine(tempRoot, address + ".prefab").Replace('\\', '/');
+                                    var saved = PrefabUtility.SaveAsPrefabAsset(go, savePath);
+                                    if (saved != null)
+                                    {
+                                        AddressablesUtility.RegisterAssetAsAddressable(savePath, address, groupName,
+                                            new List<string> { DynamicTileExporter.AddressableLabel });
+                                    }
+                                }
+
+                                Addressables.Release(handle);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex.Message}");
+                        }
+                    }
+
+                    if (catalogLoaded)
+                    {
+                        Addressables.Release(catalogHandle.Value);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"旧メタデータの読み込みに失敗しました: {ex.Message}");
+            }
+        }
 
-            return true;
+        private bool IsMetaExistInAssets()
+        {
+            var existingMeta = GetExistingMetaInAssets();
+            return existingMeta != null && context.MetaStore != null && context.MetaStore.TileMetaInfos != null;
+        }
+
+        private PLATEAUDynamicTileMetaStore GetExistingMetaInAssets()
+        {
+            return AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(context.DataPath);
         }
         
         /// <summary>
@@ -114,83 +233,5 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 .ToList();
         }
         
-        /// <summary>
-        /// 同じディレクトリに複数回タイル出力したとき、上書きではなく追加するために旧アセットバンドルを認識させる目的で、
-        /// 指定アドレスを現在のグループに含めます。
-        /// 1) Assets 内に同名Prefabがあれば再登録
-        /// 2) 無ければ、catalogPath が指定されている場合に限り Addressables 経由でロード→一時Prefab化→登録
-        /// </summary>
-        private static void EnsureAddressesInGroup(IEnumerable<string> addresses, string groupName, string catalogPath)
-        {
-            if (addresses == null) return;
-
-            AsyncOperationHandle<IResourceLocator>? catalogHandle = null;
-            bool catalogLoaded = false;
-
-            var tempRoot = Path.Combine("Assets", AddressableLoader.AddressableLocalBuildFolderName, groupName).Replace('\\','/');
-            if (!Directory.Exists(tempRoot)) Directory.CreateDirectory(tempRoot);
-
-            foreach (var address in addresses)
-            {
-                if (string.IsNullOrEmpty(address)) continue;
-                try
-                {
-                    // 1) Assets 内にあるケース
-                    var guids = AssetDatabase.FindAssets($"t:Prefab {address}");
-                    bool registered = false;
-                    if (guids != null && guids.Length > 0)
-                    {
-                        foreach (var guid in guids)
-                        {
-                            var path = AssetDatabase.GUIDToAssetPath(guid);
-                            if (string.IsNullOrEmpty(path)) continue;
-                            var name = Path.GetFileNameWithoutExtension(path);
-                            if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
-                            AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName, new List<string> { DynamicTileExporter.AddressableLabel });
-                            registered = true;
-                            break;
-                        }
-                    }
-                    if (registered) continue;
-
-                    // 2) Assets外のケースでは、Addressableに認識させるために一時的にインポートしてプレハブにします。
-                    if (!string.IsNullOrEmpty(catalogPath))
-                    {
-                        if (!catalogLoaded)
-                        {
-                            var ch = UnityEngine.AddressableAssets.Addressables.LoadContentCatalogAsync(catalogPath);
-                            ch.WaitForCompletion();
-                            catalogHandle = ch;
-                            catalogLoaded = true;
-                        }
-                        var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(address);
-                        handle.WaitForCompletion();
-                        if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
-                        {
-                            var go = handle.Result;
-                            var savePath = Path.Combine(tempRoot, address + ".prefab").Replace('\\','/');
-                            var saved = PrefabUtility.SaveAsPrefabAsset(go, savePath);
-                            if (saved != null)
-                            {
-                                AddressablesUtility.RegisterAssetAsAddressable(savePath, address, groupName, new List<string> { DynamicTileExporter.AddressableLabel });
-                            }
-                        }
-                        UnityEngine.AddressableAssets.Addressables.Release(handle);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex.Message}");
-                }
-            }
-
-            if (catalogLoaded && catalogHandle.HasValue)
-            {
-                UnityEngine.AddressableAssets.Addressables.Release(catalogHandle.Value);
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
     }
 }

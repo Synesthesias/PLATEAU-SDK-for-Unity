@@ -3,7 +3,6 @@ using PLATEAU.DynamicTile;
 using PLATEAU.Util;
 using System;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,15 +29,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             Vector3 rp = cityConfig.ReferencePoint.ToUnityVector(); // デフォルト値
             try
             {
-
-                string shorterGroupName =
-                    context.AddressableGroupName.Replace(DynamicTileProcessingContext.AddressableGroupBaseName + "_",
-                        "");
-                string addressName = $"{DynamicTileExporter.AddressableAddressBase}_{shorterGroupName}";
-
                 // 1) Assets 内にメタがある場合
-                string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
-                string dataPath = Path.Combine(normalizedAssetPath, addressName + ".asset").Replace('\\', '/');
+                string dataPath = context.DataPath;
                 var existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
                 if (existingMeta != null)
                 {
@@ -74,6 +66,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
 
             return true;
+        }
+
+        public void OnTileGenerateStartFailed()
+        {
+            // noop
         }
     }
 }

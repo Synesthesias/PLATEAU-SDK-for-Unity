@@ -3,7 +3,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
-namespace PLATEAU.Editor.Addressables
+namespace PLATEAU.Editor.TileAddressables
 {
     [InitializeOnLoad]
     public class AddressablesInitializer

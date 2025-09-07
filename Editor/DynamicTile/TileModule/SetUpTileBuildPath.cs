@@ -43,5 +43,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
             return true;
         }
+        
+        public void OnTileGenerateStartFailed()
+        {
+            // noop
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task<bool> ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
+            
             // 動的タイルのバリデーション
             if (!config.ValidateForTile())
             {
@@ -58,42 +59,11 @@ namespace PLATEAU.Editor.DynamicTile
 
             // 事前処理を実行
             progressDisplay?.SetProgress(TileProgressTitle, 0f, "動的タイル生成を開始中...");
-
+            
             var context = new DynamicTileProcessingContext(config.DynamicTileImportConfig);
-            var tileManagerGenerator = new TileManagerGenerator(context);
-            var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
-            var setupBuildPath = new SetUpTileBuildPath(context);
-            var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
-            var setReferencePointToSameIfExist = new SetReferencePointSameIfExist(config, context);
-            var generateOneTile = new GenerateOneTile(context, progressDisplay);
+            dynamicTileExporter = new DynamicTileExporter(context, config, progressDisplay);
             
-            // 動的タイル出力の事前処理を列挙します。
-            var onTileGenerateStarts = new IOnTileGenerateStart[]
-            {
-                setupBuildPath,
-                tileManagerGenerator, // 古いTileManagerを消します。
-                tileAddressableConfigMaker, // Addressableの設定を行います。
-                setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
-            };
-            
-            var onOneTileImported = new IOnOneTileImported[]
-            {
-                generateOneTile // 1タイル生成ごとに呼ばれます。
-            };
-            
-            // タイルをビルドする直前の処理を列挙します。
-            var beforeTileAssetsBuilds = new IBeforeTileAssetBuild[] { addTilesToOldMetaIfExist };
-            
-            // タイルをビルドしたあとの処理を列挙します。
-            var afterTileAssetBuilds = new IAfterTileAssetBuild[]
-            {
-                tileManagerGenerator, // TileManagerを生成します。
-                tileAddressableConfigMaker // Addressableの設定を消去し元に戻します。
-            };
-            
-            dynamicTileExporter = new DynamicTileExporter(context, progressDisplay, onTileGenerateStarts, onOneTileImported, beforeTileAssetsBuilds, afterTileAssetBuilds);
-            
-            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config);
+            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing();
             if (!preProcessSucceed)
             {
                 Debug.LogError("動的タイルの事前処理に失敗しました。");

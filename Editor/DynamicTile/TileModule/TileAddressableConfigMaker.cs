@@ -1,5 +1,5 @@
 using PLATEAU.DynamicTile;
-using PLATEAU.Editor.Addressables;
+using PLATEAU.Editor.TileAddressables;
 using UnityEngine;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// <summary>
     /// 動的タイルインポートについて、Addressableの設定を行います。
     /// </summary>
-    internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild
+    internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild, IOnTileGenerationCancelled
     {
         public readonly DynamicTileProcessingContext context;
 
@@ -41,11 +41,30 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// </summary>
         public bool AfterTileAssetBuild()
         {
+            Cleanup();
+            return true;
+        }
+
+        public void OnTileGenerationCancelled()
+        {
+            Cleanup();
+        }
+
+        private void Cleanup()
+        {
             AddressablesUtility.BackToDefaultProfile();
             
             // ビルドが終わったらAddressableGroup設定はもう不要です
-            AddressablesUtility.RemoveGroup(context.AddressableGroupName);
-            return true;
+            var groupName = context.AddressableGroupName;
+            if (!string.IsNullOrEmpty(groupName))
+            {
+                AddressablesUtility.RemoveGroup(groupName);
+            }
+        }
+        
+        public void OnTileGenerateStartFailed()
+        {
+            // noop
         }
     }
 }

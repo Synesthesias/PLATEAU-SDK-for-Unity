@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
-namespace PLATEAU.Editor.Addressables
+namespace PLATEAU.Editor.TileAddressables
 {
     /// <summary>
     /// Addressablesのグループ作成やアセットのAddressable登録を行うEditor専用ユーティリティクラス
