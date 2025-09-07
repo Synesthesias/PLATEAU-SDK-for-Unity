@@ -50,6 +50,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 context.AddressName,
                 groupName,
                 new List<string> { DynamicTileExporter.AddressableLabel });
+            
+            AddressablesUtility.SaveAddressableSettings();
             return true;
         }
     }

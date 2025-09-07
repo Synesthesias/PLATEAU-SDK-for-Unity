@@ -80,7 +80,16 @@ namespace PLATEAU.DynamicTile
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 // Addressablesからアセットを非同期でロード
-                tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
+                try
+                {
+                    tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
+                }
+                catch (InvalidKeyException e)
+                {
+                    Debug.LogError(e);
+                    tile.Reset();
+                    return LoadResult.Failure;
+                }
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();

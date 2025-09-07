@@ -1,10 +1,13 @@
 using PLATEAU.DynamicTile;
+using System;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
 namespace PLATEAU.Editor.TileAddressables
@@ -58,10 +61,10 @@ namespace PLATEAU.Editor.TileAddressables
             }
 
             // BundledAssetGroupSchemaがなければ追加
-            var bundledSchema = group.GetSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
+            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
             if (bundledSchema == null)
             {
-                bundledSchema = group.AddSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
+                group.AddSchema<BundledAssetGroupSchema>();
             }
 
             // FIXME: 動的タイルロード時のパフォーマンス向上のため、将来的に非圧縮を検討
@@ -268,6 +271,23 @@ namespace PLATEAU.Editor.TileAddressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameLoad);
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            
+            // addressables_content_state.binもビルド先に保存します。これは差分ビルドで利用します。
+            settings.ContentStateBuildPath = BuildPath(settings);
+            
+            SaveAddressableSettings();
+        }
+
+        public static void SaveAddressableSettings()
+        {
+            var settings = RequireAddressableSettings();
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static string BuildPath(AddressableAssetSettings assetSettings)
+        {
+            return assetSettings.profileSettings.GetValueByName(assetSettings.activeProfileId, ProfileVariableNameBuild);
         }
 
         private static void SetGroupSchema(BundledAssetGroupSchema groupSchema)
@@ -326,20 +346,13 @@ namespace PLATEAU.Editor.TileAddressables
         /// <summary>
         /// Addressablesのビルドを実行します。
         /// </summary>
-        /// <param name="cleanCache">ビルド前にキャッシュを消す場合はtrue</param>
-        public static void BuildAddressables(bool cleanCache = false)
+        public static void BuildAddressables(TileBuildMode buildMode)
         {
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
                 Debug.LogWarning("AddressableAssetSettingsが見つかりません。");
                 return;
-            }
-
-            if (cleanCache)
-            {
-                UnityEditor.AddressableAssets.Settings.AddressableAssetSettings.CleanPlayerContent();
-                Debug.Log("Addressablesのキャッシュをクリアしました。");
             }
 
             // Addressablesのバージョン1.22の既知のバグを回避するため、GenerateBuildLayoutを一時的にオフにします。
@@ -351,7 +364,20 @@ namespace PLATEAU.Editor.TileAddressables
             try
             {
                 // Addressablesのビルドを実行
-                AddressableAssetSettings.BuildPlayerContent(out var result);
+                AddressablesPlayerBuildResult result;
+                switch (buildMode)
+                {
+                    case TileBuildMode.New:
+                        AddressableAssetSettings.BuildPlayerContent(out result);
+                        break;
+                    case TileBuildMode.Add:
+                        var contentStatePath = Path.Combine(BuildPath(settings), "addressables_content_state.bin");
+                        result = ContentUpdateScript.BuildContentUpdate(settings, contentStatePath);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                
                 if (!string.IsNullOrEmpty(result.Error))
                 {
                     Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
@@ -367,7 +393,7 @@ namespace PLATEAU.Editor.TileAddressables
                 ProjectConfigData.GenerateBuildLayout = prevGenerateBuildLayout;
             }
         }
-
+        
         /// <summary>
         /// 指定したグループを削除します。
         /// </summary>
@@ -406,85 +432,19 @@ namespace PLATEAU.Editor.TileAddressables
                 Debug.Log($"Addressableグループを削除しました: {groupName}");
                 return true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogWarning($"Addressableグループの削除中にエラーが発生しました: {ex.Message}");
                 return false;
             }
         }
-        
-        /// <summary>
-        /// デフォルトグループ以外のグループを削除します。
-        /// </summary>
-        public static void RemoveNonDefaultGroups(string targetLabel, bool isExcludeAssetFolder)
+
+        public enum TileBuildMode
         {
-            // パラメータ検証
-            if (string.IsNullOrEmpty(targetLabel))
-            {
-                Debug.LogError("targetLabelが無効です。");
-                return;
-            }
-
-            var settings = RequireAddressableSettings();
-            if (settings == null)
-            {
-                return;
-            }
-
-            var defaultGroup = settings.DefaultGroup;
-            if (defaultGroup == null)
-            {
-                Debug.LogWarning("デフォルトグループが設定されていません。");
-                return;
-            }
-
-            // グループのリストをコピー（削除中に変更されるため）
-            var groups = settings.groups.ToList();
-            foreach (var group in groups)
-            {
-                if (group == null ||
-                    group == defaultGroup ||
-                    group.entries == null ||
-                    !group.entries.Any())
-                {
-                    continue;
-                }
-
-                try
-                {
-                    // 指定されたラベルを持つエントリがない場合はスキップ
-                    bool hasTargetLabel = false;
-                    foreach (var entry in group.entries)
-                    {
-                        if (entry != null && entry.labels != null && entry.labels.Contains(targetLabel))
-                        {
-                            hasTargetLabel = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasTargetLabel)
-                    {
-                        continue;
-                    }
-                    
-                    if (isExcludeAssetFolder && group.Name == DynamicTileProcessingContext.AddressableGroupBaseName)
-                    {
-                        // ローカルビルド用（ビルドに含める）のグループは削除しない
-                        // 削除するとLibrary配下から削除されるため
-                        continue;
-                    }
-    
-                    // グループを削除
-                    string groupName = group.Name; // 削除前に名前を保存
-                    settings.RemoveGroup(group);
-                    Debug.Log($"グループを削除しました: {groupName}");
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"グループ '{group.Name}' の処理中にエラーが発生しました: {ex.Message}");
-                }
-            }
+            /// <summary> 新しいフォルダで新規ビルド </summary>
+            New,
+            /// <summary> 既存フォルダに追加 </summary>
+            Add
         }
     }
 } 

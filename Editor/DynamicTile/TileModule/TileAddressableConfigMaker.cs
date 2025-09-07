@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// <summary>
     /// 動的タイルインポートについて、Addressableの設定を行います。
     /// </summary>
-    internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild, IOnTileGenerationCancelled
+    internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild
     {
         public readonly DynamicTileProcessingContext context;
 
@@ -21,6 +21,13 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// </summary>
         public bool OnTileGenerateStart()
         {
+            // 連続で同じフォルダが指定されたときはタイルを追加するので、そのケースはクリーンアップをしません。
+            // そのため、前と違うフォルダが指定されたときの処理前に初めてクリーンアップします。
+            if (!context.IsSameOutputPathAsPrevious)
+            {
+                Cleanup();
+            }
+
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile();
             if (string.IsNullOrEmpty(profileID))
@@ -37,24 +44,17 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         }
 
         /// <summary>
-        /// タイルビルド後、Addressableの設定を削除し元に戻します。
+        /// タイルビルド後、Addressableの設定を元に戻します。
         /// </summary>
         public bool AfterTileAssetBuild()
         {
-            Cleanup();
+            AddressablesUtility.BackToDefaultProfile();
             return true;
         }
 
-        public void OnTileGenerationCancelled()
-        {
-            Cleanup();
-        }
-
+        /// <summary> 古いグループを削除します。 </summary>
         private void Cleanup()
         {
-            AddressablesUtility.BackToDefaultProfile();
-            
-            // ビルドが終わったらAddressableGroup設定はもう不要です
             var groupName = context.AddressableGroupName;
             if (!string.IsNullOrEmpty(groupName))
             {

@@ -151,7 +151,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     if (addresses == null) return;
                     
                     AsyncOperationHandle<IResourceLocator>? catalogHandle = null;
-                    bool catalogLoaded = false;
+                    // bool catalogLoaded = false;
 
                     var groupName = context.AddressableGroupName;
 
@@ -159,6 +159,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                         .Replace('\\', '/');
                     if (!Directory.Exists(tempRoot)) Directory.CreateDirectory(tempRoot);
 
+                    // 古いメタに存在する各アドレスを登録
                     foreach (var address in addresses)
                     {
                         if (string.IsNullOrEmpty(address)) continue;
@@ -166,29 +167,30 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                         {
                             if (!string.IsNullOrEmpty(latestCatalog))
                             {
-                                if (!catalogLoaded)
-                                {
-                                    var ch = Addressables.LoadContentCatalogAsync(latestCatalog);
-                                    ch.WaitForCompletion();
-                                    catalogHandle = ch;
-                                    catalogLoaded = true;
-                                }
+                                // if (!catalogLoaded)
+                                // {
+                                //     var ch = Addressables.LoadContentCatalogAsync(latestCatalog);
+                                //     ch.WaitForCompletion();
+                                //     catalogHandle = ch;
+                                //     catalogLoaded = true;
+                                // }
 
-                                var handle = Addressables.LoadAssetAsync<GameObject>(address);
-                                handle.WaitForCompletion();
-                                if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
-                                {
-                                    var go = handle.Result;
-                                    var savePath = Path.Combine(tempRoot, address + ".prefab").Replace('\\', '/');
-                                    var saved = PrefabUtility.SaveAsPrefabAsset(go, savePath);
-                                    if (saved != null)
-                                    {
-                                        AddressablesUtility.RegisterAssetAsAddressable(savePath, address, groupName,
-                                            new List<string> { DynamicTileExporter.AddressableLabel });
-                                    }
-                                }
-
-                                Addressables.Release(handle);
+                                // 古いアドレスをプレハブにしてAddressableに登録し直す
+                                // var handle = Addressables.LoadAssetAsync<GameObject>(address);
+                                // handle.WaitForCompletion();
+                                // if (handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null)
+                                // {
+                                //     var go = handle.Result;
+                                //     var savePath = Path.Combine(tempRoot, address + ".prefab").Replace('\\', '/');
+                                //     var saved = PrefabUtility.SaveAsPrefabAsset(go, savePath);
+                                //     if (saved != null)
+                                //     {
+                                //         AddressablesUtility.RegisterAssetAsAddressable(savePath, address, groupName,
+                                //             new List<string> { DynamicTileExporter.AddressableLabel });
+                                //     }
+                                // }
+                                //
+                                // Addressables.Release(handle);
                             }
                         }
                         catch (Exception ex)
@@ -197,10 +199,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                         }
                     }
 
-                    if (catalogLoaded)
-                    {
-                        Addressables.Release(catalogHandle.Value);
-                    }
+                    // if (catalogLoaded)
+                    // {
+                    //     Addressables.Release(catalogHandle.Value);
+                    // }
                 }
             }
             catch (Exception ex)
@@ -209,7 +211,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
         }
 
-        private bool IsMetaExistInAssets()
+        public bool IsMetaExistInAssets()
         {
             var existingMeta = GetExistingMetaInAssets();
             return existingMeta != null && context.MetaStore != null && context.MetaStore.TileMetaInfos != null;

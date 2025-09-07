@@ -1,5 +1,7 @@
 using PLATEAU.DynamicTile;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
@@ -19,7 +21,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         {
             // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
             // 保存については処理前にダイアログでユーザーに了承を得ています。
-            EditorSceneManager.SaveOpenScenes();
+            SaveScene();
             return true;
         }
 
@@ -27,7 +29,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         public bool AfterTileAssetBuild()
         {
             // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
-            EditorSceneManager.SaveOpenScenes();
+            
+            SaveScene();
             
             // タイル生成中フラグを設定
             PLATEAUEditorEventListener.disableProjectChangeEvent = false;
@@ -47,7 +50,15 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         public void OnTileBuildFailed()
         {
             PLATEAUEditorEventListener.disableProjectChangeEvent = false;
-            EditorSceneManager.SaveOpenScenes();
+            SaveScene();
+        }
+
+
+        private void SaveScene()
+        {
+            var scene = SceneManager.GetActiveScene();
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
         }
     }
 }

@@ -1,36 +1,52 @@
+using PLATEAU.DynamicTile;
+using UnityEditor;
+using UnityEngine;
+
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
     /// <summary>
     /// タイル生成時の一時フォルダーを削除します
     /// </summary>
-    internal class TileCleanupTempFolder : IAfterTileAssetBuild, IOnTileGenerationCancelled
+    internal class TileCleanupTempFolder : IOnTileGenerateStart
     {
-        public bool AfterTileAssetBuild()
+        private readonly DynamicTileProcessingContext context;
+
+        public TileCleanupTempFolder(DynamicTileProcessingContext context)
         {
-            CleanupTempFolder();
+            this.context = context;
+        }
+
+
+        public bool OnTileGenerateStart()
+        {
+            // 連続で同じフォルダが指定されたときはタイルを追加するので、そのケースはクリーンアップをしません。
+            // そのため、前と違うフォルダが指定されたときの処理前に初めてクリーンアップします。
+            if (!context.IsSameOutputPathAsPrevious)
+            {
+                CleanupTempFolder();
+            }
+
+            
             return true;
         }
-        
-        public void OnTileGenerationCancelled()
+
+        public void OnTileGenerateStartFailed()
         {
-            CleanupTempFolder();
+            // noop
         }
 
         private void CleanupTempFolder()
         {
-            // FIXME 現状、Assets外のアプリビルド後に動かすためにはここはコメントアウトする必要あり
-            
-            // var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
-            // if (AssetDatabase.DeleteAsset(assetPath))
-            // {
-            //     AssetDatabase.Refresh();
-            //     Debug.Log($"一時フォルダーを削除しました: {assetPath}");
-            // }
-            // else
-            // {
-            //     Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
-            // }
-            //
+            var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            if (AssetDatabase.DeleteAsset(assetPath))
+            {
+                AssetDatabase.Refresh();
+                Debug.Log($"一時フォルダーを削除しました: {assetPath}");
+            }
+            else
+            {
+                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+            }
         }
     }
 }

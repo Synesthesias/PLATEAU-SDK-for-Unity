@@ -35,9 +35,13 @@ namespace PLATEAU.DynamicTile
 
         /// <summary> タイルビルド前後で失敗した場合の処理 </summary>
         private readonly IOnTileBuildFailed[] onTileBuildFailed;
+
+        private readonly DynamicTileProcessingContext context;
         
         public DynamicTileExporter(DynamicTileProcessingContext context, CityImportConfig cityConf, IProgressDisplay progressDisplay)
         {
+            this.context = context;
+            
             // 各処理を生成します。
             var tileManagerGenerator = new TileManagerGenerator(context);
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
@@ -47,7 +51,7 @@ namespace PLATEAU.DynamicTile
             var setReferencePointToSameIfExist = new SetReferencePointSameIfExist(cityConf, context);
             var generateOneTile = new GenerateOneTile(context, progressDisplay);
             var saveAndRegisterMetaData = new SaveAndRegisterMetaData(context);
-            var cleanUpTempFolder = new TileCleanupTempFolder();
+            var cleanUpTempFolder = new TileCleanupTempFolder(context);
             
             // フェイズ1: 事前処理
             // 動的タイル出力の事前処理を列挙します。
@@ -56,6 +60,7 @@ namespace PLATEAU.DynamicTile
                 tileEditorProcedure, // エディタ上での準備
                 setupBuildPath, // Addressableビルドパスを設定
                 tileManagerGenerator, // 古いTileManagerを消します。
+                cleanUpTempFolder, // 前回の処理で残った不要なフォルダを消します。
                 tileAddressableConfigMaker, // Addressableの設定を行います。
                 setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
             };
@@ -82,16 +87,13 @@ namespace PLATEAU.DynamicTile
             {
                 tileManagerGenerator, // TileManagerを生成します。
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
-                cleanUpTempFolder, // 一時フォルダを削除します。
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
             
             // タイル生成のキャンセル時の処理を列挙します。
             onTileGenerationCancelled = new IOnTileGenerationCancelled[]
             {
-                tileEditorProcedure,
-                tileAddressableConfigMaker,
-                cleanUpTempFolder,
+                tileEditorProcedure
             };
 
             onTileBuildFailed = new IOnTileBuildFailed[] { tileEditorProcedure };
@@ -146,7 +148,10 @@ namespace PLATEAU.DynamicTile
                 }
                 
                 // Addressablesのビルドを実行
-                AddressablesUtility.BuildAddressables(false);
+                var buildMode = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true).Length == 0
+                    ? AddressablesUtility.TileBuildMode.New
+                    : AddressablesUtility.TileBuildMode.Add;
+                AddressablesUtility.BuildAddressables(buildMode);
 
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)
