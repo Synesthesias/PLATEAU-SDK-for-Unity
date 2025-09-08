@@ -205,6 +205,23 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         /// LOD情報
         /// </summary>
         public Dictionary<float, GameObject> Lods { get; } = new Dictionary<float, GameObject>();
+        
+        /// <summary>
+        /// 最大Lod
+        /// </summary>
+        public float MaxLod => Lods.Any() ? Lods.Keys.Max() : 0;
+        
+        /// <summary>
+        /// Triplanar変換対象かどうか. Lod1より大きい
+        /// </summary>
+        public bool IsTriplanarTarget
+        {
+            get
+            {
+                var lod1 = Lods.GetValueOrDefault(1);
+                return lod1 && MaxLod > 1;
+            }
+        }
 
         public BuildingInfo(string name)
         {
@@ -291,8 +308,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             var buildings = GetBuildings(model);
             foreach (var m in buildings.Values.SelectMany(x => x))
             {
-
-                // LOD1を表示する場合
+                // LOD1を表示する場合, Lod1以下で最大のものを表示
                 if (isLod1Visible)
                 {
                     var maxLod = m.Lods.Keys.Where(l => l <= 1).Max();
@@ -324,15 +340,14 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         // 現在表示されていて, 非表示にするゲームオブジェクト
         var invisibleObjects = new HashSet<GameObject>();
 
-        // キャプチャが終わった後に非表示に戻すゲームオブジェクト
-        var afterInvisibleObjects = new HashSet<GameObject>();
-
-        var targetObjects = new Dictionary<string, GameObject>();
+        // 変換対象のゲームオブジェクト
+        var targetBuildingObjects = new Dictionary<string, GameObject>();
 
         SwitchLod1Visible(false);
 
         foreach (var tr in model.transform.GetChildren())
         {
+            // もともと非表示のものは無視する
             if (tr.gameObject.activeInHierarchy == false)
                 continue;
 
@@ -343,22 +358,20 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
                 continue;
             }
 
-            targetObjects[meshCode] = tr.gameObject;
+            targetBuildingObjects[meshCode] = tr.gameObject;
         }
 
         // 一旦全部非表示にする
         foreach (var obj in invisibleObjects)
             obj.SetActive(false);
 
-        foreach (var obj in targetObjects.Values)
+        foreach (var obj in targetBuildingObjects.Values)
             obj.SetActive(false);
 
-        foreach (var item in targetObjects)
+        foreach (var item in targetBuildingObjects)
         {
             // 表示に戻す
             item.Value.SetActive(true);
-
-            var bound = CalculateCombinedBounds(item.Value);
 
             // 全オブジェクトの統合バウンディングボックスを計算
             Bounds combinedBounds = CalculateCombinedBounds(item.Value);
@@ -368,15 +381,22 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
             // テクスチャのキャプチャ
             CaptureAllFaces(request, camera);
 
+            // マテリアル作る前にアセットデータベースを更新
+            // Loadで読み込めるように
+            AssetDatabase.Refresh();
+            
             // マテリアルの作成
             CreateTriplanarMaterial(request);
+            
+            // 非表示に戻す
+            item.Value.SetActive(false);
         }
 
         foreach (var obj in invisibleObjects)
             obj.SetActive(true);
 
-        foreach (var obj in afterInvisibleObjects)
-            obj.SetActive(false);
+        foreach(var obj in targetBuildingObjects.Values)
+            obj.SetActive( true );
 
         var buildings = GetBuildings(model);
 
@@ -396,10 +416,10 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
     {
         foreach (var b in buildings)
         {
-            var lod1 = b.Lods.GetValueOrDefault(1);
-            if (lod1 == null)
+            if (b.IsTriplanarTarget == false)
                 continue;
-
+            
+            var lod1 = b.Lods.GetValueOrDefault(1);
             // 対象オブジェクトのRendererにマテリアルを適用
             Renderer[] renderers = lod1.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
@@ -589,6 +609,9 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         {
             foreach (var obj in targetObjects)
             {
+                // Noneは無視する
+                if (!obj)
+                    continue;
                 Execute(camera, obj);
             }
             // アセットデータベースを更新
