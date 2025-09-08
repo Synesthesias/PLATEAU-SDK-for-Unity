@@ -92,18 +92,9 @@ namespace PLATEAU.Editor.Window.ProgressDisplay
         /// </summary>
         public void Clear()
         {
-            while (!this.progressBag.IsEmpty)
-            {
-                this.progressBag.TryTake(out _);
-            }
-
+            while (this.progressBag.TryTake(out _)) { }
             if (ParentEditorWindow != null)
-            {
-                this.mainThreadContext.Post(_ =>
-                {
-                    ParentEditorWindow.Repaint();
-                }, null);
-            }
+                UnityEditor.EditorApplication.delayCall += ParentEditorWindow.Repaint;
         }  
     }
 }
