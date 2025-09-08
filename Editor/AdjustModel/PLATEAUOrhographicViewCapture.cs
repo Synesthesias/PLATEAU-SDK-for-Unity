@@ -169,7 +169,7 @@ public class PLATEAUOrthographicViewCapture : EditorWindow
         return $"{GetFolderPath(meshCode)}/{meshCode}Triplanar.mat";
     }
 
-    [MenuItem("Tools/Orthographic View Capture")]
+    [MenuItem("PLATEAU/Debug/Orthographic View Capture")]
     public static void ShowWindow()
     {
         GetWindow<PLATEAUOrthographicViewCapture>("LOD1 5面図キャプチャ");
