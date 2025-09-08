@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                if (numCurrentRunningTasks <= 0)
+                if (System.Threading.Volatile.Read(ref numCurrentRunningTasks) <= 0)
                 {
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
@@ -62,14 +62,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 }
                 else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
                 {
-                    if (PlateauEditorStyle.CancelButton("キャンセル中…")){}
+                    UnityEditor.EditorGUI.BeginDisabledGroup(true);
+                    PlateauEditorStyle.CancelButton("キャンセル中…");
+                    UnityEditor.EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
                     //Cancel ボタンを描画します。
                     if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
                     {
-                        bool dialogueResult = Dialogue.Display($"インポートをキャンセルしますか？", "はい", "いいえ");
+                        bool dialogueResult = Dialogue.Display("インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
                             cancellationTokenSrc?.Cancel();
