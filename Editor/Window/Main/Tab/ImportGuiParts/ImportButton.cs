@@ -109,20 +109,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 {
                     Debug.Log("try");
                     Interlocked.Decrement(ref numCurrentRunningTasks);
-                    if (t.IsCanceled)
-                    {
-                        UnityEditor.EditorApplication.delayCall += () =>
-                            PLATEAU.Util.Dialogue.Display("インポートをキャンセルしました", "OK");
-                        return;
-                    }
-                    if (t.IsFaulted)
-                    {
-                        UnityEditor.EditorApplication.delayCall += () =>
-                            PLATEAU.Util.Dialogue.Display("インポートに失敗しました。詳細はConsoleを確認してください。", "OK");
-                        return;
-                    }
                     UnityEditor.EditorApplication.delayCall += () =>
-                        PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
+                        PLATEAU.Util.Dialogue.Display("インポートが終了しました", "OK");
                     UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
                     
                 }
