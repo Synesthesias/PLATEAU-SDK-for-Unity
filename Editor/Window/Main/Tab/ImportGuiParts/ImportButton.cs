@@ -8,6 +8,8 @@ using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
+using PLATEAU.Editor.Window.ProgressDisplay;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 {
@@ -24,7 +26,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 
         private int numCurrentRunningTasks;
         private ImportToDynamicTile importToDynamicTile;
-        
 
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
@@ -106,6 +107,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             {
                 try
                 {
+                    Debug.Log("try");
                     Interlocked.Decrement(ref numCurrentRunningTasks);
                     if (t.IsCanceled)
                     {
@@ -122,6 +124,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     UnityEditor.EditorApplication.delayCall += () =>
                         PLATEAU.Util.Dialogue.Display("インポートが完了しました", "OK");
                     UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
+                    
                 }
                 finally
                 {
