@@ -26,6 +26,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 
         private int numCurrentRunningTasks;
         private ImportToDynamicTile importToDynamicTile;
+        private volatile bool cancelRequested;
 
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
@@ -41,6 +42,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     {
                         (progressDisplay as ProgressDisplayGUI)?.Clear();
                         // タスク数をインクリメントし、キャンセルトークンを初期化
+                        cancelRequested = false; 
                         Interlocked.Increment(ref numCurrentRunningTasks);
                         cancellationTokenSrc = new CancellationTokenSource();
 
@@ -76,6 +78,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                         bool dialogueResult = Dialogue.Display("インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
+                            cancelRequested = true;
                             cancellationTokenSrc?.Cancel();
 
                             if (config.DynamicTileImportConfig.ImportType != ImportType.DynamicTile)
@@ -107,10 +110,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             {
                 try
                 {
-                    Debug.Log("try");
                     Interlocked.Decrement(ref numCurrentRunningTasks);
-                    UnityEditor.EditorApplication.delayCall += () =>
-                        PLATEAU.Util.Dialogue.Display("インポートが終了しました", "OK");
+                    if (cancelRequested)
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートをキャンセルしました", "OK");
+                    }
+                    else
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートが完了しました！", "OK");
+                    }
+                    
                     UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
                     
                 }
