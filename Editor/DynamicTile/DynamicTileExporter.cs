@@ -52,6 +52,7 @@ namespace PLATEAU.DynamicTile
             var generateOneTile = new GenerateOneTile(context, progressDisplay);
             var saveAndRegisterMetaData = new SaveAndRegisterMetaData(context);
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
+            var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);
             
             // フェイズ1: 事前処理
             // 動的タイル出力の事前処理を列挙します。
@@ -87,6 +88,7 @@ namespace PLATEAU.DynamicTile
             {
                 tileManagerGenerator, // TileManagerを生成します。
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
+                exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
             
