@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
+    /// <summary>
+    /// タイルに相当するアセットをunitypackage形式でプレハブ出力します。
+    /// プロジェクト外へタイル出力したあと、タイルを編集したい場合はunitypackageを取り込んでからタイルを再出力することになります。
+    /// </summary>
 	internal class ExportUnityPackageOfPrefabs : IAfterTileAssetBuild
 	{
 		private readonly DynamicTileProcessingContext context;
@@ -18,6 +22,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
 		public bool AfterTileAssetBuild()
 		{
+            if (!context.IsExcludeAssetFolder)
+            {
+                return true;
+            }
+            
 			try
 			{
 				// 生成プレハブのルート（Assets 相対）
@@ -25,11 +34,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 				if (!AssetDatabase.IsValidFolder(rootAssetPath))
 				{
 					Debug.LogWarning($"UnityPackage 出力対象フォルダが見つかりません: {rootAssetPath}");
-					return true; // 失敗としては扱わない（対象がなければ何もしない）
-				}
+                    return false;
+                }
 
-				// まずはプロジェクト配下に安全に出力
-				string packageFileName = $"{context.AddressName}_Prefabs.unitypackage";
+				// まずはプロジェクト配下に出力
+				string packageFileName = $"{context.AddressableGroupName}_Prefabs.unitypackage";
 				string tempPackageProjectRelativePath = packageFileName; // プロジェクトルート直下
 				AssetDatabase.ExportPackage(
 					new[] { rootAssetPath },
@@ -39,23 +48,15 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
 				string tempPackageFullPath = Path.GetFullPath(tempPackageProjectRelativePath);
 
-				// プロジェクト外に出力指定されている場合は、外部へ移動
-				if (!string.IsNullOrEmpty(context.BuildFolderPath) && Path.IsPathRooted(context.BuildFolderPath))
-				{
-					if (!Directory.Exists(context.BuildFolderPath))
-					{
-						Directory.CreateDirectory(context.BuildFolderPath);
-					}
-					string destPath = Path.Combine(context.BuildFolderPath, packageFileName);
-					File.Copy(tempPackageFullPath, destPath, true);
-					File.Delete(tempPackageFullPath);
-					AssetDatabase.Refresh();
-					Debug.Log($"UnityPackage を外部に出力しました: {destPath}");
-				}
-				else
-				{
-					Debug.Log($"UnityPackage を出力しました: {tempPackageFullPath}");
-				}
+                // プロジェクト外に出力
+                if (!Directory.Exists(context.BuildFolderPath))
+                {
+                    Directory.CreateDirectory(context.BuildFolderPath);
+                }
+                string destPath = Path.Combine(context.BuildFolderPath, packageFileName);
+                File.Copy(tempPackageFullPath, destPath, true);
+                File.Delete(tempPackageFullPath);
+                AssetDatabase.Refresh();
 
 				return true;
 			}
