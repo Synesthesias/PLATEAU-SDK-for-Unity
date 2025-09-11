@@ -123,6 +123,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // Assets外のケースで、既存のメタに新規分を追加します。
             try
             {
+                // 既存のメタが存在しないなら何もしません
                 if (string.IsNullOrEmpty(context.BuildFolderPath) || !Directory.Exists(context.BuildFolderPath))
                 {
                     return;
