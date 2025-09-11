@@ -8,6 +8,8 @@ using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine;
+using PLATEAU.Editor.Window.ProgressDisplay;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 {
@@ -24,7 +26,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 
         private int numCurrentRunningTasks;
         private ImportToDynamicTile importToDynamicTile;
-        
+        private volatile bool cancelRequested;
 
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
@@ -33,12 +35,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                if (numCurrentRunningTasks <= 0)
+                if (System.Threading.Volatile.Read(ref numCurrentRunningTasks) <= 0)
                 {
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        (progressDisplay as ProgressDisplayGUI)?.Clear();
                         // タスク数をインクリメントし、キャンセルトークンを初期化
+                        cancelRequested = false; 
                         Interlocked.Increment(ref numCurrentRunningTasks);
                         cancellationTokenSrc = new CancellationTokenSource();
 
@@ -62,16 +66,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 }
                 else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
                 {
-                    if (PlateauEditorStyle.CancelButton("キャンセル中…")){}
+                    UnityEditor.EditorGUI.BeginDisabledGroup(true);
+                    PlateauEditorStyle.CancelButton("キャンセル中…");
+                    UnityEditor.EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
                     //Cancel ボタンを描画します。
                     if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
                     {
-                        bool dialogueResult = Dialogue.Display($"インポートをキャンセルしますか？", "はい", "いいえ");
+                        bool dialogueResult = Dialogue.Display("インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
+                            cancelRequested = true;
                             cancellationTokenSrc?.Cancel();
 
                             if (config.DynamicTileImportConfig.ImportType != ImportType.DynamicTile)
@@ -97,8 +104,33 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 new CityDuplicateProcessor() // 重複した低LODを非表示にします。
             };
             var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
-            
-            task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+ 
+            // 完了後にUIスレッドでダイアログを出す
+            task.ContinueWith(t =>
+            {
+                try
+                {
+                    Interlocked.Decrement(ref numCurrentRunningTasks);
+                    if (cancelRequested)
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートをキャンセルしました", "OK");
+                    }
+                    else
+                    {
+                        UnityEditor.EditorApplication.delayCall += () =>
+                            PLATEAU.Util.Dialogue.Display("インポートが完了しました！", "OK");
+                    }
+                    
+                    UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
+                    
+                }
+                finally
+                {
+                    cancellationTokenSrc?.Dispose();
+                    cancellationTokenSrc = null;
+                }
+            });
             task.ContinueWithErrorCatch();
         }
         
