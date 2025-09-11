@@ -58,11 +58,6 @@ namespace PLATEAU.DynamicTile
         /// GML数
         /// </summary>
         public int GmlCount { get; set; }
-        
-        /// <summary>
-        /// 前と同じフォルダかどうか。trueなら上書きではなく追加とすべきです。
-        /// </summary>
-        public bool IsSameOutputPathAsPrevious { get;}
 
         /// <summary>
         /// 読み込み完了したGML数
@@ -97,9 +92,6 @@ namespace PLATEAU.DynamicTile
 
             // MetaStoreを生成
             MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
-
-            IsSameOutputPathAsPrevious = EditorPrefs.GetString(EditorPrefsKey) == BuildFolderPath;
-            EditorPrefs.SetString(EditorPrefsKey, BuildFolderPath);
         }
 
         private string EditorPrefsKey

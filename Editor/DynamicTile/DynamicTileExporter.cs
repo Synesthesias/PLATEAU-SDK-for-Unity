@@ -61,7 +61,6 @@ namespace PLATEAU.DynamicTile
                 tileEditorProcedure, // エディタ上での準備
                 setupBuildPath, // Addressableビルドパスを設定
                 tileManagerGenerator, // 古いTileManagerを消します。
-                cleanUpTempFolder, // 前回の処理で残った不要なフォルダを消します。
                 tileAddressableConfigMaker, // Addressableの設定を行います。
                 setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
             };
@@ -88,7 +87,8 @@ namespace PLATEAU.DynamicTile
             {
                 tileManagerGenerator, // TileManagerを生成します。
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
-                exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。
+                exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。cleanupTempFolderより前に行ってください。
+                cleanUpTempFolder, // 不要なフォルダを消します。
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
             
