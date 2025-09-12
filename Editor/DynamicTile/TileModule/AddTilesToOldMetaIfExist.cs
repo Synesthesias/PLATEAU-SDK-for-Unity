@@ -144,21 +144,50 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     return;
                 }
 
-                // 旧プレハブ群を取り込む。
-                AssetDatabase.ImportPackage(packagePath, false);
+                // 旧プレハブ群を取り込む（必ずプロジェクト相対パスでインポートする）
+                var tempImportFolder = "Assets/__PLATEAU_TempPackages";
+                if (!AssetDatabase.IsValidFolder(tempImportFolder))
+                {
+                    Directory.CreateDirectory(Path.Combine("Assets", "__PLATEAU_TempPackages"));
+                    AssetDatabase.Refresh();
+                }
+                var projectRelativeTempPkg = Path.Combine(tempImportFolder, Path.GetFileName(packagePath)).Replace('\\', '/');
+                var projectRelativeTempPkgFull = AssetPathUtil.GetFullPath(projectRelativeTempPkg);
+                File.Copy(packagePath, projectRelativeTempPkgFull, true);
+                AssetDatabase.ImportPackage(projectRelativeTempPkg, false);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
                 // 旧メタを取得（パッケージに含まれている想定）
-                var oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(DynamicTileProcessingContext.PrefabsTempSavePath);
                 var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
+                var oldMeta = default(PLATEAUDynamicTileMetaStore);
+                // 名前に依存しない取得（AddressName が変わっても拾えるように）
+                var metaGuids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { rootAssetPath });
+                if (metaGuids != null && metaGuids.Length > 0)
+                {
+                    foreach (var guid in metaGuids)
+                    {
+                        var p = AssetDatabase.GUIDToAssetPath(guid);
+                        if (string.IsNullOrEmpty(p)) continue;
+                        var candidate = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(p);
+                        if (candidate != null)
+                        {
+                            oldMeta = candidate;
+                            // 現在の AddressName と一致するものがあればそれを優先
+                            if (string.Equals(Path.GetFileNameWithoutExtension(p), context.AddressName, StringComparison.Ordinal))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                // oldMeta が見つからない場合は、PLATEAUPrefabs 全体を対象に再探索（稀な配置ズレ対策）
                 if (oldMeta == null)
                 {
-                    // 念のためルート直下から探索
-                    var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
-                    if (guids != null && guids.Length > 0)
+                    var allGuids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
+                    if (allGuids != null && allGuids.Length > 0)
                     {
-                        var metaPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                        var metaPath = AssetDatabase.GUIDToAssetPath(allGuids[0]);
                         oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
                     }
                 }
