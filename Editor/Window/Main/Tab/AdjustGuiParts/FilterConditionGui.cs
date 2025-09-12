@@ -140,7 +140,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
         /// <summary>
         /// パッケージごとのLODスライダーに関して、ユーザーの選択結果を返します。
         /// </summary>
-        public ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> PackageLodSliderResult {
+        public ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> PackageLodSliderResult 
+        {
              get
              {
                  var ret = new Dictionary<PredefinedCityModelPackage, (int minLod, int maxLod)>();
