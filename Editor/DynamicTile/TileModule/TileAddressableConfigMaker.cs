@@ -59,7 +59,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         
         public void OnTileGenerateStartFailed()
         {
-            // noop
+            AddressablesUtility.BackToDefaultProfile();
         }
     }
 }

@@ -63,7 +63,7 @@ namespace PLATEAU.DynamicTile
 
             return EnumerateMatches()
                 .Distinct()
-                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .OrderByDescending(p => File.GetLastWriteTimeUtc(Path.GetFullPath(p)))
                 .ToArray();
         }
 

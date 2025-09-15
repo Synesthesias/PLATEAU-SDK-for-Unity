@@ -28,6 +28,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         private void CleanupTempFolder()
         {
             var assetPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            if (!AssetDatabase.IsValidFolder(assetPath))
+            {
+                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+                return;
+            }
             if (AssetDatabase.DeleteAsset(assetPath))
             {
                 AssetDatabase.Refresh();
@@ -35,7 +40,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
             else
             {
-                Debug.Log($"一時フォルダーなし: {assetPath}"); // Assets内のケース
+                Debug.LogWarning("一時フォルダの削除に失敗しました: " + assetPath);
             }
         }
     }

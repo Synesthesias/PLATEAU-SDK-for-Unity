@@ -1,7 +1,4 @@
-﻿#if  !UNITY_EDITOR
-using System;
-#endif
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
@@ -33,7 +30,7 @@ namespace PLATEAU.Util
                     }
                     else
                     {
-                        Debug.LogError($"No suitable shazzder found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.defaultRenderPipeline}");
+                        Debug.LogError($"No suitable shader found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.defaultRenderPipeline}");
                     }
                 }
                 return defaultMat;
@@ -82,7 +79,7 @@ namespace PLATEAU.Util
         {
             float transparency = 1f - rawMaterial.Transparency; //(0で不透明、1で透明)
 
-            var pipelineAsset = GraphicsSettings.defaultRenderPipeline;
+            var pipelineAsset = GraphicsSettings.defaultRenderPipeline ?? QualitySettings.renderPipeline;
             if (pipelineAsset == null) // Built-in Render Pipeline のとき 
             {
                 //Specularに値が入っている場合ビルトインではStardard (Specular setup) Shader を使用

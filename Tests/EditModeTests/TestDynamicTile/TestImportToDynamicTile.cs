@@ -80,10 +80,8 @@ namespace PLATEAU.Tests.TestDynamicTile
             yield return TestImport(gridCodesA, new string[]{gridCodeStrA});
             EditorSceneManager.SaveOpenScenes();
             DeletePackedImages();
-            for (int i = 0; i < 10; i++)
-            {
-                yield return null;
-            }
+            AssetDatabase.Refresh();
+            yield return new WaitForSeconds(0.2f);
             // 2回目のインポート
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
         }
@@ -125,9 +123,9 @@ namespace PLATEAU.Tests.TestDynamicTile
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
             // 生成物のうちテスト用出力先（Assets 配下）を掃除
-            if (AssetDatabase.IsValidFolder(TempScenePath))
+            if (AssetDatabase.IsValidFolder(TempSceneParentPath))
             {
-                AssetDatabase.DeleteAsset(TempScenePath);
+                AssetDatabase.DeleteAsset(TempSceneParentPath);
                 AssetDatabase.Refresh();
             }
             // 出力先フォルダを削除
@@ -215,7 +213,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             }
             catch (System.Exception ex)
             {
-                Debug.LogWarning($"packed_image_* の削除に失敗しました: {ex.Message}");
+                Debug.LogError($"packed_image_* の削除に失敗しました: {ex.Message}");
             }
         }
 

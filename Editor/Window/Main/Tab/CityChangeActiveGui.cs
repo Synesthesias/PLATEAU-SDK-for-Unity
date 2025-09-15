@@ -72,6 +72,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             isFilterTaskRunning = true;
                             try
                             {
+                                using var progress = new PLATEAU.Util.ProgressBar();
+                                progress.Display("実行中...", 0.4f);
                                 this.adjustTarget.FilterByCityObjectType(this.filterConditionGUI.SelectionDict);
                                 this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
                                 if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    

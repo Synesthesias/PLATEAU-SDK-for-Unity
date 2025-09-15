@@ -203,6 +203,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
                     // 旧プレハブを Addressables に再登録
                     var addresses = GetDistinctAddressesFromMeta(oldMeta);
+                    if (addresses == null) return;
+                    
                     var groupName = context.AddressableGroupName;
 
                     foreach (var address in addresses)

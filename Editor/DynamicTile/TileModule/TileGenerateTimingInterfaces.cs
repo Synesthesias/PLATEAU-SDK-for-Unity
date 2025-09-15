@@ -25,7 +25,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// <returns>成否を返します。</returns>
         public bool OnTileGenerateStart();
 
-        /// <summary>例外が補足された場合の処理です。</summary>
+        /// <summary>例外が補捉れた場合の処理です。</summary>
         public void OnTileGenerateStartFailed();
     }
 

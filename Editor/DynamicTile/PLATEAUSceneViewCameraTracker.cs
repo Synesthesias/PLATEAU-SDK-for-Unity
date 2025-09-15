@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Util.Async;
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -6,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
 {
@@ -73,7 +75,7 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
+    public class PLATEAUEditorEventListener : AssetModificationProcessor
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
@@ -184,14 +186,22 @@ namespace PLATEAU.DynamicTile
             var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (tileManager == null) return;
             tileManager.ClearTileAssets();
-            ResetAddressables();
+            ReinitializeAddressables();
         }
 
-        private static void ResetAddressables()
+        private static void ReinitializeAddressables()
         {
-            var handle = Addressables.InitializeAsync();
-            handle.WaitForCompletion();
-            if(handle.IsValid()) Addressables.Release(handle);
+            try
+            {
+                var handle = Addressables.InitializeAsync();
+                handle.WaitForCompletion();
+                if (handle.IsValid()) Addressables.Release(handle);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Addressables init failed: " + e);
+            }
+            
             // Addressables.ClearResourceLocators();
             // AssetBundle.UnloadAllAssetBundles(true); 
             // Resources.UnloadUnusedAssets();

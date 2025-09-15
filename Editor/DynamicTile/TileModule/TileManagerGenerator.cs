@@ -63,7 +63,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             manager.SaveCatalogPath(catalogPath);
             
             // タイルのある場所にシーンビューカメラをフォーカスします。
-            manager.InitializeTiles().Wait();
             FocusSceneViewCameraToTiles(manager);
             
             // タイルを初期化します。
@@ -119,7 +118,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             float distanceHorizontal = radius / Mathf.Tan(horizontalFov * 0.5f);
 
             // 離れすぎてタイルが隠れないように
-            float maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.4f; // 0.4の根拠は勘
+            float maxDistance = 10000f; // フォールバック
+            if(manager.loadDistances != null && manager.loadDistances.Count > 0)
+            {
+                maxDistance = manager.loadDistances.Select(ld => ld.Value.Item2).Max() * 0.4f; // 0.4の根拠は勘
+            }
 
             // 横か縦か大きい方を採用
             float distance = Mathf.Min(distanceVertical, distanceHorizontal);

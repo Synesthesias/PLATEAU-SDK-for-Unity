@@ -25,10 +25,8 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             this.context = context;
         }
 
-        public void HandleSceneGUI(UnityEngine.Object target, bool canPickRoad, bool canPickIntersection)
+        public void HandleSceneGUI(UnityEngine.Object _, bool canPickRoad, bool canPickIntersection)
         {
-            var skeletonData = context.SkeletonData;
-
             HandleVertexPicking(canPickRoad, canPickIntersection);
         }
 
@@ -61,8 +59,10 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
                     float size = HandleUtility.GetHandleSize(edge.center) * 0.15f;
 
                     // Sphere描画
+                    var oldColor = Handles.color;
                     Handles.color = Color.yellow;
                     Handles.SphereHandleCap(0, edge.center, Quaternion.identity, size, EventType.Repaint);
+                    Handles.color = oldColor;
 
                     // 左クリック判定
                     if (e.type == EventType.MouseDown && e.button == 0)
@@ -85,9 +85,9 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
         {
             // コピーしてループ中にリストが変更されるのを防ぐ
             var copiedRoadSkeletons = new List<RnRoadSkeleton>(roadSkeletons);
-            foreach (var roadSleketon in copiedRoadSkeletons)
+            foreach (var roadSkeleton in copiedRoadSkeletons)
             {
-                foreach (var edge in roadSleketon.ExtensibleEdges)
+                foreach (var edge in roadSkeleton.ExtensibleEdges)
                 {
                     var pos = edge.center;
                     float size = HandleUtility.GetHandleSize(pos) * 0.15f;
