@@ -37,13 +37,13 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(address))
             {
                 DebugLog($"指定したアドレスが見つかりません: {address}");
-                return await Task.FromResult<LoadResult>(LoadResult.Failure);
+                return LoadResult.Failure;
             }
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
                 DebugLog($"Already loaded: {address}", false);
-                return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
+                return LoadResult.AlreadyLoaded;
             }
 
             try
@@ -86,7 +86,11 @@ namespace PLATEAU.DynamicTile
                 }
                 catch (InvalidKeyException e)
                 {
-                    Debug.LogError(e);
+                    if (tile.LoadHandle.IsValid())
+                    {
+                        Addressables.Release(tile.LoadHandle);
+                    }
+                    Debug.LogException(e);
                     tile.Reset();
                     return LoadResult.Failure;
                 }

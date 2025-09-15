@@ -62,6 +62,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                     Interlocked.Decrement(ref numCurrentRunningTasks);
                                     cancellationTokenSrc?.Dispose();
                                     cancellationTokenSrc = null;
+                                    importToDynamicTile = null;
                                 });
                                 task.ContinueWith(t =>
                                 {
@@ -77,7 +78,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                         }
                     }
                 }
-                else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
+                else if (cancellationTokenSrc?.IsCancellationRequested == true)
                 {
                     EditorGUI.BeginDisabledGroup(true);
                     PlateauEditorStyle.CancelButton("キャンセル中…");
