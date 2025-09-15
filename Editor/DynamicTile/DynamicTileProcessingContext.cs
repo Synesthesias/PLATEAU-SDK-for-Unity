@@ -83,7 +83,12 @@ namespace PLATEAU.DynamicTile
         /// <param name="config">DynamicTileインポート設定</param>
         public DynamicTileProcessingContext(DynamicTileImportConfig config)
         {
-            Config = config ?? throw new ArgumentNullException(nameof(config));
+            if (string.IsNullOrEmpty(config.OutputPath))
+            {
+                Debug.LogError("output path is not set.");
+            }
+            
+            Config = config;
 
             AssetConfig = ConvertToAssetConfig.DefaultValue;
             IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);

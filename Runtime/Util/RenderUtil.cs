@@ -82,7 +82,7 @@ namespace PLATEAU.Util
         {
             float transparency = 1f - rawMaterial.Transparency; //(0で不透明、1で透明)
 
-            var pipelineAsset = GraphicsSettings.defaultRenderPipeline;
+            var pipelineAsset = GraphicsSettings.defaultRenderPipeline ?? QualitySettings.renderPipeline;
             if (pipelineAsset == null) // Built-in Render Pipeline のとき 
             {
                 //Specularに値が入っている場合ビルトインではStardard (Specular setup) Shader を使用

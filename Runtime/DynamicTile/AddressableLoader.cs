@@ -112,6 +112,12 @@ namespace PLATEAU.DynamicTile
                 }
 
                 catalogPathToUse = catalogFiles.FirstOrDefault();
+                if (catalogPathToUse == null)
+                {
+                    Debug.LogError("failed to find catalog.");
+                    return null;
+                }
+                catalogPathToUse = Path.GetFullPath(catalogPathToUse);
             }
 
             await LoadCatalog(catalogPathToUse);
@@ -247,8 +253,10 @@ namespace PLATEAU.DynamicTile
         private async Task LoadCatalog(string catalogPath)
         {
 
-            // パスを正規化（バックスラッシュをスラッシュに変換）
+            // パスを正規化
+            catalogPath = Path.GetFullPath(catalogPath);
             catalogPath = catalogPath.Replace('\\', '/');
+            
 
             if (string.IsNullOrEmpty(catalogPath) || !File.Exists(catalogPath))
             {

@@ -125,9 +125,9 @@ namespace PLATEAU.Tests.TestDynamicTile
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
             // 生成物のうちテスト用出力先（Assets 配下）を掃除
-            if (AssetDatabase.IsValidFolder(TempScenePath))
+            if (AssetDatabase.IsValidFolder(TempSceneParentPath))
             {
-                AssetDatabase.DeleteAsset(TempScenePath);
+                AssetDatabase.DeleteAsset(TempSceneParentPath);
                 AssetDatabase.Refresh();
             }
             // 出力先フォルダを削除

@@ -1,6 +1,7 @@
 using System.IO;
 using PLATEAU.DynamicTile;
 using PLATEAU.Util;
+using System;
 using UnityEngine;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
@@ -32,13 +33,21 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
             else
             {
-                // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
-                var bundleOutputPath = Path.Combine(
-                    Application.streamingAssetsPath,
-                    AddressableLoader.AddressableLocalBuildFolderName,
-                    context.AddressableGroupName);
-                bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
-                context.BuildFolderPath = bundleOutputPath;
+                try
+                {
+                    // プロジェクト内: StreamingAssets/PLATEAUBundles/{GroupName}
+                    var bundleOutputPath = Path.Combine(
+                        Application.streamingAssetsPath,
+                        AddressableLoader.AddressableLocalBuildFolderName,
+                        context.AddressableGroupName);
+                    bundleOutputPath = PathUtil.FullPathToAssetsPath(bundleOutputPath);
+                    context.BuildFolderPath = bundleOutputPath;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("failed to setup path. " + e);
+                    return false;
+                }
             }
 
             return true;

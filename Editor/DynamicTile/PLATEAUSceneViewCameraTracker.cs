@@ -73,7 +73,7 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
+    public class PLATEAUEditorEventListener : AssetModificationProcessor
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
