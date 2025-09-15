@@ -1,7 +1,4 @@
-﻿#if  !UNITY_EDITOR
-using System;
-#endif
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
@@ -33,7 +30,7 @@ namespace PLATEAU.Util
                     }
                     else
                     {
-                        Debug.LogError($"No suitable shazzder found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.defaultRenderPipeline}");
+                        Debug.LogError($"No suitable shader found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.defaultRenderPipeline}");
                     }
                 }
                 return defaultMat;

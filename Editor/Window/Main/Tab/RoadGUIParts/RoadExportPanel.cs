@@ -30,8 +30,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
         {
             base.OnTabSelected(root);
 
-            var blowseButton = self.Q<Button>("ButtonBrowse");
-            if (blowseButton == null)
+            var browseButton = self.Q<Button>("ButtonBrowse");
+            if (browseButton == null)
             {
                 Debug.LogError("Failed to load ButtonBrowse");
                 return;
@@ -46,7 +46,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
 
             var exportPathField = self.Q<TextField>("ExportPathField");
 
-            blowseButton.clicked += Browse;
+            browseButton.clicked += Browse;
             exportButton.clicked += Export;
 
             exportPathField.SetEnabled(false);
@@ -102,10 +102,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.RoadGuiParts
                 exportButton.clicked -= Export;
             }
 
-            var blowseButton = self.Q<Button>("ButtonBrowse");
-            if (blowseButton != null)
+            var browseButton = self.Q<Button>("ButtonBrowse");
+            if (browseButton != null)
             {
-                blowseButton.clicked -= Browse;
+                browseButton.clicked -= Browse;
             }
 
             base.OnTabUnselected();

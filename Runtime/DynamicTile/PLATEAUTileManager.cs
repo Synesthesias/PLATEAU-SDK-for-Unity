@@ -122,8 +122,14 @@ namespace PLATEAU.DynamicTile
                     if (cityModel != null)
                         TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
                 }
-            }         
+            }
 
+            if (string.IsNullOrEmpty(catalogPath))
+            {
+                Debug.LogWarning("catalog path is empty.");
+                State = ManagerState.None;
+                return;
+            }
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             var metaStore = await addressableLoader.InitializeAsync(catalogPath);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)

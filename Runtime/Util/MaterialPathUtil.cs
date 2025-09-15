@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-#if UNITY_EDITOR
-#endif
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util

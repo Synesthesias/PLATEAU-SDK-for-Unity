@@ -30,8 +30,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
             
             string dataPath = context.DataPath;
-            // Path.Combineは環境によってバックスラッシュを使うため、フォワードスラッシュに統一
-            dataPath = dataPath.Replace('\\', '/');
 
             // 既存アセットとの衝突を回避
             // dataPath = AssetDatabase.GenerateUniqueAssetPath(dataPath);

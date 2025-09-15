@@ -149,9 +149,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     var addresses = GetDistinctAddressesFromMeta(oldMeta);
 
                     if (addresses == null) return;
-                    
-                    AsyncOperationHandle<IResourceLocator>? catalogHandle = null;
-                    // bool catalogLoaded = false;
 
                     var groupName = context.AddressableGroupName;
 

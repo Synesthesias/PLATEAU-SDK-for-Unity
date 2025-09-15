@@ -50,7 +50,7 @@ namespace PLATEAU.DynamicTile
             {
                 if (tile.LoadHandle.IsValid() && !tile.LoadHandle.IsDone)
                 {
-                    tile.LoadHandleCancellationTokenSource.Cancel();
+                    tile.LoadHandleCancellationTokenSource?.Cancel();
                     try
                     {
                         await tile.LoadHandle.Task;
@@ -64,7 +64,7 @@ namespace PLATEAU.DynamicTile
                             DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");                    
                     }
 
-                    tile.LoadHandleCancellationTokenSource.Dispose();
+                    tile.LoadHandleCancellationTokenSource?.Dispose();
                     tile.LoadHandleCancellationTokenSource = null;
                 }
 

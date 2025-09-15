@@ -121,6 +121,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             if (!Directory.Exists(outputDirFullPath))
             {
                 Directory.CreateDirectory(outputDirFullPath);
+                AssetDatabase.Refresh();
             }
 
             // 進捗更新を通知

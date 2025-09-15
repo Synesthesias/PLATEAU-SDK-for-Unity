@@ -22,6 +22,7 @@ namespace PLATEAU.Editor.TileAddressables
         private const string ProfileVariableNameLoad = "PLATEAU_LoadPath";
         private const string SafeDefaultPathLoad  = "[UnityEngine.AddressableAssets.Addressables.RuntimePath]/[BuildTarget]";
         private const string SafeDefaultPathBuild = "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]";
+        private const string ContentStateFileName = "addressables_content_state.bin";
         
         /// <summary>
         /// AddressableAssetSettingsを取得。nullの場合は警告を出す。
@@ -371,7 +372,7 @@ namespace PLATEAU.Editor.TileAddressables
                         AddressableAssetSettings.BuildPlayerContent(out result);
                         break;
                     case TileBuildMode.Add:
-                        var contentStatePath = Path.Combine(BuildPath(settings), "addressables_content_state.bin");
+                        var contentStatePath = Path.Combine(BuildPath(settings), ContentStateFileName);
                         result = ContentUpdateScript.BuildContentUpdate(settings, contentStatePath);
                         break;
                     default:

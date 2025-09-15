@@ -57,7 +57,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                 // 動的タイル形式でのインポートを実行します。
                                 importToDynamicTile = new ImportToDynamicTile(progressDisplay);
                                 var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
-                                task.ContinueWith(_ => Interlocked.Decrement(ref numCurrentRunningTasks));
+                                task.ContinueWith(_ =>
+                                {
+                                    Interlocked.Decrement(ref numCurrentRunningTasks);
+                                    cancellationTokenSrc?.Dispose();
+                                    cancellationTokenSrc = null;
+                                });
                                 task.ContinueWith(t =>
                                 {
                                     if (t.Result)

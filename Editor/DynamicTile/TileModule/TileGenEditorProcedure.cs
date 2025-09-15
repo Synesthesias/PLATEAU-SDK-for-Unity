@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         // 処理順の都合上、他のBeforeTileAssetBuildの最後にしてください。
         public bool AfterTileAssetBuild()
         {
-            // 上で自動保存しておてメタアドレスを保存しないのは中途半端なのでここでも保存します。
+            // 上で自動保存しておいてメタアドレスを保存しないのは中途半端なのでここでも保存します。
             
             SaveScene();
             
