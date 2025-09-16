@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
         public bool AfterTileAssetBuild()
         {
-            // CleanupTempFolder();
+            CleanupTempFolder();
             
             return true;
         }

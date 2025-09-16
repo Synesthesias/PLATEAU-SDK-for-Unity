@@ -4,6 +4,8 @@ using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System;
+using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -76,7 +78,7 @@ namespace PLATEAU.DynamicTile
             // タイルをビルドする直前の処理を列挙します。
             beforeTileAssetBuilds = new IBeforeTileAssetBuild[]
             {
-                addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します
+                addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します。前のフォルダにあるunity packageのインポートも行います。
                 saveAndRegisterMetaData, // メタデータを保存・登録
                 tileEditorProcedure // エディタ上での準備。処理順の都合上、配列の最後にしてください。
             };
@@ -139,14 +141,14 @@ namespace PLATEAU.DynamicTile
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// 成否を返します。
         /// </summary>
-        public bool CompleteProcessing()
+        public async Task<bool> CompleteProcessingAsync()
         {
             try
             {
                 // 与えられたビルド直前の処理を実行
                 foreach (var before in beforeTileAssetBuilds)
                 {
-                    before.BeforeTileAssetBuild();
+                    await before.BeforeTileAssetBuildAsync();
                 }
                 
                 // Addressablesのビルドを実行

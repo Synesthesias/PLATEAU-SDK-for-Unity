@@ -1,6 +1,6 @@
 using PLATEAU.DynamicTile;
+using System.Threading.Tasks;
 using UnityEditor.SceneManagement;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
@@ -17,12 +17,12 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         }
 
         // 処理順の都合上、他のBeforeTileAssetBuildの最後にしてください。
-        public bool BeforeTileAssetBuild()
+        public Task<bool> BeforeTileAssetBuildAsync()
         {
             // アセットバンドルのビルド時に「シーンを保存しますか」とダイアログが出てくるのがうっとうしいので前もって保存して抑制します。
             // 保存については処理前にダイアログでユーザーに了承を得ています。
             SaveScene();
-            return true;
+            return Task.FromResult(true);
         }
 
         // 処理順の都合上、他のBeforeTileAssetBuildの最後にしてください。

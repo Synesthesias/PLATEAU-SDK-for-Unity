@@ -103,5 +103,31 @@ namespace PLATEAU.DynamicTile
         {
             tileMetaInfos.Clear();
         }
+        
+        /// <summary>
+        /// ディープコピーします。
+        /// </summary>
+        public void CopyFrom(PLATEAUDynamicTileMetaStore source)
+        {
+            if (source == null) return;
+            referencePoint = source.referencePoint;
+            // TileMetaInfos をディープコピー
+            if (tileMetaInfos != source.tileMetaInfos) // 同じ参照のときにClearで両方消えるケースを防ぎます
+            {
+                tileMetaInfos.Clear();
+                if (source.tileMetaInfos != null && source.tileMetaInfos.Count > 0)
+                {
+                    foreach (var info in source.tileMetaInfos)
+                    {
+                        if (info == null) continue;
+                        tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(
+                            info.AddressName,
+                            info.Extent,
+                            info.LOD,
+                            info.ZoomLevel));
+                    }
+                }
+            }
+        }
     }
 } 

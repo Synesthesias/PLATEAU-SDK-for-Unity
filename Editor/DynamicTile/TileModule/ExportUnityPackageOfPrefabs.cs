@@ -43,7 +43,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 				AssetDatabase.ExportPackage(
 					new[] { rootAssetPath },
 					tempPackageProjectRelativePath,
-					ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies
+					ExportPackageOptions.Recurse // フラグにExportPackageOptions.IncludeDependenciesを付けると、ソースコード自体が古い物で上書きされることがあるので注意
 				);
 
 				string tempPackageFullPath = Path.GetFullPath(tempPackageProjectRelativePath);

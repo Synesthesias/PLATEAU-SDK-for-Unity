@@ -1,6 +1,7 @@
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.TileAddressables;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             this.context = context;
         }
         
-        public bool BeforeTileAssetBuild()
+        public Task<bool> BeforeTileAssetBuildAsync()
         {
             var metaStore = context.MetaStore;
             var groupName = context.AddressableGroupName;
@@ -26,7 +27,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             if (metaStore == null)
             {
                 Debug.LogWarning("メタデータがnullです。");
-                return false;
+                return Task.FromResult(false);
             }
             
             string dataPath = context.DataPath;
@@ -34,13 +35,21 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // 既存アセットとの衝突を回避
             // dataPath = AssetDatabase.GenerateUniqueAssetPath(dataPath);
 
-            // 既に存在する場合は新規作成を行わない（前と同じフォルダに追加で生成するケースが該当）
-            var existing = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
-            if (existing == null)
-            {
-                AssetDatabase.CreateAsset(metaStore, dataPath);
-                AssetDatabase.SaveAssets();
-            }
+			// 既に存在する場合は新規作成を行わない（前と同じフォルダに追加で生成するケースが該当）
+			var existing = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(dataPath);
+			// existingをmetaStoreに置き換えて保存します
+			if (existing == null)
+			{
+				AssetDatabase.CreateAsset(metaStore, dataPath);
+				EditorUtility.SetDirty(metaStore);
+			}
+			else
+			{
+				existing.CopyFrom(metaStore);
+				EditorUtility.SetDirty(existing);
+			}
+            AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
 
             // メタデータをAddressableに登録
             AddressablesUtility.RegisterAssetAsAddressable(
@@ -50,7 +59,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 new List<string> { DynamicTileExporter.AddressableLabel });
             
             AddressablesUtility.SaveAddressableSettings();
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

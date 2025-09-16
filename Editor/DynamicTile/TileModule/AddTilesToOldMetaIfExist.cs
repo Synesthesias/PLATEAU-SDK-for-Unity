@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
@@ -30,7 +28,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// これにより上書きの代わりに新規追加になるようにします。
         /// 加えて、前の処理のタイルをAddressable Groupに追加することで新規追加後に新旧を両方読めるようにします。
         /// </summary>
-        public bool BeforeTileAssetBuild()
+        public async Task<bool> BeforeTileAssetBuildAsync()
         {
             if (IsMetaExistInAssets())
             {
@@ -40,7 +38,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             else
             {
                 // Assets外のケース
-                AddExistingMetaOutsideAssets();
+               await AddExistingMetaOutsideAssetsAsync();
             }
             
             Save();
@@ -67,7 +65,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 
             EditorUtility.SetDirty(existingMeta);
             AssetDatabase.SaveAssets();
-            AssetDatabase.ImportAsset(context.DataPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.Refresh();
                 
             context.MetaStore = existingMeta;
 
@@ -119,127 +117,107 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// <summary>
         /// 追加処理で、メタがAssets外にあるケースです。
         /// </summary>
-        private void AddExistingMetaOutsideAssets()
+        private async Task AddExistingMetaOutsideAssetsAsync()
         {
             // Assets外のケースでは、前回出力フォルダに置いた unitypackage を取り込み、
             // 旧メタをマージしつつ旧プレハブを Addressables に登録します（上書きではなく追加）。
-            try
+            if (string.IsNullOrEmpty(context.BuildFolderPath) || !Directory.Exists(context.BuildFolderPath))
             {
-                if (string.IsNullOrEmpty(context.BuildFolderPath) || !Directory.Exists(context.BuildFolderPath))
-                {
-                    return;
-                }
+                return;
+            }
 
-                // unitypackage の候補を決定
-                string expected = Path.Combine(context.BuildFolderPath, $"{context.AddressableGroupName}_Prefabs.unitypackage");
-                string packagePath = File.Exists(expected)
-                    ? expected
-                    : Directory.GetFiles(context.BuildFolderPath, "*_Prefabs.unitypackage", SearchOption.TopDirectoryOnly)
-                        .OrderByDescending(File.GetLastWriteTime)
-                        .FirstOrDefault();
+            // unitypackage の候補を決定
+            string expected = Path.Combine(context.BuildFolderPath, $"{context.AddressableGroupName}_Prefabs.unitypackage");
+            string packagePath = File.Exists(expected)
+                ? expected
+                : Directory.GetFiles(context.BuildFolderPath, "*_Prefabs.unitypackage", SearchOption.TopDirectoryOnly)
+                    .OrderByDescending(File.GetLastWriteTime)
+                    .FirstOrDefault();
 
-                // パッケージが見つからなければ何もしない（旧タイルなし）
-                if (string.IsNullOrEmpty(packagePath) || !File.Exists(packagePath))
-                {
-                    return;
-                }
+            // パッケージが見つからなければ何もしない（旧タイルなし）
+            if (string.IsNullOrEmpty(packagePath) || !File.Exists(packagePath))
+            {
+                return;
+            }
 
-                // 旧プレハブ群を取り込む（必ずプロジェクト相対パスでインポートする）
-                var tempImportFolder = "Assets/__PLATEAU_TempPackages";
-                if (!AssetDatabase.IsValidFolder(tempImportFolder))
-                {
-                    Directory.CreateDirectory(Path.Combine("Assets", "__PLATEAU_TempPackages"));
-                    AssetDatabase.Refresh();
-                }
-                var projectRelativeTempPkg = Path.Combine(tempImportFolder, Path.GetFileName(packagePath)).Replace('\\', '/');
-                var projectRelativeTempPkgFull = AssetPathUtil.GetFullPath(projectRelativeTempPkg);
-                File.Copy(packagePath, projectRelativeTempPkgFull, true);
-                AssetDatabase.ImportPackage(projectRelativeTempPkg, false);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
+            // unitypackageをインポートしてプレハブ群を取り込みます。
+            // 非同期的にインポートする必要があります。もし同期的にした場合、Unityエディタに処理が戻らず、インポートしたいファイルが一部欠落したまま次の処理に移り、デバッグが難しい問題を引き起こします。
+            var ok = await EditorAsync.ImportPackageAsync(packagePath, false); 
+            if (!ok)
+            {
+                Debug.LogError("import failed.");
+                return;
+            }
+            
+            AssetDatabase.Refresh();
+            
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
-                // 旧メタを取得（パッケージに含まれている想定）
-                var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
-                var oldMeta = default(PLATEAUDynamicTileMetaStore);
-                // 名前に依存しない取得（AddressName が変わっても拾えるように）
-                var metaGuids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { rootAssetPath });
-                if (metaGuids != null && metaGuids.Length > 0)
+            // 旧メタを取得（パッケージに含まれている想定）
+            var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
+            var oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(DynamicTileProcessingContext.PrefabsTempSavePath);
+            if (oldMeta == null)
+            {
+                // 念のためルート直下から探索
+                var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
+                if (guids != null && guids.Length > 0)
                 {
-                    foreach (var guid in metaGuids)
-                    {
-                        var p = AssetDatabase.GUIDToAssetPath(guid);
-                        if (string.IsNullOrEmpty(p)) continue;
-                        var candidate = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(p);
-                        if (candidate != null)
-                        {
-                            oldMeta = candidate;
-                            // 現在の AddressName と一致するものがあればそれを優先
-                            if (string.Equals(Path.GetFileNameWithoutExtension(p), context.AddressName, StringComparison.Ordinal))
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    var metaPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
                 }
-                // oldMeta が見つからない場合は、PLATEAUPrefabs 全体を対象に再探索（稀な配置ズレ対策）
-                if (oldMeta == null)
-                {
-                    var allGuids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
-                    if (allGuids != null && allGuids.Length > 0)
-                    {
-                        var metaPath = AssetDatabase.GUIDToAssetPath(allGuids[0]);
-                        oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
-                    }
-                }
+            }
 
-                if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)
+            if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)
+            {
+                // 旧メタ情報を新メタにマージ（yield を含まないので try/catch 可）
+                try
                 {
-                    // 旧メタ情報を新メタにマージ
                     foreach (var info in oldMeta.TileMetaInfos)
                     {
                         if (info == null) continue;
                         context.MetaStore.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
                     }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"旧メタのマージ中に失敗: {ex.Message}");
+                    return;
+                }
 
-                    // 旧プレハブを Addressables に再登録
-                    var addresses = GetDistinctAddressesFromMeta(oldMeta);
-                    if (addresses == null) return;
-                    
-                    var groupName = context.AddressableGroupName;
+                // 旧プレハブを Addressables に再登録
+                var addresses = GetDistinctAddressesFromMeta(oldMeta);
+                if (addresses == null) return;
+                
+                var groupName = context.AddressableGroupName;
 
-                    foreach (var address in addresses)
+                foreach (var address in addresses)
+                {
+                    if (string.IsNullOrEmpty(address)) continue;
+
+                    try
                     {
-                        if (string.IsNullOrEmpty(address)) continue;
-
-                        try
+                        var prefabGuids = AssetDatabase.FindAssets($"t:Prefab {address}", new[] { rootAssetPath });
+                        if (prefabGuids != null && prefabGuids.Length > 0)
                         {
-                            var prefabGuids = AssetDatabase.FindAssets($"t:Prefab {address}", new[] { rootAssetPath });
-                            if (prefabGuids != null && prefabGuids.Length > 0)
+                            foreach (var guid in prefabGuids)
                             {
-                                foreach (var guid in prefabGuids)
-                                {
-                                    var path = AssetDatabase.GUIDToAssetPath(guid);
-                                    if (string.IsNullOrEmpty(path)) continue;
-                                    var name = Path.GetFileNameWithoutExtension(path);
-                                    if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
-                                    AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName,
-                                        new List<string> { DynamicTileExporter.AddressableLabel });
-                                    break;
-                                }
+                                var path = AssetDatabase.GUIDToAssetPath(guid);
+                                if (string.IsNullOrEmpty(path)) continue;
+                                var name = Path.GetFileNameWithoutExtension(path);
+                                if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
+                                AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName,
+                                    new List<string> { DynamicTileExporter.AddressableLabel });
+                                break;
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex}");
-                        }
                     }
-
-                    EditorUtility.SetDirty(context.MetaStore);
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex}");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"旧メタデータの取り込みに失敗しました: {ex.Message}");
+                EditorUtility.SetDirty(context.MetaStore);
             }
         }
 

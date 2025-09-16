@@ -62,12 +62,13 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             
             manager.SaveCatalogPath(catalogPath);
             
-            // タイルのある場所にシーンビューカメラをフォーカスします。
-            FocusSceneViewCameraToTiles(manager);
-            
             // タイルを初期化します。
             PLATEAUSceneViewCameraTracker.Initialize();
             manager.InitializeTiles().Wait();
+            
+            // タイルのある場所にシーンビューカメラをフォーカスします。
+            FocusSceneViewCameraToTiles(manager);
+            
             return true;
         }
         

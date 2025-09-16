@@ -1,4 +1,5 @@
 using PLATEAU.CityImport.Import;
+using System.Threading.Tasks;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
@@ -44,7 +45,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     internal interface IBeforeTileAssetBuild
     {
         /// <returns>成否を返します。</returns>
-        public bool BeforeTileAssetBuild();
+        public Task<bool> BeforeTileAssetBuildAsync();
     }
     
     /// <summary>

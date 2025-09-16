@@ -1,10 +1,7 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.Util;
-using System;
 using System.IO;
-using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -97,14 +94,6 @@ namespace PLATEAU.DynamicTile
 
             // MetaStoreを生成
             MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
-        }
-
-        private string EditorPrefsKey
-        {
-            get
-            {
-                return $"PLATEAU_LastBuildFolder";
-            }
         }
 
         /// <summary>
