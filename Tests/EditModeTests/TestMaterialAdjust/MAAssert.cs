@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.GranularityConvert;
 using System;
 using System.Linq;

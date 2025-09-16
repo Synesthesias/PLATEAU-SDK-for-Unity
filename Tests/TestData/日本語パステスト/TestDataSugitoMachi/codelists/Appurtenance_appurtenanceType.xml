@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_e8d400a0-0452-4fc1-bb97-d9540ec9cee0">
+<gml:name>Appurtenance_appurtenanceType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_1">
+<gml:description>ガバナ</gml:description>
+<gml:name>410</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_2">
+<gml:description>バルブ</gml:description>
+<gml:name>420</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_3">
+<gml:description>水取器</gml:description>
+<gml:name>430</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_4">
+<gml:description>弁栓類</gml:description>
+<gml:name>510</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_5">
+<gml:description>消火栓</gml:description>
+<gml:name>520</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_6">
+<gml:description>空気弁</gml:description>
+<gml:name>530</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_7">
+<gml:description>その他配水弁栓</gml:description>
+<gml:name>540</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_8">
+<gml:description>加圧ポンプ</gml:description>
+<gml:name>550</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_9">
+<gml:description>計測施設等</gml:description>
+<gml:name>560</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_10">
+<gml:description>テレメータ</gml:description>
+<gml:name>570</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Appurtenance_appurtenanceType_11">
+<gml:description>その他施設</gml:description>
+<gml:name>580</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,368 @@
+,メッシュコード,地物,地物名,属性又は関連役割名,属性詳細,資料名,作成機関,日付,日付の意味,座標参照系,地図情報レベル,URL
+1行目：ヘッダー,,bldg:Building,,gml:name,,国土機基本情報,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",2500,
+2行目以降：データ,,bldg:Building,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,bldg:Building,,bldg:class,,都市計画基本図（杉戸町）（2022年度）,埼玉県杉戸町,2022-12-28,001,"JGD2011 / 9(X, Y)",2500,
+,,bldg:Building,,bldg:usage,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,bldg:yearOfConstruction,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,bldg:measuredHeight,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,bldg:storeysAboveGround,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,bldg:storeysBelowGround,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,bldg:lod0RoofEdge,,都市計画基本図（杉戸町）（2022年度）,埼玉県杉戸町,2022-12-28,001,"JGD2011 / 9(X, Y)",2500,
+,,bldg:Building,,bldg:lod1Solid,,空中写真（杉戸町）（2022年度）,埼玉県杉戸町,2022-12,001,"JGD2011 / 9(X, Y)",1000,
+,,bldg:Building,,bldg:lod2Solid,,空中写真（杉戸町）（2022年度）,埼玉県杉戸町,2022-12,001,"JGD2011 / 9(X, Y)",1000,
+,,bldg:Building,,uro:buildingIDAttribute.uro:BuildingIDAttribute.uro:buildingID,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingIDAttribute.uro:BuildingIDAttribute.uro:prefecture,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingIDAttribute.uro:BuildingIDAttribute.uro:city,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:totalFloorArea,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:buildingFootprintArea,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:buildingStructureType,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:fireproofStructureType,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:buildingHeight,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDetailAttribute.uro:BuildingDetailAttribute.uro:surveyYear,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:description,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:rank,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:depth,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:adminType,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:scale,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute.uro:duration,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:srcScale,,,,,,,,
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:geometrySrcDesc,,空中写真（杉戸町）（2022年度）,埼玉県杉戸町,2022-12,001,"JGD2011 / 9(X, Y)",1000,
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:thematicSrcDesc,,,,,,,,
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:appearanceSrcDesc,,空中写真（杉戸町）（2022年度）,埼玉県杉戸町,2022-12,001,"JGD2011 / 9(X, Y)",1000,
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:lodType,,,,,,,,
+,,bldg:Building,,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute.uro:lod1HeightType,,,,,,,,
+,,luse:LandUse,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,luse:LandUse,,luse:class,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,luse:LandUse,,luse:lod1MultiSurface,,,,,,,,
+,,luse:LandUse,,uro:luse:LandUseDetailAttribute.uro:orgLandUse,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,luse:LandUse,,uro:luse:LandUseDetailAttribute.uro:prefecture,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,luse:LandUse,,uro:luse:LandUseDetailAttribute.uro:city,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,luse:LandUse,,uro:luse:LandUseDetailAttribute.uro:surveyYear,,都市計画基礎調査（埼玉県）（2022年度）,埼玉県,2022-03,001,"JGD2011 / 9(X, Y)",,
+,,tran:Road,,gml:name,,都市計画基本図（杉戸町）（2022年度）,埼玉県杉戸町,2022-12-28,001,"JGD2011 / 9(X, Y)",2500,
+,,tran:Road,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,tran:Road,,tran:class,,都市計画基本図（杉戸町）（2022年度）,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",2500,
+,,tran:Road,,tran:function,,地理院ベクトルタイル（道路中心線）,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",2500,
+,,tran:Road,,tran:usage,,国土数値情報（緊急輸送道路）、デジタル道路地図,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",2500,
+,,tran:Road,,tran:lod1MultiSurface,,,,,,,,
+,,tran:Road,,uro:tranDataQualityAttribute.uro:srcScale,,,,,,,,
+,,tran:Road,,uro:tranDataQualityAttribute.uro:geometrySrcDesc,,空中写真（杉戸町）（2022年度）,埼玉県杉戸町,2022-12,001,"JGD2011 / 9(X, Y)",1000,
+,,tran:Road,,uro:roadStructureAttribute.uro:RoadStructureAttribute.uro:sectionType,,都市計画基礎調査、全国道路・街路交通情勢調査,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",,
+,,tran:Road,,uro:trafficVolumeAttribute.uro:TrafficVolumeAttribute.uro:weekday12hourTrafficVolume,,都市計画基礎調査、全国道路・街路交通情勢調査,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",,
+,,tran:Road,,uro:trafficVolumeAttribute.uro:TrafficVolumeAttribute.uro:weekday24hourTrafficVolume,,都市計画基礎調査、全国道路・街路交通情勢調査,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",,
+,,tran:Road,,uro:trafficVolumeAttribute.uro:TrafficVolumeAttribute.uro:observationPointName,,都市計画基礎調査、全国道路・街路交通情勢調査,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",,
+,,tran:Road,,uro:trafficVolumeAttribute.uro:TrafficVolumeAttribute.uro:surveyYear,,都市計画基礎調査、全国道路・街路交通情勢調査,埼玉県杉戸町,,001,"JGD2011 / 9(X, Y)",,
+,,wtr:WaterBody,,gml:name,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,gml:name,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,gml:name,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,gml:name,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,wtr:function,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,wtr:function,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,wtr:function,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,wtr:lod1MultiSurface,,,,,,,,
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:description,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:rank,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:adminType,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系利根川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676613.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系利根川洪水想定区域図（計画規模）,国土交通省関東地方整備局利根川上流河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000676615.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系江戸川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690182.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系江戸川洪水想定区域図（計画規模）,国土交通省関東地方整備局江戸川河川事務所,2017-07-20,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000690183.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,荒川水系荒川洪水想定区域図（想定最大規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,荒川水系荒川洪水想定区域図（計画規模）,国土交通省関東地方整備局荒川上流河川事務所、国土交通省関東地方整備局荒川下流河川事務所,2016-05-30,002,"JGD2011 / 9(X, Y)",,https://www.ktr.mlit.go.jp/ktr_content/content/000710546.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系大落古利根川洪水浸水想定区域図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系大落古利根川洪水想定区域図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/8oootoshihurutonegawakouzui.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系中川流域水害リスク情報図（想定最大規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,wtr:WaterBody,,uro:floodingRiskAttribute.uro:WaterBodyRiverFloodingRiskAttribute.uro:scale,,利根川水系中川流域水害リスク情報図（計画規模）,埼玉県県土整備部河川砂防課,2020-05-26,002,"JGD2011 / 9(X, Y)",,https://www.pref.saitama.lg.jp/documents/4593/3nakagawarisk.pdf
+,,urf:UrbanPlanningArea,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:UrbanPlanningArea,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:areaClassification,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:reasonForAreaClassification,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UrbanPlanningArea,,urf:population,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:AreaClassification,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:AreaClassification,,urf:population,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:UseDistrict,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:floorAreaRate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:UseDistrict,,urf:buildingCoverageRate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:FirePreventionDistrict,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:FirePreventionDistrict,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:LandReadjustmentPromotionArea,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentPromotionArea,,urf:location,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:TrafficFacility,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:startLocation,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:endLocation,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:length,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:width,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:urbanRoadAttribute.urf:routeTypeNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:urbanRoadAttribute.urf:routeSizeNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:urbanRoadAttribute.urf:routeSerialNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TrafficFacility,,urf:urbanRoadAttribute.urf:numberOfLanes,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:OpenSpaceForPublicUse,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:location,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:parkAttribute.urf:parkTypeNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:parkAttribute.urf:parkSizeNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:OpenSpaceForPublicUse,,urf:parkAttribute.urf:parkSerialNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:TreatmentFacility,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:TreatmentFacility,,urf:location,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:LandReadjustmentProject,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:publicFacilityAllocation,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:LandReadjustmentProject,,urf:buildingLotDevelopment,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,gml:name,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,urf:DistrictPlan,,urf:function,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:validFrom,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:validFromType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:custodian,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:notificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:finalNotificationNumber,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:finalNotificationDate,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:urbanPlanType,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:nominalArea,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:prefecture,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:city,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:lod1MultiSurface,,,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:location,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,urf:DistrictPlan,,urf:policy,,都市計画決定図書（埼玉県）（2022年度）,埼玉県杉戸町,2022,001,"JGD2011 / 9(X, Y)",,https://www.town.sugito.lg.jp/cms/index120.html
+,,app:Appearance,,app:theme,,,,,,,,
+,,app:Appearance,,app:surfaceDataMember,,,,,,,,
+,,app:ParameterizedTexture,,app:imageURI,,,,,,,,
+,,app:ParameterizedTexture,,app:mimeType,,,,,,,,
+,,app:ParameterizedTexture,,app:target.app:TexCoordList.app:textureCoodeinates,,,,,,,,
+,,app:ParameterizedTexture,,app:target.app:TexCoordList.app:ring,,,,,,,,
+,,dem:ReliefFeature,,gml:name,,標準メッシュコード,,,,,,
+,,dem:ReliefFeature,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,dem:ReliefFeature,,dem:lod,,,,,,,,
+,,dem:ReliefFeature,,dem:reliefComponent,,,,,,,,
+,,dem:TINRelief,,gml:name,,標準メッシュコード,,,,,,
+,,dem:TINRelief,,core:creationDate,,納品日（2024/3/29）,,,,,,
+,,dem:TINRelief,,dem:lod,,,,,,,,
+,,dem:TINRelief,,dem:tin,,,,,,,,
+,,,,,,,,,,,,
+,,,,,,,,,,,,
+説明,,,,,,,,,,,,
+meshcode,標準地域メッシュのコードを記述する。地物のファイル単位として指定されている、3次メッシュ又は2次メッシュのメッシュコードとする。メッシュ毎に記述することを基本とする。,,,,,,,,,,,
+,同一の地物・属性について、都市域全体で同一の原典資料が使用されている場合、メッシュコードを省略する。,,,,,,,,,,,
+,例えば、1つの洪水浸水想定区域図を都市域全体で使用している場合は、メッシュコードを省略する。,,,,,,,,,,,
+,一方、LOD0の建築物の外形を都市計画基本図を使用して作成したが、一部のメッシュは航空写真から図化した場合は、同一地物・属性について複数の原典資料が使用されているため、メッシュ毎に記述する。,,,,,,,,,,,
+,また、都市計画基礎調査を複数年に分けて実施しており、場所によって作成時点の異なる都市計画基礎調査の成果が使用されている場合には、同一地物・属性について複数の原典資料が使用されているため、メッシュ毎に記述する。,,,,,,,,,,,
+feature,"地物名を記述する。各モジュールに複数の地物が定義されている場合は、集成する地物（例：Building）を記述することを基本とする。集成する地物に束ねられ、部品として使われる地物（例：WallSurface, Door）は記述しなくてもよいが、特に明記したい場合は、記述してもよい。",,,,,,,,,,,
+,なお、Appearance（地物に貼るテクスチャ）は、貼り付ける対象となる地物（例：Building）のプロパティとして本リストでは記述する。,,,,,,,,,,,
+featureName,"""feature""で、""GenericCityObject""を記述した場合は、どのGenericCityObjectを使用したかを識別するため、name属性の値を記述する。GenericCityObject以外をfeatureに記述した場合は、空とする。",,,,,,,,,,,
+property,地物の主題属性（データ型を含む）及び空間属性（幾何オブジェクトへの参照）を記述する。空間属性はLOD別とする。,,,,,,,,,,,
+,地物の主題属性がデータ型として定義されている場合は、関連役割名とする。ただし、データ型に定義された各属性に異なる原典資料が使用されている場合は、”関連役割名.主題属性名”とする。,,,,,,,,,,,
+,"地物のテクスチャは、""property""を”appearance""とする。",,,,,,,,,,,
+,"例：function, lod1Solid, lod2Solid, buildingDetailAttribute, buildingDetailAttribute.vacancy, appearance",,,,,,,,,,,
+propertyName,"""property""で、""stringAttribute""などの任意に追加した属性を記述した場合は、属性を識別するため、name属性（又はkey属性）の値を記述する。任意に追加した属性以外をpropertyに記述した場合は、空とする。",,,,,,,,,,,
+sourceName,原典として使用した資料の名称を記述する。,,,,,,,,,,,
+authority,原典資料の作成機関の名称を記述する。,,,,,,,,,,,
+date,原典資料が作成、公表又は改訂された日付。,,,,,,,,,,,
+dateType,"""date""で記述した日付の意味。作成日の場合は001、公表日の場合は002、改訂日の場合は003とする。",,,,,,,,,,,
+srs,原典資料がGISデータ又は図面の場合に、適用されている座標参照系の識別子を、JIS X7115メタデータ附属書2に従い記述する。GISデータではない場合は空とする。,,,,,,,,,,,
+mapLevel,原典資料がGISデータの場合又は図面の場合に、地図情報レベルを記述する。数値のみの記載とする。例：地図情報レベル2500の場合は”2500”とする。,,,,,,,,,,,
+URL,原典資料又はその詳細な情報が入手可能なウェブサイトがある場合にはURLを記述する。,,,,,,,,,,,
+,,,,,,,,,,,,
+注意,,,,,,,,,,,,
+,同一メッシュ内に含まれる同じ種類の地物の属性について、複数の原典資料が混在して使用されていた場合、データ毎にどの原典資料が使用されているかはこのリストでは分からない。,,,,,,,,,,,
+,例えば、同じメッシュ内の建築物のlod0RoofEdgeは地図情報レベル2500数値地形図データから作成したが、一部のランドマークとなる建築物は2021年に撮影された航空写真から図化したとする。この場合、どの建築物が航空写真から図化したものであるかは、分からない。,,,,,,,,,,,

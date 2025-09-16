@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
@@ -38,9 +39,12 @@ namespace PLATEAU.CityImport.Config
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
 
         /// <summary>
-        /// 動的タイルの設定項目です。
+        /// 動的タイルの設定項目です。実体は<see cref="ConfBeforeAreaSelect"/>の中にあります。
         /// </summary>
-        public DynamicTileImportConfig DynamicTileImportConfig { get; set; } = new DynamicTileImportConfig();
+        public DynamicTileImportConfig DynamicTileImportConfig
+        {
+            get => ConfBeforeAreaSelect.DynamicTileImportConfig;
+        }
 
         private CityImportConfig(){}
 
@@ -143,9 +147,16 @@ namespace PLATEAU.CityImport.Config
             
             if (DynamicTileImportConfig.OutputPath.IsNullOrEmpty())
             {
-                Dialogue.Display("動的タイル（Addressable出力）を選択する場合は、出力先を指定してください", "OK");
+                Dialogue.Display("動的タイル（Addressable出力）の出力先を指定してください。", "OK");
                 return false;
             }
+            
+            if (!Directory.Exists(DynamicTileImportConfig.OutputPath))
+            {
+                Dialogue.Display("出力先ディレクトリが存在しません。動的タイルの出力先を再度指定してください。", "OK");
+                return false;
+            }
+            
 
             return true;
         }

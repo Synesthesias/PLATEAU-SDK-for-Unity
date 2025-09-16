@@ -44,6 +44,15 @@ namespace PLATEAU.DynamicTile
         [SerializeField]
         private List<PLATEAUDynamicTileMetaInfo> tileMetaInfos = new List<PLATEAUDynamicTileMetaInfo>();
         public List<PLATEAUDynamicTileMetaInfo> TileMetaInfos => tileMetaInfos;
+        
+        // タイル群で共有される参照点（CityImportConfig.ReferencePoint 相当）
+        [SerializeField]
+        private Vector3 referencePoint;
+        public Vector3 ReferencePoint
+        {
+            get => referencePoint;
+            internal set => referencePoint = value;
+        }
 
         /// <summary>
         /// meta情報を追加します。

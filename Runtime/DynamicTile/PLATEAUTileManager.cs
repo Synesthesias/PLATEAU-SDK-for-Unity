@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -52,18 +51,12 @@ namespace PLATEAU.DynamicTile
             { 9, (1500f, 10000f) },
         };
 
-        [SerializeField]
+        [SerializeField, HideInInspector] // インスペクタ表示はEditorクラスに任せます
         private string catalogPath;
         public string CatalogPath => catalogPath;
 
-        /// <summary>
-        /// <see cref="addressableLoader"/>にタイルのメタ情報のアドレスを渡すことで、複数のメタがあっても識別できるようにします。
-        /// </summary>
         [SerializeField]
-        private string metaAddress;
-
-        [SerializeField]
-        private bool showDebugTileInfo = true; // Debug情報を表示するかどうか
+        private bool showDebugTileInfo = false; // Debug情報を表示するかどうか
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
@@ -129,10 +122,16 @@ namespace PLATEAU.DynamicTile
                     if (cityModel != null)
                         TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
                 }
-            }         
+            }
 
+            if (string.IsNullOrEmpty(catalogPath))
+            {
+                Debug.LogWarning("catalog path is empty.");
+                State = ManagerState.None;
+                return;
+            }
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
-            var metaStore = await addressableLoader.InitializeAsync(catalogPath, metaAddress);
+            var metaStore = await addressableLoader.InitializeAsync(catalogPath);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
             {
                 Debug.LogWarning("No tiles found in the meta store. Please check the catalog path or ensure tiles are registered.");
@@ -162,43 +161,6 @@ namespace PLATEAU.DynamicTile
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）
             catalogPath = path.Replace('\\', '/');
-        }
-        
-        public void SaveMetaAddress(string address)
-        {
-            metaAddress = address;
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
-        {
-            if (loadTask == null)
-            {
-                Debug.LogError("LoadTask is not initialized.");
-                return LoadResult.Failure;
-            }
-            return await loadTask.Load(tile, timeoutSeconds);
-        }
-
-        /// <summary>
-        /// Addressを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(string address)
-        {
-            var tile = tileAddressesDict.GetValueOrDefault(address);
-            if (tile == null)
-            {
-                DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
-                return await Task.FromResult<LoadResult>(LoadResult.Failure);
-            }
-            if (loadTask == null)
-            {
-                Debug.LogError("LoadTask is not initialized.");
-                return LoadResult.Failure;
-            }
-            return await loadTask.Load(tile);
         }
 
         /// <summary>
@@ -529,6 +491,39 @@ namespace PLATEAU.DynamicTile
                     }
                 }
             }
+        }
+        
+        /// <summary>
+        /// タイルが存在する範囲を取得します。
+        /// Extentが無効 (sizeが0) なタイルや除外タイルは無視します。
+        /// 有効なタイルが存在しない場合、sizeが(0,0,0)のBoundsを返します。
+        /// </summary>
+        /// <returns>タイルが存在する範囲のBounds</returns>
+        public Bounds GetTileBounds()
+        {
+            Bounds combinedBounds = new Bounds();
+            bool hasInit = false;
+
+            foreach (var tile in DynamicTiles)
+            {
+                if (tile == null) continue;
+                if (tile.IsExcludeTile) continue;
+
+                var extent = tile.Extent;
+                if (extent.size == Vector3.zero) continue;
+
+                if (!hasInit)
+                {
+                    combinedBounds = extent;
+                    hasInit = true;
+                }
+                else
+                {
+                    combinedBounds.Encapsulate(extent);
+                }
+            }
+
+            return combinedBounds;
         }
     }
 }

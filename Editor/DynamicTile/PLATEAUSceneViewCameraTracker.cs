@@ -1,10 +1,13 @@
 ﻿using PLATEAU.Util.Async;
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
 {
@@ -72,7 +75,7 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
+    public class PLATEAUEditorEventListener : AssetModificationProcessor
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
@@ -90,8 +93,8 @@ namespace PLATEAU.DynamicTile
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.update += OnEditorUpdate;
-
-            EditorApplication.projectChanged -= OnProjectChanged; // コード更新時
+            
+            EditorApplication.projectChanged -= OnProjectChanged;
             EditorApplication.projectChanged += OnProjectChanged;
 
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
@@ -125,9 +128,10 @@ namespace PLATEAU.DynamicTile
             Log("Unity Editor Started");
             EditorApplication.update -= OnEditorUpdate; // 一度だけ実行
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
-
+        
         static void OnProjectChanged()
         {
             if (disableProjectChangeEvent) 
@@ -135,9 +139,10 @@ namespace PLATEAU.DynamicTile
 
             Log("Project Changed");
 
+            if (BuildPipeline.isBuildingPlayer) return;
             InitView().ContinueWithErrorCatch();
         }
-
+        
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
             var tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>();
@@ -169,16 +174,37 @@ namespace PLATEAU.DynamicTile
             if (tileManager == null)
                 return;
 
+            if (BuildPipeline.isBuildingPlayer) return;
             Log($"Scene Opened: {scene.name}");
             InitView().ContinueWithErrorCatch();
         }
         
-        private static void BeforeScriptCompile(object _)
+        private static void BeforeScriptCompile(object _) 
         {
-            Log("BeforeScriptCompile");
+            Log("BeforeScriptCompile"); 
+            if (BuildPipeline.isBuildingPlayer) return;
             var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (tileManager == null) return;
             tileManager.ClearTileAssets();
+            ReinitializeAddressables();
+        }
+
+        private static void ReinitializeAddressables()
+        {
+            try
+            {
+                var handle = Addressables.InitializeAsync();
+                handle.WaitForCompletion();
+                if (handle.IsValid()) Addressables.Release(handle);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Addressables init failed: " + e);
+            }
+            
+            // Addressables.ClearResourceLocators();
+            // AssetBundle.UnloadAllAssetBundles(true); 
+            // Resources.UnloadUnusedAssets();
         }
 
         private static async Task InitView()

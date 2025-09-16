@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_bf24640b-e323-4d11-b8c1-95d4b05c9204">
+<gml:name>CyberportMarinaAndPBS_mainVessels</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CyberportMarinaAndPBS_mainVessels_1">
+<gml:description>一般貨物船（荷役）</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CyberportMarinaAndPBS_mainVessels_2">
+<gml:description>旅客船（その他）</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CyberportMarinaAndPBS_mainVessels_3">
+<gml:description>フェリー（荷役）</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="CyberportMarinaAndPBS_mainVessels_4">
+<gml:description>一般貨物船（その他）</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

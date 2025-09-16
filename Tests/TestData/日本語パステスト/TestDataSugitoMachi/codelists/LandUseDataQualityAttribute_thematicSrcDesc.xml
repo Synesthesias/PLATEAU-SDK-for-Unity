@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_db2ba841-d1c2-48c4-a98b-3a15212ff272">
+<gml:name>LandUseDataQualityAttribute_thematicSrcDesc</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_1">
+<gml:description>写真判読</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_2">
+<gml:description>現地調査</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_3">
+<gml:description>GISデータ演算</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_4">
+<gml:description>建築確認申請資料</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_5">
+<gml:description>地番図</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandUseDataQualityAttribute_thematicSrcDesc_6">
+<gml:description>14条地図</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

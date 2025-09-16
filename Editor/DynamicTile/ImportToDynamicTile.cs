@@ -1,6 +1,7 @@
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
+using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,9 +28,18 @@ namespace PLATEAU.Editor.DynamicTile
         
         /// <summary>
         /// インポートしながら動的タイルを生成します。
+        /// 成否を返します。
         /// </summary>
-        public async Task ExecAsync(CityImportConfig config, CancellationToken cancelToken)
+        public async Task<bool> ExecAsync(CityImportConfig config, CancellationToken cancelToken)
         {
+            
+            // 動的タイルのバリデーション
+            if (!config.ValidateForTile())
+            {
+                Debug.LogError($"validation failed.");
+                return false;
+            }
+            
             // アセットバンドルのビルド時はシーンの保存が求められますが、
             // 処理の途中で「保存しますか」と聞くよりも最初に聞いた方が良いので聞きます。
             if (SceneManager.GetActiveScene().isDirty)
@@ -43,30 +53,26 @@ namespace PLATEAU.Editor.DynamicTile
                 else
                 {
                     Debug.Log("シーンの保存が拒否されたため処理を中止します。");
-                    return;
+                    return false;
                 }
-            }
-            
-            // 動的タイルのバリデーション
-            if (!config.ValidateForTile())
-            {
-                Debug.LogError($"validation failed.");
-                return;
             }
 
             // 事前処理を実行
             progressDisplay?.SetProgress(TileProgressTitle, 0f, "動的タイル生成を開始中...");
-            dynamicTileExporter = new DynamicTileExporter(progressDisplay);
-            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing(config.DynamicTileImportConfig);
+            
+            var context = new DynamicTileProcessingContext(config.DynamicTileImportConfig);
+            dynamicTileExporter = new DynamicTileExporter(context, config, progressDisplay);
+            
+            bool preProcessSucceed = dynamicTileExporter.SetupPreProcessing();
             if (!preProcessSucceed)
             {
                 Debug.LogError("動的タイルの事前処理に失敗しました。");
-                return;
+                return false;
             }
             progressDisplay?.SetProgress(TileProgressTitle, 10f, "動的タイル生成を開始中...");
 
             // GMLを1つインポート完了したときの処理を登録します。
-            var postGmlImport = new List<IPostGmlImportProcessor>
+            var postGmlImport = new List<IPostTileImportProcessor>
             {
                 dynamicTileExporter // 動的タイル化します
             };
@@ -76,25 +82,25 @@ namespace PLATEAU.Editor.DynamicTile
             await task;
             
             // 事後処理
+            bool succeed = false;
             try
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                dynamicTileExporter.CompleteProcessing();
+                succeed = dynamicTileExporter.CompleteProcessing();
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");
-                return;
+                return false;
             }
             catch (System.Exception ex)
             {
-                //Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.Message}");
-                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex.StackTrace}");
-
-                return;
+                Debug.LogError($"動的タイルインポート処理中にエラーが発生しました: {ex}");
+                return false;
             }
             
             progressDisplay?.SetProgress(TileProgressTitle, 100f, "動的タイル生成完了");
+            return succeed;
         }
         
         /// <summary>

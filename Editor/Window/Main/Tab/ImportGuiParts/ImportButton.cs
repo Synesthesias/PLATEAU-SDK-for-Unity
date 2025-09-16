@@ -3,13 +3,14 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.ProgressDisplay;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
-using PLATEAU.Editor.Window.ProgressDisplay;
+using System.Threading.Tasks;
+using UnityEditor;
 
 namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 {
@@ -35,7 +36,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                if (System.Threading.Volatile.Read(ref numCurrentRunningTasks) <= 0)
+                if (Volatile.Read(ref numCurrentRunningTasks) <= 0)
                 {
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
@@ -56,7 +57,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                 // 動的タイル形式でのインポートを実行します。
                                 importToDynamicTile = new ImportToDynamicTile(progressDisplay);
                                 var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
-                                task.ContinueWith((_) => Interlocked.Decrement(ref numCurrentRunningTasks));
+                                task.ContinueWith(_ =>
+                                {
+                                    Interlocked.Decrement(ref numCurrentRunningTasks);
+                                    cancellationTokenSrc?.Dispose();
+                                    cancellationTokenSrc = null;
+                                    importToDynamicTile = null;
+                                });
+                                task.ContinueWith(t =>
+                                {
+                                    if (t.Result)
+                                    {
+                                        EditorApplication.delayCall += () => Dialogue.Display("動的タイルの保存が完了しました！", "OK");
+                                    }
+                                }, TaskContinuationOptions.OnlyOnRanToCompletion);
                                 task.ContinueWithErrorCatch();
                                 break;
                             default:
@@ -64,11 +78,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                         }
                     }
                 }
-                else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
+                else if (cancellationTokenSrc?.IsCancellationRequested == true)
                 {
-                    UnityEditor.EditorGUI.BeginDisabledGroup(true);
+                    EditorGUI.BeginDisabledGroup(true);
                     PlateauEditorStyle.CancelButton("キャンセル中…");
-                    UnityEditor.EditorGUI.EndDisabledGroup();
+                    EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
@@ -87,6 +101,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                             }
                             // 動的タイルインポートのクリーンアップ
                             importToDynamicTile?.CancelImport();
+                            importToDynamicTile = null;
                         }
                     }
                 }
@@ -113,16 +128,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                     Interlocked.Decrement(ref numCurrentRunningTasks);
                     if (cancelRequested)
                     {
-                        UnityEditor.EditorApplication.delayCall += () =>
-                            PLATEAU.Util.Dialogue.Display("インポートをキャンセルしました", "OK");
+                        EditorApplication.delayCall += () =>
+                            Dialogue.Display("インポートをキャンセルしました", "OK");
                     }
                     else
                     {
-                        UnityEditor.EditorApplication.delayCall += () =>
-                            PLATEAU.Util.Dialogue.Display("インポートが完了しました！", "OK");
+                        EditorApplication.delayCall += () =>
+                            Dialogue.Display("インポートが完了しました！", "OK");
                     }
                     
-                    UnityEditor.EditorApplication.delayCall += UnityEditor.SceneView.RepaintAll;
+                    EditorApplication.delayCall += SceneView.RepaintAll;
                     
                 }
                 finally

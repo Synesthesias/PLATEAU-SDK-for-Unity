@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_45578a18-f54f-4782-b73e-d44dc0098d9f">
+<gml:name>BridgeFunctionalAttribute_userType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeFunctionalAttribute_userType_1">
+<gml:description>歩行者専用</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeFunctionalAttribute_userType_2">
+<gml:description>自転車専用</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeFunctionalAttribute_userType_3">
+<gml:description>自転車歩行者専用</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

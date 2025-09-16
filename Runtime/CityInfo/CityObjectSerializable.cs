@@ -230,7 +230,7 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// シリアライズ可能なAttributeMapデータです。
         /// </summary>
-        [MessagePackObject]
+        [MessagePackObject(AllowPrivate = true)]
         [JsonConverter(typeof(CityObjectSerializable_CityObjectJsonConverter.CityObjectSerializable_AttributesJsonConverter))]
         public class Attributes
         {

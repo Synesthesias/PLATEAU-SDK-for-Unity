@@ -37,20 +37,20 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(address))
             {
                 DebugLog($"指定したアドレスが見つかりません: {address}");
-                return await Task.FromResult<LoadResult>(LoadResult.Failure);
+                return LoadResult.Failure;
             }
             // 既にロードされている場合はスキップ
             if (tile.LoadHandle.IsValid() || tile.LoadedObject != null)
             {
                 DebugLog($"Already loaded: {address}", false);
-                return await Task.FromResult<LoadResult>(LoadResult.AlreadyLoaded);
+                return LoadResult.AlreadyLoaded;
             }
 
             try
             {
                 if (tile.LoadHandle.IsValid() && !tile.LoadHandle.IsDone)
                 {
-                    tile.LoadHandleCancellationTokenSource.Cancel();
+                    tile.LoadHandleCancellationTokenSource?.Cancel();
                     try
                     {
                         await tile.LoadHandle.Task;
@@ -64,7 +64,7 @@ namespace PLATEAU.DynamicTile
                             DebugLog($"アセットのロード中にエラーが発生しました: {address} {ex.Message}");                    
                     }
 
-                    tile.LoadHandleCancellationTokenSource.Dispose();
+                    tile.LoadHandleCancellationTokenSource?.Dispose();
                     tile.LoadHandleCancellationTokenSource = null;
                 }
 
@@ -80,7 +80,20 @@ namespace PLATEAU.DynamicTile
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 // Addressablesからアセットを非同期でロード
-                tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
+                try
+                {
+                    tile.LoadHandle = Addressables.LoadAssetAsync<GameObject>(address);
+                }
+                catch (InvalidKeyException e)
+                {
+                    if (tile.LoadHandle.IsValid())
+                    {
+                        Addressables.Release(tile.LoadHandle);
+                    }
+                    Debug.LogException(e);
+                    tile.Reset();
+                    return LoadResult.Failure;
+                }
 
                 //Cancel処理
                 tile.LoadHandleCancellationTokenSource.Token.ThrowIfCancellationRequested();

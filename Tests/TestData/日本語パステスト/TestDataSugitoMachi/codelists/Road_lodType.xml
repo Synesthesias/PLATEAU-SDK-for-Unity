@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_da56b5bf-e6b6-4bde-b9f9-8d30901d1958">
+<gml:name>Road_lodType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_lodType_1">
+<gml:description>道路の横断方向の高さは一律とし、車道の高さとする。車道、車道交差部、分離帯及び歩道を区分する。</gml:description>
+<gml:name>3.0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_lodType_2">
+<gml:description>道路の横断方向の高さは一律とし、車道の高さとする。車道、車道交差部、分離帯及び歩道の区分に加え、車道を車線に区分する。</gml:description>
+<gml:name>3.1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_lodType_3">
+<gml:description>道路の横断方向に存在する15㎝以上の高さの差を取得する。車道、車道交差部、分離帯及び歩道の区分に加え、車道を車線に区分し、歩道上の植栽を区分する。</gml:description>
+<gml:name>3.2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_lodType_4">
+<gml:description>道路の横断方向に存在する2㎝以上の高さの差を取得する。車道、車道交差部、分離帯及び歩道の区分に加え、車道を車線に区分し、歩道上の植栽を区分する。</gml:description>
+<gml:name>3.3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Road_lodType_5">
+<gml:description>道路の横断方向に存在する2㎝以上の高さの差を取得する。車道、車道交差部、分離帯及び歩道の区分に加え、車道、分離帯、歩道を以下の区分に細分する。車道は、車線、すりつけ区間、踏切道、軌道敷、待避所、副道、自動車駐車場、非常駐車帯、中央帯、側帯、路肩、停車帯、乗合自動車停車所に区分する。分離帯は、交通島、分離帯、植樹帯、路面電車停車所に区分する。歩道は、歩道、自転車歩行者道、自転車道、植樹ますに区分する。</gml:description>
+<gml:name>3.4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

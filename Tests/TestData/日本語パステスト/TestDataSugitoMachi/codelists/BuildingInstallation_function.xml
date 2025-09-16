@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_4e402028-dc2c-497e-a5cd-8233b416eb3e">
+<gml:name>BuildingInstallation_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_1">
+<gml:description>バルコニー</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_2">
+<gml:description>ポーチ</gml:description>
+<gml:name>1001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_3">
+<gml:description>テラス</gml:description>
+<gml:name>1002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_4">
+<gml:description>エントランスホール</gml:description>
+<gml:name>1003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_5">
+<gml:description>温室</gml:description>
+<gml:name>1010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_6">
+<gml:description>カーポート</gml:description>
+<gml:name>1011</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_7">
+<gml:description>物置</gml:description>
+<gml:name>1012</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_8">
+<gml:description>アーケード</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_9">
+<gml:description>回廊</gml:description>
+<gml:name>1021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_10">
+<gml:description>煙突（建築物の一部としての）</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_11">
+<gml:description>ダクト</gml:description>
+<gml:name>1031</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_12">
+<gml:description>換気口</gml:description>
+<gml:name>1032</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_13">
+<gml:description>アンテナ</gml:description>
+<gml:name>1033</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_14">
+<gml:description>塔（建築物の一部としての）</gml:description>
+<gml:name>1040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_15">
+<gml:description>塔屋</gml:description>
+<gml:name>1041</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_16">
+<gml:description>柱・円柱</gml:description>
+<gml:name>1050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_17">
+<gml:description>看板</gml:description>
+<gml:name>1051</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_18">
+<gml:description>屋根飾り</gml:description>
+<gml:name>1052</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_19">
+<gml:description>ドーマー</gml:description>
+<gml:name>1053</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_20">
+<gml:description>出窓</gml:description>
+<gml:name>1054</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_21">
+<gml:description>パネル</gml:description>
+<gml:name>1055</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_22">
+<gml:description>階段</gml:description>
+<gml:name>1060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_23">
+<gml:description>手すり</gml:description>
+<gml:name>1061</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_24">
+<gml:description>外階段・歩道の庇</gml:description>
+<gml:name>1062</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_25">
+<gml:description>スロープ</gml:description>
+<gml:name>1063</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_26">
+<gml:description>エスカレータ</gml:description>
+<gml:name>1064</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_27">
+<gml:description>エレベータ</gml:description>
+<gml:name>1065</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_28">
+<gml:description>動く歩道</gml:description>
+<gml:name>1066</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingInstallation_function_29">
+<gml:description>その他</gml:description>
+<gml:name>1070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

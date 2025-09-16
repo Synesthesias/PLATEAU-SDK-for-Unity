@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
-using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -72,19 +70,19 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         if (PlateauEditorStyle.MainButton(isFilterTaskRunning ? "フィルタリング中..." : "フィルタリング実行"))
                         {
                             isFilterTaskRunning = true;
-                            this.adjustTarget.FilterByCityObjectTypeAsync(this.filterConditionGUI.SelectionDict)
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
-                                }, TaskScheduler.FromCurrentSynchronizationContext())
-                                .ContinueWithErrorCatch()
-                                .ContinueWith(_ =>
-                                {
-                                    if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
-                                    SceneView.RepaintAll();
-                                    isFilterTaskRunning = false;
-                                }, TaskScheduler.FromCurrentSynchronizationContext()).ContinueWithErrorCatch();
+                            try
+                            {
+                                using var progress = new PLATEAU.Util.ProgressBar();
+                                progress.Display("実行中...", 0.4f);
+                                this.adjustTarget.FilterByCityObjectType(this.filterConditionGUI.SelectionDict);
+                                this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
+                                if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
+                                SceneView.RepaintAll();
+                            }
+                            finally
+                            {
+                                isFilterTaskRunning = false;
+                            }
                         }
                     }
 

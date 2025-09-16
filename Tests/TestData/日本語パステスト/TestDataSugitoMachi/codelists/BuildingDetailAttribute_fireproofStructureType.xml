@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_bd8e1c6d-a464-449f-a32d-f10bf7e8cc7b">
+<gml:name>BuildingDetailAttribute_fireproofStructureType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_fireproofStructureType_1">
+<gml:description>耐火</gml:description>
+<gml:name>1001</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_fireproofStructureType_2">
+<gml:description>準耐火造</gml:description>
+<gml:name>1002</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_fireproofStructureType_3">
+<gml:description>その他</gml:description>
+<gml:name>1003</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingDetailAttribute_fireproofStructureType_4">
+<gml:description>不明</gml:description>
+<gml:name>1011</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

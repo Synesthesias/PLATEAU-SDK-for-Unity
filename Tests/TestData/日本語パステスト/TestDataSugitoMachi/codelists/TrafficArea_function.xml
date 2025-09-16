@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_b1efa3cf-1ee5-4025-a76b-c011f457f68a">
+<gml:name>TrafficArea_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_1">
+<gml:description>車道部</gml:description>
+<gml:name>1000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_2">
+<gml:description>車線</gml:description>
+<gml:name>1010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_3">
+<gml:description>車道交差部</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_4">
+<gml:description>すりつけ区間</gml:description>
+<gml:name>1030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_5">
+<gml:description>踏切道</gml:description>
+<gml:name>1040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_6">
+<gml:description>軌道敷</gml:description>
+<gml:name>1050</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_7">
+<gml:description>待避所</gml:description>
+<gml:name>1070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_8">
+<gml:description>副道</gml:description>
+<gml:name>1130</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_9">
+<gml:description>歩道部</gml:description>
+<gml:name>2000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_10">
+<gml:description>自転車歩行者道</gml:description>
+<gml:name>2010</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_11">
+<gml:description>歩道</gml:description>
+<gml:name>2020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_12">
+<gml:description>自転車道</gml:description>
+<gml:name>2030</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_13">
+<gml:description>自転車駐車場</gml:description>
+<gml:name>6000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_14">
+<gml:description>自動車駐車場</gml:description>
+<gml:name>7000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_15">
+<gml:description>軌道中心線</gml:description>
+<gml:name>8000</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_16">
+<gml:description>軌道</gml:description>
+<gml:name>8100</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_17">
+<gml:description>軌きょう</gml:description>
+<gml:name>8110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_18">
+<gml:description>軌間</gml:description>
+<gml:name>8111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_19">
+<gml:description>レール</gml:description>
+<gml:name>8112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TrafficArea_function_20">
+<gml:description>道床</gml:description>
+<gml:name>8120</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

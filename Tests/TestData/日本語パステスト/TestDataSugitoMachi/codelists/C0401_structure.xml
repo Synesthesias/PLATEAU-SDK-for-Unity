@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_c3dcad66-4982-4946-83c6-acbacba5191f">
+<gml:name>C0401_structure</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_1">
+<gml:description>木造・土蔵造</gml:description>
+<gml:name>601</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_2">
+<gml:description>鉄骨鉄筋コンクリート造</gml:description>
+<gml:name>602</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_3">
+<gml:description>鉄筋コンクリート造</gml:description>
+<gml:name>603</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_4">
+<gml:description>鉄骨造</gml:description>
+<gml:name>604</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_5">
+<gml:description>軽量鉄骨造</gml:description>
+<gml:name>605</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_6">
+<gml:description>レンガ造・コンクリートブロック造・石造</gml:description>
+<gml:name>606</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_7">
+<gml:description>非木造</gml:description>
+<gml:name>610</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0401_structure_8">
+<gml:description>不明</gml:description>
+<gml:name>611</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

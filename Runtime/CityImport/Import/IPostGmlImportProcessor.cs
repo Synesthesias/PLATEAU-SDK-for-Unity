@@ -1,7 +1,5 @@
 using PLATEAU.Dataset;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace PLATEAU.CityImport.Import
@@ -14,7 +12,7 @@ namespace PLATEAU.CityImport.Import
         void OnGmlImported(GmlImportResult result);
     }
 
-    public interface IPostTileImportProcessor : IPostGmlImportProcessor
+    public interface IPostTileImportProcessor
     {
         void OnTileImported(TileImportResult result);
     }

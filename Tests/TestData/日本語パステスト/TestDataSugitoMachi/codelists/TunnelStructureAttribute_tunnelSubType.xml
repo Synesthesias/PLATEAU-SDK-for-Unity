@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_964757b4-4d75-489c-91ac-e14bff2d2b30">
+<gml:name>TunnelStructureAttribute_tunnelSubType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_1">
+<gml:description>ボックスカルバート</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_2">
+<gml:description>門型カルバート</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_3">
+<gml:description>アーチカルバート</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_4">
+<gml:description>コンクリートパイプカルバート</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_5">
+<gml:description>コルゲートメタルカルバート</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_6">
+<gml:description>硬質塩化ビニルパイプカルバート</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_7">
+<gml:description>ロックシェッド</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelSubType_8">
+<gml:description>スノーシェッド</gml:description>
+<gml:name>08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

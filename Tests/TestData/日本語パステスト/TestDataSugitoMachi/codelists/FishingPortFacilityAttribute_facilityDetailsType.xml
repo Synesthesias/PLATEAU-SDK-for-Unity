@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_64d0208e-aaf4-498d-9abe-7468e304e19d">
+<gml:name>FishingPortFacilityAttribute_facilityDetailsType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_1">
+<gml:description>係船浮標</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_2">
+<gml:description>護岸</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_3">
+<gml:description>公害防止のための導水施設</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_4">
+<gml:description>広場</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_5">
+<gml:description>航路</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_6">
+<gml:description>航路標識並びに漁船の入出港のための信号施設</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_7">
+<gml:description>桟橋</gml:description>
+<gml:name>7</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_8">
+<gml:description>照明施設</gml:description>
+<gml:name>8</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_9">
+<gml:description>植栽</gml:description>
+<gml:name>9</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_10">
+<gml:description>水産種苗生産施設</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_11">
+<gml:description>水産倉庫</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_12">
+<gml:description>水門</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_13">
+<gml:description>製氷施設</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_14">
+<gml:description>船舶保管施設</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_15">
+<gml:description>船揚場</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_16">
+<gml:description>畜養施設</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_17">
+<gml:description>駐車場</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_18">
+<gml:description>堤防</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_19">
+<gml:description>鉄道</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_20">
+<gml:description>導流提</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_21">
+<gml:description>道路</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_22">
+<gml:description>突堤</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_23">
+<gml:description>泊地</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_24">
+<gml:description>浮桟橋</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_25">
+<gml:description>物揚場</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_26">
+<gml:description>防砂提</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_27">
+<gml:description>防潮堤</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_28">
+<gml:description>防波堤</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_29">
+<gml:description>野積場</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_30">
+<gml:description>養殖用餌料保管調製施設</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_31">
+<gml:description>養殖用作業施設</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_32">
+<gml:description>陸上無線電信</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_33">
+<gml:description>陸上無線電話</gml:description>
+<gml:name>33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_34">
+<gml:description>冷蔵施設</gml:description>
+<gml:name>34</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_35">
+<gml:description>冷凍施設</gml:description>
+<gml:name>35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="FishingPortFacilityAttribute_facilityDetailsType_36">
+<gml:description>閘門</gml:description>
+<gml:name>36</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

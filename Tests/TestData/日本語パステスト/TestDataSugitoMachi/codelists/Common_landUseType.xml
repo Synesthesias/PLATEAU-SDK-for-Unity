@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_ce3daa2c-e69f-41db-aff4-1d371f9482b1">
+<gml:name>Common_landUseType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_1">
+<gml:description>田（水田）</gml:description>
+<gml:name>201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_2">
+<gml:description>畑（畑、樹園地、採草地、養鶏（牛・豚）場）</gml:description>
+<gml:name>202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_3">
+<gml:description>山林（樹林地）</gml:description>
+<gml:name>203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_4">
+<gml:description>水面（河川水面、湖沼、ため池、用水路、濠、運河水面）</gml:description>
+<gml:name>204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_5">
+<gml:description>その他自然地（原野・牧野、荒れ地（耕作放棄地等自然的状況のもの）、低湿地、河川敷・河原、海浜、湖岸）</gml:description>
+<gml:name>205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_6">
+<gml:description>住宅用地（住宅、共同住宅、店舗等併用住宅、店舗等併用共同住宅、作業所併用住宅）</gml:description>
+<gml:name>211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_7">
+<gml:description>商業用地（業務施設、商業施設、宿泊施設、商業系複合施設）</gml:description>
+<gml:name>212</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_8">
+<gml:description>工業用地（工場）</gml:description>
+<gml:name>213</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_9">
+<gml:description>農林漁業施設用地（農林漁業用施設）</gml:description>
+<gml:name>219</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_10">
+<gml:description>公益施設用地（官公庁施設、文教厚生施設、供給処理施設）</gml:description>
+<gml:name>214</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_11">
+<gml:description>道路用地（道路、駅前広場、私有地内に存在する沿道用途の「私道」または、私有地の一部分であるものの公共の通行に供されている土地の部分）</gml:description>
+<gml:name>215</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_12">
+<gml:description>交通施設用地（運輸倉庫施設）</gml:description>
+<gml:name>216</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_13">
+<gml:description>公共空地（公園・緑地、広場、運動場、墓園）</gml:description>
+<gml:name>217</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_14">
+<gml:description>その他公的施設用地（防衛施設用地）</gml:description>
+<gml:name>218</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_15">
+<gml:description>その他①（ゴルフ場）</gml:description>
+<gml:name>220</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_16">
+<gml:description>その他②（太陽光発電のシステムを直接整備している土地）</gml:description>
+<gml:name>221</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_17">
+<gml:description>その他③（平面駐車場）</gml:description>
+<gml:name>222</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_18">
+<gml:description>その他④（その他①～③以外の用途に供されている都市的土地利用（建物跡地、資材置場、改変工事中の土地）、法面（道路、造成地等の主利用に含まれない法面））</gml:description>
+<gml:name>223</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_19">
+<gml:description>低未利用土地（用途に供されていない空地、空家・空き店舗・空施設の存する土地等）</gml:description>
+<gml:name>224</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_20">
+<gml:description>不明</gml:description>
+<gml:name>231</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_21">
+<gml:description>可住地</gml:description>
+<gml:name>251</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_22">
+<gml:description>非可住地</gml:description>
+<gml:name>252</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_23">
+<gml:description>農地（田、畑の区分がない）</gml:description>
+<gml:name>260</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_24">
+<gml:description>宅地（住宅用地、商業用地等の区分が無い）</gml:description>
+<gml:name>261</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_25">
+<gml:description>道路・鉄軌道敷（道路と交通施設用地が混在）</gml:description>
+<gml:name>262</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Common_landUseType_26">
+<gml:description>空地（その他①～④の区分が無い）</gml:description>
+<gml:name>263</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

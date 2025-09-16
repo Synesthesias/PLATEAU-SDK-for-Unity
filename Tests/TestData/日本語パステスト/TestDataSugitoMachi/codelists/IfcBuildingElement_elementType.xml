@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_ef59db10-a930-4f01-8971-c9cd25734ee0">
+<gml:name>IfcBuildingElement_elementType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_1">
+<gml:description>IfcBeam</gml:description>
+<gml:name>BE_01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_2">
+<gml:description>IfcColumn</gml:description>
+<gml:name>BE_02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_3">
+<gml:description>IfcCurtainWall</gml:description>
+<gml:name>BE_03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_4">
+<gml:description>IfcDoor</gml:description>
+<gml:name>BE_04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_5">
+<gml:description>IfcPlate</gml:description>
+<gml:name>BE_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_6">
+<gml:description>IfcRailing</gml:description>
+<gml:name>BE_06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_7">
+<gml:description>IfcRamp</gml:description>
+<gml:name>BE_07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_8">
+<gml:description>IfcRampFlight</gml:description>
+<gml:name>BE_08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_9">
+<gml:description>IfcRoof</gml:description>
+<gml:name>BE_09</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_10">
+<gml:description>IfcSlab</gml:description>
+<gml:name>BE_10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_11">
+<gml:description>IfcStair</gml:description>
+<gml:name>BE_11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_12">
+<gml:description>IfcStairFlight</gml:description>
+<gml:name>BE_12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_13">
+<gml:description>IfcWall</gml:description>
+<gml:name>BE_13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_14">
+<gml:description>IfcWallStandardCase</gml:description>
+<gml:name>BE_14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_15">
+<gml:description>IfcWindow</gml:description>
+<gml:name>BE_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_16">
+<gml:description>IfcBuildingElementProxy</gml:description>
+<gml:name>BE_16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_elementType_17">
+<gml:description>IfcTransportElement</gml:description>
+<gml:name>BE_17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -3,6 +3,8 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.Util;
 using System;
 using System.IO;
+using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -16,52 +18,57 @@ namespace PLATEAU.DynamicTile
         /// プレハブ一時保存パス
         /// </summary>
         public const string PrefabsTempSavePath = "Assets/PLATEAUPrefabs";
-        
+
         /// <summary>
         /// Addressableグループのベース名
         /// </summary>
         public const string AddressableGroupBaseName = "PLATEAUCityObjectGroup";
-        
+
         /// <summary>
         /// Addressableグループ名
         /// </summary>
-        public string AddressableGroupName { get; set; }
-        
+        public string AddressableGroupName { get; }
+
         /// <summary>
         /// メタデータストア
         /// </summary>
         public PLATEAUDynamicTileMetaStore MetaStore { get; set; }
-        
+
         /// <summary>
         /// アセット変換設定
         /// </summary>
-        public ConvertToAssetConfig AssetConfig { get; set; }
-        
+        public ConvertToAssetConfig AssetConfig { get; }
+
         /// <summary>
         /// DynamicTileインポート設定
         /// </summary>
         public DynamicTileImportConfig Config { get; set; }
-        
+
         /// <summary>
         /// ビルドフォルダパス（リモートビルド用）
         /// </summary>
         public string BuildFolderPath { get; set; }
-        
+
         /// <summary>
         /// Assets外のパスかどうか
         /// </summary>
-        public bool IsExcludeAssetFolder { get; set; }
-        
+        public bool IsExcludeAssetFolder { get; }
+
         /// <summary>
         /// GML数
         /// </summary>
         public int GmlCount { get; set; }
         
         /// <summary>
+        /// 前と同じフォルダかどうか。trueなら上書きではなく追加とすべきです。
+        /// </summary>
+        public bool IsSameOutputPathAsPrevious { get;}
+
+        /// <summary>
         /// 読み込み完了したGML数
         /// </summary>
         private int loadedGmlCount;
-        
+
         /// <summary>
         /// 読み込み完了したGML数をインクリメントして返す
         /// </summary>
@@ -69,29 +76,45 @@ namespace PLATEAU.DynamicTile
         {
             return System.Threading.Interlocked.Increment(ref loadedGmlCount);
         }
-        
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="config">DynamicTileインポート設定</param>
         public DynamicTileProcessingContext(DynamicTileImportConfig config)
         {
-            Config = config ?? throw new ArgumentNullException(nameof(config));
+            if (string.IsNullOrEmpty(config.OutputPath))
+            {
+                Debug.LogError("output path is not set.");
+            }
             
+            Config = config;
+
             AssetConfig = ConvertToAssetConfig.DefaultValue;
             IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
 
             // Assetsフォルダー外のパスを指定している場合は、プレハブ一時保存パスを使用
             AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : config.OutputPath;
             BuildFolderPath = config.OutputPath;
-            
+
             // AddressableGroupNameを生成
             AddressableGroupName = GenerateAddressableGroupName();
-            
+
             // MetaStoreを生成
             MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
+
+            IsSameOutputPathAsPrevious = EditorPrefs.GetString(EditorPrefsKey) == BuildFolderPath;
+            EditorPrefs.SetString(EditorPrefsKey, BuildFolderPath);
         }
-        
+
+        private string EditorPrefsKey
+        {
+            get
+            {
+                return $"PLATEAU_LastBuildFolder";
+            }
+        }
+
         /// <summary>
         /// Addressableグループ名を生成します
         /// </summary>
@@ -105,7 +128,7 @@ namespace PLATEAU.DynamicTile
             groupName += "_" + sanitizedDirectoryName;
             return groupName;
         }
-        
+
         /// <summary>
         /// パスがAssetsフォルダー内かどうかを判定します
         /// </summary>
@@ -126,16 +149,35 @@ namespace PLATEAU.DynamicTile
                 return false;
             }
         }
-        
+
         /// <summary>
         /// コンテキストが有効かどうかを判定
         /// </summary>
         public bool IsValid()
         {
-            return !string.IsNullOrEmpty(AddressableGroupName) && 
-                   AssetConfig != null && 
+            return !string.IsNullOrEmpty(AddressableGroupName) &&
+                   AssetConfig != null &&
                    !string.IsNullOrEmpty(AssetConfig.AssetPath);
         }
-        
+
+        public string AddressName
+        {
+            get
+            {
+                string shorterGroupName = AddressableGroupName.Replace(AddressableGroupBaseName + "_", "");
+                string addressName = $"{DynamicTileExporter.AddressableAddressBase}_{shorterGroupName}";
+                return addressName;
+            }
+        }
+
+        public string DataPath
+        {
+            get
+            {
+                string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(AssetConfig.AssetPath);
+                string dataPath = Path.Combine(normalizedAssetPath, AddressName + ".asset").Replace('\\', '/');
+                return dataPath;
+            }
+        }
     }
 }

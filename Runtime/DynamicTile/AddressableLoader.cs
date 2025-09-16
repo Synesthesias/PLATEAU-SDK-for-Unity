@@ -1,11 +1,13 @@
 using PLATEAU.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace PLATEAU.DynamicTile
 {
@@ -50,8 +52,20 @@ namespace PLATEAU.DynamicTile
         /// 初期化処理
         /// </summary>
         /// <returns></returns>
-        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath, string metaStoreAddress)
+        public async Task<PLATEAUDynamicTileMetaStore> InitializeAsync(string catalogPath)
         {
+            // ランタイム（プレイヤー）では、Assets/StreamingAssets を実ディレクトリにマッピング
+            if (!Application.isEditor && !string.IsNullOrEmpty(catalogPath))
+            {
+                var normalizedPath = catalogPath.Replace('\\', '/');
+                const string assetsStreamingPrefix = "Assets/StreamingAssets/";
+                if (normalizedPath.StartsWith(assetsStreamingPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    var subPath = normalizedPath.Substring(assetsStreamingPrefix.Length);
+                    var mapped = Path.Combine(Application.streamingAssetsPath, subPath).Replace('\\', '/');
+                    catalogPath = mapped;
+                }
+            }
             var init = Addressables.InitializeAsync(false);
             await WaitForCompletionAsync(init);
             if (init.Status != AsyncOperationStatus.Succeeded)
@@ -90,20 +104,27 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError("folder not found: " + folderStreaming);
                 }
 
-                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
+                var catalogFiles = TileCatalogSearcher.FindCatalogFiles(folderStreaming, true);
 
                 if (catalogFiles.Length == 0)
                 {
                     Debug.LogError("catalog file is not found.");
                 }
 
-                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+                catalogPathToUse = catalogFiles.FirstOrDefault();
+                if (catalogPathToUse == null)
+                {
+                    Debug.LogError("failed to find catalog.");
+                    return null;
+                }
+                catalogPathToUse = Path.GetFullPath(catalogPathToUse);
             }
 
             await LoadCatalog(catalogPathToUse);
-            if (metaStoreAddress.IsNullOrEmpty())
+            // MetaStoreアドレスを自動解決（同一カタログディレクトリ配下のものを優先）
+            var metaStoreAddress = await ResolveMetaStoreAddressAsync(catalogPathToUse);
+            if (string.IsNullOrEmpty(metaStoreAddress))
             {
-                Debug.LogError("MetaStoreのアドレスがありません。");
                 return null;
             }
 
@@ -118,12 +139,111 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// file://プロトコルを除去します
+        /// Addressables から PLATEAUDynamicTileMetaStore の Address を自動解決します。
+        /// 同一カタログディレクトリ配下のロケーションを優先して選択します。
         /// </summary>
-        private string RemoveFileProtocol(string path)
+        private async Task<string> ResolveMetaStoreAddressAsync(string catalogPath)
         {
-            if (string.IsNullOrEmpty(path)) return path;
-            return path.StartsWith("file://") ? path.Substring("file://".Length) : path;
+            var locationsHandle = Addressables.LoadResourceLocationsAsync(
+                DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
+            try
+            {
+                await WaitForCompletionAsync(locationsHandle);
+                var allLocations = locationsHandle.Result;
+
+                // カタログのディレクトリを正規化
+                var catalogDir = Path.GetDirectoryName(catalogPath);
+                if (string.IsNullOrEmpty(catalogDir))
+                {
+                    Debug.LogError("カタログディレクトリの取得に失敗しました。");
+                    return null;
+                }
+                var catalogDirFull = Path.GetFullPath(catalogDir).Replace('\\', '/');
+                var catalogDirName = new DirectoryInfo(catalogDirFull).Name;
+
+                bool isInAssets = PathUtil.IsSubDirectoryOfAssets(catalogPath);
+                if (isInAssets)
+                {
+                    var sanitizedDir = System.Text.RegularExpressions.Regex.Replace(catalogDirName, @"[^\w\-_]", "_");
+                    sanitizedDir = sanitizedDir.Replace("PLATEAUCityObjectGroup_", "");
+                    var expectedAddress = $"PLATEAUTileMeta_{sanitizedDir}";
+                    return expectedAddress;
+                }
+                
+                
+                
+                // ディレクトリ名でマッチ（アプリビルド後にフルパスは変わるが、親ディレクトリ名は変わらない）
+                var candidates = allLocations
+                    .Where(loc =>
+                        loc != null && !string.IsNullOrEmpty(loc.PrimaryKey) &&
+                        InternalIdContainsDirectoryName(loc, catalogDirName)
+                    )
+                    .ToList();
+
+                if (candidates.Count == 0)
+                {
+                    Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressables のビルド/ラベル設定/カタログ指定を確認してください。");
+                    return null;
+                }
+
+                if (candidates.Count > 1)
+                {
+                    Debug.LogWarning($"複数の PLATEAUDynamicTileMetaStore が見つかりました（同一カタログ配下を優先）。先頭の1つを使用します。 count={candidates.Count}");
+                }
+
+                return candidates[0].PrimaryKey;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"MetaStore アドレスの自動解決に失敗しました: {ex}");
+                return null;
+            }
+            finally
+            {
+                if (locationsHandle.IsValid())
+                {
+                    Addressables.Release(locationsHandle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// IResourceLocation が内部ID文字列上で指定ディレクトリ名を含むか（依存を辿りながら）を判定します。
+        /// アプリビルドでフルパスは変わるが、親ディレクトリ名は変わらないため。
+        /// </summary>
+        private bool InternalIdContainsDirectoryName(IResourceLocation rootLocation, string dirName)
+        {
+            if (string.IsNullOrEmpty(dirName)) return false;
+            var queue = new Queue<IResourceLocation>();
+            var visited = new HashSet<IResourceLocation>();
+            queue.Enqueue(rootLocation);
+            while (queue.Count > 0)
+            {
+                var loc = queue.Dequeue();
+                if (loc == null || visited.Contains(loc)) continue;
+                visited.Add(loc);
+
+                var internalId = loc.InternalId;
+                if (!string.IsNullOrEmpty(internalId))
+                {
+                    var normalized = Path.GetFileName(internalId.Replace('\\', '/'));
+                    normalized = normalized.Replace("PLATEAUTileMeta_", "");
+                    if (normalized.Contains(dirName))
+                    {
+                        return true;
+                    }
+                }
+
+                var deps = loc.Dependencies;
+                if (deps != null)
+                {
+                    foreach (var d in deps)
+                    {
+                        if (d != null && !visited.Contains(d)) queue.Enqueue(d);
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -133,19 +253,14 @@ namespace PLATEAU.DynamicTile
         private async Task LoadCatalog(string catalogPath)
         {
 
-            // パスを正規化（バックスラッシュをスラッシュに変換）
+            // パスを正規化
+            catalogPath = Path.GetFullPath(catalogPath);
             catalogPath = catalogPath.Replace('\\', '/');
+            
 
-            // file://プロトコルを追加
-            if (!catalogPath.StartsWith("file://"))
+            if (string.IsNullOrEmpty(catalogPath) || !File.Exists(catalogPath))
             {
-                catalogPath = "file://" + catalogPath;
-            }
-
-            var removedProtocolPath = RemoveFileProtocol(catalogPath);
-            if (string.IsNullOrEmpty(removedProtocolPath) || !File.Exists(removedProtocolPath))
-            {
-                Debug.LogError($"カタログファイルが見つかりません: {removedProtocolPath}");
+                Debug.LogError($"カタログファイルが見つかりません: {catalogPath}");
                 return;
             }
             
@@ -161,6 +276,7 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogError($"カタログファイルのロードに失敗しました: {catalogPath}");
             }
+
             Addressables.Release(catalogHandle);
         }
 

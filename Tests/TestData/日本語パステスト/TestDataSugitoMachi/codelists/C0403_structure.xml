@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_a4ea9cd7-e226-461d-8378-3c3deb60c9ca">
+<gml:name>C0403_structure</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_1">
+<gml:description>主世帯数</gml:description>
+<gml:name>04019</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_2">
+<gml:description>一戸建</gml:description>
+<gml:name>04020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_3">
+<gml:description>長屋建</gml:description>
+<gml:name>04021</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_4">
+<gml:description>共同住宅（1～2階建）</gml:description>
+<gml:name>04022</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_5">
+<gml:description>共同住宅（3～5階建）</gml:description>
+<gml:name>04023</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_6">
+<gml:description>共同住宅（6～10階建）</gml:description>
+<gml:name>04024</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_7">
+<gml:description>共同住宅（11階建以上）</gml:description>
+<gml:name>04025</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="C0403_structure_8">
+<gml:description>その他</gml:description>
+<gml:name>04026</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

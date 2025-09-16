@@ -29,5 +29,10 @@ namespace PLATEAU.CityImport.Config
         /// https://www.gsi.go.jp/sokuchikijun/jpc.html
         /// </summary>
         public int CoordinateZoneID { get; set; } = 9;
+
+        /// <summary>
+        /// 動的タイルの設定。範囲選択前に保持し、範囲選択完了後も引き継ぐためここで管理します。
+        /// </summary>
+        public DynamicTileImportConfig DynamicTileImportConfig { get; set; } = new DynamicTileImportConfig();
     }
 }

@@ -73,19 +73,6 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// Tileを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
-        {
-            if (tileLoader != null)
-            {
-                return await tileLoader.Load(tile, timeoutSeconds);
-            }
-
-            return LoadResult.Failure;
-        }
-
-        /// <summary>
         /// Tileを指定してAddressablesからロードする (リトライ機能付き)
         /// </summary>
         /// <param name="tile"></param>
