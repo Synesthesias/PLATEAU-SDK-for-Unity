@@ -7,6 +7,10 @@ using UnityEditor;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
+    /// <summary>
+    /// 動的タイルにおいて、タイルの生成元となったプレハブを取得します。
+    /// プレハブがAssets内にあることが前提であり、Assets外に出力したケースは当てはまりません。
+    /// </summary>
     internal class TilePrefabGetter
     {
 

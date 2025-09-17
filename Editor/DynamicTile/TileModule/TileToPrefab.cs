@@ -33,10 +33,16 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             var tileParent = model.transform;
             AssetPathUtil.CreateDirectoryIfNotExist(prefabDirPath);
 
+            var tilePrefabGetter = new TilePrefabGetter();
+
             // タイルごとにプレハブ化します。
-            foreach (Transform tile in tileParent)
+            foreach (Transform tileTrans in tileParent)
             {
-                var tileObj = tile.gameObject;
+                var tile = tileTrans.GetComponent<PLATEAUDynamicTile>();
+                if (tile == null) continue;
+                var basePrefab = tilePrefabGetter.GetTilePrefabFromTile(tile);
+                
+                var tileObj = tileTrans.gameObject;
                 var prevFlag = tileObj.hideFlags;
                 tileObj.hideFlags = HideFlags.None; // 保存のために一時的にHideFlagsをオフに
                 try

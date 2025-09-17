@@ -27,9 +27,13 @@ namespace PLATEAU.DynamicTile
         private int zoomLevel;
         public int ZoomLevel => zoomLevel;
 
-        public PLATEAUDynamicTileMetaInfo(string addressName, Bounds extent, int lod, int zoomLevel)
+        [SerializeField] private string groupName;
+        public string GroupName => groupName;
+
+        public PLATEAUDynamicTileMetaInfo(string addressName, string groupName, Bounds extent, int lod, int zoomLevel)
         {
             this.addressName = addressName;
+            this.groupName = groupName;
             this.extent = extent;
             this.lod = lod;
             this.zoomLevel = zoomLevel;
@@ -58,10 +62,7 @@ namespace PLATEAU.DynamicTile
         /// meta情報を追加します。
         /// TODO : lodは使用しないので、将来的に削除する可能性があります。
         /// </summary>
-        /// <param name="addressName"></param>
-        /// <param name="extent"></param>
-        /// <param name="lod"></param>
-        public void AddMetaInfo(string addressName, Bounds extent, int lod, int zoomLevel)
+        public void AddMetaInfo(string addressName, string groupName, Bounds extent, int lod, int zoomLevel)
         {
             if (string.IsNullOrEmpty(addressName))
             {
@@ -75,7 +76,7 @@ namespace PLATEAU.DynamicTile
                 return;
             }
 
-            tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(addressName, extent, lod, zoomLevel));
+            tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(addressName, groupName, extent, lod, zoomLevel));
         }
         
         /// <summary>
@@ -122,6 +123,7 @@ namespace PLATEAU.DynamicTile
                         if (info == null) continue;
                         tileMetaInfos.Add(new PLATEAUDynamicTileMetaInfo(
                             info.AddressName,
+                            info.GroupName,
                             info.Extent,
                             info.LOD,
                             info.ZoomLevel));

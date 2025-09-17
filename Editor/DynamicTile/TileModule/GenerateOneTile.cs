@@ -254,7 +254,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
 
             // メタ情報を登録
-            metaStore.AddMetaInfo(address, bounds, 0, zoomLevel);
+            metaStore.AddMetaInfo(address, groupName, bounds, 0, zoomLevel);
 
         }
         
