@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             foreach (var info in context.MetaStore.TileMetaInfos)
             {
                 if (info == null) continue;
-                existingMeta.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+                existingMeta.AddMetaInfo(info.AddressName, info.GroupName, info.Extent, info.LOD, info.ZoomLevel);
             }
                 
             EditorUtility.SetDirty(existingMeta);
@@ -72,40 +72,12 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // 追加前のアセットバンドルをAddressable Groupに登録
             try
             {
-                var addresses = GetDistinctAddressesFromMeta(existingMeta);
 
-                if (addresses == null) return;
-
-                var groupName = context.AddressableGroupName;
-                var tempRoot = Path.Combine("Assets", AddressableLoader.AddressableLocalBuildFolderName, groupName)
-                    .Replace('\\', '/');
-                if (!Directory.Exists(tempRoot)) Directory.CreateDirectory(tempRoot);
-
-                foreach (var address in addresses)
+                var prefabs = new TilePrefabGetter().GetTilePrefabsFromMeta(existingMeta, context.AddressableGroupName);
+                foreach(var prefab in prefabs)
                 {
-                    if (string.IsNullOrEmpty(address)) continue;
-                    try
-                    {
-                        var guids = AssetDatabase.FindAssets($"t:Prefab {address}");
-                        if (guids != null && guids.Length > 0)
-                        {
-                            foreach (var guid in guids)
-                            {
-                                var path = AssetDatabase.GUIDToAssetPath(guid);
-                                if (string.IsNullOrEmpty(path)) continue;
-                                var name = Path.GetFileNameWithoutExtension(path);
-                                if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
-                                AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName,
-                                    new List<string> { DynamicTileExporter.AddressableLabel });
-                                break;
-                            }
-                        }
-                        
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning($"アドレス取り込みに失敗しました: {address} - {ex}");
-                    }
+                    AddressablesUtility.RegisterAssetAsAddressable(prefab.Path, prefab.Address, prefab.GroupName,
+                        new List<string> { DynamicTileExporter.AddressableLabel });
                 }
             }
             catch (Exception ex)
@@ -176,7 +148,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     foreach (var info in oldMeta.TileMetaInfos)
                     {
                         if (info == null) continue;
-                        context.MetaStore.AddMetaInfo(info.AddressName, info.Extent, info.LOD, info.ZoomLevel);
+                        context.MetaStore.AddMetaInfo(info.AddressName,info.GroupName, info.Extent, info.LOD, info.ZoomLevel);
                     }
                 }
                 catch (Exception ex)
@@ -186,7 +158,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 }
 
                 // 旧プレハブを Addressables に再登録
-                var addresses = GetDistinctAddressesFromMeta(oldMeta);
+                var addresses = new TilePrefabGetter().GetDistinctAddressesFromMeta(oldMeta);
                 if (addresses == null) return;
                 
                 var groupName = context.AddressableGroupName;
@@ -232,18 +204,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             return AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(context.DataPath);
         }
         
-        /// <summary>
-        /// メタストアから重複のないアドレス一覧を抽出します。
-        /// </summary>
-        private static List<string> GetDistinctAddressesFromMeta(PLATEAUDynamicTileMetaStore meta)
-        {
-            if (meta == null || meta.TileMetaInfos == null) return new List<string>();
-            return meta.TileMetaInfos
-                .Where(i => i != null && !string.IsNullOrEmpty(i.AddressName))
-                .Select(i => i.AddressName)
-                .Distinct()
-                .ToList();
-        }
+        
         
     }
 }
