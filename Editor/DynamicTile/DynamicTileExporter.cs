@@ -152,10 +152,7 @@ namespace PLATEAU.DynamicTile
                 }
                 
                 // Addressablesのビルドを実行
-                var buildMode = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true).Length == 0
-                    ? AddressablesUtility.TileBuildMode.New
-                    : AddressablesUtility.TileBuildMode.Add;
-                AddressablesUtility.BuildAddressables(buildMode);
+                AddressablesUtility.BuildAddressables(context.BuildMode);
 
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)

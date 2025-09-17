@@ -1,5 +1,6 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
+using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System.IO;
 using UnityEngine;
@@ -158,6 +159,16 @@ namespace PLATEAU.DynamicTile
                 string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(AssetConfig.AssetPath);
                 string dataPath = Path.Combine(normalizedAssetPath, AddressName + ".asset").Replace('\\', '/');
                 return dataPath;
+            }
+        }
+
+        public AddressablesUtility.TileBuildMode BuildMode
+        {
+            get
+            {
+                return TileCatalogSearcher.FindCatalogFiles(BuildFolderPath, true).Length == 0
+                    ? AddressablesUtility.TileBuildMode.New
+                    : AddressablesUtility.TileBuildMode.Add;
             }
         }
     }
