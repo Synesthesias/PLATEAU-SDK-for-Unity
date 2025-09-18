@@ -93,7 +93,7 @@ namespace PLATEAU.Editor.DynamicTile
                 // tileManagerGenerator, // TileManagerを生成します。
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
                 exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。cleanupTempFolderより前に行ってください。
-                // cleanUpTempFolder, // 不要なフォルダを消します。
+                cleanUpTempFolder, // 不要なフォルダを消します。
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
 
