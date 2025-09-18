@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
     internal class FilterConditionGui
     {
         /// <summary> フィルター条件のうち、地物タイプごとに有効にするかの選択状況を格納します。 </summary>
-        private readonly Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
+        private Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
 
         /// <summary> フィルター条件のうち、パッケージごとのLODスライダーでの選択状況を格納します。 </summary>
         public ReadOnlyDictionary<Hierarchy.Node, bool> SelectionDict =>
@@ -168,6 +168,38 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                 this.AvailableMaxLod = availableMaxLod;
                 this.UserMinLod = userMinLod;
                 this.UserMaxLod = userMaxLod;
+            }
+        }
+
+        /// <summary>
+        /// 保存された都市モデルのフィルター条件をGUIに反映します。
+        /// </summary>
+        /// <param name="condition"></param>
+        public void SetSelection(FilterCondition condition)
+        {
+            if (condition.SelectionList != null)
+            {
+                var displayNameDict = this.selectionDict.Keys.ToDictionary(key => key.GetDisplayName(), key => key);
+                foreach ( var item in condition.SelectionList)
+                {
+                    if (displayNameDict.TryGetValue(item.Key, out var node))
+                    {
+                        selectionDict[node] = item.Value;
+                    }
+                }
+            }
+
+            if (condition.PackageLodList != null)
+            {
+                foreach (var item in condition.PackageLodList)
+                {
+                    if(sliderPackageLod.TryGetValue(item.Key, out var lodSliderConfig))
+                    {
+                        lodSliderConfig.UserMinLod = item.Value.Min;
+                        lodSliderConfig.UserMaxLod = item.Value.Max;
+                        sliderPackageLod[item.Key] = lodSliderConfig;
+                    }
+                }
             }
         }
     }

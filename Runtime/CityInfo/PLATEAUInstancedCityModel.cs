@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using PLATEAU.CityGML;
 using PLATEAU.Dataset;
@@ -14,7 +15,17 @@ namespace PLATEAU.CityInfo
     public class PLATEAUInstancedCityModel : MonoBehaviour
     {
         [SerializeField] private GeoReferenceData geoReferenceData;
-        
+
+        [SerializeField, HideInInspector] private PLATEAUCityModelData cityModelData;
+        public PLATEAUCityModelData CityModelData
+        {
+            get {
+                if (cityModelData == null)
+                    cityModelData = new PLATEAUCityModelData();   
+                return cityModelData; 
+            }
+        }
+
         public void CopyFrom(PLATEAUInstancedCityModel src)
         {
             this.GeoReference = src.GeoReference;
@@ -205,6 +216,14 @@ namespace PLATEAU.CityInfo
             return PredefinedCityModelPackage.Unknown;
         }
 
-        
+        /// <summary>
+        /// 都市モデルのフィルタ条件を保持し、UI側に反映します。
+        /// </summary>
+        /// <param name="dict"><see cref="FilterConditionGui"/>のselectionDict</param>
+        /// <param name="lodDict"><see cref="FilterConditionGui"/>のsliderPackageLod</param>
+        public void SaveFilterCondition(bool disableDuplicate, ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> dict, ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> lodDict)
+        {
+            CityModelData.FilterCondition.SetData(disableDuplicate, dict, lodDict);
+        }
     }
 }
