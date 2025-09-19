@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
 
         public void Draw(CityChangeActiveGui.PackageToLodMinMax packageToLodMinMax)
         {
-
+            EnsureSelectionDictInitialized(packageToLodMinMax);
             using (new EditorGUILayout.HorizontalScope())
             {
                 if(PlateauEditorStyle.MiniButton("全選択", 100))
@@ -169,6 +169,25 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                 this.UserMinLod = userMinLod;
                 this.UserMaxLod = userMaxLod;
             }
+        }
+
+
+        /// <summary>
+        /// 初回Drawで「全選択/全選択解除」が一部ノードに反映されない問題回避
+        /// selectionDictをプリロード
+        /// </summary>
+        /// <param name="packageToLodMinMax"></param>
+        private void EnsureSelectionDictInitialized(CityChangeActiveGui.PackageToLodMinMax packageToLodMinMax)
+        {
+            var root = Hierarchy.RootNode;
+            if (root == null) return;
+
+            void DFS(Hierarchy.Node n)
+            {
+                if (!selectionDict.ContainsKey(n)) selectionDict[n] = true;
+                foreach (var c in n.Children) DFS(c);
+            }
+            foreach (var n in root.Children) DFS(n);
         }
 
         /// <summary>
