@@ -17,11 +17,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
     internal class FilterConditionGui
     {
         /// <summary> フィルター条件のうち、地物タイプごとに有効にするかの選択状況を格納します。 </summary>
-        private Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
+        private readonly Dictionary<Hierarchy.Node, bool> selectionDict = new Dictionary<Hierarchy.Node, bool>();
 
         /// <summary> フィルター条件のうち、パッケージごとのLODスライダーでの選択状況を格納します。 </summary>
         public ReadOnlyDictionary<Hierarchy.Node, bool> SelectionDict =>
-            new ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool>(this.selectionDict);
+            new ReadOnlyDictionary<Hierarchy.Node, bool>(this.selectionDict);
         
         private PackageLod sliderPackageLod;
 
