@@ -49,13 +49,13 @@ namespace PLATEAU.CityInfo
             SetPackageLodDict(lod);
         }
 
-        public void SetSelectionDict(ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> dict)
+        private void SetSelectionDict(ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> dict)
         {
             var list = dict.ToList();
             SelectionList = list.Select(kv => new SerializableKeyValuePair<string, bool> { Key = kv.Key.GetDisplayName(), Value = kv.Value }).ToList();
         }
-        
-        public void SetPackageLodDict(ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> dict)
+
+        private void SetPackageLodDict(ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> dict)
         {
             var list = dict.ToList();
             PackageLodList = list.Select(kv => new SerializableKeyValuePair<PredefinedCityModelPackage, LodMinMax> { Key = kv.Key, Value = new LodMinMax(kv.Value.minLod, kv.Value.maxLod) }).ToList();
