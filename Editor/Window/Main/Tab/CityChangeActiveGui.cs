@@ -125,7 +125,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             {
                 this.filterConditionGUI.Draw(packageToLodMinMax); // 一度描画してからでないと、SelectionDictが正しく更新されないため。
                 this.disableDuplicate = cityModel.CityModelData.FilterCondition.DisableDuplicate;
-                this.filterConditionGUI.SetSelection(cityModel.CityModelData.FilterCondition);
+                this.filterConditionGUI.ApplySavedFilterCondition(cityModel.CityModelData.FilterCondition);
             } 
         }
 

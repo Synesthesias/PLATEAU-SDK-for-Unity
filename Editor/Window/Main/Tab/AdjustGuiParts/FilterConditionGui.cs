@@ -175,7 +175,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
         /// 保存された都市モデルのフィルター条件をGUIに反映します。
         /// </summary>
         /// <param name="condition"></param>
-        public void SetSelection(FilterCondition condition)
+        public void ApplySavedFilterCondition(FilterCondition condition)
         {
             if (condition.SelectionList != null)
             {
