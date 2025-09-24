@@ -4,6 +4,7 @@ using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -146,12 +147,22 @@ namespace PLATEAU.DynamicTile
                 {
                     before.BeforeTileAssetBuild();
                 }
-                
-                // Addressablesのビルドを実行
-                var buildMode = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true).Length == 0
-                    ? AddressablesUtility.TileBuildMode.New
-                    : AddressablesUtility.TileBuildMode.Add;
-                AddressablesUtility.BuildAddressables(buildMode);
+                //uv4に入ってる属性情報が消えてしまうのでStripさせないようにしたうえでビルドする
+                //MEMO: AssetBundleが大幅に肥大化してしまうようであればuv4を明示的に参照するシェーダーを用意するなどしてstrip対象にさせないようなアプローチも検討
+                var currentStripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents;
+                try
+                {
+                    PlayerSettings.stripUnusedMeshComponents = false;
+                    // Addressablesのビルドを実行
+                    var buildMode = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true).Length == 0
+                        ? AddressablesUtility.TileBuildMode.New
+                        : AddressablesUtility.TileBuildMode.Add;
+                    AddressablesUtility.BuildAddressables(buildMode);
+                }
+                finally
+                {
+                    PlayerSettings.stripUnusedMeshComponents = currentStripUnusedMeshComponents;
+                }
 
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)
