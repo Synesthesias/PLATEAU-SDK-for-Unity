@@ -28,8 +28,8 @@ namespace PLATEAU.CityInfo
     public class FilterCondition
     {
         public bool DisableDuplicate;
-        public List<SerializableKeyValuePair<string, bool>> SelectionList;
-        public List<SerializableKeyValuePair<PredefinedCityModelPackage, LodMinMax>> PackageLodList;
+        public List<FilterSelectionItem> SelectionList;
+        public List<FilterPackageLodItem> PackageLodList;
 
         public FilterCondition()
         {
@@ -43,20 +43,34 @@ namespace PLATEAU.CityInfo
         public FilterCondition(bool disableDuplicate, ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> sel, ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> lod)
         {
             DisableDuplicate = disableDuplicate;
-            SetSelectionDict(sel);
-            SetPackageLodDict(lod);
+            if (sel != null) SetSelectionDict(sel); else SelectionList = new();
+            if (lod != null) SetPackageLodDict(lod); else PackageLodList = new();
         }
 
         private void SetSelectionDict(ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> dict)
         {
-            var list = dict.ToList();
-            SelectionList = list.Select(kv => new SerializableKeyValuePair<string, bool> { Key = kv.Key.GetDisplayName(), Value = kv.Value }).ToList();
+            if (dict == null)
+            {
+                SelectionList = new(); 
+                return;
+            }
+            SelectionList = dict
+            .OrderBy(kv => kv.Key.GetDisplayName(), StringComparer.Ordinal)
+            .Select(kv => new FilterSelectionItem { Key = kv.Key.GetDisplayName(), Value = kv.Value })
+            .ToList();
         }
 
         private void SetPackageLodDict(ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> dict)
         {
-            var list = dict.ToList();
-            PackageLodList = list.Select(kv => new SerializableKeyValuePair<PredefinedCityModelPackage, LodMinMax> { Key = kv.Key, Value = new LodMinMax(kv.Value.minLod, kv.Value.maxLod) }).ToList();
+            if (dict == null) 
+            { 
+                PackageLodList = new(); 
+                return; 
+            }
+            PackageLodList = dict
+            .OrderBy(kv => kv.Key)
+            .Select(kv => new FilterPackageLodItem { Key = kv.Key, Value = new LodMinMax(kv.Value.minLod, kv.Value.maxLod) })
+            .ToList();
         }
     }
 
@@ -73,10 +87,17 @@ namespace PLATEAU.CityInfo
     }
 
     [Serializable]
-    public class SerializableKeyValuePair<TKey, TValue>
+    public class FilterSelectionItem
     {
-        public TKey Key;
-        public TValue Value;
+        public string Key;
+        public bool Value;
+    }
+
+    [Serializable]
+    public class FilterPackageLodItem
+    {
+        public PredefinedCityModelPackage Key;
+        public LodMinMax Value;
     }
 
 }
