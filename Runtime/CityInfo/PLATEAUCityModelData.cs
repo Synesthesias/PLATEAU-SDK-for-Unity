@@ -14,11 +14,10 @@ namespace PLATEAU.CityInfo
     [Serializable]
     public class PLATEAUCityModelData
     {
-        public FilterCondition FilterCondition; //フィルタリング
+        public FilterCondition FilterCondition = null; //フィルタリング
 
         public PLATEAUCityModelData()
         {
-            FilterCondition = new FilterCondition();
         }
     }
 
@@ -28,22 +27,21 @@ namespace PLATEAU.CityInfo
     [Serializable]
     public class FilterCondition
     {
-        public bool HasData = false;
-        public bool DisableDuplicate = true;
-        public List<SerializableKeyValuePair<string, bool>> SelectionList = null;
-        public List<SerializableKeyValuePair<PredefinedCityModelPackage, LodMinMax>> PackageLodList = null;
+        public bool DisableDuplicate;
+        public List<SerializableKeyValuePair<string, bool>> SelectionList;
+        public List<SerializableKeyValuePair<PredefinedCityModelPackage, LodMinMax>> PackageLodList;
 
-        public void Clear()
+        public FilterCondition()
         {
-            HasData = false;
             DisableDuplicate = true;
-            SelectionList = null;
-            PackageLodList = null;
+            SelectionList = new();
+            PackageLodList = new();
         }
 
-        public void SetData(bool disableDuplicate, ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> sel, ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> lod)
+        /// <param name="dict"><see cref="FilterConditionGui"/>のselectionDict</param>
+        /// <param name="lodDict"><see cref="FilterConditionGui"/>のsliderPackageLod</param>
+        public FilterCondition(bool disableDuplicate, ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> sel, ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> lod)
         {
-            HasData = true;
             DisableDuplicate = disableDuplicate;
             SetSelectionDict(sel);
             SetPackageLodDict(lod);

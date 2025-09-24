@@ -80,10 +80,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
                                 SceneView.RepaintAll();
 
                                 // フィルタ条件をシーンに保存します。
-                                this.adjustTarget.SaveFilterCondition(
+                                this.adjustTarget.SaveFilterCondition(new FilterCondition(
                                     this.disableDuplicate,
                                     this.filterConditionGUI.SelectionDict,
-                                    this.filterConditionGUI.PackageLodSliderResult);
+                                    this.filterConditionGUI.PackageLodSliderResult));
                                 EditorUtility.SetDirty(this.adjustTarget);
                             }
                             finally
@@ -120,8 +120,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
             // GUIを更新します。
             this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
 
-            // 保存されているフィルタ条件が存祭する場合、それをGUIに反映します。
-            if (cityModel.CityModelData.FilterCondition.HasData)
+            // 保存されているフィルタ条件が存在する場合、それをGUIに反映します。
+            if (cityModel.CityModelData.FilterCondition != null)
             {
                 this.filterConditionGUI.Draw(packageToLodMinMax); // 一度描画してからでないと、SelectionDictが正しく更新されないため。
                 this.disableDuplicate = cityModel.CityModelData.FilterCondition.DisableDuplicate;

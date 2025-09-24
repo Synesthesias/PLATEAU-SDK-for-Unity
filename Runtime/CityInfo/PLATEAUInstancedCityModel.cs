@@ -219,11 +219,9 @@ namespace PLATEAU.CityInfo
         /// <summary>
         /// 都市モデルのフィルタ条件を保持し、UI側に反映します。
         /// </summary>
-        /// <param name="dict"><see cref="FilterConditionGui"/>のselectionDict</param>
-        /// <param name="lodDict"><see cref="FilterConditionGui"/>のsliderPackageLod</param>
-        public void SaveFilterCondition(bool disableDuplicate, ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> dict, ReadOnlyDictionary<PredefinedCityModelPackage, (int minLod, int maxLod)> lodDict)
+        public void SaveFilterCondition(FilterCondition filterCondition)
         {
-            CityModelData.FilterCondition.SetData(disableDuplicate, dict, lodDict);
+            CityModelData.FilterCondition = filterCondition;
         }
     }
 }
