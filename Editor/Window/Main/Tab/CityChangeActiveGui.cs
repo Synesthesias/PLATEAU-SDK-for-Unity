@@ -78,6 +78,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                                 this.adjustTarget.FilterByLod(this.filterConditionGUI.PackageLodSliderResult);
                                 if(this.disableDuplicate) CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(this.adjustTarget);    
                                 SceneView.RepaintAll();
+
+                                // フィルタ条件をシーンに保存します。
+                                this.adjustTarget.SaveFilterCondition(new FilterCondition(
+                                    this.disableDuplicate,
+                                    this.filterConditionGUI.SelectionDict,
+                                    this.filterConditionGUI.PackageLodSliderResult));
+                                EditorUtility.SetDirty(this.adjustTarget);
                             }
                             finally
                             {
@@ -112,6 +119,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
             // GUIを更新します。
             this.filterConditionGUI.RefreshPackageAndLods(this.packageToLodMinMax);
+
+            // 保存されているフィルタ条件が存在する場合、それをGUIに反映します。
+            if (cityModel.CityModelData.FilterCondition != null)
+            {
+                this.filterConditionGUI.Draw(packageToLodMinMax); // 一度描画してからでないと、SelectionDictが正しく更新されないため。
+                this.disableDuplicate = cityModel.CityModelData.FilterCondition.DisableDuplicate;
+                this.filterConditionGUI.ApplySavedFilterCondition(cityModel.CityModelData.FilterCondition);
+            } 
         }
 
         /// <summary> テストで利用する用 </summary>
