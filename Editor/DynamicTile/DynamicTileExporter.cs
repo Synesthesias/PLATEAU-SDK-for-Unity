@@ -47,6 +47,7 @@ namespace PLATEAU.DynamicTile
             // 各処理を生成します。
             var tileManagerGenerator = new TileManagerGenerator(context);
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
+            var initializeTileManagerAndFocus = new InitializeTileManagerAndFocus();
             var tileEditorProcedure = new TileGenEditorProcedure();
             var setupBuildPath = new SetUpTileBuildPath(context);
             var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
@@ -88,6 +89,7 @@ namespace PLATEAU.DynamicTile
             afterTileAssetBuilds = new IAfterTileAssetBuild[]
             {
                 tileManagerGenerator, // TileManagerを生成します。
+                initializeTileManagerAndFocus, // タイル初期化とシーンビューのフォーカス
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
                 exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。cleanupTempFolderより前に行ってください。
                 cleanUpTempFolder, // 不要なフォルダを消します。

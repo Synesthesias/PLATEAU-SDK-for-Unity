@@ -99,7 +99,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
 
             // unitypackage の候補を決定
-            string expected = Path.Combine(context.BuildFolderPath, $"{context.AddressableGroupName}_Prefabs.unitypackage");
+            string expected = context.UnityPackagePath;
             string packagePath = File.Exists(expected)
                 ? expected
                 : Directory.GetFiles(context.BuildFolderPath, "*_Prefabs.unitypackage", SearchOption.TopDirectoryOnly)

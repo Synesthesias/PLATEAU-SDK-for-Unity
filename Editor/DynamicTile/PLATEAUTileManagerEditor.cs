@@ -110,6 +110,8 @@ namespace PLATEAU.DynamicTile
                     if (currentCamera != null)
                         _ = tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
                 }
+                
+                EditorGUILayout.LabelField("OutputPath: " + tileManager.OutputPath);
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;

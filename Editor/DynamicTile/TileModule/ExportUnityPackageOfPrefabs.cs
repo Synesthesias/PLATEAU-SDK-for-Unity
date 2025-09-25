@@ -38,7 +38,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 }
 
 				// まずはプロジェクト配下に出力
-				string packageFileName = $"{context.AddressableGroupName}_Prefabs.unitypackage";
+				string packageFileName = context.UnityPackageFileName;
 				string tempPackageProjectRelativePath = packageFileName; // プロジェクトルート直下
 				AssetDatabase.ExportPackage(
 					new[] { rootAssetPath },

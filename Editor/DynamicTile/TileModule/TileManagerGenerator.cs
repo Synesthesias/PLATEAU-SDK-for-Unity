@@ -28,6 +28,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             {
                 Object.DestroyImmediate(manager.gameObject);
             }
+            
             return true;
         }
 
@@ -37,8 +38,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         }
 
         /// <summary>
-        /// タイル生成後、<see cref="PLATEAUTileManager"/>を生成し、
-        /// シーンビューのカメラをタイルにフォーカスします。
+        /// タイル生成後、<see cref="PLATEAUTileManager"/>を生成し、カタログパスのみ設定します。
         /// </summary>
         /// <returns></returns>
         public bool AfterTileAssetBuild()
@@ -46,6 +46,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // managerを生成
             var managerObj = new GameObject("DynamicTileManager");
             var manager = managerObj.AddComponent<PLATEAUTileManager>();
+            manager.OutputPath = context.Config.OutputPath;
             
             // 最新のカタログファイルのパスを取得（Asset相対/フルの両方に対応）
             var catalogSearchDir = Path.IsPathRooted(context.BuildFolderPath)
@@ -61,13 +62,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             var catalogPath = catalogFiles[0];
             
             manager.SaveCatalogPath(catalogPath);
-            
-            // タイルを初期化します。
-            PLATEAUSceneViewCameraTracker.Initialize();
-            manager.InitializeTiles().Wait();
-            
-            // タイルのある場所にシーンビューカメラをフォーカスします。
-            FocusSceneViewCameraToTiles(manager);
             
             return true;
         }

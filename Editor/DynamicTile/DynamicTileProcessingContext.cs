@@ -63,6 +63,28 @@ namespace PLATEAU.DynamicTile
         private int loadedGmlCount;
 
         /// <summary>
+        /// 出力するunitypackageのパスです。（Assets外への出力のみ）
+        /// </summary>
+        public string UnityPackagePath
+        {
+            get
+            {
+                return Path.Combine(BuildFolderPath, UnityPackageFileName);
+            }
+        }
+
+        /// <summary>
+        /// 出力するunitypackageのファイル名です。（Assets外への出力のみ）
+        /// </summary>
+        public string UnityPackageFileName
+        {
+            get
+            {
+                return $"{AddressableGroupName}_Prefabs.unitypackage";
+            }
+        }
+
+        /// <summary>
         /// 読み込み完了したGML数をインクリメントして返す
         /// </summary>
         public int IncrementAndGetLoadedGmlCount()
