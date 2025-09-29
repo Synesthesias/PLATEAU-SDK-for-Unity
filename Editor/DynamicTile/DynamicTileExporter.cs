@@ -150,7 +150,13 @@ namespace PLATEAU.DynamicTile
                 // 与えられたビルド直前の処理を実行
                 foreach (var before in beforeTileAssetBuilds)
                 {
-                    await before.BeforeTileAssetBuildAsync();
+                    var ok = await before.BeforeTileAssetBuildAsync();
+                    if (!ok)
+                    {
+                        Debug.LogError("failed on beforeTileAssetsBuild.");
+                        foreach(var f in onTileBuildFailed) f.OnTileBuildFailed();
+                        return false;
+                    }
                 }
                 //uv4に入ってる属性情報が消えてしまうのでStripさせないようにしたうえでビルドする
                 //MEMO: AssetBundleが大幅に肥大化してしまうようであればuv4を明示的に参照するシェーダーを用意するなどしてstrip対象にさせないようなアプローチも検討

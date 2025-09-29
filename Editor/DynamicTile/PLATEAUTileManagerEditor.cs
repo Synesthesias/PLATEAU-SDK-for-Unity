@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -179,7 +180,7 @@ namespace PLATEAU.DynamicTile
                     serializedObject.ApplyModifiedProperties();
 
                     tileManager.ClearTiles();
-                    tileManager.InitializeTiles().Wait();
+                    tileManager.InitializeTiles().ContinueWithErrorCatch();
                 }
             }
         }

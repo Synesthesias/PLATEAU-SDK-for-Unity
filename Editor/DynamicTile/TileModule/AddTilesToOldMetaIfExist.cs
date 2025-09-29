@@ -128,16 +128,18 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
             // 旧メタを取得（パッケージに含まれている想定）
             var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
-            var oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(DynamicTileProcessingContext.PrefabsTempSavePath);
-            if (oldMeta == null)
+            // ルート直下から探索
+            var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
+            PLATEAUDynamicTileMetaStore oldMeta;
+            if (guids != null && guids.Length > 0)
             {
-                // 念のためルート直下から探索
-                var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
-                if (guids != null && guids.Length > 0)
-                {
-                    var metaPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-                    oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
-                }
+                var metaPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                oldMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
+            }
+            else
+            {
+                Debug.LogError("no meta found.");
+                return;
             }
 
             if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)

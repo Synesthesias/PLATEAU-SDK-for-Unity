@@ -268,8 +268,8 @@ namespace PLATEAU.Editor.TileAddressables
 
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, path);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameLoad);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
             
             // addressables_content_state.binもビルド先に保存します。これは差分ビルドで利用します。
             settings.ContentStateBuildPath = BuildPath(settings);

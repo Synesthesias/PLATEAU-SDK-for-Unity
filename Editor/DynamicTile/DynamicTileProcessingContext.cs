@@ -98,19 +98,22 @@ namespace PLATEAU.DynamicTile
         /// <param name="config">DynamicTileインポート設定</param>
         public DynamicTileProcessingContext(DynamicTileImportConfig config)
         {
-            if (string.IsNullOrEmpty(config.OutputPath))
+            if (config == null) throw new System.ArgumentNullException(nameof(config));
+            var outputPath = config.OutputPath;
+            if (string.IsNullOrEmpty(outputPath))
             {
                 Debug.LogError("output path is not set.");
+                outputPath = "";
             }
             
             Config = config;
 
             AssetConfig = ConvertToAssetConfig.DefaultValue;
-            IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
+            IsExcludeAssetFolder = !string.IsNullOrEmpty(outputPath) && !IsAssetPath(outputPath);
 
             // Assetsフォルダー外のパスを指定している場合は、プレハブ一時保存パスを使用
-            AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : config.OutputPath;
-            BuildFolderPath = config.OutputPath;
+            AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : outputPath;
+            BuildFolderPath = outputPath;
 
             // AddressableGroupNameを生成
             AddressableGroupName = GenerateAddressableGroupName();

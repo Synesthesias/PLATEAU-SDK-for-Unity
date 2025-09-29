@@ -37,7 +37,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
 
                         List<CityObjectList.CityObject> firstTwo =
                             cityObjGrp.GetAllCityObjects().Take(2).ToList();
-                        // 最小地物のみ処理
+                        // 最小地物のケースでの判定です。最小地物ではGetAllCityObjectsの結果は1つだけです。
                         if (firstTwo.Count == 1)
                             cityObjType = firstTwo.First().CityObjectType;
                         

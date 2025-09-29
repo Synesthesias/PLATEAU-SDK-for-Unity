@@ -1,10 +1,12 @@
+using UnityEngine;
+using System;
+using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEditor;
+
 namespace PLATEAU.Util
 {
-    using System;
-    using System.Collections;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using UnityEditor;
 
     public static class EditorAsync
     {
@@ -71,11 +73,17 @@ namespace PLATEAU.Util
             return tcs.Task;
         }
 
-        // 4) ImportPackage を Task 化（完了/失敗イベント待ち ＋ アイドル待ち）
+        // 4) ImportPackageをTask化（完了/失敗イベント待ち ＋ アイドル待ち）
         public static async Task<bool> ImportPackageAsync(string path, bool interactive = false,
             int extraYieldFrames = 1)
         {
             var tcs = new TaskCompletionSource<bool>();
+            if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path))
+            {
+                Debug.LogError($"ImportPackageAsync: package not found. path={path}");
+                await YieldToEditorAsync(extraYieldFrames);
+                return false;
+            }
 
             void Done(string _)
             {

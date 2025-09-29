@@ -56,13 +56,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                             case ImportType.DynamicTile:
                                 // 動的タイル形式でのインポートを実行します。
                                 importToDynamicTile = new ImportToDynamicTile(progressDisplay);
-                                var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
+                                Task<bool> task;
+                                try
+                                {
+                                    task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
+                                }catch (Exception ex)
+                                {
+                                    CleanupDynamicTileImport();
+                                    Dialogue.Display("動的タイルのインポートでエラーが発生しました。処理を中断しました。", "OK");
+                                    UnityEngine.Debug.LogException(ex);
+                                    break;
+                                }
                                 task.ContinueWith(_ =>
                                 {
-                                    Interlocked.Decrement(ref numCurrentRunningTasks);
-                                    cancellationTokenSrc?.Dispose();
-                                    cancellationTokenSrc = null;
-                                    importToDynamicTile = null;
+                                    CleanupDynamicTileImport();
                                 });
                                 task.ContinueWith(t =>
                                 {
@@ -147,6 +154,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 }
             });
             task.ContinueWithErrorCatch();
+        }
+
+        private void CleanupDynamicTileImport()
+        {
+            Interlocked.Decrement(ref numCurrentRunningTasks);
+            cancellationTokenSrc?.Dispose();
+            cancellationTokenSrc = null;
+            importToDynamicTile = null;
         }
         
     }

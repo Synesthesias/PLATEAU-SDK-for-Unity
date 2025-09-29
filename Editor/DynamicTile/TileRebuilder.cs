@@ -158,10 +158,23 @@ namespace PLATEAU.Editor.DynamicTile
 
 
             // 実行
-            StartTileGeneration();
-            await BeforeTileAssetsBuilds();
+            if (!StartTileGeneration())
+            {
+                Debug.LogError("failed on startTileGeneration.");
+                return;
+            }
+
+            if (!await BeforeTileAssetsBuilds())
+            {
+                Debug.LogError("failed on BeforeTileAssetsBuilds.");
+                return;
+            }
             AddressablesUtility.BuildAddressables(AddressablesUtility.TileBuildMode.New);
-            AfterTileAssetsBuilds();
+            if (!AfterTileAssetsBuilds())
+            {
+                Debug.LogError("failed on AfterTileAssetsBuilds.");
+                return;
+            }
         }
 
         private DynamicTileProcessingContext CreateContext(PLATEAUTileManager manager)
