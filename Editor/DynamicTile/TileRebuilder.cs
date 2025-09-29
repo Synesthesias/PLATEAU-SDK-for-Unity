@@ -17,9 +17,9 @@ namespace PLATEAU.Editor.DynamicTile
     /// <summary>
     /// タイルを再生成します。
     /// これは次の手順を踏みます。
-    /// ・アセットバンドル化のもととなったプレハブをロードします。
+    /// ・<see cref="TilePrefabsToScene()"/>を利用し、セットバンドル化のもととなったプレハブをロードします。
     /// ・シーンに配置されたプレハブインスタンスが外部から変更されるものとします。
-    /// ・その変更をプレハブに再適用して再度アセットバンドル化します。
+    /// ・<see cref="Rebuild"/>を利用し、その変更をプレハブに再適用して再度アセットバンドル化します。
     /// </summary>
     public class TileRebuilder
     {
@@ -140,6 +140,7 @@ namespace PLATEAU.Editor.DynamicTile
             {
                 // addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します。前のフォルダにあるunity packageのインポートも行います。
                 saveAndRegisterMetaData, // メタデータを保存・登録
+                new RemoveEditingTileComponentBeforeBuild(), // ビルド直前に PLATEAUEditingTile を除去
                 tileEditorProcedure // エディタ上での準備。処理順の都合上、配列の最後にしてください。
             };
             

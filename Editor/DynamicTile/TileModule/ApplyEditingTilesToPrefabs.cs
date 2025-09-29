@@ -22,9 +22,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         {
 			var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
 			if (tiles == null || tiles.Length == 0)
-			{
-				return true; // 適用対象が無ければ成功扱い
-			}
+            {
+                Debug.LogError("編集中のタイルがありません。");
+                return false;
+            }
 
 			try
 			{
@@ -43,17 +44,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
 					// 変更をプレハブに適用
 					PrefabUtility.ApplyPrefabInstance(instanceRoot, InteractionMode.AutomatedAction);
-
-					// 念のためプレハブアセットをDirtyにして保存
-					var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
-					if (!string.IsNullOrEmpty(prefabPath))
-					{
-						var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-						if (prefabAsset != null)
-						{
-							EditorUtility.SetDirty(prefabAsset);
-						}
-					}
                 }
 
 				AssetDatabase.SaveAssets();

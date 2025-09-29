@@ -31,22 +31,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 var existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(context.DataPath);
                 if (existingMeta == null)
                 {
-                    // 念のため検索（保存先配下）
-                    // var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
-                    // var metaGuids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { rootAssetPath });
-                    // if (metaGuids != null && metaGuids.Length > 0)
-                    // {
-                    //     var metaPath = AssetDatabase.GUIDToAssetPath(metaGuids[0]);
-                    //     existingMeta = AssetDatabase.LoadAssetAtPath<PLATEAUDynamicTileMetaStore>(metaPath);
-                    // }
                     Debug.LogError($"既存のメタデータが見つかりません。パスを確認してください: {context.DataPath}");
                     return false;
                 }
-
-                if (existingMeta != null)
-                {
-                    context.MetaStore.CopyFrom(existingMeta);
-                }
+                context.MetaStore.CopyFrom(existingMeta);
             }
             catch (Exception e)
             {
@@ -91,45 +79,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 					address,
 					groupName,
 					new List<string> { DynamicTileExporter.AddressableLabel });
-
-				// メタ情報の登録（既存メタを優先。なければ推定）
-				var bounds = default(Bounds);
-				var zoomLevel = 0;
-
-				var old = metaStore?.GetMetaInfo(address);
-				if (old != null)
-				{
-					bounds = old.Extent;
-					zoomLevel = old.ZoomLevel;
-				}
-				else
-				{
-					// Prefab から Bounds を推定（Renderer合成）。ZoomLevel は不明のため 0。
-					var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-					if (prefabAsset != null)
-					{
-						var renderers = prefabAsset.GetComponentsInChildren<Renderer>(true);
-						if (renderers != null && renderers.Length > 0)
-						{
-							var first = renderers.FirstOrDefault();
-							if (first != null)
-							{
-								bounds = first.bounds;
-								foreach (var r in renderers)
-								{
-									if (r == null) continue;
-									bounds.Encapsulate(r.bounds);
-								}
-							}
-						}
-					}
-				}
-
-				// 既に同アドレスが MetaStore に存在する場合は追加しない（CopyFrom 済みを維持）
-				if (metaStore.GetMetaInfo(address) == null)
-				{
-					metaStore.AddMetaInfo(address, groupName, bounds, 0, zoomLevel);
-				}
+                
 			}
             
             return true;
