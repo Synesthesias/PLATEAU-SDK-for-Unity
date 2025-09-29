@@ -152,9 +152,19 @@ namespace PLATEAU.DynamicTile
                 {
                     await before.BeforeTileAssetBuildAsync();
                 }
-                
-                // Addressablesのビルドを実行
-                AddressablesUtility.BuildAddressables(context.BuildMode);
+                //uv4に入ってる属性情報が消えてしまうのでStripさせないようにしたうえでビルドする
+                //MEMO: AssetBundleが大幅に肥大化してしまうようであればuv4を明示的に参照するシェーダーを用意するなどしてstrip対象にさせないようなアプローチも検討
+                var currentStripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents;
+                try
+                {
+                    PlayerSettings.stripUnusedMeshComponents = false;
+                    // Addressablesのビルドを実行
+                    AddressablesUtility.BuildAddressables(context.BuildMode);
+                }
+                finally
+                {
+                    PlayerSettings.stripUnusedMeshComponents = currentStripUnusedMeshComponents;
+                }
 
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)
