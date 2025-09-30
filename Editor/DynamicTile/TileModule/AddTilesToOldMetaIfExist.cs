@@ -120,8 +120,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 return;
             }
             
-            AssetDatabase.Refresh();
-            
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
