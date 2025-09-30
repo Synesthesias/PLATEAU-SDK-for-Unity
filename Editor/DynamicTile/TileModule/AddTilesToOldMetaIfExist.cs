@@ -129,7 +129,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // 旧メタを取得（パッケージに含まれている想定）
             var rootAssetPath = AssetPathUtil.NormalizeAssetPath(context.AssetConfig.AssetPath);
             // ルート直下から探索
-            var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { DynamicTileProcessingContext.PrefabsTempSavePath });
+            var guids = AssetDatabase.FindAssets("t:PLATEAUDynamicTileMetaStore", new[] { rootAssetPath });
             PLATEAUDynamicTileMetaStore oldMeta;
             if (guids != null && guids.Length > 0)
             {

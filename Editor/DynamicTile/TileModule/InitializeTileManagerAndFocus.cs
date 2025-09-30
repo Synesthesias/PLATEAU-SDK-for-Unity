@@ -1,4 +1,5 @@
 using PLATEAU.DynamicTile;
+using UnityEditor;
 using UnityEngine;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
@@ -16,7 +17,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // タイルを初期化します。
             PLATEAUSceneViewCameraTracker.Initialize();
             
-            UnityEditor.EditorApplication.delayCall += () =>
+            EditorApplication.delayCall += () =>
             {
                 var manager = Object.FindObjectOfType<PLATEAUTileManager>();
                 if (manager == null)
