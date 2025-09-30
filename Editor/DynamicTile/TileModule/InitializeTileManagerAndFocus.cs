@@ -22,6 +22,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 if (manager == null)
                 {
                     Debug.LogError("PLATEAUTileManager がシーンに見つかりませんでした。");
+                    return;
                 }
                 var task = manager.InitializeTiles();
                 task.ContinueWith(t =>

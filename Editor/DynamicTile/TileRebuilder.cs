@@ -59,7 +59,12 @@ namespace PLATEAU.Editor.DynamicTile
             if (context.IsExcludeAssetFolder)
             {
                 // unitypackageを読み込み
-                await EditorAsync.ImportPackageAsync(context.UnityPackagePath);
+                var ok = await EditorAsync.ImportPackageAsync(context.UnityPackagePath);
+                if (!ok)
+                {
+                    Debug.LogError("failed to import unity package.");
+                    return;
+                }
             }
             var prefabDir = context.AssetConfig.AssetPath;
             // 指定フォルダ配下の全プレハブをシーンへ配置
@@ -104,47 +109,34 @@ namespace PLATEAU.Editor.DynamicTile
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
             var tileEditorProcedure = new TileGenEditorProcedure();
             var setupBuildPath = new SetUpTileBuildPath(context);
-            var applyEditingTilesToPrefabs = new ApplyEditingTilesToPrefabs(context);
+            var applyEditingTilesToPrefabs = new ApplyEditingTilesToPrefabs();
             var registerEditingTilePrefabsForBuild = new RegisterEditingTilePrefabsForBuild(context);
-            // var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
-            // var setReferencePointToSameIfExist = new SetReferencePointSameIfExist(cityConf, context);
-            // var generateOneTile = new GenerateOneTile(context, progressDisplay);
             var saveAndRegisterMetaData = new SaveAndRegisterMetaData(context);
             var initializeTileManager = new InitializeTileManagerAndFocus();
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
             var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);
             
-            // フェイズ1: 事前処理
+            // 事前処理
             // 動的タイル出力の事前処理を列挙します。
             onTileGenerateStarts = new IOnTileGenerateStart[]
             {
                 tileEditorProcedure, // エディタ上での準備
                 setupBuildPath, // Addressableビルドパスを設定
-                // tileManagerGenerator, // 古いTileManagerを消します。
                 tileAddressableConfigMaker, // Addressableの設定を行います。
                 applyEditingTilesToPrefabs, // 編集中タイルをプレハブに適用します。
                 registerEditingTilePrefabsForBuild, // 編集中タイルのプレハブをAddressableとメタに登録します。
-                // setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
             };
             
-            // フェイズ2: タイル生成
-            // 1タイル生成ごとの処理を列挙します。
-            // var onOneTileImported = new IOnOneTileImported[]
-            // {
-                // generateOneTile // 1タイル生成ごとに呼ばれます。
-            // };
-            
-            // フェイズ3: ビルド直前
+            // ビルド直前
             // タイルをビルドする直前の処理を列挙します。
             beforeTileAssetBuilds = new IBeforeTileAssetBuild[]
             {
-                // addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します。前のフォルダにあるunity packageのインポートも行います。
                 saveAndRegisterMetaData, // メタデータを保存・登録
                 new RemoveEditingTileComponentBeforeBuild(), // ビルド直前に PLATEAUEditingTile を除去
                 tileEditorProcedure // エディタ上での準備。処理順の都合上、配列の最後にしてください。
             };
             
-            // フェイズ4: ビルド直後
+            // ビルド直後
             // タイルをビルドしたあとの処理を列挙します。
             afterTileAssetBuilds = new IAfterTileAssetBuild[]
             {

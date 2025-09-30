@@ -145,19 +145,21 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             if (oldMeta != null && oldMeta.TileMetaInfos != null && context.MetaStore != null)
             {
                 // 旧メタ情報を新メタにマージ（yield を含まないので try/catch 可）
-                try
+                foreach (var info in oldMeta.TileMetaInfos)
                 {
-                    foreach (var info in oldMeta.TileMetaInfos)
+                    if (info == null) continue;
+                    try
                     {
-                        if (info == null) continue;
-                        context.MetaStore.AddMetaInfo(info.AddressName,info.GroupName, info.Extent, info.LOD, info.ZoomLevel);
+                        context.MetaStore.AddMetaInfo(info.AddressName, info.GroupName, info.Extent, info.LOD,
+                            info.ZoomLevel);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"旧メタのマージ中に失敗: {ex.Message}");
+                        return;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Debug.LogWarning($"旧メタのマージ中に失敗: {ex.Message}");
-                    return;
-                }
+
 
                 // 旧プレハブを Addressables に再登録
                 var addresses = new TilePrefabGetter().GetDistinctAddressesFromMeta(oldMeta);
@@ -165,25 +167,18 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 
                 var groupName = context.AddressableGroupName;
 
+                var tilePrefabGetter = new TilePrefabGetter();
                 foreach (var address in addresses)
                 {
                     if (string.IsNullOrEmpty(address)) continue;
 
                     try
                     {
-                        var prefabGuids = AssetDatabase.FindAssets($"t:Prefab {address}", new[] { rootAssetPath });
-                        if (prefabGuids != null && prefabGuids.Length > 0)
+                        var prefab = tilePrefabGetter.GetPrefabFromAddress(address, groupName);
+                        if (prefab != null)
                         {
-                            foreach (var guid in prefabGuids)
-                            {
-                                var path = AssetDatabase.GUIDToAssetPath(guid);
-                                if (string.IsNullOrEmpty(path)) continue;
-                                var name = Path.GetFileNameWithoutExtension(path);
-                                if (!string.Equals(name, address, StringComparison.Ordinal)) continue;
-                                AddressablesUtility.RegisterAssetAsAddressable(path, address, groupName,
-                                    new List<string> { DynamicTileExporter.AddressableLabel });
-                                break;
-                            }
+                            AddressablesUtility.RegisterAssetAsAddressable(prefab.Path, prefab.Address, groupName,
+                                new List<string> { DynamicTileExporter.AddressableLabel });
                         }
                     }
                     catch (Exception ex)

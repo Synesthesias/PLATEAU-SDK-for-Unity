@@ -10,13 +10,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// </summary>
     public class ApplyEditingTilesToPrefabs : IOnTileGenerateStart
     {
-        private DynamicTileProcessingContext context;
-        
-        public ApplyEditingTilesToPrefabs(DynamicTileProcessingContext context)
-        {
-            this.context = context;
-        }
-
 
         public bool OnTileGenerateStart()
         {

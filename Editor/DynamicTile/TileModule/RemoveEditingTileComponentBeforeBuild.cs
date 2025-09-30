@@ -16,46 +16,43 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 		public async Task<bool> BeforeTileAssetBuildAsync()
 		{
 			try
-			{
-				// シーン上の全ての PLATEAUEditingTile を探索
-				var editingTiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
-				if (editingTiles != null)
-				{
-					foreach (var editingTile in editingTiles)
-					{
-						if (editingTile == null) continue;
-						var go = editingTile.gameObject;
-						// 近傍のPrefabインスタンスルートを取得
-						var instanceRoot = PrefabUtility.GetNearestPrefabInstanceRoot(go);
-						if (instanceRoot == null) instanceRoot = go;
+            {
+                // シーン上の全ての PLATEAUEditingTile を探索
+                var editingTiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
+                foreach (var editingTile in editingTiles)
+                {
+                    if (editingTile == null) continue;
+                    var go = editingTile.gameObject;
+                    // 近傍のPrefabインスタンスルートを取得
+                    var instanceRoot = PrefabUtility.GetNearestPrefabInstanceRoot(go);
+                    if (instanceRoot == null) instanceRoot = go;
 
-						// 対応するプレハブアセットからも除去
-						if (PrefabUtility.IsPartOfPrefabInstance(instanceRoot))
-						{
-							var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
-							if (!string.IsNullOrEmpty(prefabPath))
-							{
-								var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-								if (prefabAsset != null)
-								{
-									var comp = prefabAsset.GetComponent<PLATEAUEditingTile>();
-									if (comp != null)
-									{
-										Object.DestroyImmediate(comp, true);
-										EditorUtility.SetDirty(prefabAsset);
-									}
-								}
-							}
-						}
+                    // 対応するプレハブアセットからも除去
+                    if (PrefabUtility.IsPartOfPrefabInstance(instanceRoot))
+                    {
+                        var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
+                        if (!string.IsNullOrEmpty(prefabPath))
+                        {
+                            var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                            if (prefabAsset != null)
+                            {
+                                var comp = prefabAsset.GetComponent<PLATEAUEditingTile>();
+                                if (comp != null)
+                                {
+                                    Object.DestroyImmediate(comp, true);
+                                    EditorUtility.SetDirty(prefabAsset);
+                                }
+                            }
+                        }
+                    }
 
-						// シーン上のコンポーネントも除去（アセット側の適用に関係なく安全のため）
-						Object.DestroyImmediate(editingTile, true);
-					}
-				}
+                    // シーン上のコンポーネントも除去
+                    Object.DestroyImmediate(editingTile, false);
+                }
 
-				AssetDatabase.SaveAssets();
-				await Task.CompletedTask;
-				return true;
+                AssetDatabase.SaveAssets();
+                await Task.CompletedTask;
+                return true;
 			}
 			catch (System.Exception e)
 			{
@@ -65,5 +62,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 		}
 	}
 }
+
 
 

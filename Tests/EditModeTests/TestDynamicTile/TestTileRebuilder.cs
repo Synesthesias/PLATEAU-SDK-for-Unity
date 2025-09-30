@@ -10,11 +10,13 @@ using PLATEAU.Editor.DynamicTile;
 using PLATEAU.DynamicTile;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
+using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.Tests.TestDynamicTile
 {
@@ -73,32 +75,29 @@ namespace PLATEAU.Tests.TestDynamicTile
 			Assert.IsNull(GameObject.Find(TileRebuilder.EditingTilesParentName), "Rebuild 後に EditingTiles が削除されている");
 
 			// 4) Addressables 経由で再配置されたタイルに Cube 追加が反映されていることを確認
-			// SceneView カメラの揺すりでロードを促進
+			// カメラを動かしてロードを促進
 			var sceneView = SceneView.lastActiveSceneView;
 			if (sceneView != null)
 			{
 				sceneView.pivot = new Vector3(0, 50, 0);
+                manager.UpdateCameraPosition(sceneView.pivot);
 				for (int i = 0; i < 10; i++)
 				{
 					sceneView.pivot += Vector3.forward * 0.05f;
+                    manager.UpdateCameraPosition(sceneView.pivot);
 					EditorApplication.QueuePlayerLoopUpdate();
+                    
 					for (int j = 0; j < 10; j++) yield return null;
 				}
 			}
+            
+            // managerを取得し直す
+            manager = Object.FindObjectOfType<PLATEAUTileManager>();
 
 			// DynamicTileRoot 配下に TestCube が1つ以上存在すること
-			bool cubeFound = Resources.FindObjectsOfTypeAll<Transform>()
-				.Where(t => t != null && t.name == "TestCube")
-				.Any(t =>
-				{
-					var p = t.parent;
-					while (p != null)
-					{
-						if (p.name == PLATEAUTileManager.TileParentName) return true;
-						p = p.parent;
-					}
-					return false;
-				});
+            var tileParent = manager.transform.Find(PLATEAUTileManager.TileParentName);
+            Assert.IsTrue(tileParent != null, "DynamicTileRootが存在する");
+            bool cubeFound = tileParent.GetComponentsInChildren<Transform>(true).Any(t => t.name == "TestCube");
 			Assert.IsTrue(cubeFound, "再配置されたタイル配下に TestCube が存在する（変更が維持されている）");
 		}
 
@@ -163,7 +162,11 @@ namespace PLATEAU.Tests.TestDynamicTile
 			}
 			if (!string.IsNullOrEmpty(outputDir) && Directory.Exists(outputDir))
 			{
-				try { Directory.Delete(outputDir, true); } catch { }
+                try { Directory.Delete(outputDir, true); }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("failed to delete test directory.");
+                }
 			}
 
 			// StreamingAssets/Addressables の残骸を可能な範囲で掃除
@@ -201,5 +204,6 @@ namespace PLATEAU.Tests.TestDynamicTile
 		}
 	}
 }
+
 
 

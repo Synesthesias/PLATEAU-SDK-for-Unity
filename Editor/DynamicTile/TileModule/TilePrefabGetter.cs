@@ -37,7 +37,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             return GetPrefabFromAddress(tile.Address, tile.GroupName);
         }
 
-        private TilePrefab GetPrefabFromAddress(string address, string groupName)
+        internal TilePrefab GetPrefabFromAddress(string address, string groupName)
         {
             var guids = AssetDatabase.FindAssets($"t:Prefab {address}");
             if (guids != null && guids.Length > 0)
