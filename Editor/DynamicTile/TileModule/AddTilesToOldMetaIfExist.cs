@@ -65,7 +65,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 
             EditorUtility.SetDirty(existingMeta);
             AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
                 
             context.MetaStore = existingMeta;
 
@@ -156,7 +155,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     catch (Exception ex)
                     {
                         Debug.LogError($"旧メタのマージ中に失敗: {ex.Message}");
-                        return;
                     }
                 }
 
