@@ -37,6 +37,22 @@ namespace PLATEAU.Tests.TestDynamicTile
 		private string prevScenePath;
 		private string outputDir;
 
+		[SetUp]
+		public void SetUp()
+		{
+			// 前回クラッシュ等で残存した一時フォルダを削除してクリーンスタート
+			if (AssetDatabase.IsValidFolder(TempSceneParentPath))
+			{
+				AssetDatabase.DeleteAsset(TempSceneParentPath);
+				AssetDatabase.Refresh();
+			}
+			if (AssetDatabase.IsValidFolder(OutputDirPathInAssets))
+            {
+                AssetDatabase.DeleteAsset(OutputDirPathInAssets);
+                AssetDatabase.Refresh();
+			}
+		}
+
 		[UnityTest]
 		public IEnumerator Test_Rebuild_AppliesPrefabChanges()
 		{
@@ -145,7 +161,7 @@ namespace PLATEAU.Tests.TestDynamicTile
 				}
 				else
 				{
-					EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+					Debug.Log("failed to open prevScene before unit test.");
 				}
 			}
 			if (AssetDatabase.LoadAssetAtPath<SceneAsset>(TempScenePath) != null)
@@ -169,6 +185,8 @@ namespace PLATEAU.Tests.TestDynamicTile
                 }
 			}
 
+            PLATEAUEditorEventListener.Release();
+            
 			// StreamingAssets/Addressables の残骸を可能な範囲で掃除
 			var bundlesGroupPath = Path.Combine(
 				"Assets",
