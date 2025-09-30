@@ -159,7 +159,11 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
                 // 旧プレハブを Addressables に再登録
                 var addresses = new TilePrefabGetter().GetDistinctAddressesFromMeta(oldMeta);
-                if (addresses == null) return;
+                if (addresses == null || addresses.Count == 0)
+                {
+                    EditorUtility.SetDirty(context.MetaStore);
+                    return;
+                }
                 
                 var groupName = context.AddressableGroupName;
 
