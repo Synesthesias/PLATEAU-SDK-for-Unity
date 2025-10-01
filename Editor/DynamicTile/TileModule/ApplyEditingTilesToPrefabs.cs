@@ -1,4 +1,5 @@
 using PLATEAU.DynamicTile;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -21,9 +22,9 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         {
             var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
 			if (tiles == null || tiles.Length == 0)
-			{
-				return true; // 適用対象が無ければ成功扱い
-			}
+            {
+                return true; // 対象無し
+            }
 
 			try
 			{
@@ -41,13 +42,13 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 					if (!PrefabUtility.IsPartOfPrefabInstance(instanceRoot))
 						continue;
 
-                    // 部分対象が指定されている場合はアドレス（プレハブ名）で絞り込む
+                    // 対象が指定されている場合はアドレス（プレハブ名）で絞り込む
                     if (targetSet != null && targetSet.Count > 0)
                     {
                         var prefabPathFilter = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
                         if (string.IsNullOrEmpty(prefabPathFilter))
                             continue;
-                        var addressFilter = System.IO.Path.GetFileNameWithoutExtension(prefabPathFilter);
+                        var addressFilter = Path.GetFileNameWithoutExtension(prefabPathFilter);
                         if (string.IsNullOrEmpty(addressFilter) || !targetSet.Contains(addressFilter))
                             continue;
                     }

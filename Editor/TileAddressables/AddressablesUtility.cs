@@ -305,6 +305,11 @@ namespace PLATEAU.Editor.TileAddressables
 
             // bundleを個別にパックする
             groupSchema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+
+            // ハッシュを含まないファイル名とinternalIDを登録します。
+            // こうしないと、TileRebuilderを使って差分ビルドした際に、古いバンドルが残ってしまいます。
+            groupSchema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+            groupSchema.InternalIdNamingMode = BundledAssetGroupSchema.AssetNamingMode.Filename;
         }
 
         /// <summary>

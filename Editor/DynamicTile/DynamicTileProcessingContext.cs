@@ -54,7 +54,8 @@ namespace PLATEAU.DynamicTile
         public bool IsExcludeAssetFolder { get; }
 
         /// <summary>
-        /// 差分ビルド対象とするタイルのアドレス群。null または空なら全件対象。
+        /// <see cref="TileRebuilder"/>によるリビルドの時のみ利用します。
+        /// 差分ビルド対象とするタイルのアドレス群です。。null または空なら全件対象とします。
         /// </summary>
         public HashSet<string> TargetAddresses { get; set; }
 

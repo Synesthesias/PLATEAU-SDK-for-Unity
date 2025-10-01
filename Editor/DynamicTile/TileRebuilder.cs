@@ -245,12 +245,15 @@ namespace PLATEAU.Editor.DynamicTile
             var initializeTileManager = new InitializeTileManagerAndFocus();
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
             var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);
-            
+            var deleteOldBundles = new DeleteOldBundlesBeforeBuild(context);
+            var restoreAddressablesState = new RestoreAddressablesStateForRebuild(context);
+
             // 事前処理
             // 動的タイル出力の事前処理を列挙します。
             onTileGenerateStarts = new IOnTileGenerateStart[]
             {
                 tileEditorProcedure, // エディタ上での準備
+                restoreAddressablesState, // Addressableの差分ビルド設定を復元
                 setupBuildPath, // Addressableビルドパスを設定
                 tileAddressableConfigMaker, // Addressableの設定を行います。
                 applyEditingTilesToPrefabs, // 編集中タイルをプレハブに適用します。
@@ -261,9 +264,9 @@ namespace PLATEAU.Editor.DynamicTile
             // タイルをビルドする直前の処理を列挙します。
             beforeTileAssetBuilds = new IBeforeTileAssetBuild[]
             {
-                new DeleteOldBundlesBeforeBuild(context), // 旧bundleを削除
                 saveAndRegisterMetaData, // メタデータを保存・登録
                 new RemoveEditingTileComponentBeforeBuild(), // ビルド直前に PLATEAUEditingTile を除去
+                deleteOldBundles, // 増分ビルドによって古くなるバンドルファイルを削除
                 tileEditorProcedure // エディタ上での準備。処理順の都合上、配列の最後にしてください。
             };
             
@@ -325,10 +328,13 @@ namespace PLATEAU.Editor.DynamicTile
             var initializeTileManager = new InitializeTileManagerAndFocus();
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
             var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);
+            var deleteOldBundles = new DeleteOldBundlesBeforeBuild(context);
+            var restoreAddressablesState = new RestoreAddressablesStateForRebuild(context);
 
             onTileGenerateStarts = new IOnTileGenerateStart[]
             {
                 tileEditorProcedure,
+                restoreAddressablesState,
                 setupBuildPath,
                 tileAddressableConfigMaker,
                 applyEditingTilesToPrefabs,
@@ -337,9 +343,9 @@ namespace PLATEAU.Editor.DynamicTile
 
             beforeTileAssetBuilds = new IBeforeTileAssetBuild[]
             {
-                new DeleteOldBundlesBeforeBuild(context),
                 saveAndRegisterMetaData,
                 new RemoveEditingTileComponentBeforeBuild(),
+                deleteOldBundles,
                 tileEditorProcedure,
             };
 
