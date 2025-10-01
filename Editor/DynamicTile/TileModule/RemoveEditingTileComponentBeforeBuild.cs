@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using PLATEAU.DynamicTile;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 	/// </summary>
 	internal sealed class RemoveEditingTileComponentBeforeBuild : IBeforeTileAssetBuild
 	{
-		public async Task<bool> BeforeTileAssetBuildAsync()
+		public async Task<bool> BeforeTileAssetBuildAsync(CancellationToken ct)
 		{
 			try
             {
@@ -21,6 +22,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 var editingTiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
                 foreach (var editingTile in editingTiles)
                 {
+                    ct.ThrowIfCancellationRequested();
                     if (editingTile == null) continue;
                     var go = editingTile.gameObject;
                     // 近傍のPrefabインスタンスルートを取得

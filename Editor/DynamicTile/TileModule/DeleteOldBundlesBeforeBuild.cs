@@ -2,6 +2,7 @@ using PLATEAU.DynamicTile;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +22,7 @@ internal class DeleteOldBundlesBeforeBuild : IBeforeTileAssetBuild
 			this.context = context;
 		}
 
-    public Task<bool> BeforeTileAssetBuildAsync()
+    public Task<bool> BeforeTileAssetBuildAsync(CancellationToken ct)
     {
         // ファイル名にアドレスが含まれる前提で、指定アドレスを含む旧bundleのみ削除
         try
@@ -54,6 +55,7 @@ internal class DeleteOldBundlesBeforeBuild : IBeforeTileAssetBuild
             var bundleFiles = Directory.GetFiles(fullPath, "*.bundle", SearchOption.TopDirectoryOnly);
             foreach (var f in bundleFiles)
             {
+                ct.ThrowIfCancellationRequested();
                 var name = Path.GetFileName(f);
                 if (string.IsNullOrEmpty(name)) continue;
                 var lower = name.ToLowerInvariant();

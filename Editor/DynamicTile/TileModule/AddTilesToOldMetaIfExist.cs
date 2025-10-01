@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -28,7 +29,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// これにより上書きの代わりに新規追加になるようにします。
         /// 加えて、前の処理のタイルをAddressable Groupに追加することで新規追加後に新旧を両方読めるようにします。
         /// </summary>
-        public async Task<bool> BeforeTileAssetBuildAsync()
+        public async Task<bool> BeforeTileAssetBuildAsync(CancellationToken ct)
         {
             if (IsMetaExistInAssets())
             {
@@ -38,7 +39,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             else
             {
                 // Assets外のケース
-               await AddExistingMetaOutsideAssetsAsync();
+               await AddExistingMetaOutsideAssetsAsync(ct);
             }
             
             Save();
@@ -88,7 +89,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// <summary>
         /// 追加処理で、メタがAssets外にあるケースです。
         /// </summary>
-        private async Task AddExistingMetaOutsideAssetsAsync()
+        private async Task AddExistingMetaOutsideAssetsAsync(CancellationToken ct)
         {
             // Assets外のケースでは、前回出力フォルダに置いた unitypackage を取り込み、
             // 旧メタをマージしつつ旧プレハブを Addressables に登録します（上書きではなく追加）。
@@ -113,7 +114,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
             // unitypackageをインポートしてプレハブ群を取り込みます。
             // 非同期的にインポートする必要があります。もし同期的にした場合、Unityエディタに処理が戻らず、インポートしたいファイルが一部欠落したまま次の処理に移り、デバッグが難しい問題を引き起こします。
-            var ok = await EditorAsync.ImportPackageAsync(packagePath, false); 
+            var ok = await EditorAsync.ImportPackageAsync(packagePath, ct, false); 
             if (!ok)
             {
                 Debug.LogError("import failed.");

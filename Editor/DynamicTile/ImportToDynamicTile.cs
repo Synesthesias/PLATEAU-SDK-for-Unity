@@ -86,7 +86,7 @@ namespace PLATEAU.Editor.DynamicTile
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                succeed = await dynamicTileExporter.CompleteProcessingAsync();
+                succeed = await dynamicTileExporter.CompleteProcessingAsync(cancelToken);
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");

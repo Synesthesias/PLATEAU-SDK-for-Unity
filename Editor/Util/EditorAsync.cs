@@ -11,10 +11,14 @@ namespace PLATEAU.Util
     public static class EditorAsync
     {
         // 1) 次のエディタフレーム（n回）まで返す
-        public static async Task YieldToEditorAsync(int frames = 1)
+        public static async Task YieldToEditorAsync(CancellationToken cancelToken, int frames = 1)
         {
             for (int i = 0; i < frames; i++)
+            {
+                cancelToken.ThrowIfCancellationRequested();
                 await Task.Yield(); // UnitySynchronizationContext 経由でメインスレ継続
+            }
+                
         }
 
         // 2) エディタがアイドル(=インポート/再コンパイルが終わる)まで待つ
@@ -74,14 +78,14 @@ namespace PLATEAU.Util
         }
 
         // 4) ImportPackageをTask化（完了/失敗イベント待ち ＋ アイドル待ち）
-        public static async Task<bool> ImportPackageAsync(string path, bool interactive = false,
+        public static async Task<bool> ImportPackageAsync(string path, CancellationToken ct, bool interactive = false,
             int extraYieldFrames = 1)
         {
             var tcs = new TaskCompletionSource<bool>();
             if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path))
             {
                 Debug.LogError($"ImportPackageAsync: package not found. path={path}");
-                await YieldToEditorAsync(extraYieldFrames);
+                await YieldToEditorAsync(ct, extraYieldFrames);
                 return false;
             }
 
@@ -118,8 +122,8 @@ namespace PLATEAU.Util
             EditorApplication.delayCall += () => AssetDatabase.ImportPackage(path, interactive);
 
             var ok = await tcs.Task; // 完了/失敗を待つ
-            await WaitUntilEditorIdleAsync(); // Importキュー/再コンパイルの完了待ち
-            await YieldToEditorAsync(extraYieldFrames); // 念のため1フレームほど返す
+            await WaitUntilEditorIdleAsync(ct); // Importキュー/再コンパイルの完了待ち
+            await YieldToEditorAsync(ct, extraYieldFrames); // 念のため1フレームほど返す
             return ok;
         }
     }

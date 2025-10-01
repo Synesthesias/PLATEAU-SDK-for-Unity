@@ -55,7 +55,8 @@ namespace PLATEAU.Tests.TestDynamicTile
 
 		[UnityTest]
 		public IEnumerator Test_Rebuild_AppliesPrefabChanges()
-		{
+        {
+            var dummyCancelToken = new CancellationTokenSource().Token;
 			// Arrange: 出力先と一時シーンの準備
 			outputDir = OutputDirPathInAssets;
 			SetUpSceneAndOutput(outputDir);
@@ -73,7 +74,7 @@ namespace PLATEAU.Tests.TestDynamicTile
 
 			// 2) TilePrefabsToScene: 元となったプレハブをシーンへ配置（EditingTiles 配下）
 			var rebuilder = new TileRebuilder();
-			yield return rebuilder.TilePrefabsToScene(manager).AsIEnumerator();
+			yield return rebuilder.TilePrefabsToScene(manager, dummyCancelToken).AsIEnumerator();
 
 			var editingRoot = GameObject.Find(TileRebuilder.EditingTilesParentName);
 			Assert.IsNotNull(editingRoot, "EditingTiles ルートが存在する");

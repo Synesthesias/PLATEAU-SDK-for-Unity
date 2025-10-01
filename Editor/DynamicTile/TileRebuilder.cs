@@ -6,6 +6,7 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace PLATEAU.Editor.DynamicTile
     /// <summary>
     /// タイルを再生成します。
     /// これは次の手順を踏みます。
-    /// ・<see cref="TilePrefabsToSceneAll"/>を利用し、セットバンドル化のもととなったプレハブをロードします。
+    /// ・<see cref="TilePrefabsToScene(PLATEAU.DynamicTile.PLATEAUTileManager)"/>を利用し、セットバンドル化のもととなったプレハブをロードします。
     /// ・シーンに配置されたプレハブインスタンスが外部から変更されるものとします。
     /// ・<see cref="Rebuild"/>を利用し、その変更をプレハブに再適用して再度アセットバンドル化します。
     /// この処理を動作確認するためにUnityのメニューバーから実行する機能が<see cref="TileRebuilderMenuItem"/>にあります。
@@ -31,26 +32,26 @@ namespace PLATEAU.Editor.DynamicTile
         /// <summary>
         /// タイルの元となったプレハブをすべてシーンに配置します。
         /// </summary>
-        public async Task TilePrefabsToScene(PLATEAUTileManager manager)
+        public async Task TilePrefabsToScene(PLATEAUTileManager manager, CancellationToken ct)
         {
-            await TilePrefabsToSceneInternal(manager, null);
+            await TilePrefabsToSceneInternal(manager, null, ct);
         }
         
         /// <summary>
         /// タイルの元となったプレハブのうち、引数で指定されたものをシーンに配置します。
         /// </summary>
-        public async Task TilePrefabsToScene(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles)
+        public async Task TilePrefabsToScene(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles, CancellationToken ct)
         {
-            await TilePrefabsToSceneInternal(manager, tiles);
+            await TilePrefabsToSceneInternal(manager, tiles, ct);
         }
 
-        private async Task TilePrefabsToSceneInternal(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles)
+        private async Task TilePrefabsToSceneInternal(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles, CancellationToken ct)
         {
             var context = CreateContext(manager);
             if (context.IsExcludeAssetFolder)
             {
                 // unitypackageを読み込み
-                var ok = await EditorAsync.ImportPackageAsync(context.UnityPackagePath);
+                var ok = await EditorAsync.ImportPackageAsync(context.UnityPackagePath, ct);
                 if (!ok)
                 {
                     Debug.LogError("failed to import unity package.");
@@ -121,6 +122,7 @@ namespace PLATEAU.Editor.DynamicTile
 
         private async Task RebuildInternal(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles)
         {
+            var dummyCancelToken = new CancellationTokenSource().Token;
             var context = CreateContext(manager);
             if (tiles != null)
             {
@@ -186,7 +188,7 @@ namespace PLATEAU.Editor.DynamicTile
                 return;
             }
 
-            if (!await BeforeTileAssetsBuilds())
+            if (!await BeforeTileAssetsBuilds(dummyCancelToken))
             {
                 Debug.LogError("failed on BeforeTileAssetsBuilds.");
                 return;
@@ -233,11 +235,11 @@ namespace PLATEAU.Editor.DynamicTile
             }
         }
 
-        private async Task<bool> BeforeTileAssetsBuilds()
+        private async Task<bool> BeforeTileAssetsBuilds(CancellationToken ct)
         {
             foreach (var before in beforeTileAssetBuilds)
             {
-                var ok = await before.BeforeTileAssetBuildAsync();
+                var ok = await before.BeforeTileAssetBuildAsync(ct);
                 if (!ok)
                 {
                     Debug.LogError("failed to exec beforeTileAssetsBuild.");

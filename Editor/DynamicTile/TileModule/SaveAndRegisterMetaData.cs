@@ -1,6 +1,7 @@
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.TileAddressables;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -19,8 +20,9 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             this.context = context;
         }
         
-        public Task<bool> BeforeTileAssetBuildAsync()
+        public Task<bool> BeforeTileAssetBuildAsync(CancellationToken ct)
         {
+            ct.ThrowIfCancellationRequested();
             var metaStore = context.MetaStore;
             var groupName = context.AddressableGroupName;
             

@@ -1,5 +1,6 @@
 using PLATEAU.DynamicTile;
 using PLATEAU.Util.Async;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -23,7 +24,9 @@ namespace PLATEAU.Editor.DynamicTile
                 Debug.LogError("tile manager is not found.");
                 return;
             }
-            new TileRebuilder().TilePrefabsToScene(manager).ContinueWithErrorCatch();
+
+            var dummyCancelToken = new CancellationTokenSource().Token; // メニューバーからの実行ではキャンセルは不要とします。
+            new TileRebuilder().TilePrefabsToScene(manager, dummyCancelToken).ContinueWithErrorCatch();
         }
 
         /// <summary>
@@ -62,7 +65,8 @@ namespace PLATEAU.Editor.DynamicTile
                 return;
             }
 
-            new TileRebuilder().TilePrefabsToScene(manager, selected).ContinueWithErrorCatch();
+            var dummyCancelToken = new CancellationTokenSource().Token; // メニューバーからの実行ではキャンセルは不要とします。
+            new TileRebuilder().TilePrefabsToScene(manager, selected, dummyCancelToken).ContinueWithErrorCatch();
         }
 
         /// <summary>

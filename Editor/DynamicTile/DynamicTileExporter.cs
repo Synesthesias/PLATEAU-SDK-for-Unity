@@ -4,6 +4,7 @@ using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -143,14 +144,15 @@ namespace PLATEAU.DynamicTile
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// 成否を返します。
         /// </summary>
-        public async Task<bool> CompleteProcessingAsync()
+        public async Task<bool> CompleteProcessingAsync(CancellationToken ct)
         {
             try
             {
                 // 与えられたビルド直前の処理を実行
                 foreach (var before in beforeTileAssetBuilds)
                 {
-                    var ok = await before.BeforeTileAssetBuildAsync();
+                    ct.ThrowIfCancellationRequested();
+                    var ok = await before.BeforeTileAssetBuildAsync(ct);
                     if (!ok)
                     {
                         Debug.LogError("failed on beforeTileAssetsBuild.");
@@ -175,6 +177,7 @@ namespace PLATEAU.DynamicTile
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)
                 {
+                    ct.ThrowIfCancellationRequested();
                     bool result = after.AfterTileAssetBuild();
                     if (!result) return false;
                 }
