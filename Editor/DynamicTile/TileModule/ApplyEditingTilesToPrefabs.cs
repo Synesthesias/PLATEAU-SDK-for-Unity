@@ -20,7 +20,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
         public bool OnTileGenerateStart()
         {
-            var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
+            var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 			if (tiles == null || tiles.Length == 0)
             {
                 return true; // 対象無し
