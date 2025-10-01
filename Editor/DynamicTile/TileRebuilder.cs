@@ -174,11 +174,11 @@ namespace PLATEAU.Editor.DynamicTile
             // タイルをビルドしたあとの処理を列挙します。
             afterTileAssetBuilds = new IAfterTileAssetBuild[]
             {
-                initializeTileManager,
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
                 exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。cleanupTempFolderより前に行ってください。
                 cleanUpTempFolder, // 不要なフォルダを消します。
                 new CleanupEditingTilesInScene(), // シーン上のEditingTilesをクリーンアップ
+                initializeTileManager,
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
             

@@ -37,6 +37,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                     TileManagerGenerator.FocusSceneViewCameraToTiles(manager);
                 });
             };
+            
+            EditorApplication.QueuePlayerLoopUpdate();
 			return true;
 		}
 	}

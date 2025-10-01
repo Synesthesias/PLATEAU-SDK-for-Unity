@@ -165,6 +165,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 					EditorApplication.update += NudgeOnce;
                 }
             };
+            
+            EditorApplication.QueuePlayerLoopUpdate();
         }
     }
 }
