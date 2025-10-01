@@ -82,12 +82,21 @@ namespace PLATEAU.Util
             int extraYieldFrames = 1)
         {
             var tcs = new TaskCompletionSource<bool>();
+            ct.ThrowIfCancellationRequested();
             if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path))
             {
                 Debug.LogError($"ImportPackageAsync: package not found. path={path}");
                 await YieldToEditorAsync(ct, extraYieldFrames);
                 return false;
             }
+
+            var cancelled = false;
+            using var ctr = ct.Register(() =>
+            {
+                cancelled = true;
+                Unsub();
+                tcs.TrySetCanceled(ct);
+            });
 
             void Done(string _)
             {
@@ -119,7 +128,11 @@ namespace PLATEAU.Util
             AssetDatabase.importPackageCancelled += Cancel;
 
             // UIや内部ステートと競合しないよう、いったんエディタに返してから実行
-            EditorApplication.delayCall += () => AssetDatabase.ImportPackage(path, interactive);
+            EditorApplication.delayCall += () =>
+            {
+                if (cancelled) return;
+                AssetDatabase.ImportPackage(path, interactive);
+            };
 
             var ok = await tcs.Task; // 完了/失敗を待つ
             await WaitUntilEditorIdleAsync(ct); // Importキュー/再コンパイルの完了待ち

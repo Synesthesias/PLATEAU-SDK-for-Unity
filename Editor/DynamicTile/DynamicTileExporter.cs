@@ -179,7 +179,14 @@ namespace PLATEAU.DynamicTile
                 {
                     ct.ThrowIfCancellationRequested();
                     bool result = after.AfterTileAssetBuild();
-                    if (!result) return false;
+                    if (!result)
+                    {
+                        foreach (var f in onTileBuildFailed)
+                        {
+                            f.OnTileBuildFailed();
+                        }
+                        return false;
+                    }
                 }
                 
                 return true;

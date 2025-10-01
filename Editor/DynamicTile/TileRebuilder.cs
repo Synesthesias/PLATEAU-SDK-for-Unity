@@ -27,6 +27,8 @@ namespace PLATEAU.Editor.DynamicTile
         private IOnTileGenerateStart[] onTileGenerateStarts;
         private IBeforeTileAssetBuild[] beforeTileAssetBuilds;
         private IAfterTileAssetBuild[] afterTileAssetBuilds;
+        private IOnTileGenerationCancelled[] onTileGenerationCancelled;
+        private IOnTileBuildFailed[] onTileBuildFailed;
         public const string EditingTilesParentName = "EditingTiles";
 
         /// <summary>
@@ -179,26 +181,54 @@ namespace PLATEAU.Editor.DynamicTile
                 new CleanupEditingTilesInScene(), // シーン上のEditingTilesをクリーンアップ
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
+            
+            onTileGenerationCancelled = new IOnTileGenerationCancelled[]
+            {
+                tileEditorProcedure
+            };
+
+            onTileBuildFailed = new IOnTileBuildFailed[] { tileEditorProcedure };
 
 
             // 実行
             if (!StartTileGeneration())
             {
                 Debug.LogError("failed on startTileGeneration.");
+                Cancel();
                 return;
             }
 
             if (!await BeforeTileAssetsBuilds(dummyCancelToken))
             {
                 Debug.LogError("failed on BeforeTileAssetsBuilds.");
+                Cancel();
                 return;
             }
-            AddressablesUtility.BuildAddressables(context.BuildMode);
+            
+            try
+            {
+                // addressableビルド
+                AddressablesUtility.BuildAddressables(context.BuildMode);
+            }
+            catch (Exception ex)
+            {
+                Cancel();
+                foreach(var f in onTileBuildFailed) f.OnTileBuildFailed();
+                Debug.LogError($"Addressables build failed: {ex}");
+                
+            }
+            
             if (!AfterTileAssetsBuilds())
             {
                 Debug.LogError("failed on AfterTileAssetsBuilds.");
+                Cancel();
                 return;
             }
+        }
+
+        private void Cancel()
+        {
+            foreach(var c in onTileGenerationCancelled) c.OnTileGenerationCancelled();
         }
         
         private DynamicTileProcessingContext CreateContext(PLATEAUTileManager manager)
