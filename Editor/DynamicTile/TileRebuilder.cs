@@ -215,7 +215,7 @@ namespace PLATEAU.Editor.DynamicTile
                 Cancel();
                 foreach(var f in onTileBuildFailed) f.OnTileBuildFailed();
                 Debug.LogError($"Addressables build failed: {ex}");
-                
+                return;
             }
             
             if (!AfterTileAssetsBuilds())
