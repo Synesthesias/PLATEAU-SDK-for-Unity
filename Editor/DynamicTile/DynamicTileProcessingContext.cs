@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -51,6 +52,11 @@ namespace PLATEAU.DynamicTile
         /// Assets外のパスかどうか
         /// </summary>
         public bool IsExcludeAssetFolder { get; }
+
+        /// <summary>
+        /// 差分ビルド対象とするタイルのアドレス群。null または空なら全件対象。
+        /// </summary>
+        public HashSet<string> TargetAddresses { get; set; }
 
         /// <summary>
         /// GML数

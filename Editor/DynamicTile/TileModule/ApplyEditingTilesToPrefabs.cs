@@ -1,5 +1,4 @@
 using PLATEAU.DynamicTile;
-using PLATEAU.Util;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,19 +9,26 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// </summary>
     public class ApplyEditingTilesToPrefabs : IOnTileGenerateStart
     {
+        private DynamicTileProcessingContext context;
+        
+        public ApplyEditingTilesToPrefabs(DynamicTileProcessingContext context)
+        {
+            this.context = context;
+        }
+
 
         public bool OnTileGenerateStart()
         {
-			var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
+            var tiles = Object.FindObjectsByType<PLATEAUEditingTile>(FindObjectsSortMode.None);
 			if (tiles == null || tiles.Length == 0)
-            {
-                Debug.LogError("編集中のタイルがありません。");
-                return false;
-            }
+			{
+				return true; // 適用対象が無ければ成功扱い
+			}
 
 			try
 			{
-				foreach (var editingTile in tiles)
+                var targetSet = context.TargetAddresses;
+                foreach (var editingTile in tiles)
 				{
 					if (editingTile == null) continue;
 					var go = editingTile.gameObject;
@@ -35,9 +41,31 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 					if (!PrefabUtility.IsPartOfPrefabInstance(instanceRoot))
 						continue;
 
-					// 変更をプレハブに適用
+                    // 部分対象が指定されている場合はアドレス（プレハブ名）で絞り込む
+                    if (targetSet != null && targetSet.Count > 0)
+                    {
+                        var prefabPathFilter = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
+                        if (string.IsNullOrEmpty(prefabPathFilter))
+                            continue;
+                        var addressFilter = System.IO.Path.GetFileNameWithoutExtension(prefabPathFilter);
+                        if (string.IsNullOrEmpty(addressFilter) || !targetSet.Contains(addressFilter))
+                            continue;
+                    }
+
+                    // 変更をプレハブに適用
 					PrefabUtility.ApplyPrefabInstance(instanceRoot, InteractionMode.AutomatedAction);
-                }
+
+					// 念のためプレハブアセットをDirtyにして保存
+					var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
+					if (!string.IsNullOrEmpty(prefabPath))
+					{
+						var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+						if (prefabAsset != null)
+						{
+							EditorUtility.SetDirty(prefabAsset);
+						}
+					}
+				}
 
 				AssetDatabase.SaveAssets();
 				return true;

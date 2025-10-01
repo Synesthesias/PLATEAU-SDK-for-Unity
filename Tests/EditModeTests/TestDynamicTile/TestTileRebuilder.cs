@@ -63,6 +63,9 @@ namespace PLATEAU.Tests.TestDynamicTile
 			// 1) 動的タイルの初回ビルド（アセットバンドル化）
 			yield return ImportDynamicTileOnce(outputDir).AsIEnumerator();
 
+			// リビルド前のアセットバンドル数を取得
+			var preBundleCount = GetBundleCountInGroupFolder();
+
 			// 初回ビルドで PLATEAUTileManager が生成・設定されているはず
 			var manager = Object.FindObjectOfType<PLATEAUTileManager>();
 			Assert.IsNotNull(manager, "PLATEAUTileManager が存在する");
@@ -90,6 +93,10 @@ namespace PLATEAU.Tests.TestDynamicTile
 			// Rebuild 後、EditingTiles ルートはクリーンアップされている
 			Assert.IsNull(GameObject.Find(TileRebuilder.EditingTilesParentName), "Rebuild 後に EditingTiles が削除されている");
 
+			// リビルド後のアセットバンドル数を取得し、前後で一致することを確認
+			var postBundleCount = GetBundleCountInGroupFolder();
+			Assert.AreEqual(preBundleCount, postBundleCount, "リビルド前後でアセットバンドル数が一致する");
+
 			// 4) Addressables 経由で再配置されたタイルに Cube 追加が反映されていることを確認
 			// カメラを動かしてロードを促進
 			var sceneView = SceneView.lastActiveSceneView;
@@ -115,6 +122,20 @@ namespace PLATEAU.Tests.TestDynamicTile
             Assert.IsTrue(tileParent != null, "DynamicTileRootが存在する");
             bool cubeFound = tileParent.GetComponentsInChildren<Transform>(true).Any(t => t.name == "TestCube");
 			Assert.IsTrue(cubeFound, "再配置されたタイル配下に TestCube が存在する（変更が維持されている）");
+		}
+
+		private static int GetBundleCountInGroupFolder()
+		{
+			var bundlesGroupPath = Path.Combine(
+				"Assets",
+				"StreamingAssets",
+				AddressableLoader.AddressableLocalBuildFolderName,
+				"PLATEAUCityObjectGroup_" + Path.GetFileName(OutputDirPathInAssets)).Replace('\\','/');
+			// Asset パスをフルパスへ変換
+			var projectRoot = Directory.GetParent(Application.dataPath).FullName;
+			var fullPath = Path.Combine(projectRoot, bundlesGroupPath).Replace('\\','/');
+			if (!Directory.Exists(fullPath)) return 0;
+			return Directory.GetFiles(fullPath, "*.bundle", SearchOption.TopDirectoryOnly).Length;
 		}
 
 		private void SetUpSceneAndOutput(string outputDirForSetup)

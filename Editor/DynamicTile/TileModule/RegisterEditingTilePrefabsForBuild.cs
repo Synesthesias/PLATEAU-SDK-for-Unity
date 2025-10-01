@@ -41,46 +41,56 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 Debug.LogException(e);
             }
 
-			var groupName = context.AddressableGroupName;
-			var metaStore = context.MetaStore;
+            var groupName = context.AddressableGroupName;
+            var metaStore = context.MetaStore;
 
             // シーン中の編集中タイルを検索します。
+            var processedAddresses = new HashSet<string>();
+
+            // 1) 既存メタに含まれる全アドレスをAddressablesに登録（非選択も含む）
+            var getter = new TilePrefabGetter();
+            var allAddresses = getter.GetDistinctAddressesFromMeta(metaStore);
+            foreach (var addr in allAddresses)
+            {
+                if (string.IsNullOrEmpty(addr)) continue;
+                if (!processedAddresses.Add(addr)) continue;
+                var prefab = getter.GetPrefabFromAddress(addr, groupName);
+                if (prefab == null || string.IsNullOrEmpty(prefab.Path)) continue;
+                AddressablesUtility.RegisterAssetAsAddressable(
+                    prefab.Path,
+                    addr,
+                    groupName,
+                    new List<string> { DynamicTileExporter.AddressableLabel });
+            }
+
+            // 2) シーン上の編集中プレハブも登録（新規やメタ外の可能性に対処）。
             var parent = GameObject.Find(TileRebuilder.EditingTilesParentName);
-            if (parent == null)
+            if (parent != null)
             {
-                Debug.LogError("no editing tiles parent found.");
-                return false;
+                var editingTiles = parent.GetComponentsInChildren<PLATEAUEditingTile>(true);
+                if (editingTiles != null && editingTiles.Length > 0)
+                {
+                    foreach (var editingTile in editingTiles)
+                    {
+                        if (editingTile == null) continue;
+                        var instanceRoot = PrefabUtility.GetNearestPrefabInstanceRoot(editingTile.gameObject);
+                        if (instanceRoot == null) instanceRoot = editingTile.gameObject;
+                        if (!PrefabUtility.IsPartOfPrefabInstance(instanceRoot)) continue;
+
+                        var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
+                        if (string.IsNullOrEmpty(prefabPath)) continue;
+                        var address = Path.GetFileNameWithoutExtension(prefabPath);
+                        if (string.IsNullOrEmpty(address)) continue;
+                        if (!processedAddresses.Add(address)) continue;
+
+                        AddressablesUtility.RegisterAssetAsAddressable(
+                            prefabPath,
+                            address,
+                            groupName,
+                            new List<string> { DynamicTileExporter.AddressableLabel });
+                    }
+                }
             }
-			var editingTiles = parent.GetComponentsInChildren<PLATEAUEditingTile>(true);
-			if (editingTiles == null || editingTiles.Length == 0)
-            {
-                Debug.LogError("no editing tiles found.");
-                return false;
-            }
-
-			var processedAddresses = new HashSet<string>();
-			foreach (var editingTile in editingTiles)
-			{
-				if (editingTile == null) continue;
-				var instanceRoot = PrefabUtility.GetNearestPrefabInstanceRoot(editingTile.gameObject);
-				if (instanceRoot == null) instanceRoot = editingTile.gameObject;
-				if (!PrefabUtility.IsPartOfPrefabInstance(instanceRoot)) continue; // プレハブでない
-
-				var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(instanceRoot);
-				if (string.IsNullOrEmpty(prefabPath)) continue;
-
-				var address = Path.GetFileNameWithoutExtension(prefabPath);
-				if (string.IsNullOrEmpty(address)) continue;
-				if (!processedAddresses.Add(address)) continue; // 重複防止
-
-				// Addressables 登録
-				AddressablesUtility.RegisterAssetAsAddressable(
-					prefabPath,
-					address,
-					groupName,
-					new List<string> { DynamicTileExporter.AddressableLabel });
-                
-			}
             
             return true;
         }
