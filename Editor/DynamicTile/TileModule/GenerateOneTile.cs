@@ -133,8 +133,8 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
             context.AssetConfig.SrcGameObj = target;
 
-            var baseFolderAssetPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
-            var saveFolderAssetPath = AssetPathUtil.CreateDirectoryWithIncrementalNameIfExist(baseFolderAssetPath);
+            var saveFolderAssetPath = Path.Combine(context.AssetConfig.AssetPath, target.name);
+            AssetPathUtil.CreateDirectoryIfNotExist(saveFolderAssetPath);
             var saveFolderFullPath = AssetPathUtil.GetFullPath(saveFolderAssetPath);
 
             var convertedObject = PrepareAndConvert(context.AssetConfig, saveFolderFullPath, onError);
@@ -254,7 +254,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             Debug.Log($"プレハブをAddressableに登録しました: {address} path : {prefabPath}");
 
             // メタ情報を登録
-            metaStore.AddMetaInfo(address, bounds, 0, zoomLevel);
+            metaStore.AddMetaInfo(address, groupName, bounds, 0, zoomLevel);
 
         }
         

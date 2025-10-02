@@ -40,6 +40,7 @@ namespace PLATEAU.Tests.TestDynamicTile
         [UnityTest]
         public IEnumerator Test_ImportTileInAssetsTwice()
         {
+            yield return null;
             outputDir = OutputDirPathInAssets;
             SetUp(outputDir);
             
@@ -52,10 +53,12 @@ namespace PLATEAU.Tests.TestDynamicTile
             // 1回目のインポート
             yield return TestImport(gridCodesA, new string[]{gridCodeStrA});
             EditorSceneManager.SaveOpenScenes();
+            yield return null;
             DeletePackedImages();
             yield return null;
             // 2回目のインポート
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
+            yield return null;
         }
 
         /// <summary>
@@ -265,6 +268,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             for (int i = 0; i < 10; i++)
             {
                 sceneView.pivot += Vector3.forward * 0.05f;
+                manager.UpdateCameraPosition(sceneView.pivot);
                 EditorApplication.QueuePlayerLoopUpdate();
                 for (int j = 0; j < 10; j++)
                 {

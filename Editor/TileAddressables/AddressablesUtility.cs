@@ -1,4 +1,3 @@
-using PLATEAU.DynamicTile;
 using System;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -6,7 +5,6 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 
@@ -270,8 +268,8 @@ namespace PLATEAU.Editor.TileAddressables
 
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, path);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameLoad);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
             
             // addressables_content_state.binもビルド先に保存します。これは差分ビルドで利用します。
             settings.ContentStateBuildPath = BuildPath(settings);
@@ -307,6 +305,11 @@ namespace PLATEAU.Editor.TileAddressables
 
             // bundleを個別にパックする
             groupSchema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+
+            // ハッシュを含まないファイル名とinternalIDを登録します。
+            // こうしないと、TileRebuilderを使って差分ビルドした際に、古いバンドルが残ってしまいます。
+            groupSchema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+            groupSchema.InternalIdNamingMode = BundledAssetGroupSchema.AssetNamingMode.Filename;
         }
 
         /// <summary>

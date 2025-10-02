@@ -1,5 +1,6 @@
 ﻿using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -110,6 +111,8 @@ namespace PLATEAU.DynamicTile
                     if (currentCamera != null)
                         _ = tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
                 }
+                
+                EditorGUILayout.LabelField("OutputPath: " + tileManager.OutputPath);
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
@@ -177,7 +180,7 @@ namespace PLATEAU.DynamicTile
                     serializedObject.ApplyModifiedProperties();
 
                     tileManager.ClearTiles();
-                    tileManager.InitializeTiles().Wait();
+                    tileManager.InitializeTiles().ContinueWithErrorCatch();
                 }
             }
         }

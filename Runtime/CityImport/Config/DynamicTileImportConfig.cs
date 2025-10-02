@@ -41,5 +41,14 @@ namespace PLATEAU.CityImport.Config
         /// LOD1の建物にテクスチャを貼るか
         /// </summary>
         public bool Lod1Texture { get; set; } = false;
+        
+        public DynamicTileImportConfig() { }
+
+        public DynamicTileImportConfig(ImportType importType, string outputPath, bool lod1Texture)
+        {
+            ImportType = importType;
+            OutputPath = outputPath;
+            Lod1Texture = lod1Texture;
+        }
     }
 }

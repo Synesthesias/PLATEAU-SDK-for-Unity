@@ -1,7 +1,6 @@
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
-using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.Threading;
@@ -87,7 +86,7 @@ namespace PLATEAU.Editor.DynamicTile
             {
                 progressDisplay?.SetProgress(TileProgressTitle, 90f, "最終処理を実行中...");
                 // 実際の完了処理をDynamicTileExporterに委譲
-                succeed = dynamicTileExporter.CompleteProcessing();
+                succeed = await dynamicTileExporter.CompleteProcessingAsync(cancelToken);
             }catch (System.OperationCanceledException)
             {
                 Debug.Log("動的タイルインポート処理がキャンセルされました。");

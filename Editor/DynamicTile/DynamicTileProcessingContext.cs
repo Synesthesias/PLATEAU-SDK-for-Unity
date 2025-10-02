@@ -1,10 +1,9 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
+using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
-using System;
 using System.IO;
-using UnityEditor;
-using UnityEditorInternal;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PLATEAU.DynamicTile
@@ -55,19 +54,42 @@ namespace PLATEAU.DynamicTile
         public bool IsExcludeAssetFolder { get; }
 
         /// <summary>
+        /// <see cref="TileRebuilder"/>によるリビルドの時のみ利用します。
+        /// 差分ビルド対象とするタイルのアドレス群です。。null または空なら全件対象とします。
+        /// </summary>
+        public HashSet<string> TargetAddresses { get; set; }
+
+        /// <summary>
         /// GML数
         /// </summary>
         public int GmlCount { get; set; }
-        
-        /// <summary>
-        /// 前と同じフォルダかどうか。trueなら上書きではなく追加とすべきです。
-        /// </summary>
-        public bool IsSameOutputPathAsPrevious { get;}
 
         /// <summary>
         /// 読み込み完了したGML数
         /// </summary>
         private int loadedGmlCount;
+
+        /// <summary>
+        /// 出力するunitypackageのパスです。（Assets外への出力のみ）
+        /// </summary>
+        public string UnityPackagePath
+        {
+            get
+            {
+                return Path.Combine(BuildFolderPath, UnityPackageFileName);
+            }
+        }
+
+        /// <summary>
+        /// 出力するunitypackageのファイル名です。（Assets外への出力のみ）
+        /// </summary>
+        public string UnityPackageFileName
+        {
+            get
+            {
+                return $"{AddressableGroupName}_Prefabs.unitypackage";
+            }
+        }
 
         /// <summary>
         /// 読み込み完了したGML数をインクリメントして返す
@@ -83,36 +105,28 @@ namespace PLATEAU.DynamicTile
         /// <param name="config">DynamicTileインポート設定</param>
         public DynamicTileProcessingContext(DynamicTileImportConfig config)
         {
-            if (string.IsNullOrEmpty(config.OutputPath))
+            if (config == null) throw new System.ArgumentNullException(nameof(config));
+            var outputPath = config.OutputPath;
+            if (string.IsNullOrEmpty(outputPath))
             {
                 Debug.LogError("output path is not set.");
+                outputPath = "";
             }
             
             Config = config;
 
             AssetConfig = ConvertToAssetConfig.DefaultValue;
-            IsExcludeAssetFolder = !string.IsNullOrEmpty(config.OutputPath) && !IsAssetPath(config.OutputPath);
+            IsExcludeAssetFolder = !string.IsNullOrEmpty(outputPath) && !IsAssetPath(outputPath);
 
             // Assetsフォルダー外のパスを指定している場合は、プレハブ一時保存パスを使用
-            AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : config.OutputPath;
-            BuildFolderPath = config.OutputPath;
+            AssetConfig.AssetPath = IsExcludeAssetFolder ? PrefabsTempSavePath : outputPath;
+            BuildFolderPath = outputPath;
 
             // AddressableGroupNameを生成
             AddressableGroupName = GenerateAddressableGroupName();
 
             // MetaStoreを生成
             MetaStore = ScriptableObject.CreateInstance<PLATEAUDynamicTileMetaStore>();
-
-            IsSameOutputPathAsPrevious = EditorPrefs.GetString(EditorPrefsKey) == BuildFolderPath;
-            EditorPrefs.SetString(EditorPrefsKey, BuildFolderPath);
-        }
-
-        private string EditorPrefsKey
-        {
-            get
-            {
-                return $"PLATEAU_LastBuildFolder";
-            }
         }
 
         /// <summary>
@@ -177,6 +191,16 @@ namespace PLATEAU.DynamicTile
                 string normalizedAssetPath = AssetPathUtil.NormalizeAssetPath(AssetConfig.AssetPath);
                 string dataPath = Path.Combine(normalizedAssetPath, AddressName + ".asset").Replace('\\', '/');
                 return dataPath;
+            }
+        }
+
+        public AddressablesUtility.TileBuildMode BuildMode
+        {
+            get
+            {
+                return TileCatalogSearcher.FindCatalogFiles(BuildFolderPath, true).Length == 0
+                    ? AddressablesUtility.TileBuildMode.New
+                    : AddressablesUtility.TileBuildMode.Add;
             }
         }
     }

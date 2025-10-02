@@ -1,16 +1,10 @@
-﻿using PlasticGui.WorkspaceWindow.Locks;
-using PLATEAU.CityInfo;
-using PLATEAU.Dataset;
-using PLATEAU.PolygonMesh;
-using PLATEAU.RoadNetwork.Graph;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 public class PLATEAUOrthographicViewCapture : EditorWindow

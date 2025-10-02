@@ -21,13 +21,6 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// </summary>
         public bool OnTileGenerateStart()
         {
-            // 連続で同じフォルダが指定されたときはタイルを追加するので、そのケースはクリーンアップをしません。
-            // そのため、前と違うフォルダが指定されたときの処理前に初めてクリーンアップします。
-            if (!context.IsSameOutputPathAsPrevious)
-            {
-                Cleanup();
-            }
-
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile();
             if (string.IsNullOrEmpty(profileID))
@@ -50,6 +43,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         public bool AfterTileAssetBuild()
         {
             AddressablesUtility.BackToDefaultProfile();
+            Cleanup();
             return true;
         }
 

@@ -37,7 +37,7 @@ namespace PLATEAU.DynamicTile
             Timeout
         }
 
-        public static readonly string TILE_PARENT_NAME = "DynamicTileRoot"; // タイルの親Transformの名前
+        public static readonly string TileParentName = "DynamicTileRoot"; // タイルの親Transformの名前
         private Transform TileParent { get; set; } // タイルの親Transform
 
         /// <summary>
@@ -57,6 +57,12 @@ namespace PLATEAU.DynamicTile
 
         [SerializeField]
         private bool showDebugTileInfo = false; // Debug情報を表示するかどうか
+
+        /// <summary>
+        /// インポート設定でどのパスを指定したか
+        /// </summary>
+        [SerializeField] private string outputPath;
+        public string OutputPath { get => outputPath; set => outputPath = value; }
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
@@ -85,6 +91,19 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
 
         private PLATEAUDynamicTileLoadTask loadTask; // タイルのロードタスクを管理するクラス
+        
+        /// <summary> カタログの存在するディレクトリを返します。 </summary>
+        public string CatalogDirectory
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(catalogPath))
+                    return string.Empty;
+                var normalized = catalogPath.Replace('\\', '/');
+                var lastSlash = normalized.LastIndexOf('/');
+                return lastSlash >= 0 ? normalized.Substring(0, lastSlash) : string.Empty;
+            }
+        }
 
         /// <summary>
         /// 現在タスクが実行中かどうかを示すプロパティ。
@@ -95,7 +114,6 @@ namespace PLATEAU.DynamicTile
         /// Instance化のコルーチンが実行中かどうかを示すプロパティ。
         /// </summary>
         public bool IsCoroutineRunning => loadTask != null && loadTask.IsCoroutineRunning;
-
 
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
@@ -110,10 +128,10 @@ namespace PLATEAU.DynamicTile
 
             if (TileParent == null)
             {
-                TileParent = transform.Find(TILE_PARENT_NAME);
+                TileParent = transform.Find(TileParentName);
                 if (TileParent == null)
                 {
-                    TileParent = new GameObject(TILE_PARENT_NAME).transform; // タイルの親Transformを作成
+                    TileParent = new GameObject(TileParentName).transform; // タイルの親Transformを作成
                     TileParent.transform.SetParent(transform, false); // マネージャーのTransformの子として設定
 
                     //　暫定的にシーン上のPLATEAUInstancedCityModelを利用

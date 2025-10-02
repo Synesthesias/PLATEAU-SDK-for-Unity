@@ -4,6 +4,8 @@ using PLATEAU.Editor.DynamicTile.TileModule;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,6 +48,7 @@ namespace PLATEAU.DynamicTile
             // 各処理を生成します。
             var tileManagerGenerator = new TileManagerGenerator(context);
             var tileAddressableConfigMaker = new TileAddressableConfigMaker(context);
+            var initializeTileManagerAndFocus = new InitializeTileManagerAndFocus();
             var tileEditorProcedure = new TileGenEditorProcedure();
             var setupBuildPath = new SetUpTileBuildPath(context);
             var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
@@ -53,6 +56,7 @@ namespace PLATEAU.DynamicTile
             var generateOneTile = new GenerateOneTile(context, progressDisplay);
             var saveAndRegisterMetaData = new SaveAndRegisterMetaData(context);
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
+            var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);
             
             // フェイズ1: 事前処理
             // 動的タイル出力の事前処理を列挙します。
@@ -61,7 +65,6 @@ namespace PLATEAU.DynamicTile
                 tileEditorProcedure, // エディタ上での準備
                 setupBuildPath, // Addressableビルドパスを設定
                 tileManagerGenerator, // 古いTileManagerを消します。
-                cleanUpTempFolder, // 前回の処理で残った不要なフォルダを消します。
                 tileAddressableConfigMaker, // Addressableの設定を行います。
                 setReferencePointToSameIfExist // 既存のタイルがあればそれと同じ基準点を使うようにします。
             };
@@ -77,7 +80,7 @@ namespace PLATEAU.DynamicTile
             // タイルをビルドする直前の処理を列挙します。
             beforeTileAssetBuilds = new IBeforeTileAssetBuild[]
             {
-                addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します
+                addTilesToOldMetaIfExist, // 前と同じフォルダに出力するなら追加します。前のフォルダにあるunity packageのインポートも行います。
                 saveAndRegisterMetaData, // メタデータを保存・登録
                 tileEditorProcedure // エディタ上での準備。処理順の都合上、配列の最後にしてください。
             };
@@ -87,7 +90,10 @@ namespace PLATEAU.DynamicTile
             afterTileAssetBuilds = new IAfterTileAssetBuild[]
             {
                 tileManagerGenerator, // TileManagerを生成します。
+                initializeTileManagerAndFocus, // タイル初期化とシーンビューのフォーカス
                 tileAddressableConfigMaker, // Addressableの設定を消去し元に戻します。
+                exportUnityPackage, // 生成したプレハブ群をUnityPackageとしてエクスポートします。cleanupTempFolderより前に行ってください。
+                cleanUpTempFolder, // 不要なフォルダを消します。
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
             
@@ -138,14 +144,21 @@ namespace PLATEAU.DynamicTile
         /// DynamicTileの完了処理を行います（メタストア保存、Addressable処理、マネージャー設定）
         /// 成否を返します。
         /// </summary>
-        public bool CompleteProcessing()
+        public async Task<bool> CompleteProcessingAsync(CancellationToken ct)
         {
             try
             {
                 // 与えられたビルド直前の処理を実行
                 foreach (var before in beforeTileAssetBuilds)
                 {
-                    before.BeforeTileAssetBuild();
+                    ct.ThrowIfCancellationRequested();
+                    var ok = await before.BeforeTileAssetBuildAsync(ct);
+                    if (!ok)
+                    {
+                        Debug.LogError("failed on beforeTileAssetsBuild.");
+                        foreach(var f in onTileBuildFailed) f.OnTileBuildFailed();
+                        return false;
+                    }
                 }
                 //uv4に入ってる属性情報が消えてしまうのでStripさせないようにしたうえでビルドする
                 //MEMO: AssetBundleが大幅に肥大化してしまうようであればuv4を明示的に参照するシェーダーを用意するなどしてstrip対象にさせないようなアプローチも検討
@@ -154,10 +167,7 @@ namespace PLATEAU.DynamicTile
                 {
                     PlayerSettings.stripUnusedMeshComponents = false;
                     // Addressablesのビルドを実行
-                    var buildMode = TileCatalogSearcher.FindCatalogFiles(context.BuildFolderPath, true).Length == 0
-                        ? AddressablesUtility.TileBuildMode.New
-                        : AddressablesUtility.TileBuildMode.Add;
-                    AddressablesUtility.BuildAddressables(buildMode);
+                    AddressablesUtility.BuildAddressables(context.BuildMode);
                 }
                 finally
                 {
@@ -167,8 +177,16 @@ namespace PLATEAU.DynamicTile
                 // ビルド後の処理で与えられたものを実行します
                 foreach (var after in afterTileAssetBuilds)
                 {
+                    ct.ThrowIfCancellationRequested();
                     bool result = after.AfterTileAssetBuild();
-                    if (!result) return false;
+                    if (!result)
+                    {
+                        foreach (var f in onTileBuildFailed)
+                        {
+                            f.OnTileBuildFailed();
+                        }
+                        return false;
+                    }
                 }
                 
                 return true;

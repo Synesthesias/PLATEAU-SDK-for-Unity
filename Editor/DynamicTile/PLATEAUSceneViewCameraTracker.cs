@@ -118,6 +118,7 @@ namespace PLATEAU.DynamicTile
             EditorApplication.projectChanged -= OnProjectChanged;
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorSceneManager.sceneOpened -= OnSceneOpened;
+            CompilationPipeline.compilationStarted -= BeforeScriptCompile;
             PLATEAUSceneViewCameraTracker.Release();
 
             IsRunning = false;

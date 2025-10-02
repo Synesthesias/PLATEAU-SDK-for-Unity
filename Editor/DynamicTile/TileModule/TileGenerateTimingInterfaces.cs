@@ -1,4 +1,6 @@
 using PLATEAU.CityImport.Import;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PLATEAU.Editor.DynamicTile.TileModule
 {
@@ -23,10 +25,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     {
         /// <summary> 事前処理を行います。</summary>
         /// <returns>成否を返します。</returns>
-        public bool OnTileGenerateStart();
+        bool OnTileGenerateStart();
 
         /// <summary>例外が補捉れた場合の処理です。</summary>
-        public void OnTileGenerateStartFailed();
+        void OnTileGenerateStartFailed();
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     internal interface IOnOneTileImported
     {
         /// <returns>成否を返します。</returns>
-        public bool OnOneTileImported(TileImportResult importResult);
+        bool OnOneTileImported(TileImportResult importResult);
     }
     
     /// <summary>
@@ -44,7 +46,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     internal interface IBeforeTileAssetBuild
     {
         /// <returns>成否を返します。</returns>
-        public bool BeforeTileAssetBuild();
+        Task<bool> BeforeTileAssetBuildAsync(CancellationToken ct);
     }
     
     /// <summary>
@@ -53,16 +55,16 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     internal interface IAfterTileAssetBuild
     {
         /// <returns>成否を返します。</returns>
-        public bool AfterTileAssetBuild();
+        bool AfterTileAssetBuild();
     }
 
     internal interface IOnTileGenerationCancelled
     {
-        public void OnTileGenerationCancelled();
+        void OnTileGenerationCancelled();
     }
 
     internal interface IOnTileBuildFailed
     {
-        public void OnTileBuildFailed();
+        void OnTileBuildFailed();
     }
 }
