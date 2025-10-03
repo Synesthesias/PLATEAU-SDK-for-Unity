@@ -106,6 +106,18 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// CityModelコンポーネントを取得します。
+        /// </summary>
+        public PLATEAUInstancedCityModel CityModel
+        {
+            get
+            {
+                if (TileParent == null) return null;
+                return TileParent.GetComponent<PLATEAUInstancedCityModel>();
+            }
+        }
+
+        /// <summary>
         /// 現在タスクが実行中かどうかを示すプロパティ。
         /// </summary>
         public bool HasCurrentTask => loadTask != null && loadTask.HasCurrentTask;
@@ -165,7 +177,7 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
-            DynamicTileBoundsTool.AssignParentTiles(DynamicTiles); // タイルの親子関係を設定
+            DynamicTileTool.AssignParentTiles(DynamicTiles); // タイルの親子関係を設定
 
             loadTask = new(this);
             LastCameraPosition = Vector3.zero; 

@@ -95,6 +95,20 @@ namespace PLATEAU.DynamicTile
             return new TileBounds(Extent.min, Extent.max, ZoomLevel);
         }
 
+        /// <summary>
+        /// Addressからパッケージを取得する。
+        /// </summary>
+        private PredefinedCityModelPackage? package = null;
+        public PredefinedCityModelPackage Package
+        {
+            get
+            {
+                if (package == null)
+                    package = DynamicTileTool.GetPackage(Address);
+                return package ?? PredefinedCityModelPackage.None;
+            }
+        }
+
         // /// <summary>
         // /// PLATEAUDynamicTileのコンストラクタ。
         // /// </summary>

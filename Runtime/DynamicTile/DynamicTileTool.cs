@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using PLATEAU.Dataset;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace PLATEAU.DynamicTile
 {
@@ -7,7 +10,7 @@ namespace PLATEAU.DynamicTile
     /// DynamicTileのBoundsまわりの処理をまとめたクラス。
     /// zoomLevel 9 ～ zoomLevel 11まで対応　(zoomLevel追加時は改修が必要）
     /// </summary>
-    internal class DynamicTileBoundsTool
+    internal class DynamicTileTool
     {
         //zoomLevelごとにタイルの上位zoomLevelとなるParentを設定する
         public static void AssignParentTiles(List<PLATEAUDynamicTile> tiles)
@@ -64,6 +67,31 @@ namespace PLATEAU.DynamicTile
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Addressからパッケージを取得する。
+        /// </summary>
+        public static PredefinedCityModelPackage GetPackage(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+                return PredefinedCityModelPackage.None;
+
+            Match match = Regex.Match(address, @"^tile_zoom_\d+_grid_[^_]+_(.+)$");
+            if (match.Success)
+            {
+                string originalName = match.Groups[1].Value;
+                string type = originalName.Split('_').FirstOrDefault();
+                if (string.IsNullOrEmpty(type))
+                    return PredefinedCityModelPackage.None;
+                return DatasetAccessor.FeatureTypeToPackage(type);
+            }
+            else
+            {
+                Debug.LogError("アドレスからパッケージ名が取得できませんでした。Address: " + address);
+            }
+            return PredefinedCityModelPackage.None;
         }
     }
 }
