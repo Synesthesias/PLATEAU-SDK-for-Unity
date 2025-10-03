@@ -49,12 +49,6 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public CancellationTokenSource LoadHandleCancellationTokenSource { get; internal set; }
 
-        /// <summary>
-        /// LOD（Level of Detail）を保持する。
-        /// Addressablesをロードする際の親Transform取得用。
-        /// </summary>
-        public int Lod { get; private set; } = 0;
-
         public int ZoomLevel { get; private set; } = 0;
         
         public string GroupName { get; private set; }
@@ -109,36 +103,6 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-        // /// <summary>
-        // /// PLATEAUDynamicTileのコンストラクタ。
-        // /// </summary>
-        // public PLATEAUDynamicTile(string address, int lod, Bounds bounds, int zoomLevel)
-        // {
-        //     Address = address;
-        //     Lod = lod;
-        //     ZoomLevel = zoomLevel;
-        //     ChildrenTiles = new List<PLATEAUDynamicTile>();
-        //
-        //     if (bounds.size != Vector3.zero)
-        //     {
-        //         Extent = bounds;
-        //     }
-        //     else
-        //     {
-        //         // 現状この処理は未使用なのでここで行っているが、FindObjectOfTypeは処理コストが高く、オブジェクトが見つからない可能性があるため、
-        //         // もし使用する場合GeoReferenceの取得は各Tileの生成前に一度だけ行ってTileに渡すのが望ましい。
-        //         var geo = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>().GeoReference;
-        //         if (geo != null)
-        //         {
-        //             var meshcode = GetMeshCode();
-        //             if (!string.IsNullOrEmpty(meshcode))
-        //                 InitializeExtentFromMeshCode(meshcode, geo);
-        //             else
-        //                 Debug.LogError("メッシュコードが取得できませんでした。Address: " + Address);
-        //         }
-        //     }
-        // }
-
         /// <summary>
         /// PLATEAUDynamicTileのコンストラクタ。
         /// </summary>
@@ -146,7 +110,6 @@ namespace PLATEAU.DynamicTile
         public PLATEAUDynamicTile(PLATEAUDynamicTileMetaInfo info)
         {
             Address = info.AddressName;
-            Lod = info.LOD;
             Extent = info.Extent;
             ZoomLevel = info.ZoomLevel;
             ChildrenTiles = new List<PLATEAUDynamicTile>();
@@ -200,44 +163,5 @@ namespace PLATEAU.DynamicTile
             DistanceFromCamera = distance;
             return distance;
         }
-
-        // /// <summary>
-        // /// メッシュコードからタイルの範囲を初期化する。
-        // /// </summary>
-        // /// <param name="meshcode"></param>
-        // /// <returns></returns>
-        // private Bounds InitializeExtentFromMeshCode(string meshcode, GeoReference geo)
-        // {
-        //     GridCode gridCode = GridCode.Create(meshcode);
-        //
-        //     var min = geo.Project(gridCode.Extent.Min);
-        //     var max = geo.Project(gridCode.Extent.Max);
-        //
-        //     var bounds = new Bounds();
-        //     bounds.SetMinMax(new Vector3((float)min.X, (float)min.Y, (float)min.Z), new Vector3((float)max.X, (float)max.Y, (float)max.Z));
-        //
-        //     Extent = bounds;
-        //     return bounds;
-        // }
-
-        // /// <summary>
-        // /// メッシュコードを取得する。
-        // /// GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
-        // /// 例:tile_zoom_0_grid_meshcode_gameobjectname_0
-        // /// </summary>
-        // /// <returns></returns>
-        // private string GetMeshCode()
-        // {
-        //     Match match = Regex.Match(Address, @"_grid_([^_]+)_");
-        //     if (match.Success)
-        //     {
-        //         string meshcode = match.Groups[1].Value;
-        //
-        //         //Debug.Log($"メッシュコード: {meshcode}");
-        //         return meshcode;
-        //     }
-        //     Debug.LogError("メッシュコードが見つかりません");
-        //     return null;
-        // }
     }
 } 

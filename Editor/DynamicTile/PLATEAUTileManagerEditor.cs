@@ -138,7 +138,6 @@ namespace PLATEAU.DynamicTile
                     if (tile == null) continue;
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
-                    EditorGUILayout.IntField($"LOD: ", tile.Lod);
                     EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
                     EditorGUILayout.IntField($"ZoomLevel: ", tile.ZoomLevel);
                     EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);

@@ -1,4 +1,5 @@
 ﻿using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -69,7 +70,6 @@ namespace PLATEAU.DynamicTile
             }
         }
 
-
         /// <summary>
         /// Addressからパッケージを取得する。
         /// </summary>
@@ -92,6 +92,42 @@ namespace PLATEAU.DynamicTile
                 Debug.LogError("アドレスからパッケージ名が取得できませんでした。Address: " + address);
             }
             return PredefinedCityModelPackage.None;
+        }
+
+        /// <summary>
+        /// メッシュコードからタイルの範囲を初期化する。
+        /// </summary>
+        /// <param name="meshcode"></param>
+        /// <returns></returns>
+        public static Bounds GetExtentFromMeshCode(string meshcode, GeoReference geo)
+        {
+            GridCode gridCode = GridCode.Create(meshcode);
+
+            var min = geo.Project(gridCode.Extent.Min);
+            var max = geo.Project(gridCode.Extent.Max);
+
+            var bounds = new Bounds();
+            bounds.SetMinMax(new Vector3((float)min.X, (float)min.Y, (float)min.Z), new Vector3((float)max.X, (float)max.Y, (float)max.Z));
+
+            return bounds;
+        }
+
+        /// <summary>
+        /// メッシュコードを取得する。
+        /// GameObject名：tile_zoom_(タイルのズームレベル)_grid_(タイルの位置を示すメッシュコード)_(従来のゲームオブジェクト名)_(同名の場合のID)
+        /// 例:tile_zoom_0_grid_meshcode_gameobjectname_0
+        /// </summary>
+        /// <returns></returns>
+        public static string GetMeshCodeFromAddress(string Address)
+        {
+            Match match = Regex.Match(Address, @"_grid_([^_]+)_");
+            if (match.Success)
+            {
+                string meshcode = match.Groups[1].Value;
+                return meshcode;
+            }
+            Debug.LogError($"メッシュコードが見つかりません : {Address}");
+            return null;
         }
     }
 }
