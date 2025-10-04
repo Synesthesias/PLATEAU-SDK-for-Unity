@@ -9,6 +9,7 @@
 
 - **[PLATEAU SDKを使ったGISサンプル](https://www.mlit.go.jp/plateau/learning/tpc17-1/#p17_3_1)**
 ![](resources/index/gisexample.jpg)  
+
 - **[PLATEAU SDKを使ったゲームサンプル](https://www.mlit.go.jp/plateau/learning/tpc17-1/#p17_3_2)**
 ![](resources/index/gamesamplephoto.png)  
 
@@ -18,7 +19,9 @@ PLATEAU SDK for Unity を用いて実際にコンテンツを構築するチュ�
 
 #### 初級編：サンプルをカスタマイズして自分のデータに合わせてみよう
 
-まずは用意されたサンプルを少し変更して、自分の都市データに合わせてみましょう。簡単な操作で建物に色を付けたり、クリックで情報を表示できるようになります。
+まずは用意されたサンプルを少し変更して、自分の都市データに合わせてみましょう。  
+簡単な操作で建物に色を付けたり、クリックで情報を表示できるようになります。
+
 ![](resources/index/ShowAttributeMode.png)  
 
 - **[属性情報によって色分けする | PLATEAU SDK for Unity](https://project-plateau.github.io/PLATEAU-SDK-for-Unity/manual/ChangeColorByAttrs.html)**
@@ -26,8 +29,9 @@ PLATEAU SDK for Unity を用いて実際にコンテンツを構築するチュ�
 
 #### 中級編：実際にミニゲームを作ってみよう
 
-次のステップとして、実際に都市空間を利用したゲームを実際に構築してみましょう。
+次のステップとして、実際に都市空間を利用したゲームを実際に構築してみましょう。  
 キャラクターの移動や基本的な操作要素を追加することで、都市データを舞台とした簡易的なミニゲームを実装できます。
+
 ![](resources/index/youtube.png)  
 
 - **[Unityで都市を爆走するミニゲームを作る[1/2]｜3D都市モデルを使ったゲームを作る](https://www.mlit.go.jp/plateau/learning/tpc18-1/)**
