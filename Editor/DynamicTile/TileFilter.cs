@@ -45,6 +45,7 @@ namespace PLATEAU.DynamicTile
 
             var rebuilder = new TileRebuilder();
             await rebuilder.TilePrefabsToScene(tileManager, selectedTiles, ct);
+            ct.ThrowIfCancellationRequested();
             var editingTiles = tileManager.transform.Find(TileRebuilder.EditingTilesParentName);
             if (editingTiles == null)
             {
@@ -54,8 +55,10 @@ namespace PLATEAU.DynamicTile
             // 各Prefabにフィルター条件を適用
             foreach (var cond in filterConditions)
             {
+                ct.ThrowIfCancellationRequested();
                 cond.ApplyFilter(editingTiles.transform.Find(cond.Tile.Address)?.gameObject);
             }
+            ct.ThrowIfCancellationRequested();
             await rebuilder.RebuildByTiles(tileManager, selectedTiles);
         }
     }
