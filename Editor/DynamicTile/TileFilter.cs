@@ -46,6 +46,11 @@ namespace PLATEAU.DynamicTile
             var rebuilder = new TileRebuilder();
             await rebuilder.TilePrefabsToScene(tileManager, selectedTiles, ct);
             var editingTiles = tileManager.transform.Find(TileRebuilder.EditingTilesParentName);
+            if (editingTiles == null)
+            {
+                Debug.LogWarning($"{TileRebuilder.EditingTilesParentName} が見つかりません。フィルタ処理を中止します。");
+                return;
+            }
             // 各Prefabにフィルター条件を適用
             foreach (var cond in filterConditions)
             {
