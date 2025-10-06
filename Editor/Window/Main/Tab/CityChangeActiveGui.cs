@@ -146,7 +146,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     this.filterConditionGUI.PackageLodSliderResult));
                 EditorUtility.SetDirty(this.tileManager);
 
-                CancellationTokenSource cts = new CancellationTokenSource(); // 現状は、キャンセルする手段がないので、キャンセルトークンは渡すだけ。
+                using var cts = new CancellationTokenSource(); // 現状は、キャンセルする手段がないので、キャンセルトークンは渡すだけ。
                 await TileFilter.FilterByCityObjectTypeAndLod(this.tileManager, this.filterConditionGUI.SelectionDict, this.filterConditionGUI.PackageLodSliderResult, cts.Token);
             }
             catch (OperationCanceledException)
