@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:VisualElement name="Elem_TileBundleName" style="flex-grow: 1; flex-direction: row;">
+        <ui:Toggle name="Tgl_Select" style="flex-direction: row-reverse; align-self: auto; justify-content: flex-start; align-items: center; flex-wrap: nowrap;" />
+        <ui:Label tabindex="-1" text="Tile Name" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Lbl_TileName" style="-unity-text-align: middle-left; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
+    </ui:VisualElement>
+</ui:UXML>

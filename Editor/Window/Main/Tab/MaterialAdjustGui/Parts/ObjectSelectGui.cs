@@ -119,11 +119,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                         EditorGUILayout.LabelField("調整対象:", GUILayout.Width(60));
                         this.tileManager = (PLATEAUTileManager)EditorGUILayout.ObjectField(this.tileManager, typeof(PLATEAUTileManager), true);
                     }
-                    using (new EditorGUILayout.HorizontalScope())
+
+                    if (PlateauEditorStyle.TinyButton("タイル追加", 100))
                     {
-                        EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
-                        var added = (GameObject)EditorGUILayout.ObjectField(null, typeof(PLATEAUDynamicTile), true);
+                        var window = TileSelectWindow.Open(this.tileManager);
                     }
+
                 }
 
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
