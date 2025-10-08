@@ -31,8 +31,8 @@ PLATEAU SDK for Unity を用いて実際にコンテンツを構築するチュ�
 
 次のステップとして、実際に都市空間を利用したゲームを実際に構築してみましょう。  
 キャラクターの移動や基本的な操作要素を追加することで、都市データを舞台とした簡易的なミニゲームを実装できます。
-
-![](resources/index/youtube.png)  
+ 
+<iframe src="https://www.youtube.com/embed/jXWqIb2nGtk?si=k6ytJs3nW8wFENFk" frameborder="0" allowfullscreen style="aspect-ratio:16/9"></iframe>
 
 - **[Unityで都市を爆走するミニゲームを作る[1/2]｜3D都市モデルを使ったゲームを作る](https://www.mlit.go.jp/plateau/learning/tpc18-1/)**
 - **[Unityで都市を爆走するミニゲームを作る[2/2]｜音やエフェクトをつけてゲームらしくする](https://www.mlit.go.jp/plateau/learning/tpc18-2/)**
