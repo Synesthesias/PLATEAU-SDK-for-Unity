@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using System;
@@ -30,6 +31,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private bool skipLockCheck;
         private List<Transform> prevSelected = new(); // 変更を取り消すためのバックアップ
         private Action<UniqueParentTransformList> onSelectionChanged;
+
+        private PLATEAUTileManager tileManager;
+        string[] options = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
+        int selectedIndex = 0;
 
         public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged)
         {
@@ -82,25 +87,45 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             PlateauEditorStyle.Heading("対象選択", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                // 追加用のスロットを描画
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
-                    var added = (GameObject)EditorGUILayout.ObjectField(null, typeof(GameObject), true);
-                    if (added != null)
+                selectedIndex = EditorGUILayout.Popup("調整対象の種類", selectedIndex, options);
+
+                if (selectedIndex == 0)
+                { 
+                  // シーンに配置されたオブジェクト
+                  // 追加用のスロットを描画
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        // 追加
-                        if (EditorUtility.IsPersistent(added))
+                        EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
+                        var added = (GameObject)EditorGUILayout.ObjectField(null, typeof(GameObject), true);
+                        if (added != null)
                         {
-                            Dialogue.Display("シーン外のゲームオブジェクトは選択できません。シーン内から選択してください。", "OK");
-                        }
-                        else if(AskUnlock())
-                        {
-                            observableSelected.Add(added.transform);
+                            // 追加
+                            if (EditorUtility.IsPersistent(added))
+                            {
+                                Dialogue.Display("シーン外のゲームオブジェクトは選択できません。シーン内から選択してください。", "OK");
+                            }
+                            else if (AskUnlock())
+                            {
+                                observableSelected.Add(added.transform);
+                            }
                         }
                     }
                 }
-                
+                else if (selectedIndex == 1)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        EditorGUILayout.LabelField("調整対象:", GUILayout.Width(60));
+                        this.tileManager = (PLATEAUTileManager)EditorGUILayout.ObjectField(this.tileManager, typeof(PLATEAUTileManager), true);
+                    }
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
+                        var added = (GameObject)EditorGUILayout.ObjectField(null, typeof(PLATEAUDynamicTile), true);
+                    }
+                }
+
                 PlateauEditorStyle.CenterAlignHorizontal(() =>
                 {
                     ButtonAddFromSelection(); // 「選択中のn個を追加」ボタン
