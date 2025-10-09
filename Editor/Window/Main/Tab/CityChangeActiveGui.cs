@@ -53,7 +53,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 if (objectSelectedIndex == 0)
                 {
                     this.tileManager = null;
-                    //this.errorMessage = null;
 
                     EditorGUI.BeginChangeCheck();
                     this.adjustTarget =
@@ -65,7 +64,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 else if (objectSelectedIndex == 1)
                 {
                     this.adjustTarget = null;
-                    //this.errorMessage = null;
 
                     EditorGUI.BeginChangeCheck();
                     this.tileManager =
@@ -152,6 +150,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             try
             {
                 // フィルタ条件をシーンに保存します。
+                // 動的タイルでは重複地物の非表示機能は未対応のため、disableDuplicateはfalseに設定
                 this.tileManager.CityModel?.SaveFilterCondition(new FilterCondition(
                     false,
                     this.filterConditionGUI.SelectionDict,
