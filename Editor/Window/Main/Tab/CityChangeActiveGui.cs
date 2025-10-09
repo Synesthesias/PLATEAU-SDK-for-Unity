@@ -64,6 +64,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 else if (objectSelectedIndex == 1)
                 {
                     this.adjustTarget = null;
+                    errorMessage = null;
 
                     EditorGUI.BeginChangeCheck();
                     this.tileManager =
@@ -183,7 +184,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             if (cityModel == null) return;
             if(cityModel.transform.parent?.GetComponent<PLATEAUTileManager>() != null)
             {
-                errorMessage = "動的タイルの子オブジェクトは、選択できません。調整対象の種類を動的タイルに変更して動的タイルを選択してください。";
+                errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";
                 this.adjustTarget = null;
                 return;
             }
