@@ -149,6 +149,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
             isFilterTaskRunning = true;
             try
             {
+                if(this.tileManager.CityModel == null)
+                {
+                    Debug.LogError("TileManagerにCityModelが設定されていません。");
+                    return;
+                }
                 // フィルタ条件をシーンに保存します。
                 // 動的タイルでは重複地物の非表示機能は未対応のため、disableDuplicateはfalseに設定
                 this.tileManager.CityModel?.SaveFilterCondition(new FilterCondition(
@@ -217,7 +222,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             if (tileManager == null) return;
 
             this.packageToLodMinMax = new PackageToLodMinMax();
-            var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
+            var packages = tileManager.DynamicTiles.Where(tile => tile != null).Select(tile => tile.Package).Distinct().ToList();
             foreach (var package in packages)
             {
                 if (package == PredefinedCityModelPackage.None)
