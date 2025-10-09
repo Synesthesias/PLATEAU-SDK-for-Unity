@@ -28,9 +28,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
 
-        string[] options = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
-        int selectedIndex = 0;
-
+        private string[] objectSelectOptions = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
+        private int objectSelectedIndex = 0;
+        private string errorMessage = null;
 
         /// <summary>
         /// 与えられた <see cref="PredefinedCityModelPackage"/> のうち、
@@ -48,10 +48,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
             PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                selectedIndex = EditorGUILayout.Popup("調整対象の種類", selectedIndex, options);
+                objectSelectedIndex = EditorGUILayout.Popup("調整対象の種類", objectSelectedIndex, objectSelectOptions);
 
-                if (selectedIndex == 0)
+                if (objectSelectedIndex == 0)
                 {
+                    this.tileManager = null;
+
                     EditorGUI.BeginChangeCheck();
                     this.adjustTarget =
                         (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
@@ -59,8 +61,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             typeof(PLATEAUInstancedCityModel), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
                 }
-                else if (selectedIndex == 1)
+                else if (objectSelectedIndex == 1)
                 {
+                    this.adjustTarget = null;
+                    errorMessage = null;
+
                     EditorGUI.BeginChangeCheck();
                     this.tileManager =
                         (PLATEAUTileManager)EditorGUILayout.ObjectField(
@@ -69,7 +74,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
                 }
 
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    PlateauEditorStyle.MultiLineLabelWithBox(errorMessage);
+                }
+
                 if (this.adjustTarget == null && this.tileManager == null) return;
+                errorMessage = null;
 
                 PlateauEditorStyle.Separator(0);
 
@@ -139,7 +150,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
             isFilterTaskRunning = true;
             try
             {
+                if(this.tileManager.CityModel == null)
+                {
+                    Debug.LogError("TileManagerにCityModelが設定されていません。");
+                    return;
+                }
                 // フィルタ条件をシーンに保存します。
+                // 動的タイルでは重複地物の非表示機能は未対応のため、disableDuplicateはfalseに設定
                 this.tileManager.CityModel?.SaveFilterCondition(new FilterCondition(
                     false,
                     this.filterConditionGUI.SelectionDict,
@@ -165,6 +182,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
         {
             if (cityModel == null) return;
+            if(cityModel.transform.parent?.GetComponent<PLATEAUTileManager>() != null)
+            {
+                errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";
+                this.adjustTarget = null;
+                return;
+            }
+
             // シーン上に存在するパッケージとLODを求めます。
             this.packageToLodMinMax = new PackageToLodMinMax();
             var gmls = cityModel.GmlTransforms;
@@ -197,10 +221,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void OnChangeTargetTileManager(PLATEAUTileManager tileManager)
         {
             if (tileManager == null) return;
-            this.adjustTarget = null;
 
             this.packageToLodMinMax = new PackageToLodMinMax();
-            var packages = tileManager.DynamicTiles.Select(tile => tile.Package).Distinct().ToList();
+            var packages = tileManager.DynamicTiles.Where(tile => tile != null).Select(tile => tile.Package).Distinct().ToList();
             foreach (var package in packages)
             {
                 if (package == PredefinedCityModelPackage.None)
