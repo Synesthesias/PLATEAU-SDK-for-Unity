@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
+using PLATEAU.Editor.AdjustModel;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
@@ -157,17 +158,33 @@ namespace PLATEAU.DynamicTile
             string directoryPath = AssetPathUtil.GetFullPath(savePath);
             AssetPathUtil.CreateDirectoryIfNotExist(directoryPath);
 
+            //TODO こっち対応
+            if (denominator == 4)
+            {
+                var lod1 = content.transform.Find("LOD1");
+                var lod2 = content.transform.Find("LOD2");
+                if (lod1 != null && lod2 != null)
+                {
+                    var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
+                    tmpCamera.orthographic = true;
+                    tmpCamera.backgroundColor = Color.clear;
+                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(directoryPath), 1, true,CameraClearFlags.Nothing);
+                    service.Execute(tmpCamera,content);
+                    Object.DestroyImmediate(tmpCamera.gameObject);
+                }
+            }
+            
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
             var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
-            var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
+            var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath),
+                savePath);
 
             if (result != null)
                 Debug.Log($"Prefab Created : {content.name}　zoomLevel{zoomLevel}");
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
-
             return result;
         }
 
@@ -203,6 +220,20 @@ namespace PLATEAU.DynamicTile
 
             var clone = Object.Instantiate(target);
             clone.name = target.name;
+            
+            if (denominator == 4)
+            {
+                var lod1 = clone.transform.Find("LOD1");
+                var lod2 = clone.transform.Find("LOD2");
+                if (lod1 != null && lod2 != null)
+                {
+                    var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
+                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(directoryPath), 1, true,CameraClearFlags.Nothing);
+                    service.Execute(tmpCamera,clone);
+                    Object.DestroyImmediate(tmpCamera.gameObject);
+                }
+            }
+            
             var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
