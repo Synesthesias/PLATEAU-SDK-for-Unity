@@ -1,8 +1,11 @@
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System;
+using System.Threading.Tasks;
 using UnityEditor;
+
 
 namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
 {
@@ -31,9 +34,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
 
         private EditorWindow parentWindow;
         private Action<string> onAttrKeyChanged;
-        private Func<UniqueParentTransformList> selectedObjectsGetter;
+        private Func<Task<UniqueParentTransformList>> selectedObjectsGetter;
 
-        public AttributeKeyGui(EditorWindow parentWindow,Func<UniqueParentTransformList> selectedObjectsGetter, Action<string> onAttrKeyChanged)
+        public AttributeKeyGui(EditorWindow parentWindow, Func<Task<UniqueParentTransformList>> selectedObjectsGetter, Action<string> onAttrKeyChanged)
         {
             this.selectedObjectsGetter = selectedObjectsGetter;
             this.onAttrKeyChanged = onAttrKeyChanged;
@@ -49,11 +52,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                 EditorGUIUtility.labelWidth = 100;
                 if (PlateauEditorStyle.MainButton("属性情報キーを選択"))
                 {
-                    var window = AttrKeySelectWindow.Open();
-                    window.Init(this, selectedObjectsGetter(), parentWindow);
+                    OpenAttrWindow().ContinueWithErrorCatch();
                 }
-                AttrKey = EditorGUILayout.TextField("属性情報キー", AttrKey);
+                if (!string.IsNullOrEmpty(AttrKey))
+                    AttrKey = EditorGUILayout.TextField("属性情報キー", AttrKey);
             }
+        }
+
+        /// <summary>
+        /// 属性情報キーウィンドウを開きます。
+        /// </summary>
+        /// <returns></returns>
+        private async Task OpenAttrWindow()
+        {
+            var window = AttrKeySelectWindow.Open();
+            var transforms = await selectedObjectsGetter();
+            window.Init(this, transforms, parentWindow);
         }
         
         public void ReceiveAttrKeySelectResult(string selectedAttrKey)

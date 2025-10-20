@@ -36,6 +36,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             );
             ReceiveDatasetChange();
         }
+
+        public void SetData(PLATEAUInstancedCityModel data)
+        {
+            if (data == null) return;
+            DatasetSelectGui.IsVisible = false;
+            DatasetSelectGui.SetSelected(data);
+            ReceiveDatasetChange();
+        }
+
         public void Draw()
         {
             elements.Draw();
@@ -61,7 +70,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             {
                 PackageSearchGui.Search(SelectedDataset);
             }
-
         }
 
         private void OnEnterButtonPushed()
@@ -124,7 +132,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             this.changeReceiver = changeReceiver;
         }
-            
+
+        public void SetSelected(PLATEAUInstancedCityModel data)
+        {
+            Selected = data;
+        }
+
         public override void DrawContent()
         {
             PlateauEditorStyle.Heading("データセット選択", null);

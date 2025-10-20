@@ -15,6 +15,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// <summary> 設定値: FBXの出力先であるAssetsパスです。 </summary>
         public string AssetPath { get; set; }
 
+        public bool ConvertFromFbx { get; set; } = false;
+
         public ConvertToAssetConfig(GameObject srcGameObj, string assetPath)
         {
             SrcGameObj = srcGameObj;

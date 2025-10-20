@@ -24,7 +24,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             int displayIndex = 1;
 
             // 存在する地物型を列挙します 
-            for(int i=0; i<conf.Length; i++)
+            for (int i = 0; i < conf.Length; i++)
             {
                 using (PlateauEditorStyle.VerticalScopeLevel1())
                 {
@@ -41,10 +41,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
                 displayIndex++;
             }
-            
+
             PlateauEditorStyle.Separator(0);
         }
-        
+
         public override void Dispose(){}
     }
 }

@@ -38,5 +38,40 @@ namespace PLATEAU.Util
                 yield return self.GetChild(i);
             }
         }
+
+        /// <summary> /// 指定された名前を持つ親Transformを探し、その直下の子から条件に合うTransformを1つ返す /// </summary> 
+        public static Transform FindChildOfNamedParent(this Transform origin, string parentName)
+        {
+            Transform parent = origin.parent;
+            Transform current = origin;
+            while (parent?.name != parentName)
+            {
+                current = parent;
+                if (parent == null)
+                    break;
+                parent = parent.parent;
+            }
+            return current;
+        }
+
+        // 指定した Component を持つ Transform のみを取得
+        public static List<Transform> GetAllChildrenWithComponent<T>(Transform parent) where T : Component
+        {
+            List<Transform> result = new List<Transform>();
+            CollectChildrenWithComponentRecursive<T>(parent, result);
+            return result;
+        }
+
+        private static void CollectChildrenWithComponentRecursive<T>(Transform current, List<Transform> result) where T : Component
+        {
+            foreach (Transform child in current)
+            {
+                if (child.GetComponent<T>() != null)
+                {
+                    result.Add(child);
+                }
+                CollectChildrenWithComponentRecursive<T>(child, result);
+            }
+        }
     }
 }

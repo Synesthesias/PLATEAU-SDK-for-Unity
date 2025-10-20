@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.DynamicTile.TileModule;
@@ -6,6 +7,7 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -207,6 +209,7 @@ namespace PLATEAU.Editor.DynamicTile
             
             try
             {
+                PlayerSettings.stripUnusedMeshComponents = false; // UV4を使うために必要
                 // addressableビルド
                 AddressablesUtility.BuildAddressables(context.BuildMode);
             }
@@ -224,6 +227,57 @@ namespace PLATEAU.Editor.DynamicTile
                 Cancel();
                 return;
             }
+        }
+
+        /// <summary>
+        /// GameObjectをプレハブとして保存します。
+        /// 保存先はDynamicTileProcessingContext.PrefabsTempSavePathとします。
+        /// </summary>
+        public async Task SavePrefabAsset(GameObject src)
+        {
+            string outputPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            string saveFolderPath = Path.Combine(outputPath, src.name);
+            var saveFolderFullPath = Path.GetFullPath(saveFolderPath);
+            var saveFolderTempPath = saveFolderFullPath + "_temp";
+
+            var assetConfig = ConvertToAssetConfig.DefaultValue;
+            assetConfig.SrcGameObj = src;
+            assetConfig.AssetPath = saveFolderTempPath;
+            assetConfig.ConvertFromFbx = true;
+
+            var comp = src.GetComponent<PLATEAUEditingTile>();
+            if (comp != null)
+            {
+                Object.DestroyImmediate(comp, true);
+            }
+
+            if (Directory.Exists(saveFolderTempPath))
+                Directory.Delete(saveFolderTempPath, true);
+            AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+
+            var convertedObjects = new ConvertToAsset().ConvertCore(assetConfig, new DummyProgressBar());
+            if (convertedObjects == null)
+            {
+                Debug.LogWarning($"{src.name} の変換に失敗しました。");
+            }
+            string prefabPath = saveFolderPath + ".prefab";
+            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(convertedObjects.FirstOrDefault(), prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"{convertedObjects.FirstOrDefault().name} プレハブの保存に失敗しました。");
+            }
+
+            await Task.Run(() =>
+            {
+                //元フォルダを削除してTempと置き換える
+                if (Directory.Exists(saveFolderFullPath))
+                {
+                    Directory.Delete(saveFolderFullPath, true);
+                }
+                Directory.Move(saveFolderTempPath, saveFolderFullPath);
+            });
+
+            await Task.CompletedTask;
         }
 
         private void Cancel()

@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Window.Common
             {
                 if (PlateauEditorStyle.MainButton(ButtonText))
                 {
-                    onClick();
+                    onClick.Invoke();
                 }
             }
         }

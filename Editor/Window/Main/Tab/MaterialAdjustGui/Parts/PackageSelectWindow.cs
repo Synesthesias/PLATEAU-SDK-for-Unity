@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using UnityEngine.UIElements;
 
@@ -26,7 +27,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             this.isInitialized = true;
         }
 
-
+        public void Init(PLATEAUInstancedCityModel data, IPackageSelectResultReceiver resultReceiverArg)
+        {
+            Init(resultReceiverArg);
+            gui.SetData(data);
+        }
 
         protected override VisualElementDisposable CreateGui()
         {

@@ -1,5 +1,4 @@
 using PLATEAU.CityInfo;
-using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using System;
@@ -22,22 +21,27 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// </summary>
     internal class ObjectSelectGui : Element, IPackageSelectResultReceiver
     {
-        private ObservableCollection<Transform> observableSelected;
-            
+        private ObservableCollection<Transform> observableSelected;   
 
-        public bool LockChange { get; set; }
+        public SceneTileChooserGui.ChooserType SelectedType => sceneTileChooser.SelectedType;
+        
+        public bool LockChange { get => lockChange; set { lockChange = value; if( tileSelectGui != null ) tileSelectGui.LockChange = value; } }
+        private bool lockChange;
+        //public bool LockChange { get; set; }
+
         private readonly ScrollView scrollView = new (GUILayout.Height(160));
         private bool skipCallback;
         private bool skipLockCheck;
         private List<Transform> prevSelected = new(); // 変更を取り消すためのバックアップ
         private Action<UniqueParentTransformList> onSelectionChanged;
 
-        private PLATEAUTileManager tileManager;
-        string[] options = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
-        int selectedIndex = 0;
+        private SceneTileChooserGui sceneTileChooser;
+        private TileConvertGui tileSelectGui;
 
-        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged)
+        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged, SceneTileChooserGui sceneTileChooser, TileConvertGui tileSelect)
         {
+            this.sceneTileChooser = sceneTileChooser;
+            this.tileSelectGui = tileSelect;
             this.onSelectionChanged = onSelectionChanged;
             observableSelected = new ();
             
@@ -87,12 +91,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             PlateauEditorStyle.Heading("対象選択", null);
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                selectedIndex = EditorGUILayout.Popup("調整対象の種類", selectedIndex, options);
-
-                if (selectedIndex == 0)
-                { 
-                  // シーンに配置されたオブジェクト
-                  // 追加用のスロットを描画
+                sceneTileChooser.DrawAndInvoke(() =>
+                {
+                    // シーンに配置されたオブジェクト
+                    // 追加用のスロットを描画
                     using (new EditorGUILayout.HorizontalScope())
                     {
                         EditorGUILayout.LabelField("追加:", GUILayout.Width(30));
@@ -110,92 +112,84 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                             }
                         }
                     }
-                }
-                else if (selectedIndex == 1)
-                {
-                    EditorGUI.BeginChangeCheck();
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        EditorGUILayout.LabelField("調整対象:", GUILayout.Width(60));
-                        this.tileManager = (PLATEAUTileManager)EditorGUILayout.ObjectField(this.tileManager, typeof(PLATEAUTileManager), true);
-                    }
 
-                    if (PlateauEditorStyle.TinyButton("タイル追加", 100))
+                    PlateauEditorStyle.CenterAlignHorizontal(() =>
                     {
-                        var window = TileSelectWindow.Open(this.tileManager);
-                    }
+                        ButtonAddFromSelection(); // 「選択中のn個を追加」ボタン
 
-                }
-
-                PlateauEditorStyle.CenterAlignHorizontal(() =>
-                {
-                    ButtonAddFromSelection(); // 「選択中のn個を追加」ボタン
-                    
-                    if (PlateauEditorStyle.MiniButton("パッケージ種から選択", 150))
-                    {
-                        var window = PackageSelectWindow.Open();
-                        window.Init(this);
-                    }
-                });
-            }
-            
-            using (PlateauEditorStyle.VerticalScopeLevel2())
-            {
-                scrollView.Draw(() =>
-                {
-                    if (observableSelected.Count == 0)
-                    {
-                        EditorGUILayout.LabelField("（未選択）");                        
-                    }
-                    
-                    int indexToDelete = -1;
-                    bool deleteByUserInput = false; 
-                    // 各選択オブジェクトのスロットを描画
-                    for (var i = 0; i < observableSelected.Count; i++)
-                    {
-                        using (new EditorGUILayout.HorizontalScope())
+                        if (PlateauEditorStyle.MiniButton("パッケージ種から選択", 150))
                         {
-                            EditorGUILayout.LabelField($"{i+1}:", GUILayout.Width(30));
-                            var trans = observableSelected[i];
-                            if (trans == null)
-                            {
-                                indexToDelete = i;
-                                continue;
-                            }
-                            var obj = trans.gameObject;
-                            var nextObj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), true, GUILayout.ExpandWidth(true));
-                            
-                            if (nextObj != obj && AskUnlock())
-                            {
-                                observableSelected[i] = nextObj.transform;
-                            }
-                            if (PlateauEditorStyle.TinyButton("除く", 30))
-                            {
-                                indexToDelete = i;
-                                deleteByUserInput = true;
-                            }
+                            var window = PackageSelectWindow.Open();
+                            window.Init(this);
                         }
-                        
-                    }
-                    // 削除ボタンが押された時
-                    if (indexToDelete >= 0 && deleteByUserInput && AskUnlock())
-                    {
-                        observableSelected.RemoveAt(indexToDelete);
-                    }
-                });// end scrollView
+                    });
+                }, tileSelectGui.DrawSelectTile);
+            }
 
-                PlateauEditorStyle.RightAlign(() =>
+            if(sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile)
+            {
+                tileSelectGui.DrawScrollViewContent(scrollView);
+            }
+            else
+            {
+                using (PlateauEditorStyle.VerticalScopeLevel2())
                 {
-                    if (PlateauEditorStyle.TinyButton("全て除く", 75))
+                    scrollView.Draw(() =>
                     {
-                        observableSelected.Clear();
-                    }
-                    if(PlateauEditorStyle.TinyButton("対象をヒエラルキー上でハイライト", 180))
+                        if (observableSelected.Count == 0)
+                        {
+                            EditorGUILayout.LabelField("（未選択）");
+                        }
+
+                        int indexToDelete = -1;
+                        bool deleteByUserInput = false;
+                        // 各選択オブジェクトのスロットを描画
+                        for (var i = 0; i < observableSelected.Count; i++)
+                        {
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                EditorGUILayout.LabelField($"{i + 1}:", GUILayout.Width(30));
+                                var trans = observableSelected[i];
+                                if (trans == null)
+                                {
+                                    indexToDelete = i;
+                                    continue;
+                                }
+                                var obj = trans.gameObject;
+                                var nextObj = (GameObject)EditorGUILayout.ObjectField(obj, typeof(GameObject), true, GUILayout.ExpandWidth(true));
+
+                                if (nextObj != obj && AskUnlock())
+                                {
+                                    observableSelected[i] = nextObj.transform;
+                                }
+                                if (PlateauEditorStyle.TinyButton("除く", 30))
+                                {
+                                    indexToDelete = i;
+                                    deleteByUserInput = true;
+                                }
+                            }
+
+                        }
+                        // 削除ボタンが押された時
+                        if (indexToDelete >= 0 && deleteByUserInput && AskUnlock())
+                        {
+                            observableSelected.RemoveAt(indexToDelete);
+                        }
+                    });// end scrollView
+
+                    PlateauEditorStyle.RightAlign(() =>
                     {
-                        Selection.objects = new UniqueParentTransformList(observableSelected).Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
-                    }
-                });
-                
+                        if (PlateauEditorStyle.TinyButton("全て除く", 75))
+                        {
+                            observableSelected.Clear();
+                        }
+                        if (PlateauEditorStyle.TinyButton("対象をヒエラルキー上でハイライト", 180))
+                        {
+                            Selection.objects = new UniqueParentTransformList(observableSelected).Get.Select(trans => trans.gameObject).Cast<Object>().ToArray();
+                        }
+                    });
+
+                }
             }
         }
         
