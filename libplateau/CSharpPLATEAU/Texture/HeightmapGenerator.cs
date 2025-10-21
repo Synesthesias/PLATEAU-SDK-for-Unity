@@ -239,8 +239,8 @@ namespace PLATEAU.Texture
             internal static extern APIResult release_heightmap_data(
              [In] IntPtr data
             );
-        }
 #endif
+        }
     }
 
 
