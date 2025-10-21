@@ -150,7 +150,7 @@ namespace PLATEAU.HeightMapAlign
             
 #if !UNITY_IOS
             [DllImport(DLLUtil.DllName)]
-            internal staticS extern APIResult release_heightmap_data(
+            internal static extern APIResult release_heightmap_data(
                 [In] IntPtr data
             );
 #endif
