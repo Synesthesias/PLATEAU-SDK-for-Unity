@@ -34,7 +34,7 @@ namespace PLATEAU.CityImport.Import.Convert
             CityModel cityModel, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
-            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
+            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity, DebugStopwatch sw
             )
         {
 
@@ -42,10 +42,13 @@ namespace PLATEAU.CityImport.Import.Convert
             AttributeDataHelper attributeDataHelper =
                 new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
 
+            // メッシュ抽出
             Model plateauModel;
             try
             {
+                sw.Start("Mesh Extract Time");
                 plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedGridCodes));
+                sw.Stop();
             }
             catch (Exception e)
             {
@@ -57,9 +60,13 @@ namespace PLATEAU.CityImport.Import.Convert
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
 
-            return await PlateauModelToScene(
+            // シーンに配置
+            sw.Start("Model To Scene Time");
+            var result = await PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf, 
                 plateauModel, attributeDataHelper, true);
+            sw.Stop();
+            return result;
         }
 
         /// <summary>

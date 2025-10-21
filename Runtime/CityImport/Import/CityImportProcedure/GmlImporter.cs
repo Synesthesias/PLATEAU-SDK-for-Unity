@@ -48,14 +48,14 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null, int totalGmlCount = 0)
+            CancellationToken? token, DebugStopwatch stopWatch, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null, int totalGmlCount = 0)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            using var cityModel = await LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName);
+            using var cityModel = await LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, stopWatch);
 
             if (cityModel == null)
             {
@@ -77,7 +77,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             var placingResult = await PlateauToUnityModelConverter.CityModelToScene(
                 cityModel, meshExtractOptions, conf.AreaGridCodes, gmlTrans, progressDisplay, gmlName,
                 packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                infoForToolkits, packageConf.MeshGranularity
+                infoForToolkits, packageConf.MeshGranularity, stopWatch
             );
             
 
@@ -101,13 +101,13 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             }
         }
 
-        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName, float progress = 20f)
+        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName, DebugStopwatch sw, float progress = 20f)
         {
             progressDisplay.SetProgress(gmlName, progress, "GMLファイルをロード中");
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。
-            var cityModel = await Task.Run(() => ParseGML(gmlPath, token));
+            var cityModel = await Task.Run(() => ParseGML(gmlPath, token, sw));
 
             if (cityModel == null)
             {
@@ -119,8 +119,9 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         
         /// <summary> gmlファイルをパースします。 </summary>
         /// <param name="gmlAbsolutePath"> gmlファイルのパスです。 </param>
+        /// <param name="token"> キャンセルトークンです。 </param>
         /// <returns><see cref="CityGML.CityModel"/> を返します。ロードに問題があった場合は null を返します。</returns>
-        private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken? token)
+        private static CityModel ParseGML(string gmlAbsolutePath, CancellationToken? token, DebugStopwatch sw)
         {
             token?.ThrowIfCancellationRequested();
 
@@ -134,7 +135,9 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             CityModel cityModel = null;
             try
             {
+                sw.Start($"GML parse time");
                 cityModel = CityGml.Load(gmlAbsolutePath, parserParams, DllLogCallback.UnityLogCallbacks);
+                sw.Stop();
             }
             catch (Exception e)
             {
