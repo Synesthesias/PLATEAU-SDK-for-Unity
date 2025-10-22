@@ -14,8 +14,7 @@ namespace PLATEAU.Editor.Util
     /// これがないとTestFlightなどにアップロードできません。
     /// 動作確認するには次のようにします。
     /// ・iOS向けビルド→xcodeでxcodeprojを開いてメニューバーのProduct→Archive
-    /// ・Archive完了後にOrganizerが開くので、アーカイブを右クリックしてGenerate Privacy Report
-    /// ・Privacy Reportで指摘がなければOK
+    /// ・Archive完了後にOrganizerが開くので、アーカイブをValidateしてプライバシーマニフェストに関する指摘がなければOK
     /// </summary>
     public static class AddPrivacyManifest {
 #if UNITY_IOS
