@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using PLATEAU.CityAdjust.ChangeActive;
+﻿using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using PLATEAU.Util.Async;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -28,8 +29,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
 
-        private string[] objectSelectOptions = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
-        private int objectSelectedIndex = 0;
+        private SceneTileChooserGui sceneTileChooser = new();
         private string errorMessage = null;
 
         /// <summary>
@@ -48,9 +48,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                objectSelectedIndex = EditorGUILayout.Popup("調整対象の種類", objectSelectedIndex, objectSelectOptions);
-
-                if (objectSelectedIndex == 0)
+                sceneTileChooser.DrawAndInvoke(() =>
                 {
                     this.tileManager = null;
 
@@ -60,8 +58,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             "調整対象", this.adjustTarget,
                             typeof(PLATEAUInstancedCityModel), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
-                }
-                else if (objectSelectedIndex == 1)
+                }, () => 
                 {
                     this.adjustTarget = null;
                     errorMessage = null;
@@ -72,7 +69,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             "調整対象", this.tileManager,
                             typeof(PLATEAUTileManager), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
-                }
+                });
+
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {

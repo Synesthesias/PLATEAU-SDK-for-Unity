@@ -21,7 +21,14 @@ namespace PLATEAU.Editor.Window.Common
         private Action sceneHandler;
         private Action tileHandler;
 
+        private Action<ChooserType> onSelectionChanged;
+
         public ChooserType SelectedType => (ChooserType)objectSelectedIndex;
+
+        public SceneTileChooserGui(Action<ChooserType> onSelectionChanged = null)
+        {
+            this.onSelectionChanged = onSelectionChanged;
+        }
 
         public void DrawAndInvoke(Action scene, Action tile)
         {
@@ -35,7 +42,12 @@ namespace PLATEAU.Editor.Window.Common
             using(new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Label("調整対象の種類", GUILayout.Width(100));
+                EditorGUI.BeginChangeCheck();
                 objectSelectedIndex = EditorGUILayout.Popup(objectSelectedIndex, objectSelectOptions);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    onSelectionChanged?.Invoke(SelectedType);
+                }
             }
         }
 

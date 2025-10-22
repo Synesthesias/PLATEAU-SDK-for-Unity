@@ -39,7 +39,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private MaterialCriterion SelectedCriterion => criterionOptions[selectedCriterionID];
         private Action<MaterialCriterion> onCriterionChanged;
 
-        
+        public override void Reset()
+        {
+            SelectedCriterionID = 0;
+            onCriterionChanged?.Invoke(SelectedCriterion);
+        }
 
         public MaterialCriterionGui(Action<MaterialCriterion> onCriterionChanged)
         {

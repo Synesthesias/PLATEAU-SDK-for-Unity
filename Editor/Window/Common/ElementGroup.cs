@@ -109,6 +109,14 @@ namespace PLATEAU.Editor.Window.Common
             return null;
         }
 
+        public override void Reset()
+        {
+            foreach (var d in Elements)
+            {
+                d.Reset();
+            }
+        }
+
         public override void Dispose()
         {
             foreach (var d in Elements)

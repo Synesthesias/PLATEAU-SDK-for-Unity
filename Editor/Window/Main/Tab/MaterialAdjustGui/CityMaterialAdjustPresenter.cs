@@ -15,6 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ProgressBar = PLATEAU.Util.ProgressBar;
+using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
@@ -39,7 +40,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private MaterialCriterion selectedCriterion;
         private string attrKey;
         private readonly EditorWindow parentEditorWindow;
-        private SceneTileChooserGui sceneTileChooser = new();
         private TileConvertGui tileConvert;
 
         /// <summary>
@@ -58,6 +58,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 };
             }
         }
+
+        /// <summary>
+        /// シーンオブジェクト/動的タイルの現在選択されているタイプを返します。
+        /// </summary>
+        private ChooserType CurrentSceneTileSelectType => Views.Get<ObjectSelectGui>()?.SelectedType ?? ChooserType.SceneObject;
 
         /// <summary>
         /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
@@ -82,7 +87,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 new ElementGroup("", 0,
                     new HeaderElementGroup("", "分類に応じたマテリアル分けを行います。", HeaderType.Subtitle),
                     new ElementGroup("MAGuiBeforeSearch",0, // *** 検索前のUI ***
-                        new ObjectSelectGui(OnTargetChanged, sceneTileChooser, tileConvert), // 対象オブジェクト選択
+                        new ObjectSelectGui(OnTargetChanged, new SceneTileChooserGui(onSceneTileSelectionChanged), tileConvert), // 対象オブジェクト選択
                         new HeaderElementGroup("commonConf", "共通設定", HeaderType.Header,
                             new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged) // 元のオブジェクトを削除するか残すか
                         ),
@@ -106,10 +111,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 );
             this.parentEditorWindow = parentEditorWindow;
 
-            ShowGuiAfterSearch(false);
-            ShowMaterialConf(false);
-            ShowAttributeKey(false);
-            ShowGranularityConvertButton(false); 
+            ResetGui();
         }
         
         public VisualElement CreateGui()
@@ -179,6 +181,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             attrKey = key;
         }
 
+        private void onSceneTileSelectionChanged(SceneTileChooserGui.ChooserType selectedType)
+        {
+            ResetGui();
+        }
+
         /// <summary>表示・非表示 （マテリアル分け　地物・属性検索）</summary>
         private void ShowMaterialConf(bool show)
         {
@@ -210,9 +217,32 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 Views.Get("execGranularityConvertButton").IsVisible = show;
         }
 
+        /// <summary>
+        /// UIを初期状態にリセットします。
+        /// </summary>
+        private void ResetGui()
+        {
+            ShowGuiAfterSearch(false);
+            ShowMaterialConf(false);
+            ShowAttributeKey(false);
+            ShowGranularityConvertButton(false);
+
+            tileConvert?.Reset();
+            Views?.Reset();
+            IsSearched = false;
+        }
+
+        /// <summary>
+        /// 変換処理終了時の後処理を行います。
+        /// </summary>
+        private void PostConvert()
+        {
+            ResetGui();
+        }
+
         private async Task<UniqueParentTransformList> GetSelectedObjectsAsync()
         {
-            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 return await tileConvert.GetSelectionAsTransformList();
             }
@@ -226,7 +256,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
             ShowGuiAfterSearch(false);
 
-            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 SelectedObjects = await tileConvert.GetSelectionAsTransformList();
                 await Task.Yield();
@@ -268,6 +298,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 // ここで実行します。
                 await ExecMaterialAdjustPreProAsync();
                 button.RecoverFromProcessing();
+                PostConvert();
             }
             catch (Exception e)
             {
@@ -303,7 +334,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 MaterialCriterion.ByAttribute => new MAExecutorV2ByAttr(),
                 _ => throw new Exception("Unknown Criterion")
             };
-            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 result = await tileConvert.ExecMaterialAdjustAsync(GenerateConf(), maExecutor);
 
@@ -345,6 +376,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 // ここで実行します。
                 await ExecGranularityConvertMainAsync();
                 button.RecoverFromProcessing();
+                PostConvert();
             }
             catch (Exception e)
             {
@@ -358,7 +390,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
 
-            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 return await tileConvert.ExecGranularityConvertAsync(GenerateConf(), granularity);
             }

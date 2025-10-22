@@ -27,6 +27,9 @@ namespace PLATEAU.Editor.Window.Common
                 }
             });
         }
+        public override void Reset()
+        {
+        }
 
         public override void Dispose()
         {

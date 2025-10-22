@@ -1,18 +1,22 @@
 ﻿using PLATEAU.DynamicTile;
 using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
     /// <summary>
-    /// 都市モデルに含まれるパッケージ種を選択するウィンドウです。
+    /// タイル選択ウィンドウです。
     /// </summary>
-    internal class TileSelectWindow : PlateauWindowBase, IPackageSelectResultReceiver
+    internal class TileSelectWindow : PlateauWindowBaseNoScroll, IPackageSelectResultReceiver
     {
         private IPackageSelectResultReceiver resultReceiver;
         private PackageSelectGui gui;
@@ -24,14 +28,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Button executeButton;
         private Button selectAllButton;
         private Button deselectAllButton;
+        private Button tileFromSelectionButton;
         private Button fromSelectionButton;
         private Button fromPackageButton;
         private ScrollView scrollView;
 
         private List<TileNameElementContainer> tileNameElements;
-        private Action<List<string>> onSelectCallback;
+        private Action<TileSelectResult> onSelectCallback;
+        private TreeViewItemBuilder treeViewItemBuilder;
 
-        public static TileSelectWindow Open(PLATEAUTileManager manager, Action<List<string>> callback)
+        internal class TileSelectResult
+        {
+            /// <summary>
+            /// 選択されたタイル名リスト
+            /// </summary>
+            public List<string> Selection { get; set; }
+
+            /// <summary>
+            /// 子要素を選択するタイル名
+            /// </summary>
+            public List<string> ChildSelection { get; set; }
+
+            public TileSelectResult(List<string> selection, List<string> childSelection)
+            {
+                Selection = selection;
+                ChildSelection = childSelection;
+            }
+        }
+
+        public static TileSelectWindow Open(PLATEAUTileManager manager, Action<TileSelectResult> callback)
         {
             var window = GetWindow<TileSelectWindow>("タイル選択");
             window.Init(manager, callback);
@@ -39,7 +64,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return window;
         }
 
-        public void Init(PLATEAUTileManager manager, Action<List<string>> callback)
+        public void Init(PLATEAUTileManager manager, Action<TileSelectResult> callback)
         {
             this.tileManager = manager;
             this.onSelectCallback = callback;
@@ -55,6 +80,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             executeButton = root.Q<Button>("Btn_Execute");
             selectAllButton = root.Q<Button>("Btn_SelectAll");
             deselectAllButton = root.Q<Button>("Btn_ClearAll");
+            tileFromSelectionButton = root.Q<Button>("Btn_TileFromSelection");
             fromSelectionButton = root.Q<Button>("Btn_FromSelection");
             fromPackageButton = root.Q<Button>("Btn_FromPackage");
 
@@ -62,6 +88,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             executeButton.clicked += OnExecute;
             selectAllButton.clicked += SelectAll;
             deselectAllButton.clicked += DeselectAll;
+            tileFromSelectionButton.clicked += AddTileFromSelection;
             fromSelectionButton.clicked += AddFromSelection;
             fromPackageButton.clicked += AddFromPackage;
             Selection.selectionChanged += DrawNumSelection;
@@ -78,6 +105,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 return;
             }
 
+            treeViewItemBuilder = new TreeViewItemBuilder(tileManager, this);
             tileNameElements = new List<TileNameElementContainer>();
 
             // ScrollViewの設定
@@ -88,6 +116,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             {
                 var elem = viewElementTree.CloneTree();
                 var container = new TileNameElementContainer(elem);
+                container.SetOnSelectCallback(ShowTileHierarchy);
                 tileNameElements.Add(container);
                 container.TileName = item.Address;
                 scrollView.contentContainer.Add(elem);
@@ -107,16 +136,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         private void DeselectAll()
         {
-            tileNameElements.ForEach(e => e.IsSelected = false);
+            tileNameElements.ForEach(e => { e.IsSelected = false; e.SetTreeViewState(TileNameElementContainer.TreeViewState.Hide); });
         }
-
+     
         /// <summary>
         /// 選択中のオブジェクトに対応するタイルを選択状態にする
         /// </summary>
+        private void AddTileFromSelection()
+        {
+            var selectionNames = Selection.gameObjects?.Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName).name)?.ToList();
+            tileNameElements.ForEach(e => e.IsSelected = selectionNames.Contains(e.TileName));
+        }
+
+        /// <summary>
+        /// 選択中のオブジェクトに対応するタイルの子要素を選択状態にする
+        /// </summary>
         private void AddFromSelection()
         {
-            var selectionNames = Selection.gameObjects.Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName).name).ToList();
-            tileNameElements.ForEach(e => e.IsSelected = selectionNames.Contains(e.TileName));
+            treeViewItemBuilder.AddFromSelectionAsync(tileNameElements).ContinueWithErrorCatch();
         }
 
         /// <summary>
@@ -136,6 +173,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             var win = PackageSelectWindow.Open();
             win.Init(tileManager.CityModel, this);
+        }
+
+        /// <summary>
+        /// タイルの子を選択するウィンドウを開く  
+        /// </summary>
+        /// <param name="tileName"></param>
+        private void ShowTileHierarchy(TileNameElementContainer elem)
+        {
+            treeViewItemBuilder.LoadAndDisyplayHierarchy(elem).ContinueWithErrorCatch();
         }
 
         /// <summary>
@@ -161,7 +207,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             List<string> selectedAddresses = tileNameElements.Where(e => e.IsSelected)
                                                .Select(e => e.TileName)
                                                .ToList();
-            onSelectCallback?.Invoke(selectedAddresses);
+
+            List<string> selectedChildAddresses = treeViewItemBuilder.GetSelectedChildrenPath(tileNameElements);
+
+            onSelectCallback?.Invoke(new TileSelectResult(selectedAddresses, selectedChildAddresses));
 
             // ウィンドウを閉じる
             this.Close();
@@ -175,10 +224,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 selectAllButton.clicked -= SelectAll;
             if (deselectAllButton != null)
                 deselectAllButton.clicked -= DeselectAll;
+            if (tileFromSelectionButton != null)
+                tileFromSelectionButton.clicked -= AddTileFromSelection;
             if (fromSelectionButton != null)
                 fromSelectionButton.clicked -= AddFromSelection;
             if (fromPackageButton != null)
                 fromPackageButton.clicked -= AddFromPackage;
+
+            if(tileNameElements != null)
+            {
+                foreach (var elem in tileNameElements)
+                    elem.Dispose();
+            }
+            treeViewItemBuilder?.Dispose();
 
             gui?.Dispose();
         }
@@ -187,16 +245,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// <summary>
     /// タイル名表示と選択用のコンテナ
     /// </summary>
-    internal class TileNameElementContainer
+    internal class TileNameElementContainer : IDisposable
     {
+        internal enum TreeViewState
+        {
+            None,
+            Show,
+            Hide,
+            Loading
+        }
+
         private VisualElement root;
         private Toggle toggle;
         private Label nameLabel;
+        private Button selectChildButton;
+        private TreeView treeView;
+        private Action<TileNameElementContainer> OnSelectCallback;
+
+        //TreeView要素名
+        public const string TREEVIEW_TOGGLE = "Tgl_TreeSelect";
+        public const string TREEVIEW_LABEL = "Lbl_TreeTileName";
 
         public bool IsSelected
         {
             get => toggle.value;
-            set => toggle.value = value;
+            set {
+                toggle.value = value;
+                if (toggle.value == true)
+                    SetTreeViewState(TreeViewState.Hide);
+            }
         }
 
         public string TileName
@@ -205,16 +282,310 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             set => nameLabel.text = value;
         }
 
+        public TreeView TreeView => treeView;
+        public Button ButtonSelectChild => selectChildButton;
+
         public TileNameElementContainer(VisualElement root)
         {
             this.root = root;
             this.toggle = root.Q<Toggle>("Tgl_Select");
+            this.treeView = root.Q<TreeView>("Tree_Children");
             this.nameLabel = root.Q<Label>("Lbl_TileName");
-            nameLabel.RegisterCallback<ClickEvent>(evt =>
-            {
-                toggle.value = !toggle.value;
-            });
+            nameLabel.RegisterCallback<ClickEvent>(ToggleSelection);
+            this.selectChildButton = root.Q<Button>("Btn_SelectChild");
+            selectChildButton.clicked += OnSelectChild;
         }
 
+        public void SetTreeViewState(TreeViewState state)
+        {
+            selectChildButton.text = state switch
+            {
+                TreeViewState.None => "子を選択",
+                TreeViewState.Show => "子を非表示",
+                TreeViewState.Hide => "子を選択",
+                TreeViewState.Loading => "読み込み中...",
+                _ => selectChildButton.text,
+            };
+
+            treeView.style.display = state switch
+            {
+                TreeViewState.Show => DisplayStyle.Flex,
+                TreeViewState.Hide => DisplayStyle.None,
+                TreeViewState.Loading => DisplayStyle.None,
+                _ => treeView.style.display,
+            };
+        }
+
+        public List<TreeViewItemData<TreeViewItemBuilder.TransformTreeItem>> treeViewItemData { get; set; }
+
+        public VisualElement GetTreeViewVisualElement(TreeViewItemBuilder.TransformTreeItem item)
+        {
+            if (item == null) return null;
+            var id = treeView.GetIdForIndex(item.id);
+            return treeView.GetRootElementForId(id);
+        }
+
+        public Func<VisualElement> GetTreeViewMakeItem()
+        {
+            var tileChildVisualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/DynamicTile/TileChildName.uxml");
+            return () => tileChildVisualTree.CloneTree();
+        }
+
+        public Action<VisualElement,int> GetTreeViewBindItem()
+        {
+            return (element, index) =>
+            {
+                var item = treeView.GetItemDataForIndex<TreeViewItemBuilder.TransformTreeItem>(index);
+                var label = element.Q<Label>(TREEVIEW_LABEL);
+                var toggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
+                label.text = item.name;
+                //label.text = item.GetFullPath();
+                element.RegisterCallback<ClickEvent>(e => toggle.value = !toggle.value);
+            };
+        }
+
+        public void SetOnSelectCallback(Action<TileNameElementContainer> callback)
+        {
+            OnSelectCallback = callback;
+        }
+
+        private void ToggleSelection(ClickEvent evt)
+        {
+            toggle.value = !toggle.value;
+        }
+
+        private void OnSelectChild()
+        {
+            if (treeView.style.display == DisplayStyle.Flex)
+            {
+                SetTreeViewState(TreeViewState.Hide);
+            }
+            else
+            {
+                SetTreeViewState(TreeViewState.Show);
+                toggle.value = false;
+                OnSelectCallback?.Invoke(this);
+            }
+        }
+
+        public void Dispose()
+        {
+            if(nameLabel != null)
+                nameLabel.UnregisterCallback<ClickEvent>(ToggleSelection);
+
+            if (selectChildButton != null)
+                selectChildButton.clicked -= OnSelectChild;
+
+            OnSelectCallback = null;
+        }
+    }
+
+    /// <summary>
+    /// TreeView描画処理構築用クラス
+    /// </summary>
+    internal class TreeViewItemBuilder : IDisposable
+    {
+        private PLATEAUTileManager tileManager;
+        private EditorWindow parentWindow;
+        private int nextId = 0;
+
+        public TreeViewItemBuilder(PLATEAUTileManager manager, EditorWindow window)
+        {
+            this.tileManager = manager;
+            this.parentWindow = window;
+        }
+
+        public async Task LoadAndDisyplayHierarchy(TileNameElementContainer container)
+        {
+            //var SelectedTile = tileManager.DynamicTiles.FirstOrDefault(t => t.Address == container.TileName);
+            var SelectedTiles = tileManager.DynamicTiles.Where(t => t.Address == container.TileName).ToList();
+            var treeView = container.TreeView;
+
+            //if (SelectedTile != null)
+            foreach (var SelectedTile in SelectedTiles)
+            {
+                container.SetTreeViewState(TileNameElementContainer.TreeViewState.Loading);
+
+                if (SelectedTile.LoadedObject == null)
+                {
+                    // TODO : TileManagerに移動
+                    // タイル読込
+                    var tokenSorce = new CancellationTokenSource();
+                    SelectedTile.LoadHandleCancellationTokenSource = tokenSorce;
+                    var result = await tileManager.PrepareLoadTile(SelectedTile);
+
+                    // 読み込みまで待機
+                    var flagEvent = new ManualResetEventSlim(false);
+                    await Task.Run(() =>
+                    {
+                        Thread.Sleep(500);
+                        if (tileManager.IsCoroutineRunning == false)
+                            flagEvent.Set();
+                    });
+                    flagEvent.Wait();
+                }
+
+                if (SelectedTile.LoadedObject != null)
+                {
+                    treeView.makeItem = container.GetTreeViewMakeItem();
+                    treeView.bindItem = container.GetTreeViewBindItem();
+
+                    nextId = 0;
+                    var rootItem = BuildTree(SelectedTile.LoadedObject.transform, null);
+                    List<TreeViewItemData<TransformTreeItem>> rootItems = new();
+                    rootItems.Add(BuildTreeItem(rootItem));
+                    treeView.SetRootItems(rootItems);
+                    treeView.ExpandAll();
+                    treeView.style.display = DisplayStyle.Flex;
+                    container.treeViewItemData = rootItems;
+                    container.SetTreeViewState(TileNameElementContainer.TreeViewState.Show);
+                    parentWindow.Repaint();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 選択中のオブジェクトに対応するタイルの子要素を選択状態にする
+        /// </summary>
+        /// <param name="tileNameElements"></param>
+        /// <returns></returns>
+        public async Task AddFromSelectionAsync(List<TileNameElementContainer> tileNameElements)
+        {
+            var tileNames = Selection.gameObjects?.Select(x => (x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName).name, x.transform))?.ToList();
+            foreach (var elem in tileNameElements)
+            {
+                if (elem == null) continue;
+
+                var matches = tileNames.Where(item => item.name == elem.TileName).ToList();
+                foreach (var match in matches)
+                {
+                    await LoadAndDisyplayHierarchy(elem);
+                    await Task.Yield();
+                    await Task.Delay(100); // UI更新のため少し待機
+
+                    foreach (var selection in tileNames)
+                    {
+                        var path = selection.transform.GetPathToParent(selection.name);
+                        // 子要素のうち、選択中のオブジェクトに対応するものを選択状態にする
+                        foreach (var item in elem.treeViewItemData)
+                        {
+                            SelectChildRecursive(item, path, elem);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SelectChildRecursive(TreeViewItemData<TransformTreeItem> item, string pathToSelect, TileNameElementContainer container)
+        {
+            var isSelected = string.Equals(pathToSelect, item.data.GetFullPath());
+            if (isSelected)
+            {
+                //item.data.IsSelected = true; // 描画されていない場合があるため、データ側にも保持
+
+                var id = container.TreeView.GetIdForIndex(item.data.id);
+                var visualElem = container.TreeView.GetRootElementForId(id);
+                if (visualElem != null)
+                {
+                    var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
+                    toggle.value = isSelected;
+                    container.IsSelected = false; // 親のタイルは選択解除
+                }
+                else
+                {
+                    Debug.LogWarning($"visualElem is null for id: {item.data.id}");
+                }
+            }
+            foreach (var childItem in item.children)
+            {
+                SelectChildRecursive(childItem, pathToSelect, container);
+            }
+        }
+
+        /// <summary>
+        /// 選択された子要素のパスを取得
+        /// </summary>
+        /// <param name="tileNameElements"></param>
+        /// <returns></returns>
+        public List<string> GetSelectedChildrenPath(List<TileNameElementContainer> tileNameElements)
+        {
+            List<string> selected = new();
+            foreach (var elem in tileNameElements)
+            {
+                if (elem.treeViewItemData == null) continue;
+                foreach (var item in elem.treeViewItemData)
+                {
+                    GetSelectedChildrenPathRecursive(item, elem, selected);
+                }      
+            }
+            return selected;
+        }
+
+        public void GetSelectedChildrenPathRecursive(TreeViewItemData<TransformTreeItem> item, TileNameElementContainer container, List<string> selected)
+        {
+            var id = container.TreeView.GetIdForIndex(item.data.id);
+            var visualElem = container.TreeView.GetRootElementForId(id);
+            if (visualElem != null)
+            {
+                var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
+                if (toggle.value)
+                {
+                    selected.Add(item.data.GetFullPath());
+                }
+            }
+            foreach (var child in item.children)
+            {
+                GetSelectedChildrenPathRecursive(child, container, selected);
+            }
+        }
+
+
+        public class TransformTreeItem
+        {
+            public int id;
+            public string name;
+            public TransformTreeItem parent;
+            public Transform transform;
+            public List<TransformTreeItem> children = new();
+
+            public bool IsSelected { get; set; } = false;
+
+            public string GetFullPath()
+            {
+                if (parent == null)
+                    return name;
+                return parent.GetFullPath() + "/" + name;
+            }
+        }
+
+        TransformTreeItem BuildTree(Transform t, TransformTreeItem parent)
+        {
+            var item = new TransformTreeItem
+            {
+                id = nextId++,
+                name = t.name,
+                transform = t,
+                parent = parent
+            };
+
+            foreach (Transform child in t)
+            {
+                item.children.Add(BuildTree(child, item));
+            }
+
+            return item;
+        }
+
+        TreeViewItemData<TransformTreeItem> BuildTreeItem(TransformTreeItem item)
+        {
+            var children = item.children.Select(BuildTreeItem).ToList();
+            return new TreeViewItemData<TransformTreeItem>(nextId++, item, children);
+        }
+
+        public void Dispose()
+        {
+            this.tileManager = null;
+            this.parentWindow = null;
+        }
     }
 }

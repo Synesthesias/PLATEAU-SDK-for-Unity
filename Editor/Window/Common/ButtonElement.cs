@@ -58,6 +58,10 @@ namespace PLATEAU.Editor.Window.Common
             IsEnabled = true;
         }
 
+        public override void Reset()
+        {
+        }
+
         public override void Dispose()
         {
         }

@@ -18,6 +18,9 @@ namespace PLATEAU.Editor.Window.Common
         {
             drawFunc();
         }
+        public override void Reset()
+        {
+        }
 
         public override void Dispose()
         {

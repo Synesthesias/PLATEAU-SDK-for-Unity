@@ -30,7 +30,7 @@ namespace PLATEAU.Editor.Window.Main
                     flexGrow = 1 // 利用可能な空間いっぱいに広がる
                 }
             };
-            
+
             scrollView.Add(new IMGUIContainer(DrawImgui));
             gui = CreateGui();
             scrollView.Add(gui.VisualElement);
@@ -48,6 +48,36 @@ namespace PLATEAU.Editor.Window.Main
             gui?.Dispose();
         }
         
+    }
+
+    /// <summary>
+    /// スクロール機能を持たないPLATEAU SDKのEditorWindowが共通で備えているべき機能をまとめたものです。
+    /// </summary>
+    internal abstract class PlateauWindowBaseNoScroll : EditorWindow
+    {
+        private VisualElementDisposable gui;
+
+        /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
+        protected abstract VisualElementDisposable CreateGui();
+
+        private void CreateGUI()
+        {
+            rootVisualElement.Add(new IMGUIContainer(DrawImgui));
+            gui = CreateGui();
+            rootVisualElement.Add(gui.VisualElement);
+            rootVisualElement.Add(new PlateauWindowFooterGui().CreateGui());
+        }
+
+        private void DrawImgui()
+        {
+            PlateauEditorStyle.SetCurrentWindow(this);
+        }
+
+        private void OnDestroy()
+        {
+            gui?.Dispose();
+        }
+
     }
 
     internal class VisualElementDisposable

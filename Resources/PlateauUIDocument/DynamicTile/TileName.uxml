@@ -1,7 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
-    <ui:VisualElement name="Elem_TileBundleName" style="flex-grow: 1; flex-direction: row;">
-        <ui:Toggle name="Tgl_Select" style="flex-direction: row-reverse; align-self: auto; justify-content: flex-start; align-items: center; flex-wrap: nowrap;" />
-        <ui:Label tabindex="-1" text="Tile Name" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Lbl_TileName" style="-unity-text-align: middle-left; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
+    <ui:VisualElement name="Elem_TileBundleName" style="flex-grow: 1; flex-direction: column;">
+        <ui:VisualElement name="TileNameContent" style="flex-grow: 0; flex-direction: row;">
+            <ui:Toggle name="Tgl_Select" style="flex-direction: row-reverse; align-self: auto; justify-content: flex-start; align-items: center; flex-wrap: nowrap;" />
+            <ui:Label tabindex="-1" text="Tile Name" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Lbl_TileName" style="-unity-text-align: middle-left; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
+            <ui:Button text="子を選択" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_SelectChild" class="ActionButton" style="justify-content: flex-start; align-self: auto; align-items: auto; flex-shrink: 0; flex-grow: 0; overflow: hidden; flex-direction: row; height: auto; font-size: 10px; padding-left: 10px; margin-left: 4px;" />
+        </ui:VisualElement>
+        <ui:TreeView name="Tree_Children" auto-expand="true" virtualization-method="DynamicHeight" selection-type="None" focusable="true" show-alternating-row-backgrounds="None" style="align-items: stretch; justify-content: flex-start; flex-shrink: 1; display: none; flex-grow: 1; max-height: none; min-height: auto;" />
     </ui:VisualElement>
 </ui:UXML>

@@ -45,6 +45,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             PlateauEditorStyle.Separator(0);
         }
 
+        public override void Reset() { }
         public override void Dispose(){}
     }
 }

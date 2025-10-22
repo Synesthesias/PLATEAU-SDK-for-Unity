@@ -20,16 +20,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return window;
         }
 
-        public void Init(IPackageSelectResultReceiver resultReceiverArg)
+        public void Init(IPackageSelectResultReceiver resultReceiverArg, bool ignoreTileDataset)
         {
             this.resultReceiver = resultReceiverArg;
-            gui = new PackageSelectGui(resultReceiver, this);
+            gui = new PackageSelectGui(resultReceiver, this, ignoreTileDataset);
             this.isInitialized = true;
         }
 
         public void Init(PLATEAUInstancedCityModel data, IPackageSelectResultReceiver resultReceiverArg)
         {
-            Init(resultReceiverArg);
+            Init(resultReceiverArg, false);
             gui.SetData(data);
         }
 

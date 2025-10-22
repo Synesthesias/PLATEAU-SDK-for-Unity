@@ -51,7 +51,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                     "オブジェクト配置", (int)Current, DestroySrcOptions, 90);
         }
 
-
+        public override void Reset() { }
         public override void Dispose(){}
     }
     

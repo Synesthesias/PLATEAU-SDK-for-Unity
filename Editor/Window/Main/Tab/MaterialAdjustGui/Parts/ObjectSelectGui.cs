@@ -1,4 +1,5 @@
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Util;
 using System;
@@ -23,11 +24,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     {
         private ObservableCollection<Transform> observableSelected;   
 
-        public SceneTileChooserGui.ChooserType SelectedType => sceneTileChooser.SelectedType;
-        
+        public SceneTileChooserGui.ChooserType SelectedType => sceneTileChooser.SelectedType; // シーンオブジェクト/動的タイルの選択状態
+
         public bool LockChange { get => lockChange; set { lockChange = value; if( tileSelectGui != null ) tileSelectGui.LockChange = value; } }
         private bool lockChange;
-        //public bool LockChange { get; set; }
 
         private readonly ScrollView scrollView = new (GUILayout.Height(160));
         private bool skipCallback;
@@ -47,6 +47,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             
             observableSelected.CollectionChanged += (sender, args) =>
             {
+                var items = args.NewItems;
+                if(items == null) return;
+                foreach (var item in items)
+                {
+                    var tran = item as Transform;
+                    var tileMan = tran.GetComponentInParent<PLATEAUTileManager>();
+                    if(tileMan != null )
+                    {
+                        // 動的タイルの場合は処理しない
+                        var errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";
+                        Dialogue.Display(errorMessage, "OK");
+                        CancelChange();
+                        return;
+                    }
+                }
+
                 // 変更時のコールバックを呼びます。
                 // ただし、ロック中であり、ユーザーが変更をキャンセルした場合は呼ばずにロールバックします。
                 if (skipCallback) return;
@@ -59,13 +75,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 else
                 {
                     // キャンセル操作のため、変更を元に戻します
-                    skipCallback = true;
-                    observableSelected.Clear();
-                    foreach(var p in prevSelected)
-                    {
-                        observableSelected.Add(p);
-                    }
-                    skipCallback = false;
+                    CancelChange();
                 }
                 
             };
@@ -76,7 +86,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             onSelectionChanged(new UniqueParentTransformList(observableSelected));
         }
-        
+
+        /// <summary>
+        /// CollectionChangedイベント発行時のキャンセル操作
+        /// </summary>
+        private void CancelChange()
+        {
+            skipCallback = true;
+            observableSelected.Clear();
+            foreach (var p in prevSelected)
+            {
+                observableSelected.Add(p);
+            }
+            skipCallback = false;
+        }
 
         public override void DrawContent()
         {
@@ -120,13 +143,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                         if (PlateauEditorStyle.MiniButton("パッケージ種から選択", 150))
                         {
                             var window = PackageSelectWindow.Open();
-                            window.Init(this);
+                            window.Init(this, true);
                         }
                     });
                 }, tileSelectGui.DrawSelectTile);
             }
 
-            if(sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile)
+            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile)
             {
                 tileSelectGui.DrawScrollViewContent(scrollView);
             }
@@ -208,7 +231,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
             return false;
         }
-        
+
+        public override void Reset() { }
         public override void Dispose()
         {
         }

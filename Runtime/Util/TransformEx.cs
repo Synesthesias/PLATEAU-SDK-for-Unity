@@ -73,5 +73,38 @@ namespace PLATEAU.Util
                 CollectChildrenWithComponentRecursive<T>(child, result);
             }
         }
+
+        /// <summary> /// 指定した名前の親までのPathを返す /// </summary> 
+        public static string GetPathToParent(this Transform origin, string parentName)
+        {
+            Transform current = origin;
+            string path = current.name;
+            while (current.parent != null)
+            {
+                current = current.parent;
+                path = current.name + "/" + path;
+                if (current.name == parentName)
+                    break;
+            }
+            return path;
+        }
+
+        // 全ての子Transformを取得
+        public static List<Transform> GetAllChildren(this Transform parent)
+        {
+            var result = new List<Transform>();
+            CollectChildrenRecursive(parent, result);
+            return result;
+        }
+
+        private static void CollectChildrenRecursive(Transform current, List<Transform> result)
+        {
+            foreach (Transform child in current)
+            {
+                result.Add(child);
+                CollectChildrenRecursive(child, result);
+            }
+        }
+
     }
 }

@@ -10,14 +10,31 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using System.Linq;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
+    internal class TileSelectionItem
+    {
+        public string TileAddress { get; private set; } 
+        public string TilePath { get; private set; }
+
+        public bool IsTile => string.Equals(TileAddress, TilePath);
+
+        public TileSelectionItem(string fullpath)
+        {
+            TilePath = fullpath;
+            // path( 例: "xxxxx_op/LODx/xxxx-xxx") からタイルのAddress(例: "xxxxx_op")を取得する
+            var splits = fullpath.Split('/');
+            TileAddress =  splits[0];
+        }
+    }
+
+
     /// <summary>
     /// <see cref="CityMaterialAdjustPresenter"/>内のタイル選択GUI部分を担当するクラス
     /// </summary>
@@ -27,18 +44,32 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         private PLATEAUTileManager tileManager;
 
-        private ObservableCollection<string> observableSelected = new();
+        private ObservableCollection<TileSelectionItem> observableSelected = new();
 
         private readonly EditorWindow parentEditorWindow;
 
-        public ObservableCollection<string> Selected => observableSelected;
+        public ObservableCollection<TileSelectionItem> Selected => observableSelected;
 
         public bool HasTileManager => this.tileManager != null;
 
         public TileConvertGui(EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
+            SelectTileManager();
+        }
+
+        public void SelectTileManager()
+        {
             this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); //デフォルトでシーン内のTileManagerをセット
+        }
+
+        public void Reset()
+        {
+        }
+
+        public void ClearSelected()
+        {
+            observableSelected.Clear();
         }
 
         public void DrawSelectTile()
@@ -58,13 +89,22 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                     var window = TileSelectWindow.Open(this.tileManager, (result) =>
                     {
 
-                        foreach (var name in result)
+                        foreach (var name in result.Selection)
                         {
-
-                            if (observableSelected.Contains(name)) continue;
-                            observableSelected.Add(name);
+                            //if (observableSelected.Contains(name)) continue;
+                            if (observableSelected.Any(x => x.TilePath == name)) continue;
+                            observableSelected.Add(new TileSelectionItem(name));
 
                             Debug.Log($"Selected Tile: {name}");
+                        }
+
+                        foreach (var name in result.ChildSelection)
+                        {
+
+                            if (observableSelected.Any(x => x.TilePath == name)) continue;
+                            observableSelected.Add(new TileSelectionItem(name));
+
+                            Debug.Log($"Selected Child Tile: {name}");
                         }
                     });
                 }
@@ -91,13 +131,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                         using (new EditorGUILayout.HorizontalScope())
                         {
                             EditorGUILayout.LabelField($"{i + 1}:", GUILayout.Width(30));
-                            var name = observableSelected[i];
-                            if (name == null)
+                            var item = observableSelected[i];
+                            if (item == null)
                             {
                                 indexToDelete = i;
                                 continue;
                             }
-                            EditorGUILayout.LabelField(name, GUILayout.ExpandWidth(true));
+                            EditorGUILayout.LabelField(item.TilePath, GUILayout.ExpandWidth(true));
 
                             if (PlateauEditorStyle.TinyButton("除く", 30))
                             {
@@ -165,7 +205,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// Addressに含まれるタイルを読み込んで、Transformリストを取得する
         /// </summary>
         /// <returns></returns>
-        public async Task<UniqueParentTransformList> GetTransformListFromAddr(IList<string> addr)
+        public async Task<UniqueParentTransformList> GetTransformListFromAddr(IList<TileSelectionItem> addr)
         {
             CancellationTokenSource cancellationTokenSource = new();
             await tileManager.CancelLoadTask();
@@ -174,7 +214,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var selectedTiles = new List<PLATEAUDynamicTile>();
             foreach (var tile in tileManager.DynamicTiles)
             {
-                if (addr.Contains(tile.Address))
+                //if (addr.Contains(tile.Address))
+                if (addr.Any(x => x.TileAddress == tile.Address))
                     selectedTiles.Add(tile);
 
                 if(tile.LoadedObject == null)
@@ -211,8 +252,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return new UniqueParentTransformList(transforms);
         }
 
-
-
         public async Task<GranularityConvertResult> ExecGranularityConvertAsync(MAExecutorConf conf, ConvertGranularity granularity)
         {
             if (observableSelected.Count == 0)
@@ -235,7 +274,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             //　入れ直し 参照が切れるので
             tileTransforms.Clear();
-            tileTransforms = GetEditableTransforms(editingTile);
+            tileTransforms = GetEditableTransforms(editingTile, true);
 
             await SavePrefabAssets(tileTransforms, rebuilder, ct);
             await rebuilder.RebuildByTiles(tileManager, selectedTiles);
@@ -243,6 +282,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
 
             await HighlightSelectedTiles(false);
+            SelectTileManager();
             return result;
         }
 
@@ -271,7 +311,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             //　入れ直し 参照が切れるので
             tileTransforms.Clear();
-            tileTransforms = GetEditableTransforms(editingTile);
+            tileTransforms = GetEditableTransforms(editingTile, true);
 
             await SavePrefabAssets(tileTransforms, rebuilder, ct);
             await rebuilder.RebuildByTiles(tileManager, selectedTiles);
@@ -279,6 +319,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");
 
             await HighlightSelectedTiles(false);
+            SelectTileManager();
             return result;
         }
 
@@ -291,17 +332,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return GetTilesFromAddr(observableSelected.ToList());
         }
 
-        private List<PLATEAUDynamicTile> GetTilesFromAddr(List<string> addresses)
+        private List<PLATEAUDynamicTile> GetTilesFromAddr(List<TileSelectionItem> addresses)
         {
             var tiles = new List<PLATEAUDynamicTile>();
             foreach (var tile in tileManager.DynamicTiles)
             {
-                if (addresses.Contains(tile.Address))
+                //if (addresses.Contains(tile.Address))
+                if (addresses.Any(x => x.TileAddress == tile.Address))
                     tiles.Add(tile);
             }
             return tiles;
         }
-
 
         /// <summary>
         /// タイルリストからTransformリストを取得する
@@ -341,14 +382,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        private List<Transform> GetEditableTransforms(Transform parent)
+        private List<Transform> GetEditableTransforms(Transform parent, bool asTile = false)
         {
             //変換用のTransformリストを作成しconfにセットします。
             var tileTransforms = new List<Transform>();
             foreach (var addr in observableSelected)
             {
-                var edittrans = parent.transform.Find(addr)?.transform;
-                tileTransforms.Add(edittrans);
+                var edittrans = parent.transform.Find(addr.TileAddress)?.transform;
+
+                if( addr.IsTile || asTile )
+                {
+                    // タイル直下の場合はそのまま
+                    tileTransforms.Add(edittrans);
+
+                }
+                else
+                {
+                    // 子タイルの場合はパスを辿って同一のパスを探す
+                    var children = edittrans.GetAllChildren();
+                    foreach (var child in children)
+                    {
+                        var path = child.GetPathToParent(addr.TileAddress);
+                        if (path == addr.TilePath)
+                        {
+                            tileTransforms.Add(child);
+                            break;
+                        }
+                    }
+                }
+                
             }
             return tileTransforms;
         }

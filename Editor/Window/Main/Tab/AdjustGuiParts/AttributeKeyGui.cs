@@ -75,6 +75,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
             AttrKey = selectedAttrKey;
         }
 
+        public override void Reset() { }
         public override void Dispose()
         {
             

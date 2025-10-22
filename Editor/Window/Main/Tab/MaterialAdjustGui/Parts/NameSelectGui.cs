@@ -21,6 +21,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             EnteredName = EditorGUILayout.TextField(labelText, EnteredName);
         }
+        public override void Reset() { }
         public override void Dispose(){}
     }
 }

@@ -1,6 +1,8 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +25,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private DatasetSelectGui DatasetSelectGui => elements.Get<DatasetSelectGui>();
         private PackageSearchGui PackageSearchGui => elements.Get<PackageSearchGui>();
 
-        public PackageSelectGui(IPackageSelectResultReceiver resultReceiver, EditorWindow parentWindow)
+        private bool ignoreTileDataset;
+
+        public PackageSelectGui(IPackageSelectResultReceiver resultReceiver, EditorWindow parentWindow, bool ignoreTileDataset)
         {
             this.resultReceiver = resultReceiver;
             this.parentWindow = parentWindow;
-            
+            this.ignoreTileDataset = ignoreTileDataset;
+
             // データセット選択　→　パッケージ種選択 → 決定 の流れでGUIを登録します
             elements = new ElementGroup("",0,
                 new DatasetSelectGui(this),
@@ -63,6 +68,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public void ReceiveDatasetChange()
         {
+            if (ignoreTileDataset && DatasetSelectGui.Selected != null && DatasetSelectGui.Selected.transform.GetComponentInParent<PLATEAUTileManager>() != null)
+            {
+                // 動的タイルの場合は処理しない
+                var errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";
+                Dialogue.Display(errorMessage, "OK");
+                DatasetSelectGui.SetSelected(null);
+                return;
+            }
+
             // データセットが選択されたときのみ、検索してパッケージ選択を表示します。
             bool isSelected = SelectedDataset != null;
             PackageSearchGui.IsVisible = isSelected;
@@ -149,7 +163,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 if(Selected != prevSelected) changeReceiver.ReceiveDatasetChange();
             }
         }
-            
+
+        public override void Reset() { }
         public override void Dispose() { }
     }
     
@@ -194,6 +209,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             PlateauEditorStyle.Separator(0);
         }
 
+        public override void Reset() { }
         public override void Dispose()
         {
         }
@@ -233,6 +249,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             );
         }
 
+        public override void Reset() { }
         public override void Dispose()
         { }
     }
