@@ -15,6 +15,9 @@ namespace PLATEAU.Texture
             out PlateauVector3d min, out PlateauVector3d max, 
             out PlateauVector2f minUV, out PlateauVector2f maxUV, out UInt16[] heightData )
         {
+#if UNITY_IOS
+                throw new NotImplementedException("This is not implemented for iOS.");
+#else
             var apiResult =
                 NativeMethods.heightmap_generator_generate_from_mesh(
                     inMesh.Handle, textureWidth, textureHeight, new PlateauVector3d(margin.X, margin.Y, 0),
@@ -32,6 +35,7 @@ namespace PLATEAU.Texture
                 heightData[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
+#endif
         }
 
         /// <summary>
@@ -74,6 +78,9 @@ namespace PLATEAU.Texture
 
         static public void SavePngFile(string fileName, int width, int height, UInt16[] data)
         {
+#if UNITY_IOS
+                throw new NotImplementedException("This is not implemented for iOS.");
+#else
             IntPtr heightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * data.Length);
 
             byte[] outData = new byte[sizeof(UInt16) * data.Length];
@@ -95,10 +102,14 @@ namespace PLATEAU.Texture
 
             Marshal.FreeHGlobal(heightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
+#endif
         }
 
         static public void ReadPngFile(string fileName, int width, int height, out UInt16[] data)
         {
+#if UNITY_IOS
+                throw new NotImplementedException("This is not implemented for iOS.");
+#else
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(fileName);
             var apiResult =
                 NativeMethods.heightmap_read_png_file(fileNameUtf8, width, height, out IntPtr heightmapDataPtr, out int dataSize);
@@ -115,11 +126,14 @@ namespace PLATEAU.Texture
                 data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
-
+#endif
         }
 
         static public void SaveRawFile(string fileName, int width, int height, UInt16[] data)
         {
+#if UNITY_IOS
+                throw new NotImplementedException("This is not implemented for iOS.");
+#else
             IntPtr heightmapDataPtr = Marshal.AllocHGlobal(sizeof(UInt16) * data.Length);
 
             byte[] outData = new byte[sizeof(UInt16) * data.Length];
@@ -141,10 +155,14 @@ namespace PLATEAU.Texture
 
             Marshal.FreeHGlobal(heightmapDataPtr);
             DLLUtil.CheckDllError(apiResult);
+#endif
         }
 
         static public void ReadRawFile(string fileName, int width, int height, out UInt16[] Data)
         {
+#if UNITY_IOS
+                throw new NotImplementedException("This is not implemented for iOS.");
+#else
             var fileNameUtf8 = DLLUtil.StrToUtf8Bytes(fileName);
             var apiResult =
                 NativeMethods.heightmap_read_raw_file(fileNameUtf8, width, height, out IntPtr heightmapDataPtr, out int DataSize);
@@ -160,10 +178,12 @@ namespace PLATEAU.Texture
                 Data[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
+#endif
         }
 
         private static class NativeMethods
         {
+#if !UNITY_IOS
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_generator_generate_from_mesh(
                 [In] IntPtr srcMeshPtr,
@@ -188,7 +208,7 @@ namespace PLATEAU.Texture
              [In] int height,
              [In] IntPtr data
             );
-
+            
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_read_png_file(
              [In] byte[] fileName,
@@ -219,6 +239,7 @@ namespace PLATEAU.Texture
             internal static extern APIResult release_heightmap_data(
              [In] IntPtr data
             );
+#endif
         }
     }
 
