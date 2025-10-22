@@ -23,41 +23,59 @@ namespace PLATEAU.Editor.Util
     public static void OnPostProcessBuild(BuildTarget target, string path) {
         if (target != BuildTarget.iOS) return;
 
-        // Xcode プロジェクトを開く
-        string projPath = PBXProject.GetPBXProjectPath(path);
-        PBXProject proj = new PBXProject();
-        proj.ReadFromFile(projPath);
 
-        // メインターゲット取得
-        string targetGuid = proj.GetUnityMainTargetGuid();
-
-
-        // PrivacyInfo.xcprivacy をアプリルートにコピー。
-        // ただしユーザーのものがすでにあればそれを尊重するため上書きはしない
-        string src = Path.Combine(PathUtil.SdkBasePath, "Plugins/iOS", "PrivacyInfo.xcprivacy");
-        if (!File.Exists(src))
+        try
         {
-            Debug.LogError($"Source privacy manifest not found at: {src}");
-            return;
-        }
-        string dst = Path.Combine(path, "PrivacyInfo.xcprivacy");
-        if (!File.Exists(dst))
-        {
-            File.Copy(src, dst, false);
-            Debug.Log("Adding PrivacyInfo.xcprivacy to iOS build.");
-        }
-        else
-        {
-            Debug.Log("Using existing PrivacyInfo.xcprivacy");
-        }
-        
+            // Xcode プロジェクトを開く
+            string projPath = PBXProject.GetPBXProjectPath(path);
+            PBXProject proj = new PBXProject();
+            proj.ReadFromFile(projPath);
 
-        // Xcode プロジェクトに追加（Copy Bundle Resources）
-        string fileGuid = proj.AddFile("PrivacyInfo.xcprivacy", "PrivacyInfo.xcprivacy", PBXSourceTree.Source);
-        proj.AddFileToBuild(targetGuid, fileGuid);
+            // メインターゲット取得
+            string targetGuid = proj.GetUnityMainTargetGuid();
 
-        proj.WriteToFile(projPath);
-        
+
+            // PrivacyInfo.xcprivacy をアプリルートにコピー。
+            // ただしユーザーのものがすでにあればそれを尊重するため上書きはしない
+            string src = Path.Combine(PathUtil.SdkBasePath, "Plugins/iOS", "PrivacyInfo.xcprivacy");
+            if (!File.Exists(src))
+            {
+                Debug.LogError($"Source privacy manifest not found at: {src}");
+                return;
+            }
+            string dst = Path.Combine(path, "PrivacyInfo.xcprivacy");
+            if (!File.Exists(dst))
+            {
+                File.Copy(src, dst, false);
+                Debug.Log("Adding PrivacyInfo.xcprivacy to iOS build.");
+            }
+            else
+            {
+                Debug.Log("Using existing PrivacyInfo.xcprivacy");
+            }
+
+
+            // Xcode プロジェクトに追加（Copy Bundle Resources）
+            // 既にプロジェクトに追加されているか確認
+            string existingFileGuid = proj.FindFileGuidByProjectPath("PrivacyInfo.xcprivacy");
+            if (string.IsNullOrEmpty(existingFileGuid))
+            {
+                string fileGuid = proj.AddFile("PrivacyInfo.xcprivacy", "PrivacyInfo.xcprivacy", PBXSourceTree.Source);
+                proj.AddFileToBuild(targetGuid, fileGuid);
+                Debug.Log("PrivacyInfo.xcprivacy added to Xcode project.");
+            }
+            else
+            {
+                Debug.Log("PrivacyInfo.xcprivacy already exists in Xcode project.");
+            }
+
+            proj.WriteToFile(projPath);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to add privacy manifest to Xcode project: {e.Message}\n{e.StackTrace}");
+        }
+
     }
 #endif
     }
