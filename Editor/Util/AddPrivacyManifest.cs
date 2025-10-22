@@ -2,6 +2,7 @@ using PLATEAU.Util;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEngine;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -38,6 +39,11 @@ namespace PLATEAU.Editor.Util
         if (!File.Exists(dst))
         {
             File.Copy(src, dst, false);
+            Debug.Log("Using existing PrivacyInfo.xcprivacy");
+        }
+        else
+        {
+            Debug.Log("Adding PrivacyInfo.xcprivacy to iOS build.");
         }
         
 
@@ -46,7 +52,7 @@ namespace PLATEAU.Editor.Util
         proj.AddFileToBuild(targetGuid, fileGuid);
 
         proj.WriteToFile(projPath);
-        UnityEngine.Debug.Log("✅ PrivacyInfo.xcprivacy added to iOS build.");
+        
     }
 #endif
     }
