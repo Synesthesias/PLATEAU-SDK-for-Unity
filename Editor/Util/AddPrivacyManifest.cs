@@ -2,6 +2,9 @@ using PLATEAU.Util;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
+#if UNITY_IOS
+using UnityEditor.iOS.Xcode;
+#endif
 
 namespace PLATEAU.Editor.Util
 {
@@ -29,10 +32,15 @@ namespace PLATEAU.Editor.Util
         string targetGuid = proj.GetUnityMainTargetGuid();
 
 
-        // PrivacyInfo.xcprivacy をアプリルートにコピー
+        // PrivacyInfo.xcprivacy をアプリルートにコピー。
+        // ただしユーザーのものがすでにあればそれを尊重するため上書きはしない
         string src = Path.Combine(PathUtil.SdkBasePath, "Plugins/iOS", "PrivacyInfo.xcprivacy");
         string dst = Path.Combine(path, "PrivacyInfo.xcprivacy");
-        File.Copy(src, dst, true);
+        if (!File.Exists(dst))
+        {
+            File.Copy(src, dst, false);
+        }
+        
 
         // Xcode プロジェクトに追加（Copy Bundle Resources）
         string fileGuid = proj.AddFile("PrivacyInfo.xcprivacy", "PrivacyInfo.xcprivacy", PBXSourceTree.Source);
