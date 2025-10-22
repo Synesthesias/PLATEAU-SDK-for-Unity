@@ -3,5 +3,6 @@
     <ui:VisualElement name="Elem_TileBundleName" style="flex-grow: 1; flex-direction: row;">
         <ui:Toggle name="Tgl_TreeSelect" style="flex-direction: row-reverse; align-self: auto; justify-content: flex-start; align-items: center; flex-wrap: nowrap;" />
         <ui:Label tabindex="-1" text="Tile Name" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Lbl_TreeTileName" style="-unity-text-align: middle-left; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;" />
+        <ui:Button text="階層を非表示" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_TreeHide" class="ActionButton" style="justify-content: flex-start; align-self: auto; align-items: auto; flex-shrink: 0; flex-grow: 0; overflow: hidden; flex-direction: row; height: auto; font-size: 10px; padding-left: 10px; margin-left: 4px;" />
     </ui:VisualElement>
 </ui:UXML>

@@ -88,24 +88,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 {
                     var window = TileSelectWindow.Open(this.tileManager, (result) =>
                     {
-
-                        foreach (var name in result.Selection)
+                        result.ToTileSelectionItems().ForEach(item =>
                         {
-                            //if (observableSelected.Contains(name)) continue;
-                            if (observableSelected.Any(x => x.TilePath == name)) continue;
-                            observableSelected.Add(new TileSelectionItem(name));
-
-                            Debug.Log($"Selected Tile: {name}");
-                        }
-
-                        foreach (var name in result.ChildSelection)
-                        {
-
-                            if (observableSelected.Any(x => x.TilePath == name)) continue;
-                            observableSelected.Add(new TileSelectionItem(name));
-
-                            Debug.Log($"Selected Child Tile: {name}");
-                        }
+                            if (observableSelected.Any(x => x.TilePath == item.TilePath)) return;
+                            observableSelected.Add(item);
+                        });
                     });
                 }
             });
@@ -214,7 +201,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var selectedTiles = new List<PLATEAUDynamicTile>();
             foreach (var tile in tileManager.DynamicTiles)
             {
-                //if (addr.Contains(tile.Address))
                 if (addr.Any(x => x.TileAddress == tile.Address))
                     selectedTiles.Add(tile);
 
@@ -332,12 +318,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return GetTilesFromAddr(observableSelected.ToList());
         }
 
+        /// <summary>
+        /// Addressリストから同一AddressのPLATEAUDynamicTileをtileManagerから探して返す
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
         private List<PLATEAUDynamicTile> GetTilesFromAddr(List<TileSelectionItem> addresses)
         {
             var tiles = new List<PLATEAUDynamicTile>();
             foreach (var tile in tileManager.DynamicTiles)
             {
-                //if (addresses.Contains(tile.Address))
                 if (addresses.Any(x => x.TileAddress == tile.Address))
                     tiles.Add(tile);
             }

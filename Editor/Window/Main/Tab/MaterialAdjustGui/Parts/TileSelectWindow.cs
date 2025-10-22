@@ -44,15 +44,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             /// </summary>
             public List<string> Selection { get; set; }
 
-            /// <summary>
-            /// 子要素を選択するタイル名
-            /// </summary>
-            public List<string> ChildSelection { get; set; }
+            public List<TileSelectionItem> ToTileSelectionItems()
+            {
+                return Selection.Select(address => new TileSelectionItem(address)).ToList();
+            }
 
-            public TileSelectResult(List<string> selection, List<string> childSelection)
+            public TileSelectResult(List<string> selection)
             {
                 Selection = selection;
-                ChildSelection = childSelection;
             }
         }
 
@@ -207,10 +206,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             List<string> selectedAddresses = tileNameElements.Where(e => e.IsSelected)
                                                .Select(e => e.TileName)
                                                .ToList();
-
             List<string> selectedChildAddresses = treeViewItemBuilder.GetSelectedChildrenPath(tileNameElements);
-
-            onSelectCallback?.Invoke(new TileSelectResult(selectedAddresses, selectedChildAddresses));
+            selectedAddresses.AddRange(selectedChildAddresses);
+            onSelectCallback?.Invoke(new TileSelectResult(selectedAddresses));
 
             // ウィンドウを閉じる
             this.Close();
@@ -259,12 +257,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Toggle toggle;
         private Label nameLabel;
         private Button selectChildButton;
+
+        private VisualElement tileNameContent;
         private TreeView treeView;
         private Action<TileNameElementContainer> OnSelectCallback;
+
+        private List<VisualElement> treeViewElements;
 
         //TreeView要素名
         public const string TREEVIEW_TOGGLE = "Tgl_TreeSelect";
         public const string TREEVIEW_LABEL = "Lbl_TreeTileName";
+        public const string TREEVIEW_BUTTON_HIDE = "Btn_TreeHide";
 
         public bool IsSelected
         {
@@ -288,6 +291,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         public TileNameElementContainer(VisualElement root)
         {
             this.root = root;
+            this.tileNameContent = root.Q<VisualElement>("TileNameContent");
             this.toggle = root.Q<Toggle>("Tgl_Select");
             this.treeView = root.Q<TreeView>("Tree_Children");
             this.nameLabel = root.Q<Label>("Lbl_TileName");
@@ -300,19 +304,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             selectChildButton.text = state switch
             {
-                TreeViewState.None => "子を選択",
-                TreeViewState.Show => "子を非表示",
-                TreeViewState.Hide => "子を選択",
                 TreeViewState.Loading => "読み込み中...",
-                _ => selectChildButton.text,
+                _ => "階層を表示",
             };
 
             treeView.style.display = state switch
             {
                 TreeViewState.Show => DisplayStyle.Flex,
-                TreeViewState.Hide => DisplayStyle.None,
-                TreeViewState.Loading => DisplayStyle.None,
-                _ => treeView.style.display,
+                _ => DisplayStyle.None,
+            };
+
+            tileNameContent.style.display = state switch
+            {
+                TreeViewState.Show => DisplayStyle.None,
+                _ => DisplayStyle.Flex,
             };
         }
 
@@ -335,12 +340,43 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         {
             return (element, index) =>
             {
-                var item = treeView.GetItemDataForIndex<TreeViewItemBuilder.TransformTreeItem>(index);
-                var label = element.Q<Label>(TREEVIEW_LABEL);
-                var toggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
-                label.text = item.name;
-                //label.text = item.GetFullPath();
-                element.RegisterCallback<ClickEvent>(e => toggle.value = !toggle.value);
+                var treeItem = treeView.GetItemDataForIndex<TreeViewItemBuilder.TransformTreeItem>(index);
+                var treeLabel = element.Q<Label>(TREEVIEW_LABEL);
+                var treeToggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
+                var treeHideButton = element.Q<Button>(TREEVIEW_BUTTON_HIDE);
+                treeLabel.text = treeItem.name;
+                //label.text = treeItem.GetFullPath();
+                element.RegisterCallback<ClickEvent>(OnElementClick);
+                element.RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel); // メモリリーク防止
+
+                // トップのみボタン表示
+                if (treeItem.parent != null)
+                    treeHideButton.visible = false;
+                else
+                {
+                    treeToggle.value = toggle.value; // 親の選択状態に合わせる
+                    treeHideButton.clicked += OnTreeHideClick;
+                }
+
+                void OnElementClick(ClickEvent evt)
+                {
+                    var treeToggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
+                    treeToggle.value = !treeToggle.value;
+                }
+
+                void OnTreeHideClick()
+                {
+                    SetTreeViewState(TreeViewState.Hide);
+                    var treeToggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
+                    toggle.value = treeToggle.value; // 親の選択状態に合わせる
+                }
+
+                void OnDetachFromPanel(DetachFromPanelEvent evt)
+                {
+                    element.UnregisterCallback<ClickEvent>(OnElementClick);
+                    var treeHideButton = element.Q<Button>(TREEVIEW_BUTTON_HIDE);
+                    treeHideButton.clicked -= OnTreeHideClick;
+                }
             };
         }
 
@@ -363,7 +399,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             else
             {
                 SetTreeViewState(TreeViewState.Show);
-                toggle.value = false;
                 OnSelectCallback?.Invoke(this);
             }
         }
