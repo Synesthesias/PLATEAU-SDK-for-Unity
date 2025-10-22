@@ -23,6 +23,7 @@ namespace PLATEAU.Editor.Util
     public static void OnPostProcessBuild(BuildTarget target, string path) {
         if (target != BuildTarget.iOS) return;
 
+
         try
         {
             // Xcode プロジェクトを開く
@@ -74,6 +75,7 @@ namespace PLATEAU.Editor.Util
         {
             Debug.LogError($"Failed to add privacy manifest to Xcode project: {e.Message}\n{e.StackTrace}");
         }
+
     }
 #endif
     }
