@@ -35,15 +35,20 @@ namespace PLATEAU.Editor.Util
         // PrivacyInfo.xcprivacy をアプリルートにコピー。
         // ただしユーザーのものがすでにあればそれを尊重するため上書きはしない
         string src = Path.Combine(PathUtil.SdkBasePath, "Plugins/iOS", "PrivacyInfo.xcprivacy");
+        if (!File.Exists(src))
+        {
+            Debug.LogError($"Source privacy manifest not found at: {src}");
+            return;
+        }
         string dst = Path.Combine(path, "PrivacyInfo.xcprivacy");
         if (!File.Exists(dst))
         {
             File.Copy(src, dst, false);
-            Debug.Log("Using existing PrivacyInfo.xcprivacy");
+            Debug.Log("Adding PrivacyInfo.xcprivacy to iOS build.");
         }
         else
         {
-            Debug.Log("Adding PrivacyInfo.xcprivacy to iOS build.");
+            Debug.Log("Using existing PrivacyInfo.xcprivacy");
         }
         
 
