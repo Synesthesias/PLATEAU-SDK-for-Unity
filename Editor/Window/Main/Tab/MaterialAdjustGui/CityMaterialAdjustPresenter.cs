@@ -40,7 +40,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private MaterialCriterion selectedCriterion;
         private string attrKey;
         private readonly EditorWindow parentEditorWindow;
-        private TileConvertGui tileConvert;
+        private TileMaterialAdjustGui tileConvert;
 
         /// <summary>
         /// 選択中のマテリアル分け基準に応じた、マテリアル分けインスタンスを返します。
@@ -80,7 +80,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
         public CityMaterialAdjustPresenter(EditorWindow parentEditorWindow)
         {
-            tileConvert = new TileConvertGui(parentEditorWindow);
+            tileConvert = new TileMaterialAdjustGui(parentEditorWindow);
 
             // UIの内容とコールバックをここで定義します。
             Views =
@@ -161,7 +161,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private void OnDoMaterialAdjustChanged(bool doMaterialAdjustArg)
         {
             doMaterialAdjust = doMaterialAdjustArg;
-
+            ShowGuiAfterSearch(doMaterialAdjust && IsSearched);
             ShowMaterialConf(doMaterialAdjust);
             ShowGranularityConvertButton(doChangeGranularity && !doMaterialAdjust);
         }

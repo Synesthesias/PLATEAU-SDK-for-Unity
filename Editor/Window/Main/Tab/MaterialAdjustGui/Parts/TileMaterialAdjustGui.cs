@@ -38,7 +38,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// <summary>
     /// <see cref="CityMaterialAdjustPresenter"/>内のタイル選択GUI部分を担当するクラス
     /// </summary>
-    internal class TileConvertGui
+    internal class TileMaterialAdjustGui
     {
         public bool LockChange { get; set; }
 
@@ -52,13 +52,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public bool HasTileManager => this.tileManager != null;
 
-        public TileConvertGui(EditorWindow parentEditorWindow)
+        public TileMaterialAdjustGui(EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
-            SelectTileManager();
+            InitGui();
         }
 
-        public void SelectTileManager()
+        public void InitGui()
         {
             this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); //デフォルトでシーン内のTileManagerをセット
         }
@@ -72,6 +72,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             observableSelected.Clear();
         }
 
+        /// <summary>
+        /// ObjectSelectGui 内のタイル選択部分を描画する
+        /// </summary>
         public void DrawSelectTile()
         {
             EditorGUI.BeginChangeCheck();
@@ -99,6 +102,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             GUI.enabled = true;
         }
 
+        /// <summary>
+        /// ObjectSelectGui 内の選択タイル表示部分を描画する
+        /// </summary>
+        /// <param name="scrollView"></param>
         public void DrawScrollViewContent(ScrollView scrollView)
         {
             using (PlateauEditorStyle.VerticalScopeLevel2())
@@ -157,7 +164,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
         }
 
-        private bool IsHighlightSelectedTilesRunning = false;
+        /// <summary>
+        /// observableSelectedに含まれるタイルをハイライトする
+        /// </summary>
+        /// <param name="forceLoad"></param>
+        /// <returns></returns>
         private async Task HighlightSelectedTiles(bool forceLoad = true)
         {
             IsHighlightSelectedTilesRunning = true;
@@ -165,19 +176,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var transforms = new List<Transform>();
             if (forceLoad)
             {
-                var uniqueTransforms = await GetSelectionAsTransformList(); // 読み込み
-                transforms = uniqueTransforms.Get.ToList();
+                var allTransforms = await GetTransformListFromAddr(observableSelected);
+                transforms = allTransforms.Where(trans => observableSelected
+                    .Any(selected => trans.GetPathToParent(selected.TileAddress) == selected.TilePath || trans.FindChildOfNamedParent(PLATEAUTileManager.TileParentName)?.name == selected.TilePath)).ToList();
             }
             else
             {
                 transforms = GetTransformsFromTiles(GetSelectedTiles());
             }
 
-            Selection.objects = transforms.Select(trans => trans.gameObject).Cast<Object>().ToArray();
+            Selection.objects = transforms.Select(trans => trans.gameObject).Cast<UnityEngine.Object>().ToArray();
             IsHighlightSelectedTilesRunning = false;
 
             parentEditorWindow.Repaint();
         }
+        private bool IsHighlightSelectedTilesRunning = false;
 
         /// <summary>
         /// observableSelectedのAddressに含まれるタイルを読み込んで、Transformリストを取得する
@@ -185,48 +198,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task<UniqueParentTransformList> GetSelectionAsTransformList()
         {
-            return await GetTransformListFromAddr(observableSelected);
+            return await GetUniqueTransformListFromAddr(observableSelected);
         }
 
         /// <summary>
         /// Addressに含まれるタイルを読み込んで、Transformリストを取得する
         /// </summary>
         /// <returns></returns>
-        public async Task<UniqueParentTransformList> GetTransformListFromAddr(IList<TileSelectionItem> addr)
+        public async Task<List<Transform>> GetTransformListFromAddr(IList<TileSelectionItem> addr)
         {
-            CancellationTokenSource cancellationTokenSource = new();
-            await tileManager.CancelLoadTask();
-
-            bool loading = false;
-            var selectedTiles = new List<PLATEAUDynamicTile>();
-            foreach (var tile in tileManager.DynamicTiles)
-            {
-                if (addr.Any(x => x.TileAddress == tile.Address))
-                    selectedTiles.Add(tile);
-
-                if(tile.LoadedObject == null)
-                {
-                    // 読み込む
-                    loading = true;
-                    var tokenSorce = new CancellationTokenSource();
-                    tile.LoadHandleCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, tokenSorce.Token);
-                    var result = await tileManager.PrepareLoadTile(tile);
-                }
-            }
-
-            if(loading)
-            {
-                // 読み込みまで待機
-                var flagEvent = new ManualResetEventSlim(false);
-                await Task.Run(() =>
-                {
-                    Thread.Sleep(500);
-                    if (tileManager.IsCoroutineRunning == false)
-                        flagEvent.Set(); 
-                });
-                flagEvent.Wait();
-            }
-
+            var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
+            var selectedTiles = await tileManager.ForceLoadTiles(addresses);
             var transforms = new List<Transform>();
             foreach (var tile in selectedTiles)
             {
@@ -235,9 +217,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                     TransformEx.GetAllChildrenWithComponent<PLATEAUCityObjectGroup>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
                 }
             }
+            return transforms;
+        }
+
+        public async Task<UniqueParentTransformList> GetUniqueTransformListFromAddr(IList<TileSelectionItem> addr)
+        {
+            var transforms = await GetTransformListFromAddr(addr);
             return new UniqueParentTransformList(transforms);
         }
 
+        /// <summary>
+        /// 分割結合実行
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <param name="granularity"></param>
+        /// <returns></returns>
         public async Task<GranularityConvertResult> ExecGranularityConvertAsync(MAExecutorConf conf, ConvertGranularity granularity)
         {
             if (observableSelected.Count == 0)
@@ -256,7 +250,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             // ここで実行します。
             var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
-            var generatedObjNames = result.GeneratedObjs.Select(x => x.name).ToList(); // 生成されたオブジェクトの名前リストを取得
+            var generatedSelection = result.GeneratedObjs.Select(o => new TileSelectionItem(GetTilePath(o.transform, TileRebuilder.EditingTilesParentName))).ToList(); // 生成されたオブジェクトの名前リストを取得
 
             //　入れ直し 参照が切れるので
             tileTransforms.Clear();
@@ -267,11 +261,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
 
+            observableSelected.Clear();
+            generatedSelection.ForEach(item => observableSelected.Add(item));
             await HighlightSelectedTiles(false);
-            SelectTileManager();
+            InitGui();
             return result;
         }
 
+        /// <summary>
+        /// マテリアル分け実行
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <param name="maExecutor"></param>
+        /// <returns></returns>
         public async Task<UniqueParentTransformList> ExecMaterialAdjustAsync(MAExecutorConf conf, IMAExecutorV2 maExecutor )//, bool destroySrcObjs)
         {
             //上の処理と割と一緒
@@ -293,7 +295,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             // ここで実行します。
             var result = await maExecutor.ExecAsync(conf);
-            var generatedObjNames = result.Get.Select(t => t.name).ToList();
+            var generatedSelection = result.Get.Select(t => new TileSelectionItem(GetTilePath(t, TileRebuilder.EditingTilesParentName))).ToList();
 
             //　入れ直し 参照が切れるので
             tileTransforms.Clear();
@@ -304,8 +306,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");
 
+            observableSelected.Clear();
+            generatedSelection.ForEach(item => observableSelected.Add(item));
             await HighlightSelectedTiles(false);
-            SelectTileManager();
+            InitGui();
             return result;
         }
 
@@ -400,9 +404,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                         }
                     }
                 }
-                
             }
             return tileTransforms;
+        }
+
+        /// <summary>
+        /// Transformからタイルパスを取得する
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="parentName"> PLATEAUTileManager.TileParentName / TileRebuilder.EditingTilesParentName </param>
+        /// <returns></returns>
+        private string GetTilePath(Transform obj, string parentName)
+        {
+            var pathToRoot = obj.GetPathToParent(parentName);
+            var startIndex = parentName.Length + 1; // "DynamicTileRoot/" の分をスキップ
+            return pathToRoot.Substring(startIndex);
         }
 
         /// <summary>

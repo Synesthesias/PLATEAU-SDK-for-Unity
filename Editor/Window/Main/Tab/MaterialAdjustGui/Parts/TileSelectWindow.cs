@@ -444,38 +444,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public async Task LoadAndDisyplayHierarchy(TileNameElementContainer container)
         {
-            var SelectedTiles = tileManager.DynamicTiles.Where(t => t.Address == container.TileName).ToList();
             var treeView = container.TreeView;
-            foreach (var SelectedTile in SelectedTiles)
+            container.SetTreeViewState(TileNameElementContainer.TreeViewState.Loading);
+
+            var addresses = new List<string>() { container.TileName };
+            var loadedTiles = await tileManager.ForceLoadTiles(addresses);
+            foreach (var loadedTile in loadedTiles)
             {
-                container.SetTreeViewState(TileNameElementContainer.TreeViewState.Loading);
-
-                if (SelectedTile.LoadedObject == null)
-                {
-                    // TODO : TileManagerに移動
-                    // タイル読込
-                    var tokenSorce = new CancellationTokenSource();
-                    SelectedTile.LoadHandleCancellationTokenSource = tokenSorce;
-                    var result = await tileManager.PrepareLoadTile(SelectedTile);
-
-                    // 読み込みまで待機
-                    var flagEvent = new ManualResetEventSlim(false);
-                    await Task.Run(() =>
-                    {
-                        Thread.Sleep(500);
-                        if (tileManager.IsCoroutineRunning == false)
-                            flagEvent.Set();
-                    });
-                    flagEvent.Wait();
-                }
-
-                if (SelectedTile.LoadedObject != null)
+                if (loadedTile.LoadedObject != null)
                 {
                     treeView.makeItem = container.GetTreeViewMakeItem();
                     treeView.bindItem = container.GetTreeViewBindItem();
-
                     nextId = 0;
-                    var rootItem = BuildTree(SelectedTile.LoadedObject.transform, null);
+                    var rootItem = BuildTree(loadedTile.LoadedObject.transform, null);
                     List<TreeViewItemData<TransformTreeItem>> rootItems = new();
                     rootItems.Add(BuildTreeItem(rootItem));
                     treeView.SetRootItems(rootItems);

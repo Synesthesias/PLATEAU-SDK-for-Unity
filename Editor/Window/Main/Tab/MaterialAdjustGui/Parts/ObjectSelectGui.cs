@@ -36,9 +36,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Action<UniqueParentTransformList> onSelectionChanged;
 
         private SceneTileChooserGui sceneTileChooser;
-        private TileConvertGui tileSelectGui;
+        private TileMaterialAdjustGui tileSelectGui;
 
-        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged, SceneTileChooserGui sceneTileChooser, TileConvertGui tileSelect)
+        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged, SceneTileChooserGui sceneTileChooser, TileMaterialAdjustGui tileSelect)
         {
             this.sceneTileChooser = sceneTileChooser;
             this.tileSelectGui = tileSelect;

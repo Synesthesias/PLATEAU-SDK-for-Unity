@@ -2,8 +2,9 @@ using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -355,6 +356,38 @@ namespace PLATEAU.DynamicTile
 
             if (loadTask == null) return;
             await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, useJobSystem, timeoutSeconds); 
+        }
+
+        /// <summary>
+        /// 強制的に指定されたアドレスのタイルをロードします。
+        /// 注意：UpdateAssetsByCameraPositionが走るとアンロードされる可能性があります。
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public async Task<List<PLATEAUDynamicTile>> ForceLoadTiles(List<string> addresses)
+        {
+            await CancelLoadTask();
+
+            var tiles = DynamicTiles.Where(t => addresses.Contains(t.Address)).ToList();
+            foreach (var tile in tiles)
+            {
+                if (tile.LoadedObject == null)
+                {
+                    // タイル読込
+                    var result = await PrepareLoadTile(tile);
+
+                    // 読み込みまで待機
+                    var flagEvent = new ManualResetEventSlim(false);
+                    await Task.Run(() =>
+                    {
+                        Thread.Sleep(500);
+                        if (IsCoroutineRunning == false)
+                            flagEvent.Set();
+                    });
+                    flagEvent.Wait();
+                }
+            }
+            return tiles;
         }
 
         /// <summary>

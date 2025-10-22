@@ -58,20 +58,12 @@ namespace PLATEAU.Util
         public static List<Transform> GetAllChildrenWithComponent<T>(Transform parent) where T : Component
         {
             List<Transform> result = new List<Transform>();
-            CollectChildrenWithComponentRecursive<T>(parent, result);
-            return result;
-        }
-
-        private static void CollectChildrenWithComponentRecursive<T>(Transform current, List<Transform> result) where T : Component
-        {
-            foreach (Transform child in current)
+            foreach (Transform child in parent.GetAllChildren())
             {
                 if (child.GetComponent<T>() != null)
-                {
                     result.Add(child);
-                }
-                CollectChildrenWithComponentRecursive<T>(child, result);
             }
+            return result;
         }
 
         /// <summary> /// 指定した名前の親までのPathを返す /// </summary> 
@@ -99,9 +91,9 @@ namespace PLATEAU.Util
 
         private static void CollectChildrenRecursive(Transform current, List<Transform> result)
         {
+            result.Add(current);
             foreach (Transform child in current)
             {
-                result.Add(child);
                 CollectChildrenRecursive(child, result);
             }
         }
