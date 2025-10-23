@@ -215,12 +215,9 @@ namespace PLATEAU.CityImport.Import
                 token?.ThrowIfCancellationRequested();
 
                 await ImportGmlParallel(fetchedGmlFiles, 10f, 30f, token); // GML読込
-                await ImportTiles(9, 80f, 100f, token);
-
-                throw new Exception();
-
                 await ImportTiles(11, 40f, 60f, token);
                 await ImportTiles(10, 60f, 80f, token);
+                await ImportTiles(9, 80f, 100f, token);
 
                 await Task.Delay(100, token ?? CancellationToken.None); // Progressの反映待機用の遅延
 

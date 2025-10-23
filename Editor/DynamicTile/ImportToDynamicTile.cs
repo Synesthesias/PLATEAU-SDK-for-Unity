@@ -80,7 +80,6 @@ namespace PLATEAU.Editor.DynamicTile
             // インポートを実行
             var task = TileImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
             await task;
-            throw new Exception();
             
             // 事後処理
             bool succeed = false;

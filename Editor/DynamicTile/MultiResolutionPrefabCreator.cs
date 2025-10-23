@@ -166,9 +166,7 @@ namespace PLATEAU.DynamicTile
                 if (lod1 != null && lod2 != null)
                 {
                     var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
-                    tmpCamera.orthographic = true;
-                    tmpCamera.backgroundColor = Color.clear;
-                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(directoryPath), 1, true,CameraClearFlags.Nothing);
+                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(savePath), 1, true,CameraClearFlags.Nothing, Color.black);
                     service.Execute(tmpCamera,content);
                     Object.DestroyImmediate(tmpCamera.gameObject);
                 }
@@ -220,7 +218,8 @@ namespace PLATEAU.DynamicTile
 
             var clone = Object.Instantiate(target);
             clone.name = target.name;
-            
+
+            var materialList = new List<Material[]>();
             if (denominator == 4)
             {
                 var lod1 = clone.transform.Find("LOD1");
@@ -228,13 +227,16 @@ namespace PLATEAU.DynamicTile
                 if (lod1 != null && lod2 != null)
                 {
                     var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
-                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(directoryPath), 1, true,CameraClearFlags.Nothing);
+                    var service = new PLATEAUOrthographicViewCaptureService(FileUtil.GetProjectRelativePath(savePath), 1, true);
                     service.Execute(tmpCamera,clone);
                     Object.DestroyImmediate(tmpCamera.gameObject);
                 }
             }
+            else
+            {
+                materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);    
+            }
             
-            var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
 
             if (result != null)
