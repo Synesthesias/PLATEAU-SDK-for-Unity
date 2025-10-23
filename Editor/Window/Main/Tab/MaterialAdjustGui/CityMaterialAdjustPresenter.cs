@@ -181,6 +181,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             attrKey = key;
         }
 
+        /// <summary>
+        /// シーンオブジェクト/動的タイルの選択タイプが変わったときに呼ばれます。
+        /// </summary>
+        /// <param name="selectedType"></param>
         private void onSceneTileSelectionChanged(SceneTileChooserGui.ChooserType selectedType)
         {
             ResetGui();
@@ -240,6 +244,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             ResetGui();
         }
 
+        /// <summary>
+        /// 選択中のオブジェクトのTransformを取得します。
+        /// 動的タイルの場合は、タイル読込を待ってから取得します。
+        /// </summary>
+        /// <returns></returns>
         private async Task<UniqueParentTransformList> GetSelectedObjectsAsync()
         {
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
@@ -249,6 +258,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             return await Task.FromResult(SelectedObjects);
         }
 
+        /// <summary>
+        /// 検索ボタンが押されたときに呼ばれます。
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private async Task OnSearchButtonPushedAsync()
         {
             using var progressBar = new ProgressBar("検索中です...");
@@ -288,6 +302,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
         }
 
+        /// <summary>
+        /// マテリアル分け行う場合に呼びます。
+        /// </summary>
         private async Task ExecMaterialAdjustAsync()
         {
             var button = Views.Get<ButtonElement>("execMaterialAdjustButton");
@@ -377,6 +394,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 await ExecGranularityConvertMainAsync();
                 button.RecoverFromProcessing();
                 PostConvert();
+                PostConvert();
             }
             catch (Exception e)
             {
@@ -384,7 +402,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
         }
         
-
         private async Task<GranularityConvertResult> ExecGranularityConvertMainAsync()
         {
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
@@ -416,7 +433,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// </summary>
         private MAExecutorConf GenerateConf()
         {
-            
             return selectedCriterion switch
             {
                 MaterialCriterion.None => throw new Exception("分割結合のみのときはCityGranularityConverterを使ってください"),
@@ -427,15 +443,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     DoDestroySrcObjs,
                     true
                 ),
-                    
                 MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                     CurrentSearcher.MaterialAdjustConf,
                     SelectedObjects,
                     DoDestroySrcObjs,
                     true,
                     attrKey
-                ),
-                    
+                ), 
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

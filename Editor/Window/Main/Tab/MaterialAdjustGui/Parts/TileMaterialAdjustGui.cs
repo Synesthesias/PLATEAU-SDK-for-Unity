@@ -18,12 +18,16 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
+
+    /// <summary>
+    /// リストに表示するタイル選択アイテム
+    /// </summary>
     internal class TileSelectionItem
     {
         public string TileAddress { get; private set; } 
         public string TilePath { get; private set; }
 
-        public bool IsTile => string.Equals(TileAddress, TilePath);
+        public bool IsTile => string.Equals(TileAddress, TilePath); // Tileでない場合はタイル内のオブジェクトを指す
 
         public TileSelectionItem(string fullpath)
         {
@@ -34,9 +38,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
     }
 
-
     /// <summary>
-    /// <see cref="CityMaterialAdjustPresenter"/>内のタイル選択GUI部分を担当するクラス
+    /// <see cref="CityMaterialAdjustPresenter"/>内のタイル選択時の動作やUIを担当するクラス
     /// </summary>
     internal class TileMaterialAdjustGui
     {
@@ -48,6 +51,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         private readonly EditorWindow parentEditorWindow;
 
+        private bool IsHighlightSelectedTilesRunning = false; // ハイライト処理中かどうか
+
         public ObservableCollection<TileSelectionItem> Selected => observableSelected;
 
         public bool HasTileManager => this.tileManager != null;
@@ -55,16 +60,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         public TileMaterialAdjustGui(EditorWindow parentEditorWindow)
         {
             this.parentEditorWindow = parentEditorWindow;
-            InitGui();
+            SetDefaultTileManager();
         }
 
-        public void InitGui()
+        /// <summary>
+        /// デフォルトでシーン内のTileManagerをセット
+        /// </summary>
+        public void SetDefaultTileManager()
         {
-            //this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); //デフォルトでシーン内のTileManagerをセット
+            this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
         }
 
         public void Reset()
         {
+            IsHighlightSelectedTilesRunning = false;
         }
 
         public void ClearSelected()
@@ -172,11 +181,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private async Task HighlightSelectedTiles(bool forceLoad = true)
         {
             IsHighlightSelectedTilesRunning = true;
-
             var transforms = new List<Transform>();
             if (forceLoad)
             {
-                var allTransforms = await GetTransformListFromAddr(observableSelected);
+                var allTransforms = await GetTransformListFromAddr<Component>(observableSelected);
                 transforms = allTransforms.Where(trans => observableSelected
                     .Any(selected => trans.GetPathToParent(selected.TileAddress) == selected.TilePath || trans.FindChildOfNamedParent(PLATEAUTileManager.TileParentName)?.name == selected.TilePath)).ToList();
             }
@@ -190,22 +198,24 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             parentEditorWindow.Repaint();
         }
-        private bool IsHighlightSelectedTilesRunning = false;
 
         /// <summary>
         /// observableSelectedのAddressに含まれるタイルを読み込んで、Transformリストを取得する
+        /// LODにPLATEAUCityObjectGroupが設定されていないので、全てのコンポーネントを対象とする
         /// </summary>
         /// <returns></returns>
         public async Task<UniqueParentTransformList> GetSelectionAsTransformList()
         {
-            return await GetUniqueTransformListFromAddr(observableSelected);
+            var transforms = await GetTransformListFromAddr<Component>(observableSelected);
+            return new UniqueParentTransformList(transforms);
         }
 
         /// <summary>
         /// Addressに含まれるタイルを読み込んで、Transformリストを取得する
         /// </summary>
+        /// <typeparam name="T">指定したタイプのコンポーネントを持つGameObjectのみが対象</typeparam>
         /// <returns></returns>
-        public async Task<List<Transform>> GetTransformListFromAddr(IList<TileSelectionItem> addr)
+        public async Task<List<Transform>> GetTransformListFromAddr<T>(IList<TileSelectionItem> addr) where T : Component
         {
             var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
             var selectedTiles = await tileManager.ForceLoadTiles(addresses);
@@ -214,20 +224,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             {
                 if (tile.LoadedObject != null)
                 {
-                    TransformEx.GetAllChildrenWithComponent<PLATEAUCityObjectGroup>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                    TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
                 }
             }
             return transforms;
         }
 
-        public async Task<UniqueParentTransformList> GetUniqueTransformListFromAddr(IList<TileSelectionItem> addr)
-        {
-            var transforms = await GetTransformListFromAddr(addr);
-            return new UniqueParentTransformList(transforms);
-        }
-
         /// <summary>
         /// 分割結合実行
+        /// CityMaterialAdjustPresenterから呼ばれます。
         /// </summary>
         /// <param name="conf"></param>
         /// <param name="granularity"></param>
@@ -252,7 +257,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
             var generatedSelection = result.GeneratedObjs.Select(o => new TileSelectionItem(GetTilePath(o.transform, TileRebuilder.EditingTilesParentName))).ToList(); // 生成されたオブジェクトの名前リストを取得
 
-            //　入れ直し 参照が切れるので
+            //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
             tileTransforms.Clear();
             tileTransforms = GetEditableTransforms(editingTile, true);
 
@@ -261,15 +266,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
 
+            // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
             observableSelected.Clear();
             generatedSelection.ForEach(item => observableSelected.Add(item));
             await HighlightSelectedTiles(false);
-            InitGui();
+            SetDefaultTileManager();
             return result;
         }
 
         /// <summary>
         /// マテリアル分け実行
+        /// CityMaterialAdjustPresenterから呼ばれます。
         /// </summary>
         /// <param name="conf"></param>
         /// <param name="maExecutor"></param>
@@ -285,10 +292,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             CancellationTokenSource cts = new CancellationTokenSource();
             var ct = cts.Token;
-
             var selectedTiles = GetSelectedTiles();
             var rebuilder = new TileRebuilder();
-
             var editingTile = await GetEditableTransformParent(rebuilder, ct);
             var tileTransforms = GetEditableTransforms(editingTile);
             conf.TargetTransforms = new UniqueParentTransformList(tileTransforms);
@@ -297,7 +302,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var result = await maExecutor.ExecAsync(conf);
             var generatedSelection = result.Get.Select(t => new TileSelectionItem(GetTilePath(t, TileRebuilder.EditingTilesParentName))).ToList();
 
-            //　入れ直し 参照が切れるので
+            //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
             tileTransforms.Clear();
             tileTransforms = GetEditableTransforms(editingTile, true);
 
@@ -306,10 +311,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
             Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");
 
+            // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
             observableSelected.Clear();
             generatedSelection.ForEach(item => observableSelected.Add(item));
             await HighlightSelectedTiles(false);
-            InitGui();
+            SetDefaultTileManager();
             return result;
         }
 
@@ -433,8 +439,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             foreach (var trans in transforms)
             {
                 if (trans == null) continue;
-                Debug.Log($"SavePrefabAsset {trans.name}");
-
                 await rebuilder.SavePrefabAsset(trans.gameObject);
                 token.ThrowIfCancellationRequested();
             }

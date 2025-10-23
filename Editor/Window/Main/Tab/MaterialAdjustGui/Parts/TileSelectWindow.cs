@@ -17,12 +17,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// </summary>
     internal class TileSelectWindow : PlateauWindowBaseNoScroll, IPackageSelectResultReceiver
     {
-        private IPackageSelectResultReceiver resultReceiver;
         private PackageSelectGui gui;
         private bool isInitialized;
 
         private PLATEAUTileManager tileManager;
+        private TreeViewItemBuilder treeViewItemBuilder;
 
+        // UI要素
         private VisualElement root;
         private Button executeButton;
         private Button selectAllButton;
@@ -32,10 +33,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Button fromPackageButton;
         private ScrollView scrollView;
 
-        private List<TileNameElementContainer> tileNameElements;
-        private Action<TileSelectResult> onSelectCallback;
-        private TreeViewItemBuilder treeViewItemBuilder;
+        private List<TileNameElementContainer> tileNameElements; // スクロールバー内のタイル名要素リスト
 
+        /// <summary>
+        /// Windowから返されるタイル選択結果のコールバック
+        /// </summary>
+        private Action<TileSelectResult> onSelectCallback;
+        
+
+        /// <summary>
+        /// Windowから返されるタイル選択結果
+        /// </summary>
         internal class TileSelectResult
         {
             /// <summary>
@@ -95,6 +103,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return new VisualElementDisposable(root, Dispose);
         }
 
+        /// <summary>
+        /// TileManagerのDynamicTilesリストを表示
+        /// </summary>
+        /// <param name="manager"></param>
         private void DrawTileList(PLATEAUTileManager manager)
         {
             if(manager == null || !isInitialized)
@@ -179,7 +191,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
 
         /// <summary>
-        /// タイルの子を選択するウィンドウを開く  
+        /// タイルの子を選択するTreeViewを開く 
+        /// タイルを読み込んでから表示するため非同期処理
         /// </summary>
         /// <param name="tileName"></param>
         private void ShowTileHierarchy(TileNameElementContainer elem)
@@ -237,7 +250,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             {
                 foreach (var elem in tileNameElements)
                     elem.Dispose();
+                tileNameElements.Clear();
             }
+
             treeViewItemBuilder?.Dispose();
 
             gui?.Dispose();
@@ -304,6 +319,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             selectChildButton.clicked += OnSelectChild;
         }
 
+        /// <summary>
+        /// Tile/ Tile内子要素TreeViewの表示を切り替えます。
+        /// </summary>
+        /// <param name="state"></param>
         public void SetTreeViewState(TreeViewState state)
         {
             selectChildButton.text = state switch
@@ -311,13 +330,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 TreeViewState.Loading => "読み込み中...",
                 _ => "階層を表示",
             };
-
             treeView.style.display = state switch
             {
                 TreeViewState.Show => DisplayStyle.Flex,
                 _ => DisplayStyle.None,
             };
-
             tileNameContent.style.display = state switch
             {
                 TreeViewState.Show => DisplayStyle.None,
@@ -325,14 +342,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             };
         }
 
+        /// <summary>
+        /// 外部参照用：TreeViewのアイテムデータ
+        /// </summary>
         public List<TreeViewItemData<TreeViewItemBuilder.TransformTreeItem>> treeViewItemData { get; set; }
 
-        public VisualElement GetTreeViewVisualElement(TreeViewItemBuilder.TransformTreeItem item)
-        {
-            if (item == null) return null;
-            var id = treeView.GetIdForIndex(item.id);
-            return treeView.GetRootElementForId(id);
-        }
 
         public Func<VisualElement> GetTreeViewMakeItem()
         {
@@ -340,6 +354,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return () => tileChildVisualTree.CloneTree();
         }
 
+        /// <summary>
+        /// View要素生成処理
+        /// </summary>
+        /// <returns></returns>
         public Action<VisualElement,int> GetTreeViewBindItem()
         {
             return (element, index) =>
@@ -351,7 +369,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 treeLabel.text = treeItem.name;
                 //label.text = treeItem.GetFullPath();
 
-                if( element.userData == null)
+                // イベントは生成時に一度だけ登録
+                if ( element.userData == null)
                 {
                     treeLabel.RegisterCallback<ClickEvent>(OnElementClick);
                     element.RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel); // メモリリーク防止
@@ -391,16 +410,27 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             };
         }
 
+        /// <summary>
+        /// 子要素選択時の処理を外部で行うためのコールバック設定
+        /// </summary>
+        /// <param name="callback"></param>
         public void SetOnSelectCallback(Action<TileNameElementContainer> callback)
         {
             OnSelectCallback = callback;
         }
 
+        /// <summary>
+        /// ラベルクリック時の選択トグル
+        /// </summary>
+        /// <param name="evt"></param>
         private void ToggleSelection(ClickEvent evt)
         {
             toggle.SetValueWithoutNotify(!toggle.value);
         }
 
+        /// <summary>
+        /// 子要素選択ボタン押下時の処理
+        /// </summary>
         private void OnSelectChild()
         {
             if (treeView.style.display == DisplayStyle.Flex)
@@ -543,6 +573,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return selected;
         }
 
+        // 上の処理の再帰部分
         public void GetSelectedChildrenPathRecursive(TreeViewItemData<TransformTreeItem> item, TileNameElementContainer container, List<string> selected)
         {
             var id = container.TreeView.GetIdForIndex(item.data.id);
@@ -583,7 +614,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
 
         /// <summary>
-        /// TreeView用のアイテムデータを再帰的に構築します。
+        /// TreeView用のデータをを再帰的に構築します。(純粋なTransform階層)
         /// </summary>
         /// <param name="t"></param>
         /// <param name="parent"></param>
@@ -606,6 +637,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return item;
         }
 
+        /// <summary>
+        /// TreeView用のアイテムデータを再帰的に構築します。(TreeViewのAPIに合わせたラッピング処理)
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
         TreeViewItemData<TransformTreeItem> BuildTreeItem(TransformTreeItem item)
         {
             var children = item.children.Select(BuildTreeItem).ToList();
