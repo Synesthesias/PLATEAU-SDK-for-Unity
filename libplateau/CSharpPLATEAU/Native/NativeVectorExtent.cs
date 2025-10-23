@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PLATEAU.Dataset;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Native

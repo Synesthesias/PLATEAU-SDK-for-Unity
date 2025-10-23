@@ -37,6 +37,9 @@ namespace PLATEAU.CityExport
             int numChild = trans.childCount;
 
             int processedCount = 0;
+            double timeOfConvertingToCppModel = 0f;
+            double timeOfExportingToFile = 0f;
+            
             for (int i = 0; i < numChild; i++)
             {
                 var childTrans = trans.GetChild(i);
@@ -57,6 +60,7 @@ namespace PLATEAU.CityExport
                     options, geoReference.ReferencePoint, trans.position
                 );
 
+                float timeOfConvertStart = Time.realtimeSinceStartup;
                 // Unity のメッシュを中間データ構造(Model)に変換します。
                 var convertTargets = new UniqueParentTransformList();
                 for (int j = 0; j < childTrans.childCount; j++)
@@ -77,18 +81,22 @@ namespace PLATEAU.CityExport
                 using (var model = UnityMeshToDllModelConverter.Convert(convertTargets, unityMeshToDllSubMeshConverter,
                            options.ExportHiddenObjects, vertexConverter, invertMesh))
                 {
+                    double timeOfConvertComplete = Time.realtimeSinceStartupAsDouble;
+                    timeOfConvertingToCppModel += timeOfConvertComplete - timeOfConvertStart;
                     // Model をファイルにして出力します。
                     // options.PlateauModelExporter は、ファイルフォーマットに応じて FbxModelExporter, GltfModelExporter, ObjModelExporter のいずれかです。
                     string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(childName);
 
                     // ここでエクスポートします
                     options.Exporter.Export(destDir, fileNameWithoutExtension, model);
+                    timeOfExportingToFile += Time.realtimeSinceStartupAsDouble - timeOfConvertComplete;
                 }
 
                 processedCount++;
             }
 
-            progress?.Display("エクスポート完了", 1.0f);
+            progress?.Display($"エクスポート完了中。", 1.0f);
+            Debug.Log($"エクスポート完了。 所要時間：C++モデルへの変換 {timeOfConvertingToCppModel}s, 3Dモデルファイル形式への変換 {timeOfExportingToFile}s");
         }
     }
 }

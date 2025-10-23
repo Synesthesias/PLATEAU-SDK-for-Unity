@@ -152,6 +152,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return;
             }
 
+            
             var format = meshFileFormatGui.SelectedFormat;
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, this.exportHiddenObject,
                 format, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[format].GetExporter());

@@ -47,9 +47,6 @@ namespace PLATEAU.Util.Async
         {
             if (string.IsNullOrEmpty(texturePath))
                 return null;
-            
-
-            Debug.Log($"Loading Texture : {texturePath}");
 
             // 非同期でテクスチャをロードします。
             var texture = await LoadAsync(texturePath, 3);

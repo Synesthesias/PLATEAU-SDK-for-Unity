@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
+using PLATEAU.Dataset;
 using PLATEAU.Interop;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
