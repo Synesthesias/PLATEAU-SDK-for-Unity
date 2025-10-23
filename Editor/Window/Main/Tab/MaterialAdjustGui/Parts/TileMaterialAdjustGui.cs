@@ -60,7 +60,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public void InitGui()
         {
-            this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); //デフォルトでシーン内のTileManagerをセット
+            //this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); //デフォルトでシーン内のTileManagerをセット
         }
 
         public void Reset()

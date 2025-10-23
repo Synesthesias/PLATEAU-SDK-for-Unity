@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -29,7 +30,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
 
-        private SceneTileChooserGui sceneTileChooser = new();
+        private SceneTileChooserGui sceneTileChooser;
         private string errorMessage = null;
 
         /// <summary>
@@ -37,6 +38,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// シーン上にゲームオブジェクトとして存在するパッケージとそのLODです。
         /// </summary>
         private PackageToLodMinMax packageToLodMinMax;
+
+        public CityChangeActiveGui()
+        {
+            sceneTileChooser = new(OnChangeSceneTileChooser);
+        }
 
         public VisualElement CreateGui()
         {
@@ -50,8 +56,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             {
                 sceneTileChooser.DrawAndInvoke(() =>
                 {
-                    this.tileManager = null;
-
+                    // シーンに配置されたオブジェクトを選択した場合の処理
                     EditorGUI.BeginChangeCheck();
                     this.adjustTarget =
                         (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
@@ -60,9 +65,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
                 }, () => 
                 {
-                    this.adjustTarget = null;
-                    errorMessage = null;
-
+                    // 動的タイルを選択した場合の処理
                     EditorGUI.BeginChangeCheck();
                     this.tileManager =
                         (PLATEAUTileManager)EditorGUILayout.ObjectField(
@@ -70,7 +73,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             typeof(PLATEAUTileManager), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
                 });
-
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
@@ -175,6 +177,24 @@ namespace PLATEAU.Editor.Window.Main.Tab
         }
 
         /// <summary>
+        /// シーンに配置されたオブジェクトと動的タイルが切り替えられたときに呼ばれます。
+        /// </summary>
+        /// <param name="type"></param>
+        private void OnChangeSceneTileChooser(ChooserType type)
+        {
+            if (type == ChooserType.SceneObject)
+            {
+                this.tileManager = null;
+            }
+            else
+            if (type == ChooserType.DynamicTile)
+            {
+                this.adjustTarget = null;
+                errorMessage = null;
+            }
+        }
+
+        /// <summary>
         /// GUI上で調整対象の都市モデルが新たに選択されたときに呼ばれます。
         /// </summary>
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
@@ -274,7 +294,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         }
 
-        public void Dispose() { }
+        public void Dispose() 
+        {
+            this.tileManager = null;
+            this.adjustTarget = null;
+        }
+
         public void OnTabUnselect()
         {
         }
