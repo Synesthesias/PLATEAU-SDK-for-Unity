@@ -244,15 +244,35 @@ namespace PLATEAU.RoadNetwork.CityObject
         /// 自身がもともとどのPLATEAUCityObjectGroupに属していたか
         /// </summary>
         [field: SerializeField]
-        public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
+        private PLATEAUCityObjectGroup CityObjectGroup { get; set; }
+
+        /// <summary>
+        /// メッシュをワールド座標へ変換するマトリクス
+        /// </summary>
+        public Matrix4x4 LocalToWorldMatrix
+        {
+            get
+            {
+                return CityObjectGroup ? CityObjectGroup.transform.localToWorldMatrix : Matrix4x4.identity;
+            }
+        }
+        
         
         /// <summary>
         /// 自分が属する主要地物のキー
         /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
         /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
         /// </summary>
-        [field:SerializeField]
-        public RnCityObjectGroupKey CityObjectGroupKey { get; private set; }
+        [SerializeField]
+        private RnCityObjectGroupKey cityObjectGroupKey;
+        
+        // #NOTE : SubDividedCityObjectは道路ネットワーク生成時の一時的なオブジェクトなので後方互換は気にしない. 
+        /// <summary>
+        /// 自分が属する主要地物のキー
+        /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
+        /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
+        /// </summary>
+        public RnCityObjectGroupKey CityObjectGroupKey => cityObjectGroupKey;
         
         // 自分の道路タイプ
         [field: SerializeField]
@@ -393,7 +413,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         public void SetCityObjectGroup(PLATEAUCityObjectGroup group, RnCityObjectGroupKey groupKey)
         {
             CityObjectGroup = group;
-            CityObjectGroupKey = groupKey;
+            cityObjectGroupKey = groupKey;
             foreach (var c in Children)
                 c.SetCityObjectGroup(group, groupKey);
         }
@@ -404,6 +424,21 @@ namespace PLATEAU.RoadNetwork.CityObject
             ret.Meshes = Meshes.Select(m => m.DeepCopy()).ToList();
             ret.Children = Children.Select(m => m.DeepCopy()).ToList();
             return ret;
+        }
+
+        public override string ToString()
+        {
+            return CityObjectGroupKey.GmlId;
+        }
+
+        /// <summary>
+        /// 自身がgroupに属しているかどうか(子かどうか)
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public bool IsBelongingTo(PLATEAUCityObjectGroup group)
+        {
+            return CityObjectGroup == group;
         }
     }
 

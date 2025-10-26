@@ -1135,7 +1135,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 {
                     dstRoad.AddSideWalk(srcSw);
                 }
-                dstRoad.AddTargetTrans(srcRoad.TargetTrans);
+                dstRoad.AddTargetTrans(srcRoad.TargetGroupKeys);
                 srcRoad.DisConnect(true);
             }
 

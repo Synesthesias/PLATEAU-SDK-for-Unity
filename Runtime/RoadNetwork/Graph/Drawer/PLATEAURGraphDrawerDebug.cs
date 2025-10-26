@@ -68,7 +68,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // --------------------
 
 
+        /// <summary>
+        /// GUI(Editor Window)上で非表示するオブジェクトリスト
+        /// </summary>
         public HashSet<object> InVisibleObjects { get; } = new();
+        
+        /// <summary>
+        /// GUI(Editor Window)上で選択されたオブジェクトリスト
+        /// </summary>
         public HashSet<object> SelectedObjects { get; } = new();
 
         public class DrawerModel : RnDebugDrawerModel<RGraph> { }
@@ -167,7 +174,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         [Serializable]
         public class FaceDrawer : Drawer<RFace>
         {
-            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RFace self)
+            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFace self)
             {
                 if (self.CityObjectGroup)
                     yield return self.CityObjectGroup;
@@ -179,7 +186,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         {
             public bool showLaneNum = false;
 
-            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RFaceGroup self)
+            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFaceGroup self)
             {
                 if (self.CityObjectGroup)
                     yield return self.CityObjectGroup;
@@ -321,7 +328,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                     var vertices = Parent.FrameOutlineVertices;
                     var outlineGroup = RGraphEx
                         .CreateOutlineBorderGroup(vertices,
-                            e => e.Faces.Select(f => f.CityObjectGroup).FirstOrDefault(f => f != face.CityObjectGroup));
+                            e => e.Faces.Select(f => f.CityObjectGroup)
+                                .FirstOrDefault(f => f != face.CityObjectGroup));
                     if (outlineGroup.Count != 2)
                         return false;
                     var group = outlineGroup.FirstOrDefault(x => x.Key == null);
@@ -668,10 +676,15 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             foreach (var f in faceGroups)
             {
                 RnDebugDrawerBase.VisibleType visibleType;
-                if (SelectedObjects.Contains(f.CityObjectGroup))
+                if (SelectedObjects.Any(obj => f.CityObjectGroup.EqualAny(obj as PLATEAUCityObjectGroup)))
+                {
                     visibleType = RnDebugDrawerBase.VisibleType.GuiSelected;
+                }
                 else
+                {
                     visibleType = RnDebugDrawerBase.VisibleType.NonSelected;
+                }
+
                 faceGroupOption.Draw(work, f, visibleType);
             }
         }

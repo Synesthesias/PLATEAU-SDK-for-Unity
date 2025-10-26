@@ -46,7 +46,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public float edgeOffset = 0f;
         [SerializeField] public float yScale = 1f;
         // このオブジェクトに紐づくものだけ表示する
-        [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
+        [SerializeField] public RnCityObjectGroupKey targetTran;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
         [SerializeField] public bool check = false;
@@ -168,9 +168,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class IntersectionDrawer : Drawer<RnIntersection>
         {
-            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnIntersection self)
+            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnIntersection self)
             {
-                return self.TargetTrans;
+                return self.TargetGroupKeys;
             }
         }
 
@@ -182,9 +182,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class RoadDrawer : Drawer<RnRoad>
         {
-            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnRoad self)
+            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnRoad self)
             {
-                return self.TargetTrans;
+                return self.TargetGroupKeys;
             }
 
             public override bool IsValid(RnRoad self)
@@ -203,9 +203,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class SideWalkDrawer : Drawer<RnSideWalk>
         {
-            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnSideWalk self)
+            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnSideWalk self)
             {
-                return self?.ParentRoad?.TargetTrans ?? Enumerable.Empty<PLATEAUCityObjectGroup>();
+                return self?.ParentRoad?.TargetGroupKeys ?? Enumerable.Empty<RnCityObjectGroupKey>();
             }
 
             public override bool IsValid(RnSideWalk self)
@@ -313,14 +313,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         if (fromRoadType != VisibleType.All)
                         {
                             var fromRoad = intersection.FindEdges(track.FromBorder).FirstOrDefault()?.Road;
-                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
+                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetGroupKeys)) == 0)
                                 return false;
                         }
 
                         if (toRoadType != VisibleType.All)
                         {
                             var toRoad = intersection.FindEdges(track.ToBorder).FirstOrDefault()?.Road;
-                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
+                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetGroupKeys)) == 0)
                                 return false;
                         }
 

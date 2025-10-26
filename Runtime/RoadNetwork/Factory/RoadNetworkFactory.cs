@@ -150,7 +150,36 @@ namespace PLATEAU.RoadNetwork.Factory
         /// 自動生成バージョン. 作成時に番号埋め込んでおいてどのバージョンで作られたかを見れるようにする.
         /// メジャー/マイナー分けたいので文字列
         /// </summary>
-        public static readonly string FactoryVersion = "1.1";
+        public static string FactoryVersion => $"2.0";
+
+
+        /// <summary>
+        /// 自動生成バージョンをパースしてメジャーバージョン/マイナーバージョンを取得
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="majorVersion"></param>
+        /// <param name="minorVersion"></param>
+        /// <returns></returns>
+        public static bool TryParseFactoryVersion(string version, out int majorVersion, out int minorVersion)
+        {
+            majorVersion = 0;
+            minorVersion = 0;
+            if (string.IsNullOrEmpty(version))
+                return false;
+
+            try
+            {
+                var versions = version.Split(".");
+                majorVersion = int.Parse(versions[0]);
+                minorVersion = int.Parse(versions[1]);
+                return true;
+            }
+            catch (Exception e)
+            {
+                DebugEx.LogException(e);
+                return false;
+            }
+        }
 
         /// <summary>
         /// 一つの道路の内部に存在するRoadTypeMask.
@@ -701,7 +730,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var line = Lines.FirstOrDefault(l => l.IsBorder == false);
                     if (line == null)
                     {
-                        Debug.LogError($"不正なレーン構成[Terminate] : {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成[Terminate] : {cityObjectGroup}");
                         return null;
                     }
 
@@ -753,13 +782,13 @@ namespace PLATEAU.RoadNetwork.Factory
 
                     if (leftLine == null && rightLine == null)
                     {
-                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {cityObjectGroup}");
                         return road;
                     }
 
                     // ログだけ残しておく
                     if (leftLine == null || rightLine == null)
-                        Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {cityObjectGroup.name}");
+                        Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {cityObjectGroup}");
 
                     var line = leftLine ?? rightLine;
                     var prevBorderLine = line?.Prev; ;
@@ -789,7 +818,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var intersection = new RnIntersection(cityObjectGroup);
                     return intersection;
                 }
-                Debug.LogError($"不正なレーン構成 : {cityObjectGroup.name}");
+                Debug.LogError($"不正なレーン構成 : {cityObjectGroup}");
                 return null;
             }
 
@@ -837,7 +866,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var e = v0.Edges.FirstOrDefault(e => e.IsSameVertex(v0, v1));
                     if (e == null)
                     {
-                        Debug.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup.name}");
+                        Debug.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup}");
                         success = false;
                         continue;
                     }
@@ -954,7 +983,7 @@ namespace PLATEAU.RoadNetwork.Factory
                             t.FaceGroup.CityObjectGroup == fg.CityObjectGroup && t.Node != null);
 
                         var neighborCityObjects
-                            = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
+                            = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetGroupKeys)?.ToHashSet();
 
                         if (fg.CreateSideWalk(out var outsideEdges, out var insideEdges,
                                 out var startEdges, out var endEdges, neighborCityObjects) == false)

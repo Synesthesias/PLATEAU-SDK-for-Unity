@@ -44,8 +44,9 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public RGraph CreateGraph(List<SubDividedCityObject> cityObjects)
         {
-            var tmp = cityObjects.Where(x => x.CityObjectGroup != null)
-                .Select(x => (x, x.CityObjectGroup.transform.localToWorldMatrix)).ToList();
+            var tmp = cityObjects
+                .Select(x => (x, x.LocalToWorldMatrix))
+                .ToList();
             return CreateGraph(tmp);
         }
 

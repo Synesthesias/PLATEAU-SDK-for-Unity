@@ -477,7 +477,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                                         }
                                         else
                                         {
-                                            DebugEx.LogError($"Failed to get height / {ccoChild.CityObjectGroup.name}");
+                                            DebugEx.LogError($"Failed to get height / {ccoChild}");
                                         }
 
                                         m.Vertices[i] = v;

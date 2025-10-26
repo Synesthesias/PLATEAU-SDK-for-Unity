@@ -89,6 +89,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // transformの設定
             if (road != null)
             {
+                // #TODO : RoadNetworkのタイル対応
                 var targetTrans = road.TargetTrans;
                 if (targetTrans != null)
                 {

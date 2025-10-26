@@ -314,17 +314,16 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnIntersection() { }
 
-        public RnIntersection(PLATEAUCityObjectGroup targetTran)
+        public RnIntersection(RnCityObjectGroupKey targetGroupKey)
         {
-            AddTargetTran(targetTran);
+            AddTargetTran(targetGroupKey);
         }
 
-        public RnIntersection(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        public RnIntersection(IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
         {
-            foreach (var t in targetTrans)
-                AddTargetTran(t);
+           AddTargetTrans(targetGroupKeys);
         }
-
+        
         /// <summary>
         /// 隣接するRnRoadBaseを取得重複チェックはしていないので注意
         /// </summary>

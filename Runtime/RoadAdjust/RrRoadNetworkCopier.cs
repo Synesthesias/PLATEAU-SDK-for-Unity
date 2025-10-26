@@ -68,7 +68,8 @@ namespace PLATEAU.RoadAdjust
             var roadBases = new Dictionary<RnRoadBase, RnRoadBase>();
             foreach (var srcRoad in src.Roads)
             {
-                var dstRoad = new RnRoad(srcRoad.TargetTrans);
+                // #TODO : RoadNetworkのタイル対応
+                var dstRoad = new RnRoad(srcRoad.TargetGroupKeys);
                 dstRoad.DebugMyId = srcRoad.DebugMyId;
                 foreach (var srcLane in srcRoad.MainLanes)
                 {
@@ -96,7 +97,8 @@ namespace PLATEAU.RoadAdjust
             var inters = new Dictionary<RnIntersection, RnIntersection>();
             foreach (var srcInter in src.Intersections)
             {
-                var dstInter = new RnIntersection(srcInter.TargetTrans);
+                // #TODO : RoadNetworkのタイル対応
+                var dstInter = new RnIntersection(srcInter.TargetGroupKeys);
                 dstInter.DebugMyId = srcInter.DebugMyId;
                 dstInter.SetIsEmptyIntersection(srcInter.IsEmptyIntersection);
 

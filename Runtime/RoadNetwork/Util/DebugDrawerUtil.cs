@@ -74,7 +74,7 @@ namespace PLATEAU.RoadNetwork.Util
                 return true;
             }
 
-            public VisibleType GetVisibleType(object obj, IEnumerable<PLATEAUCityObjectGroup> cityObjects)
+            public VisibleType GetVisibleType(object obj, IEnumerable<RnCityObjectGroupKey> cityObjects)
             {
                 var ret = VisibleType.Empty;
 
@@ -177,7 +177,9 @@ namespace PLATEAU.RoadNetwork.Util
                 }
             }
 
-            public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
+            public virtual IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(T self) => null;
+            
+            
 
             public virtual bool IsShowTarget(TWork work, T self)
             {

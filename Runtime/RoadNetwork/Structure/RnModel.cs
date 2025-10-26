@@ -132,7 +132,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="buildTracks">変換後にTrackの生成を行う</param>
         public void Convert2Intersection(RnRoad road, bool buildTracks = true)
         {
-            var intersection = new RnIntersection(road.TargetTrans);
+            var intersection = new RnIntersection(road.TargetGroupKeys);
 
             // 左右のWayとBorderを使って交差点とする
             road.TryGetMergedSideWay(null, out var leftWay, out var rightWay);
@@ -173,7 +173,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 .Where(n => n.Road == prev || n.Road == next)
                 .ToList();
 
-            var road = new RnRoad(intersection.TargetTrans);
+            var road = new RnRoad(intersection.TargetGroupKeys);
             road.SetPrevNext(prev, next);
 
             // #TODO : 
@@ -215,7 +215,7 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="lane"></param>
         public void CreateRoadBetweenIntersection(RnIntersection prev, RnIntersection next, RnLane lane)
         {
-            var road = RnRoad.CreateOneLaneRoad(null, lane);
+            var road = RnRoad.CreateOneLaneRoad(default, lane);
             road.SetPrevNext(prev, next);
 
             // intersectionに隣接情報追加
@@ -379,7 +379,7 @@ namespace PLATEAU.RoadNetwork.Structure
                     var p = new RnPoint(pos);
                     var emptyWay = new RnWay(RnLineString.Create(Enumerable.Repeat(p, 2), false));
                     var emptyLane = RnLane.CreateEmptyLane(neighbor.Border, emptyWay);
-                    var emptyRoad = RnRoad.CreateOneLaneRoad(null, emptyLane);
+                    var emptyRoad = RnRoad.CreateOneLaneRoad(default, emptyLane);
                     emptyRoad.SetPrevNext(inter, other);
                     neighbor.Road = emptyRoad;
                     otherNeighbor.Road = emptyRoad;
@@ -1045,7 +1045,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // 新しく生成されるRoad(Next側に挿入される)
-            var newNextRoad = new RnRoad(road.TargetTrans);
+            var newNextRoad = new RnRoad(road.TargetGroupKeys);
 
             // roadをprev/next側で分断して, next側をnewRoadにする
             foreach (var lane in road.AllLanesWithMedian)
@@ -1267,7 +1267,7 @@ namespace PLATEAU.RoadNetwork.Structure
             }
 
             // 新しく生成されるRoad
-            var newNextRoad = new RnRoad(inter.TargetTrans);
+            var newNextRoad = new RnRoad(inter.TargetGroupKeys);
 
 
 

@@ -103,16 +103,15 @@ namespace PLATEAU.RoadNetwork.Structure
         public RnLane MedianLane => medianLane;
 
         public RnRoad() { }
-
-        public RnRoad(PLATEAUCityObjectGroup targetTran)
+        
+        public RnRoad(RnCityObjectGroupKey targetGroupKey)
         {
-            AddTargetTran(targetTran);
+            AddTargetTran(targetGroupKey);
         }
 
-        public RnRoad(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        public RnRoad(IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
         {
-            foreach (var targetTran in targetTrans)
-                AddTargetTran(targetTran);
+            AddTargetTrans(targetGroupKeys);
         }
 
         /// <summary>
@@ -769,23 +768,30 @@ namespace PLATEAU.RoadNetwork.Structure
         // ---------------
         // Static Methods
         // ---------------
+        
         /// <summary>
-        /// 完全に孤立したリンクを作成
+        /// 完全に孤立したロードを作成
         /// </summary>
-        /// <param name="targetTran"></param>
+        /// <param name="targetTranKey"></param>
         /// <param name="way"></param>
         /// <returns></returns>
-        public static RnRoad CreateIsolatedRoad(PLATEAUCityObjectGroup targetTran, RnWay way)
+        public static RnRoad CreateIsolatedRoad(RnCityObjectGroupKey targetTranKey, RnWay way)
         {
             var lane = RnLane.CreateOneWayLane(way);
-            var ret = new RnRoad(targetTran);
+            var ret = new RnRoad(targetTranKey);
             ret.AddMainLane(lane);
             return ret;
         }
 
-        public static RnRoad CreateOneLaneRoad(PLATEAUCityObjectGroup targetTran, RnLane lane)
+        /// <summary>
+        /// 一方通行のロード作成
+        /// </summary>
+        /// <param name="targetTranKey"></param>
+        /// <param name="lane"></param>
+        /// <returns></returns>
+        public static RnRoad CreateOneLaneRoad(RnCityObjectGroupKey targetTranKey, RnLane lane)
         {
-            var ret = new RnRoad(targetTran);
+            var ret = new RnRoad(targetTranKey);
             ret.AddMainLane(lane);
             return ret;
         }
@@ -1089,7 +1095,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // トラックを生成しなおす
             intersection.BuildTracks(BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
 
-            intersection.AddTargetTrans(self.TargetTrans);
+            intersection.AddTargetTrans(self.TargetGroupKeys);
             self.DisConnect(true);
             return true;
         }
