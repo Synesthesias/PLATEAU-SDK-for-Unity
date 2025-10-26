@@ -417,14 +417,16 @@ namespace PLATEAU.RoadNetwork.CityObject
             var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
             var attrHelper = new AttributeDataHelper(getter, true);
             // var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
-            var cco = new SubDividedCityObject(dstModel, attrHelper);
+            
+            // 一つの大きなSubDividedCityObjectを作る
+            var entireSubDividedCityObject = new SubDividedCityObject(dstModel, attrHelper);
 
             var ret = new ConvertCityObjectResult();
 
 
             // 高速化の為, 最初にテーブルを作っておく
             Dictionary<string, SubDividedCityObject> nameToSubDividedCityObject = new Dictionary<string, SubDividedCityObject>();
-            foreach (var child in cco.GetAllChildren())
+            foreach (var child in entireSubDividedCityObject.GetAllChildren())
             {
                 if (child == null)
                     continue;
@@ -437,57 +439,66 @@ namespace PLATEAU.RoadNetwork.CityObject
                 nameToSubDividedCityObject.TryAdd(child.Name, child);
             }
 
-            for (var i = 0; i < cityInfos.Count; ++i)
+            // 進行度を表示する為に総数を出す
+            var allCount = cityInfos.Sum(c => c.CityObjectGroup.PrimaryCityObjects.Count());
+            var currentWorkIndex = 0;
+            foreach (var co in cityInfos)
             {
-                var co = cityInfos[i];
                 if (!co.CachedTransform)
                 {
                     Debug.Log("skipping deleted game object.");
                     continue;
                 }
-                progressBar.SetProgress("最小地物分解", 100f * i / cityInfos.Count, "オブジェクト分解中");
-                var ccoChild = nameToSubDividedCityObject.GetValueOrDefault(co.CachedTransform.name);
-                if (ccoChild == null)
-                    continue;
-                ccoChild.SetCityObjectGroup(co.CityObjectGroup);
-                if (co.CurrentMesh != co.SourceMesh)
+                
+                // 主要地物単位でグルーピングする
+                foreach (var root in co.CityObjectGroup.PrimaryCityObjects)
                 {
-                    try
+                    progressBar.SetProgress("最小地物分解", 100f * currentWorkIndex++ / allCount, "オブジェクト分解中");
+                    var ccoChild = nameToSubDividedCityObject.GetValueOrDefault(root.GmlID);
+                    if (ccoChild == null)
+                        continue;
+                    ccoChild.SetCityObjectGroup(co.CityObjectGroup, new RnCityObjectGroupKey(root.GmlID));
+                    if (co.CurrentMesh != co.SourceMesh)
                     {
-                        void Visit(SubDividedCityObject subCog)
+                        try
                         {
-                            foreach (var m in subCog.Meshes)
-                            {
-                                for (var i = 0; i < m.Vertices.Count; i++)
-                                {
-                                    var v = m.Vertices[i];
-                                    if (TryGetHeight(v.Xz(), co.CurrentMesh, out var height))
-                                    {
-                                        v.y = height;
-                                    }
-                                    else
-                                    {
-                                        DebugEx.LogError($"Failed to get height / {ccoChild.CityObjectGroup.name}");
-                                    }
+                            var co1 = co;
 
-                                    m.Vertices[i] = v;
+                            void Visit(SubDividedCityObject subCog)
+                            {
+                                foreach (var m in subCog.Meshes)
+                                {
+                                    for (var i = 0; i < m.Vertices.Count; i++)
+                                    {
+                                        var v = m.Vertices[i];
+                                        if (TryGetHeight(v.Xz(), co1.CurrentMesh, out var height))
+                                        {
+                                            v.y = height;
+                                        }
+                                        else
+                                        {
+                                            DebugEx.LogError($"Failed to get height / {ccoChild.CityObjectGroup.name}");
+                                        }
+
+                                        m.Vertices[i] = v;
+                                    }
+                                }
+
+                                foreach (var c in subCog.Children)
+                                {
+                                    Visit(c);
                                 }
                             }
-
-                            foreach (var c in subCog.Children)
-                            {
-                                Visit(c);
-                            }
+                            Visit(ccoChild);
                         }
-                        Visit(ccoChild);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
+                        catch (Exception e)
+                        {
+                            Debug.LogException(e);
+                        }
                     }
                 }
             }
-            ret.ConvertedCityObjects.AddRange(cco.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
+            ret.ConvertedCityObjects.AddRange(entireSubDividedCityObject.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
 
             //foreach (var c in ret.ConvertedCityObjects)
             for (var i = 0; i < ret.ConvertedCityObjects.Count; ++i)

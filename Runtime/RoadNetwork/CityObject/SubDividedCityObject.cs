@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.CityObject
 {
@@ -238,9 +239,21 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
 
+        // #NOTE : 後方互換のために残しておく
+        /// <summary>
+        /// 自身がもともとどのPLATEAUCityObjectGroupに属していたか
+        /// </summary>
         [field: SerializeField]
         public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
-
+        
+        /// <summary>
+        /// 自分が属する主要地物のキー
+        /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
+        /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
+        /// </summary>
+        [field:SerializeField]
+        public RnCityObjectGroupKey CityObjectGroupKey { get; private set; }
+        
         // 自分の道路タイプ
         [field: SerializeField]
         public RRoadTypeMask SelfRoadType { get; private set; } = RRoadTypeMask.Empty;
@@ -271,6 +284,11 @@ namespace PLATEAU.RoadNetwork.CityObject
             if (containsParent)
                 ret |= ParentRoadType;
             return ret;
+        }
+
+        public int GetLodLevel()
+        {
+            return CityObjectGroup?.Lod ?? 3;
         }
 
         /// <summary>
@@ -367,11 +385,17 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
         }
 
-        public void SetCityObjectGroup(PLATEAUCityObjectGroup group)
+        /// <summary>
+        /// PLATEAUCityObjectGroup, 所属する主要地物のGroupKeyを設定する
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="groupKey"></param>
+        public void SetCityObjectGroup(PLATEAUCityObjectGroup group, RnCityObjectGroupKey groupKey)
         {
             CityObjectGroup = group;
+            CityObjectGroupKey = groupKey;
             foreach (var c in Children)
-                c.SetCityObjectGroup(group);
+                c.SetCityObjectGroup(group, groupKey);
         }
 
         public SubDividedCityObject DeepCopy()
