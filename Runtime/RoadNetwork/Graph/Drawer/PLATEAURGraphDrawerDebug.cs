@@ -176,8 +176,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         {
             public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFace self)
             {
-                if (self.CityObjectGroup)
-                    yield return self.CityObjectGroup;
+                if (self.PrimaryCityObjectGroupKey)
+                    yield return self.PrimaryCityObjectGroupKey;
             }
         }
 
@@ -328,8 +328,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                     var vertices = Parent.FrameOutlineVertices;
                     var outlineGroup = RGraphEx
                         .CreateOutlineBorderGroup(vertices,
-                            e => e.Faces.Select(f => f.CityObjectGroup)
-                                .FirstOrDefault(f => f != face.CityObjectGroup));
+                            e => e.Faces.Select(f => f.PrimaryCityObjectGroupKey)
+                                .FirstOrDefault(f => f != face.PrimaryCityObjectGroupKey));
                     if (outlineGroup.Count != 2)
                         return false;
                     var group = outlineGroup.FirstOrDefault(x => x.Key == null);

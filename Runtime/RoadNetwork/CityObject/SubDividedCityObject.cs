@@ -264,7 +264,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
         /// </summary>
         [SerializeField]
-        private RnCityObjectGroupKey cityObjectGroupKey;
+        private RnCityObjectGroupKey primaryCityObjectGroupKey;
         
         // #NOTE : SubDividedCityObjectは道路ネットワーク生成時の一時的なオブジェクトなので後方互換は気にしない. 
         /// <summary>
@@ -272,7 +272,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
         /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
         /// </summary>
-        public RnCityObjectGroupKey CityObjectGroupKey => cityObjectGroupKey;
+        public RnCityObjectGroupKey PrimaryCityObjectGroupKey => primaryCityObjectGroupKey;
         
         // 自分の道路タイプ
         [field: SerializeField]
@@ -413,7 +413,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         public void SetCityObjectGroup(PLATEAUCityObjectGroup group, RnCityObjectGroupKey groupKey)
         {
             CityObjectGroup = group;
-            cityObjectGroupKey = groupKey;
+            primaryCityObjectGroupKey = groupKey;
             foreach (var c in Children)
                 c.SetCityObjectGroup(group, groupKey);
         }
@@ -428,7 +428,7 @@ namespace PLATEAU.RoadNetwork.CityObject
 
         public override string ToString()
         {
-            return CityObjectGroupKey.GmlId;
+            return PrimaryCityObjectGroupKey.GmlId;
         }
 
         /// <summary>

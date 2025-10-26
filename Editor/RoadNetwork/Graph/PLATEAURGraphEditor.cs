@@ -56,7 +56,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
 
             public bool IsTarget(RFace face)
             {
-                return RnEx.IsEditorSceneSelected(face.CityObjectGroup);
+                return RnEx.IsEditorSceneSelected(face.PrimaryCityObjectGroupKey);
             }
 
             public PLATEAURGraphDrawerDebug Drawer

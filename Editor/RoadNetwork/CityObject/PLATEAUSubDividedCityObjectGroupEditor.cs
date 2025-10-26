@@ -27,7 +27,7 @@ namespace PLATEAU.Editor.RoadNetwork.CityObject
 
             public bool IsTarget(SubDividedCityObject cityObject)
             {
-                return RnEx.IsEditorSceneSelected(cityObject.CityObjectGroup);
+                return RnEx.IsEditorSceneSelected(cityObject.PrimaryCityObjectGroupKey);
             }
 
             private PLATEAUSubDividedCityObjectDrawerDebug DebugDrawer =>

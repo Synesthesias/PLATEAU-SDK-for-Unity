@@ -7,17 +7,27 @@ namespace PLATEAU.RoadNetwork
 {
     /// <summary>
     /// 主要地物単位のPLATEAUCityObjectGroupのまとまりを表すためのキー
-    /// 最小地物の歩道/道路がもともと所属していた主要地物のGmlキーを持つ
+    /// 最小地物単位に分解されたオブジェクト同士のつながりを表すのに使われる。
     /// </summary>
     [Serializable]
     public struct RnCityObjectGroupKey: IEquatable<RnCityObjectGroupKey>
 
     {
+        /// <summary>
+        /// 主要地物のオブジェクトのGmlId
+        /// </summary>
         [field:SerializeField]
         public string GmlId { get; set; }
         
+        /// <summary>
+        /// 有効な値かどうか
+        /// </summary>
         public bool IsValid => !string.IsNullOrEmpty(GmlId);
 
+        /// <summary>
+        /// 主要地物のGmlIdを受け取るコンストラクタ
+        /// </summary>
+        /// <param name="gmlId"></param>
         public RnCityObjectGroupKey(string gmlId)
         {
             GmlId = gmlId;

@@ -683,12 +683,6 @@ namespace PLATEAU.RoadNetwork.Graph
         //----------------------------------
 
         /// <summary>
-        /// 対応するCityObjectGroup
-        /// </summary>
-        //[SerializeField]
-        //private PLATEAUCityObjectGroup cityObjectGroup = null;
-        
-        /// <summary>
         /// 対応する主要地物キー
         /// </summary>
         [SerializeField]
@@ -731,21 +725,19 @@ namespace PLATEAU.RoadNetwork.Graph
         public RGraph Graph => graph;
 
         /// <summary>
-        /// 関連するCityObjectGroup
+        /// 対応する主要地物の道路モデルを表すキー
         /// </summary>
-        //private PLATEAUCityObjectGroup CityObjectGroup => cityObjectGroup;
-        
-        public RnCityObjectGroupKey CityObjectGroup => primaryCityObjectGroupKey;
+        public RnCityObjectGroupKey PrimaryCityObjectGroupKey => primaryCityObjectGroupKey;
 
         // 有効なポリゴンかどうか
         public bool IsValid => edges.Count > 0;
 
-        public RFace(RGraph graph, RnCityObjectGroupKey cityObjectGroupKey, RRoadTypeMask roadType, int lodLevel)
+        public RFace(RGraph graph, RnCityObjectGroupKey primaryCityObjectGroupKey, RRoadTypeMask roadType, int lodLevel)
         {
             RoadTypes = roadType;
             LodLevel = lodLevel;
             //this.cityObjectGroup = cityObjectGroup;
-            this.primaryCityObjectGroupKey = cityObjectGroupKey;
+            this.primaryCityObjectGroupKey = primaryCityObjectGroupKey;
             this.graph = graph;
         }
 
@@ -844,14 +836,14 @@ namespace PLATEAU.RoadNetwork.Graph
         /// <param name="dst"></param>
         public bool TryMergeTo(RFace dst)
         {
-            if (dst.CityObjectGroup && CityObjectGroup && dst.CityObjectGroup != CityObjectGroup)
+            if (dst.PrimaryCityObjectGroupKey && PrimaryCityObjectGroupKey && dst.PrimaryCityObjectGroupKey != PrimaryCityObjectGroupKey)
             {
-                Debug.LogWarning($"CityObjectGroupが異なるFaceは統合できません. {CityObjectGroup} != {dst.CityObjectGroup}");
+                Debug.LogWarning($"CityObjectGroupが異なるFaceは統合できません. {PrimaryCityObjectGroupKey} != {dst.PrimaryCityObjectGroupKey}");
                 return false;
             }
 
             dst.RoadTypes |= RoadTypes;
-            dst.primaryCityObjectGroupKey = CityObjectGroup;
+            dst.primaryCityObjectGroupKey = PrimaryCityObjectGroupKey;
             dst.LodLevel = Mathf.Max(dst.LodLevel, LodLevel);
 
             foreach (var e in Edges)
@@ -878,7 +870,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
         public override string ToString()
         {
-            return $"Face[{CityObjectGroup}]";
+            return $"Face[{PrimaryCityObjectGroupKey}]";
         }
     }
 
