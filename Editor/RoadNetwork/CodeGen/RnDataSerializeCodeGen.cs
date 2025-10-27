@@ -1,6 +1,3 @@
-using PLATEAU.CityInfo;
-using PLATEAU.RoadNetwork.Data;
-using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
@@ -426,7 +423,7 @@ namespace PLATEAU.Editor.RoadNetwork.CodeGen
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
                 if (script != null && script.GetClass() == typeof(T)) {
-                    return System.IO.Path.GetFullPath(path);
+                    return Path.GetFullPath(path);
                 }
             }
 
