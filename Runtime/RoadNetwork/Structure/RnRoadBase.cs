@@ -152,10 +152,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <param name="groupKeys"></param>
         public void AddTargets(IEnumerable<PLATEAUCityObjectGroup> trans, IEnumerable<RnCityObjectGroupKey> groupKeys)
         {
-            foreach (var t in trans)
+            foreach (var t in trans ?? Enumerable.Empty<PLATEAUCityObjectGroup>())
                 AddTargetTran(t);
             
-            foreach (var t in groupKeys)
+            foreach (var t in groupKeys ?? Enumerable.Empty<RnCityObjectGroupKey>())
                 AddTargetGroupKey(t);
         }
 
