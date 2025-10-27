@@ -1,7 +1,6 @@
 ﻿using PLATEAU.CityAdjust.MaterialAdjust.Executor;
 using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
 using PLATEAU.CityImport.Import.Convert;
-using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
