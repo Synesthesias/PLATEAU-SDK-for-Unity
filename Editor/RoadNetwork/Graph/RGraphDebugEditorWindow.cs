@@ -324,7 +324,7 @@ namespace PLATEAU.Editor.RoadNetwork.Graph
         /// <returns></returns>
         public static bool IsSceneSelected(RFace face)
         {
-            return RnEx.IsEditorSceneSelected(face?.PrimaryCityObjectGroupKey ?? default);
+            return RnEx.IsEditorSceneSelected(face?.CityObjectGroup);
         }
     }
 }

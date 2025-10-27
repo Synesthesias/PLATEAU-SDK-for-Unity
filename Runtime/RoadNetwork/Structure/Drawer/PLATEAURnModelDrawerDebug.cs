@@ -46,7 +46,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public float edgeOffset = 0f;
         [SerializeField] public float yScale = 1f;
         // このオブジェクトに紐づくものだけ表示する
-        [SerializeField] public RnCityObjectGroupKey targetTran;
+        [SerializeField] public PLATEAUCityObjectGroup targetTran;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
         [SerializeField] public bool check = false;
@@ -168,9 +168,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [Serializable]
         public class IntersectionDrawer : Drawer<RnIntersection>
         {
-            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnIntersection self)
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnIntersection self)
             {
-                return self.TargetGroupKeys;
+                return self.TargetTrans;
             }
         }
 
@@ -182,9 +182,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class RoadDrawer : Drawer<RnRoad>
         {
-            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnRoad self)
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnRoad self)
             {
-                return self.TargetGroupKeys;
+                return self.TargetTrans;
             }
 
             public override bool IsValid(RnRoad self)
@@ -203,9 +203,9 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
 
         public class SideWalkDrawer : Drawer<RnSideWalk>
         {
-            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RnSideWalk self)
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RnSideWalk self)
             {
-                return self?.ParentRoad?.TargetGroupKeys ?? Enumerable.Empty<RnCityObjectGroupKey>();
+                return self?.ParentRoad?.TargetTrans ?? Enumerable.Empty<PLATEAUCityObjectGroup>();
             }
 
             public override bool IsValid(RnSideWalk self)

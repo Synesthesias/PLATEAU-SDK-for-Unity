@@ -177,7 +177,7 @@ namespace PLATEAU.RoadNetwork.Util
                 }
             }
 
-            public virtual IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(T self) => null;
+            public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
             
             
 

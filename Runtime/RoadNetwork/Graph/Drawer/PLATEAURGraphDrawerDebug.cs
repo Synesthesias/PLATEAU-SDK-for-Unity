@@ -174,10 +174,10 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         [Serializable]
         public class FaceDrawer : Drawer<RFace>
         {
-            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFace self)
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RFace self)
             {
-                if (self.PrimaryCityObjectGroupKey)
-                    yield return self.PrimaryCityObjectGroupKey;
+                if (self.CityObjectGroup)
+                    yield return self.CityObjectGroup;
             }
         }
 
@@ -186,10 +186,10 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         {
             public bool showLaneNum = false;
 
-            public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFaceGroup self)
+            public override IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(RFaceGroup self)
             {
-                if (self.PrimaryCityObjectGroupKey)
-                    yield return self.PrimaryCityObjectGroupKey;
+                if (self.CityObjectGroup)
+                    yield return self.CityObjectGroup;
             }
 
         }

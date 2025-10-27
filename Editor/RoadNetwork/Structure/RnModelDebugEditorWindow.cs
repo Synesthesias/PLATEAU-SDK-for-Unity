@@ -374,9 +374,9 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (RnEditorUtil.Foldout("TargetTrans", FoldOuts, (roadBase, "TargetTrans")))
             {
                 using var indent = new EditorGUI.IndentLevelScope();
-                foreach (var tran in roadBase.TargetGroupKeys)
+                foreach (var tran in roadBase.TargetTrans)
                 {
-                    RnEditorUtil.RnCityObjectGroupField(tran);
+                    EditorGUILayout.ObjectField(tran, typeof(Transform), true);
                 }
             }
 
@@ -871,7 +871,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
         {
             if (roadBase == null)
                 return false;
-            return roadBase.TargetGroupKeys.Any(RnEx.IsEditorSceneSelected);
+            return roadBase.TargetTrans.Any(RnEx.IsEditorSceneSelected);
         }
         /// <summary>
         /// Scene上で選択されているかどうか
