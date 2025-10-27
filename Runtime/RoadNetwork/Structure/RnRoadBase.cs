@@ -290,7 +290,7 @@ namespace PLATEAU.RoadNetwork.Structure
             if (self == null || self.TargetGroupKeys == null)
                 return "null";
 
-            return string.Join(",", self.TargetGroupKeys.Select(t => t));
+            return string.Join(",", self.TargetGroupKeys);
         }
 
         /// <summary>
