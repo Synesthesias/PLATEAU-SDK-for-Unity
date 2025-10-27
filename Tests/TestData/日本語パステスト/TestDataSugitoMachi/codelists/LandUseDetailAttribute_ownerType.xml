@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_f33964dd-595e-470a-a986-46700d4f68d0">
+	<gml:name>LandUseDetailAttribute_ownerType</gml:name>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id1">
+			<gml:description>国</gml:description>
+			<gml:name>1010</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id2">
+			<gml:description>都道府県</gml:description>
+			<gml:name>1020</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id3">
+			<gml:description>市区町村</gml:description>
+			<gml:name>1030</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+	<gml:dictionaryEntry>
+		<gml:Definition gml:id="id4">
+			<gml:description>公社等</gml:description>
+			<gml:name>1040</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+		<gml:dictionaryEntry>
+		<gml:Definition gml:id="id5">
+			<gml:description>未調査</gml:description>
+			<gml:name>9000</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+		<gml:dictionaryEntry>
+		<gml:Definition gml:id="id6">
+			<gml:description>調査対象外</gml:description>
+			<gml:name>9010</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+			<gml:dictionaryEntry>
+		<gml:Definition gml:id="id7">
+			<gml:description>不明</gml:description>
+			<gml:name>9020</gml:name>
+		</gml:Definition>
+	</gml:dictionaryEntry>
+</gml:Dictionary>

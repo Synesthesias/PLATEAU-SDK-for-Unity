@@ -66,7 +66,7 @@ namespace PLATEAU.CityImport.Config
             nativeOption.MapTileZoomLevel = MapTileZoomLevel;
             nativeOption.MapTileURL = MapTileURL;
             nativeOption.TexturePackingResolution = GetTexturePackingResolution();
-            nativeOption.epsgCode = gml?.Epsg ?? CoordinateReferenceFactory.DEFAULT_EPSG;
+            nativeOption.EpsgCode = gml?.Epsg ?? CoordinateReferenceFactory.DEFAULT_EPSG;
             return nativeOption;
         }
 

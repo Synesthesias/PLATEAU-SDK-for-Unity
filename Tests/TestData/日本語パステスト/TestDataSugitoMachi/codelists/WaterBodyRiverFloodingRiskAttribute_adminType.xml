@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_d3a43bd2-801a-11ec-a8a3-0242ac121222">
+	<gml:name>WaterBodyRiverFloodingRiskAttribute_adminType</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>国</gml:description><gml:name>1</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>都道府県</gml:description><gml:name>2</gml:name>
+  </gml:Definition>
+ </gml:dictionaryEntry>
+</gml:Dictionary>

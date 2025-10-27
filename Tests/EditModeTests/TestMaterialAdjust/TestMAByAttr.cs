@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using PLATEAU.CityAdjust.MaterialAdjust.Executor;
-using PLATEAU.CityAdjust.MaterialAdjust.Executor.Process;
 using PLATEAU.CityAdjust.MaterialAdjust.ExecutorV2;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Tests.TestUtils;

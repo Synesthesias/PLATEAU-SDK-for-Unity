@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_514dfcf1-c41b-42d2-91de-ffb6c606f421">
+<gml:name>TunnelStructureAttribute_tunnelType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelType_1">
+<gml:description>トンネル</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelType_2">
+<gml:description>シェッド</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelType_3">
+<gml:description>シェルター</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelType_4">
+<gml:description>カルバート</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelStructureAttribute_tunnelType_5">
+<gml:description>地下横断歩道</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using PLATEAU.CityImport.AreaSelector.Display.Gizmos.AreaRectangles;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;

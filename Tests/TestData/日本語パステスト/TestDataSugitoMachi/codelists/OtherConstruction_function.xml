@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_24363792-1861-47e9-a9ce-cde14cd718b6">
+<gml:name>OtherConstruction_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_1">
+<gml:description>本堤</gml:description>
+<gml:name>0201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_2">
+<gml:description>控堤</gml:description>
+<gml:name>0202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_3">
+<gml:description>霞堤</gml:description>
+<gml:name>0203</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_4">
+<gml:description>背割堤</gml:description>
+<gml:name>0204</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_5">
+<gml:description>導流堤</gml:description>
+<gml:name>0205</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_6">
+<gml:description>輪中堤</gml:description>
+<gml:name>0206</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_7">
+<gml:description>無堤</gml:description>
+<gml:name>0207</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_8">
+<gml:description>山付け</gml:description>
+<gml:name>0208</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_9">
+<gml:description>霞堤の開口部</gml:description>
+<gml:name>0209</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_10">
+<gml:description>その他の切り欠き部（構造物部分）</gml:description>
+<gml:name>0210</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_11">
+<gml:description>地下河川等</gml:description>
+<gml:name>0211</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_12">
+<gml:description>その他の開口部（支流合流点、派川分流点、河口）</gml:description>
+<gml:name>0212</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_13">
+<gml:description>高水護岸</gml:description>
+<gml:name>0801</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_14">
+<gml:description>低水護岸</gml:description>
+<gml:name>0802</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_15">
+<gml:description>通常護岸</gml:description>
+<gml:name>0811</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_16">
+<gml:description>隠し護岸</gml:description>
+<gml:name>0812</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_17">
+<gml:description>親水護岸（階段護岸、緩勾配護岸等）</gml:description>
+<gml:name>0813</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_18">
+<gml:description>景観護岸（化粧護岸、自然石ブロック、緑化ブロック等）</gml:description>
+<gml:name>0814</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_19">
+<gml:description>生態護岸（魚巣ブロック等）</gml:description>
+<gml:name>0815</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_20">
+<gml:description>透過水制（杭打ち、牛類、枠類等）</gml:description>
+<gml:name>0901</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_21">
+<gml:description>不透過水制（石出し、土出し、波床類等）</gml:description>
+<gml:name>0902</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_22">
+<gml:description>半透過水制（コンクリートブロック、蛇かご等）</gml:description>
+<gml:name>0903</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_23">
+<gml:description>その他</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="OtherConstruction_function_24">
+<gml:description>不明</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_fc1b1f61-d977-465f-bcb1-a22ad93f4125">
+<gml:name>ConstructionRiskAssessmentAttribute_riskType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_1">
+<gml:description>判定区分Ⅰ（健全）</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_2">
+<gml:description>判定区分Ⅱ（予防保全段階）</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_3">
+<gml:description>判定区分Ⅲ（早期措置段階）</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_4">
+<gml:description>判定区分Ⅳ（緊急措置段階）</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_5">
+<gml:description>未点検</gml:description>
+<gml:name>91</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionRiskAssessmentAttribute_riskType_6">
+<gml:description>点検対象外</gml:description>
+<gml:name>92</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

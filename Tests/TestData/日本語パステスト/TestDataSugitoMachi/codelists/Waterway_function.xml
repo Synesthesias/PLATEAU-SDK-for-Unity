@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_eeb7ed8d-7080-4cb8-ad6e-fef87caaf272">
+<gml:name>Waterway_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="Waterway_function_1">
+<gml:description>法定航路</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

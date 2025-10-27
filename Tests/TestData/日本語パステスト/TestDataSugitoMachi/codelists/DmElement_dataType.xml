@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_480797d1-3276-41d4-87a6-a5751c12f8b8">
+<gml:name>DmElement_dataType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_1">
+<gml:description>実データなし（地形表面の高さを計測したもの）</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_2">
+<gml:description>実データなし（人口構造物等の地形表面以外の高さを計測したもの）</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_3">
+<gml:description>二次元座標レコード</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_4">
+<gml:description>三次元座標レコード（地形表面の高さを計測したもの）</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_5">
+<gml:description>注記レコード</gml:description>
+<gml:name>4</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_6">
+<gml:description>属性レコード</gml:description>
+<gml:name>5</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="DmElement_dataType_7">
+<gml:description>三次元座標レコード（人口構造物等の地形表面以外の高さを計測したもの）</gml:description>
+<gml:name>6</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

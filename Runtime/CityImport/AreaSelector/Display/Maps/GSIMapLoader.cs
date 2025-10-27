@@ -9,7 +9,6 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
 #else
@@ -29,9 +28,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Maps
         #if UNITY_EDITOR
         private static readonly string mapMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
         #endif
-        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        private const string MapMaterialNameURP = "MapUnlitMaterial_URP.mat";
-        private const string MapMaterialNameHDRP = "MapUnlitMaterial_HDRP.mat";
+        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP";
+        private const string MapMaterialNameURP = "MapUnlitMaterial_URP";
+        private const string MapMaterialNameHDRP = "MapUnlitMaterial_HDRP";
         private const int TimeOutSec = 10;
         public const string MapRootObjName = "Basemap";
         
@@ -109,30 +108,9 @@ namespace PLATEAU.CityImport.AreaSelector.Display.Maps
 
         private static Material LoadMapMaterial()
         {
-            string matFileName;
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
-            if (pipelineAsset == null) 
-            {   // Built-in Render Pipeline のとき
-                matFileName = MapMaterialNameBuiltInRP;
-            }
-            else
-            {   // URP または HDRP のとき
-                var pipelineName = pipelineAsset.GetType().Name;
-                matFileName = pipelineName switch
-                {
-                    "UniversalRenderPipelineAsset" => MapMaterialNameURP,
-                    "HDRenderPipelineAsset" => MapMaterialNameHDRP,
-                    _ => throw new InvalidDataException("Unknown material for pipeline.")
-                };
-            }
-
-#if UNITY_EDITOR
-            string matFilePath = MaterialPathUtil.GetMapMatPath();
-            var material = AssetDatabase.LoadAssetAtPath<Material>(matFilePath);
-            return material;
-#else
-            throw new NotImplementedException("Map Load in PlayMode is not implemented.");
-#endif
+            string matFileName = MaterialPathUtil.GetMapMatName();
+            var material = Resources.Load<Material>(matFileName);
+            return new Material(material);
         }
 
         private static async Task PlaceAsGameObj(MapTile mapTile, GeoReference geoReference, Transform parentTrans, string mapObjName, List<Material> generatedMaterials)

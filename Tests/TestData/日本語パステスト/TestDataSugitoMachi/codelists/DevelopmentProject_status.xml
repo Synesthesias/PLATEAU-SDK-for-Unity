@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="LandPricePerLandUseType_landuse"><gml:name>LandPricePerLandUseType_landuse</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>completed</gml:description><gml:name>1010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>under construction or approved</gml:description><gml:name>1020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id24"><gml:description>unexamined</gml:description><gml:name>9000</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id25"><gml:description>exception</gml:description><gml:name>9010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id26"><gml:description>unknown</gml:description><gml:name>9020</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

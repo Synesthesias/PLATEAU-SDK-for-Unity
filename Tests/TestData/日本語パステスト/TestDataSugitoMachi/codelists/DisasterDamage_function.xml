@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="DisasterDamage_function"><gml:name>DisasterDamage_function</gml:name>
+<gml:dictionaryEntry><gml:Definition gml:id="id1"><gml:description>external water damage area</gml:description><gml:name>1000</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id2"><gml:description>internal water damage area</gml:description><gml:name>1020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id3"><gml:description>rock slide</gml:description><gml:name>2010</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id4"><gml:description>landslide</gml:description><gml:name>2020</gml:name></gml:Definition></gml:dictionaryEntry>
+<gml:dictionaryEntry><gml:Definition gml:id="id5"><gml:description>mudflow</gml:description><gml:name>2030</gml:name></gml:Definition></gml:dictionaryEntry>
+</gml:Dictionary>

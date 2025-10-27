@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PLATEAU.Dataset
+﻿namespace PLATEAU.Dataset
 {
     /// <summary>
     /// データセット設定のローカルとサーバーの違いを吸収するインターフェイスです。

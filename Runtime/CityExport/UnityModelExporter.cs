@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
-using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
@@ -33,7 +32,7 @@ namespace PLATEAU.CityExport
             }
 
             // Unityのシーンから情報を読みます。
-            progress.Display("エクスポート準備中...", 0.1f);
+            progress?.Display("エクスポート準備中...", 0.1f);
             var trans = instancedCityModel.transform;
             int numChild = trans.childCount;
 
@@ -50,7 +49,7 @@ namespace PLATEAU.CityExport
 
                 // 進行状況を表示 (0.1～0.9の範囲で更新)
                 float progressFloat = 0.1f + (processedCount * 0.8f / numChild);
-                progress.Display($"エクスポート中... ({processedCount + 1}/{numChild})", progressFloat);
+                progress?.Display($"エクスポート中... ({processedCount + 1}/{numChild})", progressFloat);
 
                 using var geoReference = instancedCityModel.GeoReference;
 
@@ -89,7 +88,7 @@ namespace PLATEAU.CityExport
                 processedCount++;
             }
 
-            progress.Display("エクスポート完了", 1.0f);
+            progress?.Display("エクスポート完了", 1.0f);
         }
     }
 }

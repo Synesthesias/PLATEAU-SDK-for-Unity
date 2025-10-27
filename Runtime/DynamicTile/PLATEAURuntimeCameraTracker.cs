@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.LowLevel;
 
@@ -35,7 +34,7 @@ namespace PLATEAU.DynamicTile
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Failed to initialize PLATEAURuntimeCameraTracker: {e.Message}");
+                Debug.LogError($"Failed to initialize PLATEAURuntimeCameraTracker: {e}");
                 return;
             }
 
@@ -90,7 +89,7 @@ namespace PLATEAU.DynamicTile
             if (targetCamera != null)
             {
                 Vector3 currentPosition = targetCamera.transform.position;
-                if (currentPosition != cachedTileManager.LastCameraPosition)
+                if (cachedTileManager.CheckIfCameraPositionHasChanged(currentPosition))
                 {
                     await cachedTileManager.UpdateAssetsByCameraPosition(currentPosition);
                 }

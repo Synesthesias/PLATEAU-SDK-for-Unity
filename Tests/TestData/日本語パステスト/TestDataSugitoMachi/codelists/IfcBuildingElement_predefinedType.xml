@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_fc4e48ea-2fd8-477f-863a-0e1a5aced528">
+<gml:name>IfcBuildingElement_predefinedType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_1">
+<gml:description>IfcColumn：COLUMN（柱）</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_2">
+<gml:description>IfcColumn：PILASTER（壁に貼り付けられた、又は埋め込まれた装飾用の柱）</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_3">
+<gml:description>IfcColumn：PIERSTEM（橋脚の個々の部分）</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_4">
+<gml:description>IfcColumn：PIERSTEM_SEGMENT（橋脚柱の垂直部分）</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_5">
+<gml:description>IfcColumn：STANDCOLUMN（上部構造からその下のアーチに垂直荷重を伝達する柱）</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_6">
+<gml:description>IfcCovering：CEILING（天井）</gml:description>
+<gml:name>11</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_7">
+<gml:description>IfcCovering：FLOORING（床）</gml:description>
+<gml:name>12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_8">
+<gml:description>IfcCovering：CLADDING（外壁の被覆材）</gml:description>
+<gml:name>13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_9">
+<gml:description>IfcCovering：ROOFING（屋根カバー）</gml:description>
+<gml:name>14</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_10">
+<gml:description>IfcCovering：MOLDING（モールディング）</gml:description>
+<gml:name>15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_11">
+<gml:description>IfcCovering：SKIRTINGBOARD（幅木）</gml:description>
+<gml:name>16</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_12">
+<gml:description>IfcCovering：INSULATION（絶縁）</gml:description>
+<gml:name>17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_13">
+<gml:description>IfcCovering：MEMBRANE（屋根カバー又は防湿の膜）</gml:description>
+<gml:name>18</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_14">
+<gml:description>IfcCovering：SLEEVING（スリーブ）</gml:description>
+<gml:name>19</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_15">
+<gml:description>IfcCovering：WRAPPING（テープを使用して配電要素を包む）</gml:description>
+<gml:name>20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_16">
+<gml:description>IfcCovering：COPING（壁又はパラペット保護）</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_17">
+<gml:description>IfcRailing：HANDRAIL（手すり）</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_18">
+<gml:description>IfcRailing：GUARDRAIL（防護柵）</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_19">
+<gml:description>IfcRailing：BALUSTRADE（欄干）</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_20">
+<gml:description>IfcSlab：FLOOR（床）</gml:description>
+<gml:name>41</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_21">
+<gml:description>IfcSlab：ROOF（屋根）</gml:description>
+<gml:name>42</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_22">
+<gml:description>IfcSlab：LANDING（階段又はスロープ内の踊り場）</gml:description>
+<gml:name>43</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_predefinedType_23">
+<gml:description>IfcSlab：BASESLAB（地面に対する床スラブ）</gml:description>
+<gml:name>44</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_378291f7-3fc6-4444-82d0-4c89ed52a9eb">
+<gml:name>IfcBuildingElement_shapeType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_1">
+<gml:description>IfcRamp：STRAIGHT_RUN_RAMP（直線的なスロープ）</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_2">
+<gml:description>IfcRamp：TWO_STRAIGHT_RUN_RAMP（1ヵ所の踊り場のある直線的なスロープ）</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_3">
+<gml:description>IfcRamp：QUARTER_TURN_RAMP（1ヵ所の踊り場で90度転回するスロープ）</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_4">
+<gml:description>IfcRamp：TWO_QUARTER_TURN_RAMP（2ヵ所の踊り場で各90度転回するスロープ）</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_5">
+<gml:description>IfcRamp：HALF_TURN_RAMP（1ヵ所の踊り場で180度転回するスロープ）</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_6">
+<gml:description>IfcRamp：SPIRAL_RAMP（円形又は楕円形のスロープ）</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_7">
+<gml:description>IfcRoof：FLAT_ROOF（陸屋根）</gml:description>
+<gml:name>21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_8">
+<gml:description>IfcRoof：SHED_ROOF（片流れ屋根）</gml:description>
+<gml:name>22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_9">
+<gml:description>IfcRoof：GABLE_ROOF（切妻屋根）</gml:description>
+<gml:name>23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_10">
+<gml:description>IfcRoof：HIP_ROOF（寄棟屋根）</gml:description>
+<gml:name>24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_11">
+<gml:description>IfcRoof：HIPPED_GABLE_ROOF（半切妻屋根）</gml:description>
+<gml:name>25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_12">
+<gml:description>IfcRoof：GAMBREL_ROOF（腰折屋根）</gml:description>
+<gml:name>26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_13">
+<gml:description>IfcRoof：MANSARD_ROOF（マンサード屋根）</gml:description>
+<gml:name>27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_14">
+<gml:description>IfcRoof：BARREL_ROOF（かまぼこ屋根）</gml:description>
+<gml:name>28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_15">
+<gml:description>IfcRoof：RAINBOW_ROOF（虹型屋根）</gml:description>
+<gml:name>29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_16">
+<gml:description>IfcRoof：BUTTEFLY_ROOF（バタフライ屋根）</gml:description>
+<gml:name>30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_17">
+<gml:description>IfcRoof：PAVILION_ROOF（方形屋根）</gml:description>
+<gml:name>31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_18">
+<gml:description>IfcRoof：DOOM_ROOF（ドーム屋根）</gml:description>
+<gml:name>32</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_19">
+<gml:description>USERDEFINED（利用者定義）</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="IfcBuildingElement_shapeType_20">
+<gml:description>NOTDEFINED（定義なし）</gml:description>
+<gml:name>00</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

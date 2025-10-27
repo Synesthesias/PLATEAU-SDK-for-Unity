@@ -21,14 +21,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
 
         /// <summary> フィルター条件のうち、パッケージごとのLODスライダーでの選択状況を格納します。 </summary>
         public ReadOnlyDictionary<Hierarchy.Node, bool> SelectionDict =>
-            new ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool>(this.selectionDict);
+            new ReadOnlyDictionary<Hierarchy.Node, bool>(this.selectionDict);
         
         private PackageLod sliderPackageLod;
 
 
         public void Draw(CityChangeActiveGui.PackageToLodMinMax packageToLodMinMax)
         {
-
+            EnsureSelectionDictInitialized(packageToLodMinMax);
             using (new EditorGUILayout.HorizontalScope())
             {
                 if(PlateauEditorStyle.MiniButton("全選択", 100))
@@ -168,6 +168,57 @@ namespace PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts
                 this.AvailableMaxLod = availableMaxLod;
                 this.UserMinLod = userMinLod;
                 this.UserMaxLod = userMaxLod;
+            }
+        }
+
+
+        /// <summary>
+        /// 初回Drawで「全選択/全選択解除」が一部ノードに反映されない問題回避
+        /// selectionDictをプリロード
+        /// </summary>
+        /// <param name="packageToLodMinMax"></param>
+        private void EnsureSelectionDictInitialized(CityChangeActiveGui.PackageToLodMinMax packageToLodMinMax)
+        {
+            var root = Hierarchy.RootNode;
+            if (root == null) return;
+
+            void DFS(Hierarchy.Node n)
+            {
+                if (!selectionDict.ContainsKey(n)) selectionDict[n] = true;
+                foreach (var c in n.Children) DFS(c);
+            }
+            foreach (var n in root.Children) DFS(n);
+        }
+
+        /// <summary>
+        /// 保存された都市モデルのフィルター条件をGUIに反映します。
+        /// </summary>
+        /// <param name="condition"></param>
+        public void ApplySavedFilterCondition(FilterCondition condition)
+        {
+            if (condition.SelectionList != null)
+            {
+                var displayNameDict = this.selectionDict.Keys.ToDictionary(key => key.GetDisplayName(), key => key);
+                foreach ( var item in condition.SelectionList)
+                {
+                    if (displayNameDict.TryGetValue(item.Key, out var node))
+                    {
+                        selectionDict[node] = item.Value;
+                    }
+                }
+            }
+
+            if (condition.PackageLodList != null)
+            {
+                foreach (var item in condition.PackageLodList)
+                {
+                    if(sliderPackageLod.TryGetValue(item.Key, out var lodSliderConfig))
+                    {
+                        lodSliderConfig.UserMinLod = item.Value.Min;
+                        lodSliderConfig.UserMaxLod = item.Value.Max;
+                        sliderPackageLod[item.Key] = lodSliderConfig;
+                    }
+                }
             }
         }
     }

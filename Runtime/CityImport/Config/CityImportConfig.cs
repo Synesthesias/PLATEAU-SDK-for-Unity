@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.Dataset;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
+using UnityEngine;
 
 namespace PLATEAU.CityImport.Config
 {
@@ -34,6 +37,14 @@ namespace PLATEAU.CityImport.Config
         /// 都市モデル読み込みの、パッケージ種ごとの設定です。
         /// </summary>
         public PackageImportConfigDict PackageImportConfigDict { get; private set; }
+
+        /// <summary>
+        /// 動的タイルの設定項目です。実体は<see cref="ConfBeforeAreaSelect"/>の中にあります。
+        /// </summary>
+        public DynamicTileImportConfig DynamicTileImportConfig
+        {
+            get => ConfBeforeAreaSelect.DynamicTileImportConfig;
+        }
 
         private CityImportConfig(){}
 
@@ -122,6 +133,32 @@ namespace PLATEAU.CityImport.Config
         {
             return package != PredefinedCityModelPackage.Relief;
         }
-        
+
+        /// <summary>
+        /// 動的タイル生成モードでのインポートに適した設定かどうかを検証して返します。
+        /// </summary>
+        public bool ValidateForTile()
+        {
+            if (DynamicTileImportConfig == null)
+            {
+                Debug.LogError("CityImportConfigまたはDynamicTileImportConfigがnullです。");
+                return false;
+            }
+            
+            if (DynamicTileImportConfig.OutputPath.IsNullOrEmpty())
+            {
+                Dialogue.Display("動的タイル（Addressable出力）の出力先を指定してください。", "OK");
+                return false;
+            }
+            
+            if (!Directory.Exists(DynamicTileImportConfig.OutputPath))
+            {
+                Dialogue.Display("出力先ディレクトリが存在しません。動的タイルの出力先を再度指定してください。", "OK");
+                return false;
+            }
+            
+
+            return true;
+        }
     }
 }

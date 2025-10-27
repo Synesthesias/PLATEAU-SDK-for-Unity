@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using UnityEditor;
 using UnityEngine;
@@ -106,7 +107,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
                 if (Physics.Raycast(ray, out var hit, 100000.0f))
                 {
-                    if (hit.transform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
+                    //頻繁に参照してるのでキャッシュしておく
+                    var hitTransform = hit.transform;
+                    
+                    if (hitTransform.TryGetComponent<PLATEAUCityObjectGroup>(out var cog))
                     {
                         using var progressBar = new ProgressBar("クリックした地物の情報を取得中です...");
                         progressBar.Display(0f);
@@ -125,11 +129,27 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
                         if (parent == null && child == null) 
                         {
-                            errorMessage = $"{hit.transform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
+                            errorMessage = $"{hitTransform.gameObject.name}:\r\n地物がクリックされましたが、属性情報が見つかりませんでした。\r\nインポート時に属性情報を含める設定になっているか確認してください。";
                         }
                         else
                         {
-                            targetObjectName = hit.transform.root.name;
+                            //dynamic tileのときは階層構造が違うので考慮する
+                            if (hitTransform.root.TryGetComponent<PLATEAUTileManager>(out var _))
+                            {
+                                var p1 = hitTransform.parent;
+                                if (p1 != null)
+                                {
+                                    var p2 = p1.parent;
+                                    if (p2 != null)
+                                    {
+                                        targetObjectName = p2.name;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                targetObjectName = hitTransform.root.name;
+                            }
                             
                             //PrimaryとAtomicが同一であった場合片方だけ表示
                             if (parent?.GmlID == child?.GmlID)
@@ -143,7 +163,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                                 //最小値物
                                 if (!string.IsNullOrEmpty(cog.CityObjects.outsideParent))
                                 {
-                                    Transform parentTrans = (hit.transform.parent.gameObject.name == cog.CityObjects.outsideParent) ? hit.transform.parent : GameObject.Find(cog.CityObjects.outsideParent)?.transform;
+                                    Transform parentTrans = (hitTransform.parent.gameObject.name == cog.CityObjects.outsideParent) ? hitTransform.parent : GameObject.Find(cog.CityObjects.outsideParent)?.transform;
                                     if (parentTrans != null)
                                     {
                                         await GetGizmoDrawer().ShowParentSelection(parentTrans, parent.IndexInMesh, GetIdAndAttributeString(parent));
@@ -152,7 +172,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                                 }
                                 else
                                 {
-                                    await GetGizmoDrawer().ShowParentSelection(hit.transform, parent.IndexInMesh, GetIdAndAttributeString(parent));
+                                    await GetGizmoDrawer().ShowParentSelection(hitTransform, parent.IndexInMesh, GetIdAndAttributeString(parent));
                                     progressBar.Display(0.6f);
                                 }
                             }
@@ -167,7 +187,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                                 childJson = await Task.Run(() =>  JsonConvert.SerializeObject(child, Formatting.Indented));
                                 progressBar.Display(0.8f);
 
-                                await GetGizmoDrawer().ShowChildSelection(hit.transform, child.IndexInMesh, GetIdAndAttributeString(child));
+                                await GetGizmoDrawer().ShowChildSelection(hitTransform, child.IndexInMesh, GetIdAndAttributeString(child));
                                 progressBar.Display(0.99f);
                             } 
                             else

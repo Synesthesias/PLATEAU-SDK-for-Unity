@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using PLATEAU.Util;
+using UnityEngine.Rendering;
 
 namespace PLATEAU.DynamicTile
 {
@@ -14,6 +14,7 @@ namespace PLATEAU.DynamicTile
     public class PrefabTextureResizer
     {
         public static readonly int[] DENOMINATORS = { 1, 2, 4, 8, 16 };　//等倍サイズも含める場合
+        private const TextureFormat TempTextureFormat = TextureFormat.RGBA32; // 非圧縮フォーマットを使うこと
 
         /// <summary>
         /// 保存先パス
@@ -21,12 +22,19 @@ namespace PLATEAU.DynamicTile
         private string savePath;
 
         /// <summary>
+        /// 既存のファイルを上書きするかどうか
+        /// </summary>
+        private bool overwriteExisting;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="savePath_">保存先パス</param>
-        public PrefabTextureResizer(string savePath_)
+        /// <param name="overwrite">上書きするかどうか</param>
+        public PrefabTextureResizer(string savePath_, bool overwrite)
         {
             savePath = savePath_;
+            overwriteExisting = overwrite;
         }
 
         /// <summary>
@@ -63,7 +71,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="denominator">サイズ比の分母</param>
         /// <param name="saveDirectory">保存フォルダ名</param>
         /// <returns>再読み込み後のTexture</returns>
-        private (Texture2D,string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
+        private (Texture2D, string) ResizeAndSaveNewTexture(Texture2D sourceTexture, int denominator, int zoomLevel, string saveDirectory)
         {
             //サイズ
             var proportion = 1f / denominator;
@@ -74,20 +82,24 @@ namespace PLATEAU.DynamicTile
             var textureImporter = GetTextureImporter(sourceTexture);
             if (textureImporter == null)
             {
-                Debug.LogError("TextureImporter is not suppoerted.");
-                return (null,null);
+                Debug.LogError($"TextureImporter is not suppoerted. {sourceTexture?.name}");
             }
-            var compression = textureImporter.textureCompression;
-            var textureType = textureImporter.textureType;
+            TextureImporterCompression compression = TextureImporterCompression.Uncompressed;
+            TextureImporterType textureType = TextureImporterType.Default;
+            if (textureImporter != null)
+            {
+                compression = textureImporter.textureCompression;
+                textureType = textureImporter.textureType;
 
-            //設定変更
-            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
-            textureImporter.textureType = TextureImporterType.Default;
-            textureImporter.SaveAndReimport();
+                //設定変更
+                textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+                textureImporter.textureType = TextureImporterType.Default;
+                textureImporter.SaveAndReimport();
+            }
 
-            var newTexture = new Texture2D(newWidth, newHeight, sourceTexture.format, textureImporter.mipmapEnabled);
+            var newTexture = new Texture2D(newWidth, newHeight, TempTextureFormat, false);
             newTexture.name = sourceTexture.name + $"_{zoomLevel}";
-            ResizeTexture(sourceTexture, ref newTexture);
+            ResizeTextureAsync(sourceTexture, newTexture);
 
             // 保存先のディレクトリを作成 (解像度ごとに異なるフォルダに保存)
             string directoryPath = AssetPathUtil.GetFullPath(saveDirectory);
@@ -100,12 +112,21 @@ namespace PLATEAU.DynamicTile
             // 新しいファイルとして保存
             string newPath = Path.Combine(directoryPath, newAssetName);
 
+            // 上書きする場合はAssetDatabaseのパスを指定
+            if (overwriteExisting && textureImporter != null)
+            {
+                newPath = AssetPathUtil.GetAssetPath(textureImporter.assetPath);
+            }
+
             SaveTexture(newTexture, newPath, fileExtension.TrimStart('.'));
 
-            //設定を元に戻す
-            textureImporter.textureType = textureType;
-            textureImporter.textureCompression = compression;
-            textureImporter.SaveAndReimport();
+            if (textureImporter != null) 
+            {
+                //設定を元に戻す
+                textureImporter.textureType = textureType;
+                textureImporter.textureCompression = compression;
+                textureImporter.SaveAndReimport();
+            }
 
             //Texture再読み込み (AssetDatabaseにインポート)
             return (LoadTexture(newPath), newPath);
@@ -132,16 +153,42 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="source">ソースTexture2D</param>
         /// <param name="dest">変換用Texture2D</param>
-        private void ResizeTexture(Texture2D source, ref Texture2D dest)
+        private void ResizeTextureAsync(Texture2D source, Texture2D dest)
         {
-            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height);
+            RenderTexture rt = RenderTexture.GetTemporary(dest.width, dest.height, 0, RenderTextureFormat.ARGB32);
             Graphics.Blit(source, rt);
-
-            RenderTexture.active = rt;
-            dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+            
+            if (SystemInfo.supportsAsyncGPUReadback)
+            {
+                // GPU上にあるRenderTextureを取得します。
+                var request = AsyncGPUReadback.Request(rt, 0, TempTextureFormat);
+                // GPUにリクエストしたうえで成功を待たないと、下のLoadRawTextureDataに失敗する場合があります。
+                request.WaitForCompletion();
+                if (request.hasError)
+                {
+                    Debug.LogError("GPU Readback にエラーが発生しました。");
+                    RenderTexture.ReleaseTemporary(rt);
+                    return;
+                }
+                // データをTexture2Dにロードします。
+                var data = request.GetData<byte>();
+                if(data.Length != dest.width * dest.height * 4)
+                {
+                    Debug.LogError($"Data size mismatch: expected {dest.width * dest.height * 4} bytes, got {data.Length} bytes.");
+                    RenderTexture.ReleaseTemporary(rt);
+                    return;
+                }
+                dest.LoadRawTextureData(data);
+            }
+            else
+            {
+                var prev = RenderTexture.active;
+                RenderTexture.active = rt;
+                dest.ReadPixels(new Rect(0, 0, dest.width, dest.height), 0, 0);
+                RenderTexture.active = prev;
+            }
+            
             dest.Apply();
-
-            RenderTexture.active = null;
             RenderTexture.ReleaseTemporary(rt);
         }
 

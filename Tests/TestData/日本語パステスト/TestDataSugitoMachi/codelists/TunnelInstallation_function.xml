@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_136b703e-0357-40b9-bb6c-d4c3f5b884d7">
+<gml:name>TunnelInstallation_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_1">
+<gml:description>受変電設備</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_2">
+<gml:description>予備電源設備</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_3">
+<gml:description>換気設備</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_4">
+<gml:description>排水設備</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_5">
+<gml:description>監視制御設備</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_6">
+<gml:description>通報装置</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_7">
+<gml:description>非常用警報装置</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_8">
+<gml:description>消火設備</gml:description>
+<gml:name>08</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_9">
+<gml:description>避難誘導設備</gml:description>
+<gml:name>09</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_10">
+<gml:description>避難連絡坑</gml:description>
+<gml:name>10</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TunnelInstallation_function_11">
+<gml:description>その他</gml:description>
+<gml:name>90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

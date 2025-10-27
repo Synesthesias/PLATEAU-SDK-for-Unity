@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,10 +44,11 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
         /// <summary>
         /// fetch済みのGMLファイルを1つインポートします。
         /// メインスレッドで呼ぶ必要があります。
+        /// GML1つを読んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
         internal static async Task Import(GmlFile fetchedGmlFile , CityImportConfig conf,
             Transform rootTrans, IProgressDisplay progressDisplay,
-            CancellationToken? token)
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null, int totalGmlCount = 0)
         {
             token?.ThrowIfCancellationRequested();
             if (fetchedGmlFile.Path == null) return;
@@ -82,16 +84,26 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             if (placingResult.IsSucceed)
             {
                 progressDisplay.SetProgress(gmlName, 100f, "完了");
+                
+                // 1つのGMLのインポート後の処理をprocessorsに委譲
+                if (postGmlProcessors != null)
+                {
+                    var result = new GmlImportResult(placingResult.GeneratedObjs, totalGmlCount, fetchedGmlFile.GridCode.StringCode, fetchedGmlFile);
+                    foreach (var processor in postGmlProcessors)
+                    {
+                        processor.OnGmlImported(result);
+                    }
+                }
             }
             else
             {
                 progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
             }
         }
-        
-        private static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName)
+
+        internal static async Task<CityModel> LoadGmlAsync(GmlFile gmlInfo, CancellationToken? token, IProgressDisplay progressDisplay, string gmlName, float progress = 20f)
         {
-            progressDisplay.SetProgress(gmlName, 20f, "GMLファイルをロード中");
+            progressDisplay.SetProgress(gmlName, progress, "GMLファイルをロード中");
             string gmlPath = gmlInfo.Path.Replace('\\', '/');
 
             // GMLをパースした結果を返しますが、失敗した時は null を返します。
@@ -132,7 +144,7 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             return cityModel;
         }
 
-        private static GameObject CreateGmlGameObject(GmlFile fetchedGmlFile)
+        internal static GameObject CreateGmlGameObject(GmlFile fetchedGmlFile)
         {
             string udxFeature = $"/udx/{fetchedGmlFile.FeatureType}/";
             var gmlPath = fetchedGmlFile.Path;
@@ -156,7 +168,8 @@ namespace PLATEAU.CityImport.Import.CityImportProcedure
             catch (Exception e)
             {
                 progressDisplay.SetProgress(gmlName, 0f, $"失敗 : メッシュインポートの設定に失敗しました。\n{e.Message}");
-                result = new MeshExtractOptions();
+                meshExtractOptions = new MeshExtractOptions();
+                result = meshExtractOptions;
                 return false;
             }
 

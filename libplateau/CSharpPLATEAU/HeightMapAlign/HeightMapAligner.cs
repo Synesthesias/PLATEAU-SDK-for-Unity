@@ -61,6 +61,9 @@ namespace PLATEAU.HeightMapAlign
 
         public UInt16[] GetHeightMapAt(int index)
         {
+#if UNITY_IOS
+            throw new NotImplementedException("This is not implemented for iOS.");
+#else
             var apiResult = NativeMethods.height_map_aligner_get_height_map_at(
                 Handle, index, out IntPtr heightMapPtr, out int dataSize
             );
@@ -76,6 +79,7 @@ namespace PLATEAU.HeightMapAlign
             }
 
             return copiedHeightMap;
+#endif
         }
 
         protected override void DisposeNative()
@@ -144,10 +148,12 @@ namespace PLATEAU.HeightMapAlign
                 [Out] out int dataSize
             );
             
+#if !UNITY_IOS
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult release_heightmap_data(
                 [In] IntPtr data
             );
+#endif
         }
 
         

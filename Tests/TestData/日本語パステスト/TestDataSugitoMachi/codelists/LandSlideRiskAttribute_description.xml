@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_540fcf1a-9d16-4ccf-9747-4265dc800d7f">
+<gml:name>LandSlideRiskAttribute_description</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandSlideRiskAttribute_description_1">
+<gml:description>急傾斜地の崩落</gml:description>
+<gml:name>1</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandSlideRiskAttribute_description_2">
+<gml:description>土石流</gml:description>
+<gml:name>2</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="LandSlideRiskAttribute_description_3">
+<gml:description>地すべり</gml:description>
+<gml:name>3</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

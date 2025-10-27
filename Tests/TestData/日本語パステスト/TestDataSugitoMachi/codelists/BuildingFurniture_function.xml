@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_645cd7a8-b617-4b3f-9d7d-7777f2b3e5c4">
+<gml:name>BuildingFurniture_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_1">
+<gml:description>通知、識別、ラベル</gml:description>
+<gml:name>Pr_40_10_57</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_2">
+<gml:description>サインとマーカー</gml:description>
+<gml:name>Pr_40_10_77</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_3">
+<gml:description>水と航行援助標識</gml:description>
+<gml:name>Pr_40_10_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_4">
+<gml:description>風向計製品</gml:description>
+<gml:name>Pr_40_10_96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_5">
+<gml:description>入浴金具</gml:description>
+<gml:name>Pr_40_20_06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_6">
+<gml:description>緊急用シャワー製品</gml:description>
+<gml:name>Pr_40_20_27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_7">
+<gml:description>パッケージ化された衛生器具</gml:description>
+<gml:name>Pr_40_20_60</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_8">
+<gml:description>サニタリーアクセサリー</gml:description>
+<gml:name>Pr_40_20_76</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_9">
+<gml:description>水栓、自動水栓</gml:description>
+<gml:name>Pr_40_20_87</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_10">
+<gml:description>小便器とトイレの付属品</gml:description>
+<gml:name>Pr_40_20_93</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_11">
+<gml:description>洗面台、シンク、トラフ</gml:description>
+<gml:name>Pr_40_20_96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_12">
+<gml:description>動物飼育</gml:description>
+<gml:name>Pr_40_30_04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_13">
+<gml:description>カーテンとスクリーン</gml:description>
+<gml:name>Pr_40_30_20</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_14">
+<gml:description>自転車スタンドとロッカー</gml:description>
+<gml:name>Pr_40_30_21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_15">
+<gml:description>抑止力と罠</gml:description>
+<gml:name>Pr_40_30_22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_16">
+<gml:description>ディスプレイおよびプレゼンテーションフィッティング</gml:description>
+<gml:name>Pr_40_30_25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_17">
+<gml:description>物干しロープ</gml:description>
+<gml:name>Pr_40_30_26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_18">
+<gml:description>外部ストレージユニット</gml:description>
+<gml:name>Pr_40_30_28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_19">
+<gml:description>取り付けられた椅子、座席およびベンチ</gml:description>
+<gml:name>Pr_40_30_29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_20">
+<gml:description>取り付けられた机、テーブルおよび調理台</gml:description>
+<gml:name>Pr_40_30_30</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_21">
+<gml:description>旗竿</gml:description>
+<gml:name>Pr_40_30_31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_22">
+<gml:description>メールフィッティング</gml:description>
+<gml:name>Pr_40_30_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_23">
+<gml:description>楽器</gml:description>
+<gml:name>Pr_40_30_55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_24">
+<gml:description>遊具</gml:description>
+<gml:name>Pr_40_30_61</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_25">
+<gml:description>POSフィッティング</gml:description>
+<gml:name>Pr_40_30_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_26">
+<gml:description>ポスター表示ユニット</gml:description>
+<gml:name>Pr_40_30_66</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_27">
+<gml:description>宗教的な付属品</gml:description>
+<gml:name>Pr_40_30_71</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_28">
+<gml:description>金庫とセキュリティキャビネット</gml:description>
+<gml:name>Pr_40_30_75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_29">
+<gml:description>棚、ハンガー、ラック</gml:description>
+<gml:name>Pr_40_30_78</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_30">
+<gml:description>スケートボードのインストール</gml:description>
+<gml:name>Pr_40_30_80</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_31">
+<gml:description>スポーツフィッティング</gml:description>
+<gml:name>Pr_40_30_83</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_32">
+<gml:description>スポーツゴール</gml:description>
+<gml:name>Pr_40_30_84</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_33">
+<gml:description>スポーツネット</gml:description>
+<gml:name>Pr_40_30_85</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_34">
+<gml:description>スイミングプールの付属品</gml:description>
+<gml:name>Pr_40_30_86</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_35">
+<gml:description>ストレージユニットと食器棚</gml:description>
+<gml:name>Pr_40_30_87</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_36">
+<gml:description>アートワーク</gml:description>
+<gml:name>Pr_40_50_05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_37">
+<gml:description>ベッド</gml:description>
+<gml:name>Pr_40_50_06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_38">
+<gml:description>ビンとバケツ</gml:description>
+<gml:name>Pr_40_50_07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_39">
+<gml:description>椅子、座席、ベンチ</gml:description>
+<gml:name>Pr_40_50_12</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_40">
+<gml:description>時計</gml:description>
+<gml:name>Pr_40_50_13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_41">
+<gml:description>机、テーブル</gml:description>
+<gml:name>Pr_40_50_21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_42">
+<gml:description>消火器とファイヤーブランケット</gml:description>
+<gml:name>Pr_40_50_28</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_43">
+<gml:description>家具ブース</gml:description>
+<gml:name>Pr_40_50_31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_44">
+<gml:description>庭の家具</gml:description>
+<gml:name>Pr_40_50_33</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_45">
+<gml:description>医療用椅子とソファ</gml:description>
+<gml:name>Pr_40_50_51</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_46">
+<gml:description>医療デスク、テーブル、調理台</gml:description>
+<gml:name>Pr_40_50_52</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_47">
+<gml:description>医療用トロリー</gml:description>
+<gml:name>Pr_40_50_53</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_48">
+<gml:description>ソフト家具</gml:description>
+<gml:name>Pr_40_50_81</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_49">
+<gml:description>スポーツ家具</gml:description>
+<gml:name>Pr_40_50_83</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_50">
+<gml:description>スタンド、ホルダー</gml:description>
+<gml:name>Pr_40_50_84</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_51">
+<gml:description>スイミングプールの家具</gml:description>
+<gml:name>Pr_40_50_86</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_52">
+<gml:description>トロリー</gml:description>
+<gml:name>Pr_40_50_90</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_53">
+<gml:description>ホイール</gml:description>
+<gml:name>Pr_40_50_96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_54">
+<gml:description>装置</gml:description>
+<gml:name>Pr_40_70</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_55">
+<gml:description>洗浄装置</gml:description>
+<gml:name>Pr_40_70_13</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_56">
+<gml:description>冷水供給源</gml:description>
+<gml:name>Pr_40_70_15</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_57">
+<gml:description>業務用調理器具</gml:description>
+<gml:name>Pr_40_70_17</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_58">
+<gml:description>食器洗浄機</gml:description>
+<gml:name>Pr_40_70_21</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_59">
+<gml:description>ディスペンサーと受け入れユニット</gml:description>
+<gml:name>Pr_40_70_22</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_60">
+<gml:description>業務用ディスプレイおよびケータリングサービス製品</gml:description>
+<gml:name>Pr_40_70_23</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_61">
+<gml:description>家庭用調理器具</gml:description>
+<gml:name>Pr_40_70_24</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_62">
+<gml:description>家庭用洗濯設備</gml:description>
+<gml:name>Pr_40_70_25</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_63">
+<gml:description>家庭用冷蔵・冷凍庫</gml:description>
+<gml:name>Pr_40_70_26</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_64">
+<gml:description>環境保護装置</gml:description>
+<gml:name>Pr_40_70_27</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_65">
+<gml:description>火災シミュレーション装置</gml:description>
+<gml:name>Pr_40_70_29</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_66">
+<gml:description>食品冷蔵・冷凍庫</gml:description>
+<gml:name>Pr_40_70_31</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_67">
+<gml:description>一般的なワークショップ機器</gml:description>
+<gml:name>Pr_40_70_35</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_68">
+<gml:description>ランドリーの付属品および装置</gml:description>
+<gml:name>Pr_40_70_46</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_69">
+<gml:description>洗濯機と乾燥機</gml:description>
+<gml:name>Pr_40_70_47</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_70">
+<gml:description>メール機器</gml:description>
+<gml:name>Pr_40_70_50</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_71">
+<gml:description>医療および実験装置</gml:description>
+<gml:name>Pr_40_70_51</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_72">
+<gml:description>医療、実験室、薬局の冷蔵庫と冷凍庫</gml:description>
+<gml:name>Pr_40_70_53</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_73">
+<gml:description>係留、ドッキング、浮揚装置</gml:description>
+<gml:name>Pr_40_70_55</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_74">
+<gml:description>オフィス設備</gml:description>
+<gml:name>Pr_40_70_58</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_75">
+<gml:description>パーソナルドライヤー</gml:description>
+<gml:name>Pr_40_70_62</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_76">
+<gml:description>写真機材</gml:description>
+<gml:name>Pr_40_70_63</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_77">
+<gml:description>準備ケータリング機器</gml:description>
+<gml:name>Pr_40_70_65</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_78">
+<gml:description>プロセス機器</gml:description>
+<gml:name>Pr_40_70_66</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_79">
+<gml:description>プロジェクター</gml:description>
+<gml:name>Pr_40_70_67</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_80">
+<gml:description>レクリエーション設備</gml:description>
+<gml:name>Pr_40_70_71</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_81">
+<gml:description>鉄道車庫設備</gml:description>
+<gml:name>Pr_40_70_73</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_82">
+<gml:description>安全装置</gml:description>
+<gml:name>Pr_40_70_75</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_83">
+<gml:description>スポーツ用品</gml:description>
+<gml:name>Pr_40_70_84</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_84">
+<gml:description>舞台装置</gml:description>
+<gml:name>Pr_40_70_86</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_85">
+<gml:description>スイミングプール設備</gml:description>
+<gml:name>Pr_40_70_96</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BuildingFurniture_function_86">
+<gml:description>水制御装置</gml:description>
+<gml:name>Pr_40_70_99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

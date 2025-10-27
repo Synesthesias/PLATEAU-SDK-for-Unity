@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Config.PackageImportConfigs;
 using PLATEAU.CityImport.Import.CityImportProcedure;
@@ -26,8 +25,10 @@ namespace PLATEAU.CityImport.Import
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
         /// GMLファイルから都市モデルを読み、そのメッシュをUnity向けに変換してシーンに配置します。
         /// メインスレッドで呼ぶ必要があります。
+        /// GMLを1つ読み込んだあとにしたい処理を<paramref name="postGmlProcessors"/>に渡します。
         /// </summary>
-        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay, CancellationToken? token)
+        public static async Task ImportAsync(CityImportConfig config, IProgressDisplay progressDisplay,
+            CancellationToken? token, IEnumerable<IPostGmlImportProcessor> postGmlProcessors = null)
         {
             if (config == null)
             {
@@ -102,7 +103,7 @@ namespace PLATEAU.CityImport.Import
             try
             {
                 var fetchedGmls = await Fetch(targetGmls, isLocalImport, remoteDownloadPath, config, progressDisplay, token);
-
+                
                 // GMLファイルを同時に処理する最大数です。
                 // 並列数が 4 くらいだと、1つずつ処理するよりも、全部同時に処理するよりも速いという経験則です。
                 // ただしメモリ使用量が増えます。
@@ -112,14 +113,14 @@ namespace PLATEAU.CityImport.Import
                     await semGmlProcess.WaitAsync(); 
                     try
                     {
-
                         if (fetchedGml != null && !string.IsNullOrEmpty(fetchedGml.Path))
                         {
                             try
                             {
                                 // GMLを1つインポートします。
                                 // ここはメインスレッドで呼ぶ必要があります。
-                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token);
+                                await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
+                                    postGmlProcessors, fetchedGmls.Count);
                             }
                             catch(OperationCanceledException)
                             {
@@ -143,7 +144,6 @@ namespace PLATEAU.CityImport.Import
                 }));
 
                 // インポート完了後の処理
-                CityDuplicateProcessor.EnableOnlyLargestLODInDuplicate(cityModelComponent);
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
                 rootTrans.name = Path.GetFileName(finalGmlRootPath);
             }
@@ -169,7 +169,7 @@ namespace PLATEAU.CityImport.Import
         /// GMLファイルの取得処理を行います。
         /// ローカルインポートの場合は元のパスをそのまま使用し、リモートインポートの場合はダウンロードします。
         /// </summary>
-        private static async Task<List<GmlFile>> Fetch(
+        internal static async Task<List<GmlFile>> Fetch(
             List<GmlFile> targetGmls,
             bool isLocalImport,
             string remoteDownloadPath,

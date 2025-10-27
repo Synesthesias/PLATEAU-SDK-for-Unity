@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_0716c583-3ff4-44f2-99eb-098b7bdb9c8e">
+<gml:name>ConstructionStructureAttribute_structureType</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_1">
+<gml:description>アーチダム</gml:description>
+<gml:name>0101</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_2">
+<gml:description>バットレスダム</gml:description>
+<gml:name>0102</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_3">
+<gml:description>アースダム</gml:description>
+<gml:name>0103</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_4">
+<gml:description>アスファルトフェイシングダム</gml:description>
+<gml:name>0104</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_5">
+<gml:description>アスファルトコアダム</gml:description>
+<gml:name>0105</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_6">
+<gml:description>フローティングゲートダム（可動堰）</gml:description>
+<gml:name>0106</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_7">
+<gml:description>重力式コンクリートダム</gml:description>
+<gml:name>0107</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_8">
+<gml:description>重力式アーチダム</gml:description>
+<gml:name>0108</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_9">
+<gml:description>重力式コンクリートダム・フィルダム複合ダム</gml:description>
+<gml:name>0109</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_10">
+<gml:description>中空重力式コンクリートダム</gml:description>
+<gml:name>0110</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_11">
+<gml:description>マルティプルアーチダム</gml:description>
+<gml:name>0111</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_12">
+<gml:description>ロックフィルダム</gml:description>
+<gml:name>0112</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_13">
+<gml:description>台形CSGダム</gml:description>
+<gml:name>0113</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_14">
+<gml:description>土堤</gml:description>
+<gml:name>0201</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_15">
+<gml:description>特殊堤</gml:description>
+<gml:name>0202</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_16">
+<gml:description>スライドゲート（スルーゲート）</gml:description>
+<gml:name>0501</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_17">
+<gml:description>ローラーゲート</gml:description>
+<gml:name>0502</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_18">
+<gml:description>フラップゲート</gml:description>
+<gml:name>0503</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_19">
+<gml:description>転倒ゲート</gml:description>
+<gml:name>0504</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_20">
+<gml:description>ゴム堰</gml:description>
+<gml:name>0505</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_21">
+<gml:description>横引きゲート</gml:description>
+<gml:name>0506</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_22">
+<gml:description>スイングゲート</gml:description>
+<gml:name>0507</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_23">
+<gml:description>マイターゲート</gml:description>
+<gml:name>0508</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_24">
+<gml:description>ラジアルゲート（テンターゲート）</gml:description>
+<gml:name>0509</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_25">
+<gml:description>芝</gml:description>
+<gml:name>0801</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_26">
+<gml:description>コンクリートブロック</gml:description>
+<gml:name>0802</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_27">
+<gml:description>蛇かご</gml:description>
+<gml:name>0803</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_28">
+<gml:description>植生</gml:description>
+<gml:name>0804</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_29">
+<gml:description>その他</gml:description>
+<gml:name>99</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="ConstructionStructureAttribute_structureType_30">
+<gml:description>不明</gml:description>
+<gml:name>0</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

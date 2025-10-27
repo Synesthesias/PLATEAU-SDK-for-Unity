@@ -8,6 +8,7 @@ using PLATEAU.Dataset;
 using PLATEAU.Geometries;
 using PLATEAU.GranularityConvert;
 using PLATEAU.PolygonMesh;
+using PLATEAU.Util;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,10 +30,10 @@ namespace PLATEAU.Samples.APISample
             var datasetConf = new DatasetSourceConfigLocal(importPath);
             // インポート対象のメッシュコード（範囲）を指定します。文字列形式の番号の配列からMeshCodeListを生成できます。
             var meshCodesStr = new string[] { "53393652" };
-            var meshCodeList = MeshCodeList.CreateFromMeshCodesStr(meshCodesStr);
+            var meshCodeList = GridCodeList.CreateFromGridCodesStr(meshCodesStr);
             // データセットやメッシュコードから、インポート設定を生成します。
             var conf = CityImportConfig.CreateWithAreaSelectResult(
-                new AreaSelectResult(new ConfigBeforeAreaSelect(datasetConf, 9), meshCodeList));
+                new AreaSelectResult(new ConfigBeforeAreaSelect(datasetConf, 9), meshCodeList, AreaSelectResult.ResultReason.Confirm));
             // ここでconfを編集することも可能ですが、このサンプルではデフォルトでインポートします。
             await CityImporter.ImportAsync(conf, null, null);
         }
@@ -59,7 +60,7 @@ namespace PLATEAU.Samples.APISample
                 return;
             }
             // エクスポートします。
-            UnityModelExporter.Export(exportDir, target, option);
+            new UnityModelExporter().Export(exportDir, target, option, new DummyProgressBar());
         }
 
         /// <summary>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_5e0034b0-ac61-4c48-817b-b1cd8bef7156">
+<gml:name>TransportationComplex_class</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_1">
+<gml:description>徒歩道等</gml:description>
+<gml:name>1020</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_2">
+<gml:description>道路</gml:description>
+<gml:name>1040</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_3">
+<gml:description>鉄道</gml:description>
+<gml:name>1060</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_4">
+<gml:description>水路</gml:description>
+<gml:name>1070</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_5">
+<gml:description>地下鉄</gml:description>
+<gml:name>1080</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="TransportationComplex_class_6">
+<gml:description>その他</gml:description>
+<gml:name>1090</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

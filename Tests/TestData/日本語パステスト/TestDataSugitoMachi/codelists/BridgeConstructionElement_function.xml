@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<gml:Dictionary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="cl_e3c905d9-af9a-4727-bb20-086b6cab49bc">
+<gml:name>BridgeConstructionElement_function</gml:name>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_1">
+<gml:description>橋脚</gml:description>
+<gml:name>01</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_2">
+<gml:description>橋台</gml:description>
+<gml:name>02</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_3">
+<gml:description>トラス</gml:description>
+<gml:name>03</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_4">
+<gml:description>アーチ</gml:description>
+<gml:name>04</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_5">
+<gml:description>吊材</gml:description>
+<gml:name>05</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_6">
+<gml:description>パイロン</gml:description>
+<gml:name>06</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+<gml:dictionaryEntry>
+<gml:Definition gml:id="BridgeConstructionElement_function_7">
+<gml:description>ケーブル</gml:description>
+<gml:name>07</gml:name>
+</gml:Definition>
+</gml:dictionaryEntry>
+</gml:Dictionary>

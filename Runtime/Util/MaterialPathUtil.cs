@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-#if UNITY_EDITOR
-#endif
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
@@ -17,15 +15,14 @@ namespace PLATEAU.Util
     {
         //ベースパス
         public static readonly string BaseMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
-        // 地図表示用のデフォルトマテリアルパス
-        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP.mat";
-        private const string MapMaterialNameUrp = "MapUnlitMaterial_URP.mat";
-
-        private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP.mat";
+        // 地図表示用のデフォルトマテリアル名
+        private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP";
+        private const string MapMaterialNameUrp = "MapUnlitMaterial_URP";
+        private const string MapMaterialNameHdrp = "MapUnlitMaterial_HDRP";
 
         public static PipeLineType GetRenderPipelineType()
         {
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
+            var pipelineAsset = GraphicsSettings.defaultRenderPipeline;
             if (pipelineAsset == null)
             {   // Built-in Render Pipeline
                 return PipeLineType.BuildIn;
@@ -42,7 +39,7 @@ namespace PLATEAU.Util
             }
         }
 
-        public static string GetMapMatPath()
+        public static string GetMapMatName()
         {
             var pipeline = GetRenderPipelineType();
             var materialFileName = pipeline switch
@@ -53,7 +50,7 @@ namespace PLATEAU.Util
                 _ => throw new Exception("Unknown pipeline type.")
             };
 
-            return Path.Combine(BaseMaterialDir, materialFileName);
+            return materialFileName;
         }
 
         
