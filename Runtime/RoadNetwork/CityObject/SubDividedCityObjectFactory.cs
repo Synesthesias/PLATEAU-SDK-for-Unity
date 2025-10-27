@@ -449,15 +449,25 @@ namespace PLATEAU.RoadNetwork.CityObject
                     Debug.Log("skipping deleted game object.");
                     continue;
                 }
+
+                // これもないと主要地物インポートの時に外れる道路があった
+                Apply(co.CachedTransform.name);
                 
                 // 主要地物単位でグルーピングする
                 foreach (var root in co.CityObjectGroup.PrimaryCityObjects)
                 {
                     progressBar.SetProgress("最小地物分解", 100f * currentWorkIndex++ / allCount, "オブジェクト分解中");
-                    var ccoChild = nameToSubDividedCityObject.GetValueOrDefault(root.GmlID);
-                    if (ccoChild == null)
-                        continue;
-                    ccoChild.SetCityObjectGroup(co.CityObjectGroup, new RnCityObjectGroupKey(root.GmlID));
+                    Apply(root.GmlID);
+                }
+
+                continue;
+
+                void Apply(string gmlId)
+                {
+                    var subDividedCityObject = nameToSubDividedCityObject.GetValueOrDefault(gmlId);
+                    if (subDividedCityObject == null)
+                        return;
+                    subDividedCityObject.SetCityObjectGroup(co.CityObjectGroup, new RnCityObjectGroupKey(gmlId));
                     if (co.CurrentMesh != co.SourceMesh)
                     {
                         try
@@ -477,7 +487,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                                         }
                                         else
                                         {
-                                            DebugEx.LogError($"Failed to get height / {ccoChild}");
+                                            DebugEx.LogError($"Failed to get height / {subDividedCityObject}");
                                         }
 
                                         m.Vertices[i] = v;
@@ -489,7 +499,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                                     Visit(c);
                                 }
                             }
-                            Visit(ccoChild);
+                            Visit(subDividedCityObject);
                         }
                         catch (Exception e)
                         {

@@ -104,14 +104,19 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnRoad() { }
         
-        public RnRoad(RnCityObjectGroupKey targetGroupKey)
+        /// <summary>
+        /// オリジナルのメッシュを含むPLATEAUCityObjectGroup, 自身が所属する主要地物キーを受け取るコンストラクタ
+        /// </summary>
+        /// <param name="targetTran"></param>
+        /// <param name="groupKey"></param>
+        public RnRoad(PLATEAUCityObjectGroup targetTran, RnCityObjectGroupKey groupKey)
         {
-            AddTargetTran(targetGroupKey);
+            AddTarget(targetTran, groupKey);
         }
 
-        public RnRoad(IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
+        public RnRoad(IEnumerable<PLATEAUCityObjectGroup> targetTrans, IEnumerable<RnCityObjectGroupKey> groupKeys)
         {
-            AddTargetTrans(targetGroupKeys);
+            AddTargets(targetTrans, groupKeys);
         }
 
         /// <summary>
@@ -768,17 +773,18 @@ namespace PLATEAU.RoadNetwork.Structure
         // ---------------
         // Static Methods
         // ---------------
-        
+
         /// <summary>
         /// 完全に孤立したロードを作成
         /// </summary>
-        /// <param name="targetTranKey"></param>
+        /// <param name="targetTran"></param>
+        /// <param name="groupKey"></param>
         /// <param name="way"></param>
         /// <returns></returns>
-        public static RnRoad CreateIsolatedRoad(RnCityObjectGroupKey targetTranKey, RnWay way)
+        public static RnRoad CreateIsolatedRoad(PLATEAUCityObjectGroup targetTran, RnCityObjectGroupKey groupKey, RnWay way)
         {
             var lane = RnLane.CreateOneWayLane(way);
-            var ret = new RnRoad(targetTranKey);
+            var ret = new RnRoad(targetTran, groupKey);
             ret.AddMainLane(lane);
             return ret;
         }
@@ -786,12 +792,13 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 一方通行のロード作成
         /// </summary>
-        /// <param name="targetTranKey"></param>
+        /// <param name="targetTran"></param>
+        /// <param name="groupKey"></param>
         /// <param name="lane"></param>
         /// <returns></returns>
-        public static RnRoad CreateOneLaneRoad(RnCityObjectGroupKey targetTranKey, RnLane lane)
+        public static RnRoad CreateOneLaneRoad(PLATEAUCityObjectGroup targetTran, RnCityObjectGroupKey groupKey, RnLane lane)
         {
-            var ret = new RnRoad(targetTranKey);
+            var ret = new RnRoad(targetTran, groupKey);
             ret.AddMainLane(lane);
             return ret;
         }
@@ -1095,7 +1102,7 @@ namespace PLATEAU.RoadNetwork.Structure
             // トラックを生成しなおす
             intersection.BuildTracks(BuildTrackOption.WithBorder(oppositeBorders.Select(x => x.LineString).ToHashSet()));
 
-            intersection.AddTargetTrans(self.TargetGroupKeys);
+            intersection.AddTargets(self.TargetTrans, self.TargetGroupKeys);
             self.DisConnect(true);
             return true;
         }

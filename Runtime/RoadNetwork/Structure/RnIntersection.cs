@@ -314,14 +314,19 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnIntersection() { }
 
-        public RnIntersection(RnCityObjectGroupKey targetGroupKey)
+        /// <summary>
+        /// オリジナルのメッシュを含むPLATEAUCityObjectGroup, 自身が所属する主要地物キーを受け取るコンストラクタ
+        /// </summary>
+        /// <param name="targetTran"></param>
+        /// <param name="groupKey"></param>
+        public RnIntersection(PLATEAUCityObjectGroup targetTran, RnCityObjectGroupKey groupKey)
         {
-            AddTargetTran(targetGroupKey);
+            AddTarget(targetTran, groupKey);
         }
 
-        public RnIntersection(IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
+        public RnIntersection(IEnumerable<PLATEAUCityObjectGroup> targetTrans, IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
         {
-           AddTargetTrans(targetGroupKeys);
+            AddTargets(targetTrans, targetGroupKeys);
         }
         
         /// <summary>

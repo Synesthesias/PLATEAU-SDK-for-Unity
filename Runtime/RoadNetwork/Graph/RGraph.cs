@@ -683,6 +683,12 @@ namespace PLATEAU.RoadNetwork.Graph
         //----------------------------------
 
         /// <summary>
+        /// 元のメッシュが所属していたPLATEAUCityObjectGroup
+        /// </summary>
+        [SerializeField]
+        private PLATEAUCityObjectGroup cityObjectGroup;
+        
+        /// <summary>
         /// 対応する主要地物キー
         /// </summary>
         [SerializeField]
@@ -725,6 +731,11 @@ namespace PLATEAU.RoadNetwork.Graph
         public RGraph Graph => graph;
 
         /// <summary>
+        /// 元のメッシュが所属していたPLATEAUCityObjectGroup
+        /// </summary>
+        public PLATEAUCityObjectGroup CityObjectGroup => cityObjectGroup;
+        
+        /// <summary>
         /// 対応する主要地物の道路モデルを表すキー
         /// </summary>
         public RnCityObjectGroupKey PrimaryCityObjectGroupKey => primaryCityObjectGroupKey;
@@ -732,11 +743,11 @@ namespace PLATEAU.RoadNetwork.Graph
         // 有効なポリゴンかどうか
         public bool IsValid => edges.Count > 0;
 
-        public RFace(RGraph graph, RnCityObjectGroupKey primaryCityObjectGroupKey, RRoadTypeMask roadType, int lodLevel)
+        public RFace(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RnCityObjectGroupKey primaryCityObjectGroupKey, RRoadTypeMask roadType, int lodLevel)
         {
             RoadTypes = roadType;
             LodLevel = lodLevel;
-            //this.cityObjectGroup = cityObjectGroup;
+            this.cityObjectGroup = cityObjectGroup;
             this.primaryCityObjectGroupKey = primaryCityObjectGroupKey;
             this.graph = graph;
         }
@@ -937,12 +948,15 @@ namespace PLATEAU.RoadNetwork.Graph
     {
         public RGraph Graph { get; }
 
-        //public PLATEAUCityObjectGroup CityObjectGroup { get; }
+        /// <summary>
+        /// 元のメッシュが所属していたPLATEAUCityObjectGroup
+        /// </summary>
+        public PLATEAUCityObjectGroup CityObjectGroup { get; }
         
         /// <summary>
         /// グルーピング用の主要地物のグループキー
         /// </summary>
-        public RnCityObjectGroupKey CityObjectGroup { get; }
+        public RnCityObjectGroupKey PrimaryCityObjectGroupKey { get; }
 
         public HashSet<RFace> Faces { get; } = new HashSet<RFace>();
 
@@ -968,10 +982,11 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        public RFaceGroup(RGraph graph, RnCityObjectGroupKey cityObjectGroup, IEnumerable<RFace> faces)
+        public RFaceGroup(RGraph graph, PLATEAUCityObjectGroup cityObjectGroup, RnCityObjectGroupKey primaryCityObjectGroupKey, IEnumerable<RFace> faces)
         {
             Graph = graph;
             CityObjectGroup = cityObjectGroup;
+            PrimaryCityObjectGroupKey = primaryCityObjectGroupKey;
             foreach (var face in faces)
                 Faces.Add(face);
         }

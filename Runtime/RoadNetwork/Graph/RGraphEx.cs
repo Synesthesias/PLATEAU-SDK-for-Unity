@@ -46,22 +46,22 @@ namespace PLATEAU.RoadNetwork.Graph
             }
         }
 
-        public static RGraph Create(List<(SubDividedCityObject cityObjects, Matrix4x4 mat)> cityObjects, bool useOutline)
+        public static RGraph Create(List<(SubDividedCityObject subObject, Matrix4x4 mat)> cityObjects, bool useOutline)
         {
             var graph = new RGraph();
             Dictionary<Vector3, RVertex> vertexMap = new Dictionary<Vector3, RVertex>();
             Dictionary<EdgeKey, REdge> edgeMap = new Dictionary<EdgeKey, REdge>();
             foreach (var item in cityObjects)
             {
-                var cityObject = item.cityObjects;
+                var subObject = item.subObject;
 
-                var lodLevel = cityObject.GetLodLevel();
-                var roadType = cityObject.GetRoadType(true);
+                var lodLevel = subObject.GetLodLevel();
+                var roadType = subObject.GetRoadType(true);
                 // transformを適用する
                 var mat = item.mat;
-                foreach (var mesh in cityObject.Meshes)
+                foreach (var mesh in subObject.Meshes)
                 {
-                    var face = new RFace(graph, cityObject.PrimaryCityObjectGroupKey, roadType, lodLevel);
+                    var face = new RFace(graph, subObject.CityObjectGroup, subObject.PrimaryCityObjectGroupKey, roadType, lodLevel);
                     var vertices = mesh.Vertices.Select(v =>
                     {
                         var v4 = mat * v.Xyza(1f);
@@ -598,8 +598,8 @@ namespace PLATEAU.RoadNetwork.Graph
                         foreach (var f in queue)
                             faces.Remove(f);
                     }
-
-                    ret.Add(new RFaceGroup(self, group.Key, g));
+                    // 主要地物のキーでグルーピングされているので、facesのCityObjectGroupはすべて同じはず
+                    ret.Add(new RFaceGroup(self, faces.FirstOrDefault()?.CityObjectGroup, group.Key, g));
                 }
 
             }
@@ -959,7 +959,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
             for (var i = 1; i < separatedEdges.Count; i++)
             {
-                var face = new RFace(self.Graph, self.PrimaryCityObjectGroupKey, self.RoadTypes, self.LodLevel);
+                var face = new RFace(self.Graph, self.CityObjectGroup, self.PrimaryCityObjectGroupKey, self.RoadTypes, self.LodLevel);
                 foreach (var e in separatedEdges[i])
                     face.AddEdge(e);
                 self.Graph.AddFace(face);
@@ -1152,7 +1152,7 @@ namespace PLATEAU.RoadNetwork.Graph
 
                 var neighborCityObjects = e.Faces
                     .Select(f => f.PrimaryCityObjectGroupKey)
-                    .Where(co => co != faceGroup.CityObjectGroup)
+                    .Where(co => co != faceGroup.PrimaryCityObjectGroupKey)
                     .ToHashSet();
                 if (neighborCityObjectGroupsFilter != null)
                     neighborCityObjects.IntersectWith(neighborCityObjectGroupsFilter);
@@ -1200,7 +1200,7 @@ namespace PLATEAU.RoadNetwork.Graph
             if (self.Edges.Count < 3)
                 return false;
 
-            var faceGroup = new RFaceGroup(self.Graph, self.PrimaryCityObjectGroupKey, new[] { self });
+            var faceGroup = new RFaceGroup(self.Graph, self.CityObjectGroup, self.PrimaryCityObjectGroupKey, new[] { self });
             return TryGroupBySideWalkEdge(faceGroup, out edgeGroups, neighborCityObjectGroupsFilter);
         }
 
@@ -1313,7 +1313,7 @@ namespace PLATEAU.RoadNetwork.Graph
             if (TryGroupBySideWalkEdge(self, out var ways, neighborCityObjectGroupsFilter) == false)
                 return false;
 
-            return SplitSideWalkEdge(self.CityObjectGroup, ref outsideEdges, ref insideEdges, ref startEdges, ref endEdges, ways);
+            return SplitSideWalkEdge(self.PrimaryCityObjectGroupKey, ref outsideEdges, ref insideEdges, ref startEdges, ref endEdges, ways);
         }
 
         /// <summary>
@@ -1360,7 +1360,7 @@ namespace PLATEAU.RoadNetwork.Graph
             var newGraph = new RGraph();
             foreach (var face in srcFaces)
             {
-                var newFace = new RFace(newGraph, face.PrimaryCityObjectGroupKey, face.RoadTypes, face.LodLevel);
+                var newFace = new RFace(newGraph, face.CityObjectGroup, face.PrimaryCityObjectGroupKey, face.RoadTypes, face.LodLevel);
 
                 foreach (var srcEdge in face.Edges)
                     newFace.AddEdge(edgeMap[srcEdge]);
@@ -1530,7 +1530,7 @@ namespace PLATEAU.RoadNetwork.Graph
             {
                 if (ignoreHighWay && fg.RoadTypes.IsHighWay())
                     continue;
-                var face = new RFace(newGraph, fg.CityObjectGroup, fg.RoadTypes, fg.MaxLodLevel);
+                var face = new RFace(newGraph, fg.CityObjectGroup, fg.PrimaryCityObjectGroupKey, fg.RoadTypes, fg.MaxLodLevel);
                 var vertices = fg.ComputeOutlineVertices(f => true);
 
                 for (var i = 0; i < vertices.Count; ++i)

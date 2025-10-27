@@ -239,25 +239,12 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
 
-        // #NOTE : 後方互換のために残しておく
         /// <summary>
         /// 自身がもともとどのPLATEAUCityObjectGroupに属していたか
         /// </summary>
         [field: SerializeField]
-        private PLATEAUCityObjectGroup CityObjectGroup { get; set; }
+        public PLATEAUCityObjectGroup CityObjectGroup { get; set; }
 
-        /// <summary>
-        /// メッシュをワールド座標へ変換するマトリクス
-        /// </summary>
-        public Matrix4x4 LocalToWorldMatrix
-        {
-            get
-            {
-                return CityObjectGroup ? CityObjectGroup.transform.localToWorldMatrix : Matrix4x4.identity;
-            }
-        }
-        
-        
         /// <summary>
         /// 自分が属する主要地物のキー
         /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
@@ -282,7 +269,19 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public RRoadTypeMask ParentRoadType { get; private set; } = RRoadTypeMask.Empty;
 
+        /// <summary>
+        /// シリアライズされたjson情報
+        /// </summary>
         public string SerializedCityObjects => serializedCityObjects;
+        
+        /// <summary>
+        /// メッシュをワールド座標へ変換するマトリクス
+        /// </summary>
+        public Matrix4x4 LocalToWorldMatrix
+        {
+            get => CityObjectGroup ? CityObjectGroup.transform.localToWorldMatrix : Matrix4x4.identity;
+        }
+
 
         public CityInfo.CityObjectList CityObjects
         {

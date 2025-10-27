@@ -188,8 +188,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
 
             public override IEnumerable<RnCityObjectGroupKey> GetTargetGameObjects(RFaceGroup self)
             {
-                if (self.CityObjectGroup)
-                    yield return self.CityObjectGroup;
+                if (self.PrimaryCityObjectGroupKey)
+                    yield return self.PrimaryCityObjectGroupKey;
             }
 
         }
@@ -676,7 +676,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             foreach (var f in faceGroups)
             {
                 RnDebugDrawerBase.VisibleType visibleType;
-                if (SelectedObjects.Any(obj => f.CityObjectGroup.EqualAny(obj as PLATEAUCityObjectGroup)))
+                if (SelectedObjects.Any(obj => f.PrimaryCityObjectGroupKey.EqualAny(obj as PLATEAUCityObjectGroup)))
                 {
                     visibleType = RnDebugDrawerBase.VisibleType.GuiSelected;
                 }
