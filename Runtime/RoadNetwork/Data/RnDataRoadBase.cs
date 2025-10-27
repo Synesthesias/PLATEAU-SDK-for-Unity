@@ -21,7 +21,7 @@ namespace PLATEAU.RoadNetwork.Data
         
         [field:SerializeField]
         [RoadNetworkSerializeMember]
-        public List<RnCityObjectGroupKey> GroupKeys { get; set; } = new List<RnCityObjectGroupKey>();
+        public List<RnCityObjectGroupKey> TargetGroupKeys { get; set; } = new List<RnCityObjectGroupKey>();
 
         [field: SerializeField]
         [RoadNetworkSerializeMember("sideWalks")]
