@@ -179,8 +179,6 @@ namespace PLATEAU.RoadNetwork.Util
 
             public virtual IEnumerable<PLATEAUCityObjectGroup> GetTargetGameObjects(T self) => null;
             
-            
-
             public virtual bool IsShowTarget(TWork work, T self)
             {
                 return true;
