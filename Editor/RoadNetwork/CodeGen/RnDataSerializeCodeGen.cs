@@ -439,6 +439,8 @@ namespace PLATEAU.Editor.RoadNetwork.CodeGen
         public static void GenerateRnDataCollectCode()
         {
             string thisFilePath = GetScriptPath<RnDataSerializeCodeGen>();
+            if (string.IsNullOrEmpty(thisFilePath))
+                return;
             var path = Path.Combine(Path.GetDirectoryName(thisFilePath),
                 "../../../Runtime/RoadNetwork/Structure/RnModel.generated.cs");
             if (File.Exists(path) == false)
