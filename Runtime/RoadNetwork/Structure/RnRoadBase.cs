@@ -265,18 +265,6 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
             }
         }
-
-
-        /// <summary>
-        /// デシリアライズ後に呼ばれる
-        /// </summary>
-        public virtual void OnAfterDeserialize()
-        {
-            if (TargetGroupKeys.Any() == false)
-            {
-                
-            }
-        }
     }
 
     public static class RnRoadBaseEx
