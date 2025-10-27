@@ -849,7 +849,7 @@ namespace PLATEAU.RoadNetwork.Graph
         {
             if (dst.PrimaryCityObjectGroupKey && PrimaryCityObjectGroupKey && dst.PrimaryCityObjectGroupKey != PrimaryCityObjectGroupKey)
             {
-                Debug.LogWarning($"CityObjectGroupが異なるFaceは統合できません. {PrimaryCityObjectGroupKey} != {dst.PrimaryCityObjectGroupKey}");
+                Debug.LogWarning($"PrimaryCityObjectGroupKeyが異なるFaceは統合できません. {PrimaryCityObjectGroupKey} != {dst.PrimaryCityObjectGroupKey}");
                 return false;
             }
 

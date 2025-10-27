@@ -676,7 +676,7 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             foreach (var f in faceGroups)
             {
                 RnDebugDrawerBase.VisibleType visibleType;
-                if (SelectedObjects.Any(obj => f.PrimaryCityObjectGroupKey.EqualAny(obj as PLATEAUCityObjectGroup)))
+                if (SelectedObjects.Contains(f.CityObjectGroup))
                 {
                     visibleType = RnDebugDrawerBase.VisibleType.GuiSelected;
                 }

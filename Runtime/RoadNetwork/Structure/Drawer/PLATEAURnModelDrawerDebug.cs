@@ -46,7 +46,7 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
         [SerializeField] public float edgeOffset = 0f;
         [SerializeField] public float yScale = 1f;
         // このオブジェクトに紐づくものだけ表示する
-        [SerializeField] public PLATEAUCityObjectGroup targetTran;
+        [SerializeField] public PLATEAUCityObjectGroup targetTran = null;
         [SerializeField] public RnPartsTypeMask showPartsType = 0;
 
         [SerializeField] public bool check = false;
@@ -313,14 +313,14 @@ namespace PLATEAU.RoadNetwork.Structure.Drawer
                         if (fromRoadType != VisibleType.All)
                         {
                             var fromRoad = intersection.FindEdges(track.FromBorder).FirstOrDefault()?.Road;
-                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetGroupKeys)) == 0)
+                            if ((fromRoadType & work.GetVisibleType(fromRoad, fromRoad?.TargetTrans)) == 0)
                                 return false;
                         }
 
                         if (toRoadType != VisibleType.All)
                         {
                             var toRoad = intersection.FindEdges(track.ToBorder).FirstOrDefault()?.Road;
-                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetGroupKeys)) == 0)
+                            if ((toRoadType & work.GetVisibleType(toRoad, toRoad?.TargetTrans)) == 0)
                                 return false;
                         }
 

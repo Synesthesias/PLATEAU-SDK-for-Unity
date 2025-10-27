@@ -113,10 +113,5 @@ namespace PLATEAU.Editor.RoadNetwork
                 foldoutObjects.Remove(obj);
             return isNextVisible;
         }
-
-        public static void RnCityObjectGroupField(RnCityObjectGroupKey self)
-        {
-            EditorGUILayout.LabelField(self.GmlId);
-        }
     }
 }
