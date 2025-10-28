@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
@@ -158,18 +159,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         private void AddTileFromSelection()
         {
-            var selectionNames = Selection.gameObjects ?
-                .Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName))
-                .Where(t => t != null)
-                .Select(t => t.name)
-                .ToList();
+            var gos = Selection.gameObjects ?? Array.Empty<GameObject>();
+            var selectionNameSet = new HashSet<string>(
+            gos.Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName))
+                       .Where(t => t != null)
+                       .Select(t => t.name)
+                );
 
-            tileNameElements.ForEach(e =>
+            foreach (var e in tileNameElements)
             {
-                if (!e.IsSelected && selectionNames.Contains(e.TileName))
+                if (!e.IsSelected && selectionNameSet.Contains(e.TileName))
                     e.IsSelected = true;
-            });
-
+            }
         }
 
         /// <summary>
@@ -553,11 +554,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task AddFromSelectionAsync(List<TileNameElementContainer> tileNameElements)
         {
-            var tileNames = Selection.gameObjects ?
-                .Select(x => (t: x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName), x.transform))
-                .Where(p => p.t != null)
-                .Select(p => (p.t.name, p.transform))
-                .ToList() ?? new List<(string name, Transform transform)>();
+            var gos = Selection.gameObjects ?? Array.Empty<GameObject>();
+            var tileNames = gos
+                    .Select(x => (t: x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName), x.transform))
+                    .Where(p => p.t != null)
+                    .Select(p => (p.t.name, p.transform))
+                    .ToList();
 
             foreach (var elem in tileNameElements)
             {
