@@ -17,7 +17,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// <summary>
     /// タイル選択ウィンドウです。
     /// </summary>
-    internal class TileSelectWindow : PlateauWindowBaseNoScroll, IPackageSelectResultReceiver
+    internal class TileSelectWindow : PlateauWindowBase, IPackageSelectResultReceiver
     {
         private PackageSelectGui gui;
         private bool isInitialized;
@@ -34,6 +34,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Button fromSelectionButton;
         private Button fromPackageButton;
         private ScrollView scrollView;
+
+        protected override bool UseScrollView => false; // 基底クラスのスクロールビューを使用
 
         private List<TileNameElementContainer> tileNameElements; // スクロールバー内のタイル名要素リスト
 

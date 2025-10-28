@@ -18,23 +18,24 @@ namespace PLATEAU.Editor.Window.Main
         /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
         protected abstract VisualElementDisposable CreateGui();
 
+        /// <summary> スクロールビューを使うかどうか。サブクラスでオーバーライド可能。 </summary>
+        protected virtual bool UseScrollView => true;
+
         private void CreateGUI()
         {
-            var scrollView = new ScrollView
+            var container = UseScrollView ? new ScrollView
             {
                 viewDataKey = "plateau-window-scroll-view",
                 horizontalScrollerVisibility = ScrollerVisibility.Hidden,
-                verticalScrollerVisibility = ScrollerVisibility.Auto,  // 垂直スクロールを表示
-                style =
-                {
-                    flexGrow = 1 // 利用可能な空間いっぱいに広がる
-                }
-            };
+                verticalScrollerVisibility = ScrollerVisibility.Auto,
+                style = { flexGrow = 1 }
+            }
+            : new VisualElement { style = { flexGrow = 1 } };
 
-            scrollView.Add(new IMGUIContainer(DrawImgui));
+            container.Add(new IMGUIContainer(DrawImgui));
             gui = CreateGui();
-            scrollView.Add(gui.VisualElement);
-            rootVisualElement.Add(scrollView);
+            container.Add(gui.VisualElement);
+            rootVisualElement.Add(container);
             rootVisualElement.Add(new PlateauWindowFooterGui().CreateGui());
         }
 
@@ -48,36 +49,6 @@ namespace PLATEAU.Editor.Window.Main
             gui?.Dispose();
         }
         
-    }
-
-    /// <summary>
-    /// スクロール機能を持たないPLATEAU SDKのEditorWindowが共通で備えているべき機能をまとめたものです。
-    /// </summary>
-    internal abstract class PlateauWindowBaseNoScroll : EditorWindow
-    {
-        private VisualElementDisposable gui;
-
-        /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
-        protected abstract VisualElementDisposable CreateGui();
-
-        private void CreateGUI()
-        {
-            rootVisualElement.Add(new IMGUIContainer(DrawImgui));
-            gui = CreateGui();
-            rootVisualElement.Add(gui.VisualElement);
-            rootVisualElement.Add(new PlateauWindowFooterGui().CreateGui());
-        }
-
-        private void DrawImgui()
-        {
-            PlateauEditorStyle.SetCurrentWindow(this);
-        }
-
-        private void OnDestroy()
-        {
-            gui?.Dispose();
-        }
-
     }
 
     internal class VisualElementDisposable
