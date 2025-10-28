@@ -185,7 +185,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         private void DrawNumSelection()
         {
-            var numSelection = Selection.gameObjects.Length.ToString();
+            var numSelection = (Selection.gameObjects?.Length ?? 0).ToString();
             fromSelectionButton.text = $"選択中の{numSelection}個を追加";
         }
 
@@ -499,7 +499,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 cts.Cancel();
                 cts.Dispose();
             }
-            cts = new CancellationTokenSource();
+            var localCts = new CancellationTokenSource();
+            cts = localCts;
 
             var treeView = container.TreeView;
             container.SetTreeViewState(TileNameElementContainer.TreeViewState.Loading);
@@ -507,7 +508,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             try
             {
                 var addresses = new List<string>() { container.TileName };
-                var loadedTiles = await tileManager.ForceLoadTiles(addresses, cts.Token);
+                var loadedTiles = await tileManager.ForceLoadTiles(addresses, localCts.Token);
 
                 await Task.Delay(100); // UI更新のため少し待機
                 await Task.Yield();
@@ -539,8 +540,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
             finally
             {
-                cts?.Dispose();
-                cts = null;
+                localCts?.Dispose();
+                if (cts == localCts)
+                    cts = null;
             }
         }
 
@@ -555,7 +557,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 .Select(x => (t: x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName), x.transform))
                 .Where(p => p.t != null)
                 .Select(p => (p.t.name, p.transform))
-                .ToList();
+                .ToList() ?? new List<(string name, Transform transform)>();
 
             foreach (var elem in tileNameElements)
             {
