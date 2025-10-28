@@ -3,6 +3,7 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -262,6 +263,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 tileNameElements.Clear();
             }
 
+            Selection.selectionChanged -= DrawNumSelection;
+
             treeViewItemBuilder?.Dispose();
 
             gui?.Dispose();
@@ -378,44 +381,45 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 treeLabel.text = treeItem.name;
                 //label.text = treeItem.GetFullPath();
 
-                // イベントは生成時に一度だけ登録
-                if ( element.userData == null)
+                // トップのみボタン表示
+                if (treeItem.parent != null)
                 {
-                    treeLabel.RegisterCallback<ClickEvent>(OnElementClick);
-                    element.RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel); // メモリリーク防止
-
-                    // トップのみボタン表示
-                    if (treeItem.parent != null)
-                        treeHideButton.visible = false;
-                    else
-                    {
-                        treeToggle.value = toggle.value; // 親の選択状態に合わせる
-                        treeHideButton.clicked -= OnTreeHideClick;
-                        treeHideButton.clicked += OnTreeHideClick;
-                    }
-
-                    void OnElementClick(ClickEvent evt)
-                    {
-                        treeToggle.SetValueWithoutNotify(!treeToggle.value);
-                        Debug.Log($"Clicked on {treeItem.name}, selected:{treeToggle.value}");
-                        evt.StopPropagation();
-                    }
-
-                    void OnTreeHideClick()
-                    {
-                        SetTreeViewState(TreeViewState.Hide);
-                        toggle.value = treeToggle.value; // 親の選択状態に合わせる
-                    }
-
-                    void OnDetachFromPanel(DetachFromPanelEvent evt)
-                    {
-                        element.UnregisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
-                        treeLabel.UnregisterCallback<ClickEvent>(OnElementClick);
-                        treeHideButton.clicked -= OnTreeHideClick;
-                    }
-
-                    element.userData = true; // 一度だけ登録するためのフラグ
+                    treeHideButton.visible = false;
                 }
+                else
+                {
+                    treeToggle.value = toggle.value;
+                    treeHideButton.visible = true;
+                    treeHideButton.clicked += OnTreeHideClick;
+                }
+
+                // 既存のコールバックをクリア（リサイクル対策）
+                if (element.userData is System.Action cleanup)
+                {
+                    cleanup();
+                }
+                
+                void OnElementClick(ClickEvent evt)
+                {
+                    treeToggle.SetValueWithoutNotify(!treeToggle.value);
+                    evt.StopPropagation();
+                }
+                
+                void OnTreeHideClick()
+                {
+                    SetTreeViewState(TreeViewState.Hide);
+                    toggle.value = treeToggle.value;
+                }
+                
+                // 新しいコールバックを登録
+                treeLabel.RegisterCallback<ClickEvent>(OnElementClick);
+                
+                // クリーンアップ関数を保存
+                element.userData = (System.Action)(() =>
+                {
+                    treeLabel.UnregisterCallback<ClickEvent>(OnElementClick);
+                    treeHideButton.clicked -= OnTreeHideClick;
+                });
             };
         }
 
@@ -556,20 +560,19 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 if (elem == null) continue;
 
                 var matches = tileNames.Where(item => item.name == elem.TileName).ToList();
+                if(matches.Count == 0) continue;
+
+                await LoadAndDisyplayHierarchyAsync(elem);
+                await Task.Yield();
+                await Task.Delay(100); // UI更新のため少し待機
+
                 foreach (var match in matches)
                 {
-                    await LoadAndDisyplayHierarchyAsync(elem);
-                    await Task.Yield();
-                    await Task.Delay(100); // UI更新のため少し待機
-
-                    foreach (var selection in tileNames)
+                    var path = match.transform.GetPathToParent(match.name);
+                    // 子要素のうち、選択中のオブジェクトに対応するものを選択状態にする
+                    foreach (var item in elem.treeViewItemData)
                     {
-                        var path = selection.transform.GetPathToParent(selection.name);
-                        // 子要素のうち、選択中のオブジェクトに対応するものを選択状態にする
-                        foreach (var item in elem.treeViewItemData)
-                        {
-                            SelectChildRecursive(item, path, elem);
-                        }
+                        SelectChildRecursive(item, path, elem);
                     }
                 }
             }

@@ -331,7 +331,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             {
                 var result = await ExecGranularityConvertMainAsync();
                 // 失敗時は処理中断
-                if (result.GeneratedRootTransforms == null || result.GeneratedRootTransforms.Count == 0)
+                if (!result.IsSucceed || result.GeneratedRootTransforms == null || result.GeneratedRootTransforms.Count == 0)
                 {
                     return new UniqueParentTransformList();
                 }
