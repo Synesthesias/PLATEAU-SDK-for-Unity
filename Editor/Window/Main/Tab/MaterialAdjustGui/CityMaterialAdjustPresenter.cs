@@ -330,6 +330,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             if (doChangeGranularity)
             {
                 var result = await ExecGranularityConvertMainAsync();
+                // 失敗時は処理中断
+                if (result.GeneratedRootTransforms == null || result.GeneratedRootTransforms.Count == 0)
+                {
+                    return new UniqueParentTransformList();
+                }
                 // 次のマテリアル分けの設定値を差し替え
                 conf.DoDestroySrcObjs = true;
                 conf.TargetTransforms = result.GeneratedRootTransforms;

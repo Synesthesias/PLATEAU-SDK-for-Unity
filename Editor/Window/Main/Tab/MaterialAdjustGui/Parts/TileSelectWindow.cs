@@ -212,11 +212,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <param name="result"></param>
         public void ReceivePackageSelectResult(PackageSelectResult result)
         {
-            foreach(var package in result.SelectedDict)
+            foreach (var package in result.SelectedDict)
             {
                 if (!package.Value) continue;
                 var tilesInPackage = tileManager.DynamicTiles.Where(t => t.Package == package.Key).Select(t => t.Address).ToList();
-                tileNameElements.ForEach(e => e.IsSelected = tilesInPackage.Contains(e.TileName));
+                tileNameElements.ForEach(e => 
+                {
+                    if (tilesInPackage.Contains(e.TileName)) e.IsSelected = true;
+                });
             }
         }
 
@@ -530,7 +533,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
             finally
             {
-                cts.Dispose();
+                cts?.Dispose();
                 cts = null;
             }
         }

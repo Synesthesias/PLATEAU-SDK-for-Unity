@@ -395,7 +395,10 @@ namespace PLATEAU.DynamicTile
                     DebugLog($"ForceLoadTiles: タイムアウトしました");
                     break;
                 }
-                await Task.Delay(50).ConfigureAwait(false);
+                // すでに全タイルが実体化済みなら早期終了
+                if (tiles.All(t => t.LoadedObject != null)) break;
+                await Task.Yield();                // メインスレッドに制御を返す
+                await Task.Delay(50, token);       // 同期コンテキスト維持
             }
 
             return tiles;
