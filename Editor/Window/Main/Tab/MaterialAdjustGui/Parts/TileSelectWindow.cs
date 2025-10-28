@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static PlasticGui.LaunchDiffParameters;
 
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
@@ -307,7 +308,17 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             set {
                 toggle.value = value;
                 if (toggle.value == true)
+                {
                     SetTreeViewState(TreeViewState.Hide);
+                    // 親が選択された場合、子要素の選択をクリア
+                    if (treeViewItemData != null)
+                    {
+                        foreach (var item in treeViewItemData)
+                        {
+                            ClearChildSelectionRecursive(item);
+                        }
+                    }
+                }    
             }
         }
 
@@ -360,6 +371,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         public List<TreeViewItemData<TreeViewItemBuilder.TransformTreeItem>> treeViewItemData { get; set; }
 
+        /// <summary>
+        /// TreeView内の子要素選択を再帰的にクリアします。
+        /// </summary>
+        /// <param name="item"></param>
+        private void ClearChildSelectionRecursive(TreeViewItemData<TreeViewItemBuilder.TransformTreeItem> item)
+        {
+            item.data.IsSelected = false;
+            foreach (var child in item.children)
+            {
+                ClearChildSelectionRecursive(child);
+            }
+        }
 
         public Func<VisualElement> GetTreeViewMakeItem()
         {
@@ -580,6 +603,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 await LoadAndDisyplayHierarchyAsync(elem);
                 await Task.Yield();
                 await Task.Delay(100); // UI更新のため少し待機
+
+                if (elem.treeViewItemData == null) continue;
 
                 foreach (var match in matches)
                 {
