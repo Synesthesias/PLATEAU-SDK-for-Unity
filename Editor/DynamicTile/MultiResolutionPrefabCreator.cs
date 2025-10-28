@@ -219,9 +219,13 @@ namespace PLATEAU.DynamicTile
             var clone = Object.Instantiate(target);
             clone.name = target.name;
 
+            target.SetActive(false);
+            
+
             var materialList = new List<Material[]>();
             if (denominator == 4)
             {
+
                 var lod1 = clone.transform.Find("LOD1");
                 var lod2 = clone.transform.Find("LOD2");
                 if (lod1 != null && lod2 != null)
@@ -231,6 +235,7 @@ namespace PLATEAU.DynamicTile
                     service.Execute(tmpCamera,clone);
                     Object.DestroyImmediate(tmpCamera.gameObject);
                 }
+                target.SetActive(true);
             }
             else
             {

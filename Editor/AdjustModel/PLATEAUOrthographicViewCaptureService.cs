@@ -3,6 +3,7 @@ using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -116,7 +117,7 @@ namespace PLATEAU.Editor.AdjustModel
             /// <summary>
             /// LOD情報
             /// </summary>
-            public Dictionary<float, GameObject> Lods { get; } = new Dictionary<float, GameObject>();
+            public Dictionary<int, GameObject> Lods { get; } = new Dictionary<int, GameObject>();
 
             /// <summary>
             /// 最大Lod
@@ -240,7 +241,7 @@ namespace PLATEAU.Editor.AdjustModel
                 var list = ret.GetValueOrCreate(meshCode);
                 // key : gameObject名
                 // value : { key : LOD番号, value : そのGameObject}
-                Dictionary<string, Dictionary<float, GameObject>> objectLodTable = new();
+                Dictionary<string, Dictionary<int, GameObject>> objectLodTable = new();
                 foreach (var child in tr.GetChildren())
                 {
                     var m = Regex.Match(child.name, @"LOD(\d+)");
@@ -289,6 +290,23 @@ namespace PLATEAU.Editor.AdjustModel
         public void SwitchLod1Visible(GameObject model, bool isLod1Visible)
         {
             var buildings = GetBuildings(model);
+            var sb = new StringBuilder();
+            foreach (var kvp in buildings)
+            {
+                sb.AppendLine($"MeshCode: {kvp.Key}, BuildingCount: {kvp.Value.Count}");
+                foreach (var vBuildingInfo in kvp.Value)
+                {
+                    sb.AppendLine("\tBuilding Name: " + vBuildingInfo.Name);
+                    foreach (var lod in vBuildingInfo.Lods)
+                    {
+                        sb.AppendLine($"\t\tLOD{lod.Key}: {lod.Value.name}");
+                    }
+                }
+            }
+
+            sb.AppendLine("作業開始");
+            
+            
             foreach (var m in buildings.Values.SelectMany(x => x))
             {
                 // LOD1を表示する場合, Lod1以下で最大のものを表示
@@ -298,6 +316,7 @@ namespace PLATEAU.Editor.AdjustModel
                     foreach (var x in m.Lods)
                     {
                         x.Value.SetActive(x.Key == maxLod);
+                        sb.AppendLine($"\tLOD{x.Key} Visible: {x.Value.activeSelf}");
                     }
                 }
                 // そうじゃない場合は最大のLODを表示する
@@ -306,10 +325,13 @@ namespace PLATEAU.Editor.AdjustModel
                     var maxLod = m.Lods.Keys.Max();
                     foreach (var x in m.Lods)
                     {
-                        x.Value.SetActive(x.Key == maxLod);
+                        var active = isDynamicTileMode ? x.Key != 1 : x.Key == maxLod;
+                        x.Value.SetActive(active);
+                        sb.AppendLine($"\tLOD{x.Key} Visible: {x.Value.activeSelf}");
                     }
                 }
             }
+            Debug.Log(sb.ToString());
         }
 
         /// <summary>
@@ -373,7 +395,9 @@ namespace PLATEAU.Editor.AdjustModel
                 Bounds combinedBounds = CalculateCombinedBounds(item.Value);
 
                 var request = new CaptureRequest(item.Key, combinedBounds, pixelsPerMeter);
-
+                
+                camera.Render();
+                
                 // テクスチャのキャプチャ
                 CaptureAllFaces(request, camera);
 
