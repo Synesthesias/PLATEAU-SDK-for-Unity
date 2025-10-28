@@ -19,7 +19,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     /// </summary>
     internal class TileSelectWindow : PlateauWindowBase, IPackageSelectResultReceiver
     {
-        private PackageSelectGui gui;
         private bool isInitialized;
 
         private PLATEAUTileManager tileManager;
@@ -35,7 +34,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Button fromPackageButton;
         private ScrollView scrollView;
 
-        protected override bool UseScrollView => false; // 基底クラスのスクロールビューを使用
+        protected override bool UseScrollView => false; // スクロールビューを使用しない
 
         private List<TileNameElementContainer> tileNameElements; // スクロールバー内のタイル名要素リスト
 
@@ -268,8 +267,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             Selection.selectionChanged -= DrawNumSelection;
 
             treeViewItemBuilder?.Dispose();
-
-            gui?.Dispose();
         }
     }
 
