@@ -3,14 +3,12 @@ using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
 
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
@@ -381,8 +379,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 var treeLabel = element.Q<Label>(TREEVIEW_LABEL);
                 var treeToggle = element.Q<Toggle>(TREEVIEW_TOGGLE);
                 var treeHideButton = element.Q<Button>(TREEVIEW_BUTTON_HIDE);
+
+                // 既存のコールバックをクリア（リサイクル対策）
+                if (element.userData is System.Action cleanup)
+                    cleanup();
+                
                 treeLabel.text = treeItem.name;
                 //label.text = treeItem.GetFullPath();
+
+                // データモデル→UIへ同期
+                treeToggle.SetValueWithoutNotify(treeItem.IsSelected);
+
+                // 新しいコールバックを登録
+                treeLabel.RegisterCallback<ClickEvent>(OnElementClick);
+                treeToggle.RegisterValueChangedCallback(OnToggleChanged);
 
                 // トップのみボタン表示
                 if (treeItem.parent != null)
@@ -391,36 +401,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 }
                 else
                 {
-                    treeToggle.value = toggle.value;
+                    treeToggle.SetValueWithoutNotify(toggle.value);
+                    treeItem.IsSelected = treeToggle.value;
                     treeHideButton.visible = true;
                     treeHideButton.clicked += OnTreeHideClick;
-                }
-
-                // 既存のコールバックをクリア（リサイクル対策）
-                if (element.userData is System.Action cleanup)
-                {
-                    cleanup();
                 }
                 
                 void OnElementClick(ClickEvent evt)
                 {
-                    treeToggle.SetValueWithoutNotify(!treeToggle.value);
+                    var v = !treeToggle.value;
+                    treeToggle.value = v;
                     evt.StopPropagation();
                 }
-                
+
+                void OnToggleChanged(ChangeEvent<bool> evt)
+                {
+                    treeItem.IsSelected = evt.newValue; // UI→データモデルへ
+                }
+
                 void OnTreeHideClick()
                 {
                     SetTreeViewState(TreeViewState.Hide);
                     toggle.value = treeToggle.value;
                 }
                 
-                // 新しいコールバックを登録
-                treeLabel.RegisterCallback<ClickEvent>(OnElementClick);
-                
                 // クリーンアップ関数を保存
                 element.userData = (System.Action)(() =>
                 {
                     treeLabel.UnregisterCallback<ClickEvent>(OnElementClick);
+                    treeToggle.UnregisterValueChangedCallback(OnToggleChanged);
                     treeHideButton.clicked -= OnTreeHideClick;
                 });
             };
@@ -589,17 +598,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var isSelected = string.Equals(pathToSelect, item.data.GetFullPath());
             if (isSelected)
             {
+                item.data.IsSelected = isSelected;
+                // UI同期
                 var visualElem = container.TreeView.GetRootElementForId(item.data.id);
-                if (visualElem != null)
-                {
-                    var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
-                    toggle.value = isSelected;
-                    container.IsSelected = false; // 親のタイルは選択解除
-                }
-                else
-                {
-                    Debug.LogWarning($"visualElem is null for id: {item.data.id}");
-                }
+                var toggle = visualElem?.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
+                toggle?.SetValueWithoutNotify(true);
+                container.IsSelected = false; // 親タイルは解除
+
             }
             foreach (var childItem in item.children)
             {
@@ -629,15 +634,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         // 上の処理の再帰部分
         public void GetSelectedChildrenPathRecursive(TreeViewItemData<TransformTreeItem> item, TileNameElementContainer container, List<string> selected)
         {
-            var visualElem = container.TreeView.GetRootElementForId(item.data.id);
-            if (visualElem != null)
-            {
-                var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
-                if (toggle.value)
-                {
-                    selected.Add(item.data.GetFullPath());
-                }
-            }
+            if (item.data.IsSelected)
+                selected.Add(item.data.GetFullPath());
+
             foreach (var child in item.children)
             {
                 GetSelectedChildrenPathRecursive(child, container, selected);
