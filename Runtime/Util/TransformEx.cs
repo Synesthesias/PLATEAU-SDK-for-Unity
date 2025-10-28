@@ -71,14 +71,19 @@ namespace PLATEAU.Util
         {
             Transform current = origin;
             string path = current.name;
+            bool found = false;
             while (current.parent != null)
             {
                 current = current.parent;
                 path = current.name + "/" + path;
                 if (current.name == parentName)
+                {
+                    found = true;
                     break;
+                }    
             }
-            return path;
+            // 親が見つからなかった場合はnullを返す
+            return found ? path : null;
         }
 
         // 全ての子Transformを取得

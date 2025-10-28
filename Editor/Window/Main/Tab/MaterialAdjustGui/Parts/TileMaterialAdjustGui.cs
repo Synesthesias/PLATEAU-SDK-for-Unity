@@ -7,6 +7,7 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -179,23 +180,31 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         private async Task HighlightSelectedTiles(bool forceLoad = true)
         {
+            if (IsHighlightSelectedTilesRunning) return;
             IsHighlightSelectedTilesRunning = true;
-            var transforms = new List<Transform>();
-            if (forceLoad)
+            try
             {
-                var allTransforms = await GetTransformListFromAddr<Component>(observableSelected);
-                transforms = allTransforms.Where(trans => observableSelected
-                    .Any(selected => trans.GetPathToParent(selected.TileAddress) == selected.TilePath || trans.FindChildOfNamedParent(PLATEAUTileManager.TileParentName)?.name == selected.TilePath)).ToList();
+                var transforms = new List<Transform>();
+                if (forceLoad)
+                {
+                    var allTransforms = await GetTransformListFromAddr<Component>(observableSelected);
+                    transforms = allTransforms.Where(trans => observableSelected
+                        .Any(selected => trans.GetPathToParent(selected.TileAddress) == selected.TilePath || trans.FindChildOfNamedParent(PLATEAUTileManager.TileParentName)?.name == selected.TilePath)).ToList();
+                }
+                else
+                {
+                    transforms = GetTransformsFromTiles(GetSelectedTiles());
+                }
+
+                Selection.objects = transforms.Select(trans => trans.gameObject).Cast<UnityEngine.Object>().ToArray();
+                IsHighlightSelectedTilesRunning = false;
+
+                parentEditorWindow.Repaint();
             }
-            else
+            finally
             {
-                transforms = GetTransformsFromTiles(GetSelectedTiles());
+                IsHighlightSelectedTilesRunning = false;
             }
-
-            Selection.objects = transforms.Select(trans => trans.gameObject).Cast<UnityEngine.Object>().ToArray();
-            IsHighlightSelectedTilesRunning = false;
-
-            parentEditorWindow.Repaint();
         }
 
         /// <summary>
@@ -216,17 +225,26 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task<List<Transform>> GetTransformListFromAddr<T>(IList<TileSelectionItem> addr) where T : Component
         {
-            var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
-            var selectedTiles = await tileManager.ForceLoadTiles(addresses);
-            var transforms = new List<Transform>();
-            foreach (var tile in selectedTiles)
+            var cts = new CancellationTokenSource();
+            try
             {
-                if (tile.LoadedObject != null)
+                var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
+                var selectedTiles = await tileManager.ForceLoadTiles(addresses, cts.Token);
+                var transforms = new List<Transform>();
+                foreach (var tile in selectedTiles)
                 {
-                    TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                    if (tile.LoadedObject != null)
+                    {
+                        TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                    }
                 }
+                return transforms;
             }
-            return transforms;
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("タイルの読み込みがキャンセルされました。");
+                return new List<Transform>();
+            }
         }
 
         /// <summary>
@@ -238,6 +256,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task<GranularityConvertResult> ExecGranularityConvertAsync(MAExecutorConf conf, ConvertGranularity granularity)
         {
+            if (tileManager == null)
+            {
+                Dialogue.Display("タイルマネージャーを指定してください。", "OK");
+                return GranularityConvertResult.Fail();
+            }
+
             if (observableSelected.Count == 0)
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
@@ -282,7 +306,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task<UniqueParentTransformList> ExecMaterialAdjustAsync(MAExecutorConf conf, IMAExecutorV2 maExecutor )//, bool destroySrcObjs)
         {
-            //上の処理と割と一緒
+            if (tileManager == null)
+            {
+                Dialogue.Display("タイルマネージャーを指定してください。", "OK");
+                return new UniqueParentTransformList();
+            }
+
             if (observableSelected.Count == 0)
             {
                 Dialogue.Display("粒度変換の対象を指定してください。", "OK");
@@ -422,8 +451,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private string GetTilePath(Transform obj, string parentName)
         {
             var pathToRoot = obj.GetPathToParent(parentName);
-            var startIndex = parentName.Length + 1; // "DynamicTileRoot/" の分をスキップ
-            return pathToRoot.Substring(startIndex);
+            if (pathToRoot == null)
+                return obj.name; // 親が見つからなかった場合はオブジェクト名のみを返す
+            var prefix = parentName + "/";
+            if (!pathToRoot.StartsWith(prefix))
+                    return pathToRoot;
+            return pathToRoot.Substring(prefix.Length); // "DynamicTileRoot/" の分をスキップ
         }
 
         /// <summary>

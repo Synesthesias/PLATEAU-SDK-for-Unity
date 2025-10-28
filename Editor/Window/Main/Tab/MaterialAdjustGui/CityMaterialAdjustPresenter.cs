@@ -353,12 +353,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             };
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
-                result = await tileConvert.ExecMaterialAdjustAsync(GenerateConf(), maExecutor);
-
-                if (DoDestroySrcObjs)
-                {
-                    if (tileConvert.Selected.Count == 0) IsSearched = false;
-                }
+                result = await tileConvert.ExecMaterialAdjustAsync(conf, maExecutor);
+                if (DoDestroySrcObjs && tileConvert.Selected.Count == 0) IsSearched = false;
             }
             else
             {
@@ -394,7 +390,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 await ExecGranularityConvertMainAsync();
                 button.RecoverFromProcessing();
                 PostConvert();
-                PostConvert();
             }
             catch (Exception e)
             {
@@ -409,7 +404,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
-                return await tileConvert.ExecGranularityConvertAsync(GenerateConf(), granularity);
+                // 処理に必要最低限の設定値を作成して渡す。
+                var minimalConf = new MAExecutorConf(
+                    CurrentSearcher != null ? CurrentSearcher.MaterialAdjustConf : null,
+                    SelectedObjects,
+                    DoDestroySrcObjs,
+                    true
+                );
+                return await tileConvert.ExecGranularityConvertAsync(minimalConf, granularity);
             }
 
             var conf = GenerateConf();

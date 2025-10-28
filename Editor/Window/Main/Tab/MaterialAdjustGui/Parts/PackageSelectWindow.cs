@@ -20,6 +20,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return window;
         }
 
+        /// <summary>
+        /// ウィンドウ初期化
+        /// </summary>
+        /// <param name="resultReceiverArg"></param>
+        /// <param name="ignoreTileDataset">動的タイルの場合はデータセット選択を非表示にする</param>
         public void Init(IPackageSelectResultReceiver resultReceiverArg, bool ignoreTileDataset)
         {
             this.resultReceiver = resultReceiverArg;

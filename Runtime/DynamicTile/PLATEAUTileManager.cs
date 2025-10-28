@@ -364,29 +364,40 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="addresses"></param>
         /// <returns></returns>
-        public async Task<List<PLATEAUDynamicTile>> ForceLoadTiles(List<string> addresses)
+        public async Task<List<PLATEAUDynamicTile>> ForceLoadTiles(List<string> addresses, CancellationToken token)
         {
             await CancelLoadTask();
 
-            var tiles = DynamicTiles.Where(t => addresses.Contains(t.Address)).ToList();
+            var addressSet = new HashSet<string>(addresses);
+            var tiles = DynamicTiles.Where(t => addressSet.Contains(t.Address)).ToList();
             foreach (var tile in tiles)
             {
                 if (tile.LoadedObject == null)
                 {
-                    // タイル読込
-                    var result = await PrepareLoadTile(tile);
+                    token.ThrowIfCancellationRequested();
 
-                    // 読み込みまで待機
-                    var flagEvent = new ManualResetEventSlim(false);
-                    await Task.Run(() =>
+                    // タイル読込開始
+                    var result = await PrepareLoadTile(tile);
+                    if (result == LoadResult.Failure || result == LoadResult.Cancelled || result == LoadResult.Timeout)
                     {
-                        Thread.Sleep(500);
-                        if (IsCoroutineRunning == false)
-                            flagEvent.Set();
-                    });
-                    flagEvent.Wait();
+                        continue;
+                    }
                 }
             }
+
+            // コルーチン終了まで待機（最大タイムアウト）
+            var timeout = TimeSpan.FromSeconds(10);
+            var start = DateTime.UtcNow;
+            while (IsCoroutineRunning)
+            {
+                token.ThrowIfCancellationRequested();
+                if (DateTime.UtcNow - start > timeout) { 
+                    DebugLog($"ForceLoadTiles: タイムアウトしました");
+                    break;
+                }
+                await Task.Delay(50).ConfigureAwait(false);
+            }
+
             return tiles;
         }
 
@@ -397,7 +408,7 @@ namespace PLATEAU.DynamicTile
         {
             if (loadTask != null)
             {
-                await loadTask.CancelLoadTask().ContinueWithErrorCatch(); // タスクのキャンセルをタスクに委譲
+                await loadTask.CancelLoadTask(); // タスクのキャンセルをタスクに委譲
             }
         }
 

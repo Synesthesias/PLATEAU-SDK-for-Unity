@@ -4,6 +4,7 @@ using PLATEAU.Util.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -154,7 +155,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         private void AddTileFromSelection()
         {
-            var selectionNames = Selection.gameObjects?.Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName).name)?.ToList();
+            var selectionNames = Selection.gameObjects ?
+                .Select(x => x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName))
+                .Where(t => t != null)
+                .Select(t => t.name)
+                .ToList();
+
             tileNameElements.ForEach(e =>
             {
                 if (!e.IsSelected && selectionNames.Contains(e.TileName))
@@ -197,7 +203,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <param name="tileName"></param>
         private void ShowTileHierarchy(TileNameElementContainer elem)
         {
-            treeViewItemBuilder.LoadAndDisyplayHierarchy(elem).ContinueWithErrorCatch();
+            treeViewItemBuilder.LoadAndDisyplayHierarchy(elem);
         }
 
         /// <summary>
@@ -464,6 +470,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private PLATEAUTileManager tileManager;
         private EditorWindow parentWindow;
         private int nextId = 0;
+        private CancellationTokenSource cts;
 
         public TreeViewItemBuilder(PLATEAUTileManager manager, EditorWindow window)
         {
@@ -471,30 +478,60 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             this.parentWindow = window;
         }
 
-        public async Task LoadAndDisyplayHierarchy(TileNameElementContainer container)
+        public void LoadAndDisyplayHierarchy(TileNameElementContainer container)
         {
+            LoadAndDisyplayHierarchyAsync(container).ContinueWithErrorCatch();
+        }
+
+        public async Task LoadAndDisyplayHierarchyAsync(TileNameElementContainer container)
+        {
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
+            cts = new CancellationTokenSource();
+
             var treeView = container.TreeView;
             container.SetTreeViewState(TileNameElementContainer.TreeViewState.Loading);
 
-            var addresses = new List<string>() { container.TileName };
-            var loadedTiles = await tileManager.ForceLoadTiles(addresses);
-            foreach (var loadedTile in loadedTiles)
+            try
             {
-                if (loadedTile.LoadedObject != null)
+                var addresses = new List<string>() { container.TileName };
+                var loadedTiles = await tileManager.ForceLoadTiles(addresses, cts.Token);
+
+                await Task.Delay(100); // UI更新のため少し待機
+                await Task.Yield();
+
+                foreach (var loadedTile in loadedTiles)
                 {
-                    treeView.makeItem = container.GetTreeViewMakeItem();
-                    treeView.bindItem = container.GetTreeViewBindItem();
-                    nextId = 0;
-                    var rootItem = BuildTree(loadedTile.LoadedObject.transform, null);
-                    List<TreeViewItemData<TransformTreeItem>> rootItems = new();
-                    rootItems.Add(BuildTreeItem(rootItem));
-                    treeView.SetRootItems(rootItems);
-                    treeView.ExpandAll();
-                    treeView.style.display = DisplayStyle.Flex;
-                    container.treeViewItemData = rootItems;
-                    container.SetTreeViewState(TileNameElementContainer.TreeViewState.Show);
-                    parentWindow.Repaint();
+                    if (loadedTile?.LoadedObject != null)
+                    {
+                        treeView.makeItem = container.GetTreeViewMakeItem();
+                        treeView.bindItem = container.GetTreeViewBindItem();
+                        nextId = 0;
+                        var rootItem = BuildTree(loadedTile.LoadedObject.transform, null);
+                        List<TreeViewItemData<TransformTreeItem>> rootItems = new();
+                        rootItems.Add(BuildTreeItem(rootItem));
+                        treeView.SetRootItems(rootItems);
+                        treeView.ExpandAll();
+                        treeView.style.display = DisplayStyle.Flex;
+                        container.treeViewItemData = rootItems;
+                        container.SetTreeViewState(TileNameElementContainer.TreeViewState.Show);
+                        parentWindow.Repaint();
+                    }
                 }
+                
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("LoadAndDisyplayHierarchy was canceled.");
+                container.SetTreeViewState(TileNameElementContainer.TreeViewState.Hide);
+            }
+            finally
+            {
+                cts.Dispose();
+                cts = null;
             }
         }
 
@@ -505,7 +542,12 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task AddFromSelectionAsync(List<TileNameElementContainer> tileNameElements)
         {
-            var tileNames = Selection.gameObjects?.Select(x => (x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName).name, x.transform))?.ToList();
+            var tileNames = Selection.gameObjects ?
+                .Select(x => (t: x.transform.FindChildOfNamedParent(PLATEAUTileManager.TileParentName), x.transform))
+                .Where(p => p.t != null)
+                .Select(p => (p.t.name, p.transform))
+                .ToList();
+
             foreach (var elem in tileNameElements)
             {
                 if (elem == null) continue;
@@ -513,7 +555,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 var matches = tileNames.Where(item => item.name == elem.TileName).ToList();
                 foreach (var match in matches)
                 {
-                    await LoadAndDisyplayHierarchy(elem);
+                    await LoadAndDisyplayHierarchyAsync(elem);
                     await Task.Yield();
                     await Task.Delay(100); // UI更新のため少し待機
 
@@ -535,8 +577,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             var isSelected = string.Equals(pathToSelect, item.data.GetFullPath());
             if (isSelected)
             {
-                var id = container.TreeView.GetIdForIndex(item.data.id);
-                var visualElem = container.TreeView.GetRootElementForId(id);
+                var visualElem = container.TreeView.GetRootElementForId(item.data.id);
                 if (visualElem != null)
                 {
                     var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
@@ -576,8 +617,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         // 上の処理の再帰部分
         public void GetSelectedChildrenPathRecursive(TreeViewItemData<TransformTreeItem> item, TileNameElementContainer container, List<string> selected)
         {
-            var id = container.TreeView.GetIdForIndex(item.data.id);
-            var visualElem = container.TreeView.GetRootElementForId(id);
+            var visualElem = container.TreeView.GetRootElementForId(item.data.id);
             if (visualElem != null)
             {
                 var toggle = visualElem.Q<Toggle>(TileNameElementContainer.TREEVIEW_TOGGLE);
@@ -646,13 +686,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         TreeViewItemData<TransformTreeItem> BuildTreeItem(TransformTreeItem item)
         {
             var children = item.children.Select(BuildTreeItem).ToList();
-            return new TreeViewItemData<TransformTreeItem>(nextId++, item, children);
+            return new TreeViewItemData<TransformTreeItem>(item.id, item, children);
         }
 
         public void Dispose()
         {
             this.tileManager = null;
             this.parentWindow = null;
+            cts?.Cancel();
+            cts?.Dispose();
         }
     }
 }
