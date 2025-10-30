@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static PlasticGui.LaunchDiffParameters;
-
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
@@ -294,6 +292,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         private List<VisualElement> treeViewElements;
 
+        // TreeViewのUXMLリソースパス
+        public const string TREEVIEW_UXML_RESOURCE_PATH = "Resources/PlateauUIDocument/DynamicTile/TileChildName.uxml";
         //TreeView要素名
         public const string TREEVIEW_TOGGLE = "Tgl_TreeSelect";
         public const string TREEVIEW_LABEL = "Lbl_TreeTileName";
@@ -302,20 +302,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         public bool IsSelected
         {
             get => toggle.value;
-            set {
+            set
+            {
+                if (toggle.value == value) return;
                 toggle.value = value;
-                if (toggle.value == true)
-                {
-                    SetTreeViewState(TreeViewState.Hide);
-                    // 親が選択された場合、子要素の選択をクリア
-                    if (treeViewItemData != null)
-                    {
-                        foreach (var item in treeViewItemData)
-                        {
-                            ClearChildSelectionRecursive(item);
-                        }
-                    }
-                }    
             }
         }
 
@@ -335,9 +325,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             this.toggle = root.Q<Toggle>("Tgl_Select");
             this.treeView = root.Q<TreeView>("Tree_Children");
             this.nameLabel = root.Q<Label>("Lbl_TileName");
-            nameLabel.RegisterCallback<ClickEvent>(ToggleSelection);
             this.selectChildButton = root.Q<Button>("Btn_SelectChild");
-            selectChildButton.clicked += OnSelectChild;
+            this.toggle.RegisterValueChangedCallback(OnToggleValueChanged);
+            this.nameLabel.RegisterCallback<ClickEvent>(ToggleSelection);    
+            this.selectChildButton.clicked += OnSelectChild;
         }
 
         /// <summary>
@@ -381,9 +372,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
         }
 
+        /// <summary>
+        /// treeView.makeItemに渡す要素生成処理
+        /// </summary>
+        /// <returns></returns>
         public Func<VisualElement> GetTreeViewMakeItem()
         {
-            var tileChildVisualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{PathUtil.SdkBasePath}/Resources/PlateauUIDocument/DynamicTile/TileChildName.uxml");
+            var tileChildVisualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{PathUtil.SdkBasePath}/{TREEVIEW_UXML_RESOURCE_PATH}");
             return () => tileChildVisualTree.CloneTree();
         }
 
@@ -405,7 +400,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                     cleanup();
                 
                 treeLabel.text = treeItem.name;
-                //label.text = treeItem.GetFullPath();
+                //label.text = treeItem.GetFullPath(); // Debug用にフルパス表示
 
                 // データモデル→UIへ同期
                 treeToggle.SetValueWithoutNotify(treeItem.IsSelected);
@@ -470,7 +465,27 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <param name="evt"></param>
         private void ToggleSelection(ClickEvent evt)
         {
-            toggle.SetValueWithoutNotify(!toggle.value);
+            IsSelected = !IsSelected;
+        }
+
+        /// <summary>
+        /// Toggle値変更時の処理
+        /// </summary>
+        /// <param name="evt"></param>
+        private void OnToggleValueChanged(ChangeEvent<bool> evt)
+        {
+            if (evt.newValue)
+            {
+                SetTreeViewState(TreeViewState.Hide);
+                // 親が選択された場合、子要素の選択をクリア
+                if (treeViewItemData != null)
+                {
+                    foreach (var item in treeViewItemData)
+                    {
+                        ClearChildSelectionRecursive(item);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -491,7 +506,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public void Dispose()
         {
-            if(nameLabel != null)
+            if (toggle != null)
+                toggle.UnregisterValueChangedCallback(OnToggleValueChanged);
+
+            if (nameLabel != null)
                 nameLabel.UnregisterCallback<ClickEvent>(ToggleSelection);
 
             if (selectChildButton != null)
