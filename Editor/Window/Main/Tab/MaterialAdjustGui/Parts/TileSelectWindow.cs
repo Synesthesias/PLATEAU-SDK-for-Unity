@@ -116,6 +116,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 return;
             }
 
+            // 既存リソースをクリーンアップ
+            treeViewItemBuilder?.Dispose();
+            if (tileNameElements != null)
+            {
+                foreach (var elem in tileNameElements)
+                    elem.Dispose();
+            }
+
             treeViewItemBuilder = new TreeViewItemBuilder(tileManager, this);
             tileNameElements = new List<TileNameElementContainer>();
 
