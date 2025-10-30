@@ -736,7 +736,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
         /// </summary>
-        [Obsolete("使われていない")]
         public void SeparateContinuousBorder()
         {
             Align();
