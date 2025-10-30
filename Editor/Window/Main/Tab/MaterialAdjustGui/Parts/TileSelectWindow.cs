@@ -212,15 +212,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <param name="result"></param>
         public void ReceivePackageSelectResult(PackageSelectResult result)
         {
+            var selectedTileAddresses = new HashSet<string>();
             foreach (var package in result.SelectedDict)
             {
                 if (!package.Value) continue;
                 var tilesInPackage = tileManager.DynamicTiles.Where(t => t.Package == package.Key).Select(t => t.Address).ToList();
-                tileNameElements.ForEach(e => 
+                foreach (var address in tilesInPackage)
                 {
-                    if (tilesInPackage.Contains(e.TileName)) e.IsSelected = true;
-                });
+                    selectedTileAddresses.Add(address);
+                }
             }
+            tileNameElements.ForEach(e =>
+            {
+                if (selectedTileAddresses.Contains(e.TileName)) e.IsSelected = true;
+            });
         }
 
         /// <summary>
@@ -624,6 +629,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 foreach (var match in matches)
                 {
                     var path = match.transform.GetPathToParent(match.name);
+                    if (path == null)
+                    {
+                        Debug.LogWarning($"親タイル {match.name} が見つかりませんでした。");
+                        continue;
+                    }
                     // 子要素のうち、選択中のオブジェクトに対応するものを選択状態にする
                     foreach (var item in elem.treeViewItemData)
                     {
