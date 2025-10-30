@@ -153,6 +153,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             tileFromSelectionButton?.SetEnabled(enabled);
             fromSelectionButton?.SetEnabled(enabled);
             fromPackageButton?.SetEnabled(enabled);
+            executeButton?.SetEnabled(enabled);
         }
 
         /// <summary>
