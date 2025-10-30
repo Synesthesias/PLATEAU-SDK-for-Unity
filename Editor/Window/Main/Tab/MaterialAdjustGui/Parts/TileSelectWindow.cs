@@ -135,6 +135,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
 
         /// <summary>
+        /// 決定ボタンの有効/無効を設定
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void SetExecutable(bool enabled)
+        {
+            executeButton?.SetEnabled(enabled);
+        }
+
+        /// <summary>
         /// 全選択
         /// </summary>
         private void SelectAll()
@@ -174,7 +183,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         private void AddFromSelection()
         {
-            treeViewItemBuilder.AddFromSelectionAsync(tileNameElements).ContinueWithErrorCatch();
+            AddFromSelectionAsync().ContinueWithErrorCatch();
+        }
+
+        private async Task AddFromSelectionAsync()
+        {
+            SetExecutable(false);
+            await treeViewItemBuilder.AddFromSelectionAsync(tileNameElements);
+            SetExecutable(true);
         }
 
         /// <summary>
