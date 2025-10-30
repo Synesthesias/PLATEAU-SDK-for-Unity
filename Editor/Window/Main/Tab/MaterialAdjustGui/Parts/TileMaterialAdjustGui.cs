@@ -105,6 +105,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                             if (observableSelected.Any(x => x.TilePath == item.TilePath)) return;
                             observableSelected.Add(item);
                         });
+                        this.parentEditorWindow.Repaint();
                     });
                 }
             });
