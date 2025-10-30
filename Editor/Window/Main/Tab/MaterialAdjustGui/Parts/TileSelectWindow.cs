@@ -713,7 +713,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         // 上の処理の再帰部分
         public void GetSelectedChildrenPathRecursive(TreeViewItemData<TransformTreeItem> item, TileNameElementContainer container, List<string> selected)
         {
-            if (item.data.IsSelected)
+            bool isRootAndParentSelected = item.data.parent == null && container.IsSelected;
+            if (item.data.IsSelected && !isRootAndParentSelected)
                 selected.Add(item.data.GetFullPath());
 
             foreach (var child in item.children)
