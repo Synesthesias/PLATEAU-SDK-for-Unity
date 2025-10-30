@@ -143,12 +143,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
 
         /// <summary>
-        /// 決定ボタンの有効/無効を設定
+        /// ボタンの有効/無効を設定
         /// </summary>
         /// <param name="enabled"></param>
-        private void SetExecutable(bool enabled)
+        private void SetButtonsEnabled(bool enabled)
         {
-            executeButton?.SetEnabled(enabled);
+            selectAllButton?.SetEnabled(enabled);
+            deselectAllButton?.SetEnabled(enabled);
+            tileFromSelectionButton?.SetEnabled(enabled);
+            fromSelectionButton?.SetEnabled(enabled);
+            fromPackageButton?.SetEnabled(enabled);
         }
 
         /// <summary>
@@ -196,9 +200,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         private async Task AddFromSelectionAsync()
         {
-            SetExecutable(false);
+            SetButtonsEnabled(false);
             await treeViewItemBuilder.AddFromSelectionAsync(tileNameElements);
-            SetExecutable(true);
+            SetButtonsEnabled(true);
         }
 
         /// <summary>
@@ -445,6 +449,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 }
                 else
                 {
+                    // 親タイルの選択状態をツリーのルートアイテムに反映
                     treeToggle.SetValueWithoutNotify(toggle.value);
                     treeItem.IsSelected = treeToggle.value;
                     treeHideButton.visible = true;
