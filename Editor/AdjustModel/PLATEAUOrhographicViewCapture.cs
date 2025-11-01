@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.AdjustModel
         /// <param name="isLod1Visible"></param>
         private void SwitchLod1Visible(bool isLod1Visible)
         {
-            var service = new PLATEAUOrthographicViewCaptureService(savePath, pixelsPerMeter, false,cameraClearFlag, cameraClearColor);
+            var service = new Lod1TextureCaptureService(savePath, pixelsPerMeter, false,cameraClearFlag, cameraClearColor);
             foreach (var model in targetObjects)
             {
                 if (!model)
@@ -147,7 +147,7 @@ namespace PLATEAU.Editor.AdjustModel
 
             try
             {
-                var service = new PLATEAUOrthographicViewCaptureService(savePath, pixelsPerMeter, false,cameraClearFlag, cameraClearColor);
+                var service = new Lod1TextureCaptureService(savePath, pixelsPerMeter, false,cameraClearFlag, cameraClearColor);
                 service.Execute(camera, targetObjects.Select(m=>m.gameObject));
 
                 // defaultMaterialが設定されていればLOD1マテリアルを設定

@@ -163,11 +163,14 @@ namespace PLATEAU.DynamicTile
             bool lod1Processed = false;
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
+            
+            // 倍率が4分の1の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
             if (denominator is 4 && content.name.Contains("bldg"))
             {
                 lod1Processed = CreateLod1TextureAndMaterialIfRequired(ref content);
             }
-            else
+            
+            if(!lod1Processed)
             {
                 materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
             }
@@ -218,7 +221,7 @@ namespace PLATEAU.DynamicTile
             var materialList = new List<Material[]>();
             bool lod1Processed = false;
 
-            // 倍率が4分の1の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
+            // 倍率が4分の1の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
             if (denominator is 4 && target.name.Contains("bldg"))
             {
                 //撮影の邪魔になるのでcloneを非表示
@@ -232,7 +235,8 @@ namespace PLATEAU.DynamicTile
                     target.SetActive(true);
                 }
             }
-            else
+            
+            if(!lod1Processed)
             {
                 materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
             }
@@ -439,7 +443,7 @@ namespace PLATEAU.DynamicTile
                 try
                 {
                     var service =
-                        new PLATEAUOrthographicViewCaptureService(Path.Combine(FileUtil.GetProjectRelativePath(savePath),target.name), 1,
+                        new Lod1TextureCaptureService(Path.Combine(FileUtil.GetProjectRelativePath(savePath),target.name), 1,
                             true);
                     service.Execute(tmpCamera, target);
                     service.SwitchLod1Visible(target, true);
