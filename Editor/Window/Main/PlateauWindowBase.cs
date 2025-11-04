@@ -18,23 +18,24 @@ namespace PLATEAU.Editor.Window.Main
         /// <summary> GUIの中身の生成はサブクラスに任せます。 </summary>
         protected abstract VisualElementDisposable CreateGui();
 
+        /// <summary> スクロールビューを使うかどうか。サブクラスでオーバーライド可能。 </summary>
+        protected virtual bool UseScrollView => true;
+
         private void CreateGUI()
         {
-            var scrollView = new ScrollView
+            var container = UseScrollView ? new ScrollView
             {
                 viewDataKey = "plateau-window-scroll-view",
                 horizontalScrollerVisibility = ScrollerVisibility.Hidden,
-                verticalScrollerVisibility = ScrollerVisibility.Auto,  // 垂直スクロールを表示
-                style =
-                {
-                    flexGrow = 1 // 利用可能な空間いっぱいに広がる
-                }
-            };
-            
-            scrollView.Add(new IMGUIContainer(DrawImgui));
+                verticalScrollerVisibility = ScrollerVisibility.Auto,
+                style = { flexGrow = 1 }
+            }
+            : new VisualElement { style = { flexGrow = 1 } };
+
+            container.Add(new IMGUIContainer(DrawImgui));
             gui = CreateGui();
-            scrollView.Add(gui.VisualElement);
-            rootVisualElement.Add(scrollView);
+            container.Add(gui.VisualElement);
+            rootVisualElement.Add(container);
             rootVisualElement.Add(new PlateauWindowFooterGui().CreateGui());
         }
 

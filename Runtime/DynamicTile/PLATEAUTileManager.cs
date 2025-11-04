@@ -2,8 +2,9 @@ using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -358,13 +359,59 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 強制的に指定されたアドレスのタイルをロードします。
+        /// 注意：UpdateAssetsByCameraPositionが走るとアンロードされる可能性があります。
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public async Task<List<PLATEAUDynamicTile>> ForceLoadTiles(List<string> addresses, CancellationToken token)
+        {
+            await CancelLoadTask();
+
+            var addressSet = new HashSet<string>(addresses);
+            var tiles = DynamicTiles.Where(t => addressSet.Contains(t.Address)).ToList();
+            foreach (var tile in tiles)
+            {
+                if (tile.LoadedObject == null)
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    // タイル読込開始
+                    var result = await PrepareLoadTile(tile);
+                    if (result == LoadResult.Failure || result == LoadResult.Cancelled || result == LoadResult.Timeout)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            // コルーチン終了まで待機（最大タイムアウト）
+            var timeout = TimeSpan.FromSeconds(10);
+            var start = DateTime.UtcNow;
+            while (IsCoroutineRunning)
+            {
+                token.ThrowIfCancellationRequested();
+                if (DateTime.UtcNow - start > timeout) { 
+                    DebugLog($"ForceLoadTiles: タイムアウトしました");
+                    break;
+                }
+                // すでに全タイルが実体化済みなら早期終了
+                if (tiles.All(t => t.LoadedObject != null)) break;
+                await Task.Yield();                // メインスレッドに制御を返す
+                await Task.Delay(50, token);       // 同期コンテキスト維持
+            }
+
+            return tiles;
+        }
+
+        /// <summary>
         /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
         /// </summary>
         public async Task CancelLoadTask()
         {
             if (loadTask != null)
             {
-                await loadTask.CancelLoadTask().ContinueWithErrorCatch(); // タスクのキャンセルをタスクに委譲
+                await loadTask.CancelLoadTask(); // タスクのキャンセルをタスクに委譲
             }
         }
 

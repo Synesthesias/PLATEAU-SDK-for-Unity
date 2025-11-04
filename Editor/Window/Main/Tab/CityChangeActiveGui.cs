@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using PLATEAU.CityAdjust.ChangeActive;
+﻿using PLATEAU.CityAdjust.ChangeActive;
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using PLATEAU.Util.Async;
+using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -28,8 +30,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
 
-        private string[] objectSelectOptions = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
-        private int objectSelectedIndex = 0;
+        private SceneTileChooserGui sceneTileChooser;
         private string errorMessage = null;
 
         /// <summary>
@@ -37,6 +38,11 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// シーン上にゲームオブジェクトとして存在するパッケージとそのLODです。
         /// </summary>
         private PackageToLodMinMax packageToLodMinMax;
+
+        public CityChangeActiveGui()
+        {
+            sceneTileChooser = new(OnChangeSceneTileChooser);
+        }
 
         public VisualElement CreateGui()
         {
@@ -48,31 +54,25 @@ namespace PLATEAU.Editor.Window.Main.Tab
             PlateauEditorStyle.SubTitle("配置済みモデルデータの調整を行います。");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                objectSelectedIndex = EditorGUILayout.Popup("調整対象の種類", objectSelectedIndex, objectSelectOptions);
-
-                if (objectSelectedIndex == 0)
+                sceneTileChooser.DrawAndInvoke(() =>
                 {
-                    this.tileManager = null;
-
+                    // シーンに配置されたオブジェクトを選択した場合の処理
                     EditorGUI.BeginChangeCheck();
                     this.adjustTarget =
                         (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
                             "調整対象", this.adjustTarget,
                             typeof(PLATEAUInstancedCityModel), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetCityModel(this.adjustTarget);
-                }
-                else if (objectSelectedIndex == 1)
+                }, () => 
                 {
-                    this.adjustTarget = null;
-                    errorMessage = null;
-
+                    // 動的タイルを選択した場合の処理
                     EditorGUI.BeginChangeCheck();
                     this.tileManager =
                         (PLATEAUTileManager)EditorGUILayout.ObjectField(
                             "調整対象", this.tileManager,
                             typeof(PLATEAUTileManager), true);
                     if (EditorGUI.EndChangeCheck()) OnChangeTargetTileManager(this.tileManager);
-                }
+                });
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
@@ -177,6 +177,24 @@ namespace PLATEAU.Editor.Window.Main.Tab
         }
 
         /// <summary>
+        /// シーンに配置されたオブジェクトと動的タイルが切り替えられたときに呼ばれます。
+        /// </summary>
+        /// <param name="type"></param>
+        private void OnChangeSceneTileChooser(ChooserType type)
+        {
+            if (type == ChooserType.SceneObject)
+            {
+                this.tileManager = null;
+            }
+            else
+            if (type == ChooserType.DynamicTile)
+            {
+                this.adjustTarget = null;
+                errorMessage = null;
+            }
+        }
+
+        /// <summary>
         /// GUI上で調整対象の都市モデルが新たに選択されたときに呼ばれます。
         /// </summary>
         private void OnChangeTargetCityModel(PLATEAUInstancedCityModel cityModel)
@@ -276,7 +294,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         }
 
-        public void Dispose() { }
+        public void Dispose() 
+        {
+            this.tileManager = null;
+            this.adjustTarget = null;
+        }
+
         public void OnTabUnselect()
         {
         }
