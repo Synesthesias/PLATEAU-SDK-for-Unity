@@ -31,6 +31,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public TileSelectionItem(string fullpath)
         {
+            if (string.IsNullOrEmpty(fullpath))
+                throw new ArgumentException("fullpath は null または空にできません。", nameof(fullpath));
+
             TilePath = fullpath;
             // path( 例: "xxxxx_op/LODx/xxxx-xxx") からタイルのAddress(例: "xxxxx_op")を取得する
             var splits = fullpath.Split('/');
@@ -91,6 +94,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             {
                 EditorGUILayout.LabelField("調整対象:", GUILayout.Width(60));
                 this.tileManager = (PLATEAUTileManager)EditorGUILayout.ObjectField(this.tileManager, typeof(PLATEAUTileManager), true);
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                OnChangeTargetTileManager(this.tileManager);
             }
 
             GUI.enabled = (this.tileManager != null);
@@ -355,6 +362,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 SetDefaultTileManager();
                 return result;
             }
+        }
+
+        /// <summary>
+        /// TileManagerが変更されたときの処理
+        /// </summary>
+        /// <param name="newTileManager"></param>
+        private void OnChangeTargetTileManager(PLATEAUTileManager newTileManager)
+        {
+            observableSelected.Clear();
         }
 
         /// <summary>
