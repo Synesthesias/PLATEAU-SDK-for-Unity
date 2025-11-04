@@ -68,7 +68,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// </summary>
         public void SetDefaultTileManager()
         {
-            this.tileManager = GameObject.FindObjectOfType<PLATEAUTileManager>(); 
+            this.tileManager = GameObject.FindAnyObjectByType<PLATEAUTileManager>(); 
         }
 
         public void Reset()
@@ -224,30 +224,32 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         /// <returns></returns>
         public async Task<List<Transform>> GetTransformListFromAddr<T>(IList<TileSelectionItem> addr) where T : Component
         {
-            var cts = new CancellationTokenSource();
-            try
+            using (var cts = new CancellationTokenSource())
             {
-                var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
-                var selectedTiles = await tileManager.ForceLoadTiles(addresses, cts.Token);
-                var transforms = new List<Transform>();
-                foreach (var tile in selectedTiles)
+                try
                 {
-                    if (tile.LoadedObject != null)
+                    var addresses = addr.ToList().Select(x => x.TileAddress).Distinct().ToList();
+                    var selectedTiles = await tileManager.ForceLoadTiles(addresses, cts.Token);
+                    var transforms = new List<Transform>();
+                    foreach (var tile in selectedTiles)
                     {
-                        TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                        if (tile.LoadedObject != null)
+                        {
+                            TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                        }
                     }
+                    return transforms;
                 }
-                return transforms;
-            }
-            catch (OperationCanceledException)
-            {
-                Debug.LogWarning("タイルの読み込みがキャンセルされました。");
-                return new List<Transform>();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"タイルの読み込み中にエラーが発生しました: {ex.Message}");
-                return new List<Transform>();
+                catch (OperationCanceledException)
+                {
+                    Debug.LogWarning("タイルの読み込みがキャンセルされました。");
+                    return new List<Transform>();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"タイルの読み込み中にエラーが発生しました: {ex.Message}");
+                    return new List<Transform>();
+                }
             }
         }
 
