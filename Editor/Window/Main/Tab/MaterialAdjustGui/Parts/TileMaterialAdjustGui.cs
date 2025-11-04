@@ -198,8 +198,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 }
 
                 Selection.objects = transforms.Select(trans => trans.gameObject).Cast<UnityEngine.Object>().ToArray();
-                IsHighlightSelectedTilesRunning = false;
-
                 parentEditorWindow.Repaint();
             }
             finally
@@ -246,6 +244,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 Debug.LogWarning("タイルの読み込みがキャンセルされました。");
                 return new List<Transform>();
             }
+            catch (Exception ex)
+            {
+                Debug.LogError($"タイルの読み込み中にエラーが発生しました: {ex.Message}");
+                return new List<Transform>();
+            }
         }
 
         /// <summary>
@@ -269,33 +272,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 return GranularityConvertResult.Fail();
             }
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            var ct = cts.Token;
-            var selectedTiles = GetSelectedTiles();
-            var rebuilder = new TileRebuilder();
-            var editingTile = await GetEditableTransformParent(rebuilder, ct);
-            var tileTransforms = GetEditableTransforms(editingTile);
-            conf.TargetTransforms = new UniqueParentTransformList(tileTransforms);
+            using (var cts = new CancellationTokenSource())
+            {
+                var ct = cts.Token;
+                var selectedTiles = GetSelectedTiles();
+                var rebuilder = new TileRebuilder();
+                var editingTile = await GetEditableTransformParent(rebuilder, ct);
+                var tileTransforms = GetEditableTransforms(editingTile);
+                conf.TargetTransforms = new UniqueParentTransformList(tileTransforms);
 
-            // ここで実行します。
-            var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
-            var generatedSelection = result.GeneratedObjs.Select(o => new TileSelectionItem(GetTilePath(o.transform, TileRebuilder.EditingTilesParentName))).ToList(); // 生成されたオブジェクトの名前リストを取得
+                // ここで実行します。
+                var result = await new CityGranularityConverter().ConvertAsync(new GranularityConvertOptionUnity(new GranularityConvertOption(granularity, 1), conf.TargetTransforms, conf.DoDestroySrcObjs));
+                var generatedSelection = result.GeneratedObjs.Select(o => new TileSelectionItem(GetTilePath(o.transform, TileRebuilder.EditingTilesParentName))).ToList(); // 生成されたオブジェクトの名前リストを取得
 
-            //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
-            tileTransforms.Clear();
-            tileTransforms = GetEditableTransforms(editingTile, true);
+                //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
+                tileTransforms.Clear();
+                tileTransforms = GetEditableTransforms(editingTile, true);
 
-            await SavePrefabAssets(tileTransforms, rebuilder, ct);
-            await rebuilder.RebuildByTiles(tileManager, selectedTiles);
+                await SavePrefabAssets(tileTransforms, rebuilder, ct);
+                await rebuilder.RebuildByTiles(tileManager, selectedTiles);
 
-            Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
+                Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
 
-            // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
-            observableSelected.Clear();
-            generatedSelection.ForEach(item => observableSelected.Add(item));
-            await HighlightSelectedTiles(false);
-            SetDefaultTileManager();
-            return result;
+                // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
+                observableSelected.Clear();
+                generatedSelection.ForEach(item => observableSelected.Add(item));
+                await HighlightSelectedTiles(false);
+                SetDefaultTileManager();
+                return result;
+            }
         }
 
         /// <summary>
@@ -319,33 +324,35 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 return new UniqueParentTransformList();
             }
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            var ct = cts.Token;
-            var selectedTiles = GetSelectedTiles();
-            var rebuilder = new TileRebuilder();
-            var editingTile = await GetEditableTransformParent(rebuilder, ct);
-            var tileTransforms = GetEditableTransforms(editingTile);
-            conf.TargetTransforms = new UniqueParentTransformList(tileTransforms);
+            using (var cts = new CancellationTokenSource())
+            {
+                var ct = cts.Token;
+                var selectedTiles = GetSelectedTiles();
+                var rebuilder = new TileRebuilder();
+                var editingTile = await GetEditableTransformParent(rebuilder, ct);
+                var tileTransforms = GetEditableTransforms(editingTile);
+                conf.TargetTransforms = new UniqueParentTransformList(tileTransforms);
 
-            // ここで実行します。
-            var result = await maExecutor.ExecAsync(conf);
-            var generatedSelection = result.Get.Select(t => new TileSelectionItem(GetTilePath(t, TileRebuilder.EditingTilesParentName))).ToList();
+                // ここで実行します。
+                var result = await maExecutor.ExecAsync(conf);
+                var generatedSelection = result.Get.Select(t => new TileSelectionItem(GetTilePath(t, TileRebuilder.EditingTilesParentName))).ToList();
 
-            //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
-            tileTransforms.Clear();
-            tileTransforms = GetEditableTransforms(editingTile, true);
+                //　子要素ではなくタイルのTransformを取得し直す。タイルの場合も参照が切れるため入れ直しが必要
+                tileTransforms.Clear();
+                tileTransforms = GetEditableTransforms(editingTile, true);
 
-            await SavePrefabAssets(tileTransforms, rebuilder, ct);
-            await rebuilder.RebuildByTiles(tileManager, selectedTiles);
+                await SavePrefabAssets(tileTransforms, rebuilder, ct);
+                await rebuilder.RebuildByTiles(tileManager, selectedTiles);
 
-            Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");
+                Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");
 
-            // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
-            observableSelected.Clear();
-            generatedSelection.ForEach(item => observableSelected.Add(item));
-            await HighlightSelectedTiles(false);
-            SetDefaultTileManager();
-            return result;
+                // 変換されたオブジェクトを選択リストにセットし、タイルが読み込まれていればハイライトする
+                observableSelected.Clear();
+                generatedSelection.ForEach(item => observableSelected.Add(item));
+                await HighlightSelectedTiles(false);
+                SetDefaultTileManager();
+                return result;
+            }
         }
 
         /// <summary>
@@ -403,6 +410,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             await rebuilder.TilePrefabsToScene(tileManager, selectedTiles, token);
             token.ThrowIfCancellationRequested();
             var editingTile = tileManager.transform.Find(TileRebuilder.EditingTilesParentName);
+            if (editingTile == null)
+                throw new InvalidOperationException($"{TileRebuilder.EditingTilesParentName} が見つかりませんでした。");
             return editingTile;
         }
 
@@ -418,8 +427,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             foreach (var addr in observableSelected)
             {
                 var edittrans = parent.transform.Find(addr.TileAddress)?.transform;
+                if (edittrans == null)
+                {
+                    Debug.LogWarning($"タイル {addr.TileAddress} が見つかりませんでした。");
+                    continue;
+                }
 
-                if( addr.IsTile || asTile )
+                if ( addr.IsTile || asTile )
                 {
                     // タイル直下の場合はそのまま
                     tileTransforms.Add(edittrans);
