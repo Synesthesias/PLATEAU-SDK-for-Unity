@@ -47,9 +47,15 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             return true;
         }
 
-        /// <summary> 古いグループを削除します。 </summary>
+        /// <summary> 古いグループを削除します。（Assets外に限り） </summary>
         private void Cleanup()
         {
+            // ユーザーのAddressablesの設定をなるべく汚したくないので、
+            // タイルの出力先がAssets外のときはGroup設定を削除します。
+            // ロード時にはカタログパスから設定を読み直すので動く仕組みです。
+            // ただし、タイルの出力先がAssets内のときは、タイルはビルドに含める必要があるので設定を残します。
+            if (!context.IsExcludeAssetFolder) return;
+            
             var groupName = context.AddressableGroupName;
             if (!string.IsNullOrEmpty(groupName))
             {
