@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using PLATEAU.CityExport;
 using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Common.PathSelector;
 using PLATEAU.Editor.Window.Main.Tab.ExportGuiParts;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
 using System;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,8 +36,10 @@ namespace PLATEAU.Editor.Window.Main.Tab
     /// 参考 : https://gamedev.stackexchange.com/questions/39906/why-does-unity-obj-import-flip-my-x-coordinate
     internal class CityExportGui : ITabContent
     {
-        private PLATEAUInstancedCityModel exportTarget;
+        private PLATEAUInstancedCityModel exportCityModelTarget;
+        private PLATEAUTileManager exportTileManagerTarget;
         private CoordinateSystemGui coordinateSystemGui;
+        private SceneTileChooserGui sceneTileChooser;
         private readonly MeshFileFormatGui meshFileFormatGui;
 
         private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
@@ -53,6 +57,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool foldOutOption = true;
         private bool foldOutExportPath = true;
         private readonly PathSelectorFolder exportDirSelector = new PathSelectorFolder();
+        private Task dynamicTileExportTask = null;
 
         public CityExportGui()
         {
@@ -63,6 +68,18 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 var selectedSystem = coordinateSystemGui?.SelectedCoordinateSystem ?? CoordinateSystem.WUN;
                 coordinateSystemGui = new CoordinateSystemGui(format, selectedSystem);
             };
+
+            sceneTileChooser = new SceneTileChooserGui(type =>
+            {
+                if (type is SceneTileChooserGui.ChooserType.DynamicTile)
+                {
+                    exportCityModelTarget = null;
+                }
+                else if (type is SceneTileChooserGui.ChooserType.SceneObject)
+                {
+                    exportTileManagerTarget = null;
+                }
+            });
             meshFileFormatGui.InvokeOnFormatChanged();
         }
         
@@ -77,10 +94,18 @@ namespace PLATEAU.Editor.Window.Main.Tab
             PlateauEditorStyle.Heading("選択オブジェクト", "num1.png");
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                this.exportTarget =
-                    (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
-                        "エクスポート対象", this.exportTarget,
-                        typeof(PLATEAUInstancedCityModel), true);
+                sceneTileChooser.DrawAndInvoke(() =>
+                {
+                    this.exportCityModelTarget =
+                        (PLATEAUInstancedCityModel)EditorGUILayout.ObjectField(
+                            "エクスポート対象", this.exportCityModelTarget,
+                            typeof(PLATEAUInstancedCityModel), true);
+                    
+                }, () =>
+                {
+                    this.exportTileManagerTarget = (PLATEAUTileManager)EditorGUILayout.ObjectField("エクスポート対象", this.exportTileManagerTarget,
+                        typeof(PLATEAUTileManager), true);
+                });
             }
             PlateauEditorStyle.Heading("出力形式", "num2.png");
             meshFileFormatGui.Draw();
@@ -105,8 +130,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                             EditorGUIUtility.labelWidth = prevLabelWidth;
                         }
                     }
-                    this.exportHiddenObject = PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
-                    
+                    //DynamicTileの場合、表示をそもそも制御して出しているのでこのオプションは不要
+                    if (sceneTileChooser.SelectedType is SceneTileChooserGui.ChooserType.SceneObject)
+                    {
+                        this.exportHiddenObject =
+                            PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
+                    }
+
                     // 座標軸の向きを選択するUI
                     this.meshTransformType =
                         (MeshExportOptions.MeshTransformType)EditorGUILayout.EnumPopup("座標変換", this.meshTransformType);
@@ -123,35 +153,28 @@ namespace PLATEAU.Editor.Window.Main.Tab
             PlateauEditorStyle.Separator(0);
             if (PlateauEditorStyle.MainButton("エクスポート"))
             {
-                Export(this.exportDirPath, this.exportTarget);
+                if (exportCityModelTarget != null)
+                {
+                    Export(this.exportDirPath, this.exportCityModelTarget);
+                }
+                else if (exportTileManagerTarget != null)
+                {
+                    if (dynamicTileExportTask == null || dynamicTileExportTask.IsCompleted)
+                    {
+                        dynamicTileExportTask = Export(this.exportDirPath, this.exportTileManagerTarget);
+                    }
+                }
             }
         }
 
         private void Export(string destinationDir, PLATEAUInstancedCityModel target)
         {
-            if (target == null)
-            {
-                Dialogue.Display("エクスポート失敗：\nエクスポート対象を指定してください。", "OK");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(destinationDir))
-            {
-                Dialogue.Display("エクスポート失敗：\nエクスポート先を指定してください。", "OK");
-                return;
-            }
-
-            if (!Directory.Exists(destinationDir))
-            {
-                Dialogue.Display("エクスポート失敗：\nエクスポート先フォルダが実在しません。\n再度エクスポート先を指定してください。", "OK");
-                return;
-            }
-
-            if (!WarnIfFileExist(destinationDir))
+            
+            if (!IsValidExportArgs(destinationDir, target))
             {
                 return;
             }
-
+            
             var format = meshFileFormatGui.SelectedFormat;
             var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, this.exportHiddenObject,
                 format, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[format].GetExporter());
@@ -172,6 +195,69 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             Dialogue.Display("エクスポートが完了しました。", "OK");
+        }
+
+        private async Task Export(string destinationDir, PLATEAUTileManager target)
+        {
+            if(!IsValidExportArgs(destinationDir, target))
+            {
+                return;
+            }
+            var format = meshFileFormatGui.SelectedFormat;
+            var meshExportOptions = new MeshExportOptions(this.meshTransformType, this.exportTextures, exportDefaultTextures, true,
+                format, coordinateSystemGui.SelectedCoordinateSystem, this.formatToExporterGUI[format].GetExporter());
+            using (var progress = new ProgressBar("エクスポート中..."))
+            {
+                try
+                {
+                    var exporter = new UnityModelExporter();
+                    await exporter.Export(destinationDir, target, meshExportOptions, progress, default);
+                }
+                catch (Exception e)
+                {
+                    Dialogue.Display("エラーによりエクスポートを中止しました。", "OK");
+                    Debug.LogError(e);
+                    return;
+                }
+                finally
+                {
+                    dynamicTileExportTask = null;
+                }
+
+                EditorUtility.RevealInFinder(destinationDir +"/");
+            }
+
+            Dialogue.Display("エクスポートが完了しました。", "OK");
+            
+        }
+        
+        //共通の引数関係のvalidation
+        private bool IsValidExportArgs(string destinationDir, UnityEngine.Object target)
+        {
+            if (target == null)
+            {
+                Dialogue.Display("エクスポート失敗：\nエクスポート対象を指定してください。", "OK");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(destinationDir))
+            {
+                Dialogue.Display("エクスポート失敗：\nエクスポート先を指定してください。", "OK");
+                return false;
+            }
+
+            if (!Directory.Exists(destinationDir))
+            {
+                Dialogue.Display("エクスポート失敗：\nエクスポート先フォルダが実在しません。\n再度エクスポート先を指定してください。", "OK");
+                return false;
+            }
+
+            if (!WarnIfFileExist(destinationDir))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
