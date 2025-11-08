@@ -215,6 +215,7 @@ namespace PLATEAU.CityImport.Import
                 token?.ThrowIfCancellationRequested();
 
                 await ImportGmlParallel(fetchedGmlFiles, 10f, 30f, token); // GML読込
+                
                 await ImportTiles(11, 40f, 60f, token);
                 await ImportTiles(10, 60f, 80f, token);
                 await ImportTiles(9, 80f, 100f, token);
@@ -705,9 +706,10 @@ namespace PLATEAU.CityImport.Import
             }
             else if (zoomLevel == 9)
             {
+                //zoomLevel9のときはLOD1テクスチャを作成する関係でLOD1,2を抽出させる
                 meshExtractOptions.MeshGranularity = MeshGranularity.PerCityModelArea;
                 meshExtractOptions.GridCountOfSide = 1;
-                meshExtractOptions.HighestLodOnly = false; // 高精細メッシュのみを抽出
+                meshExtractOptions.HighestLodOnly = false;
                 meshExtractOptions.SetLODRange(1,2);
             }
 
