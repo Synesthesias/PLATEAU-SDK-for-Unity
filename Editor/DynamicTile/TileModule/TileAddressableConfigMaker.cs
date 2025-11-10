@@ -21,6 +21,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         /// </summary>
         public bool OnTileGenerateStart()
         {
+            // すでに同名のグループが存在する場合、一度削除します。
+            // こうしないと、Assets内のタイルを更新したケースで更新が反映されなくなります。
+            AddressablesUtility.RemoveGroup(context.AddressableGroupName);
+            
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile();
             if (string.IsNullOrEmpty(profileID))
