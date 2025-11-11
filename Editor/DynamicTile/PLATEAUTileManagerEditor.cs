@@ -14,6 +14,8 @@ namespace PLATEAU.DynamicTile
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
+        private SerializedProperty onTileInstantiatedProperty;
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -113,6 +115,11 @@ namespace PLATEAU.DynamicTile
                 }
                 
                 EditorGUILayout.LabelField("OutputPath: " + tileManager.OutputPath);
+                EditorGUILayout.Space();
+                
+                // Event表示
+                EditorGUILayout.PropertyField(onTileInstantiatedProperty);
+                serializedObject.ApplyModifiedProperties();
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
@@ -192,6 +199,7 @@ namespace PLATEAU.DynamicTile
         public void OnEnable()
         {
             isShowingZoomLevel = false;
+            onTileInstantiatedProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.onTileInstantiated));
         }
 
         public void OnDisable()
