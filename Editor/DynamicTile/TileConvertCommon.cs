@@ -1,5 +1,4 @@
-﻿using PLATEAU.DynamicTile;
-using PLATEAU.Editor.DynamicTile;
+﻿using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
 using PLATEAU.Util;
 using System;
@@ -11,8 +10,9 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.Window.Common.Tile
+namespace PLATEAU.DynamicTile
 {
+    // 主にUI等でで使用する各種処理のまとめ
     internal class TileConvertCommon
     {
         /// <summary>

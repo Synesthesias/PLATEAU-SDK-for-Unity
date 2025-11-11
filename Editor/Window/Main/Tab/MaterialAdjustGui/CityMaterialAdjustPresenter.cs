@@ -359,7 +359,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 result = await tileConvert.ExecMaterialAdjustAsync(conf, maExecutor);
-                if (DoDestroySrcObjs && tileConvert.Selected.Count == 0) IsSearched = false;
+                if (DoDestroySrcObjs && tileConvert.Selected?.Count == 0) IsSearched = false;
             }
             else
             {
