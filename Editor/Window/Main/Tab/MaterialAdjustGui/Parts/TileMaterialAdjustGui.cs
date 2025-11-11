@@ -4,6 +4,7 @@ using PLATEAU.CityImport.Import.Convert;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;

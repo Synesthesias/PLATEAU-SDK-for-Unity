@@ -1,4 +1,4 @@
-using PLATEAU.CityAdjust.NonLibData;
+﻿using PLATEAU.CityAdjust.NonLibData;
 using PLATEAU.CityAdjust.NonLibDataHolder;
 using PLATEAU.CityExport.ModelConvert;
 using PLATEAU.CityExport.ModelConvert.SubMeshConvert;
@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -24,17 +25,14 @@ using UnityEditor.SceneManagement;
 
 namespace PLATEAU.CityAdjust.AlignLand
 {
-    public class AlignLandExecutor
+    internal class TileAlignLandExecutor : AlignLandExecutor
     {
-        protected const float HeightOffset = 0.3f; // 高さ合わせの結果に対して、埋まらないようにこれだけ上げます(メートル)
-        
-        public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
+        public async Task ExecAsync(ALTileConfig conf, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress("", 0f, "ハイトマップを作成中...");
-            var landTransforms = conf.Lands;
-
             List<ConvertedTerrainData.HeightmapData> heightmaps = new();
-            
+            var landTransforms = conf.LandTransformList;
+
             // 土地ごとのループ
             foreach (var land in landTransforms)
             {
@@ -61,32 +59,35 @@ namespace PLATEAU.CityAdjust.AlignLand
                     return;
                 }
             }
-           
 
             // 高さを変えるモデルについて情報収集します。
             progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
             var alignTarget = new UniqueParentTransformList();
             var alignInvertTarget = new UniqueParentTransformList();
-            foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
-            {
-                var package = conf.TargetModel.GetPackage(cog);
-                if (!conf.TargetPackages.Contains(package)) continue;
-                var targetMf = cog.GetComponent<MeshFilter>();
-                if (targetMf == null) continue;
-                var targetMesh = targetMf.sharedMesh;
-                if (targetMesh == null) continue;
 
-                // LOD3の道路は、道路の高さの正確性を尊重するため、土地のほうを道路に合わせます。
-                // それ以外はモデルを土地に合わせます。
-                if (package == PredefinedCityModelPackage.Road && cog.Lod >= 3)
+            var alignTransforms = conf.AlignTransformList;
+            foreach (var transform in alignTransforms)
+            {
+                foreach(var cog in transform.GetComponentsInChildren<PLATEAUCityObjectGroup>())
                 {
-                    alignInvertTarget.Add(cog.transform);
+                    var package = conf.TileManager.CityModel.GetPackage(cog);
+                    if (!package.CanAlignWithLand()) continue;
+                    var targetMf = cog.GetComponent<MeshFilter>();
+                    if (targetMf == null) continue;
+                    var targetMesh = targetMf.sharedMesh;
+                    if (targetMesh == null) continue;
+
+                    // LOD3の道路は、道路の高さの正確性を尊重するため、土地のほうを道路に合わせます。
+                    // それ以外はモデルを土地に合わせます。
+                    if (package == PredefinedCityModelPackage.Road && cog.Lod >= 3)
+                    {
+                        alignInvertTarget.Add(cog.transform);
+                    }
+                    else
+                    {
+                        alignTarget.Add(cog.transform);
+                    }
                 }
-                else
-                {
-                    alignTarget.Add(cog.transform);
-                }
-                
             }
 
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
@@ -94,7 +95,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                 new NameToAttrsDict(),
                 new ContourMeshesMaker()
             );
-            nonLibDataHolder.ComposeFrom(new []{alignTarget, alignInvertTarget});
+            nonLibDataHolder.ComposeFrom(new[] { alignTarget, alignInvertTarget });
 
             // 土地の高さをC++に送ります。
             using var heightmapAligner = HeightMapAligner.Create(HeightOffset, CoordinateSystem.EUN);
@@ -102,8 +103,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             {
                 heightmapAligner.AddHeightmapFrame(m.HeightData, m.textureWidth, m.textureHeight, (float)m.min.X, (float)m.max.X, (float)m.min.Y, (float)m.max.Y, (float)m.min.Z, (float)m.max.Z, CoordinateSystem.EUN);
             }
-            
-            
+
             var resultTransforms = new UniqueParentTransformList();
             var alTargets = alignTarget.Get.ToArray();
             var alignTargetModels = new Model[alTargets.Length];
@@ -112,7 +112,7 @@ namespace PLATEAU.CityAdjust.AlignLand
             for (int i = 0; i < alTargets.Length; i++)
             {
                 var target = alTargets[i];
-                progressDisplay.SetProgress(target.name, ((float)i * 100)/alTargets.Length, "共通ライブラリのModelに変換中...");
+                progressDisplay.SetProgress(target.name, ((float)i * 100) / alTargets.Length, "共通ライブラリのModelに変換中...");
                 subMeshConverters[i] = new GameMaterialIDRegistry();
                 alignTargetModels[i] = UnityMeshToDllModelConverter.Convert(
                     new UniqueParentTransformList(target),
@@ -120,7 +120,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                     false,
                     VertexConverterFactory.NoopConverter());
             }
-
+            
             if (conf.AlignInvert)
             {
                 // 逆高さ合わせのモデルをC++のModelに変換します
@@ -129,7 +129,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                 for (int i = 0; i < alInvertTargets.Length; i++)
                 {
                     var target = alInvertTargets[i];
-                    progressDisplay.SetProgress(target.name, ((float)i * 100)/alInvertTargets.Length, "共通ライブラリのModelに変換中(alignInvert対象)...");
+                    progressDisplay.SetProgress(target.name, ((float)i * 100) / alInvertTargets.Length, "共通ライブラリのModelに変換中(alignInvert対象)...");
                     alignInvertTargetModels[i] = UnityMeshToDllModelConverter.Convert(
                         new UniqueParentTransformList(target),
                         new UnityMeshToDllSubMeshWithEmptyMaterial(),
@@ -137,15 +137,14 @@ namespace PLATEAU.CityAdjust.AlignLand
                         VertexConverterFactory.NoopConverter()
                     );
                 }
-            
-
+                
                 // 逆高さ合わせ（土地をモデルに合わせる）
                 foreach (var m in alignInvertTargetModels)
                 {
                     heightmapAligner.AlignInvert(m);
                 }
                 // 逆高さ合わせの結果を反映
-                for (int i = 0; i < landTransforms.Length; i++)
+                for (int i = 0; i < landTransforms.Count; i++)
                 {
                     var land = landTransforms[i];
                     var heightmap1d = heightmapAligner.GetHeightMapAt(i);
@@ -176,19 +175,19 @@ namespace PLATEAU.CityAdjust.AlignLand
                     resultTransforms.Add(land);
                 }
             }
-
+            
             if (conf.AlignLandNormal)
             {
                 // 高さ合わせをします
                 for (int i = 0; i < alTargets.Length; i++)
                 {
                     var target = alTargets[i];
-                    progressDisplay.SetProgress(target.name, ((float)i * 100)/alTargets.Length, "高さを変換中...");
-                
-            
+                    progressDisplay.SetProgress(target.name, ((float)i * 100) / alTargets.Length, "高さを変換中...");
+
+
                     // 高さ合わせをします。
                     heightmapAligner.Align(alignTargetModels[i]);
-            
+
                     var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                         null, new DummyProgressDisplay(), "",
                         new PlaceToSceneConfig(new RecoverFromGameMaterialID(subMeshConverters[i]), true, null, null,
@@ -199,22 +198,21 @@ namespace PLATEAU.CityAdjust.AlignLand
                             true),
                         true
                     );
-                
+
                     // 親を変換前と同じにします。
                     foreach (var r in result.GeneratedRootTransforms.Get)
                     {
                         r.parent = target.parent;
                     }
-                
+
                     resultTransforms.AddRange(result.GeneratedRootTransforms.Get);
                 }
-                
+
             }
-            
             
             // 変換前の情報を復元します。
             nonLibDataHolder.RestoreTo(resultTransforms);
-            
+
             // 復元後に元のオブジェクトを削除します。
             if (conf.AlignLandNormal && conf.DoDestroySrcObj)
             {
@@ -223,55 +221,14 @@ namespace PLATEAU.CityAdjust.AlignLand
                     Object.DestroyImmediate(src.gameObject);
                 }
             }
-            
-            
-            #if UNITY_EDITOR
+
+#if UNITY_EDITOR
             var selected = Selection.objects.ToList();
             selected.AddRange(resultTransforms.Get.Select(trans => trans.gameObject).Cast<Object>());
             Selection.objects = selected.ToArray();
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
 #endif
-        }
-        
-        /// <summary>
-        /// メッシュ形式の土地からハイトマップを生成します。
-        /// 失敗時はnullを返します。
-        /// </summary>
-        internal List<ConvertedTerrainData.HeightmapData> CreateHeightMapFromMesh(Transform landTrans, ALConfigBase conf)
-        {
-            Debug.Log($"CreateHeightMapFromMesh");
 
-            var landMf = landTrans.GetComponent<MeshFilter>();
-            if (landMf == null) return null;
-            var landMesh = landMf.sharedMesh;
-            if (landMesh == null) return null;
-            var landModel = UnityMeshToDllModelConverter.Convert(
-                new UniqueParentTransformList(landTrans),
-                new UnityMeshToDllSubMeshWithEmptyMaterial(),
-                false,
-                VertexConverterFactory.NoopConverter());
-            var terrain = new ConvertedTerrainData(
-                landModel,
-                new TerrainConvertOption(new GameObject[] { landTrans.gameObject }, conf.HeightmapWidth, false,
-                    conf.FillEdges, conf.ApplyConvolutionFilterToHeightMap, true, TerrainConvertOption.ImageOutput.PNG));
-            var heightmaps = terrain.GetHeightmapDataRecursive();
-            if (heightmaps.Count == 0) return null;
-            return heightmaps;
-        }
-    }
-
-    public class MinMax3d
-    {
-        public Vector3 Min { get; set; } = new Vector3(99999, 99999, 99999);
-        public Vector3 Max { get; set; } = new Vector3(-99999, -99999, -99999);
-
-        /// <summary>
-        /// 指定地点がMinMaxの範囲内に収まるようにMinMaxを調整します。
-        /// </summary>
-        public void Include(Vector3 p)
-        {
-            Min = new Vector3(Mathf.Min(Min.x, p.x), Mathf.Min(Min.y, p.y), Mathf.Min(Min.z, p.z));
-            Max = new Vector3(Mathf.Max(Max.x, p.x), Mathf.Max(Max.y, p.y), Mathf.Max(Max.z, p.z));
         }
     }
 }

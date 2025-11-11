@@ -1,39 +1,74 @@
 ﻿using PLATEAU.CityAdjust.AlignLand;
-using System.Threading.Tasks;
+using PLATEAU.CityInfo;
+using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Common.Tile;
+using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
+using PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui;
 using PLATEAU.TerrainConvert;
+using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using System.Linq;
-using PLATEAU.CityInfo;
-using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
-using PLATEAU.Util;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
+using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
+    internal class CityTerrainConvertParam
+    {
+        internal static TerrainConvertOption.ImageOutput HEIGHTMAP_IMAGE_OUTPUT = TerrainConvertOption.ImageOutput.None;
+        internal static readonly string[] SizeOptions = { "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049" };
+        internal static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
+
+        public int SelectedSize { get; set; } = 1;
+        public bool FillEdges { get; set; } = true;
+        public bool ConvertToTerrain { get; set; }
+        public bool EnableTerrainConversion { get; set; }
+        public bool ApplyConvolutionFilterToHeightMap { get; set; }
+        public bool AlignLand { get; set; }
+        public bool AlignLandNormal { get; set; }
+        public bool AlignLandInvert { get; set; }
+        public PreserveOrDestroy PreserveOrDestroy { get; set; }
+
+        public int GetHeightmapWidth()
+        {
+            return (int)CityTerrainConvertParam.SizeValues.GetValue(SelectedSize);
+        }
+    }
+
     /// <summary>
     /// PLATEAU SDK ウィンドウで「地形変換」タブが選択されている時のGUIです。
     /// </summary>
     internal class CityTerrainConvertGui : ITabContent
     {
         private PLATEAUInstancedCityModel targetModel;
-        private int selectedSize = 1;
-        private bool fillEdges = true;
-        private static TerrainConvertOption.ImageOutput heightmapImageOutput = TerrainConvertOption.ImageOutput.None;
-        private static readonly string[] SizeOptions = { "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049" };
-        private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
-        private PreserveOrDestroy preserveOrDestroy;
-        private bool convertToTerrain;
-        private bool enableTerrainConversion;
-        private bool applyConvolutionFilterToHeightMap;
-        private bool alignLand;
-        private bool alignLandNormal;
-        private bool alignLandInvert;
+        //private int selectedSize = 1;
+        //private bool fillEdges = true;
+        //private static TerrainConvertOption.ImageOutput heightmapImageOutput = TerrainConvertOption.ImageOutput.None;
+        //private static readonly string[] SizeOptions = { "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049" };
+        //private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
+        //private PreserveOrDestroy preserveOrDestroy;
+        //private bool convertToTerrain;
+        //private bool enableTerrainConversion;
+        //private bool applyConvolutionFilterToHeightMap;
+        //private bool alignLand;
+        //private bool alignLandNormal;
+        //private bool alignLandInvert;
+        private CityTerrainConvertParam localParam;
         private EditorWindow parentWindow;
+
+        /// <summary>
+        /// シーンオブジェクト/動的タイルの現在選択されているタイプを返します。
+        /// </summary>
+        private ChooserType CurrentSceneTileSelectType => guis.Get<TileSceneTargetSelectGui>()?.SelectedType ?? ChooserType.SceneObject;
+
+        private TileTerrainConvert tileTerrainConvert;
+        private TileListElementData tileListData;
 
         private readonly ElementGroup guis;
         
@@ -43,11 +78,18 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public CityTerrainConvertGui(UnityEditor.EditorWindow parentEditorWindow)
         {
+            localParam = new CityTerrainConvertParam();
+            tileListData = new TileListElementData(parentEditorWindow);
+            tileTerrainConvert = new TileTerrainConvert(localParam, tileListData, parentWindow);
+            tileListData.EnableTileHierarchy = true; // タイル選択時に子要素も選択可能にするか？
+
             this.parentWindow = parentEditorWindow;
             guis =
                 new ElementGroup("",0,
                     new HeaderElementGroup("", "地形モデルの平滑化と地物の地形への高さ合わせを行います。", HeaderType.Subtitle),
-                    new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
+                    //new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
+                    new TileSceneTargetSelectGui("TargetSelect", OnTargetModelChanged, OnTargetTileManagerChanged, OnChooserTypeChanged),
+                    new TileListElement(tileListData),
                     new GeneralElement("", () => EditorGUILayout.HelpBox("選択された3D都市モデル内の地形モデルの平滑化・Terrain化及び地形に埋まっている各地物形状（道路、都市計画決定情報等）の高さ補正が行われます。", MessageType.Info)),
                     new GeneralElement("", NotifyIfInvalidTarget),
                     new HeaderElementGroup("", "設定", HeaderType.Header),
@@ -78,82 +120,115 @@ namespace PLATEAU.Editor.Window.Main.Tab
             return new IMGUIContainer(Draw);
         }
 
-
         private void Draw()
         {
             guis.Draw();
+        }
 
+        private void UpdateGui()
+        {
             // 不要な設定項目を隠す
-            var detailConf = guis.Get<FoldOutElement>("detailConf");
-            detailConf.ChildElementGroup.Get("terrainConf").IsVisible = convertToTerrain;
-            detailConf.ChildElementGroup.Get("alignLandConf").IsVisible = alignLand;
-            
+            var detailConf = guis?.Get<FoldOutElement>("detailConf");
+            if (detailConf != null)
+            {
+                detailConf.ChildElementGroup.Get("terrainConf").IsVisible = localParam.ConvertToTerrain;
+                detailConf.ChildElementGroup.Get("alignLandConf").IsVisible = localParam.AlignLand;
+            }
+
             // 実行中なら実行ボタンを変更
-            var execButton = guis.Get<ButtonElement>("execButton");
-            execButton.ButtonText = isExecTaskRunning ? ExecButtonTextRunning : ExecButtonTextNormal;
-            execButton.IsEnabled = !isExecTaskRunning;
+            var execButton = guis?.Get<ButtonElement>("execButton");
+            if (execButton != null)
+            {
+                execButton.ButtonText = isExecTaskRunning ? ExecButtonTextRunning : ExecButtonTextNormal;
+                execButton.IsEnabled = !isExecTaskRunning;
+            }
+
+            var tilelist = guis?.Get<TileListElement>();
+            if (tilelist != null)
+            {
+                tilelist.IsVisible = CurrentSceneTileSelectType == ChooserType.DynamicTile;
+            }
         }
 
         private void DrawHeightmapResolutionSelector()
         {
-            this.selectedSize =
+            localParam.SelectedSize =
                 PlateauEditorStyle.PopupWithLabelWidth(
-                    "ハイトマップ解像度", this.selectedSize, SizeOptions, 110);
+                    "ハイトマップ解像度", localParam.SelectedSize, CityTerrainConvertParam.SizeOptions, 110);
         }
 
-        private void WarnAlignLandToLod3RoadNotWorking()
+        private void SetTaskRunning(bool running)
         {
-            if (targetModel == null) return;
-            if (alignLandInvert && (targetModel.GetComponent<Terrain>() == null && targetModel.GetComponent<PLATEAUSmoothedDem>() == null) && (!convertToTerrain))
-            {
-                EditorGUILayout.HelpBox("土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。", MessageType.Warning);   
-            }
+            isExecTaskRunning = running;
+            UpdateGui();
+        }
+
+        private void OnChooserTypeChanged(SceneTileChooserGui.ChooserType chooserType)
+        {
+            parentWindow.Repaint();
+            UpdateGui();
+        }
+
+        /// <summary> GUIで変換対象のタイルマネージャーが変更された時 </summary>
+        private void OnTargetTileManagerChanged(PLATEAUTileManager tileManager)
+        {
+            tileListData.TileManager = tileManager;
+            UpdateGui();
         }
 
         /// <summary> GUIで変換対象の都市モデルが変更された時 </summary>
         private void OnTargetModelChanged(PLATEAUInstancedCityModel selectedModel)
         {
             targetModel = selectedModel;
+            UpdateGui();
         }
 
         private void OnPreserveOrDestroyChanged(PreserveOrDestroy pod)
         {
-            preserveOrDestroy = pod;
+            localParam.PreserveOrDestroy = pod;
+            UpdateGui();
         }
 
         private void OnApplyConvolutionFilterChanged(bool value)
         {
-            applyConvolutionFilterToHeightMap = value;
+            localParam.ApplyConvolutionFilterToHeightMap = value;
+            UpdateGui();
         }
 
         private void OnConvertToTerrainChanged(bool value)
         {
-            convertToTerrain = value;
+            localParam.ConvertToTerrain = value;
+            UpdateGui();
         }
 
         private void OnEnableTerrainConversionChanged(bool value)
         {
-            enableTerrainConversion = value;
+            localParam.EnableTerrainConversion = value;
+            UpdateGui();
         }
 
         private void OnChangeAlignLand(bool value)
         {
-            alignLand = value;
+            localParam.AlignLand = value;
+            UpdateGui();
         }
 
         private void OnFillEdgesChanged(bool value)
         {
-            fillEdges = value;
+            localParam.FillEdges = value;
+            UpdateGui();
         }
 
         private void OnChangeAlignLandNormal(bool value)
         {
-            alignLandNormal = value;
+            localParam.AlignLandNormal = value;
+            UpdateGui();
         }
         
         private void OnAlignLandInvertChanged(bool value)
         {
-            alignLandInvert = value;
+            localParam.AlignLandInvert = value;
+            UpdateGui();
         }
         
 
@@ -194,40 +269,73 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// <summary> ここで実行します </summary>
         private async Task Exec()
         {
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            {
+                SetTaskRunning(true);
+                await tileTerrainConvert.Exec();
+                SetTaskRunning(false);
+                return;
+            }
+
             if (!CanExecOrNotify()) return;
-            isExecTaskRunning = true;
-            int heightmapWidth = (int)SizeValues.GetValue(selectedSize);
+            SetTaskRunning(true);
+
+            int heightmapWidth = (int)CityTerrainConvertParam.SizeValues.GetValue(localParam.SelectedSize);
             Selection.objects = new Object[] { };
 
             // Terrainに変換します
-            if (convertToTerrain)
+            if (localParam.ConvertToTerrain)
             {
                 var converter = new CityTerrainConverter();
                 var convertOption = new TerrainConvertOption(
                     FilterDemItems(new GameObject[]{targetModel.gameObject}),
                     heightmapWidth,
-                    preserveOrDestroy == PreserveOrDestroy.Destroy,
-                    fillEdges,
-                    applyConvolutionFilterToHeightMap,
-                    enableTerrainConversion,
-                    heightmapImageOutput
+                    localParam.PreserveOrDestroy == PreserveOrDestroy.Destroy,
+                    localParam.FillEdges,
+                    localParam.ApplyConvolutionFilterToHeightMap,
+                    localParam.EnableTerrainConversion,
+                    CityTerrainConvertParam.HEIGHTMAP_IMAGE_OUTPUT
                 );
 
                 await converter.ConvertAsync(convertOption);
             }
 
             // 高さ合わせを実行します
-            if (alignLand || ((!alignLandNormal) && (!alignLandInvert)))
+            if (localParam.AlignLand || ((!localParam.AlignLandNormal) && (!localParam.AlignLandInvert)))
             {
                 ExecAlignLand(heightmapWidth);
             }
             
-            isExecTaskRunning = false;
             parentWindow.Repaint(); // テキストが「実行中...」に変わったボタンを元に戻します
+            SetTaskRunning(false);
+        }
+        private void WarnAlignLandToLod3RoadNotWorking()
+        {
+            const string WARNING_MESSAGE = "土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。";
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            {
+                if (!tileTerrainConvert?.IsAlignLandToLod3RoadNotWorking ?? true)
+                    EditorGUILayout.HelpBox(WARNING_MESSAGE, MessageType.Warning);
+                return;
+            }
+
+            if (targetModel == null) return;
+            if (localParam.AlignLandInvert && (targetModel.GetComponent<Terrain>() == null && targetModel.GetComponent<PLATEAUSmoothedDem>() == null) && (!localParam.ConvertToTerrain))
+            {
+                EditorGUILayout.HelpBox(WARNING_MESSAGE, MessageType.Warning);
+            }
         }
 
         private void NotifyIfInvalidTarget()
         {
+            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            {
+                if(!tileTerrainConvert?.IsReliefSelected ?? false)
+                    EditorGUILayout.HelpBox("変換対象のタイルに土地が含まれていません。", MessageType.Error);
+                return;
+            }
+
+
             if (targetModel == null) return;
             if (!new ALTargetSearcher(targetModel).IsLandExist())
             {
@@ -246,7 +354,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 Dialogue.Display("変換対象の都市モデルが選択されていません。", "OK");
                 return false;
             }
-            if(!(alignLand || convertToTerrain))
+            if(!(localParam.AlignLand || localParam.ConvertToTerrain))
             {
                 Dialogue.Display("処理がすべてオフになっています。処理を選択してください。", "OK");
                 return false;
@@ -268,7 +376,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 return;
             }
             // 高さ合わせを実行します
-            var conf = searcher.ToConfig(preserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth, fillEdges, applyConvolutionFilterToHeightMap, alignLandNormal, alignLandInvert);
+            var conf = searcher.ToConfig(localParam.PreserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth, localParam.FillEdges, localParam.ApplyConvolutionFilterToHeightMap, localParam.AlignLandNormal, localParam.AlignLandInvert);
             ExecAlignLandInner().ContinueWithErrorCatch();
 
             // 非同期部分のインナーメソッド
@@ -282,7 +390,9 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public void Dispose()
         {
+            tileListData?.Dispose();
             guis.Dispose();
+            tileTerrainConvert?.Dispose();
         }
     }
 }
