@@ -15,6 +15,7 @@ namespace PLATEAU.DynamicTile
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
         private SerializedProperty onTileInstantiatedProperty;
+        private SerializedProperty beforeTileUnloadProperty;
 
         public override void OnInspectorGUI()
         {
@@ -30,6 +31,7 @@ namespace PLATEAU.DynamicTile
 
             // Event表示
             EditorGUILayout.PropertyField(onTileInstantiatedProperty);
+            EditorGUILayout.PropertyField(beforeTileUnloadProperty);
 
             // デバッグ表示トグル
             var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
@@ -198,6 +200,7 @@ namespace PLATEAU.DynamicTile
         {
             isShowingZoomLevel = false;
             onTileInstantiatedProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.onTileInstantiated));
+            beforeTileUnloadProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.beforeTileUnload));
         }
 
         public void OnDisable()

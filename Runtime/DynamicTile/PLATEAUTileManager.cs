@@ -10,7 +10,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Serialization;
 
 namespace PLATEAU.DynamicTile
 {
@@ -83,9 +82,14 @@ namespace PLATEAU.DynamicTile
         /// タイルがインスタンス化されたときに発火するイベントで、タイルのゲームオブジェクトが渡されます。
         /// SDKの利用者がタイルに対して処理を行いたい場合に利用します。
         /// </summary>
-        [SerializeField]
-        public UnityEvent<GameObject> onTileInstantiated;
+        [SerializeField] public UnityEvent<GameObject> onTileInstantiated = new();
 
+        /// <summary>
+        /// タイルがアンロードされる直前に発火するイベントで、タイルのゲームオブジェクトが渡されます。
+        /// SDKの利用者向けです。
+        /// </summary>
+        [SerializeField] public UnityEvent<GameObject> beforeTileUnload = new();
+        
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
