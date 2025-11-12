@@ -225,7 +225,14 @@ namespace PLATEAU.DynamicTile
                 // Instance削除
                 if (tile.LoadedObject != null)
                 {
-                    loadTask.TileManager.beforeTileUnload?.Invoke(tile.LoadedObject);
+                    try
+                    {
+                        loadTask.TileManager.beforeTileUnload?.Invoke(tile.LoadedObject);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
                 }
                 loadTask.TileManager.DeleteGameObjectInstance(tile.LoadedObject);
                 tile.Reset(); // タイルの状態をリセット
