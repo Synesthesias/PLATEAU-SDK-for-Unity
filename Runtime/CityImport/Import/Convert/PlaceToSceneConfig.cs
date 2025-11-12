@@ -26,9 +26,14 @@ namespace PLATEAU.CityImport.Import.Convert
         public CityObjectGroupInfoForToolkits InfoForToolkits { get; }
 
         public MeshGranularity Granularity { get; }
+
+        /// <summary>
+        /// GameObject名の先頭に文字列追加(ユニーク名）
+        /// </summary>
+        public string Prefix { get; }
         
 
-        public PlaceToSceneConfig(IDllSubMeshToUnityMaterialConverter materialConverter, bool doSetMeshCollider, CancellationToken? cancellationToken, UnityEngine.Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity)
+        public PlaceToSceneConfig(IDllSubMeshToUnityMaterialConverter materialConverter, bool doSetMeshCollider, CancellationToken? cancellationToken, UnityEngine.Material fallbackMaterial, CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity, string prefix = null)
         {
             MaterialConverter = materialConverter;
             DoSetMeshCollider = doSetMeshCollider;
@@ -36,6 +41,7 @@ namespace PLATEAU.CityImport.Import.Convert
             FallbackMaterial = fallbackMaterial;
             InfoForToolkits = infoForToolkits;
             Granularity = granularity;
+            Prefix = prefix;
         }
     }
 }

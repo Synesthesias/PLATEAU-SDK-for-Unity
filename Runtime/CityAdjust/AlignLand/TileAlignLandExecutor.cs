@@ -191,7 +191,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                     var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                         null, new DummyProgressDisplay(), "",
                         new PlaceToSceneConfig(new RecoverFromGameMaterialID(subMeshConverters[i]), true, null, null,
-                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
+                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject, "ALIGNED"),
                         alignTargetModels[i],
                         new AttributeDataHelper(
                             new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), alignTargetModels[i]),

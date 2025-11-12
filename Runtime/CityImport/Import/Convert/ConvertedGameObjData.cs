@@ -106,7 +106,7 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             parent = parent
                         },
-                        name = this.name,
+                        name = GetRevisedName(conf.Prefix),
                         isStatic = true,
                     };
                     obj.SetActive(isActive);
@@ -125,11 +125,12 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
+                        nextParent.gameObject.name = GetRevisedName(conf.Prefix); // GameObject名変更
                         result.Add(nextParent.gameObject);
                     }
                 }
  
-                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == this.name)
+                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == GetRevisedName(conf.Prefix))
                 {
                     //　属性情報表示コンポーネントを追加します。
                     var serialized = this.attributeDataHelper.GetSerializableCityObject();
@@ -172,6 +173,20 @@ namespace PLATEAU.CityImport.Import.Convert
 
             lod = -1;
             return false;
+        }
+
+        /// <summary>
+        /// PlaceToSceneConfigのPrefixに応じてGameObject名を変更
+        /// </summary>
+        /// <param name="prifix">PlaceToSceneConfigのPrefix</param>
+        /// <returns></returns>
+        private string GetRevisedName(string prifix)
+        {
+            if (!string.IsNullOrEmpty(prifix))
+            {
+                return $"{prifix}_{this.name}";
+            }
+            return this.name;
         }
     }
 }
