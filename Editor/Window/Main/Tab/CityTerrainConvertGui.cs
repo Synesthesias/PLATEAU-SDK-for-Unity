@@ -87,7 +87,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
             guis =
                 new ElementGroup("",0,
                     new HeaderElementGroup("", "地形モデルの平滑化と地物の地形への高さ合わせを行います。", HeaderType.Subtitle),
-                    //new ObjectFieldElement<PLATEAUInstancedCityModel>("", "変換対象", OnTargetModelChanged),
                     new TileSceneTargetSelectGui("TargetSelect", OnTargetModelChanged, OnTargetTileManagerChanged, OnChooserTypeChanged),
                     new TileListElement(tileListData),
                     new GeneralElement("", () => EditorGUILayout.HelpBox("選択された3D都市モデル内の地形モデルの平滑化・Terrain化及び地形に埋まっている各地物形状（道路、都市計画決定情報等）の高さ補正が行われます。", MessageType.Info)),
@@ -113,6 +112,8 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     new HeaderElementGroup("", "", HeaderType.Separator),
                     new ButtonElement("execButton", ExecButtonTextNormal, ()=>Exec().ContinueWithErrorCatch())
                 );
+
+            tileTerrainConvert.SetConversionFinishCallback( () => guis.Get<TileSceneTargetSelectGui>().Reset() );
         }
 
         public VisualElement CreateGui()

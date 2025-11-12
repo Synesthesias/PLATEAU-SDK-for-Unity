@@ -109,6 +109,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
         public override void Reset()
         {
             base.Reset();
+            OnChooserTypeChanged(sceneTileChooser.SelectedType);
         }
     }
 }

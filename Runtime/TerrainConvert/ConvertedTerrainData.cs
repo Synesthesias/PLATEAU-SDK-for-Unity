@@ -310,6 +310,7 @@ namespace PLATEAU.TerrainConvert
                     string prevTextureName = TextureName(srcTrans);
                     
                     var gameObject = await mesh.PlaceToScene(srcTrans.parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
+                    gameObject.name = $"SMOOTHED_{gameObject.name}";
 
                     var smoothedDem = gameObject.AddComponent<PLATEAUSmoothedDem>();
                     smoothedDem.HeightMapData = heightmapData;

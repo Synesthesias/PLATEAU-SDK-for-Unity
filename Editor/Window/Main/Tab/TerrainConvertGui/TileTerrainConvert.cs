@@ -23,6 +23,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
         private TileListElementData tileListElementData;
         private EditorWindow parentEditorWindow;
         private TileRebuilder tileRebuilder;
+        private Action ConversionFinishCallback;
 
         /// <summary>
         /// 変換対象の都市モデルに土地が含まれているかチェック
@@ -57,9 +58,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             parentEditorWindow = parent;
         }
 
+        public void SetConversionFinishCallback(Action conversionFinishCallback)
+        {
+            ConversionFinishCallback = conversionFinishCallback;
+        }
+
         public void Dispose()
         {
-            
+            ConversionFinishCallback = null;
         }
 
         public void Repaint()
@@ -127,6 +133,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
                     tileRebuilder?.CancelRebuild();
                 }
             }
+
+            ConversionFinishCallback?.Invoke();
         }
 
         // 地形のタイルTransform取得( 地形の場合は、Tileの下層は扱わない　）
