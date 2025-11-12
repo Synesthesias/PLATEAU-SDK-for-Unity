@@ -1,7 +1,8 @@
 ﻿using PLATEAU.Util;
-using UnityEngine;
-using UnityEditor;
+using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 namespace PLATEAU.CityAdjust.NonLibData
 {
@@ -34,29 +35,72 @@ namespace PLATEAU.CityAdjust.NonLibData
                     var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
                     AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
 
+                    List<TerrainLayer> newLayers = new();
                     int layerIndex = 0;
                     foreach (var layer in terrainData.terrainLayers)
                     {
                         if (layer.diffuseTexture != null)
                         {
-                            //　DiffuseTexture保存
-                            byte[] pngData = layer.diffuseTexture.EncodeToPNG();
-                            string texturePath = AssetPathUtil.GetAssetPath($"{assetPath}/{terrain.name}_{layerIndex}.png");
-                            File.WriteAllBytes(AssetPathUtil.GetFullPath(texturePath), pngData);
-                            AssetDatabase.ImportAsset(texturePath);
-                            Texture2D savedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+                            string originalTexturePath = AssetDatabase.GetAssetPath(layer.diffuseTexture);
+                            string saveTexturePath = AssetPathUtil.GetAssetPath($"{assetPath}/{terrain.name}_{layerIndex}.png"); //新規作成時のパス(temp folder)
+                            if (string.IsNullOrEmpty(originalTexturePath))
+                            {
+                                //　DiffuseTexture保存
+                                byte[] pngData = layer.diffuseTexture.EncodeToPNG();
+                                File.WriteAllBytes(AssetPathUtil.GetFullPath(saveTexturePath), pngData);
+                            }
+                            else
+                            {
+                                //　既存アセットが存在する場合
+                                File.Copy(originalTexturePath, saveTexturePath, overwrite: true); // ソースフォルダからtempフォルダにコピー
+                            }
+
+                            AssetDatabase.ImportAsset(saveTexturePath);
+                            Texture2D savedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(saveTexturePath);
                             layer.diffuseTexture = savedTexture;
 
                             // Terrain Layer 保存
                             string layerPath = AssetPathUtil.GetAssetPath($"{assetPath}/{terrain.name}_layer{layerIndex}.asset");
-                            AssetDatabase.CreateAsset(layer, layerPath);
+                            if (!CanCreateAsset(layer, layerPath)) // 既存アセットがある場合
+                            {
+                                TerrainLayer newTerrainLayer = UnityEngine.Object.Instantiate(layer);
+                                AssetDatabase.CreateAsset(newTerrainLayer, layerPath);
+                                TerrainLayer loadedTerrainLayer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);
+                                string texturePath2 = AssetDatabase.GetAssetPath(loadedTerrainLayer.diffuseTexture);
+                                newLayers.Add(loadedTerrainLayer);
+                                EditorUtility.SetDirty(layer);
+                            }         
+                            else
+                            {
+                                AssetDatabase.CreateAsset(layer, layerPath);
+                                newLayers.Add(layer);
+                            }
+
                             layerIndex++;
                         }
                     }
 
                     // Terrain Data保存
                     var terrainPath = AssetPathUtil.GetAssetPath($"{assetPath}/{terrain.name}.asset");
-                    AssetDatabase.CreateAsset(terrainData, terrainPath);
+                    if(!CanCreateAsset(terrainData, terrainPath)) // 既存アセットがある場合
+                    {
+                        TerrainData newTerrainData = UnityEngine.Object.Instantiate(terrainData);
+                        newTerrainData.terrainLayers = newLayers.ToArray();
+                        AssetDatabase.CreateAsset(newTerrainData, terrainPath);
+                        TerrainData loadedTerrainData = AssetDatabase.LoadAssetAtPath<TerrainData>(terrainPath);
+                        terrain.terrainData = loadedTerrainData;
+                        EditorUtility.SetDirty(terrain);
+                    } 
+                    else
+                    {
+                        AssetDatabase.CreateAsset(terrainData, terrainPath);
+                    }
+
+                    var collider = trans.GetComponent<TerrainCollider>();
+                    if(collider != null)
+                    {
+                        collider.terrainData = terrain.terrainData;
+                    }
                 }
                 return NextSearchFlow.Continue;
             });
@@ -67,5 +111,15 @@ namespace PLATEAU.CityAdjust.NonLibData
         public void RestoreTo(UniqueParentTransformList target)
         {
         }
+
+#if UNITY_EDITOR
+        bool CanCreateAsset(UnityEngine.Object obj, string path)
+        {
+            bool isUnregistered = string.IsNullOrEmpty(AssetDatabase.GetAssetPath(obj));
+            bool pathIsFree = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path) == null;
+            return isUnregistered && pathIsFree;
+        }
+
+#endif
     }
 }
