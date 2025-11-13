@@ -321,7 +321,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
 
             if (targetModel == null) return;
-            if (localParam.AlignLandInvert && (targetModel.GetComponent<Terrain>() == null && targetModel.GetComponent<PLATEAUSmoothedDem>() == null) && (!localParam.ConvertToTerrain))
+            if (localParam.AlignLandInvert && (targetModel.GetComponentInChildren<Terrain>() == null && targetModel.GetComponentInChildren<PLATEAUSmoothedDem>() == null) && (!localParam.ConvertToTerrain))
             {
                 EditorGUILayout.HelpBox(WARNING_MESSAGE, MessageType.Warning);
             }
