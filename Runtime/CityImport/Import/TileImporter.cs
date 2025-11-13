@@ -21,6 +21,7 @@ namespace PLATEAU.CityImport.Import
 {
     internal class TileImporter : IDisposable
     {
+        private const bool LogTime = false;
         /// <summary>
         /// <see cref="CityImporter"/> のインポート処理に代わるタイル用インポート処理です。
         /// GMLファイルから都市モデルを読み、Tile用のメッシュ、GameObjectを生成します。
@@ -251,7 +252,7 @@ namespace PLATEAU.CityImport.Import
             foreach (var fetchedGmlFile in fetchedGmlFiles)
             {
                 token?.ThrowIfCancellationRequested();
-                await ImportGmlInner(fetchedGmlFile, startProgess, endProgress, token);
+                await ImportGmlInner(fetchedGmlFile, startProgess, endProgress, new DebugStopwatch(Path.GetFileName(fetchedGmlFile.Path), LogTime),token);
             }
 
             Debug.Log($"GMLファイルのロードが完了しました。{cityModels.Count} 個のパッケージが見つかりました。");
@@ -278,7 +279,8 @@ namespace PLATEAU.CityImport.Import
                 await semGmlProcess.WaitAsync();
                 try
                 {
-                    await ImportGmlInner(fetchedGml, startProgess, endProgress, token);
+                    var sw = new DebugStopwatch(Path.GetFileName(fetchedGml.Path), LogTime);
+                    await ImportGmlInner(fetchedGml, startProgess, endProgress, sw, token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -301,19 +303,14 @@ namespace PLATEAU.CityImport.Import
         /// <summary>
         /// GMLファイルを1つインポートします。
         /// </summary>
-        /// <param name="fetchedGmlFile"></param>
-        /// <param name="conf"></param>
-        /// <param name="rootTrans"></param>
-        /// <param name="progressDisplay"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportGmlInner(GmlFile fetchedGmlFile, float startProgess, float endProgress, CancellationToken? token)
+        internal async Task ImportGmlInner(GmlFile fetchedGmlFile, float startProgess, float endProgress, DebugStopwatch sw, CancellationToken? token)
         {
             token?.ThrowIfCancellationRequested();
 
             string gmlName = Path.GetFileName(fetchedGmlFile.Path);
 
-            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, startProgess); //　別スレッドでGMLを読み込みます。
+            var cityModel = await GmlImporter.LoadGmlAsync(fetchedGmlFile, token, progressDisplay, gmlName, sw, startProgess); //　別スレッドでGMLを読み込みます。
 
             if (cityModel != null)
             {

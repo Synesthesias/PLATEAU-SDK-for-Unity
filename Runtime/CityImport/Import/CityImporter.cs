@@ -20,6 +20,10 @@ namespace PLATEAU.CityImport.Import
     /// </summary>
     public static class CityImporter
     {
+        /// <summary>
+        /// 処理時間をログに出すかどうかです
+        /// </summary>
+        private const bool LogTime = true;
         
         /// <summary>
         /// <see cref="CityImporter"/> クラスのメインメソッドです。
@@ -119,8 +123,9 @@ namespace PLATEAU.CityImport.Import
                             {
                                 // GMLを1つインポートします。
                                 // ここはメインスレッドで呼ぶ必要があります。
+                                var stopWatch = new DebugStopwatch(Path.GetFileName(fetchedGml.Path), LogTime);
                                 await GmlImporter.Import(fetchedGml, config, rootTrans, progressDisplay, token,
-                                    postGmlProcessors, fetchedGmls.Count);
+                                    stopWatch, postGmlProcessors, fetchedGmls.Count);
                             }
                             catch(OperationCanceledException)
                             {

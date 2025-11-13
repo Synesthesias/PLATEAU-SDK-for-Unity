@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
+using PLATEAU.Dataset;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Geometries
 {

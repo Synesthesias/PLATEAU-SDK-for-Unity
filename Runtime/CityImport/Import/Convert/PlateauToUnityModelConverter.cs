@@ -7,6 +7,7 @@ using PLATEAU.CityGML;
 using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.CityInfo;
+using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Util;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace PLATEAU.CityImport.Import.Convert
     /// </summary>
     internal static class PlateauToUnityModelConverter
     {
+        private const DllLogLevel MeshExtractLogLevel = DllLogLevel.Info;
+        
         // TODO 処理をキャンセルする機能が未実装
         /// <summary>
         /// 引数の cityModel を Unity向けに変換し、シーンに配置します。
@@ -34,7 +37,7 @@ namespace PLATEAU.CityImport.Import.Convert
             CityModel cityModel, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes,
             Transform parentTrans, IProgressDisplay progressDisplay, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token,  UnityEngine.Material fallbackMaterial,
-            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity
+            CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity, DebugStopwatch sw
             )
         {
 
@@ -42,10 +45,13 @@ namespace PLATEAU.CityImport.Import.Convert
             AttributeDataHelper attributeDataHelper =
                 new AttributeDataHelper(new SerializedCityObjectGetterFromCityModel(cityModel), doSetAttrInfo);
 
+            // メッシュ抽出
             Model plateauModel;
             try
             {
+                sw.Start("Mesh Extract Time");
                 plateauModel = await Task.Run(() => ExtractMeshes(cityModel, meshExtractOptions, selectedGridCodes));
+                sw.Stop();
             }
             catch (Exception e)
             {
@@ -57,9 +63,13 @@ namespace PLATEAU.CityImport.Import.Convert
             var placeToSceneConf = new PlaceToSceneConfig(materialConverter, doSetMeshCollider, token, fallbackMaterial,
                 infoForToolkits, granularity);
 
-            return await PlateauModelToScene(
+            // シーンに配置
+            sw.Start("Model To Scene Time");
+            var result = await PlateauModelToScene(
                 parentTrans, progressDisplay, progressName, placeToSceneConf, 
                 plateauModel, attributeDataHelper, true);
+            sw.Stop();
+            return result;
         }
 
         /// <summary>
@@ -145,7 +155,9 @@ namespace PLATEAU.CityImport.Import.Convert
                 code.Dispose(); // 廃棄を明示
                 return extent;
             }).ToList();
-            MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents);
+
+            var logCallbacks = DllLogCallback.UnityLogCallbacks;
+            MeshExtractor.ExtractInExtents(ref model, cityModel, meshExtractOptions, extents, logCallbacks, MeshExtractLogLevel);
             return model;
         }
     }
