@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     {
         public bool AfterTileAssetBuild()
         {
-            // タイル生成中フラグを設定
+            // タイル生成中フラグを解除
             PLATEAUEditorEventListener.disableProjectChangeEvent = false;
             return true;
         }

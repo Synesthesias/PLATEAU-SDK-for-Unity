@@ -178,13 +178,13 @@ namespace PLATEAU.CityImport.Import.Convert
         /// <summary>
         /// PlaceToSceneConfigのPrefixに応じてGameObject名を変更
         /// </summary>
-        /// <param name="prifix">PlaceToSceneConfigのPrefix</param>
+        /// <param name="prefix">PlaceToSceneConfigのPrefix</param>
         /// <returns></returns>
-        private string GetRevisedName(string prifix)
+        private string GetRevisedName(string prefix)
         {
-            if (!string.IsNullOrEmpty(prifix))
+            if (!string.IsNullOrEmpty(prefix))
             {
-                return $"{prifix}_{this.name}";
+                return $"{prefix}_{this.name}";
             }
             return this.name;
         }

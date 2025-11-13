@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             get
             {
                 if (tileListElementData.TileManager == null) return true;
-                return !(localParam.AlignLandInvert && !IsReliefSelected && (!localParam.ConvertToTerrain));
+                return !(localParam.AlignLandInvert && (IsReliefSelected || localParam.ConvertToTerrain));
             }
         }
 

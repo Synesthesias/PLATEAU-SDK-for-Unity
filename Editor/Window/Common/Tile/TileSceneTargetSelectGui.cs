@@ -74,6 +74,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
             {
                 errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";
                 ModelSelectElement.SetSelectedObject(null);
+                onCityModelChanged?.Invoke(null);
                 return;
             }
 

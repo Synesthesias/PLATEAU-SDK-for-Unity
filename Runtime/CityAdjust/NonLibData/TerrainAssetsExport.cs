@@ -52,7 +52,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                             else
                             {
                                 //　既存アセットが存在する場合
-                                File.Copy(originalTexturePath, saveTexturePath, overwrite: true); // ソースフォルダからtempフォルダにコピー
+                                File.Copy(AssetPathUtil.GetFullPath(originalTexturePath), AssetPathUtil.GetFullPath(saveTexturePath), overwrite: true); // ソースフォルダからtempフォルダにコピー
                             }
 
                             AssetDatabase.ImportAsset(saveTexturePath);
@@ -68,7 +68,6 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 TerrainLayer loadedTerrainLayer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);
                                 string texturePath2 = AssetDatabase.GetAssetPath(loadedTerrainLayer.diffuseTexture);
                                 newLayers.Add(loadedTerrainLayer);
-                                EditorUtility.SetDirty(layer);
                             }         
                             else
                             {

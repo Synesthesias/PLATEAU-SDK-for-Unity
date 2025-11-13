@@ -78,12 +78,12 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         public CityTerrainConvertGui(UnityEditor.EditorWindow parentEditorWindow)
         {
+            this.parentWindow = parentEditorWindow;
             localParam = new CityTerrainConvertParam();
             tileListData = new TileListElementData(parentEditorWindow);
-            tileTerrainConvert = new TileTerrainConvert(localParam, tileListData, parentWindow);
+            tileTerrainConvert = new TileTerrainConvert(localParam, tileListData, parentEditorWindow);
             tileListData.EnableTileHierarchy = true; // タイル選択時に子要素も選択可能にするか？
-
-            this.parentWindow = parentEditorWindow;
+            
             guis =
                 new ElementGroup("",0,
                     new HeaderElementGroup("", "地形モデルの平滑化と地物の地形への高さ合わせを行います。", HeaderType.Subtitle),
@@ -315,7 +315,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             const string WARNING_MESSAGE = "土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。";
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
             {
-                if (!tileTerrainConvert?.IsAlignLandToLod3RoadNotWorking ?? true)
+                if (tileTerrainConvert?.IsAlignLandToLod3RoadNotWorking ?? true)
                     EditorGUILayout.HelpBox(WARNING_MESSAGE, MessageType.Warning);
                 return;
             }
