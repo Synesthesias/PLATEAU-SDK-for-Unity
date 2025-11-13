@@ -1,4 +1,4 @@
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
@@ -77,6 +78,18 @@ namespace PLATEAU.DynamicTile
         [SerializeField]
         private bool showDebugLog = false; // ログを表示するか
 
+        /// <summary>
+        /// タイルがインスタンス化されたときに発火するイベントで、タイルのゲームオブジェクトが渡されます。
+        /// SDKの利用者がタイルに対して処理を行いたい場合に利用します。
+        /// </summary>
+        [SerializeField] public UnityEvent<GameObject> onTileInstantiated = new();
+
+        /// <summary>
+        /// タイルがアンロードされる直前に発火するイベントで、タイルのゲームオブジェクトが渡されます。
+        /// SDKの利用者向けです。
+        /// </summary>
+        [SerializeField] public UnityEvent<GameObject> beforeTileUnload = new();
+        
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
@@ -462,6 +475,7 @@ namespace PLATEAU.DynamicTile
                     //Debug Material色変え
                     //ReplaceWithDebugMaterial(tile);
 
+                    onTileInstantiated?.Invoke(tile.LoadedObject);
                     return true;
                 }
             }
