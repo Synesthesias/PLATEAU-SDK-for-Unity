@@ -28,7 +28,8 @@ namespace PLATEAU.CityExport
                 return;
             }
 
-            ExportInternal(destDir, instancedCityModel, instancedCityModel.GeoReference, options, progress);
+            using var geo = instancedCityModel.GeoReference;
+            ExportInternal(destDir, instancedCityModel, geo, options, progress);
         }
 
         public async Task Export(string destDir, PLATEAUTileManager tileManager, MeshExportOptions options,
@@ -45,7 +46,8 @@ namespace PLATEAU.CityExport
                 await tileManager.InitializeTiles();
             }
 
-            await ExportInternal(destDir,tileManager.DynamicTiles.ToArray(),tileManager, tileManager.CityModel.GeoReference, options, progress);
+            using var geo = tileManager.CityModel.GeoReference;
+            await ExportInternal(destDir,tileManager.DynamicTiles.ToArray(),tileManager, geo, options, progress);
             
         }
 
@@ -77,7 +79,6 @@ namespace PLATEAU.CityExport
                 // 進行状況を表示 (0.1～0.9の範囲で更新)
                 float progressFloat = 0.1f + (processedCount * 0.8f / numChild);
                 progress?.Display($"エクスポート中... ({processedCount + 1}/{numChild})", progressFloat);
-
                 ExportMesh(destDir, childTrans, trans.position, geo, options);
 
                 processedCount++;
@@ -95,7 +96,7 @@ namespace PLATEAU.CityExport
         /// <param name="geo"></param>
         /// <param name="options"></param>
         /// <param name="progress"></param>
-        private async Task ExportInternal(string destDir, PLATEAUDynamicTile[] dynamicTile , PLATEAUTileManager tileManager , GeoReference geo, MeshExportOptions options, IProgressBar progress)
+        private async Task ExportInternal(string destDir, PLATEAUDynamicTile[] dynamicTile, PLATEAUTileManager tileManager, GeoReference geo, MeshExportOptions options, IProgressBar progress)
         {
             progress?.Display("エクスポート準備中...", 0.1f);
 
@@ -105,7 +106,7 @@ namespace PLATEAU.CityExport
                 //メモリ負荷を抑えるため１タイルごとにLoadして出力する
                 var tiles = await tileManager.ForceLoadTiles(new List<string>() { dynamicTile[i].Address }, CancellationToken.None);
 
-                if(tiles == null ||　!tiles[0].LoadHandle.IsValid() || tiles[0].LoadHandle.Result == null)
+                if(tiles == null || !tiles[0].LoadHandle.IsValid() || tiles[0].LoadHandle.Result == null)
                 {
                     Debug.LogError($"タイルのロードに失敗しました。アドレス: {dynamicTile[i].Address}");
                     continue;
@@ -133,10 +134,9 @@ namespace PLATEAU.CityExport
             GeoReference geo,
             MeshExportOptions options)
         {
-            using var geoReference = geo;
 
             var vertexConverter = VertexConverterFactory.CreateByExportOptions(
-                options, geoReference.ReferencePoint, rootPosition
+                options, geo.ReferencePoint, rootPosition
             );
 
             // Unity のメッシュを中間データ構造(Model)に変換します。
