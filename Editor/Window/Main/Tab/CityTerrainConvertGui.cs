@@ -280,35 +280,39 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
             if (!CanExecOrNotify()) return;
             SetTaskRunning(true);
-
-            int heightmapWidth = (int)CityTerrainConvertParam.SizeValues.GetValue(localParam.SelectedSize);
-            Selection.objects = new Object[] { };
-
-            // Terrainに変換します
-            if (localParam.ConvertToTerrain)
+            try
             {
-                var converter = new CityTerrainConverter();
-                var convertOption = new TerrainConvertOption(
-                    FilterDemItems(new GameObject[]{targetModel.gameObject}),
-                    heightmapWidth,
-                    localParam.PreserveOrDestroy == PreserveOrDestroy.Destroy,
-                    localParam.FillEdges,
-                    localParam.ApplyConvolutionFilterToHeightMap,
-                    localParam.EnableTerrainConversion,
-                    CityTerrainConvertParam.HEIGHTMAP_IMAGE_OUTPUT
-                );
+                int heightmapWidth = (int)CityTerrainConvertParam.SizeValues.GetValue(localParam.SelectedSize);
+                Selection.objects = new Object[] { };
 
-                await converter.ConvertAsync(convertOption);
+                // Terrainに変換します
+                if (localParam.ConvertToTerrain)
+                {
+                    var converter = new CityTerrainConverter();
+                    var convertOption = new TerrainConvertOption(
+                        FilterDemItems(new GameObject[] { targetModel.gameObject }),
+                        heightmapWidth,
+                        localParam.PreserveOrDestroy == PreserveOrDestroy.Destroy,
+                        localParam.FillEdges,
+                        localParam.ApplyConvolutionFilterToHeightMap,
+                        localParam.EnableTerrainConversion,
+                        CityTerrainConvertParam.HEIGHTMAP_IMAGE_OUTPUT
+                    );
+
+                    await converter.ConvertAsync(convertOption);
+                }
+
+                // 高さ合わせを実行します
+                if (localParam.AlignLand || ((!localParam.AlignLandNormal) && (!localParam.AlignLandInvert)))
+                {
+                    ExecAlignLand(heightmapWidth);
+                }
             }
-
-            // 高さ合わせを実行します
-            if (localParam.AlignLand || ((!localParam.AlignLandNormal) && (!localParam.AlignLandInvert)))
+            finally
             {
-                ExecAlignLand(heightmapWidth);
+                parentWindow.Repaint(); // テキストが「実行中...」に変わったボタンを元に戻します
+                SetTaskRunning(false);
             }
-            
-            parentWindow.Repaint(); // テキストが「実行中...」に変わったボタンを元に戻します
-            SetTaskRunning(false);
         }
         private void WarnAlignLandToLod3RoadNotWorking()
         {

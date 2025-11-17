@@ -57,22 +57,24 @@ namespace PLATEAU.CityAdjust.NonLibData
 
                             AssetDatabase.ImportAsset(saveTexturePath);
                             Texture2D savedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(saveTexturePath);
-                            layer.diffuseTexture = savedTexture;
 
-                            // Terrain Layer 保存
                             string layerPath = AssetPathUtil.GetAssetPath($"{assetPath}/{terrain.name}_layer{layerIndex}.asset");
+                            var targetLayer = CanCreateAsset(layer, layerPath)
+                                ? layer
+                                : UnityEngine.Object.Instantiate(layer);
+                            targetLayer.diffuseTexture = savedTexture;
+
+                            //// Terrain Layer 保存
                             if (!CanCreateAsset(layer, layerPath)) // 既存アセットがある場合
                             {
-                                TerrainLayer newTerrainLayer = UnityEngine.Object.Instantiate(layer);
-                                AssetDatabase.CreateAsset(newTerrainLayer, layerPath);
+                                AssetDatabase.CreateAsset(targetLayer, layerPath);
                                 TerrainLayer loadedTerrainLayer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);
-                                string texturePath2 = AssetDatabase.GetAssetPath(loadedTerrainLayer.diffuseTexture);
                                 newLayers.Add(loadedTerrainLayer);
-                            }         
+                            }
                             else
                             {
-                                AssetDatabase.CreateAsset(layer, layerPath);
-                                newLayers.Add(layer);
+                                AssetDatabase.CreateAsset(targetLayer, layerPath);
+                                newLayers.Add(targetLayer);
                             }
 
                             layerIndex++;

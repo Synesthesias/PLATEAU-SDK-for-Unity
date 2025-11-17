@@ -70,6 +70,11 @@ namespace PLATEAU.Editor.Window.Common.Tile
         private void OnTargetModelChanged(PLATEAUInstancedCityModel selectedCityModel)
         {
             errorMessage = null;
+            if (selectedCityModel == null)
+            {
+                onCityModelChanged?.Invoke(null);
+                return;
+            }
             if (selectedCityModel.transform.parent?.GetComponent<PLATEAUTileManager>() != null)
             {
                 errorMessage = "動的タイルを対象とするには「調整対象の種類」を動的タイルにしてください。";

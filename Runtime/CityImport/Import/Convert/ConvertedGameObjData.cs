@@ -97,6 +97,7 @@ namespace PLATEAU.CityImport.Import.Convert
             var nextParent = parent;
             if (!skipRoot)
             {
+                var revisedName = GetRevisedName(conf.Prefix);
                 if (this.meshData == null || this.meshData.VerticesCount <= 0 || meshData.SubMeshCount == 0)
                 {
                     // メッシュがなければ、中身のないゲームオブジェクトを作成します。
@@ -106,7 +107,7 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             parent = parent
                         },
-                        name = GetRevisedName(conf.Prefix),
+                        name = revisedName,
                         isStatic = true,
                     };
                     obj.SetActive(isActive);
@@ -125,12 +126,12 @@ namespace PLATEAU.CityImport.Import.Convert
                         {
                             placedObj.AddComponent<MeshCollider>();
                         }
-                        nextParent.gameObject.name = GetRevisedName(conf.Prefix); // GameObject名変更
+                        nextParent.gameObject.name = revisedName; // GameObject名変更
                         result.Add(nextParent.gameObject);
                     }
                 }
  
-                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == GetRevisedName(conf.Prefix))
+                if(nextParent != null && nextParent.gameObject.GetComponent<PLATEAUCityObjectGroup>() == null && nextParent.gameObject.name == revisedName)
                 {
                     //　属性情報表示コンポーネントを追加します。
                     var serialized = this.attributeDataHelper.GetSerializableCityObject();
