@@ -305,7 +305,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 // 高さ合わせを実行します
                 if (localParam.AlignLand || ((!localParam.AlignLandNormal) && (!localParam.AlignLandInvert)))
                 {
-                    ExecAlignLand(heightmapWidth);
+                    await ExecAlignLand(heightmapWidth);
                 }
             }
             finally
@@ -335,7 +335,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
             {
-                if(!tileTerrainConvert?.IsReliefSelected ?? false)
+                if (!(tileTerrainConvert?.IsReliefSelected ?? false))
                     EditorGUILayout.HelpBox("変換対象のタイルに土地が含まれていません。", MessageType.Error);
                 return;
             }
@@ -371,7 +371,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         {
         }
 
-        private void ExecAlignLand(int heightmapWidth)
+        private async Task ExecAlignLand(int heightmapWidth)
         {
             // 高さ合わせの対象を検索します
             var searcher = new ALTargetSearcher(targetModel);
@@ -382,7 +382,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             }
             // 高さ合わせを実行します
             var conf = searcher.ToConfig(localParam.PreserveOrDestroy == PreserveOrDestroy.Destroy, heightmapWidth, localParam.FillEdges, localParam.ApplyConvolutionFilterToHeightMap, localParam.AlignLandNormal, localParam.AlignLandInvert);
-            ExecAlignLandInner().ContinueWithErrorCatch();
+            await ExecAlignLandInner();
 
             // 非同期部分のインナーメソッド
             async Task ExecAlignLandInner()

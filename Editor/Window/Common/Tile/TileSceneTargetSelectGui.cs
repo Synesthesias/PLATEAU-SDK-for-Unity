@@ -1,6 +1,5 @@
 ﻿using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
-using PLATEAU.Editor.Window.Common;
 using System;
 using UnityEngine;
 
@@ -57,7 +56,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
                 {
                     // シーン内のTileManagerを自動でセット
                     var targetTileManager = GameObject.FindAnyObjectByType<PLATEAUTileManager>();
-                    if ((targetTileManager != null))
+                    if (targetTileManager != null)
                     {
                         TileSelectElement.SetSelectedObject(targetTileManager);
                         OnTargetTileChanged(targetTileManager);

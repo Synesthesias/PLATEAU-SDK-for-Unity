@@ -94,6 +94,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                     } 
                     else
                     {
+                        terrainData.terrainLayers = newLayers.ToArray();
                         AssetDatabase.CreateAsset(terrainData, terrainPath);
                     }
 
