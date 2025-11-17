@@ -64,18 +64,9 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 : UnityEngine.Object.Instantiate(layer);
                             targetLayer.diffuseTexture = savedTexture;
 
-                            //// Terrain Layer 保存
-                            if (!CanCreateAsset(layer, layerPath)) // 既存アセットがある場合
-                            {
-                                AssetDatabase.CreateAsset(targetLayer, layerPath);
-                                TerrainLayer loadedTerrainLayer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);
-                                newLayers.Add(loadedTerrainLayer);
-                            }
-                            else
-                            {
-                                AssetDatabase.CreateAsset(targetLayer, layerPath);
-                                newLayers.Add(targetLayer);
-                            }
+                            // Terrain Layer 保存
+                            AssetDatabase.CreateAsset(targetLayer, layerPath);
+                            newLayers.Add(targetLayer);
 
                             layerIndex++;
                         }

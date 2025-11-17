@@ -273,8 +273,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
             if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
             {
                 SetTaskRunning(true);
-                await tileTerrainConvert.Exec();
-                SetTaskRunning(false);
+                try
+                {
+                    await tileTerrainConvert.Exec();
+                }
+                finally
+                {
+                    SetTaskRunning(false);
+                }
                 return;
             }
 
