@@ -11,18 +11,18 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class TerrainAssetsExport : INonLibData
     {
-        private bool convertTerrain;
+        private bool convertTerrains;
         private string assetPath;
 
         public TerrainAssetsExport(string assetPath, bool convertTerrains)
         {
             this.assetPath = assetPath;
-            this.convertTerrain = convertTerrains;
+            this.convertTerrains = convertTerrains;
         }
 
         public void ComposeFrom(UniqueParentTransformList src)
         {
-            if (!convertTerrain) return;
+            if (!convertTerrains) return;
 #if UNITY_EDITOR
             src.BfsExec(trans =>
             {
