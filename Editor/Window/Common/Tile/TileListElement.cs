@@ -41,6 +41,8 @@ namespace PLATEAU.Editor.Window.Common.Tile
 
         private bool IsHighlightSelectedTilesRunning = false; // ハイライト処理中かどうか
 
+        private ScrollView scrollView = new(GUILayout.Height(160));
+
         public TileListElement(TileListElementData data)
         {
             tileListData = data;
@@ -54,8 +56,6 @@ namespace PLATEAU.Editor.Window.Common.Tile
         public override void DrawContent()
         {
             DrawSelectTile();
-
-            ScrollView scrollView = new(GUILayout.Height(160));
             DrawScrollViewContent(scrollView);
         }
 
