@@ -42,6 +42,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
             
             // MonoScript Bundle の生成を無効化します。
+            // デフォルトではMonoScript BundleがLibraryフォルダに生成されますが、それを無効化することでLibraryフォルダへの依存がなくなり、他のPCで動作させることが簡単になります。
             // Addressables 2.x では Disabled が削除されたため、Custom に設定して名前を null にすることで生成を抑制します。
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             if (settings != null)
