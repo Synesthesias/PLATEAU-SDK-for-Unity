@@ -23,6 +23,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             var smoother = new LineSmoother(smoothingStrategy.ShouldSubdivide());
             foreach (var road in target.Roads())
             {
+                // #TODO : RoadNetworkのタイル対応
                 var roadSrc = road.TargetTrans.FirstOrDefault();
                 foreach (var sideWalk in road.SideWalks)
                 {

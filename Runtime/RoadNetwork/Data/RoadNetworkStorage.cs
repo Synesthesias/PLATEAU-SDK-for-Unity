@@ -1,4 +1,5 @@
-﻿using PLATEAU.RoadNetwork.Structure;
+﻿using PLATEAU.RoadNetwork.Factory;
+using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,6 +46,19 @@ namespace PLATEAU.RoadNetwork.Data
         /// </summary>
         [field: SerializeField]
         public string FactoryVersion { get; set; } = "";
+
+        /// <summary>
+        /// FactoryVersionをメジャー/マイナーで分けたもの
+        /// </summary>
+        public (int majorVersion, int minorVersion) FactoryVersions
+        {
+            get
+            {
+                if(RoadNetworkFactory.TryParseFactoryVersion(FactoryVersion, out var majorVersion, out var minorVersion))
+                    return (majorVersion, minorVersion);
+                return (0, 0);
+            }
+        }
 
         public PrimitiveDataStorage PrimitiveDataStorage { get => primitiveDataStorage; }
 

@@ -55,11 +55,10 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             var index = 0;
             foreach (var item in cityObjects)
             {
-
                 var coVisible =
                     item.Visible &&
                     (!TargetCityObjects.Any() || TargetCityObjects.Contains(item))
-                    && (onlySelectedCityObjectGroupVisible == false || RnEx.GetSceneSelectedCityObjectGroups().Any(cog => item.CityObjectGroup == cog))
+                    && (onlySelectedCityObjectGroupVisible == false || RnEx.GetSceneSelectedCityObjectGroups().Any(cog => item.IsBelongingTo(cog)))
                     && ((item.GetRoadType(true) & showRRoadTypeMask) != 0)
                     ;
 
@@ -107,8 +106,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
 
                     foreach (var subMesh in mesh.SubMeshes)
                     {
-
-                        var mat = item.CityObjectGroup.transform.localToWorldMatrix;
+                        var mat = item.LocalToWorldMatrix;
                         DrawMesh(mesh, subMesh, mat, color: DebugEx.GetDebugColor(index, meshColorNum));
                         index++;
                     }

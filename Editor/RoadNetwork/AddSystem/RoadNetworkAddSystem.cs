@@ -101,6 +101,7 @@ namespace PLATEAU.Editor.RoadNetwork
             // こうすることで、道路編集で何を対象に編集したのかの判定に一貫性を持たせます。
             if (roadBase.TargetTrans.All(t => t == null))
             {
+                // #TODO : RoadNetworkのタイル対応
                 // 道路ネットワークのTargetTransを更新
                 roadBase.TargetTrans.Clear();
                 roadBase.TargetTrans.AddRange(reproducedRoads.Select(g => g.GetComponent<PLATEAUCityObjectGroup>()).Where(c => c != null));

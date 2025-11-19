@@ -73,8 +73,8 @@ namespace PLATEAU.Editor.RoadNetwork.Tester
                     var subDividedCityObjects
                         = cityObjects
                             .CityObjects
-                            .Where(x => x.CityObjectGroup != null)
-                            .Select(x => (x, x.CityObjectGroup.transform.localToWorldMatrix)).ToList();
+                            .Select(x => (x, x.LocalToWorldMatrix))
+                            .ToList();
 
                     var graphTask = Task.Run(() =>
                     {
