@@ -29,6 +29,7 @@ namespace PLATEAU.Editor.DynamicTile
         private IOnTileGenerateStart[] onTileGenerateStarts;
         private IBeforeTileAssetBuild[] beforeTileAssetBuilds;
         private IAfterTileAssetBuild[] afterTileAssetBuilds;
+        private IAfterTileAssetBuild[] afterTileAssetCancelled;
         private IOnTileGenerationCancelled[] onTileGenerationCancelled;
         private IOnTileBuildFailed[] onTileBuildFailed;
         public const string EditingTilesParentName = "EditingTiles";
@@ -104,6 +105,14 @@ namespace PLATEAU.Editor.DynamicTile
 
                 GameObjectUtil.AssureComponent<PLATEAUEditingTile>(instance);
             }
+
+            //　Rebuildを行わない場合のキャンセル処理
+            afterTileAssetCancelled = new IAfterTileAssetBuild[]
+            {
+                new TileCleanupTempFolder(context), // 不要なフォルダを消します。
+                new CleanupEditingTilesInScene(), // シーン上のEditingTilesをクリーンアップ
+                new TileRebuildCancellation()　// タイル生成中フラグを元に戻す
+            };
 
             await Task.CompletedTask;
         }
@@ -183,7 +192,7 @@ namespace PLATEAU.Editor.DynamicTile
                 initializeTileManager,
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
-            
+
             onTileGenerationCancelled = new IOnTileGenerationCancelled[]
             {
                 tileEditorProcedure
@@ -240,6 +249,9 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task SavePrefabAsset(GameObject src)
         {
+            bool disableProjectChangeEventBefore = PLATEAUEditorEventListener.disableProjectChangeEvent;
+            PLATEAUEditorEventListener.disableProjectChangeEvent = true;
+
             string outputPath = DynamicTileProcessingContext.PrefabsTempSavePath;
             AssetPathUtil.CreateDirectoryIfNotExist(AssetPathUtil.GetFullPath(outputPath)); // ルートを確実に作成
             string saveFolderPath = Path.Combine(outputPath, src.name);
@@ -250,6 +262,7 @@ namespace PLATEAU.Editor.DynamicTile
             assetConfig.SrcGameObj = src;
             assetConfig.AssetPath = saveFolderTempPath;
             assetConfig.ConvertFromFbx = true;
+            assetConfig.ConvertTerrain = true;
 
             var comp = src.GetComponent<PLATEAUEditingTile>();
             if (comp != null)
@@ -257,9 +270,13 @@ namespace PLATEAU.Editor.DynamicTile
                 Object.DestroyImmediate(comp, true);
             }
 
-            if (Directory.Exists(saveFolderTempPath))
-                Directory.Delete(saveFolderTempPath, true);
-            AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+            await Task.Run(() =>
+            {
+                if (Directory.Exists(saveFolderTempPath))
+                    Directory.Delete(saveFolderTempPath, true);
+                AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+            });
+            await Task.Yield();
 
             var convertedObjects = new ConvertToAsset().ConvertCore(assetConfig, new DummyProgressBar());
             if (convertedObjects == null || convertedObjects.Count == 0 || convertedObjects[0] == null)
@@ -290,7 +307,30 @@ namespace PLATEAU.Editor.DynamicTile
             }
             AssetDatabase.Refresh();
 
+            PLATEAUEditorEventListener.disableProjectChangeEvent = disableProjectChangeEventBefore;
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// TilePrefabsToScene実行後にRebuildせずに終了したい場合のキャンセル処理
+        /// Rebuild時に作成されたtempデータを削除
+        /// </summary>
+        /// <returns></returns>
+        public bool CancelRebuild()
+        {
+            if (afterTileAssetCancelled == null || afterTileAssetCancelled.Length <= 0)
+                return false;
+
+            foreach (var after in afterTileAssetCancelled)
+            {
+                bool ok = after.AfterTileAssetBuild();
+                if (!ok)
+                {
+                    Debug.LogError("failed to exec afterTileAssetCancelled.");
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void Cancel()

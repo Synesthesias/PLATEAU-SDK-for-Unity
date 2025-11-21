@@ -57,7 +57,8 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
                 new NameToExportedMaterialsDict(subMeshConverter, conf.AssetPath, conf.ConvertFromFbx),
-                new NonLibComponentsDict()
+                new NonLibComponentsDict(),
+                new TerrainAssetsExport(conf.AssetPath, conf.ConvertTerrain)
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
 

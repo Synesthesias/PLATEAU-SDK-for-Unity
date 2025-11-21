@@ -376,6 +376,9 @@ namespace PLATEAU.CityInfo
         {
             get
             {
+                if (CityObjects?.rootCityObjects?.Count <= 0)
+                    return PredefinedCityModelPackage.None;
+
                 // パッケージ種は1つのCityObjectGroup内で同じなので、最初の1つだけ見れば十分です。
                 return CityObjects.rootCityObjects[0].type.ToPackage();
             }

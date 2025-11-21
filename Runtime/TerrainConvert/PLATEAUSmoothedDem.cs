@@ -11,11 +11,13 @@ namespace PLATEAU.TerrainConvert
         {
             get
             {
+                heightMapData.FromSerializable();
                 return heightMapData;
             }
             set
             {
                 heightMapData = value;
+                heightMapData.ToSerializable();
             }
         }
 

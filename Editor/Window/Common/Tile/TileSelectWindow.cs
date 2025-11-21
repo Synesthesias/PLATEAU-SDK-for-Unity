@@ -1,4 +1,6 @@
 ﻿using PLATEAU.DynamicTile;
+using PLATEAU.Editor.Window.Main;
+using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -10,7 +12,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
+namespace PLATEAU.Editor.Window.Common.Tile
 {
     /// <summary>
     /// タイル選択ウィンドウです。
@@ -18,6 +20,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     internal class TileSelectWindow : PlateauWindowBase, IPackageSelectResultReceiver
     {
         private bool isInitialized;
+
+        private bool enableTileHierarchy = true; // タイル階層選択を有効にするかどうか
 
         private PLATEAUTileManager tileManager;
         private TreeViewItemBuilder treeViewItemBuilder;
@@ -30,7 +34,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private Button tileFromSelectionButton;
         private Button fromSelectionButton;
         private Button fromPackageButton;
-        private ScrollView scrollView;
+        private UnityEngine.UIElements.ScrollView scrollView;
 
         protected override bool UseScrollView => false; // スクロールビューを使用しない
 
@@ -63,19 +67,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             }
         }
 
-        public static TileSelectWindow Open(PLATEAUTileManager manager, Action<TileSelectResult> callback)
+        public static TileSelectWindow Open(PLATEAUTileManager manager, Action<TileSelectResult> callback, bool enableTileHierarchy = true)
         {
             var window = GetWindow<TileSelectWindow>("タイル選択");
-            window.Init(manager, callback);
+            window.Init(manager, callback, enableTileHierarchy);
             window.Show();
             return window;
         }
 
-        public void Init(PLATEAUTileManager manager, Action<TileSelectResult> callback)
+        public void Init(PLATEAUTileManager manager, Action<TileSelectResult> callback, bool enableTileHierarchy)
         {
             this.tileManager = manager;
             this.onSelectCallback = callback;
             this.isInitialized = true;
+            this.enableTileHierarchy = enableTileHierarchy;
             DrawTileList(manager);
         }
 
@@ -136,10 +141,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 var elem = viewElementTree.CloneTree();
                 var container = new TileNameElementContainer(elem);
                 container.SetOnSelectCallback(ShowTileHierarchy);
+                container.SetEnableChildSelect(enableTileHierarchy);
                 tileNameElements.Add(container);
                 container.TileName = item.Address;
                 scrollView.contentContainer.Add(elem);
             }
+
+            fromSelectionButton.style.display = enableTileHierarchy ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         /// <summary>
@@ -351,6 +359,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         public TreeView TreeView => treeView;
         public Button ButtonSelectChild => selectChildButton;
+
+        public void SetEnableChildSelect(bool enable)
+        {
+            selectChildButton.visible = enable;
+        }
 
         public TileNameElementContainer(VisualElement root)
         {
