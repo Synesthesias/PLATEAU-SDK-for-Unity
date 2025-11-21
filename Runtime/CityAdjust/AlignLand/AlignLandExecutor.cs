@@ -148,9 +148,10 @@ namespace PLATEAU.CityAdjust.AlignLand
                     heightmapAligner.AlignInvert(m);
                 }
                 // 逆高さ合わせの結果を反映
-                for (int i = 0; i < landTransforms.Count(); i++)
+                var landTransformList = landTransforms.ToList();
+                for (int i = 0; i < landTransformList.Count; i++)
                 {
-                    var land = landTransforms.ElementAt(i);
+                    var land = landTransformList[i];
                     var heightmap1d = heightmapAligner.GetHeightMapAt(i);
 
                     var terrain = land.GetComponent<Terrain>();

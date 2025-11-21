@@ -237,7 +237,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             var selectionList = new HashSet<GameObject>();
             foreach (var gameObj in gameObjects)
             {
+                if (gameObj == null) continue;
                 var components = gameObj.transform.GetComponentsInChildren<PLATEAUCityObjectGroup>();
+
                 foreach (var grp in components)
                 {
                     if (grp.CityObjects.rootCityObjects.Exists(x => x.type == CityGML.CityObjectType.COT_TINRelief))
