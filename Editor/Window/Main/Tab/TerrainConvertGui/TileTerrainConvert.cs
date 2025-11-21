@@ -83,7 +83,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
                 {
                     var ct = cts.Token;
 
-                    var doAlignLand = (localParam.AlignLand || ((!localParam.AlignLandNormal) && (!localParam.AlignLandInvert))); // 高さ合わせを実行するか
+                    var doAlignLand = localParam.AlignLand && (localParam.AlignLandNormal || localParam.AlignLandInvert); // 高さ合わせを実行するか
                     var selectedTiles = TileConvertCommon.GetSelectedTiles(tileListElementData.ObservableSelectedTiles, tileListElementData.TileManager);
 
                     tileRebuilder = new TileRebuilder();

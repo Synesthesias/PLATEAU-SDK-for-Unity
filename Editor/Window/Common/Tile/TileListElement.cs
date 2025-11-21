@@ -95,7 +95,6 @@ namespace PLATEAU.Editor.Window.Common.Tile
                     }
 
                     int indexToDelete = -1;
-                    bool deleteByUserInput = false;
                     // 各選択オブジェクトのスロットを描画
                     for (var i = 0; i < tileListData.ObservableSelectedTiles.Count; i++)
                     {
@@ -106,20 +105,20 @@ namespace PLATEAU.Editor.Window.Common.Tile
                             if (item == null)
                             {
                                 indexToDelete = i;
-                                continue;
+                                break;
                             }
                             EditorGUILayout.LabelField(item.TilePath, GUILayout.ExpandWidth(true));
 
                             if (PlateauEditorStyle.TinyButton("除く", 30))
                             {
                                 indexToDelete = i;
-                                deleteByUserInput = true;
+                                break;
                             }
                         }
 
                     }
                     // 削除ボタンが押された時
-                    if (indexToDelete >= 0 && deleteByUserInput)
+                    if (indexToDelete >= 0)
                     {
                         tileListData.ObservableSelectedTiles.RemoveAt(indexToDelete);
                     }
@@ -131,7 +130,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
                     {
                         tileListData.ObservableSelectedTiles.Clear();
                     }
-                    GUI.enabled = !IsHighlightSelectedTilesRunning;
+                    GUI.enabled = tileListData.TileManager != null && !IsHighlightSelectedTilesRunning;
                     if (PlateauEditorStyle.TinyButton("対象をヒエラルキー上でハイライト", 180))
                     {
                         HighlightSelectedTiles().ContinueWithErrorCatch();
@@ -154,10 +153,11 @@ namespace PLATEAU.Editor.Window.Common.Tile
         private async Task HighlightSelectedTiles(bool forceLoad = true)
         {
             if (IsHighlightSelectedTilesRunning) return;
+            if (tileListData.TileManager == null) return;
             IsHighlightSelectedTilesRunning = true;
             try
             {
-                await TileConvertCommon.HighlightSelectedTiles(tileListData.ObservableSelectedTiles, tileListData.TileManager);
+                await TileConvertCommon.HighlightSelectedTiles(tileListData.ObservableSelectedTiles,tileListData.TileManager,forceLoad);
                 tileListData.ParentEditorWindow.Repaint();
             }
             finally
