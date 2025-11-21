@@ -249,6 +249,9 @@ namespace PLATEAU.Editor.DynamicTile
         /// </summary>
         public async Task SavePrefabAsset(GameObject src)
         {
+            bool disableProjectChangeEventBefore = PLATEAUEditorEventListener.disableProjectChangeEvent;
+            PLATEAUEditorEventListener.disableProjectChangeEvent = true;
+
             string outputPath = DynamicTileProcessingContext.PrefabsTempSavePath;
             AssetPathUtil.CreateDirectoryIfNotExist(AssetPathUtil.GetFullPath(outputPath)); // ルートを確実に作成
             string saveFolderPath = Path.Combine(outputPath, src.name);
@@ -267,9 +270,13 @@ namespace PLATEAU.Editor.DynamicTile
                 Object.DestroyImmediate(comp, true);
             }
 
-            if (Directory.Exists(saveFolderTempPath))
-                Directory.Delete(saveFolderTempPath, true);
-            AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+            await Task.Run(() =>
+            {
+                if (Directory.Exists(saveFolderTempPath))
+                    Directory.Delete(saveFolderTempPath, true);
+                AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+            });
+            await Task.Yield();
 
             var convertedObjects = new ConvertToAsset().ConvertCore(assetConfig, new DummyProgressBar());
             if (convertedObjects == null || convertedObjects.Count == 0 || convertedObjects[0] == null)
@@ -300,6 +307,7 @@ namespace PLATEAU.Editor.DynamicTile
             }
             AssetDatabase.Refresh();
 
+            PLATEAUEditorEventListener.disableProjectChangeEvent = disableProjectChangeEventBefore;
             await Task.CompletedTask;
         }
 
