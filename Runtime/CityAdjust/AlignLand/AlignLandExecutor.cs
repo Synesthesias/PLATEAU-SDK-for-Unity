@@ -28,10 +28,10 @@ namespace PLATEAU.CityAdjust.AlignLand
     {
         protected const float HeightOffset = 0.3f; // 高さ合わせの結果に対して、埋まらないようにこれだけ上げます(メートル)
         
-        public async Task ExecAsync(ALConfig conf, IProgressDisplay progressDisplay)
+        public async Task ExecAsync(ALConfigBase conf, IProgressDisplay progressDisplay)
         {
             progressDisplay.SetProgress("", 0f, "ハイトマップを作成中...");
-            var landTransforms = conf.Lands;
+            var landTransforms = conf.LandTransforms;
 
             List<ConvertedTerrainData.HeightmapData> heightmaps = new();
             
@@ -67,10 +67,13 @@ namespace PLATEAU.CityAdjust.AlignLand
             progressDisplay.SetProgress("", 0f, "処理対象の情報を収集中...");
             var alignTarget = new UniqueParentTransformList();
             var alignInvertTarget = new UniqueParentTransformList();
-            foreach (var cog in conf.TargetModel.GetComponentsInChildren<PLATEAUCityObjectGroup>())
+
+            var alignCog = conf.AlignCityObjectGroups;
+            foreach (var cog in alignCog)
             {
-                var package = conf.TargetModel.GetPackage(cog);
-                if (!conf.TargetPackages.Contains(package)) continue;
+                var package = conf.GetPackage(cog);
+                if (!conf.CanAlign(package)) continue;
+
                 var targetMf = cog.GetComponent<MeshFilter>();
                 if (targetMf == null) continue;
                 var targetMesh = targetMf.sharedMesh;
@@ -145,9 +148,9 @@ namespace PLATEAU.CityAdjust.AlignLand
                     heightmapAligner.AlignInvert(m);
                 }
                 // 逆高さ合わせの結果を反映
-                for (int i = 0; i < landTransforms.Length; i++)
+                for (int i = 0; i < landTransforms.Count(); i++)
                 {
-                    var land = landTransforms[i];
+                    var land = landTransforms.ElementAt(i);
                     var heightmap1d = heightmapAligner.GetHeightMapAt(i);
 
                     var terrain = land.GetComponent<Terrain>();
@@ -192,7 +195,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                     var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                         null, new DummyProgressDisplay(), "",
                         new PlaceToSceneConfig(new RecoverFromGameMaterialID(subMeshConverters[i]), true, null, null,
-                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject),
+                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject, "ALIGNED"),
                         alignTargetModels[i],
                         new AttributeDataHelper(
                             new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), alignTargetModels[i]),

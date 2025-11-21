@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.Window.Main.Tab
@@ -47,25 +46,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
     internal class CityTerrainConvertGui : ITabContent
     {
         private PLATEAUInstancedCityModel targetModel;
-        //private int selectedSize = 1;
-        //private bool fillEdges = true;
-        //private static TerrainConvertOption.ImageOutput heightmapImageOutput = TerrainConvertOption.ImageOutput.None;
-        //private static readonly string[] SizeOptions = { "257 x 257", "513 x 513", "1025 x 1025", "2049 x 2049" };
-        //private static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
-        //private PreserveOrDestroy preserveOrDestroy;
-        //private bool convertToTerrain;
-        //private bool enableTerrainConversion;
-        //private bool applyConvolutionFilterToHeightMap;
-        //private bool alignLand;
-        //private bool alignLandNormal;
-        //private bool alignLandInvert;
         private CityTerrainConvertParam localParam;
         private EditorWindow parentWindow;
 
         /// <summary>
         /// シーンオブジェクト/動的タイルの現在選択されているタイプを返します。
         /// </summary>
-        private ChooserType CurrentSceneTileSelectType => guis.Get<TileSceneTargetSelectGui>()?.SelectedType ?? ChooserType.SceneObject;
+        private SceneTileChooserType CurrentSceneTileSelectType => guis.Get<SceneTileChooserElement>()?.SelectedType ?? SceneTileChooserType.SceneObject;
 
         private TileTerrainConvert tileTerrainConvert;
         private TileListElementData tileListData;
@@ -87,7 +74,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             guis =
                 new ElementGroup("",0,
                     new HeaderElementGroup("", "地形モデルの平滑化と地物の地形への高さ合わせを行います。", HeaderType.Subtitle),
-                    new TileSceneTargetSelectGui("TargetSelect", OnTargetModelChanged, OnTargetTileManagerChanged, OnChooserTypeChanged),
+                    new SceneTileChooserElement("TargetSelect", OnTargetModelChanged, OnTargetTileManagerChanged, OnChooserTypeChanged),
                     new TileListElement(tileListData),
                     new GeneralElement("", () => EditorGUILayout.HelpBox("選択された3D都市モデル内の地形モデルの平滑化・Terrain化及び地形に埋まっている各地物形状（道路、都市計画決定情報等）の高さ補正が行われます。", MessageType.Info)),
                     new GeneralElement("", NotifyIfInvalidTarget),
@@ -113,7 +100,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                     new ButtonElement("execButton", ExecButtonTextNormal, ()=>Exec().ContinueWithErrorCatch())
                 );
 
-            tileTerrainConvert.SetConversionFinishCallback( () => guis.Get<TileSceneTargetSelectGui>().Reset() );
+            tileTerrainConvert.SetConversionFinishCallback( () => guis.Get<SceneTileChooserElement>().Reset() );
         }
 
         public VisualElement CreateGui()
@@ -147,7 +134,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             var tilelist = guis?.Get<TileListElement>();
             if (tilelist != null)
             {
-                tilelist.IsVisible = CurrentSceneTileSelectType == ChooserType.DynamicTile;
+                tilelist.IsVisible = CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile;
             }
         }
 
@@ -164,7 +151,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
             UpdateGui();
         }
 
-        private void OnChooserTypeChanged(SceneTileChooserGui.ChooserType chooserType)
+        private void OnChooserTypeChanged(SceneTileChooserType chooserType)
         {
             parentWindow.Repaint();
             UpdateGui();
@@ -270,7 +257,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// <summary> ここで実行します </summary>
         private async Task Exec()
         {
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile)
             {
                 SetTaskRunning(true);
                 try
@@ -323,7 +310,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private void WarnAlignLandToLod3RoadNotWorking()
         {
             const string WARNING_MESSAGE = "土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。";
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile)
             {
                 if (tileTerrainConvert?.IsAlignLandToLod3RoadNotWorking ?? true)
                     EditorGUILayout.HelpBox(WARNING_MESSAGE, MessageType.Warning);
@@ -339,7 +326,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
 
         private void NotifyIfInvalidTarget()
         {
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile)
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile)
             {
                 if (!(tileTerrainConvert?.IsReliefSelected ?? false))
                     EditorGUILayout.HelpBox("変換対象のタイルに土地が含まれていません。", MessageType.Error);

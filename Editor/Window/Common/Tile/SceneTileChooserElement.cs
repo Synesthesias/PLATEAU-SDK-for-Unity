@@ -7,25 +7,26 @@ namespace PLATEAU.Editor.Window.Common.Tile
 {
     /// <summary>
     /// PLATEAUInstancedCityModel　またはPLATEAUTileManagerのどちらかを選択するGUI要素群
+    /// ElementGroupで利用する場合に使用　（IMGUDIでは、<see cref="SceneTileChooserImgui"/>を使用）
     /// </summary>
-    internal class TileSceneTargetSelectGui : ElementGroup
+    internal class SceneTileChooserElement : ElementGroup
     {
-        public SceneTileChooserGui.ChooserType SelectedType => sceneTileChooser.SelectedType; // シーンオブジェクト/動的タイルの選択状態
+        public SceneTileChooserType SelectedType => sceneTileChooser.SelectedType; // シーンオブジェクト/動的タイルの選択状態
 
-        private SceneTileChooserGui sceneTileChooser;
+        private SceneTileChooserImgui sceneTileChooser;
 
         private Action<PLATEAUInstancedCityModel> onCityModelChanged;
         private Action<PLATEAUTileManager> onTileManagerChanged;
-        private Action<SceneTileChooserGui.ChooserType> onChooserTypeChanged;
+        private Action<SceneTileChooserType> onChooserTypeChanged;
 
         private ObjectFieldElement<PLATEAUInstancedCityModel> ModelSelectElement;
         private ObjectFieldElement<PLATEAUTileManager> TileSelectElement;
 
         private string errorMessage = null;
 
-        public TileSceneTargetSelectGui( string name, Action<PLATEAUInstancedCityModel> onCityModelChanged, Action<PLATEAUTileManager> onTileManagerChanged,  Action<SceneTileChooserGui.ChooserType> onChooserTypeChanged = null) :base(name, 0)
+        public SceneTileChooserElement( string name, Action<PLATEAUInstancedCityModel> onCityModelChanged, Action<PLATEAUTileManager> onTileManagerChanged,  Action<SceneTileChooserType> onChooserTypeChanged = null) :base(name, 0)
         {
-            sceneTileChooser = new SceneTileChooserGui(OnChooserTypeChanged);
+            sceneTileChooser = new SceneTileChooserImgui(OnChooserTypeChanged);
             Elements = new Element[] { 
                 new ObjectFieldElement<PLATEAUInstancedCityModel>("scene", "変換対象", OnTargetModelChanged), 
                 new ObjectFieldElement<PLATEAUTileManager>("tile", "変換対象", OnTargetTileChanged) };
@@ -39,10 +40,10 @@ namespace PLATEAU.Editor.Window.Common.Tile
             this.onChooserTypeChanged = onChooserTypeChanged;
         }
 
-        private void OnChooserTypeChanged(SceneTileChooserGui.ChooserType chooserType)
+        private void OnChooserTypeChanged(SceneTileChooserType chooserType)
         {
             errorMessage = null;
-            if (chooserType == SceneTileChooserGui.ChooserType.SceneObject)
+            if (chooserType == SceneTileChooserType.SceneObject)
             {
                 ModelSelectElement.IsVisible = true;
                 TileSelectElement.IsVisible = false;

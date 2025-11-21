@@ -208,7 +208,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
 
             // 高さ合わせを実行します
             using var progressDisplay = new ProgressDisplayDialogue();
-            await new TileAlignLandExecutor().ExecAsync(conf, progressDisplay);
+            await new AlignLandExecutor().ExecAsync(conf, progressDisplay);
         }
 
         public bool CanExecOrNotify()
