@@ -7,7 +7,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
 {
     /// <summary>
     /// PLATEAUInstancedCityModel　またはPLATEAUTileManagerのどちらかを選択するGUI要素群
-    /// ElementGroupで利用する場合に使用　（IMGUDIでは、<see cref="SceneTileChooserImgui"/>を使用）
+    /// ElementGroupで利用する場合に使用　（IMGUIでは、<see cref="SceneTileChooserImgui"/>を使用）
     /// </summary>
     internal class SceneTileChooserElement : ElementGroup
     {
