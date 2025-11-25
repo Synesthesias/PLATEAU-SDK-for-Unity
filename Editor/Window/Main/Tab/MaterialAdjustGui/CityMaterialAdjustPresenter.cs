@@ -15,7 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ProgressBar = PLATEAU.Util.ProgressBar;
-using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
+using PLATEAU.Editor.Window.Common.Tile;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
@@ -62,7 +62,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// <summary>
         /// シーンオブジェクト/動的タイルの現在選択されているタイプを返します。
         /// </summary>
-        private ChooserType CurrentSceneTileSelectType => Views.Get<ObjectSelectGui>()?.SelectedType ?? ChooserType.SceneObject;
+        private SceneTileChooserType CurrentSceneTileSelectType => Views.Get<ObjectSelectGui>()?.SelectedType ?? SceneTileChooserType.SceneObject;
 
         /// <summary>
         /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
@@ -87,7 +87,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 new ElementGroup("", 0,
                     new HeaderElementGroup("", "分類に応じたマテリアル分けを行います。", HeaderType.Subtitle),
                     new ElementGroup("MAGuiBeforeSearch",0, // *** 検索前のUI ***
-                        new ObjectSelectGui(OnTargetChanged, new SceneTileChooserGui(onSceneTileSelectionChanged), tileConvert), // 対象オブジェクト選択
+                        new ObjectSelectGui(OnTargetChanged, new SceneTileChooserImgui(onSceneTileSelectionChanged), tileConvert), // 対象オブジェクト選択
                         new HeaderElementGroup("commonConf", "共通設定", HeaderType.Header,
                             new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged) // 元のオブジェクトを削除するか残すか
                         ),
@@ -185,7 +185,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// シーンオブジェクト/動的タイルの選択タイプが変わったときに呼ばれます。
         /// </summary>
         /// <param name="selectedType"></param>
-        private void onSceneTileSelectionChanged(SceneTileChooserGui.ChooserType selectedType)
+        private void onSceneTileSelectionChanged(SceneTileChooserType selectedType)
         {
             ResetGui();
         }
@@ -251,7 +251,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// <returns></returns>
         private async Task<UniqueParentTransformList> GetSelectedObjectsAsync()
         {
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 return await tileConvert.GetSelectionAsTransformList();
             }
@@ -270,7 +270,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 
             ShowGuiAfterSearch(false);
 
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 SelectedObjects = await tileConvert.GetSelectionAsTransformList();
                 await Task.Yield();
@@ -356,10 +356,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                 MaterialCriterion.ByAttribute => new MAExecutorV2ByAttr(),
                 _ => throw new Exception("Unknown Criterion")
             };
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 result = await tileConvert.ExecMaterialAdjustAsync(conf, maExecutor);
-                if (DoDestroySrcObjs && tileConvert.Selected.Count == 0) IsSearched = false;
+                if (DoDestroySrcObjs && tileConvert.Selected?.Count == 0) IsSearched = false;
             }
             else
             {
@@ -407,7 +407,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
 
-            if (CurrentSceneTileSelectType == ChooserType.DynamicTile) // 動的タイルを選択しているとき
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
                 // 処理に必要最低限の設定値を作成して渡す。
                 var minimalConf = new MAExecutorConf(

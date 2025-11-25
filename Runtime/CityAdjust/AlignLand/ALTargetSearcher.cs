@@ -1,5 +1,6 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
+using PLATEAU.TerrainConvert;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -97,6 +98,12 @@ namespace PLATEAU.CityAdjust.AlignLand
             foreach(var ter in targetModel.GetComponentsInChildren<Terrain>())
             {
                 yield return ter.transform;
+            }
+
+            // 平滑化メッシュを土地とみなして追加します。
+            foreach (var mesh in targetModel.GetComponentsInChildren<PLATEAUSmoothedDem>())
+            {
+                yield return mesh.transform;
             }
         }
 

@@ -15,7 +15,11 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         /// <summary> 設定値: FBXの出力先であるAssetsパスです。 </summary>
         public string AssetPath { get; set; }
 
+        // Tile Rebuild時にtrueに設定
         public bool ConvertFromFbx { get; set; } = false;
+
+        // Tile Rebuild時にtrueに設定
+        public bool ConvertTerrain { get; set; } = false;
 
         public ConvertToAssetConfig(GameObject srcGameObj, string assetPath)
         {

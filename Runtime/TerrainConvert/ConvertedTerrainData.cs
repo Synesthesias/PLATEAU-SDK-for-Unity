@@ -36,6 +36,12 @@ namespace PLATEAU.TerrainConvert
             //debug 
             public UInt16[] HeightData;
 
+            // Addressable保存時のシリアライズ可能データ
+            [SerializeField] SerializalbeVector3d sMin;
+            [SerializeField] SerializalbeVector3d sMax;
+            [SerializeField] SerializalbeVector2f sMinUV;
+            [SerializeField] SerializalbeVector2f sMaxUV;
+
             public static HeightmapData CreateFromTerrain(Terrain terrain)
             {
                 var trans = terrain.transform;
@@ -43,7 +49,7 @@ namespace PLATEAU.TerrainConvert
                 var data = terrain.terrainData;
                 var resolution = data.heightmapResolution;
                 var heights = data.GetHeights(0, 0, resolution, resolution);
-                
+
                 var ret = new HeightmapData()
                 {
                     name = terrain.name,
@@ -55,6 +61,68 @@ namespace PLATEAU.TerrainConvert
                     HeightData = HeightmapGenerator.ConvertToUInt16Array(heights, resolution, resolution)
                 };
                 return ret;
+            }
+
+            [Serializable]
+            public class SerializalbeVector3d
+            {
+                public double X;
+                public double Y;
+                public double Z;
+
+                public SerializalbeVector3d(PlateauVector3d vec)
+                {
+                    X = vec.X; Y = vec.Y; Z = vec.Z;
+                }
+
+                public PlateauVector3d ToPlateauVector3d()
+                {
+                    return new PlateauVector3d(X, Y, Z);
+                }
+            }
+
+
+            [Serializable]
+            public class SerializalbeVector2f
+            {
+                public float X;
+                public float Y;
+
+                public SerializalbeVector2f(PlateauVector2f vec)
+                {
+                    X = vec.X; Y = vec.Y;
+                }
+
+                public PlateauVector2f ToPlateauVector2f()
+                {
+                    return new PlateauVector2f(X, Y);
+                }
+            }
+
+            /// <summary>
+            /// Serialize可能な形式のデータを作成
+            /// </summary>
+            public void ToSerializable()
+            {
+                sMin = new SerializalbeVector3d(min);
+                sMax = new SerializalbeVector3d(max);
+                sMinUV = new SerializalbeVector2f(minUV);
+                sMaxUV = new SerializalbeVector2f(maxUV);
+            }
+
+            /// <summary>
+            ///  Serializeされたデータから元データを復元
+            /// </summary>
+            public void FromSerializable()
+            {
+                if (sMin != null)
+                    min = sMin.ToPlateauVector3d();
+                if (sMax != null)
+                    max = sMax.ToPlateauVector3d();
+                if (sMinUV != null)
+                    minUV = sMinUV.ToPlateauVector2f();
+                if (sMaxUV != null)
+                    maxUV = sMaxUV.ToPlateauVector2f();
             }
         }
 
@@ -310,6 +378,7 @@ namespace PLATEAU.TerrainConvert
                     string prevTextureName = TextureName(srcTrans);
                     
                     var gameObject = await mesh.PlaceToScene(srcTrans.parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
+                    gameObject.name = $"SMOOTHED_{gameObject.name}";
 
                     var smoothedDem = gameObject.AddComponent<PLATEAUSmoothedDem>();
                     smoothedDem.HeightMapData = heightmapData;

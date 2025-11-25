@@ -3,6 +3,7 @@ using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.Editor.Window.Main.Tab.AdjustGuiParts;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static PLATEAU.Editor.Window.Common.SceneTileChooserGui;
 
 namespace PLATEAU.Editor.Window.Main.Tab
 {
@@ -30,7 +30,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private bool disableDuplicate = true;
         private static bool isFilterTaskRunning;
 
-        private SceneTileChooserGui sceneTileChooser;
+        private SceneTileChooserImgui sceneTileChooser;
         private string errorMessage = null;
 
         /// <summary>
@@ -180,14 +180,14 @@ namespace PLATEAU.Editor.Window.Main.Tab
         /// シーンに配置されたオブジェクトと動的タイルが切り替えられたときに呼ばれます。
         /// </summary>
         /// <param name="type"></param>
-        private void OnChangeSceneTileChooser(ChooserType type)
+        private void OnChangeSceneTileChooser(SceneTileChooserType type)
         {
-            if (type == ChooserType.SceneObject)
+            if (type == SceneTileChooserType.SceneObject)
             {
                 this.tileManager = null;
             }
             else
-            if (type == ChooserType.DynamicTile)
+            if (type == SceneTileChooserType.DynamicTile)
             {
                 this.adjustTarget = null;
                 errorMessage = null;

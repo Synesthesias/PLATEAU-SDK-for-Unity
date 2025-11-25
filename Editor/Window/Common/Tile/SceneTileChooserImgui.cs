@@ -2,30 +2,31 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace PLATEAU.Editor.Window.Common
+namespace PLATEAU.Editor.Window.Common.Tile
 {
     /// <summary>
     /// シーンに配置されたオブジェクトと動的タイルのどちらかを選択するGUIを提供します。
-    /// </summary>
-    public class SceneTileChooserGui
+    /// IMGUIベースで使用する場合に使用　（ElementGroupでは、<see cref="SceneTileChooserElement"/>を使用）
+    /// </summary> 
+    public enum SceneTileChooserType
     {
-        public enum ChooserType
-        {
-            SceneObject,
-            DynamicTile
-        }
+        SceneObject,
+        DynamicTile
+    }
 
+    internal class SceneTileChooserImgui
+    {
         private string[] objectSelectOptions = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
         private int objectSelectedIndex = 0;
 
         private Action sceneHandler;
         private Action tileHandler;
 
-        private Action<ChooserType> onSelectionChanged;
+        private Action<SceneTileChooserType> onSelectionChanged;
 
-        public ChooserType SelectedType => (ChooserType)objectSelectedIndex;
+        public SceneTileChooserType SelectedType => (SceneTileChooserType)objectSelectedIndex;
 
-        public SceneTileChooserGui(Action<ChooserType> onSelectionChanged = null)
+        public SceneTileChooserImgui(Action<SceneTileChooserType> onSelectionChanged = null)
         {
             this.onSelectionChanged = onSelectionChanged;
         }

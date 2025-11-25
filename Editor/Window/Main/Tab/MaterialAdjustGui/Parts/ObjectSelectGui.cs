@@ -1,6 +1,7 @@
 using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
     {
         private ObservableCollection<Transform> observableSelected;   
 
-        public SceneTileChooserGui.ChooserType SelectedType => sceneTileChooser.SelectedType; // シーンオブジェクト/動的タイルの選択状態
+        public SceneTileChooserType SelectedType => sceneTileChooser.SelectedType; // シーンオブジェクト/動的タイルの選択状態
 
         public bool LockChange { get => lockChange; set { lockChange = value; if( tileSelectGui != null ) tileSelectGui.LockChange = value; } }
         private bool lockChange;
@@ -35,10 +36,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         private List<Transform> prevSelected = new(); // 変更を取り消すためのバックアップ
         private Action<UniqueParentTransformList> onSelectionChanged;
 
-        private SceneTileChooserGui sceneTileChooser;
+        private SceneTileChooserImgui sceneTileChooser;
         private TileMaterialAdjustGui tileSelectGui;
 
-        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged, SceneTileChooserGui sceneTileChooser, TileMaterialAdjustGui tileSelect)
+        public ObjectSelectGui(Action<UniqueParentTransformList> onSelectionChanged, SceneTileChooserImgui sceneTileChooser, TileMaterialAdjustGui tileSelect)
         {
             this.sceneTileChooser = sceneTileChooser;
             this.tileSelectGui = tileSelect;
@@ -149,7 +150,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 }, tileSelectGui.DrawSelectTile);
             }
 
-            if (sceneTileChooser.SelectedType == SceneTileChooserGui.ChooserType.DynamicTile)
+            if (sceneTileChooser.SelectedType == SceneTileChooserType.DynamicTile)
             {
                 tileSelectGui.DrawScrollViewContent(scrollView);
             }
