@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using PLATEAU.CityExport;
+﻿using PLATEAU.CityExport;
 using PLATEAU.CityInfo;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Common.PathSelector;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.Editor.Window.Main.Tab.ExportGuiParts;
 using PLATEAU.Geometries;
 using PLATEAU.Util;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
         private PLATEAUInstancedCityModel exportCityModelTarget;
         private PLATEAUTileManager exportTileManagerTarget;
         private CoordinateSystemGui coordinateSystemGui;
-        private SceneTileChooserGui sceneTileChooser;
+        private SceneTileChooserImgui sceneTileChooser;
         private readonly MeshFileFormatGui meshFileFormatGui;
 
         private readonly Dictionary<MeshFileFormat, IExportConfigGUI> formatToExporterGUI = new()
@@ -69,13 +70,13 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 coordinateSystemGui = new CoordinateSystemGui(format, selectedSystem);
             };
 
-            sceneTileChooser = new SceneTileChooserGui(type =>
+            sceneTileChooser = new SceneTileChooserImgui(type =>
             {
-                if (type is SceneTileChooserGui.ChooserType.DynamicTile)
+                if (type is SceneTileChooserType.DynamicTile)
                 {
                     exportCityModelTarget = null;
                 }
-                else if (type is SceneTileChooserGui.ChooserType.SceneObject)
+                else if (type is SceneTileChooserType.SceneObject)
                 {
                     exportTileManagerTarget = null;
                 }
@@ -131,7 +132,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                         }
                     }
                     //DynamicTileの場合、表示をそもそも制御して出しているのでこのオプションは不要
-                    if (sceneTileChooser.SelectedType is SceneTileChooserGui.ChooserType.SceneObject)
+                    if (sceneTileChooser.SelectedType is SceneTileChooserType.SceneObject)
                     {
                         this.exportHiddenObject =
                             PlateauEditorStyle.Toggle("非アクティブオブジェクトを含める", this.exportHiddenObject);
