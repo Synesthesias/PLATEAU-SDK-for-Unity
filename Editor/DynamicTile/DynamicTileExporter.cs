@@ -53,7 +53,7 @@ namespace PLATEAU.DynamicTile
             var setupBuildPath = new SetUpTileBuildPath(context);
             var addTilesToOldMetaIfExist = new AddTilesToOldMetaIfExist(context);
             var setReferencePointToSameIfExist = new SetReferencePointSameIfExist(cityConf, context);
-            var generateOneTile = new GenerateOneTile(context, progressDisplay);
+            var generateOneTile = new GenerateOneTile(context, cityConf, progressDisplay);
             var saveAndRegisterMetaData = new SaveAndRegisterMetaData(context);
             var cleanUpTempFolder = new TileCleanupTempFolder(context);
             var exportUnityPackage = new ExportUnityPackageOfPrefabs(context);

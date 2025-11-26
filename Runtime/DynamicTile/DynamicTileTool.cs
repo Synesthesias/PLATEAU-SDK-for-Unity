@@ -129,5 +129,22 @@ namespace PLATEAU.DynamicTile
             Debug.LogError($"メッシュコードが見つかりません : {Address}");
             return null;
         }
+
+        /// <summary>
+        /// ズームレベルからデフォルトの解像度の分母を取得します。(固定値)
+        /// [9: 1/4, 10: 1/2, 11: 1/1]
+        /// </summary>
+        /// <param name="zoomLevel"></param>
+        /// <returns></returns>
+        public static int GetDefaultDenominatorFromZoomLevel(int zoomLevel)
+        {
+            return zoomLevel switch
+            {
+                9 => 4,
+                10 => 2,
+                11 => 1,
+                _ => 0 // 未対応
+            };
+        }
     }
 }
