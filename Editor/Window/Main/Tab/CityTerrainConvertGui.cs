@@ -25,12 +25,40 @@ namespace PLATEAU.Editor.Window.Main.Tab
         internal static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
 
         public int SelectedSize { get; set; } = 1;
+        
+        /// <summary>
+        /// 「余白を端の高さに合わせる」のチェック
+        /// </summary>
         public bool FillEdges { get; set; } = true;
+        
+        /// <summary>
+        /// 「地形変換」のチェック（Unityのテレインではない）
+        /// </summary>
         public bool ConvertToTerrain { get; set; }
+        
+        /// <summary>
+        /// 「テレインに変換する」のチェック
+        /// </summary>
         public bool EnableTerrainConversion { get; set; }
+        
+        /// <summary>
+        /// 「ハイトマップ平滑化」のチェック
+        /// </summary>
         public bool ApplyConvolutionFilterToHeightMap { get; set; }
+        
+        /// <summary>
+        /// 「高さ合わせ」のチェック
+        /// </summary>
         public bool AlignLand { get; set; }
+        
+        /// <summary>
+        /// 「交通・区域モデルの高さを地形に合わせる」のチェック
+        /// </summary>
         public bool AlignLandNormal { get; set; }
+        
+        /// <summary>
+        /// 「土地をLOD3道路モデルに合わせる」のチェック
+        /// </summary>
         public bool AlignLandInvert { get; set; }
         public PreserveOrDestroy PreserveOrDestroy { get; set; }
 

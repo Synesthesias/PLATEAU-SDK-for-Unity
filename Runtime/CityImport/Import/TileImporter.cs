@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -346,13 +346,28 @@ namespace PLATEAU.CityImport.Import
         /// <returns></returns>
         internal async Task ImportTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
-            if (zoomLevel <= 9)
+            int totalGroups = cityModels.Count;
+            int currentGroupIndex = 0;
+
+            foreach (var kv in cityModels)
             {
-                await ImportCombinedTiles(zoomLevel, startProgress, endProgress, token);
-            }
-            else
-            {
-                await ImportEachTiles(zoomLevel, startProgress, endProgress, token);
+                token?.ThrowIfCancellationRequested();
+                var (package, epsg) = kv.Key;
+                var models = kv.Value;
+
+                float groupStartProgress = startProgress + (endProgress - startProgress) * ((float)currentGroupIndex / totalGroups);
+                float groupEndProgress = startProgress + (endProgress - startProgress) * ((float)(currentGroupIndex + 1) / totalGroups);
+
+
+                if (zoomLevel <= 9 && !package.IsLargePackage()) // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
+                {
+                    await ImportCombinedTiles(models, package, epsg, zoomLevel, groupStartProgress, groupEndProgress, token);
+                }
+                else
+                {
+                    await ImportEachTiles(models, zoomLevel, groupStartProgress, groupEndProgress, token);
+                }
+                currentGroupIndex++;
             }
         }
 
@@ -365,9 +380,9 @@ namespace PLATEAU.CityImport.Import
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportEachTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
+        internal async Task ImportEachTiles(List<CityModel> targetCityModels, int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
-            foreach (var cityModel in cityModels.Values.SelectMany(models => models))
+            foreach (var cityModel in targetCityModels)
             {
                 token?.ThrowIfCancellationRequested();
 
@@ -388,7 +403,8 @@ namespace PLATEAU.CityImport.Import
                 var placingResult = await CityModelToGameObject(
                     new List<CityModel>() { cityModel }, meshExtractOptions, importConfig.AreaGridCodes, gmlTrans, gmlName,
                     packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f)
+                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f),
+                    gml.Package
                 );
 
                 if (placingResult.IsSucceed)
@@ -422,69 +438,64 @@ namespace PLATEAU.CityImport.Import
         /// <param name="progressDisplay"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal async Task ImportCombinedTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
+        internal async Task ImportCombinedTiles(List<CityModel> targetCityModels, PredefinedCityModelPackage package, int epsg, int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
-            foreach (var kv in cityModels)
+            var cityModels = targetCityModels;
+
+            if (cityModels.Count == 0)
+            {
+                Debug.LogWarning($"パッケージ: {package}, EPSG: {epsg} のモデルが見つかりません。");
+                return;
+            }
+
+            Debug.Log($"パッケージ: {package}, EPSG: {epsg} のモデルを配置します。");
+
+            var packageConf = importConfig.GetConfigForPackage(package);
+            var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
+
+            var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
+            combinedTileCount += tileGroups.Count; // 結合タイル数をカウント
+
+            foreach (var cityModelsInTile in tileGroups)
             {
                 token?.ThrowIfCancellationRequested();
 
-                var (package, epsg) = kv.Key;
-                var cityModels = kv.Value;
+                var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
+                var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString(); // 結合する場合は、最初のGML名、又は パッケージ名を使用
+                var gameObjectName = GetTileName(zoomLevel, firstGmlName);
+                var gmlTrans = new GameObject(gameObjectName).transform;
 
-                if (cityModels.Count == 0)
+                if (!TryCreateMeshExtractOptions(gmlTrans, firstGml, firstGmlName, zoomLevel,
+                    out var meshExtractOptions))
                 {
-                    Debug.LogWarning($"パッケージ: {package}, EPSG: {epsg} のモデルが見つかりません。");
-                    continue;
+                    return;
                 }
 
-                Debug.Log($"パッケージ: {package}, EPSG: {epsg} のモデルを配置します。");
+                // ここはメインスレッドで呼ぶ必要があります。
+                var placingResult = await CityModelToGameObject(
+                    cityModelsInTile, meshExtractOptions, importConfig.AreaGridCodes, gmlTrans, firstGmlName,
+                    packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
+                    infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f),
+                    package
+                );
 
-                var packageConf = importConfig.GetConfigForPackage(package);
-                var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
-
-                var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
-                combinedTileCount += tileGroups.Count; // 結合タイル数をカウント
-
-                foreach (var cityModelsInTile in tileGroups)
+                foreach (var cityModel in cityModelsInTile)
                 {
-                    token?.ThrowIfCancellationRequested();
-
-                    var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
-                    var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString(); // 結合する場合は、最初のGML名、又は パッケージ名を使用
-                    var gameObjectName = GetTileName(zoomLevel, firstGmlName);
-                    var gmlTrans = new GameObject(gameObjectName).transform;
-
-                    if (!TryCreateMeshExtractOptions(gmlTrans, firstGml, firstGmlName, zoomLevel,
-                        out var meshExtractOptions))
-                    {
-                        return;
-                    }
-
-                    // ここはメインスレッドで呼ぶ必要があります。
-                    var placingResult = await CityModelToGameObject(
-                        cityModelsInTile, meshExtractOptions, importConfig.AreaGridCodes, gmlTrans, firstGmlName,
-                        packageConf.DoSetMeshCollider, packageConf.DoSetAttrInfo, token, packageConf.FallbackMaterial,
-                        infoForToolkits, packageConf.MeshGranularity, zoomLevel, startProgress, startProgress + (int)((endProgress - startProgress) * 0.5f)
-                    );
-
-                    foreach (var cityModel in cityModelsInTile)
-                    {
-                        var gml = cityModelGml[cityModel];
-                        string gmlName = Path.GetFileName(gml.Path);
-                        if (placingResult.IsSucceed)
-                        {
-                            progressDisplay.SetProgress(gmlName, endProgress, endProgress >= 100f ? "完了" : $"ズームレベル:{zoomLevel} 完了");
-                        }
-                        else
-                        {
-                            progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
-                        }
-                    }
-
+                    var gml = cityModelGml[cityModel];
+                    string gmlName = Path.GetFileName(gml.Path);
                     if (placingResult.IsSucceed)
                     {
-                        HandlePostProcessors(placingResult, firstGml, zoomLevel);
+                        progressDisplay.SetProgress(gmlName, endProgress, endProgress >= 100f ? "完了" : $"ズームレベル:{zoomLevel} 完了");
                     }
+                    else
+                    {
+                        progressDisplay.SetProgress(gmlName, 0f, "失敗 : モデルの変換または配置に失敗しました。");
+                    }
+                }
+
+                if (placingResult.IsSucceed)
+                {
+                    HandlePostProcessors(placingResult, firstGml, zoomLevel);
                 }
             }
         }
@@ -608,7 +619,7 @@ namespace PLATEAU.CityImport.Import
             Transform parentTrans, string progressName,
             bool doSetMeshCollider, bool doSetAttrInfo, CancellationToken? token, UnityEngine.Material fallbackMaterial,
             CityObjectGroupInfoForToolkits infoForToolkits, MeshGranularity granularity,
-            int zoomLevel, float startProgress, float endProgress
+            int zoomLevel, float startProgress, float endProgress, PredefinedCityModelPackage package
         )
         {
             token?.ThrowIfCancellationRequested();
@@ -619,7 +630,7 @@ namespace PLATEAU.CityImport.Import
             Model plateauModel;
             try
             {
-                plateauModel = await Task.Run(() => ExtractMeshes(cityModels, meshExtractOptions, selectedGridCodes, zoomLevel));
+                plateauModel = await Task.Run(() => ExtractMeshes(cityModels, meshExtractOptions, selectedGridCodes, zoomLevel, package));
             }
             catch (Exception e)
             {
@@ -645,7 +656,7 @@ namespace PLATEAU.CityImport.Import
         /// <param name="selectedGridCodes"></param>
         /// <returns></returns>
         private Model ExtractMeshes(
-            List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes, int zoomLevel)
+            List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes, int zoomLevel, PredefinedCityModelPackage package)
         {
             var model = Model.Create();
             if (cityModels.Count == 0) return model;
@@ -658,7 +669,7 @@ namespace PLATEAU.CityImport.Import
                 return extent;
             }).ToList();
 
-            if (zoomLevel <= 9)
+            if (zoomLevel <= 9 && !package.IsLargePackage()) // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
                 TileExtractor.ExtractWithCombine(ref model, cityModels, meshExtractOptions, extents); //結合
             else
                 TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位

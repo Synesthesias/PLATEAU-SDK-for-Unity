@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace PLATEAU.Dataset
@@ -156,6 +156,16 @@ namespace PLATEAU.Dataset
             }
 
             return string.Join(", ", names);
+        }
+
+        /// <summary>
+        /// 範囲が広く、2次メッシュ単位でのファイルとなることが多いパッケージかどうかを返します。
+        /// </summary>
+        public static bool IsLargePackage(this PredefinedCityModelPackage package)
+        {
+            return package == PredefinedCityModelPackage.UrbanPlanningDecision ||
+                   package == PredefinedCityModelPackage.LandUse ||
+                   package == PredefinedCityModelPackage.DisasterRisk;
         }
     }
 }
