@@ -120,7 +120,11 @@ namespace PLATEAU.CityImport.Import
 
                 // タイルインポート処理を行います。
                 using var tileImporter = new TileImporter();
-                await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token, postGmlProcessors);
+                var success = await tileImporter.Import(fetchedGmls, config, rootTrans, progressDisplay, token, postGmlProcessors);
+                if(!success)
+                {
+                    throw new Exception("タイルインポートに失敗しました。");
+                }
 
                 // インポート完了後の処理
                 string finalGmlRootPath = fetchedGmls.Last().CityRootPath();
