@@ -441,8 +441,10 @@ namespace PLATEAU.DynamicTile
                 var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
                 try
                 {
+                    // savePathをAssets相対パスに変換してからLod1TextureCaptureServiceに渡す
+                    var assetRelativeSavePath = AssetPathUtil.GetAssetPath(savePath);
                     var service =
-                        new Lod1TextureCaptureService(Path.Combine(FileUtil.GetProjectRelativePath(savePath),target.name), 1,
+                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath, target.name), 1,
                             true);
                     service.Execute(tmpCamera, target);
                     service.SwitchLod1Visible(target, true);
