@@ -1,7 +1,6 @@
 ﻿using PLATEAU.CityImport.Config;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.Window.Common;
-using PLATEAU.Editor.Window.Common.Tile;
 using System;
 using UnityEditor;
 using UnityEngine;
