@@ -90,12 +90,9 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
         /// </summary>
         /// <param name="denominator"><see cref="zl10Denominators"/>又は、<see cref="zl11Denominators"/>で定義された分母の値</param>
         /// <param name="zoomLevel">ズームレベル( 10 ,11 )</param>
-        /// <returns><see cref="zl10Denominators"/>又は、<see cref="zl11Denominators"/>で定義された分母の値の配列上のインデックス。取得できない場合は、デフォルト値を返す</returns>
+        /// <returns><see cref="zl10Denominators"/>又は、<see cref="zl11Denominators"/>で定義された分母の値の配列上のインデックス。取得できない場合は、0を返す</returns>
         private int GetIndexFromDenominator(int denominator, int zoomLevel)
         {
-            if (denominator < 0)
-                return DynamicTileTool.GetDefaultDenominatorFromZoomLevel(zoomLevel);
-
             int[] denominators = null;
 
             if (zoomLevel == 10)
@@ -104,9 +101,10 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs
                 denominators = zl11Denominators;
 
             if (denominators == null || denominators.Length == 0)
-                return DynamicTileTool.GetDefaultDenominatorFromZoomLevel(zoomLevel);
+                return 0;
 
-            return Array.IndexOf(denominators, denominator);
+            int index = Array.IndexOf(denominators, denominator);
+            return index >= 0 ? index : 0;
         }
     }
 }
