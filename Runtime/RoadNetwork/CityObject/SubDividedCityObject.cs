@@ -217,6 +217,9 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
         }
 
+        /// <summary>
+        /// Node名. ルートの場合はRootという名前
+        /// </summary>
         [field: SerializeField]
         public string Name { get; private set; }
 
