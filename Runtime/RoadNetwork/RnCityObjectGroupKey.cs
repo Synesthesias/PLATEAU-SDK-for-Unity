@@ -112,5 +112,10 @@ namespace PLATEAU.RoadNetwork
             
             return new RnCityObjectGroupKey(obj.GmlID);
         }
+
+        public override string ToString()
+        {
+            return IsValid ? GmlId : "Invalid";
+        }
     }
 }

@@ -20,15 +20,19 @@ namespace PLATEAU.RoadNetwork.Structure
         // 自分が所属するRoadNetworkModel
         public RnModel ParentModel { get; set; }
 
+        private List<RnCityObjectGroupKey> targetGroupKeys = new List<RnCityObjectGroupKey>();
+        
+        private List<PLATEAUCityObjectGroup> targetTrans = new List<PLATEAUCityObjectGroup>();
+        
         /// <summary>
         ///  このオブジェクトに紐づく主要地物の都市モデルIdリスト(統合なので複数存在する場合がある)
         /// </summary>
-        public List<RnCityObjectGroupKey> TargetGroupKeys { get; set; } = new List<RnCityObjectGroupKey>();
-        
+        public IReadOnlyList<RnCityObjectGroupKey> TargetGroupKeys => targetGroupKeys;
+
         /// <summary>
         ///   このオブジェクトのメッシュが所属していたPLATEAUCityObjectGroupのリスト(統合されているので複数存在する場合がある)
         /// </summary>
-       public List<PLATEAUCityObjectGroup> TargetTrans { get; set; } = new List<PLATEAUCityObjectGroup>();
+       public IReadOnlyList<PLATEAUCityObjectGroup> TargetTrans => targetTrans;
 
         /// <summary>
         /// 歩道情報
@@ -118,8 +122,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (!tran)
                 return;
-            if (TargetTrans.Contains(tran) == false)
-                TargetTrans.Add(tran);
+            if (targetTrans.Contains(tran) == false)
+                targetTrans.Add(tran);
         }
 
         /// <summary>
@@ -130,8 +134,8 @@ namespace PLATEAU.RoadNetwork.Structure
         {
             if (groupKey.IsValid == false)
                 return;
-            if (TargetGroupKeys.Contains(groupKey) == false)
-                TargetGroupKeys.Add(groupKey);
+            if (targetGroupKeys.Contains(groupKey) == false)
+                targetGroupKeys.Add(groupKey);
         }
 
         /// <summary>
@@ -264,6 +268,15 @@ namespace PLATEAU.RoadNetwork.Structure
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// targetTrans/targetGroupKeysをクリアする
+        /// </summary>
+        public void ClearTargets()
+        {
+            targetTrans.Clear();
+            targetGroupKeys.Clear();
         }
     }
 

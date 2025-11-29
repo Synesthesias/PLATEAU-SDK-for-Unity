@@ -16,11 +16,11 @@ namespace PLATEAU.RoadNetwork.Data
         public PLATEAUCityObjectGroup TargetTran => TargetTrans.FirstOrDefault();
 
         [field: SerializeField]
-        [RoadNetworkSerializeMember]
+        [RoadNetworkSerializeMember( "targetTrans")]
         public List<PLATEAUCityObjectGroup> TargetTrans { get; set; } = new List<PLATEAUCityObjectGroup>();
         
         [field:SerializeField]
-        [RoadNetworkSerializeMember]
+        [RoadNetworkSerializeMember("targetGroupKeys")]
         public List<RnCityObjectGroupKey> TargetGroupKeys { get; set; } = new List<RnCityObjectGroupKey>();
 
         [field: SerializeField]

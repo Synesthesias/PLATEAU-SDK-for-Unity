@@ -347,7 +347,7 @@ namespace PLATEAU.Editor.RoadNetwork.AddSystem
             if (oppositeIntersection != null)
                 oppositeIntersectionBorder.Road = centerRoad;
 
-            intersection.TargetTrans.Clear();
+            intersection.ClearTargets();
         }
 
         /// <summary>

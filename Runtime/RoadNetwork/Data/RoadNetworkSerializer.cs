@@ -594,7 +594,7 @@ namespace PLATEAU.RoadNetwork.Data
                     // TargetTransKeysが空かつTargetTransが空でない場合、古いデータなのでTargetTransから移植する
                     if (r.TargetGroupKeys.Any() == false && r.TargetTrans.Any())
                     {
-                        r.TargetGroupKeys.AddRange(r.TargetTrans.Select(RnCityObjectGroupKey.CreateFromPrimaryPLATEAUCityObjectGroup).Where(x => x));
+                        r.AddTargets(null, r.TargetTrans.Select(RnCityObjectGroupKey.CreateFromPrimaryPLATEAUCityObjectGroup).Where(x => x));
                     }
                 }
             }
