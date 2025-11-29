@@ -21,6 +21,10 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
         public bool showVertexIndex = false;
         public bool showOutline = false;
         public int showVertexIndexFontSize = 8;
+        /// <summary>
+        /// SubDividedCityObject.Nameを表示する
+        /// </summary>
+        public bool showNodeName = false;
 
         public RRoadTypeMask showRRoadTypeMask = RRoadTypeMask.All;
         public HashSet<SubDividedCityObject> TargetCityObjects { get; } = new();
@@ -67,6 +71,11 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);
                     continue;
+                }
+
+                if (showNodeName)
+                {
+                    DebugEx.DrawString(item.Name, item.Meshes[0].Vertices[0]);
                 }
 
                 foreach (var mesh in item.Meshes)
