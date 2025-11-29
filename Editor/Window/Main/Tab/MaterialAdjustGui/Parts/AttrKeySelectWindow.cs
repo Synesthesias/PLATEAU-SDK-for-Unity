@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 
         private void Dispose()
         {
-            gui.Dispose();
+            gui?.Dispose();
         }
     }
 

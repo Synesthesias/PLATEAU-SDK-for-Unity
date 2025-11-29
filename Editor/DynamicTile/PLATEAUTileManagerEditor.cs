@@ -14,6 +14,9 @@ namespace PLATEAU.DynamicTile
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
+        private SerializedProperty onTileInstantiatedProperty;
+        private SerializedProperty beforeTileUnloadProperty;
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -26,6 +29,10 @@ namespace PLATEAU.DynamicTile
                 SceneView.lastActiveSceneView?.Repaint();
             }
 
+            // Event表示
+            EditorGUILayout.PropertyField(onTileInstantiatedProperty);
+            EditorGUILayout.PropertyField(beforeTileUnloadProperty);
+
             // デバッグ表示トグル
             var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
             EditorGUILayout.PropertyField(debugInfoProperty, new GUIContent("SDKデバッグ用情報を表示"));
@@ -36,8 +43,6 @@ namespace PLATEAU.DynamicTile
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("useJobSystem"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("showDebugLog"));
             }
-
-            serializedObject.ApplyModifiedProperties();
 
             if (debugInfoProperty.boolValue)
             {
@@ -113,6 +118,7 @@ namespace PLATEAU.DynamicTile
                 }
                 
                 EditorGUILayout.LabelField("OutputPath: " + tileManager.OutputPath);
+                EditorGUILayout.Space();
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
@@ -150,6 +156,7 @@ namespace PLATEAU.DynamicTile
                 if (dynamicTiles.Count > 0)
                     Repaint();
             }
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>
@@ -192,6 +199,8 @@ namespace PLATEAU.DynamicTile
         public void OnEnable()
         {
             isShowingZoomLevel = false;
+            onTileInstantiatedProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.onTileInstantiated));
+            beforeTileUnloadProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.beforeTileUnload));
         }
 
         public void OnDisable()

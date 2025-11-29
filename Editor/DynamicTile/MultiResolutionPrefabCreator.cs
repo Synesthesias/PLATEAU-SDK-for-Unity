@@ -1,10 +1,11 @@
-﻿using PLATEAU.Util;
+using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using PLATEAU.CityImport.Import.Convert.MaterialConvert;
+using PLATEAU.Editor.AdjustModel;
 using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
@@ -157,17 +158,29 @@ namespace PLATEAU.DynamicTile
             string directoryPath = AssetPathUtil.GetFullPath(savePath);
             AssetPathUtil.CreateDirectoryIfNotExist(directoryPath);
 
+            var materialList = new List<Material[]>();
+            bool lod1Processed = false;
             // リソース保存先のディレクトリを作成
             var resourcePath = CreateUniqueResourcePath(content.name, zoomLevel);
-            var materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
-            var result = SavePrefabFromPrefab(prefab, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
+            
+            // 倍率が4分の1の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
+            if (denominator is 4 && content.name.Contains("bldg"))
+            {
+                lod1Processed = CreateLod1TextureAndMaterialIfRequired(ref content);
+            }
+            
+            if(!lod1Processed)
+            {
+                materialList = CreateMaterialList(content, resourcePath, denominator, zoomLevel);
+            }
+            var result = SavePrefabFromGameObject(content, materialList, zoomLevel, Path.GetFileName(resourcePath),
+                savePath, lod1Processed);
 
             if (result != null)
                 Debug.Log($"Prefab Created : {content.name}　zoomLevel{zoomLevel}");
 
             //破棄
             PrefabUtility.UnloadPrefabContents(content);
-
             return result;
         }
 
@@ -203,8 +216,31 @@ namespace PLATEAU.DynamicTile
 
             var clone = Object.Instantiate(target);
             clone.name = target.name;
-            var materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
-            var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath);
+
+            var materialList = new List<Material[]>();
+            bool lod1Processed = false;
+
+            // 倍率が4分の1の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
+            if (denominator is 4 && target.name.Contains("bldg"))
+            {
+                //撮影の邪魔になるのでcloneを非表示
+                target.SetActive(false);
+                try
+                {
+                    lod1Processed = CreateLod1TextureAndMaterialIfRequired(ref clone);
+                }
+                finally
+                {
+                    target.SetActive(true);
+                }
+            }
+            
+            if(!lod1Processed)
+            {
+                materialList = CreateMaterialList(clone, resourcePath, denominator, zoomLevel);
+            }
+
+            var result = SavePrefabFromGameObject(clone, materialList, zoomLevel, Path.GetFileName(resourcePath), savePath, lod1Processed);
 
             if (result != null)
                 Debug.Log($"Prefab Created : {target.name}　zoomLevel{zoomLevel}"); 
@@ -301,7 +337,8 @@ namespace PLATEAU.DynamicTile
         /// <param name="zoomLevel"></param>
         /// <param name="prefabName"></param>
         /// <param name="saveDirectory"></param>
-        private Result SavePrefabFromGameObject(GameObject target, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory)
+        /// <param name="isLod1TextureProcessed">LOD1にテクスチャを貼る処理を実行している場合はtrue</param>
+        private Result SavePrefabFromGameObject(GameObject target, List<Material[]> materialList, int zoomLevel, string prefabName, string saveDirectory, bool isLod1TextureProcessed = false)
         {
             // missing script削除
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(target);
@@ -340,14 +377,16 @@ namespace PLATEAU.DynamicTile
 
             string uniquePath = string.Empty;
             GameObject created;
-            if (overwriteExisting)
+            if (overwriteExisting && !isLod1TextureProcessed)
             {
-                // 上書き時は新規保存しない
+                // 上書き時は新規保存しない（ただしLOD1テクスチャの処理をしていた場合は保存する必要がある）
                 created = target;
             }
             else
             {
-                var newName = $"{prefabName}.prefab";
+                // prefabNameが空の場合はtarget.nameを使用（overwriteモード時にresourcePathが空になるため）
+                var baseName = string.IsNullOrEmpty(prefabName) ? target.name : prefabName;
+                var newName = $"{baseName}.prefab";
                 var newPath = AssetPathUtil.GetFullPath(Path.Combine(saveDirectory, newName));
                 uniquePath = AssetPathUtil.CreateIncrementalPathName(newPath);
                 created = PrefabUtility.SaveAsPrefabAsset(target, uniquePath);
@@ -389,6 +428,37 @@ namespace PLATEAU.DynamicTile
             var basePath = AssetPathUtil.GetAssetPath($"{relativeSaveDirectory}/{materialName}.mat");
             AssetDatabase.CreateAsset(material, basePath);
             AssetDatabase.SaveAssets();
+        }
+
+        private bool CreateLod1TextureAndMaterialIfRequired(ref GameObject target)
+        {
+            if (!target.name.Contains("bldg")) return false;
+
+            var lod1 = target.transform.Find("LOD1");
+            var lod2 = target.transform.Find("LOD2");
+            if (lod1 != null && lod2 != null)
+            {
+                var tmpCamera = new GameObject("TempCamera").AddComponent<Camera>();
+                try
+                {
+                    // savePathをAssets相対パスに変換してからLod1TextureCaptureServiceに渡す
+                    var assetRelativeSavePath = AssetPathUtil.GetAssetPath(savePath);
+                    var service =
+                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath, target.name), 1,
+                            true);
+                    service.Execute(tmpCamera, target);
+                    service.SwitchLod1Visible(target, true);
+                    //LOD2を削除してLOD1(Material反映済み）のみ残す
+                    Object.DestroyImmediate(lod2.gameObject);
+                }
+                finally
+                {
+                    //シーンが汚れないように削除
+                    Object.DestroyImmediate(tmpCamera.gameObject);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

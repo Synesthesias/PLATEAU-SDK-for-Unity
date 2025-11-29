@@ -1,3 +1,4 @@
+using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.DynamicTile.TileModule;
@@ -6,6 +7,7 @@ using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -27,6 +29,7 @@ namespace PLATEAU.Editor.DynamicTile
         private IOnTileGenerateStart[] onTileGenerateStarts;
         private IBeforeTileAssetBuild[] beforeTileAssetBuilds;
         private IAfterTileAssetBuild[] afterTileAssetBuilds;
+        private IAfterTileAssetBuild[] afterTileAssetCancelled;
         private IOnTileGenerationCancelled[] onTileGenerationCancelled;
         private IOnTileBuildFailed[] onTileBuildFailed;
         public const string EditingTilesParentName = "EditingTiles";
@@ -102,6 +105,14 @@ namespace PLATEAU.Editor.DynamicTile
 
                 GameObjectUtil.AssureComponent<PLATEAUEditingTile>(instance);
             }
+
+            //　Rebuildを行わない場合のキャンセル処理
+            afterTileAssetCancelled = new IAfterTileAssetBuild[]
+            {
+                new TileCleanupTempFolder(context), // 不要なフォルダを消します。
+                new CleanupEditingTilesInScene(), // シーン上のEditingTilesをクリーンアップ
+                new TileRebuildCancellation()　// タイル生成中フラグを元に戻す
+            };
 
             await Task.CompletedTask;
         }
@@ -181,7 +192,7 @@ namespace PLATEAU.Editor.DynamicTile
                 initializeTileManager,
                 tileEditorProcedure // エディタ上での後始末。処理の都合上、配列の最後にしてください。
             };
-            
+
             onTileGenerationCancelled = new IOnTileGenerationCancelled[]
             {
                 tileEditorProcedure
@@ -205,25 +216,121 @@ namespace PLATEAU.Editor.DynamicTile
                 return;
             }
             
+            var prevStripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents; // 元の設定を保存
             try
             {
+                PlayerSettings.stripUnusedMeshComponents = false; // UV4を使うために必要
                 // addressableビルド
                 AddressablesUtility.BuildAddressables(context.BuildMode);
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 Cancel();
                 foreach(var f in onTileBuildFailed) f.OnTileBuildFailed();
                 Debug.LogError($"Addressables build failed: {ex}");
                 return;
             }
-            
+            finally
+            {
+                PlayerSettings.stripUnusedMeshComponents = prevStripUnusedMeshComponents; // 元に戻す
+            }
+
             if (!AfterTileAssetsBuilds())
             {
                 Debug.LogError("failed on AfterTileAssetsBuilds.");
                 Cancel();
                 return;
             }
+        }
+
+        /// <summary>
+        /// GameObjectをプレハブとして保存します。
+        /// 保存先はDynamicTileProcessingContext.PrefabsTempSavePathとします。
+        /// </summary>
+        public async Task SavePrefabAsset(GameObject src)
+        {
+            bool disableProjectChangeEventBefore = PLATEAUEditorEventListener.disableProjectChangeEvent;
+            PLATEAUEditorEventListener.disableProjectChangeEvent = true;
+
+            string outputPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            AssetPathUtil.CreateDirectoryIfNotExist(AssetPathUtil.GetFullPath(outputPath)); // ルートを確実に作成
+            string saveFolderPath = Path.Combine(outputPath, src.name);
+            var saveFolderFullPath = Path.GetFullPath(saveFolderPath);
+            var saveFolderTempPath = saveFolderFullPath + "_temp";
+
+            var assetConfig = ConvertToAssetConfig.DefaultValue;
+            assetConfig.SrcGameObj = src;
+            assetConfig.AssetPath = saveFolderTempPath;
+            assetConfig.ConvertFromFbx = true;
+            assetConfig.ConvertTerrain = true;
+
+            var comp = src.GetComponent<PLATEAUEditingTile>();
+            if (comp != null)
+            {
+                Object.DestroyImmediate(comp, true);
+            }
+
+            await Task.Run(() =>
+            {
+                if (Directory.Exists(saveFolderTempPath))
+                    Directory.Delete(saveFolderTempPath, true);
+                AssetPathUtil.CreateDirectoryIfNotExist(saveFolderTempPath);
+            });
+            await Task.Yield();
+
+            var convertedObjects = new ConvertToAsset().ConvertCore(assetConfig, new DummyProgressBar());
+            if (convertedObjects == null || convertedObjects.Count == 0 || convertedObjects[0] == null)
+            {
+                Debug.LogWarning($"{src.name} の変換に失敗しました。");
+                return;
+            }
+            // Prefab 保存
+            string prefabPath = saveFolderPath + ".prefab";
+            var rootGo = convertedObjects.FirstOrDefault();
+            var prefabAsset = PrefabUtility.SaveAsPrefabAsset(rootGo, prefabPath);
+            if (prefabAsset == null)
+            {
+                Debug.LogWarning($"{src.name} プレハブの保存に失敗しました。");
+                return;
+            }
+            // Temp フォルダを AssetDatabase 経由で移動し、DB を同期
+            var tempAssetsPath = AssetPathUtil.GetAssetPath(saveFolderTempPath);
+            var finalAssetsPath = AssetPathUtil.GetAssetPath(saveFolderFullPath);
+            if (AssetDatabase.IsValidFolder(finalAssetsPath))
+            {
+                AssetDatabase.DeleteAsset(finalAssetsPath);
+            }
+            var moveError = AssetDatabase.MoveAsset(tempAssetsPath, finalAssetsPath);
+            if (!string.IsNullOrEmpty(moveError))
+            {
+                Debug.LogWarning($"フォルダの移動に失敗しました: {moveError}");
+            }
+            AssetDatabase.Refresh();
+
+            PLATEAUEditorEventListener.disableProjectChangeEvent = disableProjectChangeEventBefore;
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// TilePrefabsToScene実行後にRebuildせずに終了したい場合のキャンセル処理
+        /// Rebuild時に作成されたtempデータを削除
+        /// </summary>
+        /// <returns></returns>
+        public bool CancelRebuild()
+        {
+            if (afterTileAssetCancelled == null || afterTileAssetCancelled.Length <= 0)
+                return false;
+
+            foreach (var after in afterTileAssetCancelled)
+            {
+                bool ok = after.AfterTileAssetBuild();
+                if (!ok)
+                {
+                    Debug.LogError("failed to exec afterTileAssetCancelled.");
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void Cancel()

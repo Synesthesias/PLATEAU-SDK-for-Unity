@@ -117,5 +117,21 @@ namespace PLATEAU.Editor.DynamicTile
             }
             return result;
         }
+
+        /// <summary>
+        /// シーンに配置したGameObjectからPrefabを生成して保存します。
+        /// </summary>
+        [MenuItem("PLATEAU/Debug/Convert And Save Tile Asset")]
+        public static void ConvertAndSaveAsset()
+        {
+            GameObject selected = Selection.activeGameObject;
+            if (selected != null)
+            {
+                new TileRebuilder().SavePrefabAsset(selected).ContinueWithErrorCatch();
+            }
+
+        }
     }
 }
+
+

@@ -217,6 +217,11 @@ namespace PLATEAU.CityImport.Import.Convert
 
             foreach (var id in indexList)
             {
+                if (string.IsNullOrEmpty(id.PrimaryID))
+                {
+                    Debug.LogWarning("primary id is null.");
+                    continue;
+                }
                 if (chidrenMap.ContainsKey(id.PrimaryID))
                     chidrenMap[id.PrimaryID].Add(id);
                 else

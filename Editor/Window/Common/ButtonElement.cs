@@ -33,7 +33,7 @@ namespace PLATEAU.Editor.Window.Common
             {
                 if (PlateauEditorStyle.MainButton(ButtonText))
                 {
-                    onClick();
+                    onClick.Invoke();
                 }
             }
         }
@@ -56,6 +56,10 @@ namespace PLATEAU.Editor.Window.Common
         {
             ButtonText = initialText;
             IsEnabled = true;
+        }
+
+        public override void Reset()
+        {
         }
 
         public override void Dispose()

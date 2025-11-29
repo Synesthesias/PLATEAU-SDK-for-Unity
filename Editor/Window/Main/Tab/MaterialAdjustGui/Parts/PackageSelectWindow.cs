@@ -1,3 +1,4 @@
+using PLATEAU.CityInfo;
 using PLATEAU.Editor.Window.Common;
 using UnityEngine.UIElements;
 
@@ -19,14 +20,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
             return window;
         }
 
-        public void Init(IPackageSelectResultReceiver resultReceiverArg)
+        /// <summary>
+        /// ウィンドウ初期化
+        /// </summary>
+        /// <param name="resultReceiverArg"></param>
+        /// <param name="ignoreTileDataset">動的タイルの場合はデータセット選択を非表示にする</param>
+        public void Init(IPackageSelectResultReceiver resultReceiverArg, bool ignoreTileDataset)
         {
             this.resultReceiver = resultReceiverArg;
-            gui = new PackageSelectGui(resultReceiver, this);
+            gui = new PackageSelectGui(resultReceiver, this, ignoreTileDataset);
             this.isInitialized = true;
         }
 
-
+        public void Init(PLATEAUInstancedCityModel data, IPackageSelectResultReceiver resultReceiverArg)
+        {
+            Init(resultReceiverArg, false);
+            gui.SetData(data);
+        }
 
         protected override VisualElementDisposable CreateGui()
         {

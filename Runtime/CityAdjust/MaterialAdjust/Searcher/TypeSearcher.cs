@@ -49,7 +49,6 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                         found.Add(cityObj.CityObjectType);
                     }
                 }
-                
             }
 
             if (found.Count == 0)
@@ -76,6 +75,9 @@ namespace PLATEAU.CityAdjust.MaterialAdjust
                 indicesInMesh.Add(new CityObjectIndex(Mathf.RoundToInt(vec.x), Mathf.RoundToInt(vec.y)));
                 
             }
+
+            if(len == 0)
+                Debug.LogWarning($"TypeSearcher uv4が設定されていません。");
 
             return indicesInMesh;
         }

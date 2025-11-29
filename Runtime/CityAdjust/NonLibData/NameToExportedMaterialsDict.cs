@@ -17,13 +17,15 @@ namespace PLATEAU.CityAdjust.NonLibData
         private NonLibDictionary<Material[]> data = new();
         private UnityMeshToDllSubMeshWithTexture subMeshConverter;
         private string assetPath;
-        
+        private bool convertFromFbx = false;
+
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
 
-        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath)
+        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool fromFbx)
         {
             this.subMeshConverter = subMeshConverter;
             this.assetPath = assetPath;
+            this.convertFromFbx = fromFbx;
         }
 
         /// <summary>
@@ -126,12 +128,15 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 {
                                     #if UNITY_EDITOR
                                     var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
-                                    #else
+#else
                                     var srcTexPath = "";
-                                    #endif
+#endif
                                     // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
                                     // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                                    shouldUseFbxMaterial = srcTexPath == "";
+                                    if(convertFromFbx)
+                                        shouldUseFbxMaterial = true; // FBXから変換しているなら、テクスチャのパスに関わらずFBXのマテリアルを使います。
+                                    else
+                                        shouldUseFbxMaterial = srcTexPath == "";
                                 }
                             }
 
