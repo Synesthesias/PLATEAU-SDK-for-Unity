@@ -385,88 +385,104 @@ namespace PLATEAU.RoadNetwork.CityObject
             using var progressBar = new ProgressDisplayDialogue();
             using var _ = new DebugTimer("ConvertCityObjects");
             // NOTE : CityGranularityConverterを参考
-            var cityInfos = new List<CityObjectEntry>();
+            var cityObjectEntries = new List<CityObjectEntry>();
             foreach (var cityObjectGroup in cityObjectGroups)
             {
                 var info = CityObjectEntry.Create(cityObjectGroup, useContourMesh);
                 if (info != null)
                 {
-                    cityInfos.Add(info);
+                    cityObjectEntries.Add(info);
                 }
             }
+            // 最小単位に分解する
             var nativeOption = new GranularityConvertOption(ConvertGranularity.PerAtomicFeatureObject, 1);
 
-            var transformList = new UniqueParentTransformList(cityInfos.Select(c => c.CachedTransform).ToArray());
-
+            
             // 属性情報を記憶しておく
+            var transformList = new UniqueParentTransformList(cityObjectEntries.Select(c => c.CachedTransform).ToArray());
             var attributes = new GmlIdToSerializedCityObj();
             attributes.ComposeFrom(transformList);
 
             var unityMeshToDllSubMeshConverter = new UnityMeshToDllSubMeshWithEmptyMaterial();
-
-            // ゲームオブジェクトを共通ライブラリのModelに変換します。
-            using var srcModel = Convert(
-                cityInfos,
-                unityMeshToDllSubMeshConverter,
-                true, // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
-                VertexConverterFactory.NoopConverter());
-
-            // 共通ライブラリの機能でモデルを分割・結合します。
-            var converter = new GranularityConverter();
-            var dstModel = converter.Convert(srcModel, nativeOption);
-            var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
-            var attrHelper = new AttributeDataHelper(getter, true);
-            // var cco = await Task.Run(() => new SubDividedCityObject(dstModel, attrHelper));
             
-            // 一つの大きなSubDividedCityObjectを作る
-            var entireSubDividedCityObject = new SubDividedCityObject(dstModel, attrHelper);
-
-            var ret = new ConvertCityObjectResult();
-
-
-            // 高速化の為, 最初にテーブルを作っておく
-            Dictionary<string, SubDividedCityObject> nameToSubDividedCityObject = new Dictionary<string, SubDividedCityObject>();
-            foreach (var child in entireSubDividedCityObject.GetAllChildren())
+            
+            var subObjects = new List<SubDividedCityObject>();
+            
+            // 進行度を表示する為に総数を出す
+            var allCount = cityObjectEntries.Sum(c => c.CityObjectGroup.PrimaryCityObjects.Count());
+            var currentWorkIndex = 0;
+            
+            // https://synesthesias.slack.com/archives/C0261M64C15/p1762011824752139?thread_ts=1758790969.985829&cid=C0261M64C15
+            // #NOTE : LOD2に属する道路モデルがLOD3のPLATEAUCityObjectGroupの属性情報にも入っている模様
+            //       : そのため、SubDividedCityObjectGroupの親のPLATEAUCityObjectGroupがどれになるのかが判断が難しい
+            //       : なので、個別に分解したうえで、最後にメッシュを含まないものだけ抽出するようにする
+            foreach (var co in cityObjectEntries)
             {
-                if (child == null)
-                    continue;
-                //// 最小の単位だけ使うので親ポリゴンは無視
-                //if (child.Children.Any())
-                //    continue;
-                //// メッシュないものも無視
-                //if (child.Meshes.Any() == false)
-                //    continue;
-                nameToSubDividedCityObject.TryAdd(child.Name, child);
+                // ゲームオブジェクトを共通ライブラリのModelに変換します。
+                using var srcModel = Convert(
+                    new List<CityObjectEntry>{co},
+                    unityMeshToDllSubMeshConverter,
+                    // 非表示のゲームオブジェクトも対象に含めます。なぜなら、LOD0とLOD1のうちLOD1だけがActiveになっているという状況で、変換後もToolkitsのLOD機能を使えるようにするためです。
+                    true,
+                    VertexConverterFactory.NoopConverter());
+
+                // 共通ライブラリの機能でモデルを分割・結合します。
+                var converter = new GranularityConverter();
+                var dstModel = converter.Convert(srcModel, nativeOption);
+                var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
+                var attrHelper = new AttributeDataHelper(getter, true);
+
+                // 一つの大きなSubDividedCityObjectを作る
+                var entireSubDividedCityObject = new SubDividedCityObject(dstModel, attrHelper);
+                
+                // 高速化の為に参照テーブルを作っておく
+                Dictionary<string, SubDividedCityObject> nameToSubDividedCityObject = new Dictionary<string, SubDividedCityObject>();
+                foreach (var child in entireSubDividedCityObject.GetAllChildren())
+                {
+                    if (child == null)
+                        continue;
+                    nameToSubDividedCityObject.TryAdd(child.Name, child);
+                }
+                
+                if (co.CachedTransform)
+                {
+                    // これもないと主要地物インポートの時に外れる道路があった
+                    Apply(co, nameToSubDividedCityObject.GetValueOrDefault(co.CachedTransform.name),co.CachedTransform.name);
+                
+                    // 主要地物単位でグルーピングする
+                    foreach (var root in co.CityObjectGroup.PrimaryCityObjects)
+                    {
+                        progressBar.SetProgress("最小地物分解", 100f * currentWorkIndex++ / allCount, "オブジェクト分解中");
+                        Apply(co, nameToSubDividedCityObject.GetValueOrDefault(root.GmlID),  root.GmlID);
+                    }
+                }
+               
+                // 最小単位(子の存在しない)かつメッシュが存在するものだけを抽出する
+                // #NOTE : さすがにメッシュがあって同じGmlIDを持つものは存在しない前提
+                subObjects.AddRange(entireSubDividedCityObject.GetAllChildren()
+                    .Where(c => c.Children.Any() == false && c.Meshes.Any()));
+            }
+            
+            var ret = new ConvertCityObjectResult();
+            ret.ConvertedCityObjects.AddRange(subObjects);
+            for (var i = 0; i < ret.ConvertedCityObjects.Count; ++i)
+            {
+                var c = ret.ConvertedCityObjects[i];
+                progressBar.SetProgress("最小地物分解", 100f * i / ret.ConvertedCityObjects.Count, "頂点チェック中");
+                // 全く同じ頂点を結合する
+                foreach (var m in c.Meshes)
+                    m.VertexReduction();
             }
 
-            // 進行度を表示する為に総数を出す
-            var allCount = cityInfos.Sum(c => c.CityObjectGroup.PrimaryCityObjects.Count());
-            var currentWorkIndex = 0;
-            foreach (var co in cityInfos)
-            {
-                if (!co.CachedTransform)
+            return ret;
+            
+            // subDividedCityObjectに対応するCityObjectGroup/RnCItyObjectGroupKeyの紐づけを行う
+            // また、メッシュが高さ合わせされている場合にそっちから高さ情報を取ってくる
+            void Apply(CityObjectEntry co, SubDividedCityObject subDividedCityObject, string gmlId)
                 {
-                    Debug.Log("skipping deleted game object.");
-                    continue;
-                }
-
-                // これもないと主要地物インポートの時に外れる道路があった
-                Apply(co.CachedTransform.name);
-                
-                // 主要地物単位でグルーピングする
-                foreach (var root in co.CityObjectGroup.PrimaryCityObjects)
-                {
-                    progressBar.SetProgress("最小地物分解", 100f * currentWorkIndex++ / allCount, "オブジェクト分解中");
-                    Apply(root.GmlID);
-                }
-
-                continue;
-
-                void Apply(string gmlId)
-                {
-                    var subDividedCityObject = nameToSubDividedCityObject.GetValueOrDefault(gmlId);
                     if (subDividedCityObject == null)
                         return;
+                    
                     subDividedCityObject.SetCityObjectGroup(co.CityObjectGroup, new RnCityObjectGroupKey(gmlId));
                     if (co.CurrentMesh != co.SourceMesh)
                     {
@@ -507,20 +523,6 @@ namespace PLATEAU.RoadNetwork.CityObject
                         }
                     }
                 }
-            }
-            ret.ConvertedCityObjects.AddRange(entireSubDividedCityObject.GetAllChildren().Where(c => c.Children.Any() == false && c.Meshes.Any()));
-
-            //foreach (var c in ret.ConvertedCityObjects)
-            for (var i = 0; i < ret.ConvertedCityObjects.Count; ++i)
-            {
-                var c = ret.ConvertedCityObjects[i];
-                progressBar.SetProgress("最小地物分解", 100f * i / ret.ConvertedCityObjects.Count, "頂点チェック中");
-                // 全く同じ頂点を結合する
-                foreach (var m in c.Meshes)
-                    m.VertexReduction();
-            }
-
-            return ret;
         }
 
 
