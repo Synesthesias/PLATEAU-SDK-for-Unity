@@ -69,7 +69,8 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 常に高解像度で表示するタイルのアドレスの配列
         /// </summary>
-        [HideInInspector] public string[] ForceHighResolutionTileAddresses {  private set; get; } = null;
+        public string[] ForceHighResolutionTileAddresses => forceHighResolutionTileAddresses;
+        [SerializeField, HideInInspector] private string[] forceHighResolutionTileAddresses = null;
         
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
@@ -369,7 +370,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (loadTask == null) return;
-            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, timeoutSeconds, ForceHighResolutionTileAddresses); 
+            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, timeoutSeconds, forceHighResolutionTileAddresses); 
         }
 
         /// <summary>
@@ -624,7 +625,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="addresses"></param>
         public void SetForceHighResolutionTileAddresses(string[] addresses)
         {
-            ForceHighResolutionTileAddresses = addresses;
+            forceHighResolutionTileAddresses = addresses;
         }
     }
 }

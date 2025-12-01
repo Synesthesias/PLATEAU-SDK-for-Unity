@@ -209,6 +209,8 @@ namespace PLATEAU.DynamicTile
             isShowingZoomLevel = false;
             onTileInstantiatedProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.onTileInstantiated));
             beforeTileUnloadProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.beforeTileUnload));
+            //高解像度タイル選択で表示するリストのキャッシュをクリア
+            filteredTileCacheArray = null;
         }
 
         public void OnDisable()
@@ -280,7 +282,7 @@ namespace PLATEAU.DynamicTile
             {
                 PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
                 filteredTileCacheArray = tileManager.DynamicTiles.Where(m => m.ZoomLevel == 11).ToArray();
-                selectedTileAddresses = tileManager.ForceHighResolutionTileAddresses?.Any() ?? false
+                selectedTileAddresses = tileManager.ForceHighResolutionTileAddresses != null && tileManager.ForceHighResolutionTileAddresses.Any()
                     ? new HashSet<string>(tileManager.ForceHighResolutionTileAddresses)
                     : new HashSet<string>();
             }
@@ -379,6 +381,8 @@ namespace PLATEAU.DynamicTile
                 searchQuery = "";
                 PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
                 tileManager.SetForceHighResolutionTileAddresses(selectedTileAddresses.ToArray());
+                EditorUtility.SetDirty(tileManager);
+                AssetDatabase.SaveAssets();
                 EditorUtility.DisplayDialog(nameof(PLATEAUTileManager),"強制高解像度タイル情報をリセットしました。","OK");
 
             }

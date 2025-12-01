@@ -105,7 +105,7 @@ namespace PLATEAU.DynamicTile
             LoadTaskCancellationTokenSource?.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds)); // タイムアウト設定
 
 
-            var hash = forceHighResTileAddresses?.GetHashCode() ?? 0;
+            var hash = CalcHighResolutionTileAddressesArrayHashCode(forceHighResTileAddresses);
             if (jobSystem != null && (jobSystem?.TileCount != tileManager.DynamicTiles.Count || forceHighResTileAddressesHash != hash))
             {
                 // タイル数が変更された or 強制高解像度タイル情報が更新された場合、Job SystemのNativeArrayを再初期化
@@ -223,6 +223,13 @@ namespace PLATEAU.DynamicTile
         public void DebugLog(string message, bool warn = true)
         {
             TileManager.DebugLog(message, warn);
+        }
+
+        private int CalcHighResolutionTileAddressesArrayHashCode(IEnumerable<string> addresses)
+        {
+            if (addresses == null) return 0;
+            return addresses.OrderBy(a => a)
+                .Aggregate(17, (current, addr) => current * 31 + (addr?.GetHashCode() ?? 0));
         }
     }
 }

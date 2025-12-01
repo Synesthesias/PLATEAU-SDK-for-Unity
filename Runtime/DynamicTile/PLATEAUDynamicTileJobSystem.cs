@@ -567,10 +567,8 @@ namespace PLATEAU.DynamicTile
             {
                 foreach (var address in forceHighResTileAddresses)
                 {
-                    var sb = new StringBuilder();
                     //対象タイルを取得
-                    var targetTile = dynamicTiles.FirstOrDefault(m => m.Address.Contains(address));
-                    sb.AppendLine($"高解像度タイル設定開始！: Address={address}, 対象タイル={(targetTile != null ? targetTile.Address : "Not Found")}");
+                    var targetTile = dynamicTiles.FirstOrDefault(m => m.Address == address);
                     if (targetTile == null)
                     {
                         continue;
@@ -580,15 +578,11 @@ namespace PLATEAU.DynamicTile
                     var tmpTile = targetTile;
                     while (tmpTile.ParentTile != null)
                     {
-                        sb.AppendLine("親タイル追加: " + tmpTile.ParentTile.Address　+ "ZoomLevel=" + tmpTile.ParentTile.ZoomLevel);
                         tmpTile = tmpTile.ParentTile;
                         var parentInfo = new ParentTileInfo(indexMap[tmpTile], NativeChildrens[indexMap[tmpTile]]);
                         config.ParentsTileIndices.TryAdd(tmpTile.ZoomLevel, parentInfo);
                     }
                     NativeHighResConfigs.Add(config);
-                    
-                    Debug.Log(sb.ToString());
-
                 }
             }
         }
