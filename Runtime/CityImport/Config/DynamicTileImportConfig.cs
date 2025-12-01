@@ -41,7 +41,17 @@ namespace PLATEAU.CityImport.Config
         /// LOD1の建物にテクスチャを貼るか
         /// </summary>
         public bool Lod1Texture { get; set; } = false;
-        
+
+        /// <summary>
+        /// ZoomLevel11のテクスチャ解像度分母(1倍, 1/2倍)
+        /// </summary>
+        public int ZoomLevel11TextureResolutionDenominator { get; set; } = 1;
+
+        /// <summary>
+        /// ZoomLevel10のテクスチャ解像度分母(1/2, 1/4倍)
+        /// </summary>
+        public int ZoomLevel10TextureResolutionDenominator { get; set; } = 2;
+
         public DynamicTileImportConfig() { }
 
         public DynamicTileImportConfig(ImportType importType, string outputPath, bool lod1Texture)

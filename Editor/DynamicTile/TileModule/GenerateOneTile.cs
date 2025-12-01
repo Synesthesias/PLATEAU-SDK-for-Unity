@@ -1,4 +1,5 @@
 using PLATEAU.CityAdjust.ConvertToAsset;
+using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.DynamicTile;
 using PLATEAU.Editor.TileAddressables;
@@ -15,11 +16,13 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     internal class GenerateOneTile : IOnOneTileImported
     {
         private readonly DynamicTileProcessingContext context;
+        private readonly CityImportConfig cityImportConfig;
         private readonly IProgressDisplay progressDisplay;
 
-        public GenerateOneTile(DynamicTileProcessingContext context, IProgressDisplay progressDisplay)
+        public GenerateOneTile(DynamicTileProcessingContext context, CityImportConfig config, IProgressDisplay progressDisplay)
         {
             this.context = context;
+            this.cityImportConfig = config;
             this.progressDisplay = progressDisplay;
         }
         
@@ -152,7 +155,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 return false;
             }
 
-            var denominator = GetDenominatorFromZoomLevel(zoomLevel);
+            var denominator = GetDenominator(zoomLevel);
             if (denominator == 0)
             {
                 Debug.LogWarning($"未対応のズームレベルです: {zoomLevel}");
@@ -257,22 +260,22 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             metaStore.AddMetaInfo(address, groupName, bounds, 0, zoomLevel);
 
         }
-        
+
         /// <summary>
-        /// ズームレベルから解像度の分母を取得します。
-        /// [9: 1/4, 10: 1/2, 11: 1/1]
+        /// インポート時に設定された値から解像度の分母を取得します。
         /// </summary>
         /// <param name="zoomLevel"></param>
         /// <returns></returns>
-        public static int GetDenominatorFromZoomLevel(int zoomLevel)
+        private int GetDenominator(int zoomLevel)
         {
-            return zoomLevel switch
+            if (cityImportConfig?.DynamicTileImportConfig != null)
             {
-                9 => 4,
-                10 => 2,
-                11 => 1,
-                _ => 0 // 未対応
-            };
+                if (zoomLevel == 10)
+                    return cityImportConfig.DynamicTileImportConfig.ZoomLevel10TextureResolutionDenominator;
+                else if (zoomLevel == 11)
+                    return cityImportConfig.DynamicTileImportConfig.ZoomLevel11TextureResolutionDenominator;
+            }
+            return DynamicTileTool.GetDefaultDenominatorFromZoomLevel(zoomLevel);
         }
     }
 }

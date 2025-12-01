@@ -220,8 +220,8 @@ namespace PLATEAU.DynamicTile
             var materialList = new List<Material[]>();
             bool lod1Processed = false;
 
-            // 倍率が4分の1の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
-            if (denominator is 4 && target.name.Contains("bldg"))
+            // ズームレベル9の場合かつ建物の場合は5面図キャプチャでLOD1テクスチャを生成し、Materialを適用する
+            if (zoomLevel is 9 && target.name.Contains("bldg"))
             {
                 //撮影の邪魔になるのでcloneを非表示
                 target.SetActive(false);

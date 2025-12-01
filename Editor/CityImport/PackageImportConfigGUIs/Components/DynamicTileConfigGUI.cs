@@ -11,10 +11,13 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
     internal class DynamicTileConfigGUI : IEditorDrawable
     {
         private readonly CityImportConfig conf;
-        
+
+        private ZoomLevelTextureConfigGUI zoomLevelTextureConfigGUI;
+
         public DynamicTileConfigGUI(CityImportConfig conf)
         {
             this.conf = conf;
+            zoomLevelTextureConfigGUI = new ZoomLevelTextureConfigGUI(conf);
         }
             
         public void Draw()
@@ -44,7 +47,7 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         EditorGUILayout.EndHorizontal();
 
                         GUILayout.Space(5);
-                        
+
                         // infoメッセージボックス
                         EditorGUILayout.HelpBox(
                             "Assetsフォルダ内またはUnityプロジェクト外の任意のフォルダを選択してください。",
@@ -61,12 +64,12 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         // LOD1の建物にテクスチャを貼るかのチェックです。
                         // ここは2025年アルファ版では利用しないのでいったんコメントアウトします。その次のバージョンで利用します。
                         // config.Lod1Texture = EditorGUILayout.Toggle("LOD1の建物にテクスチャを貼る", config.Lod1Texture);
-
-                        GUILayout.Space(5);
-
-                        
                     }
-                    
+
+                    // ZoomLevel選択
+                    zoomLevelTextureConfigGUI?.Draw();
+
+                    GUILayout.Space(5);
                 }
             }
             
@@ -82,6 +85,9 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
             }
         }
 
-        public void Dispose() { }
+        public void Dispose() 
+        {
+            zoomLevelTextureConfigGUI?.Dispose();
+        }
     }
 }
