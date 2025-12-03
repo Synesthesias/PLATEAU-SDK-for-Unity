@@ -25,14 +25,24 @@ namespace PLATEAU.DynamicTile
         }
         public static void SetParent(List<PLATEAUDynamicTile> inner, List<PLATEAUDynamicTile> outer)
         {
+            var innerType = string.Empty;
+            var outerType = string.Empty;
             foreach (var innerTile in inner)
             {
+                var splitsAddress = innerTile.Address.Split("_");
+                innerType = splitsAddress.Length > 5 ? splitsAddress[5] : string.Empty;
                 foreach (var outerTile in outer)
                 {
+                    splitsAddress = outerTile.Address.Split("_");
+                    outerType = splitsAddress.Length > 5 ? splitsAddress[5] : string.Empty;
                     //センターを含む場合
                     if (outerTile.Extent.Contains(innerTile.Extent.center))
                     {
-                        innerTile.ParentTile = outerTile; //上位のタイルを親として設定
+                        if (innerType == outerType)
+                        {
+                            innerTile.ParentTile = outerTile; //上位のタイルを親として設定(同じタイプの場合のみ）
+                        }
+
                         outerTile.ChildrenTiles ??= new List<PLATEAUDynamicTile>();
                         if (!outerTile.ChildrenTiles.Contains(innerTile))
                         {
