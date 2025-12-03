@@ -144,6 +144,15 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// PLATEAUTileManagerからContextを生成します
+        /// </summary>
+        public static DynamicTileProcessingContext CreateFrom(PLATEAUTileManager manager)
+        {
+            var importConf = new DynamicTileImportConfig(ImportType.DynamicTile, manager.OutputPath, true);
+            return new DynamicTileProcessingContext(importConf);
+        }
+
+        /// <summary>
         /// パスがAssetsフォルダー内かどうかを判定します
         /// </summary>
         private static bool IsAssetPath(string path)
