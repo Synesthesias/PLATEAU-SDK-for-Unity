@@ -1,5 +1,4 @@
 ﻿using PLATEAU.DynamicTile;
-using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
 using PLATEAU.Util.Async;
 using System;
 using System.Collections.ObjectModel;
@@ -10,7 +9,7 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Common.Tile
 {
-    internal class TileListElementData: IDisposable
+    public class TileListElementData: IDisposable
     {
         public ObservableCollection<TileSelectionItem> ObservableSelectedTiles = new();
         public EditorWindow ParentEditorWindow { get; set; }
@@ -34,7 +33,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
     /// <summary>
     /// タイル選択ウィンドウを開き、そこで選択されたタイルをリストに表示します。
     /// </summary>
-    internal class TileListElement : Element
+    public class TileListElement : Element
     {
         private TileListElementData tileListData;
 

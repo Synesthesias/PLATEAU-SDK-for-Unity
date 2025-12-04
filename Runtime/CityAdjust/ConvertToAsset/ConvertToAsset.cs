@@ -56,7 +56,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
-                new NameToExportedMaterialsDict(subMeshConverter, conf.AssetPath, conf.ConvertFromFbx),
+                new NameToExportedMaterialsDict(subMeshConverter, conf.AssetPath, conf.IsRebuild),
                 new NonLibComponentsDict(),
                 new TerrainAssetsExport(conf.AssetPath, conf.ConvertTerrain)
             );

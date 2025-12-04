@@ -1,5 +1,6 @@
-﻿using PLATEAU.Editor.DynamicTile;
-using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
+﻿using PLATEAU.Dataset;
+using PLATEAU.Editor.DynamicTile;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using UnityEngine;
 namespace PLATEAU.DynamicTile
 {
     // 主にUI等でで使用する各種処理のまとめ
-    internal class TileConvertCommon
+    public class TileConvertCommon
     {
         /// <summary>
         /// observableSelectedに含まれるタイルをハイライトする
@@ -218,6 +219,29 @@ namespace PLATEAU.DynamicTile
                 await rebuilder.SavePrefabAsset(trans.gameObject);
                 token.ThrowIfCancellationRequested();
             }
+        }
+
+        /// <summary>
+        /// ObservableCollection<TileSelectionItem>を指定のパッケージでフィルタリングする
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="observableSelectedTiles"></param>
+        /// <param name="tileManager"></param>
+        /// <returns></returns>
+        public static ObservableCollection<TileSelectionItem> FilterByPackage(PredefinedCityModelPackage package, ObservableCollection<TileSelectionItem> observableSelectedTiles, PLATEAUTileManager tileManager)
+        {
+            var filtered = new ObservableCollection<TileSelectionItem>();
+            foreach (var addr in observableSelectedTiles)
+            {
+                if (tileManager.DynamicTiles.Find(t => t.Address == addr.TileAddress) is PLATEAUDynamicTile tile)
+                {
+                    if (tile.Package == package)
+                    {
+                        filtered.Add(addr);
+                    }
+                }
+            }
+            return filtered;
         }
     }
 }

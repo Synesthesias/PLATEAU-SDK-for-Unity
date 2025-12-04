@@ -16,7 +16,7 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         public string AssetPath { get; set; }
 
         // Tile Rebuild時にtrueに設定
-        public bool ConvertFromFbx { get; set; } = false;
+        public bool IsRebuild { get; set; } = false;
 
         // Tile Rebuild時にtrueに設定
         public bool ConvertTerrain { get; set; } = false;

@@ -14,7 +14,7 @@ namespace PLATEAU.Editor.Window.Common.Tile
         DynamicTile
     }
 
-    internal class SceneTileChooserImgui
+    public class SceneTileChooserImgui
     {
         private string[] objectSelectOptions = new string[] { "シーンに配置されたオブジェクト", "動的タイル" };
         private int objectSelectedIndex = 0;
