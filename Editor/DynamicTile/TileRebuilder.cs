@@ -52,7 +52,7 @@ namespace PLATEAU.Editor.DynamicTile
 
         private async Task TilePrefabsToSceneInternal(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles, CancellationToken ct)
         {
-            var context = CreateContext(manager);
+            var context = DynamicTileProcessingContext.CreateFrom(manager);
             if (context.IsExcludeAssetFolder)
             {
                 // unitypackageを読み込み
@@ -136,7 +136,7 @@ namespace PLATEAU.Editor.DynamicTile
         private async Task RebuildInternal(PLATEAUTileManager manager, IEnumerable<PLATEAUDynamicTile> tiles)
         {
             var dummyCancelToken = new CancellationTokenSource().Token;
-            var context = CreateContext(manager);
+            var context = DynamicTileProcessingContext.CreateFrom(manager);
             if (tiles != null)
             {
                 context.TargetAddresses = new HashSet<string>();
@@ -247,12 +247,14 @@ namespace PLATEAU.Editor.DynamicTile
         /// GameObjectをプレハブとして保存します。
         /// 保存先はDynamicTileProcessingContext.PrefabsTempSavePathとします。
         /// </summary>
-        public async Task SavePrefabAsset(GameObject src)
+        public async Task SavePrefabAsset(PLATEAUTileManager manager, GameObject src)
         {
             bool disableProjectChangeEventBefore = PLATEAUEditorEventListener.disableProjectChangeEvent;
             PLATEAUEditorEventListener.disableProjectChangeEvent = true;
 
-            string outputPath = DynamicTileProcessingContext.PrefabsTempSavePath;
+            var context = DynamicTileProcessingContext.CreateFrom(manager);
+            string outputPath = context.AssetConfig.AssetPath;
+            
             AssetPathUtil.CreateDirectoryIfNotExist(AssetPathUtil.GetFullPath(outputPath)); // ルートを確実に作成
             string saveFolderPath = Path.Combine(outputPath, src.name);
             var saveFolderFullPath = Path.GetFullPath(saveFolderPath);
@@ -263,12 +265,7 @@ namespace PLATEAU.Editor.DynamicTile
             assetConfig.AssetPath = saveFolderTempPath;
             assetConfig.ConvertFromFbx = true;
             assetConfig.ConvertTerrain = true;
-
-            var comp = src.GetComponent<PLATEAUEditingTile>();
-            if (comp != null)
-            {
-                Object.DestroyImmediate(comp, true);
-            }
+            
 
             await Task.Run(() =>
             {
@@ -338,12 +335,6 @@ namespace PLATEAU.Editor.DynamicTile
             foreach(var c in onTileGenerationCancelled) c.OnTileGenerationCancelled();
         }
         
-        private DynamicTileProcessingContext CreateContext(PLATEAUTileManager manager)
-        {
-            var importConf = new DynamicTileImportConfig(ImportType.DynamicTile, manager.OutputPath, true);
-            return new DynamicTileProcessingContext(importConf);
-        }
-
         private bool StartTileGeneration()
         {
             try

@@ -126,7 +126,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
 
                     tileTransforms.Clear();
                     tileTransforms = TileConvertCommon.GetEditableTransforms(tileListElementData.ObservableSelectedTiles, editingTile, true); // Tileとして取得し直す
-                    await TileConvertCommon.SavePrefabAssets(tileTransforms, tileRebuilder, ct);
+                    await TileConvertCommon.SavePrefabAssets(tileListElementData.TileManager, tileTransforms, tileRebuilder, ct);
                     await tileRebuilder.RebuildByTiles(tileListElementData.TileManager, selectedTiles);
                 }
                 catch (Exception ex)
