@@ -139,6 +139,3 @@ namespace PLATEAU.Editor.DynamicTile
         }
     }
 }
-
-
-
