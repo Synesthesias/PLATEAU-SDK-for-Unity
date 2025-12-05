@@ -3,7 +3,6 @@ using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Linq;
 using UnityEngine;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -95,13 +94,13 @@ namespace PLATEAU.CityAdjust.NonLibData
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
 
+
                             string shaderName = srcMat.shader.name;
                             if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
                             {
                                 // Rendering ToolkitのAuto Textureを利用している場合
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
-
                                 var nextMaterial = new Material(srcMat);
                                 var fbxTex = nextMaterials[i].mainTexture;
                                 nextMaterial.SetTexture(PropIdBaseMap, fbxTex);
@@ -135,16 +134,17 @@ namespace PLATEAU.CityAdjust.NonLibData
 #endif
                                     // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
                                     // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                                    if (isRebuild)
+                                    if(isRebuild)
                                         shouldUseFbxMaterial = true; // FBXから変換しているなら、テクスチャのパスに関わらずFBXのマテリアルを使います。
                                     else
                                         shouldUseFbxMaterial = srcTexPath == "";
                                 }
                             }
-                            
+
                             if (!shouldUseFbxMaterial)
                             {
 #if UNITY_EDITOR
+
                                 if (isRebuild)
                                 {
                                     try
@@ -179,17 +179,17 @@ namespace PLATEAU.CityAdjust.NonLibData
                                     }
                                 }
 #endif
+                                nextMaterials[i] = srcMat;
                             }
-                            nextMaterials[i] = srcMat; 
                         }
-                            
                     }
 
                     renderer.sharedMaterials = nextMaterials;
                 }
-
                 return NextSearchFlow.Continue;
             });
+
+
         }
 
         /// <summary>
