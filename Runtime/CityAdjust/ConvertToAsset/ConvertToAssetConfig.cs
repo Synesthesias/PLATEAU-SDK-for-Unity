@@ -18,9 +18,6 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
         // Tile Rebuild時にtrueに設定
         public bool IsRebuild { get; set; } = false;
 
-        // Tile Rebuild時にtrueに設定
-        public bool ConvertTerrain { get; set; } = false;
-
         public ConvertToAssetConfig(GameObject srcGameObj, string assetPath)
         {
             SrcGameObj = srcGameObj;

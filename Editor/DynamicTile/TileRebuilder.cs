@@ -262,7 +262,6 @@ namespace PLATEAU.Editor.DynamicTile
             assetConfig.SrcGameObj = src;
             assetConfig.AssetPath = saveFolderTempPath;
             assetConfig.IsRebuild = true;
-            assetConfig.ConvertTerrain = true;
 
             var comp = src.GetComponent<PLATEAUEditingTile>();
             if (comp != null)
