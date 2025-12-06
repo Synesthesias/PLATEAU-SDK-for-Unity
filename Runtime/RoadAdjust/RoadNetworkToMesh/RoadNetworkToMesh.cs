@@ -1,4 +1,5 @@
 ﻿using PLATEAU.CityInfo;
+using PLATEAU.PolygonMesh;
 using PLATEAU.RoadAdjust.RoadMarking;
 using PLATEAU.Util;
 using System;
@@ -131,8 +132,22 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     
                 }
                 renderer.sharedMaterials = dstMats;
+
+                // タイル単位でインポートされた場合はコピーが重すぎるので無視する
+                // もともとの要件に無いので無視しても問題ないらしい
+                // https://synesthesias.slack.com/archives/C0261M64C15/p1761986599128749?thread_ts=1758790969.985829&cid=C0261M64C15
+                var isAreaImported =  srcObjs.Any(s =>
+                {
+                    if (!s.Transform)
+                        return false;
+
+                    var cityObject = s.Transform.GetComponent<PLATEAUCityObjectGroup>();
+                    if (!cityObject)
+                        return false;
+                    return cityObject.Granularity == MeshGranularity.PerCityModelArea;
+                });
                 
-                if (srcObjs.Length > 0)
+                if (srcObjs.Length > 0 && isAreaImported == false)
                 {
                     // UV4をコピーします。
                     new RnmUV4Copier().Copy(srcObjs, dstObj);
@@ -165,7 +180,6 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                                 });
                         componentCopier.Copy(srcObjs[0].Transform.gameObject, dstObj);
                     }
-                    
                 }
             }
             
