@@ -22,6 +22,9 @@ namespace PLATEAU.RoadNetwork.Structure
 
         private List<RnCityObjectGroupKey> targetGroupKeys = new List<RnCityObjectGroupKey>();
         
+        // #NOTE : タイルメッシュ読み込みだと実質意味を持たなくなります.タイル内のすべての道路が同じ物を参照するようになるためです
+        //       : 代わりにTargetGroupKeysを使ってください
+        // #TODO : 最終的には消す予定です。現在使っている個所があるのでdeprecatedにもしていませんが今後deprecated -> 削除されます
         private List<PLATEAUCityObjectGroup> targetTrans = new List<PLATEAUCityObjectGroup>();
         
         /// <summary>
@@ -30,6 +33,9 @@ namespace PLATEAU.RoadNetwork.Structure
         public IReadOnlyList<RnCityObjectGroupKey> TargetGroupKeys => targetGroupKeys;
 
         /// <summary>
+        /// #NOTE : タイルメッシュ読み込みだと実質意味を持たなくなります.タイル内のすべての道路が同じ物を参照するようになるためです
+        ///       : 代わりにTargetGroupKeysを使ってください
+        /// #TODO : 最終的には消す予定です。現在使っている個所があるのでdeprecatedにもしていませんが今後deprecated -> 削除されます
         ///   このオブジェクトのメッシュが所属していたPLATEAUCityObjectGroupのリスト(統合されているので複数存在する場合がある)
         /// </summary>
        public IReadOnlyList<PLATEAUCityObjectGroup> TargetTrans => targetTrans;
