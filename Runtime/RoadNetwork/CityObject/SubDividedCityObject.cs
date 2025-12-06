@@ -246,7 +246,7 @@ namespace PLATEAU.RoadNetwork.CityObject
         /// 自身がもともとどのPLATEAUCityObjectGroupに属していたか
         /// </summary>
         [field: SerializeField]
-        public PLATEAUCityObjectGroup CityObjectGroup { get; set; }
+        public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
 
         /// <summary>
         /// 自分が属する主要地物のキー

@@ -428,7 +428,7 @@ namespace PLATEAU.RoadNetwork.CityObject
 
                 // 共通ライブラリの機能でモデルを分割・結合します。
                 var converter = new GranularityConverter();
-                var dstModel = converter.Convert(srcModel, nativeOption);
+                using var dstModel = converter.Convert(srcModel, nativeOption);
                 var getter = new SerializedCityObjectGetterFromDict(attributes, dstModel);
                 var attrHelper = new AttributeDataHelper(getter, true);
 
@@ -503,7 +503,7 @@ namespace PLATEAU.RoadNetwork.CityObject
                                         }
                                         else
                                         {
-                                            DebugEx.LogError($"Failed to get height / {subDividedCityObject}");
+                                            DebugEx.LogError($"Failed to get height / {subCog.Name}");
                                         }
 
                                         m.Vertices[i] = v;
