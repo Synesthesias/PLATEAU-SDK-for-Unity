@@ -310,7 +310,7 @@ namespace PLATEAU.RoadNetwork.CityObject
 
         public int GetLodLevel()
         {
-            return CityObjectGroup?.Lod ?? 3;
+            return CityObjectGroup.GetLodLevel();
         }
 
         /// <summary>
