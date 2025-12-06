@@ -21,6 +21,10 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
         public bool showVertexIndex = false;
         public bool showOutline = false;
         public int showVertexIndexFontSize = 8;
+        /// <summary>
+        /// SubDividedCityObject.Nameを表示する
+        /// </summary>
+        public bool showNodeName = false;
 
         public RRoadTypeMask showRRoadTypeMask = RRoadTypeMask.All;
         public HashSet<SubDividedCityObject> TargetCityObjects { get; } = new();
@@ -55,11 +59,10 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
             var index = 0;
             foreach (var item in cityObjects)
             {
-
                 var coVisible =
                     item.Visible &&
                     (!TargetCityObjects.Any() || TargetCityObjects.Contains(item))
-                    && (onlySelectedCityObjectGroupVisible == false || RnEx.GetSceneSelectedCityObjectGroups().Any(cog => item.CityObjectGroup == cog))
+                    && (onlySelectedCityObjectGroupVisible == false || RnEx.GetSceneSelectedCityObjectGroups().Any(cog => item.IsBelongingTo(cog)))
                     && ((item.GetRoadType(true) & showRRoadTypeMask) != 0)
                     ;
 
@@ -68,6 +71,11 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
                     // インデックスは進めておかないとvisible切り替わるたびに色代わるの辛い
                     index += item.Meshes.Sum(m => m.SubMeshes.Count);
                     continue;
+                }
+
+                if (showNodeName && item.Meshes.Count > 0 && item.Meshes[0].Vertices.Count > 0)
+                {
+                    DebugEx.DrawString(item.Name, item.Meshes[0].Vertices[0]);
                 }
 
                 foreach (var mesh in item.Meshes)
@@ -107,8 +115,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
 
                     foreach (var subMesh in mesh.SubMeshes)
                     {
-
-                        var mat = item.CityObjectGroup.transform.localToWorldMatrix;
+                        var mat = item.LocalToWorldMatrix;
                         DrawMesh(mesh, subMesh, mat, color: DebugEx.GetDebugColor(index, meshColorNum));
                         index++;
                     }

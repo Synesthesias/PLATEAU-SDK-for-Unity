@@ -52,6 +52,25 @@ namespace PLATEAU.RoadNetwork.Structure{
 			return true;
 		}
 	}
+	partial class RnIntersectionEdge{
+		// データシリアライズ用. メンバ変数から対象オブジェクトを抽出する
+		internal virtual  bool Collect(CollectRnModelWork collectWork){
+			if(collectWork.Visited.Add(this)== false) return false;
+			var BorderTmp = Border;
+			if(BorderTmp != null){
+				if(collectWork.TryAdd(BorderTmp)){
+					BorderTmp.Collect(collectWork);
+				}
+			}
+			var RoadTmp = Road;
+			if(RoadTmp != null){
+				if(collectWork.TryAdd(RoadTmp)){
+					RoadTmp.Collect(collectWork);
+				}
+			}
+			return true;
+		}
+	}
 	partial class RnLane{
 		// データシリアライズ用. メンバ変数から対象オブジェクトを抽出する
 		internal virtual  bool Collect(CollectRnModelWork collectWork){
@@ -135,25 +154,6 @@ namespace PLATEAU.RoadNetwork.Structure{
 					if(collectWork.TryAdd(v)){
 						v.Collect(collectWork);
 					}
-				}
-			}
-			return true;
-		}
-	}
-	partial class RnIntersectionEdge{
-		// データシリアライズ用. メンバ変数から対象オブジェクトを抽出する
-		internal virtual  bool Collect(CollectRnModelWork collectWork){
-			if(collectWork.Visited.Add(this)== false) return false;
-			var BorderTmp = Border;
-			if(BorderTmp != null){
-				if(collectWork.TryAdd(BorderTmp)){
-					BorderTmp.Collect(collectWork);
-				}
-			}
-			var RoadTmp = Road;
-			if(RoadTmp != null){
-				if(collectWork.TryAdd(RoadTmp)){
-					RoadTmp.Collect(collectWork);
 				}
 			}
 			return true;

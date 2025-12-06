@@ -1,3 +1,4 @@
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using System;
 using System.Linq;
@@ -79,35 +80,44 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     [Serializable]
     public class RoadReproduceSource
     {
+        /* 優先順位は以下で比較する
+        * targetCityObjectKey
+        * transform
+        * roadNetworkID
+        */
+        
+        // 元のCityObjectのGmlId
+        [SerializeField]
+        private RnCityObjectGroupKey targetCityObjectKey;
+
         [SerializeField] private Transform transform;
-        [SerializeField] private long roadNetworkID; // 元となるtransformが削除された場合、代わりにこちらを一致判定に使います。不明な場合は-1です。
+        [SerializeField] private long roadNetworkID;// 元となるtransformが削除された場合、代わりにこちらを一致判定に使います。不明な場合は-1です。
+        
         public Transform Transform => transform;
         
+        public RnCityObjectGroupKey TargetCityObjectKey => targetCityObjectKey;
 
         public RoadReproduceSource(RnRoadBase road)
         {
-            // transformの設定
-            if (road != null)
-            {
-                var targetTrans = road.TargetTrans;
-                if (targetTrans != null)
-                {
-                    var targetTran = targetTrans.FirstOrDefault();
-                    if (targetTran != null)
-                    {
-                        transform = targetTran == null ? null : targetTran.transform;
-                    }
-                }
-            }
+            // RnCityObjectGroupKeyの設定(タイルメッシュ対応)
+            targetCityObjectKey = road?.TargetGroupKeys.FirstOrDefault() ?? new RnCityObjectGroupKey();
             
+            // transformの設定
+            var targetTran = road?.TargetTrans?.FirstOrDefault();
+            transform = targetTran ? targetTran.transform : null;
+           
             // roadNetworkIDの設定
             roadNetworkID = road == null ? -1 : (long)road.DebugMyId;
         }
 
         public string GetName()
         {
-            if(transform == null) return "UnknownRoad";
-            return transform.name;
+            if(TargetCityObjectKey.IsValid)
+                return TargetCityObjectKey.GmlId;
+            
+            if(transform)
+                return transform.name;
+            return "UnknownRoad";
         }
 
         public bool IsSourceExists()
@@ -117,14 +127,19 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
 
         public bool IsMatch(RoadReproduceSource other)
         {
-            if (other == null) return false;
+            if (other == null) 
+                return false;
+            
+            // TargetCityObjectKey(最小地物分解されたGmlID)で比較(タイル読み込みでも動く)
+            if(TargetCityObjectKey.IsValid)
+                return TargetCityObjectKey == other.TargetCityObjectKey;
+            
+            // TargetCityObjectKeyが存在しない昔のデータの場合はtransformで比較(タイルだとうまく動かない)
+            if (transform || other.transform)
+                return transform == other.transform;
+            
             // 元の道路が削除された場合は、代わりに道路ネットワーク上のIDで比較
-            if (transform == null && other.transform == null)
-            {
-                return roadNetworkID == other.roadNetworkID && roadNetworkID >= 0;
-            }
-            // 元の道路で比較
-            return transform == other.transform;
+            return roadNetworkID == other.roadNetworkID && roadNetworkID >= 0;
         }
     }
 }

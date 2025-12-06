@@ -90,7 +90,6 @@ namespace PLATEAU.RoadNetwork.Tester
             foreach (var g in groups.GroupBy(g => g.gameObject.name)
                          .Where(g => g.Count() > 1))
             {
-                var level = g.Select(a => a.GetLodLevel()).Max();
                 g.TryFindMaxElement(a => a.GetLodLevel(), out var maxG);
 
                 foreach (var a in g)
