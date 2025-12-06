@@ -73,7 +73,7 @@ namespace PLATEAU.RoadNetwork.CityObject.Drawer
                     continue;
                 }
 
-                if (showNodeName)
+                if (showNodeName && item.Meshes.Count > 0 && item.Meshes[0].Vertices.Count > 0)
                 {
                     DebugEx.DrawString(item.Name, item.Meshes[0].Vertices[0]);
                 }
