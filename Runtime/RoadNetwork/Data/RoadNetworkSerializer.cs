@@ -574,7 +574,7 @@ namespace PLATEAU.RoadNetwork.Data
             refTable.ConvertAll();
             var ret = new RnModel { FactoryVersion = roadNetworkStorage.FactoryVersion };
 
-            var (major, minor) = roadNetworkStorage.FactoryVersions;
+            var (major, _) = roadNetworkStorage.FactoryVersions;
             
             foreach (var r in roadBases)
             {
@@ -594,7 +594,9 @@ namespace PLATEAU.RoadNetwork.Data
                     // TargetTransKeysが空かつTargetTransが空でない場合、古いデータなのでTargetTransから移植する
                     if (r.TargetGroupKeys.Any() == false && r.TargetTrans.Any())
                     {
-                        r.AddTargets(null, r.TargetTrans.Select(RnCityObjectGroupKey.CreateFromPrimaryPLATEAUCityObjectGroup).Where(x => x));
+                        r.AddTargets(null, r.TargetTrans
+                            .Select(RnCityObjectGroupKey.CreateFromPrimaryPLATEAUCityObjectGroup)
+                            .Where(x => x.IsValid));
                     }
                 }
             }
