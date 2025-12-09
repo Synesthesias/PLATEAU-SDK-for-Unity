@@ -432,17 +432,10 @@ namespace PLATEAU.CityImport.Import
         /// <summary>
         /// タイル結合用Import
         /// </summary>
-        /// <param name="conf"></param>
-        /// <param name="zoomLevel"></param>
-        /// <param name="rootTrans"></param>
-        /// <param name="progressDisplay"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
         internal async Task ImportCombinedTiles(List<CityModel> targetCityModels, PredefinedCityModelPackage package, int epsg, int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
-            var cityModels = targetCityModels;
 
-            if (cityModels.Count == 0)
+            if (targetCityModels.Count == 0)
             {
                 Debug.LogWarning($"パッケージ: {package}, EPSG: {epsg} のモデルが見つかりません。");
                 return;
@@ -453,7 +446,7 @@ namespace PLATEAU.CityImport.Import
             var packageConf = importConfig.GetConfigForPackage(package);
             var infoForToolkits = new CityObjectGroupInfoForToolkits(packageConf.EnableTexturePacking, false);
 
-            var tileGroups = GetCityModelsForEachTile(cityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
+            var tileGroups = GetCityModelsForEachTile(targetCityModels, zoomLevel); // ズームレベルに応じた結合タイル数ごとにまとめる
             combinedTileCount += tileGroups.Count; // 結合タイル数をカウント
 
             foreach (var cityModelsInTile in tileGroups)
@@ -651,15 +644,15 @@ namespace PLATEAU.CityImport.Import
         /// <summary>
         /// メッシュ抽出処理です。
         /// </summary>
-        /// <param name="cityModels"></param>
+        /// <param name="targetCityModels"></param>
         /// <param name="meshExtractOptions"></param>
         /// <param name="selectedGridCodes"></param>
         /// <returns></returns>
         private Model ExtractMeshes(
-            List<CityModel> cityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes, int zoomLevel, PredefinedCityModelPackage package)
+            List<CityModel> targetCityModels, MeshExtractOptions meshExtractOptions, GridCodeList selectedGridCodes, int zoomLevel, PredefinedCityModelPackage package)
         {
             var model = Model.Create();
-            if (cityModels.Count == 0) return model;
+            if (targetCityModels.Count == 0) return model;
             var extents = selectedGridCodes.GridCodes.Select(code =>
             {
                 var extent = code.Extent;
@@ -670,9 +663,9 @@ namespace PLATEAU.CityImport.Import
             }).ToList();
 
             if (zoomLevel <= 9 && !package.IsLargePackage()) // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
-                TileExtractor.ExtractWithCombine(ref model, cityModels, meshExtractOptions, extents); //結合
+                TileExtractor.ExtractWithCombine(ref model, targetCityModels, meshExtractOptions, extents); //結合
             else
-                TileExtractor.ExtractWithGrid(ref model, cityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
+                TileExtractor.ExtractWithGrid(ref model, targetCityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
 
             return model;
         }
