@@ -338,15 +338,15 @@ namespace PLATEAU.CityImport.Import
         /// <summary>
         /// タイルのインポート処理です。
         /// </summary>
-        /// <param name="conf"></param>
-        /// <param name="zoomLevel"></param>
-        /// <param name="rootTrans"></param>
-        /// <param name="progressDisplay"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        internal async Task ImportTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
+        private async Task ImportTiles(int zoomLevel, float startProgress, float endProgress, CancellationToken? token)
         {
             int totalGroups = cityModels.Count;
+
+            if (totalGroups == 0)
+            {
+                Debug.LogWarning("cityModels.Count is zero.");
+                return;
+            }
             int currentGroupIndex = 0;
 
             foreach (var kv in cityModels)
@@ -452,8 +452,8 @@ namespace PLATEAU.CityImport.Import
             foreach (var cityModelsInTile in tileGroups)
             {
                 token?.ThrowIfCancellationRequested();
-
-                var firstGml = cityModelGml[cityModelsInTile.FirstOrDefault()]; // epsg判定、gml名取得用
+                
+                var firstGml = cityModelGml[cityModelsInTile.First()]; // epsg判定、gml名取得用
                 var firstGmlName = firstGml != null ? Path.GetFileName(firstGml.Path) : package.ToString(); // 結合する場合は、最初のGML名、又は パッケージ名を使用
                 var gameObjectName = GetTileName(zoomLevel, firstGmlName);
                 var gmlTrans = new GameObject(gameObjectName).transform;

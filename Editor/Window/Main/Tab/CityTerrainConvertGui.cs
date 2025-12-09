@@ -8,6 +8,7 @@ using PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui;
 using PLATEAU.TerrainConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -282,23 +283,42 @@ namespace PLATEAU.Editor.Window.Main.Tab
             return selectionList.ToArray();
         }
 
-        /// <summary> ここで実行します </summary>
+        /// <summary> ここで実行します。地形変換/高さ合わせのエントリーポイントです。 </summary>
         private async Task Exec()
         {
-            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile)
+            switch (CurrentSceneTileSelectType)
             {
-                SetTaskRunning(true);
-                try
-                {
-                    await tileTerrainConvert.Exec();
-                }
-                finally
-                {
-                    SetTaskRunning(false);
-                }
-                return;
+                case SceneTileChooserType.DynamicTile:
+                    await ExecForTile();
+                    break;
+                case SceneTileChooserType.SceneObject:
+                    await ExecForSceneObjects();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
 
+        ///<summary>タイルを対象に地形変換/高さ合わせを実行します。</summary>
+        private async Task ExecForTile()
+        {
+            SetTaskRunning(true);
+            try
+            {
+                await tileTerrainConvert.Exec();
+            }
+            finally
+            {
+                SetTaskRunning(false);
+            }
+            return;
+        }
+
+        /// <summary>
+        /// シーン内のゲームオブジェクトを対象に地形変換/高さ合わせを実行します。
+        /// </summary>
+        private async Task ExecForSceneObjects()
+        {
             if (!CanExecOrNotify()) return;
             SetTaskRunning(true);
             try
@@ -335,6 +355,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 SetTaskRunning(false);
             }
         }
+        
         private void WarnAlignLandToLod3RoadNotWorking()
         {
             const string WARNING_MESSAGE = "土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。";
