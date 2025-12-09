@@ -8,6 +8,7 @@ using PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui;
 using PLATEAU.TerrainConvert;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,12 +26,40 @@ namespace PLATEAU.Editor.Window.Main.Tab
         internal static readonly int[] SizeValues = { 257, 513, 1025, 2049 };
 
         public int SelectedSize { get; set; } = 1;
+        
+        /// <summary>
+        /// 「余白を端の高さに合わせる」のチェック
+        /// </summary>
         public bool FillEdges { get; set; } = true;
+        
+        /// <summary>
+        /// 「地形変換」のチェック（Unityのテレインではない）
+        /// </summary>
         public bool ConvertToTerrain { get; set; }
+        
+        /// <summary>
+        /// 「テレインに変換する」のチェック
+        /// </summary>
         public bool EnableTerrainConversion { get; set; }
+        
+        /// <summary>
+        /// 「ハイトマップ平滑化」のチェック
+        /// </summary>
         public bool ApplyConvolutionFilterToHeightMap { get; set; }
+        
+        /// <summary>
+        /// 「高さ合わせ」のチェック
+        /// </summary>
         public bool AlignLand { get; set; }
+        
+        /// <summary>
+        /// 「交通・区域モデルの高さを地形に合わせる」のチェック
+        /// </summary>
         public bool AlignLandNormal { get; set; }
+        
+        /// <summary>
+        /// 「土地をLOD3道路モデルに合わせる」のチェック
+        /// </summary>
         public bool AlignLandInvert { get; set; }
         public PreserveOrDestroy PreserveOrDestroy { get; set; }
 
@@ -254,23 +283,41 @@ namespace PLATEAU.Editor.Window.Main.Tab
             return selectionList.ToArray();
         }
 
-        /// <summary> ここで実行します </summary>
+        /// <summary> ここで実行します。地形変換/高さ合わせのエントリーポイントです。 </summary>
         private async Task Exec()
         {
-            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile)
+            switch (CurrentSceneTileSelectType)
             {
-                SetTaskRunning(true);
-                try
-                {
-                    await tileTerrainConvert.Exec();
-                }
-                finally
-                {
-                    SetTaskRunning(false);
-                }
-                return;
+                case SceneTileChooserType.DynamicTile:
+                    await ExecForTile();
+                    break;
+                case SceneTileChooserType.SceneObject:
+                    await ExecForSceneObjects();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
 
+        ///<summary>タイルを対象に地形変換/高さ合わせを実行します。</summary>
+        private async Task ExecForTile()
+        {
+            SetTaskRunning(true);
+            try
+            {
+                await tileTerrainConvert.Exec();
+            }
+            finally
+            {
+                SetTaskRunning(false);
+            }
+        }
+
+        /// <summary>
+        /// シーン内のゲームオブジェクトを対象に地形変換/高さ合わせを実行します。
+        /// </summary>
+        private async Task ExecForSceneObjects()
+        {
             if (!CanExecOrNotify()) return;
             SetTaskRunning(true);
             try
@@ -307,6 +354,7 @@ namespace PLATEAU.Editor.Window.Main.Tab
                 SetTaskRunning(false);
             }
         }
+        
         private void WarnAlignLandToLod3RoadNotWorking()
         {
             const string WARNING_MESSAGE = "土地をLOD3道路に合わせる機能を利用するには、平滑化された土地モデルが必要です。\nそのため、地形変換をオンにしてTerrain化するか、\n変換対象にTerrainが存在するようにしてください。";

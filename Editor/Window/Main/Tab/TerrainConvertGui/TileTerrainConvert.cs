@@ -73,6 +73,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             parentEditorWindow?.Repaint();
         }
 
+        /// <summary>
+        /// タイルを対象に地形変換/高さ合わせを行います。
+        /// </summary>
         public async Task Exec()
         {
             if (!CanExecOrNotify()) return;
