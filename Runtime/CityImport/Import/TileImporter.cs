@@ -359,7 +359,7 @@ namespace PLATEAU.CityImport.Import
                 float groupEndProgress = startProgress + (endProgress - startProgress) * ((float)(currentGroupIndex + 1) / totalGroups);
 
 
-                if (zoomLevel <= 9 && !package.IsLargePackage()) // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
+                if (ShouldCombineTiles(zoomLevel, package))
                 {
                     await ImportCombinedTiles(models, package, epsg, zoomLevel, groupStartProgress, groupEndProgress, token);
                 }
@@ -662,7 +662,7 @@ namespace PLATEAU.CityImport.Import
                 return extent;
             }).ToList();
 
-            if (zoomLevel <= 9 && !package.IsLargePackage()) // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
+            if (ShouldCombineTiles(zoomLevel, package))
                 TileExtractor.ExtractWithCombine(ref model, targetCityModels, meshExtractOptions, extents); //結合
             else
                 TileExtractor.ExtractWithGrid(ref model, targetCityModels.FirstOrDefault(), meshExtractOptions, extents); //分割、又はエリア単位
@@ -754,6 +754,15 @@ namespace PLATEAU.CityImport.Import
             int gmlCount = cityModelGml.Count;
             int estimatedTileCount = gmlCount + (gmlCount * 4); // ズームレベル10 + ズームレベル11 (9は未確定）
             return estimatedTileCount + (combinedTileCount == 0 ? gmlCount : combinedTileCount);
+        }
+
+        /// <summary>
+        /// タイルを結合するかどうかを判定します。
+        /// </summary>
+        private static bool ShouldCombineTiles(int zoomLevel, PredefinedCityModelPackage package)
+        {
+            // 2次メッシュ単位の大きなファイルはCombinedとしません。巨大なメッシュが出力されてしまうためです。
+            return zoomLevel <= 9 && !package.IsLargePackage();
         }
 
         /// <summary>

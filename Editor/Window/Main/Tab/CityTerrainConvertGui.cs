@@ -311,7 +311,6 @@ namespace PLATEAU.Editor.Window.Main.Tab
             {
                 SetTaskRunning(false);
             }
-            return;
         }
 
         /// <summary>
