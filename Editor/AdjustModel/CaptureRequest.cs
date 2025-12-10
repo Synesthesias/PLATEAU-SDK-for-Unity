@@ -24,13 +24,13 @@ namespace PLATEAU.Editor.AdjustModel
             /// <summary>
             /// 画像サイズ
             /// </summary>
-            public Vector2Int ImageSize { get; }
+            public Vector2 ImageSize { get; }
 
             public FaceRequest(Vector3 direction, Vector3 up, Vector2 imageSize)
             {
                 Direction = direction;
                 Up = up;
-                ImageSize = imageSize.FloorToInt();
+                ImageSize = imageSize;
             }
         }
 
