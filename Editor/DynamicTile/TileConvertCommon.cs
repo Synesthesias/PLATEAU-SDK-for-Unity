@@ -265,10 +265,10 @@ namespace PLATEAU.DynamicTile
         /// <param name="ct">CancellationToken</param>
         /// <returns></returns>
         public static async Task EditAndSaveSelectedTilesAsync<TParam>(
-            List<GameObject> targets, 
-            TileRebuilder tileRebuilder, 
-            Action<Transform, TParam> handler, 
-            TParam param, 
+            List<GameObject> targets,
+            TileRebuilder tileRebuilder,
+            Func<EditAndSaveTilesParams, TParam, Task> handler,
+            TParam param,
             CancellationToken ct)
         {
             List<GameObject> tileChildren = targets.FindAll(go => go.GetComponentInParent<PLATEAUTileManager>() != null);
@@ -277,21 +277,57 @@ namespace PLATEAU.DynamicTile
             var tileItems = tileChildren.Select(go => CreateTileSelectionItemFromTransform(go.transform)).ToList();
             ObservableCollection<TileSelectionItem> tileItemCollection = new ObservableCollection<TileSelectionItem>(tileItems);
 
-            List<PLATEAUDynamicTile> selectedTiles = GetSelectedTiles(tileItemCollection, tileManager);
-            Transform editingTile = await GetEditableTransformParent(tileItemCollection, tileManager, tileRebuilder, ct);
-            List<Transform> tileTransforms = GetEditableTransforms(tileItemCollection, editingTile, true);
-
-            foreach (Transform editingTransform in tileTransforms)
-            {
-                if (editingTransform == null)
-                    continue;
-
-                handler.Invoke(editingTransform, param);
-            }
-
-            tileTransforms = TileConvertCommon.GetEditableTransforms(tileItemCollection, editingTile, true); // Tileとして取得し直す
-            await SavePrefabAssets(tileTransforms, tileRebuilder, ct);
-            await tileRebuilder.RebuildByTiles(tileManager, selectedTiles); 
+            await EditAndSaveSelectedTilesAsync<TParam>(
+                tileItemCollection,
+                tileManager,
+                tileRebuilder,
+                handler,
+                param,
+                ct);
         }
+
+        /// <summary>
+        /// タイル選択リストから、元のタイルを編集し、Prefabを保存し、タイルを再構築する
+        /// </summary>
+        public static async Task EditAndSaveSelectedTilesAsync<TParam>(
+            ObservableCollection<TileSelectionItem> tileItemList,
+            PLATEAUTileManager tileManager,
+            TileRebuilder tileRebuilder,
+            Func<EditAndSaveTilesParams, TParam, Task> handler,
+            TParam param,
+            CancellationToken ct)
+        {
+            List<PLATEAUDynamicTile> selectedTiles = GetSelectedTiles(tileItemList, tileManager);
+            Transform editingTile = await GetEditableTransformParent(tileItemList, tileManager, tileRebuilder, ct);
+            List<Transform> tileTransforms = GetEditableTransforms(tileItemList, editingTile, true);
+            EditAndSaveTilesParams callbackParams = new EditAndSaveTilesParams(selectedTiles, editingTile, tileTransforms, ct);
+
+            await handler.Invoke(callbackParams, param);
+
+            tileTransforms = TileConvertCommon.GetEditableTransforms(tileItemList, editingTile, true); // Tileとして取得し直す
+            await SavePrefabAssets(tileTransforms, tileRebuilder, ct);
+            await tileRebuilder.RebuildByTiles(tileManager, selectedTiles);
+        }
+
+        /// <summary>
+        /// EditAndSaveSelectedTilesAsyncのCallback用パラメータクラス
+        /// </summary>
+        public class EditAndSaveTilesParams
+        {
+            public List<PLATEAUDynamicTile> SelectedTiles { get; set; }
+            public Transform EditingTile { get; set; }
+            public List<Transform> TileTransforms { get; set; }
+
+            public CancellationToken CancellationToken { get; set; }
+
+            public EditAndSaveTilesParams(List<PLATEAUDynamicTile> selectedTiles, Transform editingTile, List<Transform> tileTransforms, CancellationToken cancellationToken)
+            {
+                SelectedTiles = selectedTiles;
+                EditingTile = editingTile;
+                TileTransforms = tileTransforms;
+                CancellationToken = cancellationToken;
+            }
+        }
+
     }
 }

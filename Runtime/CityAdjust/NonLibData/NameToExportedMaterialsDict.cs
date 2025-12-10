@@ -93,7 +93,8 @@ namespace PLATEAU.CityAdjust.NonLibData
 
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
-
+                            // 元のマテリアルがデフォルトマテリアルの場合は、アセットとして保存する処理をスキップします。
+                            bool isDefaultMaterial = false;
 
                             string shaderName = srcMat.shader.name;
                             if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
@@ -118,7 +119,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 // Rendering Toolkitでない場合
 
                                 // mainTextureがないシェーダー、またはmainTextureがない、またはデフォルトマテリアルなら、元のマテリアルを利用します。
-                                bool isDefaultMaterial =
+                                isDefaultMaterial =
                                     srcMat.mainTexture != null &&
                                     FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name) != null;
                                 if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null || isDefaultMaterial)
@@ -141,7 +142,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 }
                             }
 
-                            if (!shouldUseFbxMaterial)
+                            if (!shouldUseFbxMaterial && !isDefaultMaterial)
                             {
 #if UNITY_EDITOR
                                 try

@@ -91,6 +91,12 @@ namespace PLATEAU.Util
                     }
                     else
                     {
+                        if (mat.mainTexture == null)
+                        {
+                            Debug.LogError($"Default material for package {package.ToString()} has no main texture.");
+                            continue;
+                        }
+
                         // 通常のケース
                         defaultTexName = mat.mainTexture.name;
                     }
