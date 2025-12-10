@@ -443,9 +443,10 @@ namespace PLATEAU.DynamicTile
                 {
                     // savePathをAssets相対パスに変換してからLod1TextureCaptureServiceに渡す
                     var assetRelativeSavePath = AssetPathUtil.GetAssetPath(savePath);
+                    // 背景色をグレーにする（黒だとUVがずれたときに目立つため）
                     var service =
                         new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath, target.name), 1,
-                            true);
+                            true, CameraClearFlags.SolidColor, Color.gray);
                     service.Execute(tmpCamera, target);
                     service.SwitchLod1Visible(target, true);
                     //LOD2を削除してLOD1(Material反映済み）のみ残す
