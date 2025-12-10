@@ -66,6 +66,9 @@ namespace PLATEAU.Util
         /// </summary>
         public static Material ByMainTextureName(string mainTexNameArg)
         {
+            if (string.IsNullOrEmpty(mainTexNameArg))
+                return null;
+
             string mainTexName = Path.GetFileNameWithoutExtension(mainTexNameArg);
             if (mainTexNameToMaterial == null)
             {

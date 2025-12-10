@@ -55,7 +55,7 @@ namespace PLATEAU.Util
         }
 
         // 指定した Component を持つ Transform のみを取得
-        public static List<Transform> GetAllChildrenWithComponent<T>(Transform parent) where T : Component
+        public static List<Transform> GetAllChildrenWithComponent<T>(this Transform parent) where T : Component
         {
             List<Transform> result = new List<Transform>();
             foreach (Transform child in parent.GetAllChildren())

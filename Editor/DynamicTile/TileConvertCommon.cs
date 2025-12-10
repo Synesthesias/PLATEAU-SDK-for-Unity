@@ -66,7 +66,7 @@ namespace PLATEAU.DynamicTile
                     {
                         if (tile.LoadedObject != null)
                         {
-                            TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                            tile.LoadedObject.transform.GetAllChildrenWithComponent<T>().ForEach(t => transforms.Add(t));
                         }
                     }
                     return transforms;
@@ -205,6 +205,18 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 子のTransformからTileSelectionItemを作成する
+        /// </summary>
+        /// <param name="obj">transform</param>
+        /// <returns></returns>
+        public static TileSelectionItem CreateTileSelectionItemFromTransform(Transform obj)
+        {
+            var tilePath = TileConvertCommon.GetTilePath(obj, PLATEAUTileManager.TileParentName);
+            var tileItem = new TileSelectionItem(tilePath);
+            return tileItem;
+        }
+
+        /// <summary>
         /// 各TransformのPrefab Assetを保存する
         /// </summary>
         /// <param name="transforms">Prefabとして保存するTransform</param>
@@ -242,6 +254,44 @@ namespace PLATEAU.DynamicTile
                 }
             }
             return filtered;
+        }
+
+        /// <summary>
+        /// GameObjectリストから、元のタイルを編集し、Prefabを保存し、タイルを再構築する
+        /// </summary>
+        /// <param name="targets">編集したいAddressablesとして読み込まれたタイル</param>
+        /// <param name="tileRebuilder">TileRebuilder</param>
+        /// <param name="handler">各Tile Transformに対する編集処理</param>
+        /// <param name="ct">CancellationToken</param>
+        /// <returns></returns>
+        public static async Task EditAndSaveSelectedTilesAsync<TParam>(
+            List<GameObject> targets, 
+            TileRebuilder tileRebuilder, 
+            Action<Transform, TParam> handler, 
+            TParam param, 
+            CancellationToken ct)
+        {
+            List<GameObject> tileChildren = targets.FindAll(go => go.GetComponentInParent<PLATEAUTileManager>() != null);
+            PLATEAUTileManager tileManager = tileChildren.FirstOrDefault().GetComponentInParent<PLATEAUTileManager>();
+
+            var tileItems = tileChildren.Select(go => CreateTileSelectionItemFromTransform(go.transform)).ToList();
+            ObservableCollection<TileSelectionItem> tileItemCollection = new ObservableCollection<TileSelectionItem>(tileItems);
+
+            List<PLATEAUDynamicTile> selectedTiles = GetSelectedTiles(tileItemCollection, tileManager);
+            Transform editingTile = await GetEditableTransformParent(tileItemCollection, tileManager, tileRebuilder, ct);
+            List<Transform> tileTransforms = GetEditableTransforms(tileItemCollection, editingTile, true);
+
+            foreach (Transform editingTransform in tileTransforms)
+            {
+                if (editingTransform == null)
+                    continue;
+
+                handler.Invoke(editingTransform, param);
+            }
+
+            tileTransforms = TileConvertCommon.GetEditableTransforms(tileItemCollection, editingTile, true); // Tileとして取得し直す
+            await SavePrefabAssets(tileTransforms, tileRebuilder, ct);
+            await tileRebuilder.RebuildByTiles(tileManager, selectedTiles); 
         }
     }
 }
