@@ -93,7 +93,7 @@ namespace PLATEAU.Util
                     {
                         if (mat.mainTexture == null)
                         {
-                            Debug.LogError($"Default material for package {package.ToString()} has no main texture.");
+                            Debug.LogError($"Default material for package {package.ToString()} has no main texture."); // Materialが破損している可能性があります。
                             continue;
                         }
 

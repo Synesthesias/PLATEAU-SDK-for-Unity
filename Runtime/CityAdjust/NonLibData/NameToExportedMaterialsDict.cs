@@ -142,43 +142,45 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 }
                             }
 
-                            if (!shouldUseFbxMaterial && !isDefaultMaterial)
+                            if (!shouldUseFbxMaterial)
                             {
-#if UNITY_EDITOR
-                                try
+                                if (!isDefaultMaterial)
                                 {
-                                    // マテリアルが保存されていない場合は、アセットとして保存します。
-                                    // Import時　(Veg等のマテリアル色変更アセット用）
-                                    // Rebuild時（Rendering ToolkitのAuto Texture等のマテリアル用）
-                                    var srcMatPath = AssetDatabase.GetAssetPath(srcMat);
-                                    if (string.IsNullOrEmpty(srcMatPath))
+#if UNITY_EDITOR
+                                    try
                                     {
-                                        var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
-                                        AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
-                                        var matName = srcMat.name.Replace("/", "_").Replace("\\", "_").Replace(" ", "").Replace(".", "");
-                                        var matPath = AssetPathUtil.GetAssetPathFromRelativePath($"{assetPath}/{matName}.mat");
-                                        var matRealtivePath = AssetPathUtil.GetAssetPath(matPath);
+                                        // マテリアルが保存されていない場合は、アセットとして保存します。
+                                        // Import時　(Veg等のマテリアル色変更アセット用）
+                                        // Rebuild時（Rendering ToolkitのAuto Texture等のマテリアル用）
+                                        var srcMatPath = AssetDatabase.GetAssetPath(srcMat);
+                                        if (string.IsNullOrEmpty(srcMatPath))
+                                        {
+                                            var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
+                                            AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
+                                            var matName = srcMat.name.Replace("/", "_").Replace("\\", "_").Replace(" ", "").Replace(".", "");
+                                            var matPath = AssetPathUtil.GetAssetPathFromRelativePath($"{assetPath}/{matName}.mat");
+                                            var matRealtivePath = AssetPathUtil.GetAssetPath(matPath);
 
-                                        var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRealtivePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
-                                        if (currentMat == null)
-                                        {
-                                            var newMat = new Material(srcMat);
-                                            AssetDatabase.CreateAsset(newMat, matRealtivePath);
-                                            AssetDatabase.SaveAssets();
-                                            srcMat = newMat;
-                                        }
-                                        else
-                                        {
-                                            srcMat = currentMat;
+                                            var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRealtivePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
+                                            if (currentMat == null)
+                                            {
+                                                var newMat = new Material(srcMat);
+                                                AssetDatabase.CreateAsset(newMat, matRealtivePath);
+                                                AssetDatabase.SaveAssets();
+                                                srcMat = newMat;
+                                            }
+                                            else
+                                            {
+                                                srcMat = currentMat;
+                                            }
                                         }
                                     }
-                                }
-                                catch (System.Exception e)
-                                {
-                                    Debug.LogError($"Could not save material asset for {dst.name} : {e.Message}\n{e.StackTrace}");
-                                }
-
+                                    catch (System.Exception e)
+                                    {
+                                        Debug.LogError($"Could not save material asset for {dst.name} : {e.Message}\n{e.StackTrace}");
+                                    }
 #endif
+                                }
                                 nextMaterials[i] = srcMat;
                             }
                         }
