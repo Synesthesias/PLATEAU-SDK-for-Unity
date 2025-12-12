@@ -306,7 +306,7 @@ namespace PLATEAU.DynamicTile
             await handler.Invoke(callbackParams, param);
 
             tileTransforms = TileConvertCommon.GetEditableTransforms(tileItemList, editingTile, true); // Tileとして取得し直す
-            await SavePrefabAssets(tileTransforms, tileRebuilder, ct);
+            await SavePrefabAssets(tileManager, tileTransforms, tileRebuilder, ct);
             await tileRebuilder.RebuildByTiles(tileManager, selectedTiles);
         }
 

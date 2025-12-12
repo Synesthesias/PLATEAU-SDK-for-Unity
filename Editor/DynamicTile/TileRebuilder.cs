@@ -263,9 +263,7 @@ namespace PLATEAU.Editor.DynamicTile
             var assetConfig = ConvertToAssetConfig.DefaultValue;
             assetConfig.SrcGameObj = src;
             assetConfig.AssetPath = saveFolderTempPath;
-            assetConfig.ConvertFromFbx = true;
-            assetConfig.ConvertTerrain = true;
-            
+            assetConfig.IsRebuild = true;
 
             await Task.Run(() =>
             {
