@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Jobs;
@@ -197,6 +198,39 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
+    /// 親タイルの情報を保持する構造体。
+    /// <see cref="NativeHighResolutionTileConfig"/>で使用される。
+    /// </summary>
+    public struct ParentTileInfo
+    {
+        public int TileIndex;
+        public ChildTileIndices Children;
+
+        public ParentTileInfo(int tileIndex, ChildTileIndices children)
+        {
+            TileIndex = tileIndex;
+            Children = children;
+        }
+    }
+
+    /// <summary>
+    /// 高解像度タイルの設定を保持する構造体
+    /// </summary>
+    public struct NativeHighResolutionTileConfig
+    {
+        public int TargetTileIndex;
+        public NativeHashMap<int, ParentTileInfo> ParentsTileIndices;
+        public bool IsEnabled; // nullチェックの代わりに使用
+
+        public NativeHighResolutionTileConfig(int targetTileIndex, Allocator allocator)
+        {
+            TargetTileIndex = targetTileIndex;
+            ParentsTileIndices = new NativeHashMap<int, ParentTileInfo>(10, allocator);
+            IsEnabled = true;
+        }
+    }
+
+    /// <summary>
     /// タイルの距離を計算するJobSystemのJob
     /// </summary>
     [BurstCompile]
@@ -344,6 +378,104 @@ namespace PLATEAU.DynamicTile
     }
 
     /// <summary>
+    /// 常に高解像度で表示したいタイルが設定されている際に関連タイルのロード状態を更新するJobSystemのJob
+    /// </summary>
+    [BurstCompile]
+    public struct HighResolutionTileLoadStateUpdateJob : IJob
+    {
+        [ReadOnly] public NativeHighResolutionTileConfig Config;
+        public NativeArray<TileDistanceInfo> Distances;
+
+        public void Execute()
+        {
+            // 設定が無効な場合は処理をスキップ
+            if (!Config.IsEnabled)
+                return;
+
+            // 関連タイルのロード状態をチェック( ZoomLevel 9 または 10 が表示対象となっているか判定する)
+            bool isLoadedParentTiles = false;
+            foreach (var kvp in Config.ParentsTileIndices)
+            {
+                var parentInfo = kvp.Value;
+                //親タイルがロードされている（高解像度対象のタイルを表示する必要がある）かチェック
+                if (Distances[parentInfo.TileIndex].State == LoadState.Load)
+                {
+                    isLoadedParentTiles = true;
+                    break;
+                }
+            }
+            
+            // ターゲットとなってるタイルそのものが表示対象になってる場合も考慮
+            if (Distances[Config.TargetTileIndex].State == LoadState.Load)
+            {
+                isLoadedParentTiles = true;
+            }
+            
+
+            if (!isLoadedParentTiles)
+                return;
+
+            // ZoomLevel 9 と 10 の親タイル情報を取得
+            if (!Config.ParentsTileIndices.TryGetValue(9, out var zoomLevel9Info) ||
+                !Config.ParentsTileIndices.TryGetValue(10, out var zoomLevel10Info))
+            {
+                // ZoomLevel 9 または 10 の情報が見つからない場合は処理をスキップ
+                return;
+            }
+            // ターゲットとなるタイルを表示させるために、重なってしまうタイルたちを全てアンロードしていく
+            // ZoomLevel 9 の親タイルをアンロード
+            Distances[zoomLevel9Info.TileIndex] = Distances[zoomLevel9Info.TileIndex]
+                .WithUpdatedState(LoadState.Unload);
+
+            // ZoomLevel 9 の子タイル（ZoomLevel 10）を処理
+            var z9Children = zoomLevel9Info.Children;
+            for (int i = 0; i < z9Children.Length; i++)
+            {
+                int childIndex = i switch
+                {
+                    0 => z9Children.tile1,
+                    1 => z9Children.tile2,
+                    2 => z9Children.tile3,
+                    3 => z9Children.tile4,
+                    _ => -1
+                };
+
+                if (childIndex < 0 || childIndex >= Distances.Length)
+                    continue;
+                
+                //一旦全てLoadに設定
+                Distances[childIndex] = Distances[childIndex].WithUpdatedState(LoadState.Load);
+            }
+            
+            // 高解像度化対象のタイルの親にあたるZoomLevel10のタイルをアンロードする
+            Distances[zoomLevel10Info.TileIndex] = Distances[zoomLevel10Info.TileIndex]
+                .WithUpdatedState(LoadState.Unload);
+
+            // ZoomLevel 10 の子タイル（ZoomLevel 11）を全てロード
+            // これにより対象タイルの周辺のみ（ZoomLevel10の範囲）は全てZoomLevel11の高解像度タイルとなる
+            var z10Children = zoomLevel10Info.Children;
+            for (int i = 0; i < z10Children.Length; i++)
+            {
+                int childIndex = i switch
+                {
+                    0 => z10Children.tile1,
+                    1 => z10Children.tile2,
+                    2 => z10Children.tile3,
+                    3 => z10Children.tile4,
+                    _ => -1
+                };
+
+                if (childIndex < 0 || childIndex >= Distances.Length)
+                    continue;
+
+                Distances[childIndex] = Distances[childIndex].WithUpdatedState(LoadState.Load);
+            }
+            
+            Distances[Config.TargetTileIndex] = Distances[Config.TargetTileIndex].WithUpdatedState(LoadState.Load);
+        }
+    }
+
+    /// <summary>
     /// Jobsystemを使用したタイルロード処理
     /// </summary>
     public class PLATEAUDynamicTileJobSystem : IDisposable
@@ -360,6 +492,9 @@ namespace PLATEAU.DynamicTile
         private List<PLATEAUDynamicTile> dynamicTiles; // タイルリスト
         private PLATEAUDynamicTileLoadTask loadTask;
 
+        // Native対応の高解像度タイル設定（複数のConfigを保持）
+        private List<NativeHighResolutionTileConfig> NativeHighResConfigs = new List<NativeHighResolutionTileConfig>();
+
         public int TileCount => dynamicTiles?.Count ?? 0; // タイルの数を取得するプロパティ
 
         /// <summary>
@@ -371,7 +506,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="tiles"></param>
-        internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, List<PLATEAUDynamicTile> tiles)
+        internal void Initialize(PLATEAUDynamicTileLoadTask loadTask, List<PLATEAUDynamicTile> tiles, IEnumerable<string> forceHighResTileAddresses = null)
         {
             dynamicTiles = tiles;
             this.loadTask = loadTask;
@@ -400,7 +535,7 @@ namespace PLATEAU.DynamicTile
                     NativeLoadDistances.TryAdd(loadDist.Key, new FloatMinMax { min = min, max = max });
                 }
             }
-
+            
             // タイル -> インデックス マップを事前構築
             var indexMap = new Dictionary<PLATEAUDynamicTile, int>(dynamicTiles.Count);
             for (int i = 0; i < dynamicTiles.Count; i++) indexMap[dynamicTiles[i]] = i;          
@@ -409,14 +544,48 @@ namespace PLATEAU.DynamicTile
                 var tile = dynamicTiles[i];
                 NativeTileBounds[i] = tile.GetTileBoundsStruct();
 
+
                 // 子タイルのインデックスを取得
                 if (tile.ChildrenTiles == null || tile.ChildrenTiles.Count == 0)
                     NativeChildrens[i] = new ChildTileIndices(new int[0]);
                 else
                     NativeChildrens[i] = new ChildTileIndices(tile.ChildrenTiles.Where(t => t != null).Select(t => indexMap[t]));
             }
-        }
+            
+            // 既存のNativeHighResConfigsがあればDisposeする
+            foreach (var config in NativeHighResConfigs)
+            {
+                if (config.ParentsTileIndices.IsCreated)
+                {
+                    config.ParentsTileIndices.Dispose();
+                }
+            }
+            NativeHighResConfigs.Clear();
 
+            //高解像度タイルが設定されてる場合は設定用データを作成する
+            if (forceHighResTileAddresses != null)
+            {
+                foreach (var address in forceHighResTileAddresses)
+                {
+                    //対象タイルを取得
+                    var targetTile = dynamicTiles.FirstOrDefault(m => m.Address == address);
+                    if (targetTile == null)
+                    {
+                        continue;
+                    }
+                    var config = new NativeHighResolutionTileConfig(indexMap[targetTile], Allocator.Persistent);
+                    //親タイルを辿ってZoomLevel10,9のタイルのIndexと子タイル情報を保持する
+                    var tmpTile = targetTile;
+                    while (tmpTile.ParentTile != null)
+                    {
+                        tmpTile = tmpTile.ParentTile;
+                        var parentInfo = new ParentTileInfo(indexMap[tmpTile], NativeChildrens[indexMap[tmpTile]]);
+                        config.ParentsTileIndices.TryAdd(tmpTile.ZoomLevel, parentInfo);
+                    }
+                    NativeHighResConfigs.Add(config);
+                }
+            }
+        }
         // NativeArray PersistentなのでDispose必須　（メモリリーク防止のため）
         public void Dispose()
         {
@@ -428,6 +597,14 @@ namespace PLATEAU.DynamicTile
                 NativeChildrens.Dispose();
             if (NativeLoadDistances.IsCreated)
                 NativeLoadDistances.Dispose();
+
+            // 全てのConfigをDispose
+            foreach (var config in NativeHighResConfigs)
+            {
+                if (config.ParentsTileIndices.IsCreated)
+                    config.ParentsTileIndices.Dispose();
+            }
+            NativeHighResConfigs.Clear();
         }
 
         /// <summary>
@@ -462,14 +639,25 @@ namespace PLATEAU.DynamicTile
                 Childrens = NativeChildrens,
                 Distances = NativeTileDistances
             };
-            JobHandle fillHolesHandle = fillHolesJob.Schedule(rangeHandle);
+            JobHandle currentHandle = fillHolesJob.Schedule(rangeHandle);
+
+            // 複数の高解像度タイルConfigに対してJobをスケジュール
+            foreach (var config in NativeHighResConfigs)
+            {
+                HighResolutionTileLoadStateUpdateJob highResJob = new HighResolutionTileLoadStateUpdateJob
+                {
+                    Config = config,
+                    Distances = NativeTileDistances
+                };
+                currentHandle = highResJob.Schedule(currentHandle);
+            }
 
             // 距離が近い順にソート
-            JobHandle sortHandle = new SortDistancesJob { Distances = NativeTileDistances }.Schedule(fillHolesHandle);
+            JobHandle sortHandle = new SortDistancesJob { Distances = NativeTileDistances }.Schedule(currentHandle);
             sortHandle.Complete();
 
             //loadTask.DebugLog($"JobSystem Elapsed Time: {sw.Elapsed.TotalMilliseconds:F4} ms");
-
+            
             try
             {
                 await ExecuteLoadTask(loadTask.LoadTaskCancellationTokenSource.Token);

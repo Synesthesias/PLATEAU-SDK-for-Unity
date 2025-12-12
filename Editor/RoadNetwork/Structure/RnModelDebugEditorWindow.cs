@@ -1,4 +1,7 @@
-﻿using PLATEAU.RoadNetwork;
+﻿using PLATEAU.RoadAdjust;
+using PLATEAU.RoadAdjust.RoadMarking;
+using PLATEAU.RoadAdjust.RoadNetworkToMesh;
+using PLATEAU.RoadNetwork;
 using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.RoadNetwork.Util;
 using PLATEAU.Util;
@@ -388,6 +391,14 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             if (GUILayout.Button("Merge Same LineString"))
             {
                 roadBase.MergeSamePointLineStrings();
+            }
+
+            if (GUILayout.Button("Generate Mesh"))
+            {
+                var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(
+                    work.Self.InstanceHelper.GetModel(), new []{roadBase})
+                    , CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
+
             }
         }
 
@@ -802,6 +813,12 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
                             inter.MergeContinuousNonBorderEdge();
                     }
                 }
+
+                if (GUILayout.Button("Generate Road Mesh"))
+                {
+                    var generatedObjs = new RoadReproducer().Generate(new RrTargetRoadBases(model, model.Roads), CrosswalkFrequency.All, new SmoothingStrategyRespectOriginal());
+
+                }
             }
 
 
@@ -839,6 +856,7 @@ namespace PLATEAU.Editor.RoadNetwork.Structure
             Impl(ret.RnSideWalks);
             return ret;
         }
+        
         /// <summary>
         /// ウィンドウを取得する、存在しない場合に生成する
         /// </summary>

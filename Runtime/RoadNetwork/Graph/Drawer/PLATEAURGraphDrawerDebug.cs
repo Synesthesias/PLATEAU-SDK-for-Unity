@@ -68,7 +68,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
         // --------------------
 
 
+        /// <summary>
+        /// GUI(Editor Window)上で非表示するオブジェクトリスト
+        /// </summary>
         public HashSet<object> InVisibleObjects { get; } = new();
+        
+        /// <summary>
+        /// GUI(Editor Window)上で選択されたオブジェクトリスト
+        /// </summary>
         public HashSet<object> SelectedObjects { get; } = new();
 
         public class DrawerModel : RnDebugDrawerModel<RGraph> { }
@@ -321,7 +328,8 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
                     var vertices = Parent.FrameOutlineVertices;
                     var outlineGroup = RGraphEx
                         .CreateOutlineBorderGroup(vertices,
-                            e => e.Faces.Select(f => f.CityObjectGroup).FirstOrDefault(f => f != face.CityObjectGroup));
+                            e => e.Faces.Select(f => f.PrimaryCityObjectGroupKey)
+                                .FirstOrDefault(f => f != face.PrimaryCityObjectGroupKey));
                     if (outlineGroup.Count != 2)
                         return false;
                     var group = outlineGroup.FirstOrDefault(x => x.Key == null);
@@ -669,9 +677,14 @@ namespace PLATEAU.RoadNetwork.Graph.Drawer
             {
                 RnDebugDrawerBase.VisibleType visibleType;
                 if (SelectedObjects.Contains(f.CityObjectGroup))
+                {
                     visibleType = RnDebugDrawerBase.VisibleType.GuiSelected;
+                }
                 else
+                {
                     visibleType = RnDebugDrawerBase.VisibleType.NonSelected;
+                }
+
                 faceGroupOption.Draw(work, f, visibleType);
             }
         }

@@ -127,11 +127,15 @@ namespace PLATEAU.Editor.DynamicTile
             GameObject selected = Selection.activeGameObject;
             if (selected != null)
             {
-                new TileRebuilder().SavePrefabAsset(selected).ContinueWithErrorCatch();
+                var manager = Object.FindObjectOfType<PLATEAUTileManager>();
+                if (manager == null)
+                {
+                    Debug.LogError("tile manager is not found.");
+                    return;
+                }
+                new TileRebuilder().SavePrefabAsset(manager, selected).ContinueWithErrorCatch();
             }
 
         }
     }
 }
-
-

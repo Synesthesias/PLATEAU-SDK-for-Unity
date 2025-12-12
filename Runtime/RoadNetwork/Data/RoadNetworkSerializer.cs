@@ -69,8 +69,10 @@ namespace PLATEAU.RoadNetwork.Data
                 }
 
                 if (dst2SrcType.ContainsKey(dstType) == false)
+                {
                     throw new ArgumentException(
                         $"{dstType?.Name} has no attribute {nameof(RoadNetworkSerializeDataAttribute)}");
+                }
 
 
                 var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -571,6 +573,9 @@ namespace PLATEAU.RoadNetwork.Data
 
             refTable.ConvertAll();
             var ret = new RnModel { FactoryVersion = roadNetworkStorage.FactoryVersion };
+
+            var (major, _) = roadNetworkStorage.FactoryVersions;
+            
             foreach (var r in roadBases)
             {
                 if (r is RnIntersection n)
@@ -578,8 +583,27 @@ namespace PLATEAU.RoadNetwork.Data
                 else if (r is RnRoad l)
                     ret.AddRoad(l);
             }
+
+            // #NOTE : バージョン2.0でフォーマットが変わったので後方互換の為の処理を入れる
+            //       : バージョン1では道路はPLATEAUCityObjectGroupに紐づいていたが、バージョン2.0でタイル単位でのインポートが入り
+            //       : PLATEAUCityObjectGroupが主要地物単位ではなくなったのでGmlIDで識別するように変更
+            if (major < 2)
+            {
+                foreach (var r in roadBases)
+                {
+                    // TargetTransKeysが空かつTargetTransが空でない場合、古いデータなのでTargetTransから移植する
+                    if (r.TargetGroupKeys.Any() == false && r.TargetTrans.Any())
+                    {
+                        r.AddTargets(null, r.TargetTrans
+                            .Select(RnCityObjectGroupKey.CreateFromPrimaryPLATEAUCityObjectGroup)
+                            .Where(x => x.IsValid));
+                    }
+                }
+            }
+            
             foreach (var s in sideWalks)
                 ret.AddSideWalk(s);
+            
             return ret;
         }
     }

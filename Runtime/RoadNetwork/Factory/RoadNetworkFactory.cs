@@ -150,7 +150,36 @@ namespace PLATEAU.RoadNetwork.Factory
         /// 自動生成バージョン. 作成時に番号埋め込んでおいてどのバージョンで作られたかを見れるようにする.
         /// メジャー/マイナー分けたいので文字列
         /// </summary>
-        public static readonly string FactoryVersion = "1.1";
+        public static string FactoryVersion => $"2.0";
+
+
+        /// <summary>
+        /// 自動生成バージョンをパースしてメジャーバージョン/マイナーバージョンを取得
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="majorVersion"></param>
+        /// <param name="minorVersion"></param>
+        /// <returns></returns>
+        public static bool TryParseFactoryVersion(string version, out int majorVersion, out int minorVersion)
+        {
+            majorVersion = 0;
+            minorVersion = 0;
+            if (string.IsNullOrEmpty(version))
+                return false;
+
+            try
+            {
+                var versions = version.Split(".");
+                majorVersion = int.Parse(versions[0]);
+                minorVersion = int.Parse(versions[1]);
+                return true;
+            }
+            catch (Exception e)
+            {
+                DebugEx.LogException(e);
+                return false;
+            }
+        }
 
         /// <summary>
         /// 一つの道路の内部に存在するRoadTypeMask.
@@ -678,6 +707,7 @@ namespace PLATEAU.RoadNetwork.Factory
             private RnRoadBase CreateRoad()
             {
                 var cityObjectGroup = FaceGroup.CityObjectGroup;
+                var groupKey = FaceGroup.PrimaryCityObjectGroupKey;
                 // 孤立
                 if (RoadType == RoadType.Isolated)
                 {
@@ -685,12 +715,12 @@ namespace PLATEAU.RoadNetwork.Factory
                     // (道路に完全内包する中央分離帯だったりと無意味なので)
                     if (FaceGroup.RoadTypes.IsMedian())
                     {
-                        DebugEx.LogWarning($"skip : {cityObjectGroup} is isolated median ");
+                        DebugEx.LogWarning($"skip : {groupKey} is isolated median ");
                         return null;
                     }
 
                     var way = Work.CreateWay(Vertices);
-                    var road = RnRoad.CreateIsolatedRoad(cityObjectGroup, way);
+                    var road = RnRoad.CreateIsolatedRoad(cityObjectGroup, groupKey, way);
                     return road;
                 }
 
@@ -701,7 +731,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var line = Lines.FirstOrDefault(l => l.IsBorder == false);
                     if (line == null)
                     {
-                        Debug.LogError($"不正なレーン構成[Terminate] : {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成[Terminate] : {groupKey}");
                         return null;
                     }
 
@@ -721,7 +751,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var prevBorderWay = AsWay(edgeIndices, true, false);
                     var nextBorderWay = Work.CreateWay(border?.Vertices);
                     var lane = new RnLane(lWay, rWay, prevBorderWay, nextBorderWay);
-                    var road = RnRoad.CreateOneLaneRoad(cityObjectGroup, lane);
+                    var road = RnRoad.CreateOneLaneRoad(cityObjectGroup, groupKey, lane);
                     road.SetPrevNext(null, border.Neighbor?.Node);
                     return road;
                 }
@@ -730,7 +760,7 @@ namespace PLATEAU.RoadNetwork.Factory
                 if (RoadType == RoadType.Road)
                 {
                     var lanes = Lines.Where(l => l.IsBorder == false).ToList();
-                    var road = new RnRoad(cityObjectGroup);
+                    var road = new RnRoad(cityObjectGroup, groupKey);
 
                     // 同じPrev/Nextの組み合わせでグループ化(順序逆は問わない)
                     var pairs = lanes.GroupBy(l => RnEx.CombSet(l.Prev, l.Next))
@@ -753,13 +783,13 @@ namespace PLATEAU.RoadNetwork.Factory
 
                     if (leftLine == null && rightLine == null)
                     {
-                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {cityObjectGroup.name}");
+                        Debug.LogError($"不正なレーン構成(Wayの存在しないLane) {groupKey}");
                         return road;
                     }
 
                     // ログだけ残しておく
                     if (leftLine == null || rightLine == null)
-                        Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {cityObjectGroup.name}");
+                        Debug.LogWarning($"不正なレーン構成(片側Wayのみ存在) {groupKey}");
 
                     var line = leftLine ?? rightLine;
                     var prevBorderLine = line?.Prev; ;
@@ -786,10 +816,10 @@ namespace PLATEAU.RoadNetwork.Factory
                 // 交差点
                 if (RoadType == RoadType.Intersection)
                 {
-                    var intersection = new RnIntersection(cityObjectGroup);
+                    var intersection = new RnIntersection(cityObjectGroup, groupKey);
                     return intersection;
                 }
-                Debug.LogError($"不正なレーン構成 : {cityObjectGroup.name}");
+                Debug.LogError($"不正なレーン構成 : {groupKey}");
                 return null;
             }
 
@@ -837,7 +867,7 @@ namespace PLATEAU.RoadNetwork.Factory
                     var e = v0.Edges.FirstOrDefault(e => e.IsSameVertex(v0, v1));
                     if (e == null)
                     {
-                        Debug.LogError($"ループしていないメッシュ. {FaceGroup.CityObjectGroup.name}");
+                        Debug.LogError($"ループしていないメッシュ. {FaceGroup.PrimaryCityObjectGroupKey}");
                         success = false;
                         continue;
                     }
@@ -951,10 +981,10 @@ namespace PLATEAU.RoadNetwork.Factory
                             continue;
 
                         var parent = work.TranMap.Values.FirstOrDefault(t =>
-                            t.FaceGroup.CityObjectGroup == fg.CityObjectGroup && t.Node != null);
+                            t.FaceGroup.PrimaryCityObjectGroupKey == fg.PrimaryCityObjectGroupKey && t.Node != null);
 
                         var neighborCityObjects
-                            = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetTrans)?.ToHashSet();
+                            = parent?.Node?.GetNeighborRoads()?.SelectMany(r => r.TargetGroupKeys)?.ToHashSet();
 
                         if (fg.CreateSideWalk(out var outsideEdges, out var insideEdges,
                                 out var startEdges, out var endEdges, neighborCityObjects) == false)

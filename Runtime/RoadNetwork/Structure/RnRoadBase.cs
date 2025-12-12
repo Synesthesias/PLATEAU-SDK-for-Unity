@@ -20,10 +20,25 @@ namespace PLATEAU.RoadNetwork.Structure
         // 自分が所属するRoadNetworkModel
         public RnModel ParentModel { get; set; }
 
+        private List<RnCityObjectGroupKey> targetGroupKeys = new List<RnCityObjectGroupKey>();
+        
+        // #NOTE : タイルメッシュ読み込みだと実質意味を持たなくなります.タイル内のすべての道路が同じ物を参照するようになるためです
+        //       : 代わりにTargetGroupKeysを使ってください
+        // #TODO : 最終的には消す予定です。現在使っている個所があるのでdeprecatedにもしていませんが今後deprecated -> 削除されます
+        private List<PLATEAUCityObjectGroup> targetTrans = new List<PLATEAUCityObjectGroup>();
+        
         /// <summary>
-        ///  これに紐づくtranオブジェクトリスト(統合なので複数存在する場合がある)
+        ///  このオブジェクトに紐づく主要地物の都市モデルIdリスト(統合なので複数存在する場合がある)
         /// </summary>
-        public List<PLATEAUCityObjectGroup> TargetTrans { get; set; } = new List<PLATEAUCityObjectGroup>();
+        public IReadOnlyList<RnCityObjectGroupKey> TargetGroupKeys => targetGroupKeys;
+
+        /// <summary>
+        /// #NOTE : タイルメッシュ読み込みだと実質意味を持たなくなります.タイル内のすべての道路が同じ物を参照するようになるためです
+        ///       : 代わりにTargetGroupKeysを使ってください
+        /// #TODO : 最終的には消す予定です。現在使っている個所があるのでdeprecatedにもしていませんが今後deprecated -> 削除されます
+        ///   このオブジェクトのメッシュが所属していたPLATEAUCityObjectGroupのリスト(統合されているので複数存在する場合がある)
+        /// </summary>
+       public IReadOnlyList<PLATEAUCityObjectGroup> TargetTrans => targetTrans;
 
         /// <summary>
         /// 歩道情報
@@ -108,18 +123,52 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 対象のTargetTranを追加
         /// </summary>
-        /// <param name="targetTran"></param>
-        public void AddTargetTran(PLATEAUCityObjectGroup targetTran)
+        /// <param name="tran"></param>
+        private void AddTargetTran(PLATEAUCityObjectGroup tran)
         {
-            if (TargetTrans.Contains(targetTran) == false)
-                TargetTrans.Add(targetTran);
+            if (!tran)
+                return;
+            if (targetTrans.Contains(tran) == false)
+                targetTrans.Add(tran);
         }
 
-        public void AddTargetTrans(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        /// <summary>
+        /// 対象のTargetTranを追加
+        /// </summary>
+        /// <param name="groupKey"></param>
+        private void AddTargetGroupKey(RnCityObjectGroupKey groupKey)
         {
-            foreach (var t in targetTrans)
-                AddTargetTran(t);
+            if (groupKey.IsValid == false)
+                return;
+            if (targetGroupKeys.Contains(groupKey) == false)
+                targetGroupKeys.Add(groupKey);
         }
+
+        /// <summary>
+        /// 対象のTargetTranを追加
+        /// </summary>
+        /// <param name="tran"></param>
+        /// <param name="groupKey"></param>
+        public void AddTarget(PLATEAUCityObjectGroup tran, RnCityObjectGroupKey groupKey)
+        {
+            AddTargetTran(tran);
+            AddTargetGroupKey(groupKey);
+        }
+        
+        /// <summary>
+        /// 対象のTargetTranを追加(複数
+        /// </summary>
+        /// <param name="trans"></param>
+        /// <param name="groupKeys"></param>
+        public void AddTargets(IEnumerable<PLATEAUCityObjectGroup> trans, IEnumerable<RnCityObjectGroupKey> groupKeys)
+        {
+            foreach (var t in trans ?? Enumerable.Empty<PLATEAUCityObjectGroup>())
+                AddTargetTran(t);
+            
+            foreach (var t in groupKeys ?? Enumerable.Empty<RnCityObjectGroupKey>())
+                AddTargetGroupKey(t);
+        }
+
 
         /// <summary>
         /// 所属するすべてのWayを取得(重複の可能性あり)
@@ -224,11 +273,17 @@ namespace PLATEAU.RoadNetwork.Structure
                     if (found == false)
                         break;
                 }
-
-
             }
         }
 
+        /// <summary>
+        /// targetTrans/targetGroupKeysをクリアする
+        /// </summary>
+        public void ClearTargets()
+        {
+            targetTrans.Clear();
+            targetGroupKeys.Clear();
+        }
     }
 
     public static class RnRoadBaseEx
@@ -251,11 +306,10 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <returns></returns>
         public static string GetTargetTransName(this RnRoadBase self)
         {
-            if (self == null || self.TargetTrans == null)
+            if (self == null || self.TargetGroupKeys == null)
                 return "null";
 
-            return string.Join(",", self.TargetTrans.Select(t => !t ? "null" : t.name));
-
+            return string.Join(",", self.TargetGroupKeys);
         }
 
         /// <summary>

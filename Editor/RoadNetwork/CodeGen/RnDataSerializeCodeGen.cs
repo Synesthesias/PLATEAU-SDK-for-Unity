@@ -1,4 +1,4 @@
-﻿using PLATEAU.RoadNetwork.Structure;
+using PLATEAU.RoadNetwork.Structure;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using UnityEditor;
 
 namespace PLATEAU.Editor.RoadNetwork.CodeGen
 {
@@ -410,11 +411,42 @@ namespace PLATEAU.Editor.RoadNetwork.CodeGen
         }
 
         /// <summary>
+        /// 型Tのスクリプトが置かれているファイルパスを返す
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string GetScriptPath<T>() where T : class
+        {
+            // クラス型に対応するMonoScriptを探す
+            string[] guids = AssetDatabase.FindAssets($"t:MonoScript {typeof(T).Name}");
+            foreach (string guid in guids) {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+                if (script != null && script.GetClass() == typeof(T)) {
+                    return Path.GetFullPath(path);
+                }
+            }
+
+            return null;
+        }
+        
+        
+        /// <summary>
+        /// #NOTE : 道路ネットワークのフォーマットに変更が走った場合は下記のMenuItemを有効化したうえで実行する
         /// RnModelに対してシリアライズ用のデータ抽出を行うコードを生成する.
         /// </summary>
-        /// <param name="path"></param>
-        public static void GenerateRnDataCollectCode(string path)
+        //[MenuItem("PLATEAU/Debug/Generate RnModel Export Code")]
+        public static void GenerateRnDataCollectCode()
         {
+            string thisFilePath = GetScriptPath<RnDataSerializeCodeGen>();
+            if (string.IsNullOrEmpty(thisFilePath))
+                return;
+            var path = Path.Combine(Path.GetDirectoryName(thisFilePath),
+                "../../../Runtime/RoadNetwork/Structure/RnModel.generated.cs");
+            if (File.Exists(path) == false)
+            {
+                throw new FileNotFoundException($"not found : {path}");
+            }
             Generate(typeof(RnModel), path);
         }
     }

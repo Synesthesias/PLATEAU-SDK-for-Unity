@@ -167,7 +167,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 tileTransforms.Clear();
                 tileTransforms = TileConvertCommon.GetEditableTransforms(Selected, editingTile, true);
 
-                await TileConvertCommon.SavePrefabAssets(tileTransforms, rebuilder, ct);
+                await TileConvertCommon.SavePrefabAssets(TileManager, tileTransforms, rebuilder, ct);
                 await rebuilder.RebuildByTiles(TileManager, selectedTiles);
 
                 Debug.Log($"粒度変換が完了しました。変換結果: 成功={result.IsSucceed}, 生成オブジェクト数={result.GeneratedRootTransforms.Count}");
@@ -219,7 +219,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 tileTransforms.Clear();
                 tileTransforms = TileConvertCommon.GetEditableTransforms(Selected, editingTile, true);
 
-                await TileConvertCommon.SavePrefabAssets(tileTransforms, rebuilder, ct);
+                await TileConvertCommon.SavePrefabAssets(TileManager, tileTransforms, rebuilder, ct);
                 await rebuilder.RebuildByTiles(TileManager, selectedTiles);
 
                 Debug.Log($"マテリアル変換が完了しました。変換結果: 生成オブジェクト数={result.Count}");

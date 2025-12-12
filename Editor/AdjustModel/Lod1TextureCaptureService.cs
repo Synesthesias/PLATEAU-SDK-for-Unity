@@ -418,22 +418,23 @@ namespace PLATEAU.Editor.AdjustModel
             camera.transform.LookAt(center, up);
 
             // 直交投影のサイズを設定
-            camera.orthographicSize = imageSize.Min() * 0.5f;
+            // 縦幅の半分を指定する
+            camera.orthographicSize = imageSize.y * 0.5f;
             // ニアクリップとファークリップを設定
             camera.nearClipPlane = 0.1f;
             camera.farClipPlane = distance * 2f;
 
             // レンダーテクスチャを作成
-            imageSize = (imageSize.ToVector2() * pixelsPerMeter).ToVector2Int();
-            RenderTexture renderTexture = new RenderTexture(imageSize.x, imageSize.y, 24);
+            var pixelSize = (imageSize * pixelsPerMeter).ToVector2Int();
+            RenderTexture renderTexture = new RenderTexture(pixelSize.x, pixelSize.y, 24);
             camera.targetTexture = renderTexture;
             // レンダリング実行
             camera.Render();
 
             // テクスチャを読み取り
             RenderTexture.active = renderTexture;
-            Texture2D screenshot = new Texture2D(imageSize.x, imageSize.y, TextureFormat.RGBA32, false);
-            screenshot.ReadPixels(new Rect(0, 0, imageSize.x, imageSize.y), 0, 0);
+            Texture2D screenshot = new Texture2D(pixelSize.x, pixelSize.y, TextureFormat.RGBA32, false);
+            screenshot.ReadPixels(new Rect(0, 0, pixelSize.x, pixelSize.y), 0, 0);
             screenshot.Apply();
 
             // ファイルに保存

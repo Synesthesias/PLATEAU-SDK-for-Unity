@@ -66,10 +66,12 @@ namespace PLATEAU.DynamicTile
         [SerializeField] private string outputPath;
         public string OutputPath { get => outputPath; set => outputPath = value; }
 
-        [ConditionalShow("showDebugTileInfo")]
-        [SerializeField]
-        private bool useJobSystem = true; // Job Systemを使用するかどうか
-
+        /// <summary>
+        /// 常に高解像度で表示するタイルのアドレスの配列
+        /// </summary>
+        public string[] ForceHighResolutionTileAddresses => forceHighResolutionTileAddresses;
+        [SerializeField, HideInInspector] private string[] forceHighResolutionTileAddresses = null;
+        
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
         public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
@@ -368,7 +370,7 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (loadTask == null) return;
-            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, useJobSystem, timeoutSeconds); 
+            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, timeoutSeconds, forceHighResolutionTileAddresses); 
         }
 
         /// <summary>
@@ -615,6 +617,15 @@ namespace PLATEAU.DynamicTile
             }
 
             return combinedBounds;
+        }
+        
+        /// <summary>
+        /// 常に高解像度で表示するタイルのアドレスを設定します
+        /// </summary>
+        /// <param name="addresses"></param>
+        public void SetForceHighResolutionTileAddresses(string[] addresses)
+        {
+            forceHighResolutionTileAddresses = addresses;
         }
     }
 }

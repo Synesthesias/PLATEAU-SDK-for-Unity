@@ -219,16 +219,17 @@ namespace PLATEAU.DynamicTile
         /// <summary>
         /// 各TransformのPrefab Assetを保存する
         /// </summary>
+        /// <param name="manager"></param>
         /// <param name="transforms">Prefabとして保存するTransform</param>
         /// <param name="rebuilder"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task SavePrefabAssets(List<Transform> transforms, TileRebuilder rebuilder, CancellationToken token)
+        public static async Task SavePrefabAssets(PLATEAUTileManager manager, List<Transform> transforms, TileRebuilder rebuilder, CancellationToken token)
         {
             foreach (var trans in transforms)
             {
                 if (trans == null) continue;
-                await rebuilder.SavePrefabAsset(trans.gameObject);
+                await rebuilder.SavePrefabAsset(manager, trans.gameObject);
                 token.ThrowIfCancellationRequested();
             }
         }

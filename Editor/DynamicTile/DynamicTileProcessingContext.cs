@@ -2,6 +2,7 @@ using PLATEAU.CityAdjust.ConvertToAsset;
 using PLATEAU.CityImport.Config;
 using PLATEAU.Editor.TileAddressables;
 using PLATEAU.Util;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
@@ -141,6 +142,16 @@ namespace PLATEAU.DynamicTile
             var sanitizedDirectoryName = System.Text.RegularExpressions.Regex.Replace(directoryName, @"[^\w\-_]", "_");
             groupName += "_" + sanitizedDirectoryName;
             return groupName;
+        }
+
+        /// <summary>
+        /// PLATEAUTileManagerからContextを生成します
+        /// </summary>
+        public static DynamicTileProcessingContext CreateFrom(PLATEAUTileManager manager)
+        {
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
+            var importConf = new DynamicTileImportConfig(ImportType.DynamicTile, manager.OutputPath, true);
+            return new DynamicTileProcessingContext(importConf);
         }
 
         /// <summary>
