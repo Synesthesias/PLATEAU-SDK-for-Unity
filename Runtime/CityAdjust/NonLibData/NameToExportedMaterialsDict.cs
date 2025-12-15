@@ -122,9 +122,16 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 // Rendering Toolkitでない場合
 
                                 // mainTextureがないシェーダー、またはmainTextureがない、またはデフォルトマテリアルなら、元のマテリアルを利用します。
-                                isDefaultMaterial =
-                                    srcMat.mainTexture != null &&
-                                    FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name) != null;
+                                if (srcMat.mainTexture != null)
+                                {
+                                    var defaultMat = FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name);
+                                    if (defaultMat != null)
+                                    {
+                                        isDefaultMaterial = true;
+                                        // 判定用なので明示的に破棄
+                                        UnityEngine.Object.Destroy(defaultMat);
+                                    }
+                                }
                                 if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null || isDefaultMaterial)
                                 {
                                     shouldUseFbxMaterial = false;
