@@ -129,7 +129,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                                     {
                                         isDefaultMaterial = true;
                                         // 判定用なので明示的に破棄
+#if UNITY_EDITOR
+                                        UnityEngine.Object.DestroyImmediate(defaultMat);
+#else
                                         UnityEngine.Object.Destroy(defaultMat);
+#endif
                                     }
                                 }
                                 if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null || isDefaultMaterial)
@@ -168,13 +172,13 @@ namespace PLATEAU.CityAdjust.NonLibData
                                             var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
                                             AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
                                             var matName = srcMat.name.Replace("/", "_").Replace("\\", "_").Replace(" ", "").Replace(".", "");
-                                            var matRealtivePath = AssetPathUtil.NormalizeAssetPath($"{assetPath}/{matName}.mat");
+                                            var matRelativePath = AssetPathUtil.NormalizeAssetPath($"{assetPath}/{matName}.mat");
 
-                                            var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRealtivePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
+                                            var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRelativePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
                                             if (currentMat == null)
                                             {
                                                 var newMat = new Material(srcMat);
-                                                AssetDatabase.CreateAsset(newMat, matRealtivePath);
+                                                AssetDatabase.CreateAsset(newMat, matRelativePath);
                                                 AssetDatabase.SaveAssets();
                                                 srcMat = newMat;
                                             }
