@@ -158,8 +158,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                                             var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
                                             AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
                                             var matName = srcMat.name.Replace("/", "_").Replace("\\", "_").Replace(" ", "").Replace(".", "");
-                                            var matPath = AssetPathUtil.GetAssetPathFromRelativePath($"{assetPath}/{matName}.mat");
-                                            var matRealtivePath = AssetPathUtil.GetAssetPath(matPath);
+                                            var matRealtivePath = AssetPathUtil.NormalizeAssetPath($"{assetPath}/{matName}.mat");
 
                                             var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRealtivePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
                                             if (currentMat == null)

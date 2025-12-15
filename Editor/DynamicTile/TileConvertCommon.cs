@@ -273,6 +273,9 @@ namespace PLATEAU.DynamicTile
             CancellationToken ct)
         {
             List<GameObject> tileChildren = targets.FindAll(go => go.GetComponentInParent<PLATEAUTileManager>() != null);
+            if (tileChildren.Count == 0)
+                throw new Exception("PLATEAUTileManager配下のGameObjectが見つかりませんでした。");
+            
             PLATEAUTileManager tileManager = tileChildren.FirstOrDefault().GetComponentInParent<PLATEAUTileManager>();
 
             var tileItems = tileChildren.Select(go => CreateTileSelectionItemFromTransform(go.transform)).ToList();
