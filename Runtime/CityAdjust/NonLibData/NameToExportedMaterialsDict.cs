@@ -103,8 +103,11 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
                                 var nextMaterial = new Material(srcMat);
-                                var fbxTex = nextMaterials[i].mainTexture;
-                                nextMaterial.SetTexture(PropIdBaseMap, fbxTex);
+                                if (nextMaterials[i] != null)
+                                {
+                                    var fbxTex = nextMaterials[i].mainTexture;
+                                    nextMaterial.SetTexture(PropIdBaseMap, fbxTex); 
+                                }
                                 srcMat = nextMaterial;
                             }
                             else if (shaderName is "Shader Graphs/ObstacleLight_URP"
