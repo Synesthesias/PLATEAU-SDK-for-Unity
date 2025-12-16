@@ -1,5 +1,6 @@
-﻿using PLATEAU.Editor.DynamicTile;
-using PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts;
+﻿using PLATEAU.Dataset;
+using PLATEAU.Editor.DynamicTile;
+using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.Util;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using UnityEngine;
 namespace PLATEAU.DynamicTile
 {
     // 主にUI等でで使用する各種処理のまとめ
-    internal class TileConvertCommon
+    public class TileConvertCommon
     {
         /// <summary>
         /// observableSelectedに含まれるタイルをハイライトする
@@ -65,7 +66,7 @@ namespace PLATEAU.DynamicTile
                     {
                         if (tile.LoadedObject != null)
                         {
-                            TransformEx.GetAllChildrenWithComponent<T>(tile.LoadedObject.transform).ForEach(t => transforms.Add(t));
+                            tile.LoadedObject.transform.GetAllChildrenWithComponent<T>().ForEach(t => transforms.Add(t));
                         }
                     }
                     return transforms;
@@ -204,6 +205,18 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
+        /// 子のTransformからTileSelectionItemを作成する
+        /// </summary>
+        /// <param name="obj">transform</param>
+        /// <returns></returns>
+        public static TileSelectionItem CreateTileSelectionItemFromTransform(Transform obj)
+        {
+            var tilePath = TileConvertCommon.GetTilePath(obj, PLATEAUTileManager.TileParentName);
+            var tileItem = new TileSelectionItem(tilePath);
+            return tileItem;
+        }
+
+        /// <summary>
         /// 各TransformのPrefab Assetを保存する
         /// </summary>
         /// <param name="manager"></param>
@@ -220,5 +233,105 @@ namespace PLATEAU.DynamicTile
                 token.ThrowIfCancellationRequested();
             }
         }
+
+        /// <summary>
+        /// ObservableCollection<TileSelectionItem>を指定のパッケージでフィルタリングする
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="observableSelectedTiles"></param>
+        /// <param name="tileManager"></param>
+        /// <returns></returns>
+        public static ObservableCollection<TileSelectionItem> FilterByPackage(PredefinedCityModelPackage package, ObservableCollection<TileSelectionItem> observableSelectedTiles, PLATEAUTileManager tileManager)
+        {
+            var filtered = new ObservableCollection<TileSelectionItem>();
+            foreach (var addr in observableSelectedTiles)
+            {
+                if (tileManager.DynamicTiles.Find(t => t.Address == addr.TileAddress) is PLATEAUDynamicTile tile)
+                {
+                    if (tile.Package == package)
+                    {
+                        filtered.Add(addr);
+                    }
+                }
+            }
+            return filtered;
+        }
+
+        /// <summary>
+        /// GameObjectリストから、元のタイルを編集し、Prefabを保存し、タイルを再構築する
+        /// </summary>
+        /// <param name="targets">編集したいAddressablesとして読み込まれたタイル</param>
+        /// <param name="tileRebuilder">TileRebuilder</param>
+        /// <param name="handler">各Tile Transformに対する編集処理</param>
+        /// <param name="ct">CancellationToken</param>
+        /// <returns></returns>
+        public static async Task EditAndSaveSelectedTilesAsync<TParam>(
+            List<GameObject> targets,
+            TileRebuilder tileRebuilder,
+            Func<EditAndSaveTilesParams, TParam, Task> handler,
+            TParam param,
+            CancellationToken ct)
+        {
+            List<GameObject> tileChildren = targets.FindAll(go => go.GetComponentInParent<PLATEAUTileManager>() != null);
+            if (tileChildren.Count == 0)
+                throw new Exception("PLATEAUTileManager配下のGameObjectが見つかりませんでした。");
+            
+            PLATEAUTileManager tileManager = tileChildren.FirstOrDefault().GetComponentInParent<PLATEAUTileManager>();
+
+            var tileItems = tileChildren.Select(go => CreateTileSelectionItemFromTransform(go.transform)).ToList();
+            ObservableCollection<TileSelectionItem> tileItemCollection = new ObservableCollection<TileSelectionItem>(tileItems);
+
+            await EditAndSaveSelectedTilesAsync<TParam>(
+                tileItemCollection,
+                tileManager,
+                tileRebuilder,
+                handler,
+                param,
+                ct);
+        }
+
+        /// <summary>
+        /// タイル選択リストから、元のタイルを編集し、Prefabを保存し、タイルを再構築する
+        /// </summary>
+        public static async Task EditAndSaveSelectedTilesAsync<TParam>(
+            ObservableCollection<TileSelectionItem> tileItemList,
+            PLATEAUTileManager tileManager,
+            TileRebuilder tileRebuilder,
+            Func<EditAndSaveTilesParams, TParam, Task> handler,
+            TParam param,
+            CancellationToken ct)
+        {
+            List<PLATEAUDynamicTile> selectedTiles = GetSelectedTiles(tileItemList, tileManager);
+            Transform editingTile = await GetEditableTransformParent(tileItemList, tileManager, tileRebuilder, ct);
+            List<Transform> tileTransforms = GetEditableTransforms(tileItemList, editingTile, true);
+            EditAndSaveTilesParams callbackParams = new EditAndSaveTilesParams(selectedTiles, editingTile, tileTransforms, ct);
+
+            await handler.Invoke(callbackParams, param);
+
+            tileTransforms = TileConvertCommon.GetEditableTransforms(tileItemList, editingTile, true); // Tileとして取得し直す
+            await SavePrefabAssets(tileManager, tileTransforms, tileRebuilder, ct);
+            await tileRebuilder.RebuildByTiles(tileManager, selectedTiles);
+        }
+
+        /// <summary>
+        /// EditAndSaveSelectedTilesAsyncのCallback用パラメータクラス
+        /// </summary>
+        public class EditAndSaveTilesParams
+        {
+            public List<PLATEAUDynamicTile> SelectedTiles { get; set; }
+            public Transform EditingTile { get; set; }
+            public List<Transform> TileTransforms { get; set; }
+
+            public CancellationToken CancellationToken { get; set; }
+
+            public EditAndSaveTilesParams(List<PLATEAUDynamicTile> selectedTiles, Transform editingTile, List<Transform> tileTransforms, CancellationToken cancellationToken)
+            {
+                SelectedTiles = selectedTiles;
+                EditingTile = editingTile;
+                TileTransforms = tileTransforms;
+                CancellationToken = cancellationToken;
+            }
+        }
+
     }
 }

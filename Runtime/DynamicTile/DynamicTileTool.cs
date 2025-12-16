@@ -11,7 +11,7 @@ namespace PLATEAU.DynamicTile
     /// DynamicTileのBoundsまわりの処理をまとめたクラス。
     /// zoomLevel 9 ～ zoomLevel 11まで対応　(zoomLevel追加時は改修が必要）
     /// </summary>
-    internal class DynamicTileTool
+    public class DynamicTileTool
     {
         //zoomLevelごとにタイルの上位zoomLevelとなるParentを設定する
         public static void AssignParentTiles(List<PLATEAUDynamicTile> tiles)
@@ -138,6 +138,23 @@ namespace PLATEAU.DynamicTile
             }
             Debug.LogError($"メッシュコードが見つかりません : {Address}");
             return null;
+        }
+
+        /// <summary>
+        /// ZoomLevelを取得する。
+        /// </summary>
+        /// <param name="Address"></param>
+        /// <returns></returns>
+        public static int GetZoomLevelFromAddress(string Address)
+        {
+            Match match = Regex.Match(Address, @"_zoom_(\d+)_grid_");
+            if (match.Success)
+            {
+                string zoomLevel = match.Groups[1].Value;
+                return int.Parse(zoomLevel);
+            }
+            Debug.LogError($"ズームレベルが見つかりません : {Address}");
+            return -1;
         }
 
         /// <summary>

@@ -7,7 +7,6 @@ using PLATEAU.Editor.Window.Common;
 using PLATEAU.Editor.Window.Common.Tile;
 using PLATEAU.GranularityConvert;
 using PLATEAU.Util;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -17,29 +16,6 @@ using UnityEngine;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
 {
-
-    /// <summary>
-    /// リストに表示するタイル選択アイテム
-    /// </summary>
-    internal class TileSelectionItem
-    {
-        public string TileAddress { get; private set; } 
-        public string TilePath { get; private set; }
-
-        public bool IsTile => string.Equals(TileAddress, TilePath); // Tileでない場合はタイル内のオブジェクトを指す
-
-        public TileSelectionItem(string fullpath)
-        {
-            if (string.IsNullOrEmpty(fullpath))
-                throw new ArgumentException("fullpath は null または空にできません。", nameof(fullpath));
-
-            TilePath = fullpath;
-            // path( 例: "xxxxx_op/LODx/xxxx-xxx") からタイルのAddress(例: "xxxxx_op")を取得する
-            var splits = fullpath.Split('/');
-            TileAddress =  splits[0];
-        }
-    }
-
     /// <summary>
     /// <see cref="CityMaterialAdjustPresenter"/>内のタイル選択時の動作やUIを担当するクラス
     /// </summary>

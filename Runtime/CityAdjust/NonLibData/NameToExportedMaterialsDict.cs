@@ -17,15 +17,15 @@ namespace PLATEAU.CityAdjust.NonLibData
         private NonLibDictionary<Material[]> data = new();
         private UnityMeshToDllSubMeshWithTexture subMeshConverter;
         private string assetPath;
-        private bool convertFromFbx = false;
+        private bool isRebuild = false;
 
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
 
-        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool fromFbx)
+        public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool isRebuild)
         {
             this.subMeshConverter = subMeshConverter;
             this.assetPath = assetPath;
-            this.convertFromFbx = fromFbx;
+            this.isRebuild = isRebuild;
         }
 
         /// <summary>
@@ -93,7 +93,8 @@ namespace PLATEAU.CityAdjust.NonLibData
 
                             // trueならFBXのマテリアルを利用し、falseなら元のマテリアルを利用します。
                             bool shouldUseFbxMaterial = false;
-
+                            // 元のマテリアルがデフォルトマテリアルの場合は、アセットとして保存する処理をスキップします。
+                            bool isDefaultMaterial = false;
 
                             string shaderName = srcMat.shader.name;
                             if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
@@ -102,38 +103,53 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
                                 var nextMaterial = new Material(srcMat);
-                                var fbxTex = nextMaterials[i].mainTexture;
-                                nextMaterial.SetTexture(PropIdBaseMap, fbxTex);
+                                if (nextMaterials[i] != null)
+                                {
+                                    var fbxTex = nextMaterials[i].mainTexture;
+                                    nextMaterial.SetTexture(PropIdBaseMap, fbxTex); 
+                                }
+                                srcMat = nextMaterial;
                             }
                             else if (shaderName is "Shader Graphs/ObstacleLight_URP"
                                      or "Shader Graphs/ObstacleLight_HDRP")
                             {
                                 // Rendering ToolkitのAuto Textureで生成されるライトの場合
                                 shouldUseFbxMaterial = false;
-                                nextMaterials[i] = new Material(srcMat);
+                                srcMat = new Material(srcMat);
                             }
                             else
                             {
                                 // Rendering Toolkitでない場合
 
                                 // mainTextureがないシェーダー、またはmainTextureがない、またはデフォルトマテリアルなら、元のマテリアルを利用します。
-                                bool isDefaultMaterial =
-                                    srcMat.mainTexture != null &&
-                                    FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name) != null;
+                                if (srcMat.mainTexture != null)
+                                {
+                                    var defaultMat = FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name);
+                                    if (defaultMat != null)
+                                    {
+                                        isDefaultMaterial = true;
+                                        // 判定用なので明示的に破棄
+#if UNITY_EDITOR
+                                        UnityEngine.Object.DestroyImmediate(defaultMat);
+#else
+                                        UnityEngine.Object.Destroy(defaultMat);
+#endif
+                                    }
+                                }
                                 if (!srcMat.HasMainTextureAttribute() || srcMat.mainTexture == null || isDefaultMaterial)
                                 {
                                     shouldUseFbxMaterial = false;
                                 }
                                 else
                                 {
-                                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                                     var srcTexPath = AssetDatabase.GetAssetPath(srcMat.mainTexture);
 #else
                                     var srcTexPath = "";
 #endif
                                     // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
                                     // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                                    if(convertFromFbx)
+                                    if(isRebuild)
                                         shouldUseFbxMaterial = true; // FBXから変換しているなら、テクスチャのパスに関わらずFBXのマテリアルを使います。
                                     else
                                         shouldUseFbxMaterial = srcTexPath == "";
@@ -142,18 +158,42 @@ namespace PLATEAU.CityAdjust.NonLibData
 
                             if (!shouldUseFbxMaterial)
                             {
-#if UNITY_EDITOR
-                                // マテリアルが保存されていない場合は、アセットとして保存します。(Veg等のマテリアル色変更アセット用）
-                                var srcMatPath = AssetDatabase.GetAssetPath(srcMat);
-                                if (string.IsNullOrEmpty(srcMatPath))
+                                if (!isDefaultMaterial)
                                 {
-                                    var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
-                                    AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
-                                    var basePath = AssetPathUtil.GetAssetPathFromRelativePath($"{assetPath}/{srcMat.name}.mat");
-                                    AssetDatabase.CreateAsset(srcMat, basePath);
-                                    AssetDatabase.SaveAssets();
-                                }
+#if UNITY_EDITOR
+                                    try
+                                    {
+                                        // マテリアルが保存されていない場合は、アセットとして保存します。
+                                        // Import時　(Veg等のマテリアル色変更アセット用）
+                                        // Rebuild時（Rendering ToolkitのAuto Texture等のマテリアル用）
+                                        var srcMatPath = AssetDatabase.GetAssetPath(srcMat);
+                                        if (string.IsNullOrEmpty(srcMatPath))
+                                        {
+                                            var fullpath = AssetPathUtil.GetFullPath(AssetPathUtil.GetAssetPathFromRelativePath(assetPath));
+                                            AssetPathUtil.CreateDirectoryIfNotExist(fullpath);
+                                            var matName = srcMat.name.Replace("/", "_").Replace("\\", "_").Replace(" ", "").Replace(".", "");
+                                            var matRelativePath = AssetPathUtil.NormalizeAssetPath($"{assetPath}/{matName}.mat");
+
+                                            var currentMat = AssetDatabase.LoadAssetAtPath<Material>(matRelativePath); // 既に同じ名前で保存されているマテリアルがある場合は同一とみなす
+                                            if (currentMat == null)
+                                            {
+                                                var newMat = new Material(srcMat);
+                                                AssetDatabase.CreateAsset(newMat, matRelativePath);
+                                                AssetDatabase.SaveAssets();
+                                                srcMat = newMat;
+                                            }
+                                            else
+                                            {
+                                                srcMat = currentMat;
+                                            }
+                                        }
+                                    }
+                                    catch (System.Exception e)
+                                    {
+                                        Debug.LogError($"Could not save material asset for {dst.name} : {e.Message}\n{e.StackTrace}");
+                                    }
 #endif
+                                }
                                 nextMaterials[i] = srcMat;
                             }
                         }

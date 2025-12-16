@@ -154,10 +154,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             foreach (var t in landTileTransforms)
             {
                 // Mesh と TerrainのComponentを持つ子要素を取得
-                var meshes = TransformEx.GetAllChildrenWithComponent<PLATEAUSmoothedDem>(t);
+                var meshes = t.GetAllChildrenWithComponent<PLATEAUSmoothedDem>();
                 foreach (var item in meshes)
                     landTransformsHash.Add(item);
-                var terrains = TransformEx.GetAllChildrenWithComponent<Terrain>(t);
+                var terrains = t.GetAllChildrenWithComponent<Terrain>();
                 foreach (var item in terrains)
                     landTransformsHash.Add(item);
             }
@@ -174,7 +174,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.TerrainConvertGui
             var alignTransforms = new List<Transform>();
             foreach (var t in alignTileTransforms)
             {
-                alignTransforms.AddRange(TransformEx.GetAllChildrenWithComponent<PLATEAUCityObjectGroup>(t)); // PLATEAUCityObjectGroupを持つ子をリストに追加
+                alignTransforms.AddRange(t.GetAllChildrenWithComponent<PLATEAUCityObjectGroup>()); // PLATEAUCityObjectGroupを持つ子をリストに追加
             }
             return alignTransforms;
         }
