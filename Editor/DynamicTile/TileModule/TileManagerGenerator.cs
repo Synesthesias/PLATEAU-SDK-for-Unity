@@ -49,9 +49,19 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             manager.OutputPath = context.Config.OutputPath;
             
             // 最新のカタログファイルのパスを取得（Asset相対/フルの両方に対応）
-            var catalogSearchDir = Path.IsPathRooted(context.BuildFolderPath)
-                ? context.BuildFolderPath
-                : AssetPathUtil.GetFullPath(context.BuildFolderPath);
+            string catalogSearchDir;
+            if (context.IsExcludeAssetFolder)
+            {
+                catalogSearchDir = Path.IsPathRooted(context.BuildFolderPath)
+                    ? context.BuildFolderPath
+                    : AssetPathUtil.GetFullPath(context.BuildFolderPath);
+            }
+            else
+            {
+                // Assets内出力の場合、StreamingAssets/PLATEAUBundles/{GroupName} に出力されているはず
+                catalogSearchDir = $"Assets/StreamingAssets/{AddressableLoader.AddressableLocalBuildFolderName}/{context.AddressableGroupName}";
+            }
+            
             var catalogFiles = TileCatalogSearcher.FindCatalogFiles(catalogSearchDir, true);
             if (catalogFiles.Length == 0)
             {

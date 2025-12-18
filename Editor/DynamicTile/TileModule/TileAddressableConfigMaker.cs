@@ -11,7 +11,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
     /// </summary>
     internal class TileAddressableConfigMaker : IOnTileGenerateStart, IAfterTileAssetBuild
     {
-        public readonly DynamicTileProcessingContext context;
+        private readonly DynamicTileProcessingContext context;
         private MonoScriptBundleNaming? savedMonoScriptBundleNaming;
         private string savedMonoScriptBundleCustomNaming;
 
@@ -38,7 +38,14 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             }
 
             // ビルド設定を行います。
-            AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
+            if (context.IsExcludeAssetFolder)
+            {
+                AddressablesUtility.SetRemoteProfileSettings(context.BuildFolderPath, context.AddressableGroupName);
+            }
+            else
+            {
+                AddressablesUtility.SetProfileForAssetBundleInAssets(context.AddressableGroupName);
+            }
             AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
             
             // MonoScript Bundle の生成を無効化します。
