@@ -183,7 +183,50 @@ namespace PLATEAU.Editor.TileAddressables
             addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
             addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
             EditorUtility.SetDirty(addrSettings);
-            AssetDatabase.SaveAssets();
+            SaveAddressableSettings();
+        }
+
+        /// <summary>
+        /// プロファイルをローカル実行用（Assets内配置）に設定します。
+        /// カタログを生成し、BuildPath/LoadPath共にStreamingAssetsへの直接パスを設定します。
+        /// </summary>
+        public static void SetProfileForAssetBundleInAssets(string groupName)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null) return;
+
+            // カタログ生成を有効化
+            settings.BuildRemoteCatalog = true;
+
+            var profileSettings = settings.profileSettings;
+            
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
+            {
+                profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
+            }
+            if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
+            {
+                profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
+            }
+            
+            // 出力パス: Assets/StreamingAssets/PLATEAUBundles/{GroupName}
+            // AddressablesではAssets/StreamingAssetsを指定するとビルド時に自動的にそこに出力されます。
+            // また、実行時(Runtime)もStreamingAssetsは特別なパスとして処理されるため整合性が取れます。
+            
+            string buildPath = $"Assets/StreamingAssets/{PLATEAU.DynamicTile.AddressableLoader.AddressableLocalBuildFolderName}/{groupName}";
+            // ランタイムではApplication.streamingAssetsPathを使って動的に解決させる
+            string loadPath = $"{{UnityEngine.Application.streamingAssetsPath}}/{PLATEAU.DynamicTile.AddressableLoader.AddressableLocalBuildFolderName}/{groupName}";
+
+            profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, buildPath);
+            profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, loadPath);
+            
+            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
+            
+            // addressables_content_state.binもビルド先に保存
+            settings.ContentStateBuildPath = BuildPath(settings);
+            
+            SaveAddressableSettings();
         }
 
         /// <summary>
@@ -205,7 +248,7 @@ namespace PLATEAU.Editor.TileAddressables
                 return;
             }
 
-            var bundledSchema = group.GetSchema<UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema>();
+            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
             if (bundledSchema == null)
             {
                 Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
