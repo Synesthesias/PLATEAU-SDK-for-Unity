@@ -153,32 +153,35 @@ namespace PLATEAU.Editor.TileAddressables
                 }
             }
 
-            // Default に戻す
-            addrSettings.activeProfileId = defaultProfileId;
+            // Defaultプロファイルであっても、PLATEAU_BuildPathとPLATEAU_LoadPathの値は
+            // PLATEAU_TileBuildProfileから引き継ぐようにします。
+            // これによりDefaultプロファイルのままでもAddressableビルドが成功するようにします。
+            
+            // 現在のアクティブなプロファイル（PLATEAU_TileBuildProfile）から設定値を取得
+            var activeProfileId = addrSettings.activeProfileId;
+            var buildPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameBuild);
+            var loadPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameLoad);
 
-            // ProfileVariableNameが空だと不安定になるのでデフォルトの安全な値を入れます
+            // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
+                profileSettings.CreateValue(ProfileVariableNameLoad, loadPathValue);
             }
-
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
             {
-                profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
+                profileSettings.CreateValue(ProfileVariableNameBuild, buildPathValue);
             }
 
-            var currentLoad = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
-            if (string.IsNullOrEmpty(currentLoad))
-            {
-                profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, SafeDefaultPathLoad);
-            }
+            // Defaultプロファイルに値を設定
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, loadPathValue);
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, buildPathValue);
 
-            var currentBuild = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameBuild);
-            if (string.IsNullOrEmpty(currentBuild))
-            {
-                profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
-            }
+            // プロファイルを切り替え
+            addrSettings.activeProfileId = defaultProfileId;
 
+            // RemoteCatalog の参照先を揃える
+            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
+            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
