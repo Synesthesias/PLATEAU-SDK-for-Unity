@@ -179,9 +179,6 @@ namespace PLATEAU.Editor.TileAddressables
                 profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
             }
 
-            // RemoteCatalog の参照先を揃える
-            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
-            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
@@ -220,8 +217,6 @@ namespace PLATEAU.Editor.TileAddressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, buildPath);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, loadPath);
             
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
             
             // addressables_content_state.binもビルド先に保存
             settings.ContentStateBuildPath = BuildPath(settings);
