@@ -40,8 +40,10 @@ PLATEAU SDK for Unity の導入方法は2通りあります。
   ![](../resources/manual/installation/packageInstalled.png)
 
 ### GitのURL指定で導入する方法
-- Gitを用いて導入するには、Git LFSがお使いのコンピュータにインストールされている必要があります。
-  - Git LFSのインストール方法については[こちら](https://docs.github.com/ja/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)を参照してください。
+> [!NOTE]
+> Gitを用いて導入するには、Git **LFS**がお使いのコンピュータにインストールされている必要があります。
+> Git LFSのインストール方法については【[こちら](https://docs.github.com/ja/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)】を参照してください。
+
 - 導入したいバージョンを確認するため、 [PLATEAU SDK for Unity のリリースページ](https://github.com/Project-PLATEAU/PLATEAU-SDK-for-Unity/releases) にアクセスします。
 - リリースのリンクをクリックし、導入したいバージョンのタグ（画像の箇所）をメモします。
   ![](../resources/manual/installation/releaseTag.png)
