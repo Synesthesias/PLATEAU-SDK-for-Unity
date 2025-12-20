@@ -180,8 +180,18 @@ namespace PLATEAU.Editor.TileAddressables
             addrSettings.activeProfileId = defaultProfileId;
 
             // RemoteCatalog の参照先を揃える
-            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
-            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
+            // PLATEAU_BuildPathのままだと標準ビルドでカタログが上書きされてしまうため、RemoteBuildPathに戻します。
+            const string DefaultRemoteBuildPath = "Remote.BuildPath";
+            const string DefaultRemoteLoadPath = "Remote.LoadPath";
+            var profileVarNames = profileSettings.GetVariableNames();
+            if (profileVarNames.Contains(DefaultRemoteBuildPath))
+            {
+                addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, DefaultRemoteBuildPath);
+            }
+            if (profileVarNames.Contains(DefaultRemoteLoadPath))
+            {
+                addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, DefaultRemoteLoadPath);
+            }
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
@@ -223,7 +233,18 @@ namespace PLATEAU.Editor.TileAddressables
             
             // addressables_content_state.binもビルド先に保存
             settings.ContentStateBuildPath = BuildPath(settings);
-            
+
+            // RemoteCatalogBuildPathも動的タイルのビルドパスに合わせる必要があります。
+            // これをしないと、デフォルト設定（Remote.BuildPath）が使われてしまい、StreamingAssetsにカタログが出力されません。
+            if (profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
+            {
+                settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
+            }
+            if (profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
+            {
+                settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            }
+
             SaveAddressableSettings();
         }
 

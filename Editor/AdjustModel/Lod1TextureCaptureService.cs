@@ -313,8 +313,6 @@ namespace PLATEAU.Editor.AdjustModel
 
                 var request = new CaptureRequest(item.Key, combinedBounds, pixelsPerMeter);
                 
-                // camera.Render();
-                
                 // テクスチャのキャプチャ
                 CaptureAllFaces(request, camera);
 
