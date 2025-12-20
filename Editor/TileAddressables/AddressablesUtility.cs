@@ -162,6 +162,12 @@ namespace PLATEAU.Editor.TileAddressables
             var buildPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameBuild);
             var loadPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameLoad);
 
+            if (string.IsNullOrEmpty(buildPathValue) || string.IsNullOrEmpty(loadPathValue))
+            {
+                Debug.LogError($"アクティブなプロファイルから {ProfileVariableNameBuild} または {ProfileVariableNameLoad} を取得できませんでした。Defaultプロファイルへの設定反映を中止します。");
+                return;
+            }
+
             // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
