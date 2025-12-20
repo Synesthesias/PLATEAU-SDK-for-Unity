@@ -1,7 +1,9 @@
-﻿using PLATEAU.Util.Async;
+using PLATEAU.Util.Async;
 using System;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -75,7 +77,7 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class PLATEAUEditorEventListener : AssetModificationProcessor
+    public class PLATEAUEditorEventListener : AssetModificationProcessor, IPostprocessBuildWithReport
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
@@ -83,6 +85,27 @@ namespace PLATEAU.DynamicTile
         public static volatile bool disableProjectChangeEvent = false;
 
         public static bool IsRunning { get; private set; }
+
+        public int callbackOrder => 0;
+
+        /// <summary>
+        /// アプリビルド完了時に呼ばれます
+        /// </summary>
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            // アプリビルド後にTileManagerが停止しているのを再開させます。
+            Initialize();
+        }
+
+        /// <summary>
+        /// 手動でTileManagerの読み込みを再開します
+        /// </summary>
+        [MenuItem("PLATEAU/Debug/Reload Tile Manager")]
+        public static void ReloadTileManager()
+        {
+            Initialize();
+            Debug.Log("PLATEAUTileManagerの読み込みを再開しました。");
+        }
 
         static PLATEAUEditorEventListener()
         {

@@ -347,27 +347,21 @@ namespace PLATEAU.CityImport.Import
                 Debug.LogWarning("cityModels.Count is zero.");
                 return;
             }
-            int currentGroupIndex = 0;
 
             foreach (var kv in cityModels)
             {
                 token?.ThrowIfCancellationRequested();
                 var (package, epsg) = kv.Key;
                 var models = kv.Value;
-
-                float groupStartProgress = startProgress + (endProgress - startProgress) * ((float)currentGroupIndex / totalGroups);
-                float groupEndProgress = startProgress + (endProgress - startProgress) * ((float)(currentGroupIndex + 1) / totalGroups);
-
-
+                
                 if (ShouldCombineTiles(zoomLevel, package))
                 {
-                    await ImportCombinedTiles(models, package, epsg, zoomLevel, groupStartProgress, groupEndProgress, token);
+                    await ImportCombinedTiles(models, package, epsg, zoomLevel, startProgress, endProgress, token);
                 }
                 else
                 {
-                    await ImportEachTiles(models, zoomLevel, groupStartProgress, groupEndProgress, token);
+                    await ImportEachTiles(models, zoomLevel, startProgress, endProgress, token);
                 }
-                currentGroupIndex++;
             }
         }
 

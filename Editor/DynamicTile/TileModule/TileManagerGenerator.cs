@@ -28,7 +28,10 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             {
                 Object.DestroyImmediate(manager.gameObject);
             }
-            
+
+            // 同一シーンで再度実行した際に、前のAssetBundleがメモリに残っているとエラーになるため、明示的にアンロードします。
+            AssetBundle.UnloadAllAssetBundles(false);
+            Caching.ClearCache();
             return true;
         }
 

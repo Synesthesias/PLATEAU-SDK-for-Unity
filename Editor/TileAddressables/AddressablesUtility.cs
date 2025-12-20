@@ -153,35 +153,51 @@ namespace PLATEAU.Editor.TileAddressables
                 }
             }
 
-            // Default に戻す
-            addrSettings.activeProfileId = defaultProfileId;
+            // Defaultプロファイルであっても、PLATEAU_BuildPathとPLATEAU_LoadPathの値は
+            // PLATEAU_TileBuildProfileから引き継ぐようにします。
+            // これによりDefaultプロファイルのままでもAddressableビルドが成功するようにします。
+            
+            // 現在のアクティブなプロファイル（PLATEAU_TileBuildProfile）から設定値を取得
+            var activeProfileId = addrSettings.activeProfileId;
+            var buildPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameBuild);
+            var loadPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameLoad);
 
-            // ProfileVariableNameが空だと不安定になるのでデフォルトの安全な値を入れます
+            if (string.IsNullOrEmpty(buildPathValue) || string.IsNullOrEmpty(loadPathValue))
+            {
+                Debug.LogError($"アクティブなプロファイルから {ProfileVariableNameBuild} または {ProfileVariableNameLoad} を取得できませんでした。Defaultプロファイルへの設定反映を中止します。");
+                return;
+            }
+
+            // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
+                profileSettings.CreateValue(ProfileVariableNameLoad, loadPathValue);
             }
-
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
             {
-                profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
+                profileSettings.CreateValue(ProfileVariableNameBuild, buildPathValue);
             }
 
-            var currentLoad = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
-            if (string.IsNullOrEmpty(currentLoad))
-            {
-                profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, SafeDefaultPathLoad);
-            }
+            // Defaultプロファイルに値を設定
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, loadPathValue);
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, buildPathValue);
 
-            var currentBuild = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameBuild);
-            if (string.IsNullOrEmpty(currentBuild))
-            {
-                profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
-            }
+            // プロファイルを切り替え
+            addrSettings.activeProfileId = defaultProfileId;
 
             // RemoteCatalog の参照先を揃える
-            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, ProfileVariableNameBuild);
-            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, ProfileVariableNameLoad);
+            // PLATEAU_BuildPathのままだと標準ビルドでカタログが上書きされてしまうため、RemoteBuildPathに戻します。
+            const string DefaultRemoteBuildPath = "Remote.BuildPath";
+            const string DefaultRemoteLoadPath = "Remote.LoadPath";
+            var profileVarNames = profileSettings.GetVariableNames();
+            if (profileVarNames.Contains(DefaultRemoteBuildPath))
+            {
+                addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, DefaultRemoteBuildPath);
+            }
+            if (profileVarNames.Contains(DefaultRemoteLoadPath))
+            {
+                addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, DefaultRemoteLoadPath);
+            }
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
@@ -220,12 +236,21 @@ namespace PLATEAU.Editor.TileAddressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, buildPath);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, loadPath);
             
-            settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
-            settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
             
             // addressables_content_state.binもビルド先に保存
             settings.ContentStateBuildPath = BuildPath(settings);
-            
+
+            // RemoteCatalogBuildPathも動的タイルのビルドパスに合わせる必要があります。
+            // これをしないと、デフォルト設定（Remote.BuildPath）が使われてしまい、StreamingAssetsにカタログが出力されません。
+            if (profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
+            {
+                settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
+            }
+            if (profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
+            {
+                settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
+            }
+
             SaveAddressableSettings();
         }
 
