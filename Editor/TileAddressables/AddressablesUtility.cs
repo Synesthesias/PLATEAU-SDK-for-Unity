@@ -153,51 +153,35 @@ namespace PLATEAU.Editor.TileAddressables
                 }
             }
 
-            // Defaultプロファイルであっても、PLATEAU_BuildPathとPLATEAU_LoadPathの値は
-            // PLATEAU_TileBuildProfileから引き継ぐようにします。
-            // これによりDefaultプロファイルのままでもAddressableビルドが成功するようにします。
+            // PLATEAUプロファイルを探す
+            var plateauProfileId = profileSettings.GetProfileId(TileBuildProfileName);
+            var sourceProfileId = !string.IsNullOrEmpty(plateauProfileId) ? plateauProfileId : addrSettings.activeProfileId;
             
-            // 現在のアクティブなプロファイル（PLATEAU_TileBuildProfile）から設定値を取得
-            var activeProfileId = addrSettings.activeProfileId;
-            var buildPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameBuild);
-            var loadPathValue = profileSettings.GetValueByName(activeProfileId, ProfileVariableNameLoad);
-
-            if (string.IsNullOrEmpty(buildPathValue) || string.IsNullOrEmpty(loadPathValue))
-            {
-                Debug.LogError($"アクティブなプロファイルから {ProfileVariableNameBuild} または {ProfileVariableNameLoad} を取得できませんでした。Defaultプロファイルへの設定反映を中止します。");
-                return;
-            }
-
+            // アプリビルド時の settings.json 生成場所の不整合や
+            // カタログ上書き問題を避けるため、Defaultプロファイルは標準的なパス設定（StreamingAssets/aa/...）に戻します。
+            // 動的タイルは独自のカタログ(PLATEAUBundles/catalog.json)を持つため、Defaultの設定が標準に戻ってもロード可能です。
+            
             // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
-                profileSettings.CreateValue(ProfileVariableNameLoad, loadPathValue);
+                profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
             }
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameBuild))
             {
-                profileSettings.CreateValue(ProfileVariableNameBuild, buildPathValue);
+                profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
             }
 
-            // Defaultプロファイルに値を設定
-            profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, loadPathValue);
-            profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, buildPathValue);
+            // Defaultプロファイルに値を設定（標準のパスに戻す）
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, SafeDefaultPathLoad);
+            profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
+
+            // 標準変数(Local.BuildPath等)も安全な標準のパスに戻す
+            // これによりアプリビルド時に適切な settings.json が生成されます。
+            OverwriteStandardPathVariables(profileSettings, defaultProfileId, SafeDefaultPathBuild, SafeDefaultPathLoad);
+
 
             // プロファイルを切り替え
             addrSettings.activeProfileId = defaultProfileId;
-
-            // RemoteCatalog の参照先を揃える
-            // PLATEAU_BuildPathのままだと標準ビルドでカタログが上書きされてしまうため、RemoteBuildPathに戻します。
-            const string DefaultRemoteBuildPath = "Remote.BuildPath";
-            const string DefaultRemoteLoadPath = "Remote.LoadPath";
-            var profileVarNames = profileSettings.GetVariableNames();
-            if (profileVarNames.Contains(DefaultRemoteBuildPath))
-            {
-                addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, DefaultRemoteBuildPath);
-            }
-            if (profileVarNames.Contains(DefaultRemoteLoadPath))
-            {
-                addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, DefaultRemoteLoadPath);
-            }
             
             // BuildRemotePathの設定を変えます。この設定が正しくないとアプリビルドに失敗します。
             var currentLoadPath = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
@@ -381,13 +365,25 @@ namespace PLATEAU.Editor.TileAddressables
 
             var variableNames = profileSettings.GetVariableNames();
             if (variableNames.Contains(LocalBuildPath))
+            {
                 profileSettings.SetValue(profileId, LocalBuildPath, buildPath);
+                Debug.Log($"Overwrite {LocalBuildPath} -> {buildPath}");
+            }
             if (variableNames.Contains(LocalLoadPath))
+            {
                 profileSettings.SetValue(profileId, LocalLoadPath, loadPath);
+                Debug.Log($"Overwrite {LocalLoadPath} -> {loadPath}");
+            }
             if (variableNames.Contains(RemoteBuildPath))
+            {
                 profileSettings.SetValue(profileId, RemoteBuildPath, buildPath);
+                Debug.Log($"Overwrite {RemoteBuildPath} -> {buildPath}");
+            }
             if (variableNames.Contains(RemoteLoadPath))
+            {
                 profileSettings.SetValue(profileId, RemoteLoadPath, loadPath);
+                Debug.Log($"Overwrite {RemoteLoadPath} -> {loadPath}");
+            }
         }
 
         public static void SaveAddressableSettings()
