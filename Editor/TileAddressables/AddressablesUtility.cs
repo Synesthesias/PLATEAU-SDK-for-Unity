@@ -199,9 +199,18 @@ namespace PLATEAU.Editor.TileAddressables
                 addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, DefaultRemoteLoadPath);
             }
             
-            // デフォルトに戻すときは、Remote Catalog Buildを無効にしておかないと、
-            // 新規プロジェクトでAssets内タイルインポート→アプリビルド時にエラーメッセージが出ます。
-            addrSettings.BuildRemoteCatalog = false;
+            // BuildRemotePathの設定を変えます。この設定が正しくないとアプリビルドに失敗します。
+            var currentLoadPath = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
+            bool isExternalPath = !currentLoadPath.Contains("StreamingAssets") && !currentLoadPath.Contains("[UnityEngine.AddressableAssets.Addressables.RuntimePath]");
+            
+            if (!isExternalPath)
+            {
+                addrSettings.BuildRemoteCatalog = false;
+            }
+            else
+            {
+                addrSettings.BuildRemoteCatalog = true;
+            }
             
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();

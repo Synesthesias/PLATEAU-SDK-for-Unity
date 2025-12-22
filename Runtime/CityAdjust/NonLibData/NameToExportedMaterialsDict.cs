@@ -58,6 +58,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// </summary>
         public void RestoreTo(UniqueParentTransformList target)
         {
+            bool isDirty = false; // このメソッドの中で何度もAssetDatabase.SaveAssetsを呼ぶと、まれに動的タイル化でマテリアルが壊れることがあるので、フラグにして最後にSaveAssetsします。
             target.BfsExec(dst =>
             {
                 // Plateau ToolkitのAutoTexturingで生成されるObstacleLight向けの特別処理です。
@@ -179,7 +180,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                                             {
                                                 var newMat = new Material(srcMat);
                                                 AssetDatabase.CreateAsset(newMat, matRelativePath);
-                                                AssetDatabase.SaveAssets();
+                                                isDirty = true;
                                                 srcMat = newMat;
                                             }
                                             else
@@ -203,8 +204,13 @@ namespace PLATEAU.CityAdjust.NonLibData
                 }
                 return NextSearchFlow.Continue;
             });
-
-
+            
+            if (isDirty)
+            {
+#if UNITY_EDITOR
+                AssetDatabase.SaveAssets();
+#endif
+            }
         }
 
         /// <summary>
