@@ -198,6 +198,11 @@ namespace PLATEAU.Editor.TileAddressables
             {
                 addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, DefaultRemoteLoadPath);
             }
+            
+            // デフォルトに戻すときは、Remote Catalog Buildを無効にしておかないと、
+            // 新規プロジェクトでAssets内タイルインポート→アプリビルド時にエラーメッセージが出ます。
+            addrSettings.BuildRemoteCatalog = false;
+            
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
