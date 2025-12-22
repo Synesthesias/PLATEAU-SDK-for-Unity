@@ -250,6 +250,8 @@ namespace PLATEAU.Editor.TileAddressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, buildPath);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, loadPath);
             
+            OverwriteStandardPathVariables(profileSettings, settings.activeProfileId, buildPath, loadPath);
+            
             
             // addressables_content_state.binもビルド先に保存
             settings.ContentStateBuildPath = BuildPath(settings);
@@ -352,11 +354,40 @@ namespace PLATEAU.Editor.TileAddressables
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, path);
             settings.RemoteCatalogBuildPath.SetVariableByName(settings, ProfileVariableNameBuild);
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
+
+            OverwriteStandardPathVariables(profileSettings, settings.activeProfileId, path, path);
             
             // addressables_content_state.binもビルド先に保存します。これは差分ビルドで利用します。
             settings.ContentStateBuildPath = BuildPath(settings);
             
             SaveAddressableSettings();
+        }
+
+        /// <summary>
+        /// パス変数 Local.BuildPath や Remote.BuildPath などの値を編集します。
+        /// 本当はパス変数 PLATEAU_BuildPath や PLATEAU_LoadPath があるので、こちらは不要と思いたかったのですが、
+        /// Addressablesのbuilt-inデータまではそのパス変数では変わらずエラーになりがちだったための処置です。
+        /// </summary>
+        private static void OverwriteStandardPathVariables(
+            AddressableAssetProfileSettings profileSettings,
+            string profileId,
+            string buildPath,
+            string loadPath)
+        {
+            const string LocalBuildPath = "Local.BuildPath";
+            const string LocalLoadPath = "Local.LoadPath";
+            const string RemoteBuildPath = "Remote.BuildPath";
+            const string RemoteLoadPath = "Remote.LoadPath";
+
+            var variableNames = profileSettings.GetVariableNames();
+            if (variableNames.Contains(LocalBuildPath))
+                profileSettings.SetValue(profileId, LocalBuildPath, buildPath);
+            if (variableNames.Contains(LocalLoadPath))
+                profileSettings.SetValue(profileId, LocalLoadPath, loadPath);
+            if (variableNames.Contains(RemoteBuildPath))
+                profileSettings.SetValue(profileId, RemoteBuildPath, buildPath);
+            if (variableNames.Contains(RemoteLoadPath))
+                profileSettings.SetValue(profileId, RemoteLoadPath, loadPath);
         }
 
         public static void SaveAddressableSettings()
