@@ -201,7 +201,7 @@ namespace PLATEAU.Tests.TestDynamicTile
 			if (!string.IsNullOrEmpty(outputDir) && Directory.Exists(outputDir))
 			{
                 try { Directory.Delete(outputDir, true); }
-                catch (Exception e)
+                catch
                 {
                     Debug.LogWarning("failed to delete test directory.");
                 }
