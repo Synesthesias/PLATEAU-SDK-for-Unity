@@ -39,6 +39,8 @@ namespace PLATEAU.Util
         /// <returns></returns>
         public static string GetAssetPathFromRelativePath(string relativePath)
         {
+            if (relativePath == ".") return ASSET_PATH;
+
             if(relativePath.StartsWith(ASSET_PATH))
                 return relativePath;
 
@@ -108,6 +110,17 @@ namespace PLATEAU.Util
             }
 
             return normalizedAssetPath;
+        }
+
+        /// <summary>
+        /// 指定されたパスがAssetsフォルダ直下（ルート）かどうかを判定します
+        /// </summary>
+        public static bool IsAssetsFolderRoot(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+            string fullPath = Path.GetFullPath(path).Replace('\\', '/').TrimEnd('/');
+            string dataPath = Path.GetFullPath(Application.dataPath).Replace('\\', '/').TrimEnd('/');
+            return string.Equals(fullPath, dataPath, System.StringComparison.OrdinalIgnoreCase);
         }
 
     }

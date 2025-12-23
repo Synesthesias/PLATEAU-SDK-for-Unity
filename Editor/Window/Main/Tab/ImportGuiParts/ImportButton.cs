@@ -38,6 +38,15 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
             {
                 if (Volatile.Read(ref numCurrentRunningTasks) <= 0)
                 {
+                    // 動的タイルインポート時のバリデーション
+                    bool isDynamicTile = config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile;
+                    bool isValidPath = true;
+                    if (isDynamicTile && !string.IsNullOrEmpty(config.DynamicTileImportConfig.OutputPath))
+                    {
+                        isValidPath = config.DynamicTileImportConfig.IsValidOutputPath;
+                    }
+
+                    EditorGUI.BeginDisabledGroup(!isValidPath);
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
@@ -84,6 +93,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                 throw new Exception("invalid import type.");
                         }
                     }
+                    EditorGUI.EndDisabledGroup();
                 }
                 else if (cancellationTokenSrc?.IsCancellationRequested == true)
                 {

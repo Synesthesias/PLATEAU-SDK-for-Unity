@@ -58,6 +58,14 @@ namespace PLATEAU.Editor.CityImport.PackageImportConfigGUIs.Components
                         {
                             EditorGUILayout.HelpBox("出力先を選択してください。", MessageType.Warning);
                         }
+                        else
+                        {
+                            // Assets直下チェック
+                            if (!config.IsValidOutputPath)
+                            {
+                                EditorGUILayout.HelpBox("Assets直下には対応していません。新規フォルダを作って指定してください。", MessageType.Error);
+                            }
+                        }
 
                         GUILayout.Space(5);
 

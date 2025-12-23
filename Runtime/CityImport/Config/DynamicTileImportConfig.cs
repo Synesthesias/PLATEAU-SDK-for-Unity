@@ -60,5 +60,11 @@ namespace PLATEAU.CityImport.Config
             OutputPath = outputPath;
             Lod1Texture = lod1Texture;
         }
+
+        /// <summary>
+        /// 出力先パスが有効かどうかを判定します
+        /// Assetsフォルダ直下（ルート）の場合は無効とします
+        /// </summary>
+        public bool IsValidOutputPath => !PLATEAU.Util.AssetPathUtil.IsAssetsFolderRoot(OutputPath);
     }
 }
