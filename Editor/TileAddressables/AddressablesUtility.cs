@@ -101,6 +101,9 @@ namespace PLATEAU.Editor.TileAddressables
                 return;
             }
 
+            // パスに含まれる /./ を削除して正規化
+            assetPath = assetPath.Replace("/./", "/");
+            
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
             if (string.IsNullOrEmpty(guid))
             {
