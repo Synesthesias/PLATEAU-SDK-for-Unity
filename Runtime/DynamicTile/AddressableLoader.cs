@@ -144,12 +144,20 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async Task<string> ResolveMetaStoreAddressAsync(string catalogPath)
         {
+            // まずはラベル "DynamicTile" で検索
             var locationsHandle = Addressables.LoadResourceLocationsAsync(
                 DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
+            
             try
             {
                 await WaitForCompletionAsync(locationsHandle);
                 var allLocations = locationsHandle.Result;
+
+                if (allLocations == null || allLocations.Count == 0)
+                {
+                     Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。CatalogPath: {catalogPath}");
+                     return null;
+                }
 
                 // カタログのディレクトリを正規化
                 var catalogDir = Path.GetDirectoryName(catalogPath);

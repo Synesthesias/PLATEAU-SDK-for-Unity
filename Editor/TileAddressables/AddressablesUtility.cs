@@ -156,13 +156,15 @@ namespace PLATEAU.Editor.TileAddressables
                 }
             }
 
-            // PLATEAUプロファイルを探す
-            var plateauProfileId = profileSettings.GetProfileId(TileBuildProfileName);
-            var sourceProfileId = !string.IsNullOrEmpty(plateauProfileId) ? plateauProfileId : addrSettings.activeProfileId;
+            // Defaultプロファイルであっても、PLATEAU_BuildPathとPLATEAU_LoadPathの値は
+            // PLATEAU_TileBuildProfileから引き継ぐようにします。
+            // これによりDefaultプロファイルのままでもAddressableビルドが成功するようにします。
             
-            // アプリビルド時の settings.json 生成場所の不整合や
-            // カタログ上書き問題を避けるため、Defaultプロファイルは標準的なパス設定（StreamingAssets/aa/...）に戻します。
-            // 動的タイルは独自のカタログ(PLATEAUBundles/catalog.json)を持つため、Defaultの設定が標準に戻ってもロード可能です。
+            // 現在のプロファイル（TileBuildProfileのはず）から設定値を取得してDefaultにコピーします。
+            // これにより、Assets内出力かAssets外出力かに関わらず、正しいパス設定が引き継がれます。
+            var currentProfileId = addrSettings.activeProfileId;
+            var currentBuildPath = profileSettings.GetValueByName(currentProfileId, ProfileVariableNameBuild);
+            var currentLoadPath = profileSettings.GetValueByName(currentProfileId, ProfileVariableNameLoad);
             
             // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
@@ -174,20 +176,27 @@ namespace PLATEAU.Editor.TileAddressables
                 profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
             }
 
-            // Defaultプロファイルに値を設定（標準のパスに戻す）
-            profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, SafeDefaultPathLoad);
-            profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, SafeDefaultPathBuild);
+            // Defaultプロファイルに値を設定（引き継ぎ）
+            if (!string.IsNullOrEmpty(currentBuildPath))
+            {
+                profileSettings.SetValue(defaultProfileId, ProfileVariableNameBuild, currentBuildPath);
+            }
+            if (!string.IsNullOrEmpty(currentLoadPath))
+            {
+                profileSettings.SetValue(defaultProfileId, ProfileVariableNameLoad, currentLoadPath);
+            }
 
-            // 標準変数(Local.BuildPath等)も安全な標準のパスに戻す
-            // これによりアプリビルド時に適切な settings.json が生成されます。
-            OverwriteStandardPathVariables(profileSettings, defaultProfileId, SafeDefaultPathBuild, SafeDefaultPathLoad);
-
+            // カタログの出力先設定を標準（Remote.BuildPath / Remote.LoadPath）に戻します。
+            // これを行わないと、Assetsの外にタイル出力したあとにビルドしたらタイルのカタログが空で上書きされてしまいます。
+            addrSettings.RemoteCatalogBuildPath.SetVariableByName(addrSettings, "Remote.BuildPath");
+            addrSettings.RemoteCatalogLoadPath.SetVariableByName(addrSettings, "Remote.LoadPath");
+            
+            addrSettings.BuildRemoteCatalog = true;
 
             // プロファイルを切り替え
             addrSettings.activeProfileId = defaultProfileId;
             
             // BuildRemotePathの設定を変えます。この設定が正しくないとアプリビルドに失敗します。
-            var currentLoadPath = profileSettings.GetValueByName(defaultProfileId, ProfileVariableNameLoad);
             bool isExternalPath = !currentLoadPath.Contains("StreamingAssets") && !currentLoadPath.Contains("[UnityEngine.AddressableAssets.Addressables.RuntimePath]");
             
             if (!isExternalPath)
