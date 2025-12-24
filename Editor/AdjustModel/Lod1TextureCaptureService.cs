@@ -1,6 +1,5 @@
 using PLATEAU.CityInfo;
 using PLATEAU.Util;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace PLATEAU.Editor.AdjustModel
 {
@@ -261,7 +259,6 @@ namespace PLATEAU.Editor.AdjustModel
 
             camera.clearFlags = cameraClearFlag;
             camera.backgroundColor = cameraClearColor;
-            TryConfigureHDRPCamera(camera);
             camera.orthographic = true;
             
             // 現在表示されていて, 非表示にするゲームオブジェクト
@@ -504,47 +501,6 @@ namespace PLATEAU.Editor.AdjustModel
             // マテリアルを保存
             string materialPath = GetMaterialPath(req.MeshCode);
             AssetDatabase.CreateAsset(triplanarMaterial, materialPath);
-        }
-
-        /// <summary>
-        /// HDRPであれば、それ向けの撮影カメラ設定をします。
-        /// </summary>
-        private void TryConfigureHDRPCamera(Camera camera)
-        {
-            var hdCameraDataType = Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
-            if (hdCameraDataType == null) return;
-
-            var hdCameraData = camera.GetComponent(hdCameraDataType);
-            if (hdCameraData == null)
-            {
-                hdCameraData = camera.gameObject.AddComponent(hdCameraDataType);
-            }
-
-            // ClearColorMode.Color
-            var clearColorModeType = Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData+ClearColorMode, Unity.RenderPipelines.HighDefinition.Runtime");
-            if (clearColorModeType != null)
-            {
-                var propClearColorMode = hdCameraDataType.GetProperty("clearColorMode");
-                if (propClearColorMode != null)
-                {
-                    try
-                    {
-                        var colorMode = Enum.Parse(clearColorModeType, "Color");
-                        propClearColorMode.SetValue(hdCameraData, colorMode);
-                    }
-                    catch
-                    {
-                        Debug.LogWarning("Failed to set ClearColorMode for HDRP camera.");
-                    }
-                }
-            }
-
-            // BackgroundColorHDR
-            var propBackgroundColorHDR = hdCameraDataType.GetProperty("backgroundColorHDR");
-            if (propBackgroundColorHDR != null)
-            {
-                propBackgroundColorHDR.SetValue(hdCameraData, cameraClearColor);
-            }
         }
     }
 }
