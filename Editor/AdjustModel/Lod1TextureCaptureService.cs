@@ -514,6 +514,9 @@ namespace PLATEAU.Editor.AdjustModel
             if (hdData != null)
             {
                 var type = hdData.GetType();
+                var assembly = type.Assembly;
+
+                // 1. 背景色 (ClearColorMode) の設定
                 var clearColorModeProp = type.GetProperty("clearColorMode");
                 if (clearColorModeProp != null)
                 {
@@ -534,6 +537,47 @@ namespace PLATEAU.Editor.AdjustModel
                 if (backgroundColorHDRProp != null)
                 {
                     backgroundColorHDRProp.SetValue(hdData, cameraClearColor);
+                }
+
+                // 2. Fog (AtmosphericScattering) の無効化
+                // Custom Frame Settings を有効にする
+                var customRenderingSettingsProp = type.GetProperty("customRenderingSettings");
+                if (customRenderingSettingsProp != null)
+                {
+                    customRenderingSettingsProp.SetValue(hdData, true);
+                }
+
+                // renderingPathCustomFrameSettings (FrameSettings struct) を取得して編集
+                var frameSettingsProp = type.GetProperty("renderingPathCustomFrameSettings");
+                if (frameSettingsProp != null)
+                {
+                    var frameSettings = frameSettingsProp.GetValue(hdData);
+                    var frameSettingsType = frameSettings.GetType();
+                    
+                    // FrameSettingsField の型を取得
+                    var frameSettingsFieldType = assembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
+                    if (frameSettingsFieldType != null)
+                    {
+                        object fieldVal = null;
+                        // AtmosphericScattering または Fog を探す
+                        try { fieldVal = System.Enum.Parse(frameSettingsFieldType, "AtmosphericScattering"); } catch { }
+                        if (fieldVal == null)
+                        {
+                            try { fieldVal = System.Enum.Parse(frameSettingsFieldType, "Fog"); } catch { }
+                        }
+
+                        if (fieldVal != null)
+                        {
+                            var setEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
+                            if (setEnabledMethod != null)
+                            {
+                                // Fog = false
+                                setEnabledMethod.Invoke(frameSettings, new object[] { fieldVal, false });
+                                // 構造体なので書き戻す
+                                frameSettingsProp.SetValue(hdData, frameSettings);
+                            }
+                        }
+                    }
                 }
             }
         }
