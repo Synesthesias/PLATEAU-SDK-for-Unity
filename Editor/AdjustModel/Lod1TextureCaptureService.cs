@@ -261,6 +261,8 @@ namespace PLATEAU.Editor.AdjustModel
             camera.backgroundColor = cameraClearColor;
             camera.orthographic = true;
             
+            SetHdrpCameraSetting(camera);
+            
             // 現在表示されていて, 非表示にするゲームオブジェクト
             var invisibleObjects = new HashSet<GameObject>();
 
@@ -501,6 +503,39 @@ namespace PLATEAU.Editor.AdjustModel
             // マテリアルを保存
             string materialPath = GetMaterialPath(req.MeshCode);
             AssetDatabase.CreateAsset(triplanarMaterial, materialPath);
+        }
+
+        private void SetHdrpCameraSetting(Camera camera)
+        {
+            // HDRP環境化での背景色設定
+            // HDAdditionalCameraDataコンポーネントを取得し、リフレクションで設定を変更する
+            // これによりHDRPパッケージへの直接の参照を避ける
+            var hdData = camera.GetComponent("HDAdditionalCameraData");
+            if (hdData != null)
+            {
+                var type = hdData.GetType();
+                var clearColorModeProp = type.GetProperty("clearColorMode");
+                if (clearColorModeProp != null)
+                {
+                    // ClearColorMode.Color は列挙値の 1 だが、安全のため名前でパースする
+                    // 万が一 Color が存在しない場合は例外を握りつぶして何もしない
+                    try
+                    {
+                        var colorMode = System.Enum.Parse(clearColorModeProp.PropertyType, "Color");
+                        clearColorModeProp.SetValue(hdData, colorMode);
+                    }
+                    catch
+                    {
+                        Debug.LogWarning("Failed to set HDAdditionalCameraData.clearColorMode to Color.");
+                    }
+                }
+
+                var backgroundColorHDRProp = type.GetProperty("backgroundColorHDR");
+                if (backgroundColorHDRProp != null)
+                {
+                    backgroundColorHDRProp.SetValue(hdData, cameraClearColor);
+                }
+            }
         }
     }
 }
