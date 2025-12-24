@@ -259,8 +259,10 @@ namespace PLATEAU.Editor.AdjustModel
         public void Execute(Camera camera, GameObject model)
         {
 
-            // HDRPであれば、それ向けの撮影カメラ設定をします。
+            camera.clearFlags = cameraClearFlag;
+            camera.backgroundColor = cameraClearColor;
             TryConfigureHDRPCamera(camera);
+            camera.orthographic = true;
             
             // 現在表示されていて, 非表示にするゲームオブジェクト
             var invisibleObjects = new HashSet<GameObject>();
@@ -542,73 +544,6 @@ namespace PLATEAU.Editor.AdjustModel
             if (propBackgroundColorHDR != null)
             {
                 propBackgroundColorHDR.SetValue(hdCameraData, cameraClearColor);
-            }
-
-            // Custom Frame Settingsを有効にしてSkyとFogを無効化
-            try
-            {
-                var propCustomRenderingSettings = hdCameraDataType.GetProperty("customRenderingSettings");
-                if (propCustomRenderingSettings != null)
-                {
-                    propCustomRenderingSettings.SetValue(hdCameraData, true);
-                }
-
-                // FrameSettingsを操作してSkyとFogを無効にする
-                // Note: FrameSettingsはstructなので、GetProperty/Fieldで取得したコピーを変更しても反映されない
-                
-                // renderingPathCustomFrameSettings は FrameSettings 型
-                var propFrameSettings = hdCameraDataType.GetProperty("renderingPathCustomFrameSettings");
-                // renderingPathCustomFrameSettingsOverrideMask は FrameSettingsOverrideMask 型
-                var propOverrideMask = hdCameraDataType.GetProperty("renderingPathCustomFrameSettingsOverrideMask");
-                
-                var frameSettingsType = Type.GetType("UnityEngine.Rendering.HighDefinition.FrameSettings, Unity.RenderPipelines.HighDefinition.Runtime");
-                var frameSettingsFieldType = Type.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField, Unity.RenderPipelines.HighDefinition.Runtime");
-
-                if (propFrameSettings != null && propOverrideMask != null && frameSettingsType != null && frameSettingsFieldType != null)
-                {
-                    object frameSettings = propFrameSettings.GetValue(hdCameraData);
-                    object overrideMask = propOverrideMask.GetValue(hdCameraData);
-
-                    // リフレクションで SetEnabled メソッドを探す
-                    var fsSetEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
-                    
-                    // OverrideMaskには SetEnabled がない場合があるため、インデクサを探す: this[FrameSettingsField]
-                    var maskIndexer = propOverrideMask.PropertyType.GetProperty("Item", new[] { frameSettingsFieldType });
-
-                    if (fsSetEnabledMethod != null)
-                    {
-                        string[] fieldsToDisable = { "AtmosphericScattering", "Volumetrics", "Reprojection" };
-                        
-                        foreach (var fieldName in fieldsToDisable)
-                        {
-                            try
-                            {
-                                var fieldEnum = Enum.Parse(frameSettingsFieldType, fieldName);
-                                
-                                // FrameSettingsで該当機能をOFFにする
-                                fsSetEnabledMethod.Invoke(frameSettings, new object[] { fieldEnum, false });
-                                
-                                // OverrideMaskで「この設定を使用する(Overrideする)」をONにする
-                                if (maskIndexer != null)
-                                {
-                                    maskIndexer.SetValue(overrideMask, true, new object[] { fieldEnum });
-                                }
-                            }
-                            catch
-                            {
-                                // 無視
-                            }
-                        }
-                        
-                        // 書き戻し
-                        propFrameSettings.SetValue(hdCameraData, frameSettings);
-                        propOverrideMask.SetValue(hdCameraData, overrideMask);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"Failed to configure HDRP FrameSettings: {e.Message}");
             }
         }
     }
