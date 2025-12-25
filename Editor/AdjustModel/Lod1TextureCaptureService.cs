@@ -6,7 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+#if PLATEAU_HDRP
 using UnityEngine.Rendering.HighDefinition;
+#endif
 
 namespace PLATEAU.Editor.AdjustModel
 {
