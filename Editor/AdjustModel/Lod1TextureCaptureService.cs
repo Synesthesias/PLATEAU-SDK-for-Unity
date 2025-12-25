@@ -549,6 +549,13 @@ namespace PLATEAU.Editor.AdjustModel
                     backgroundColorHDRField.SetValue(hdData, cameraClearColor);
                 }
 
+                // Volume Layer Mask を Nothing (0) に設定
+                var volumeLayerMaskField = type.GetField("volumeLayerMask");
+                if (volumeLayerMaskField != null)
+                {
+                    volumeLayerMaskField.SetValue(hdData, (LayerMask)0);
+                }
+
                 // 2. Fog (AtmosphericScattering) の無効化
                 // Custom Frame Settings を有効にする
                 // field: public bool customRenderingSettings
@@ -572,26 +579,30 @@ namespace PLATEAU.Editor.AdjustModel
                     var frameSettingsFieldType = frameSettingsAssembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
                     if (frameSettingsFieldType != null)
                     {
-                        object fieldVal = null;
-                        // AtmosphericScattering または Fog を探す
-                        try { fieldVal = System.Enum.Parse(frameSettingsFieldType, "AtmosphericScattering"); } catch { }
-                        if (fieldVal == null)
+                        var setEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
+                        if (setEnabledMethod != null)
                         {
-                            try { fieldVal = System.Enum.Parse(frameSettingsFieldType, "Fog"); } catch { }
-                        }
+                            var targetFields = new List<string> { 
+                                "AtmosphericScattering", // Fog
+                                "Fog",                   // 古いバージョン用
+                                "Water",                 // 水面エフェクト
+                                "VolumetricClouds"       // ボリューメトリッククラウド
+                            };
 
-                        if (fieldVal != null)
-                        {
-                            var setEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
-                            if (setEnabledMethod != null)
+                            foreach (var fieldName in targetFields)
                             {
-                                // Fog = false
-                                // FrameSettings is a struct, so we need to invoke SetEnabled on the boxed object or value
-                                object[] parameters = new object[] { fieldVal, false };
-                                setEnabledMethod.Invoke(frameSettings, parameters);
-                                // 構造体なので書き戻す
-                                frameSettingsField.SetValue(hdData, frameSettings);
+                                object fieldVal = null;
+                                try { fieldVal = System.Enum.Parse(frameSettingsFieldType, fieldName); } catch { }
+
+                                if (fieldVal != null)
+                                {
+                                    object[] parameters = new object[] { fieldVal, false };
+                                    setEnabledMethod.Invoke(frameSettings, parameters);
+                                }
                             }
+                            
+                            // 構造体なので書き戻す
+                            frameSettingsField.SetValue(hdData, frameSettings);
                         }
                     }
                 }
