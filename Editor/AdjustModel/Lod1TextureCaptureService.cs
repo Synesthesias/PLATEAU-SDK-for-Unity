@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace PLATEAU.Editor.AdjustModel
 {
@@ -506,130 +507,50 @@ namespace PLATEAU.Editor.AdjustModel
 
         private void SetHdrpCameraSetting(Camera camera)
         {
+#if PLATEAU_HDRP
             // HDRP環境化での背景色設定
-            // HDAdditionalCameraDataコンポーネントを取得し、リフレクションで設定を変更する
-            // これによりHDRPパッケージへの直接の参照を避け、非HDRP環境でも動くようにする
-            var hdData = camera.GetComponent("HDAdditionalCameraData");
+            // asmdefにUnity.RenderPipelines.HighDefinition.Runtimeを追加しているため直接型を参照
+            
+            var hdData = camera.GetComponent<HDAdditionalCameraData>();
 
             if (hdData == null)
             {
                 // HDAdditionalCameraDataがない場合は追加する
-                var hdDataType = System.Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
-                if (hdDataType != null)
-                {
-                    hdData = camera.gameObject.AddComponent(hdDataType);
-                }
+                hdData = camera.gameObject.AddComponent<HDAdditionalCameraData>();
             }
 
             if (hdData != null)
             {
-                var type = hdData.GetType();
-                var assembly = type.Assembly;
-
                 // 1. 背景色 (ClearColorMode) の設定
-                // field: public ClearColorMode clearColorMode
-                var clearColorModeField = type.GetField("clearColorMode");
-                if (clearColorModeField != null)
-                {
-                    try
-                    {
-                        var colorMode = System.Enum.Parse(clearColorModeField.FieldType, "Color");
-                        clearColorModeField.SetValue(hdData, colorMode);
-                    }
-                    catch
-                    {
-                        Debug.LogWarning("Failed to set HDAdditionalCameraData.clearColorMode to Color.");
-                    }
-                }
-
-                // field: public Color backgroundColorHDR
-                var backgroundColorHDRField = type.GetField("backgroundColorHDR");
-                if (backgroundColorHDRField != null)
-                {
-                    backgroundColorHDRField.SetValue(hdData, cameraClearColor);
-                }
+                hdData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
+                hdData.backgroundColorHDR = cameraClearColor;
 
                 // 2. Fog (AtmosphericScattering) の無効化
                 // Custom Frame Settings を有効にする
-                // field: public bool customRenderingSettings
-                var customRenderingSettingsField = type.GetField("customRenderingSettings");
-                if (customRenderingSettingsField != null)
-                {
-                    customRenderingSettingsField.SetValue(hdData, true);
-                }
+                hdData.customRenderingSettings = true;
 
-                // renderingPathCustomFrameSettings (FrameSettings struct) を取得して編集
-                // backing field: FrameSettings m_RenderingPathCustomFrameSettings
-                var frameSettingsField = type.GetField("m_RenderingPathCustomFrameSettings", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                // FrameSettings の設定
+                // Fog (AtmosphericScattering) を無効にする
                 
-                // OverrideMaskの設定も必要
-                var overrideMaskField = type.GetField("frameSettingsOverrideMask");
+                hdData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.AtmosphericScattering, false);
+                hdData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.AtmosphericScattering] = true;
 
-                if (frameSettingsField != null)
+                // 必要に応じて他のエフェクトも無効化
+                try 
                 {
-                    var frameSettings = frameSettingsField.GetValue(hdData);
-                    var frameSettingsType = frameSettings.GetType();
-                    
-                    var frameSettingsAssembly = frameSettingsType.Assembly;
-                    
-                    // FrameSettingsField の型を取得
-                    var frameSettingsFieldType = frameSettingsAssembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
-                    if (frameSettingsFieldType != null)
-                    {
-                        var targetFields = new List<string> { 
-                            "AtmosphericScattering", // Fog
-                            "Fog",                   // 古いバージョン用
-                            "Water",                 // 水面エフェクト
-                            "VolumetricClouds"       // ボリューメトリッククラウド
-                        };
+                    // Water
+                    hdData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Water, false);
+                    hdData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Water] = true;
+                } catch (System.Exception e) { Debug.LogWarning($"Failed to disable Water effect: {e.Message}"); }
 
-                        // 1. FrameSettings の値を false (無効) に設定
-                        var setEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
-                        if (setEnabledMethod != null)
-                        {
-                            foreach (var fieldName in targetFields)
-                            {
-                                object fieldVal = null;
-                                try { fieldVal = System.Enum.Parse(frameSettingsFieldType, fieldName); } catch { }
-
-                                if (fieldVal != null)
-                                {
-                                    object[] parameters = new object[] { fieldVal, false };
-                                    setEnabledMethod.Invoke(frameSettings, parameters);
-                                }
-                            }
-                            // 構造体なので書き戻す
-                            frameSettingsField.SetValue(hdData, frameSettings);
-                        }
-
-                        // 2. OverrideMask を true (Override有効) に設定
-                        if (overrideMaskField != null)
-                        {
-                            var overrideMask = overrideMaskField.GetValue(hdData);
-                            var overrideMaskType = overrideMask.GetType();
-                            // Indexerを取得 (Itemプロパティ)
-                            var itemProperty = overrideMaskType.GetProperty("Item");
-
-                            if (itemProperty != null)
-                            {
-                                foreach (var fieldName in targetFields)
-                                {
-                                    object fieldVal = null;
-                                    try { fieldVal = System.Enum.Parse(frameSettingsFieldType, fieldName); } catch { }
-
-                                    if (fieldVal != null)
-                                    {
-                                        // mask[field] = true;
-                                        itemProperty.SetValue(overrideMask, true, new object[] { fieldVal });
-                                    }
-                                }
-                                // 構造体なので書き戻す
-                                overrideMaskField.SetValue(hdData, overrideMask);
-                            }
-                        }
-                    }
-                }
+                try 
+                {
+                    // VolumetricClouds
+                    hdData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.VolumetricClouds, false);
+                    hdData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.VolumetricClouds] = true;
+                } catch (System.Exception e) { Debug.LogWarning($"Failed to disable VolumetricClouds effect: {e.Message}"); }
             }
+#endif
         }
     }
 }
