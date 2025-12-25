@@ -519,10 +519,6 @@ namespace PLATEAU.Editor.AdjustModel
                 {
                     hdData = camera.gameObject.AddComponent(hdDataType);
                 }
-                else
-                {
-                    Debug.LogWarning("Failed to find type UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData.");
-                }
             }
 
             if (hdData != null)

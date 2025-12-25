@@ -543,7 +543,7 @@ namespace PLATEAU.Editor.TileAddressables
                 var group = settings.FindGroup(groupName);
                 if (group == null)
                 {
-                    Debug.LogWarning($"グループが見つかりません: {groupName}");
+                    Debug.Log($"group does not exist. skipping. group name: {groupName}");
                     return false;
                 }
                 
