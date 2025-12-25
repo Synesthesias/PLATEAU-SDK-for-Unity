@@ -549,13 +549,6 @@ namespace PLATEAU.Editor.AdjustModel
                     backgroundColorHDRField.SetValue(hdData, cameraClearColor);
                 }
 
-                // Volume Layer Mask を Nothing (0) に設定
-                var volumeLayerMaskField = type.GetField("volumeLayerMask");
-                if (volumeLayerMaskField != null)
-                {
-                    volumeLayerMaskField.SetValue(hdData, (LayerMask)0);
-                }
-
                 // 2. Fog (AtmosphericScattering) の無効化
                 // Custom Frame Settings を有効にする
                 // field: public bool customRenderingSettings
@@ -568,6 +561,10 @@ namespace PLATEAU.Editor.AdjustModel
                 // renderingPathCustomFrameSettings (FrameSettings struct) を取得して編集
                 // backing field: FrameSettings m_RenderingPathCustomFrameSettings
                 var frameSettingsField = type.GetField("m_RenderingPathCustomFrameSettings", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                
+                // OverrideMaskの設定も必要
+                var overrideMaskField = type.GetField("frameSettingsOverrideMask");
+
                 if (frameSettingsField != null)
                 {
                     var frameSettings = frameSettingsField.GetValue(hdData);
@@ -579,16 +576,17 @@ namespace PLATEAU.Editor.AdjustModel
                     var frameSettingsFieldType = frameSettingsAssembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
                     if (frameSettingsFieldType != null)
                     {
+                        var targetFields = new List<string> { 
+                            "AtmosphericScattering", // Fog
+                            "Fog",                   // 古いバージョン用
+                            "Water",                 // 水面エフェクト
+                            "VolumetricClouds"       // ボリューメトリッククラウド
+                        };
+
+                        // 1. FrameSettings の値を false (無効) に設定
                         var setEnabledMethod = frameSettingsType.GetMethod("SetEnabled", new[] { frameSettingsFieldType, typeof(bool) });
                         if (setEnabledMethod != null)
                         {
-                            var targetFields = new List<string> { 
-                                "AtmosphericScattering", // Fog
-                                "Fog",                   // 古いバージョン用
-                                "Water",                 // 水面エフェクト
-                                "VolumetricClouds"       // ボリューメトリッククラウド
-                            };
-
                             foreach (var fieldName in targetFields)
                             {
                                 object fieldVal = null;
@@ -600,9 +598,34 @@ namespace PLATEAU.Editor.AdjustModel
                                     setEnabledMethod.Invoke(frameSettings, parameters);
                                 }
                             }
-                            
                             // 構造体なので書き戻す
                             frameSettingsField.SetValue(hdData, frameSettings);
+                        }
+
+                        // 2. OverrideMask を true (Override有効) に設定
+                        if (overrideMaskField != null)
+                        {
+                            var overrideMask = overrideMaskField.GetValue(hdData);
+                            var overrideMaskType = overrideMask.GetType();
+                            // Indexerを取得 (Itemプロパティ)
+                            var itemProperty = overrideMaskType.GetProperty("Item");
+
+                            if (itemProperty != null)
+                            {
+                                foreach (var fieldName in targetFields)
+                                {
+                                    object fieldVal = null;
+                                    try { fieldVal = System.Enum.Parse(frameSettingsFieldType, fieldName); } catch { }
+
+                                    if (fieldVal != null)
+                                    {
+                                        // mask[field] = true;
+                                        itemProperty.SetValue(overrideMask, true, new object[] { fieldVal });
+                                    }
+                                }
+                                // 構造体なので書き戻す
+                                overrideMaskField.SetValue(hdData, overrideMask);
+                            }
                         }
                     }
                 }
