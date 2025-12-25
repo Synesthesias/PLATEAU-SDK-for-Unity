@@ -1,4 +1,3 @@
-using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using System.Collections.Generic;
 using System.IO;
@@ -509,23 +508,37 @@ namespace PLATEAU.Editor.AdjustModel
         {
             // HDRP環境化での背景色設定
             // HDAdditionalCameraDataコンポーネントを取得し、リフレクションで設定を変更する
-            // これによりHDRPパッケージへの直接の参照を避ける
+            // これによりHDRPパッケージへの直接の参照を避け、非HDRP環境でも動くようにする
             var hdData = camera.GetComponent("HDAdditionalCameraData");
+
+            if (hdData == null)
+            {
+                // HDAdditionalCameraDataがない場合は追加する
+                var hdDataType = System.Type.GetType("UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData, Unity.RenderPipelines.HighDefinition.Runtime");
+                if (hdDataType != null)
+                {
+                    hdData = camera.gameObject.AddComponent(hdDataType);
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to find type UnityEngine.Rendering.HighDefinition.HDAdditionalCameraData.");
+                }
+            }
+
             if (hdData != null)
             {
                 var type = hdData.GetType();
                 var assembly = type.Assembly;
 
                 // 1. 背景色 (ClearColorMode) の設定
-                var clearColorModeProp = type.GetProperty("clearColorMode");
-                if (clearColorModeProp != null)
+                // field: public ClearColorMode clearColorMode
+                var clearColorModeField = type.GetField("clearColorMode");
+                if (clearColorModeField != null)
                 {
-                    // ClearColorMode.Color は列挙値の 1 だが、安全のため名前でパースする
-                    // 万が一 Color が存在しない場合は例外を握りつぶして何もしない
                     try
                     {
-                        var colorMode = System.Enum.Parse(clearColorModeProp.PropertyType, "Color");
-                        clearColorModeProp.SetValue(hdData, colorMode);
+                        var colorMode = System.Enum.Parse(clearColorModeField.FieldType, "Color");
+                        clearColorModeField.SetValue(hdData, colorMode);
                     }
                     catch
                     {
@@ -533,29 +546,34 @@ namespace PLATEAU.Editor.AdjustModel
                     }
                 }
 
-                var backgroundColorHDRProp = type.GetProperty("backgroundColorHDR");
-                if (backgroundColorHDRProp != null)
+                // field: public Color backgroundColorHDR
+                var backgroundColorHDRField = type.GetField("backgroundColorHDR");
+                if (backgroundColorHDRField != null)
                 {
-                    backgroundColorHDRProp.SetValue(hdData, cameraClearColor);
+                    backgroundColorHDRField.SetValue(hdData, cameraClearColor);
                 }
 
                 // 2. Fog (AtmosphericScattering) の無効化
                 // Custom Frame Settings を有効にする
-                var customRenderingSettingsProp = type.GetProperty("customRenderingSettings");
-                if (customRenderingSettingsProp != null)
+                // field: public bool customRenderingSettings
+                var customRenderingSettingsField = type.GetField("customRenderingSettings");
+                if (customRenderingSettingsField != null)
                 {
-                    customRenderingSettingsProp.SetValue(hdData, true);
+                    customRenderingSettingsField.SetValue(hdData, true);
                 }
 
                 // renderingPathCustomFrameSettings (FrameSettings struct) を取得して編集
-                var frameSettingsProp = type.GetProperty("renderingPathCustomFrameSettings");
-                if (frameSettingsProp != null)
+                // backing field: FrameSettings m_RenderingPathCustomFrameSettings
+                var frameSettingsField = type.GetField("m_RenderingPathCustomFrameSettings", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (frameSettingsField != null)
                 {
-                    var frameSettings = frameSettingsProp.GetValue(hdData);
+                    var frameSettings = frameSettingsField.GetValue(hdData);
                     var frameSettingsType = frameSettings.GetType();
                     
+                    var frameSettingsAssembly = frameSettingsType.Assembly;
+                    
                     // FrameSettingsField の型を取得
-                    var frameSettingsFieldType = assembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
+                    var frameSettingsFieldType = frameSettingsAssembly.GetType("UnityEngine.Rendering.HighDefinition.FrameSettingsField");
                     if (frameSettingsFieldType != null)
                     {
                         object fieldVal = null;
@@ -572,9 +590,11 @@ namespace PLATEAU.Editor.AdjustModel
                             if (setEnabledMethod != null)
                             {
                                 // Fog = false
-                                setEnabledMethod.Invoke(frameSettings, new object[] { fieldVal, false });
+                                // FrameSettings is a struct, so we need to invoke SetEnabled on the boxed object or value
+                                object[] parameters = new object[] { fieldVal, false };
+                                setEnabledMethod.Invoke(frameSettings, parameters);
                                 // 構造体なので書き戻す
-                                frameSettingsProp.SetValue(hdData, frameSettings);
+                                frameSettingsField.SetValue(hdData, frameSettings);
                             }
                         }
                     }
