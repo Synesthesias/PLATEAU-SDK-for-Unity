@@ -58,15 +58,6 @@ namespace PLATEAU.DynamicTile
             internal set => referencePoint = value;
         }
 
-        // タイル群で共有される参照点（CityImportConfig.ReferencePoint 相当）
-        [SerializeField]
-        private Vector3 referencePoint;
-        public Vector3 ReferencePoint
-        {
-            get => referencePoint;
-            internal set => referencePoint = value;
-        }
-
         /// <summary>
         /// meta情報を追加します。
         /// TODO : lodは使用しないので、将来的に削除する可能性があります。
