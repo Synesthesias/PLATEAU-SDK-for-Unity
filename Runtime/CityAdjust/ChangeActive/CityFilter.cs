@@ -35,11 +35,11 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         if (cityObjGrp == null) continue;
                         // PLATEAUCityObjectGroupが存在する場合、属性情報を利用してタイプ判定
 
-                        List<CityObjectList.CityObject> cityObjList =
-                            cityObjGrp.GetAllCityObjects().ToList();
-                        // 最小地物のみ処理
-                        if (cityObjList.Count == 1)
-                            cityObjType = cityObjList.First().CityObjectType;
+                        List<CityObjectList.CityObject> firstTwo =
+                            cityObjGrp.GetAllCityObjects().Take(2).ToList();
+                        // 最小地物のケースでの判定です。最小地物ではGetAllCityObjectsの結果は1つだけです。
+                        if (firstTwo.Count == 1)
+                            cityObjType = firstTwo.First().CityObjectType;
                         
                         var typeNode = CityObjectTypeHierarchy.GetNodeByPackage(gmlPackage);
                         try
@@ -56,7 +56,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
                         }
                         catch(KeyNotFoundException e)
                         {
-                            Debug.LogError(e);
+                            Debug.LogException(e);
                         }
 
                         bool shouldObjEnabled = true;

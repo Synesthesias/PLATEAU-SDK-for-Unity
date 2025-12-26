@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PLATEAU.RoadNetwork.CityObject
 {
@@ -216,6 +217,9 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
         }
 
+        /// <summary>
+        /// Node名. ルートの場合はRootという名前
+        /// </summary>
         [field: SerializeField]
         public string Name { get; private set; }
 
@@ -238,9 +242,28 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public List<SubDividedCityObject> Children { get; set; } = new List<SubDividedCityObject>();
 
+        /// <summary>
+        /// 自身がもともとどのPLATEAUCityObjectGroupに属していたか
+        /// </summary>
         [field: SerializeField]
         public PLATEAUCityObjectGroup CityObjectGroup { get; private set; }
 
+        /// <summary>
+        /// 自分が属する主要地物のキー
+        /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
+        /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
+        /// </summary>
+        [SerializeField]
+        private RnCityObjectGroupKey primaryCityObjectGroupKey;
+        
+        // #NOTE : SubDividedCityObjectは道路ネットワーク生成時の一時的なオブジェクトなので後方互換は気にしない. 
+        /// <summary>
+        /// 自分が属する主要地物のキー
+        /// 歩道/道路/中央分離帯など最小地物を一つの道路にグルーピングするもの.
+        /// CityObjectGroupと同じになるとは限らない(タイル単位で落としてきたときなど)
+        /// </summary>
+        public RnCityObjectGroupKey PrimaryCityObjectGroupKey => primaryCityObjectGroupKey;
+        
         // 自分の道路タイプ
         [field: SerializeField]
         public RRoadTypeMask SelfRoadType { get; private set; } = RRoadTypeMask.Empty;
@@ -249,7 +272,19 @@ namespace PLATEAU.RoadNetwork.CityObject
         [field: SerializeField]
         public RRoadTypeMask ParentRoadType { get; private set; } = RRoadTypeMask.Empty;
 
+        /// <summary>
+        /// シリアライズされたjson情報
+        /// </summary>
         public string SerializedCityObjects => serializedCityObjects;
+        
+        /// <summary>
+        /// メッシュをワールド座標へ変換するマトリクス
+        /// </summary>
+        public Matrix4x4 LocalToWorldMatrix
+        {
+            get => CityObjectGroup ? CityObjectGroup.transform.localToWorldMatrix : Matrix4x4.identity;
+        }
+
 
         public CityInfo.CityObjectList CityObjects
         {
@@ -271,6 +306,11 @@ namespace PLATEAU.RoadNetwork.CityObject
             if (containsParent)
                 ret |= ParentRoadType;
             return ret;
+        }
+
+        public int GetLodLevel()
+        {
+            return CityObjectGroup.GetLodLevel();
         }
 
         /// <summary>
@@ -367,11 +407,17 @@ namespace PLATEAU.RoadNetwork.CityObject
             }
         }
 
-        public void SetCityObjectGroup(PLATEAUCityObjectGroup group)
+        /// <summary>
+        /// PLATEAUCityObjectGroup, 所属する主要地物のGroupKeyを設定する
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="groupKey"></param>
+        public void SetCityObjectGroup(PLATEAUCityObjectGroup group, RnCityObjectGroupKey groupKey)
         {
             CityObjectGroup = group;
+            primaryCityObjectGroupKey = groupKey;
             foreach (var c in Children)
-                c.SetCityObjectGroup(group);
+                c.SetCityObjectGroup(group, groupKey);
         }
 
         public SubDividedCityObject DeepCopy()
@@ -380,6 +426,21 @@ namespace PLATEAU.RoadNetwork.CityObject
             ret.Meshes = Meshes.Select(m => m.DeepCopy()).ToList();
             ret.Children = Children.Select(m => m.DeepCopy()).ToList();
             return ret;
+        }
+
+        public override string ToString()
+        {
+            return PrimaryCityObjectGroupKey.GmlId;
+        }
+
+        /// <summary>
+        /// 自身がgroupに属しているかどうか(子かどうか)
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public bool IsBelongingTo(PLATEAUCityObjectGroup group)
+        {
+            return CityObjectGroup == group;
         }
     }
 

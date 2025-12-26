@@ -1,12 +1,14 @@
-using PLATEAU.CityInfo;
+﻿using PLATEAU.CityInfo;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace PLATEAU.DynamicTile
@@ -37,7 +39,8 @@ namespace PLATEAU.DynamicTile
             Timeout
         }
 
-        private const int MaxLodLevel = 4; // 最大LODレベル (最小LODは0とする)
+        public static readonly string TileParentName = "DynamicTileRoot"; // タイルの親Transformの名前
+        private Transform TileParent { get; set; } // タイルの親Transform
 
         /// <summary>
         /// 各Zoomレベルごとのカメラからのロード距離を定義します。
@@ -48,24 +51,47 @@ namespace PLATEAU.DynamicTile
             { 11, (-10000f, 500f) },
             { 10, (500f, 1500f) },
             { 9, (1500f, 10000f) },
-        }; 
+        };
 
         [SerializeField, HideInInspector] // インスペクタ表示はEditorクラスに任せます
         private string catalogPath;
         public string CatalogPath => catalogPath;
-        
 
         [SerializeField]
         private bool showDebugTileInfo = false; // Debug情報を表示するかどうか
 
+        /// <summary>
+        /// インポート設定でどのパスを指定したか
+        /// </summary>
+        [SerializeField] private string outputPath;
+        public string OutputPath { get => outputPath; set => outputPath = value; }
+
+        /// <summary>
+        /// 常に高解像度で表示するタイルのアドレスの配列
+        /// </summary>
+        public string[] ForceHighResolutionTileAddresses => forceHighResolutionTileAddresses;
+        [SerializeField, HideInInspector] private string[] forceHighResolutionTileAddresses = null;
+        
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
-        private bool useJobSystem = true; // Job Systemを使用するかどうか
+        public bool ignoreY = true; // Y軸を無視して距離計算するかどうか
 
         [ConditionalShow("showDebugTileInfo")]
         [SerializeField]
         private bool showDebugLog = false; // ログを表示するか
 
+        /// <summary>
+        /// タイルがインスタンス化されたときに発火するイベントで、タイルのゲームオブジェクトが渡されます。
+        /// SDKの利用者がタイルに対して処理を行いたい場合に利用します。
+        /// </summary>
+        [SerializeField] public UnityEvent<GameObject> onTileInstantiated = new();
+
+        /// <summary>
+        /// タイルがアンロードされる直前に発火するイベントで、タイルのゲームオブジェクトが渡されます。
+        /// SDKの利用者向けです。
+        /// </summary>
+        [SerializeField] public UnityEvent<GameObject> beforeTileUnload = new();
+        
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
@@ -78,12 +104,34 @@ namespace PLATEAU.DynamicTile
         // TileとAddressのマッピング
         private Dictionary<string, PLATEAUDynamicTile> tileAddressesDict = new();
 
-        // Parent TransformをLODごとに管理する辞書
-        private Dictionary<int, Transform> lodParentDict = new();
-
         private AddressableLoader addressableLoader = new ();
 
         private PLATEAUDynamicTileLoadTask loadTask; // タイルのロードタスクを管理するクラス
+        
+        /// <summary> カタログの存在するディレクトリを返します。 </summary>
+        public string CatalogDirectory
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(catalogPath))
+                    return string.Empty;
+                var normalized = catalogPath.Replace('\\', '/');
+                var lastSlash = normalized.LastIndexOf('/');
+                return lastSlash >= 0 ? normalized.Substring(0, lastSlash) : string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// CityModelコンポーネントを取得します。
+        /// </summary>
+        public PLATEAUInstancedCityModel CityModel
+        {
+            get
+            {
+                if (TileParent == null) return null;
+                return TileParent.GetComponent<PLATEAUInstancedCityModel>();
+            }
+        }
 
         /// <summary>
         /// 現在タスクが実行中かどうかを示すプロパティ。
@@ -94,7 +142,6 @@ namespace PLATEAU.DynamicTile
         /// Instance化のコルーチンが実行中かどうかを示すプロパティ。
         /// </summary>
         public bool IsCoroutineRunning => loadTask != null && loadTask.IsCoroutineRunning;
-
 
         /// <summary>
         /// カタログに変わるScriptableObjectを使用して、タイルの初期化を行います。
@@ -107,6 +154,28 @@ namespace PLATEAU.DynamicTile
 
             State = ManagerState.Initializing;
 
+            if (TileParent == null)
+            {
+                TileParent = transform.Find(TileParentName);
+                if (TileParent == null)
+                {
+                    TileParent = new GameObject(TileParentName).transform; // タイルの親Transformを作成
+                    TileParent.transform.SetParent(transform, false); // マネージャーのTransformの子として設定
+
+                    //　暫定的にシーン上のPLATEAUInstancedCityModelを利用
+                    //　TODO: 予めScriptableObjectか、Addressablesで設定できるようにする
+                    var cityModel = FindFirstObjectByType<PLATEAUInstancedCityModel>(); // PLATEAUInstancedCityModelを追加
+                    if (cityModel != null)
+                        TileParent.gameObject.AddComponent<PLATEAUInstancedCityModel>().CopyFrom(cityModel); //　既存のPLATEAUInstancedCityModelの値をコピー
+                }
+            }
+
+            if (string.IsNullOrEmpty(catalogPath))
+            {
+                Debug.LogWarning("catalog path is empty.");
+                State = ManagerState.None;
+                return;
+            }
             // PLATEAUDynamicTileMetaStoreをAddressablesからロード
             var metaStore = await addressableLoader.InitializeAsync(catalogPath);
             if (metaStore == null || metaStore.TileMetaInfos.Count == 0)
@@ -124,6 +193,8 @@ namespace PLATEAU.DynamicTile
                 AddTile(tile);
             }
 
+            DynamicTileTool.AssignParentTiles(DynamicTiles); // タイルの親子関係を設定
+
             loadTask = new(this);
             LastCameraPosition = Vector3.zero; 
             State = ManagerState.Operating;
@@ -136,38 +207,6 @@ namespace PLATEAU.DynamicTile
         {
             // パスを正規化（バックスラッシュをスラッシュに変換）
             catalogPath = path.Replace('\\', '/');
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
-        {
-            if (loadTask == null)
-            {
-                Debug.LogError("LoadTask is not initialized.");
-                return LoadResult.Failure;
-            }
-            return await loadTask.Load(tile, timeoutSeconds);
-        }
-
-        /// <summary>
-        /// Addressを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(string address)
-        {
-            var tile = tileAddressesDict.GetValueOrDefault(address);
-            if (tile == null)
-            {
-                DebugLog($"指定したアドレスに対応するタイルが見つかりません: {address}");
-                return await Task.FromResult<LoadResult>(LoadResult.Failure);
-            }
-            if (loadTask == null)
-            {
-                Debug.LogError("LoadTask is not initialized.");
-                return LoadResult.Failure;
-            }
-            return await loadTask.Load(tile);
         }
 
         /// <summary>
@@ -194,14 +233,22 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// 現在のロードタスクを破棄します。
         /// </summary>
-        private void OnDestroy()
+        public void DestroyLoadTask()
         {
             if (loadTask != null)
             {
                 loadTask.DestroyTask().ContinueWithErrorCatch();
             }
+        }
+
+        /// <summary>
+        /// 破棄時にすべてのロード済みオブジェクトをアンロード
+        /// </summary>
+        private void OnDestroy()
+        {
+            DestroyLoadTask();
             ClearTiles();
         }
 
@@ -210,10 +257,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private void OnDisable()
         {
-            if (loadTask != null)
-            {
-                loadTask.DestroyTask().ContinueWithErrorCatch();
-            }
+            DestroyLoadTask();
         }
 
         /// <summary>
@@ -259,10 +303,6 @@ namespace PLATEAU.DynamicTile
             ClearTileAssets();
             DynamicTiles.Clear();
             tileAddressesDict.Clear();
-
-            // LODの親Transformもクリア
-            lodParentDict.Clear();
-
             State = ManagerState.None; // マネージャーの状態をリセット
         }
 
@@ -295,40 +335,20 @@ namespace PLATEAU.DynamicTile
                 }
             }
 
-            ClearLodChildren();
-            State = originalState;
-        }
-
-        /// <summary>
-        /// LOD直下の子オブジェクトをすべてアンロードします。
-        /// (TileからのUnloadでは消去されない場合があるため)
-        /// </summary>
-        private void ClearLodChildren()
-        { 
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
-                instance = this.gameObject;
-
-            // Lod直下の子オブジェクトをすべてアンロード
-            for (int lod = 0; lod <= MaxLodLevel; lod++)
+            // Transformの子オブジェクトをすべて削除
+            if (TileParent != null)
             {
-                var lodName = $"LOD{lod}";
-                var lodParent = instance.transform.Find(lodName)?.gameObject;
-                if (lodParent != null)
+                for (int i = TileParent.childCount - 1; i >= 0; i--)
                 {
-                    for (int i = lodParent.transform.childCount - 1; i >= 0; i--)
+                    var child = TileParent.GetChild(i);
+                    if (child != null)
                     {
-                        var child = lodParent.transform.GetChild(i);
-                        if (child != null)
-                        {
-                            // 子オブジェクトを削除
-                            DeleteGameObjectInstance(child.gameObject);
-                        }
+                        DeleteGameObjectInstance(child.gameObject);
                     }
-                    // LODの親Transformも削除
-                    DeleteGameObjectInstance(lodParent);
                 }
             }
+
+            State = originalState;
         }
 
         public bool CheckIfCameraPositionHasChanged(Vector3 position, float threshold = 0.01f)
@@ -350,7 +370,53 @@ namespace PLATEAU.DynamicTile
                 return;
 
             if (loadTask == null) return;
-            await loadTask.UpdateAssetsByCameraPosition(position, useJobSystem, timeoutSeconds); 
+            await loadTask.UpdateAssetsByCameraPosition(position, ignoreY, timeoutSeconds, forceHighResolutionTileAddresses); 
+        }
+
+        /// <summary>
+        /// 強制的に指定されたアドレスのタイルをロードします。
+        /// 注意：UpdateAssetsByCameraPositionが走るとアンロードされる可能性があります。
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public async Task<List<PLATEAUDynamicTile>> ForceLoadTiles(List<string> addresses, CancellationToken token)
+        {
+            await CancelLoadTask();
+
+            var addressSet = new HashSet<string>(addresses);
+            var tiles = DynamicTiles.Where(t => addressSet.Contains(t.Address)).ToList();
+            foreach (var tile in tiles)
+            {
+                if (tile.LoadedObject == null)
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    // タイル読込開始
+                    var result = await PrepareLoadTile(tile);
+                    if (result == LoadResult.Failure || result == LoadResult.Cancelled || result == LoadResult.Timeout)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            // コルーチン終了まで待機（最大タイムアウト）
+            var timeout = TimeSpan.FromSeconds(10);
+            var start = DateTime.UtcNow;
+            while (IsCoroutineRunning)
+            {
+                token.ThrowIfCancellationRequested();
+                if (DateTime.UtcNow - start > timeout) { 
+                    DebugLog($"ForceLoadTiles: タイムアウトしました");
+                    break;
+                }
+                // すでに全タイルが実体化済みなら早期終了
+                if (tiles.All(t => t.LoadedObject != null)) break;
+                await Task.Yield();                // メインスレッドに制御を返す
+                await Task.Delay(50, token);       // 同期コンテキスト維持
+            }
+
+            return tiles;
         }
 
         /// <summary>
@@ -360,7 +426,7 @@ namespace PLATEAU.DynamicTile
         {
             if (loadTask != null)
             {
-                await loadTask.CancelLoadTask().ContinueWithErrorCatch(); // タスクのキャンセルをタスクに委譲
+                await loadTask.CancelLoadTask(); // タスクのキャンセルをタスクに委譲
             }
         }
 
@@ -402,7 +468,7 @@ namespace PLATEAU.DynamicTile
                 var instance = Instantiate(tile.LoadHandle.Result);
                 if (instance != null)
                 {
-                    instance.transform.SetParent(FindParent(tile.Lod), false); // LODごとの親Transformに設定
+                    instance.transform.SetParent(TileParent, false); // LODごとの親Transformに設定
                     instance.name = tile.Address;
                     instance.hideFlags = HideFlags.DontSave; // シーン保存時にオブジェクトを保存しない
                     DeleteGameObjectInstance(tile.LoadedObject); // 既存のオブジェクトが存在する場合削除
@@ -411,6 +477,7 @@ namespace PLATEAU.DynamicTile
                     //Debug Material色変え
                     //ReplaceWithDebugMaterial(tile);
 
+                    onTileInstantiated?.Invoke(tile.LoadedObject);
                     return true;
                 }
             }
@@ -447,33 +514,16 @@ namespace PLATEAU.DynamicTile
         }
 
         /// <summary>
-        /// 指定されたLODから親Transformを取得または作成します。
+        /// 指定された距離がタイルのロード最大範囲内にあるかどうかを判定
         /// </summary>
-        /// <param name="lod"></param>
-        /// <returns></returns>
-        private Transform FindParent(int lod)
+        internal bool WithinMaxRange(float distance, PLATEAUDynamicTile tile)
         {
-            if (lodParentDict.TryGetValue(lod, out var parentTransform))
+            if (loadDistances.TryGetValue(tile.ZoomLevel, out var minmax))
             {
-                if (parentTransform != null)
-                    return parentTransform;
+                var (min, max) = minmax;
+                return distance <= max;
             }
-
-            var lodName = $"LOD{lod}";
-            GameObject lodObject = null;
-            var instance = GameObject.FindObjectOfType<PLATEAUInstancedCityModel>()?.gameObject;
-            if (instance == null)
-                instance = this.gameObject;
-
-            lodObject = instance.transform.Find(lodName)?.gameObject;
-            if (lodObject == null)
-            {
-                lodObject = new GameObject(lodName);
-                lodObject.transform.SetParent(instance?.transform, false);
-            }
-
-            lodParentDict[lod] = lodObject.transform;
-            return lodObject.transform;
+            return false;
         }
 
         /// <summary>
@@ -535,7 +585,7 @@ namespace PLATEAU.DynamicTile
                 }
             }
         }
-
+        
         /// <summary>
         /// タイルが存在する範囲を取得します。
         /// Extentが無効 (sizeが0) なタイルや除外タイルは無視します。
@@ -567,6 +617,15 @@ namespace PLATEAU.DynamicTile
             }
 
             return combinedBounds;
+        }
+        
+        /// <summary>
+        /// 常に高解像度で表示するタイルのアドレスを設定します
+        /// </summary>
+        /// <param name="addresses"></param>
+        public void SetForceHighResolutionTileAddresses(string[] addresses)
+        {
+            forceHighResolutionTileAddresses = addresses;
         }
     }
 }

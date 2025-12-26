@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Config;
 using PLATEAU.CityImport.Import;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.Editor.Window.Common;
+using PLATEAU.Editor.Window.ProgressDisplay;
 using PLATEAU.Util;
 using PLATEAU.Util.Async;
 using System;
@@ -26,7 +27,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
 
         private int numCurrentRunningTasks;
         private ImportToDynamicTile importToDynamicTile;
-        
+        private volatile bool cancelRequested;
 
         /// <summary>
         /// 「モデルをインポート」ボタンの描画と実行を行います。
@@ -35,12 +36,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
         {
             using (PlateauEditorStyle.VerticalScopeLevel1())
             {
-                if (numCurrentRunningTasks <= 0)
+                if (Volatile.Read(ref numCurrentRunningTasks) <= 0)
                 {
+                    // 動的タイルインポート時のバリデーション
+                    bool isDynamicTile = config.DynamicTileImportConfig.ImportType == ImportType.DynamicTile;
+                    bool isValidPath = true;
+                    if (isDynamicTile && !string.IsNullOrEmpty(config.DynamicTileImportConfig.OutputPath))
+                    {
+                        isValidPath = config.DynamicTileImportConfig.IsValidOutputPath;
+                    }
+
+                    EditorGUI.BeginDisabledGroup(!isValidPath);
                     // ボタンを描画します。
                     if (PlateauEditorStyle.MainButton("モデルをインポート"))
                     {
+                        (progressDisplay as ProgressDisplayGUI)?.Clear();
                         // タスク数をインクリメントし、キャンセルトークンを初期化
+                        cancelRequested = false; 
                         Interlocked.Increment(ref numCurrentRunningTasks);
                         cancellationTokenSrc = new CancellationTokenSource();
 
@@ -53,8 +65,21 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                             case ImportType.DynamicTile:
                                 // 動的タイル形式でのインポートを実行します。
                                 importToDynamicTile = new ImportToDynamicTile(progressDisplay);
-                                var task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
-                                task.ContinueWith((_) => Interlocked.Decrement(ref numCurrentRunningTasks));
+                                Task<bool> task;
+                                try
+                                {
+                                    task = importToDynamicTile.ExecAsync(config, cancellationTokenSrc.Token);
+                                }catch (Exception ex)
+                                {
+                                    CleanupDynamicTileImport();
+                                    Dialogue.Display("動的タイルのインポートでエラーが発生しました。処理を中断しました。", "OK");
+                                    UnityEngine.Debug.LogException(ex);
+                                    break;
+                                }
+                                task.ContinueWith(_ =>
+                                {
+                                    CleanupDynamicTileImport();
+                                });
                                 task.ContinueWith(t =>
                                 {
                                     if (t.Result)
@@ -68,19 +93,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                                 throw new Exception("invalid import type.");
                         }
                     }
+                    EditorGUI.EndDisabledGroup();
                 }
-                else if (cancellationTokenSrc?.Token != null && cancellationTokenSrc.Token.IsCancellationRequested)
+                else if (cancellationTokenSrc?.IsCancellationRequested == true)
                 {
-                    if (PlateauEditorStyle.CancelButton("キャンセル中…")){}
+                    EditorGUI.BeginDisabledGroup(true);
+                    PlateauEditorStyle.CancelButton("キャンセル中…");
+                    EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
                     //Cancel ボタンを描画します。
                     if (PlateauEditorStyle.CancelButton("インポートをキャンセルする"))
                     {
-                        bool dialogueResult = Dialogue.Display($"インポートをキャンセルしますか？", "はい", "いいえ");
+                        bool dialogueResult = Dialogue.Display("インポートをキャンセルしますか？", "はい", "いいえ");
                         if (dialogueResult)
                         {
+                            cancelRequested = true;
                             cancellationTokenSrc?.Cancel();
 
                             if (config.DynamicTileImportConfig.ImportType != ImportType.DynamicTile)
@@ -107,9 +136,42 @@ namespace PLATEAU.Editor.Window.Main.Tab.ImportGuiParts
                 new CityDuplicateProcessor() // 重複した低LODを非表示にします。
             };
             var task = CityImporter.ImportAsync(config, progressDisplay, cancellationTokenSrc.Token, postGmlProcessors);
-            
-            task.ContinueWith((_) => { Interlocked.Decrement(ref numCurrentRunningTasks); });
+ 
+            // 完了後にUIスレッドでダイアログを出す
+            task.ContinueWith(t =>
+            {
+                try
+                {
+                    Interlocked.Decrement(ref numCurrentRunningTasks);
+                    if (cancelRequested)
+                    {
+                        EditorApplication.delayCall += () =>
+                            Dialogue.Display("インポートをキャンセルしました", "OK");
+                    }
+                    else
+                    {
+                        EditorApplication.delayCall += () =>
+                            Dialogue.Display("インポートが完了しました！", "OK");
+                    }
+                    
+                    EditorApplication.delayCall += SceneView.RepaintAll;
+                    
+                }
+                finally
+                {
+                    cancellationTokenSrc?.Dispose();
+                    cancellationTokenSrc = null;
+                }
+            });
             task.ContinueWithErrorCatch();
+        }
+
+        private void CleanupDynamicTileImport()
+        {
+            Interlocked.Decrement(ref numCurrentRunningTasks);
+            cancellationTokenSrc?.Dispose();
+            cancellationTokenSrc = null;
+            importToDynamicTile = null;
         }
         
     }

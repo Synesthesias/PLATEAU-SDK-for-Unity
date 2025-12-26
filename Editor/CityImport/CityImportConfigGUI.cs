@@ -76,7 +76,7 @@ namespace PLATEAU.Editor.CityImport
                         savedGranularityPerPackage[package] = conf.MeshGranularity;
                     }
                     conf.ForcePerCityModelArea = true;
-                    conf.MeshGranularity = PLATEAU.PolygonMesh.MeshGranularity.PerCityModelArea;
+                    conf.MeshGranularity = PolygonMesh.MeshGranularity.PerCityModelArea;
                 }
                 else
                 {

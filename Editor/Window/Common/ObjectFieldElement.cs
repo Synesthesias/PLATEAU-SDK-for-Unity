@@ -17,7 +17,12 @@ namespace PLATEAU.Editor.Window.Common
             this.label = label;
             this.onSelectionChanged = onSelectionChanged;
         }
-        
+
+        public void SetSelectedObject(T obj)
+        {
+            SelectedObject = obj;
+        }
+
         public override void DrawContent()
         {
             var nextSelected = EditorGUILayout.ObjectField(label, SelectedObject, typeof(T), true) as T;
@@ -28,6 +33,7 @@ namespace PLATEAU.Editor.Window.Common
             }
         }
 
+        public override void Reset() { }
         public override void Dispose()
         {
         }

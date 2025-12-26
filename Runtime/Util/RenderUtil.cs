@@ -1,7 +1,4 @@
-﻿#if  !UNITY_EDITOR
-using System;
-#endif
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Util
@@ -15,7 +12,7 @@ namespace PLATEAU.Util
         {
             get
             {
-                var pipelineAsset = GraphicsSettings.renderPipelineAsset;
+                var pipelineAsset = GraphicsSettings.defaultRenderPipeline;
                 var defaultMat = pipelineAsset == null ?
                     new Material(Shader.Find("Standard")) : // Built-in Render Pipeline のとき 
                     pipelineAsset.defaultMaterial; // Universal Render Pipeline または High Definition Render Pipeline のとき
@@ -33,7 +30,7 @@ namespace PLATEAU.Util
                     }
                     else
                     {
-                        Debug.LogError($"No suitable shazzder found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.renderPipelineAsset}");
+                        Debug.LogError($"No suitable shader found. QualitySettings.renderPipeline={QualitySettings.renderPipeline}, GraphicsSettings.renderPipelineAsset={GraphicsSettings.defaultRenderPipeline}");
                     }
                 }
                 return defaultMat;
@@ -82,7 +79,7 @@ namespace PLATEAU.Util
         {
             float transparency = 1f - rawMaterial.Transparency; //(0で不透明、1で透明)
 
-            var pipelineAsset = GraphicsSettings.renderPipelineAsset;
+            var pipelineAsset = GraphicsSettings.defaultRenderPipeline ?? QualitySettings.renderPipeline;
             if (pipelineAsset == null) // Built-in Render Pipeline のとき 
             {
                 //Specularに値が入っている場合ビルトインではStardard (Specular setup) Shader を使用
@@ -130,7 +127,7 @@ namespace PLATEAU.Util
 
             if (pipelineAsset != null)
             {
-                string pipelineName = UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name;
+                string pipelineName = UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline.GetType().Name;
                 bool isHDRP = pipelineName == "HDRenderPipelineAsset";
                 material.SetInt("_IsHDRP", isHDRP ? 1 : 0);
             }

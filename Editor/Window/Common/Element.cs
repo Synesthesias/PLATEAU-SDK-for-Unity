@@ -43,6 +43,7 @@ namespace PLATEAU.Editor.Window.Common
         }
 
         public abstract void DrawContent();
+        public abstract void Reset();
         public abstract void Dispose();
     }
 }

@@ -68,7 +68,7 @@ namespace PLATEAU.CityImport.Import.Convert
         /// </summary>
         public static async Task<GranularityConvertResult> PlateauModelToScene(Transform parentTrans, IProgressDisplay progressDisplay,
             string progressName, PlaceToSceneConfig placeToSceneConf, Model plateauModel, 
-            AttributeDataHelper attributeDataHelper, bool skipRoot)
+            AttributeDataHelper attributeDataHelper, bool skipRoot, float progressFrom = 60f, float progressTo = 80f)
         {
             // ここの処理は 処理A と 処理B に分割されています。
             // Unityのメッシュデータを操作するのは 処理B のみであり、
@@ -80,7 +80,7 @@ namespace PLATEAU.CityImport.Import.Convert
             // 処理A :
             // Unityでメッシュを作るためのデータを構築します。
             // 実際のメッシュデータを触らないので、Task.Run で別のスレッドで処理できます。
-            progressDisplay.SetProgress(progressName, 60f, "3Dメッシュを変換中");
+            progressDisplay.SetProgress(progressName, progressFrom, "3Dメッシュを変換中");
             ConvertedGameObjData meshObjsData;
             try
             {
@@ -100,7 +100,7 @@ namespace PLATEAU.CityImport.Import.Convert
             // 実際にメッシュを操作してシーンに配置します。
             // こちらはメインスレッドでのみ実行可能なので、Loadメソッドはメインスレッドから呼ぶ必要があります。
 
-            progressDisplay.SetProgress(progressName, 80f, "シーンに配置中");
+            progressDisplay.SetProgress(progressName, progressTo, "シーンに配置中");
 
             var result = new GranularityConvertResult();
 

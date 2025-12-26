@@ -34,7 +34,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
         }
 
         private bool doChangeGranularity = false;
-        
+
         private static string[] granularityChoices = 
             ((ConvertGranularity[])Enum.GetValues(typeof(ConvertGranularity)))
             .Select(g => g.ToJapaneseString())
@@ -70,6 +70,14 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGui.Parts
                 }
             }
             
+        }
+
+        public override void Reset()
+        {
+            doChangeGranularity = false;
+            selectedGranularityIndex = 2;
+            Granularity = (ConvertGranularity)(selectedGranularityIndex);
+            onDoChangeGranularityChanged?.Invoke(doChangeGranularity);
         }
 
         public override void Dispose()

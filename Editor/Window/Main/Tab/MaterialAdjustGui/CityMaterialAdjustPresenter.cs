@@ -15,6 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ProgressBar = PLATEAU.Util.ProgressBar;
+using PLATEAU.Editor.Window.Common.Tile;
 
 namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
 {
@@ -28,8 +29,7 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         // マテリアル分けの基準が属性情報の場合と地物型の場合で、2つのインスタンスを用意します。
         private readonly MAKeySearcher materialGuiByType = new MAKeySearcher(MaterialCriterion.ByType);
         private readonly MAKeySearcher materialGuiByAttr = new MAKeySearcher(MaterialCriterion.ByAttribute);
-        
-        
+           
         private UniqueParentTransformList SelectedObjects { get; set; } // ここでsetしてもGUIに反映されないので注意です。set時にはForceSetTargetObjectsを使ってください。
 
         private PreserveOrDestroy preserveOrDestroy;
@@ -40,6 +40,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         private MaterialCriterion selectedCriterion;
         private string attrKey;
         private readonly EditorWindow parentEditorWindow;
+        private TileMaterialAdjustGui tileConvert;
+
         /// <summary>
         /// 選択中のマテリアル分け基準に応じた、マテリアル分けインスタンスを返します。
         /// </summary>
@@ -58,6 +60,11 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         }
 
         /// <summary>
+        /// シーンオブジェクト/動的タイルの現在選択されているタイプを返します。
+        /// </summary>
+        private SceneTileChooserType CurrentSceneTileSelectType => Views.Get<ObjectSelectGui>()?.SelectedType ?? SceneTileChooserType.SceneObject;
+
+        /// <summary>
         /// マテリアル分けの選択画面を出すために、利用可能な分類項目を検索したかどうかです。
         /// falseにすることで検索をリセットできます。
         /// </summary>
@@ -71,15 +78,16 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
         }
 
-
         public CityMaterialAdjustPresenter(EditorWindow parentEditorWindow)
         {
+            tileConvert = new TileMaterialAdjustGui(parentEditorWindow);
+
             // UIの内容とコールバックをここで定義します。
             Views =
                 new ElementGroup("", 0,
                     new HeaderElementGroup("", "分類に応じたマテリアル分けを行います。", HeaderType.Subtitle),
                     new ElementGroup("MAGuiBeforeSearch",0, // *** 検索前のUI ***
-                        new ObjectSelectGui(OnTargetChanged), // 対象オブジェクト選択
+                        new ObjectSelectGui(OnTargetChanged, new SceneTileChooserImgui(onSceneTileSelectionChanged), tileConvert), // 対象オブジェクト選択
                         new HeaderElementGroup("commonConf", "共通設定", HeaderType.Header,
                             new DestroyOrPreserveSrcGui(OnPreserveOrDestroyChanged) // 元のオブジェクトを削除するか残すか
                         ),
@@ -90,18 +98,20 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                             new ToggleLeftElement("doMaterialAdjust", "マテリアルを条件指定で変更する", false, OnDoMaterialAdjustChanged),
                             new ElementGroup("materialConf", 0,
                                 new MaterialCriterionGui(OnCriterionChanged), // マテリアル分け基準選択
-                                new AttributeKeyGui(parentEditorWindow, ()=>SelectedObjects, OnAttrKeyChanged), // 属性情報キー選択
-                                new ButtonElement("", "検索", new Vector4(0,0,15,0), OnSearchButtonPushed) // 検索ボタン
+                                new AttributeKeyGui(parentEditorWindow, GetSelectedObjectsAsync, OnAttrKeyChanged), // 属性情報キー選択
+                                new ButtonElement("", "検索", new Vector4(0,0,15,0), () => OnSearchButtonPushedAsync().ContinueWithErrorCatch()) // 検索ボタン
                             )
                         )
                     ),
-                    new ElementGroup("MAGuiAfterSearch",0, // *** 検索後のUI ***
+                    new ElementGroup("MAGuiAfterSearch", 0, // *** 検索後のUI ***
                         new MaterialConfGui(() => CurrentSearcher?.MaterialAdjustConf), // マテリアル設定,
-                        new ButtonElement("execMaterialAdjustButton", "マテリアル分けを実行", ExecMaterialAdjust)
+                        new ButtonElement("execMaterialAdjustButton", "マテリアル分けを実行", () => ExecMaterialAdjustAsync().ContinueWithErrorCatch())
                     ),
-                    new ButtonElement("execGranularityConvertButton", "粒度変更を実行", ExecGranularityConvert)
+                    new ButtonElement("execGranularityConvertButton", "粒度変更を実行", () => ExecGranularityConvertAsync().ContinueWithErrorCatch())
                 );
             this.parentEditorWindow = parentEditorWindow;
+
+            ResetGui();
         }
         
         public VisualElement CreateGui()
@@ -112,18 +122,8 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// <summary>
         /// GUIを描画します
         /// </summary>
-        private void Draw()
-        {
-            // 描画メイン
-            Views.Draw();
-            
-            // 不要な設定項目を隠します
-            Views.Get<AttributeKeyGui>().IsVisible = selectedCriterion == MaterialCriterion.ByAttribute; // 属性情報による分類をするときのみ属性情報キー入力欄を表示
-            Views.Get<ButtonElement>().IsVisible = !doMaterialAdjust; // マテリアル分けをせず粒度変更のみのとき表示するボタン
-            Views.Get("MAGuiAfterSearch").IsVisible = IsSearched && doMaterialAdjust;
-            Views.Get("materialConf").IsVisible = doMaterialAdjust;
-        }
-        
+        private void Draw() => Views.Draw();
+
         /// <summary> 対象が変わった時に検索結果をリセットするか </summary>
         private bool clearSearchOnTargetChange = true;
         
@@ -137,40 +137,147 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             SelectedObjects = nextTarget;
         }
 
+        /// <summary>変更通知（元のオブジェクトを削除するか残すか）</summary>
         private void OnPreserveOrDestroyChanged(PreserveOrDestroy pod)
         {
             preserveOrDestroy = pod;
         }
 
+        /// <summary>変更通知（分割結合チェック）</summary>
         private void OnMAGranularityChanged(ConvertGranularity granularityArg)
         {
             this.granularity = granularityArg;
         }
 
+        /// <summary>変更通知（分割結合粒度変更）</summary>
         private void OnDoChangeGranularityChanged(bool doChangeGranularityArg)
         {
             this.doChangeGranularity = doChangeGranularityArg;
+
+            ShowGranularityConvertButton(doChangeGranularity && !doMaterialAdjust);
         }
 
+        /// <summary>変更通知（マテリアル分けチェック）</summary>
         private void OnDoMaterialAdjustChanged(bool doMaterialAdjustArg)
         {
             doMaterialAdjust = doMaterialAdjustArg;
+            ShowGuiAfterSearch(doMaterialAdjust && IsSearched);
+            ShowMaterialConf(doMaterialAdjust);
+            ShowGranularityConvertButton(doChangeGranularity && !doMaterialAdjust);
         }
 
+        /// <summary>変更通知（マテリアル分け分類変更）</summary>
         private void OnCriterionChanged(MaterialCriterion criterion)
         {
-            selectedCriterion = criterion; 
+            selectedCriterion = criterion;
+
+            ShowAttributeKey(selectedCriterion == MaterialCriterion.ByAttribute);
+            ShowGuiAfterSearch(false);
         }
-        
+
+        /// <summary>変更通知（マテリアル分け属性情報キー変更）</summary>
         private void OnAttrKeyChanged(string key)
         {
             attrKey = key;
         }
 
-        private void OnSearchButtonPushed()
+        /// <summary>
+        /// シーンオブジェクト/動的タイルの選択タイプが変わったときに呼ばれます。
+        /// </summary>
+        /// <param name="selectedType"></param>
+        private void onSceneTileSelectionChanged(SceneTileChooserType selectedType)
+        {
+            ResetGui();
+        }
+
+        /// <summary>表示・非表示 （マテリアル分け　地物・属性検索）</summary>
+        private void ShowMaterialConf(bool show)
+        {
+            if (Views?.Get("materialConf") != null)
+                Views.Get("materialConf").IsVisible = show;
+
+            if (Views?.Get<MaterialConfGui>() != null)
+                Views.Get<MaterialConfGui>().IsVisible = show;
+        }
+
+        /// <summary>表示・非表示 （マテリアル分け 属性情報キー）</summary>
+        private void ShowAttributeKey(bool show)
+        {
+            if (Views?.Get<AttributeKeyGui>() != null)
+                Views.Get<AttributeKeyGui>().IsVisible = show;
+        }
+
+        /// <summary>表示・非表示 （検索後のUI）</summary>
+        private void ShowGuiAfterSearch(bool show)
+        {
+            if (Views?.Get("MAGuiAfterSearch") != null)
+                Views.Get("MAGuiAfterSearch").IsVisible = show;
+        }
+
+        /// <summary>表示・非表示 （マテリアル分けをせず粒度変更のみのとき表示するボタン）</summary>
+        private void ShowGranularityConvertButton(bool show)
+        {
+            if (Views?.Get("execGranularityConvertButton") != null)
+                Views.Get("execGranularityConvertButton").IsVisible = show;
+        }
+
+        /// <summary>
+        /// UIを初期状態にリセットします。
+        /// </summary>
+        private void ResetGui()
+        {
+            ShowGuiAfterSearch(false);
+            ShowMaterialConf(false);
+            ShowAttributeKey(false);
+            ShowGranularityConvertButton(false);
+
+            tileConvert?.Reset();
+            Views?.Reset();
+            IsSearched = false;
+        }
+
+        /// <summary>
+        /// 変換処理終了時の後処理を行います。
+        /// </summary>
+        private void PostConvert()
+        {
+            ResetGui();
+        }
+
+        /// <summary>
+        /// 選択中のオブジェクトのTransformを取得します。
+        /// 動的タイルの場合は、タイル読込を待ってから取得します。
+        /// </summary>
+        /// <returns></returns>
+        private async Task<UniqueParentTransformList> GetSelectedObjectsAsync()
+        {
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
+            {
+                return await tileConvert.GetSelectionAsTransformList();
+            }
+            return await Task.FromResult(SelectedObjects);
+        }
+
+        /// <summary>
+        /// 検索ボタンが押されたときに呼ばれます。
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        private async Task OnSearchButtonPushedAsync()
         {
             using var progressBar = new ProgressBar("検索中です...");
             progressBar.Display(0.4f);
+
+            ShowGuiAfterSearch(false);
+
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
+            {
+                SelectedObjects = await tileConvert.GetSelectionAsTransformList();
+                await Task.Yield();
+            }
+
+            progressBar.Display(0.6f);
+
             SearchArg searchArg = selectedCriterion switch
             {
                 MaterialCriterion.ByType => new SearchArg(SelectedObjects),
@@ -179,6 +286,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             };
             bool searchSucceed = CurrentSearcher.Search(searchArg);
             IsSearched = searchSucceed;
+
+            progressBar.Display(0.8f);
+
+            ShowGuiAfterSearch(searchSucceed);
             parentEditorWindow.Repaint();
         }
 
@@ -191,7 +302,10 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         {
         }
 
-        private void ExecMaterialAdjust()
+        /// <summary>
+        /// マテリアル分け行う場合に呼びます。
+        /// </summary>
+        private async Task ExecMaterialAdjustAsync()
         {
             var button = Views.Get<ButtonElement>("execMaterialAdjustButton");
             button.SetProcessing("マテリアル分け中...");
@@ -199,7 +313,9 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             try
             {
                 // ここで実行します。
-                ExecMaterialAdjustAsync().ContinueWith(_ => button.RecoverFromProcessing()).ContinueWithErrorCatch();
+                await ExecMaterialAdjustPreProAsync();
+                button.RecoverFromProcessing();
+                PostConvert();
             }
             catch (Exception e)
             {
@@ -207,44 +323,59 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
         }
 
-        private async Task<UniqueParentTransformList> ExecMaterialAdjustAsync()
+        private async Task<UniqueParentTransformList> ExecMaterialAdjustPreProAsync()
         {
             var conf = GenerateConf();
             // 分割結合
             if (doChangeGranularity)
             {
-                var result = await ExecGranularityConvertAsync();
+                var result = await ExecGranularityConvertMainAsync();
+                // 失敗時は処理中断
+                if (!result.IsSucceed || result.GeneratedRootTransforms == null || result.GeneratedRootTransforms.Count == 0)
+                {
+                    return new UniqueParentTransformList();
+                }
                 // 次のマテリアル分けの設定値を差し替え
                 conf.DoDestroySrcObjs = true;
                 conf.TargetTransforms = result.GeneratedRootTransforms;
             }
 
             // マテリアル分け
-            return await ExecMaterialAdjustAsyncInner(conf);
+            return await ExecMaterialAdjustMainAsync(conf);
         }
 
-        private async Task<UniqueParentTransformList> ExecMaterialAdjustAsyncInner(MAExecutorConf conf)
+        private async Task<UniqueParentTransformList> ExecMaterialAdjustMainAsync(MAExecutorConf conf)
         {
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
-            
+
+            UniqueParentTransformList result;
             IMAExecutorV2 maExecutor = selectedCriterion switch
             {
                 MaterialCriterion.ByType => new MAExecutorV2ByType(),
                 MaterialCriterion.ByAttribute => new MAExecutorV2ByAttr(),
                 _ => throw new Exception("Unknown Criterion")
             };
-            // ここで実行します。
-            var result = await maExecutor.ExecAsync(conf);
-
-            // 完了後、GUIで表示される「選択オブジェクト」を完了後に差し替えます
-            if (DoDestroySrcObjs)
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
             {
-                if (SelectedObjects.Count == 0) IsSearched = false;
+                result = await tileConvert.ExecMaterialAdjustAsync(conf, maExecutor);
+                if (DoDestroySrcObjs && tileConvert.Selected?.Count == 0) IsSearched = false;
+            }
+            else
+            {
+                // ここで実行します。
+                result = await maExecutor.ExecAsync(conf);
+
+                // 完了後、GUIで表示される「選択オブジェクト」を完了後に差し替えます
+                if (DoDestroySrcObjs)
+                {
+                    if (SelectedObjects.Count == 0) IsSearched = false;
+                }
+
+                Selection.objects = result.Get.Where(trans => trans != null).Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
+                ForceSetTargetObjects(result);
             }
 
-            Selection.objects = result.Get.Select(trans => (UnityEngine.Object)trans.gameObject).ToArray();
-            ForceSetTargetObjects(result);
             return result;
         }
         
@@ -252,15 +383,18 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// <summary>
         /// マテリアル分けをせず、分割結合のみ行う場合に呼びます。
         /// </summary>
-        private void ExecGranularityConvert()
+        private async Task ExecGranularityConvertAsync()
         {
             var button = Views.Get<ButtonElement>("execGranularityConvertButton");
             button.SetProcessing("粒度変更中...");
             parentEditorWindow.Repaint();
+
             try
             {
                 // ここで実行します。
-                ExecGranularityConvertAsync().ContinueWith((_) => button.RecoverFromProcessing()).ContinueWithErrorCatch();
+                await ExecGranularityConvertMainAsync();
+                button.RecoverFromProcessing();
+                PostConvert();
             }
             catch (Exception e)
             {
@@ -268,12 +402,23 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
             }
         }
         
-
-        private async Task<GranularityConvertResult> ExecGranularityConvertAsync()
+        private async Task<GranularityConvertResult> ExecGranularityConvertMainAsync()
         {
             await Task.Delay(100); // ボタン押下時のGUIの更新を反映させるために1フレーム以上待つ必要があります。
             await Task.Yield();
-            
+
+            if (CurrentSceneTileSelectType == SceneTileChooserType.DynamicTile) // 動的タイルを選択しているとき
+            {
+                // 処理に必要最低限の設定値を作成して渡す。
+                var minimalConf = new MAExecutorConf(
+                    CurrentSearcher != null ? CurrentSearcher.MaterialAdjustConf : null,
+                    SelectedObjects,
+                    DoDestroySrcObjs,
+                    true
+                );
+                return await tileConvert.ExecGranularityConvertAsync(minimalConf, granularity);
+            }
+
             var conf = GenerateConf();
             if (conf.TargetTransforms.Count == 0)
             {
@@ -295,7 +440,6 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
         /// </summary>
         private MAExecutorConf GenerateConf()
         {
-            
             return selectedCriterion switch
             {
                 MaterialCriterion.None => throw new Exception("分割結合のみのときはCityGranularityConverterを使ってください"),
@@ -306,15 +450,13 @@ namespace PLATEAU.Editor.Window.Main.Tab.MaterialAdjustGUI
                     DoDestroySrcObjs,
                     true
                 ),
-                    
                 MaterialCriterion.ByAttribute => new MAExecutorConfByAttr(
                     CurrentSearcher.MaterialAdjustConf,
                     SelectedObjects,
                     DoDestroySrcObjs,
                     true,
                     attrKey
-                ),
-                    
+                ), 
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

@@ -1,7 +1,7 @@
 using PLATEAU.Util;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -104,18 +104,23 @@ namespace PLATEAU.DynamicTile
                     Debug.LogError("folder not found: " + folderStreaming);
                 }
 
-                var catalogFiles = Directory.GetFiles(folderStreaming, "catalog_*.json", SearchOption.AllDirectories);
+                var catalogFiles = TileCatalogSearcher.FindCatalogFiles(folderStreaming, true);
 
                 if (catalogFiles.Length == 0)
                 {
                     Debug.LogError("catalog file is not found.");
                 }
 
-                catalogPathToUse = catalogFiles.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+                catalogPathToUse = catalogFiles.FirstOrDefault();
+                if (catalogPathToUse == null)
+                {
+                    Debug.LogError("failed to find catalog.");
+                    return null;
+                }
+                catalogPathToUse = Path.GetFullPath(catalogPathToUse);
             }
 
             await LoadCatalog(catalogPathToUse);
-
             // MetaStoreアドレスを自動解決（同一カタログディレクトリ配下のものを優先）
             var metaStoreAddress = await ResolveMetaStoreAddressAsync(catalogPathToUse);
             if (string.IsNullOrEmpty(metaStoreAddress))
@@ -139,12 +144,20 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         private async Task<string> ResolveMetaStoreAddressAsync(string catalogPath)
         {
+            // まずはラベル "DynamicTile" で検索
             var locationsHandle = Addressables.LoadResourceLocationsAsync(
                 DynamicTileLabelName, typeof(PLATEAUDynamicTileMetaStore));
+            
             try
             {
                 await WaitForCompletionAsync(locationsHandle);
                 var allLocations = locationsHandle.Result;
+
+                if (allLocations == null || allLocations.Count == 0)
+                {
+                     Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。CatalogPath: {catalogPath}");
+                     return null;
+                }
 
                 // カタログのディレクトリを正規化
                 var catalogDir = Path.GetDirectoryName(catalogPath);
@@ -175,7 +188,7 @@ namespace PLATEAU.DynamicTile
                     )
                     .ToList();
 
-                if (candidates == null || candidates.Count == 0)
+                if (candidates.Count == 0)
                 {
                     Debug.LogError($"PLATEAUDynamicTileMetaStore がカタログから見つかりませんでした。Addressables のビルド/ラベル設定/カタログ指定を確認してください。");
                     return null;
@@ -248,8 +261,10 @@ namespace PLATEAU.DynamicTile
         private async Task LoadCatalog(string catalogPath)
         {
 
-            // パスを正規化（バックスラッシュをスラッシュに変換）
+            // パスを正規化
+            catalogPath = Path.GetFullPath(catalogPath);
             catalogPath = catalogPath.Replace('\\', '/');
+            
 
             if (string.IsNullOrEmpty(catalogPath) || !File.Exists(catalogPath))
             {

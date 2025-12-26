@@ -12,6 +12,11 @@ namespace PLATEAU.CityImport.Import
         void OnGmlImported(GmlImportResult result);
     }
 
+    public interface IPostTileImportProcessor
+    {
+        void OnTileImported(TileImportResult result);
+    }
+
     /// <summary>
     /// GMLインポート結果をまとめたクラス
     /// </summary>
@@ -28,6 +33,23 @@ namespace PLATEAU.CityImport.Import
             TotalGmlCount = totalGmlCount;
             GridCode = gridCode;
             GmlFile = gmlFile;
+        }
+    }
+
+    /// <summary>
+    /// Tileインポート結果をまとめたクラス
+    /// </summary>
+    public class TileImportResult: GmlImportResult
+    {
+        public int ZoomLevel { get; }
+
+        public GameObject RootObject { get; }
+
+        public TileImportResult(List<GameObject> generatedObjects, int totalGmlCount, string gridCode, GmlFile gmlFile, GameObject rootObject, int zoomLevel): 
+            base(generatedObjects, totalGmlCount, gridCode, gmlFile)
+        {
+            ZoomLevel = zoomLevel;
+            RootObject = rootObject;
         }
     }
 } 

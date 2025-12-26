@@ -66,6 +66,9 @@ namespace PLATEAU.Util
         /// </summary>
         public static Material ByMainTextureName(string mainTexNameArg)
         {
+            if (string.IsNullOrEmpty(mainTexNameArg))
+                return null;
+
             string mainTexName = Path.GetFileNameWithoutExtension(mainTexNameArg);
             if (mainTexNameToMaterial == null)
             {
@@ -88,6 +91,12 @@ namespace PLATEAU.Util
                     }
                     else
                     {
+                        if (mat.mainTexture == null)
+                        {
+                            Debug.LogError($"Default material for package {package.ToString()} has no main texture."); // Materialが破損している可能性があります。
+                            continue;
+                        }
+
                         // 通常のケース
                         defaultTexName = mat.mainTexture.name;
                     }

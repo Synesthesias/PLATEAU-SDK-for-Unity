@@ -56,8 +56,9 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new PositionRotationDict(),
                 new NameToAttrsDict(),
-                new NameToExportedMaterialsDict(subMeshConverter),
-                new NonLibComponentsDict()
+                new NameToExportedMaterialsDict(subMeshConverter, conf.AssetPath, conf.IsRebuild),
+                new NonLibComponentsDict(),
+                new TerrainAssetsExport(conf.AssetPath, conf.IsRebuild)
             );
             nonLibDataHolder.ComposeFrom(srcTransforms);
 
@@ -177,14 +178,17 @@ namespace PLATEAU.CityAdjust.ConvertToAsset
             
             // FBXのインポート設定をします。
             string fbxPath = Path.Combine(conf.AssetPath, fbxNameWithoutExtension + ".fbx");
-            ModelImporter modelImporter = AssetImporter.GetAtPath(fbxPath) as ModelImporter;
+            ModelImporter modelImporter = AssetImporter.GetAtPath(PathUtil.FullPathToAssetsPath(fbxPath)) as ModelImporter;
             if (modelImporter != null)
             {
                 modelImporter.globalScale = 100;
                 modelImporter.isReadable = true;
                 modelImporter.SaveAndReimport();
             }
-            
+            else
+            {
+                Debug.LogError($"失敗： fbxファイルのインポーターが取得できませんでした。{fbxPath}");
+            }
 
             AssetDatabase.Refresh();
 #else 

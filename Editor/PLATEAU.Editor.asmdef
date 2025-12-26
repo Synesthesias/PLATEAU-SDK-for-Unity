@@ -13,7 +13,9 @@
         "PlateauToolkit.Sandbox",
         "Unity.Addressables",
         "Unity.Addressables.Editor",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
     ],
     "includePlatforms": [
         "Editor"
@@ -29,6 +31,11 @@
             "name": "com.synesthesias.plateau-unity-toolkit",
             "expression": "",
             "define": "PLATEAU_TOOLKIT"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "PLATEAU_HDRP"
         }
     ],
     "noEngineReferences": false

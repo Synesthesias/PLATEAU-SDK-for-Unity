@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -36,6 +37,8 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public bool IsCoroutineRunning => tileInstantiation != null && tileInstantiation.IsRunning;
 
+        private int forceHighResTileAddressesHash = 0;
+
         public PLATEAUDynamicTileLoadTask(PLATEAUTileManager tileManager)
         {
             this.tileManager = tileManager;
@@ -60,30 +63,7 @@ namespace PLATEAU.DynamicTile
             tileLoader?.Dispose();
             tileInstantiation?.Dispose();
         }
-
-        /// <summary>
-        /// Job Systemを使用している場合、OnDisableでDisposeする
-        /// </summary>
-        public async Task DisableTask()
-        {
-            await CancelLoadTask();
-            jobSystem?.Dispose();
-            jobSystem = null;
-        }
-
-        /// <summary>
-        /// Tileを指定してAddressablesからロードする
-        /// </summary>
-        public async Task<LoadResult> Load(PLATEAUDynamicTile tile, float timeoutSeconds = 2f)
-        {
-            if (tileLoader != null)
-            {
-                return await tileLoader.Load(tile, timeoutSeconds);
-            }
-
-            return LoadResult.Failure;
-        }
-
+        
         /// <summary>
         /// Tileを指定してAddressablesからロードする (リトライ機能付き)
         /// </summary>
@@ -115,7 +95,7 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         /// <param name="position"></param>
         /// <param name="timeoutSeconds">完了まで待機する際のタイムアウト秒数</param>
-        public async Task UpdateAssetsByCameraPosition(Vector3 position, bool useJobSystem, float timeoutSeconds = 10f)
+        public async Task UpdateAssetsByCameraPosition(Vector3 position, bool ignoreY, float timeoutSeconds = 10f , IEnumerable<string> forceHighResTileAddresses = null)
         {
             // 前回のタスクがまだ完了していない場合処理しない
             if (CurrentTask != null && !CurrentTask.IsCompleted)
@@ -124,104 +104,69 @@ namespace PLATEAU.DynamicTile
             await CancelLoadTask();
             LoadTaskCancellationTokenSource?.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds)); // タイムアウト設定
 
-            if (useJobSystem)
-            {
-                // Job Systemを使用する場合
-                if (jobSystem != null && jobSystem?.TileCount != tileManager.DynamicTiles.Count)
-                {
-                    // タイル数が変更された場合、Job SystemのNativeArrayを再初期化
-                    await CancelLoadTask();
-                    jobSystem?.Dispose();
-                    jobSystem = null;
-                }
 
-                if (jobSystem == null)
-                {
-                    jobSystem = new PLATEAUDynamicTileJobSystem();
-                    jobSystem.Initialize(this, tileManager?.DynamicTiles);
-                }
-
-                CurrentTask = jobSystem.UpdateAssetsByCameraPosition(position);
-            }
-            else
+            var hash = CalcHighResolutionTileAddressesArrayHashCode(forceHighResTileAddresses);
+            if (jobSystem != null && (jobSystem?.TileCount != tileManager.DynamicTiles.Count || forceHighResTileAddressesHash != hash))
             {
-                // Job Systemを使用しない場合
-                CurrentTask = UpdateAssetsByCameraPositionInternal(position);
+                // タイル数が変更された or 強制高解像度タイル情報が更新された場合、Job SystemのNativeArrayを再初期化
+                await CancelLoadTask();
+                jobSystem?.Dispose();
+                jobSystem = null;
+                forceHighResTileAddressesHash = hash;
+
             }
 
+            if (jobSystem == null)
+            {
+                jobSystem = new PLATEAUDynamicTileJobSystem();
+                jobSystem.Initialize(this, tileManager?.DynamicTiles, forceHighResTileAddresses);
+            }
+
+            CurrentTask = jobSystem.UpdateAssetsByCameraPosition(position, ignoreY);
+            
+           
             tileManager.UpdateCameraPosition(position); // 最後のカメラ位置を更新
 
             await CurrentTask;
         }
 
+      
         /// <summary>
-        /// 各タイルごとにカメラの距離に応じてロード状態を更新する。
-        /// JobSystemを使用しない場合の実装。
+        /// タイルの穴埋め処理を非同期で実行する。
+        /// Unload状態のタイルはその階層の子タイルを個別に判定してロード状態を補正する。
+        /// zoomLevel 9 ～ zoomLevel 11まで対応　(zoomLevel追加時は改修が必要）
         /// </summary>
-        /// <param name="position"></param>
-        public async Task UpdateAssetsByCameraPositionInternal(Vector3 position)
+        /// <returns></returns>
+        internal Task FillTileHoles(CancellationToken token)
         {
-            var sortByDistance = new List<PLATEAUDynamicTile>(tileManager.DynamicTiles);
-            sortByDistance.Sort((a, b) => a.DistanceFromCamera.CompareTo(b.DistanceFromCamera)); // Distance順にソート
-
-            foreach (var tile in sortByDistance)
-            {
-                var distance = tile.GetDistance(position, true);
-                if (tileManager.WithinTheRange(distance, tile))
+            return Task.Run(() => {
+                List<PLATEAUDynamicTile> zoom9Tiles = tileManager.DynamicTiles.Where(t => t.ZoomLevel == 9 && t.NextLoadState == LoadState.Unload && tileManager.WithinMaxRange(t.DistanceFromCamera, t)).ToList();
+                foreach (var zoom9Tile in zoom9Tiles)
                 {
-                    if (tile.LoadHandle.IsValid())
-                        tile.NextLoadState = LoadState.None;
-                    else
-                        tile.NextLoadState = LoadState.Load;
+                    List<PLATEAUDynamicTile> zoom10Tiles = zoom9Tile.ChildrenTiles.Where(t => t.NextLoadState == LoadState.Unload).ToList();
+                    foreach (var zoom10Tile in zoom10Tiles)
+                    {
+                        List<PLATEAUDynamicTile> zoom11Tiles = zoom10Tile.ChildrenTiles.Where(t => t.NextLoadState == LoadState.Unload).ToList();
+                        if (zoom11Tiles.Count == zoom10Tile.ChildrenTiles.Count) // 子が全てUnloadの場合
+                        {
+                            zoom10Tile.NextLoadState = LoadState.Load; // 上位タイルをロード状態にする
+                        }
+                        else
+                        {
+                            // 子のうち一部がロード状態の場合は、子の全てをロード状態にする
+                            foreach (var zoom11Tile in zoom11Tiles)
+                            {
+                                zoom11Tile.NextLoadState = LoadState.Load;
+                                token.ThrowIfCancellationRequested();
+                            }
+                        }
+                        token.ThrowIfCancellationRequested();
+                    }
+                    token.ThrowIfCancellationRequested();
                 }
-                else
-                {
-                    if (tile.LoadHandle.IsValid())
-                        tile.NextLoadState = LoadState.Unload;
-                    else
-                        tile.NextLoadState = LoadState.None;
-                }
-            }
-
-            try
-            {
-                await ExecuteLoadTask(LoadTaskCancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                tileManager.DebugLog("タイルのロードTaskがキャンセルされました。");
-            }
-            finally
-            {
-                PostLoadTask();
-            }
+            }, token);
         }
-
-        /// <summary>
-        /// タイルのロード状態に応じて、非同期でロードまたはアンロードを実行する。
-        /// Job Systemを使用しない場合の実装。
-        /// </summary>
-        private async Task ExecuteLoadTask(CancellationToken token)
-        {
-            foreach (var tile in tileManager.DynamicTiles)
-            {
-                if (tile.NextLoadState == LoadState.None)
-                {
-                    // 何もしない
-                    continue;
-                }
-                else if (tile.NextLoadState == LoadState.Load)
-                {
-                    await PrepareLoadTile(tile);
-                }
-                else if (tile.NextLoadState == LoadState.Unload)
-                {
-                    PrepareUnloadTile(tile);
-                }
-                token.ThrowIfCancellationRequested();
-            }
-        }
-
+        
         /// <summary>
         /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
         /// </summary>
@@ -278,6 +223,13 @@ namespace PLATEAU.DynamicTile
         public void DebugLog(string message, bool warn = true)
         {
             TileManager.DebugLog(message, warn);
+        }
+
+        private int CalcHighResolutionTileAddressesArrayHashCode(IEnumerable<string> addresses)
+        {
+            if (addresses == null) return 0;
+            return addresses.OrderBy(a => a)
+                .Aggregate(17, (current, addr) => current * 31 + (addr?.GetHashCode() ?? 0));
         }
     }
 }

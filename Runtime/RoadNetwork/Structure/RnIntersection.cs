@@ -314,17 +314,21 @@ namespace PLATEAU.RoadNetwork.Structure
 
         public RnIntersection() { }
 
-        public RnIntersection(PLATEAUCityObjectGroup targetTran)
+        /// <summary>
+        /// オリジナルのメッシュを含むPLATEAUCityObjectGroup, 自身が所属する主要地物キーを受け取るコンストラクタ
+        /// </summary>
+        /// <param name="targetTran"></param>
+        /// <param name="groupKey"></param>
+        public RnIntersection(PLATEAUCityObjectGroup targetTran, RnCityObjectGroupKey groupKey)
         {
-            AddTargetTran(targetTran);
+            AddTarget(targetTran, groupKey);
         }
 
-        public RnIntersection(IEnumerable<PLATEAUCityObjectGroup> targetTrans)
+        public RnIntersection(IEnumerable<PLATEAUCityObjectGroup> targetTrans, IEnumerable<RnCityObjectGroupKey> targetGroupKeys)
         {
-            foreach (var t in targetTrans)
-                AddTargetTran(t);
+            AddTargets(targetTrans, targetGroupKeys);
         }
-
+        
         /// <summary>
         /// 隣接するRnRoadBaseを取得重複チェックはしていないので注意
         /// </summary>
@@ -736,7 +740,6 @@ namespace PLATEAU.RoadNetwork.Structure
         /// <summary>
         /// 必ず 境界線の間に輪郭線が来るように少し移動させて間に微小なEdgeを追加する
         /// </summary>
-        [Obsolete("使われていない")]
         public void SeparateContinuousBorder()
         {
             Align();

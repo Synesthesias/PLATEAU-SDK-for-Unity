@@ -1,6 +1,9 @@
-﻿using PLATEAU.Util;
+﻿using PLATEAU.Editor.DynamicTile.TileModule;
+using PLATEAU.Util;
+using PLATEAU.Util.Async;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +15,15 @@ namespace PLATEAU.DynamicTile
     [CustomEditor(typeof(PLATEAUTileManager))]
     public class PLATEAUTileManagerEditor : UnityEditor.Editor
     {
+        private SerializedProperty onTileInstantiatedProperty;
+        private SerializedProperty beforeTileUnloadProperty;
+
+        // 強制高解像度タイル選択UI用のフィールド
+        private string searchQuery = "";
+        private HashSet<string> selectedTileAddresses = new HashSet<string>();
+        private Vector2 scrollPosition = Vector2.zero;
+        private PLATEAUDynamicTile[] filteredTileCacheArray = null;
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -20,9 +32,15 @@ namespace PLATEAU.DynamicTile
             DrawCatalogPathWithOpenButton(tileManager);
             if (GUILayout.Button("シーンビューで都市にフォーカス"))
             {
-                DynamicTileExporter.FocusSceneViewCameraToTiles(tileManager);
+                TileManagerGenerator.FocusSceneViewCameraToTiles(tileManager);
                 SceneView.lastActiveSceneView?.Repaint();
             }
+            
+            DrawForceHighResolutionTileEditor();
+
+            // Event表示
+            EditorGUILayout.PropertyField(onTileInstantiatedProperty);
+            EditorGUILayout.PropertyField(beforeTileUnloadProperty);
 
             // デバッグ表示トグル
             var debugInfoProperty = serializedObject.FindProperty("showDebugTileInfo");
@@ -31,11 +49,8 @@ namespace PLATEAU.DynamicTile
             // デバッグON時のみ付随オプションを表示
             if (debugInfoProperty.boolValue)
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("useJobSystem"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("showDebugLog"));
             }
-
-            serializedObject.ApplyModifiedProperties();
 
             if (debugInfoProperty.boolValue)
             {
@@ -109,6 +124,9 @@ namespace PLATEAU.DynamicTile
                     if (currentCamera != null)
                         _ = tileManager.UpdateAssetsByCameraPosition(currentCamera.transform.position);
                 }
+                
+                EditorGUILayout.LabelField("OutputPath: " + tileManager.OutputPath);
+                EditorGUILayout.Space();
 
                 // Tile情報の表示
                 var dynamicTiles = tileManager.DynamicTiles;
@@ -134,7 +152,6 @@ namespace PLATEAU.DynamicTile
                     if (tile == null) continue;
                     GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
                     EditorGUILayout.LabelField($"Tile Address: {tile.Address}");
-                    EditorGUILayout.IntField($"LOD: ", tile.Lod);
                     EditorGUILayout.BoundsField($"Extent Bounds: ", tile.Extent);
                     EditorGUILayout.IntField($"ZoomLevel: ", tile.ZoomLevel);
                     EditorGUILayout.ObjectField($"LoadedObject: ", tile.LoadedObject, typeof(GameObject), true);
@@ -147,6 +164,7 @@ namespace PLATEAU.DynamicTile
                 if (dynamicTiles.Count > 0)
                     Repaint();
             }
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>
@@ -156,7 +174,7 @@ namespace PLATEAU.DynamicTile
         {
             var catalogProp = serializedObject.FindProperty("catalogPath");
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス(json)"));
+            EditorGUILayout.PropertyField(catalogProp, new GUIContent("Addressableカタログパス"));
             bool clickedOpen = GUILayout.Button("参照", GUILayout.Width(64));
             EditorGUILayout.EndHorizontal();
             if (clickedOpen)
@@ -164,7 +182,11 @@ namespace PLATEAU.DynamicTile
                 var initialDir = string.IsNullOrEmpty(catalogProp.stringValue)
                     ? Application.dataPath
                     : Path.GetDirectoryName(catalogProp.stringValue);
-                var selected = EditorUtility.OpenFilePanel("Addressablesのカタログ(JSON)を選択してください", initialDir, "json");
+                var selected = EditorUtility.OpenFilePanelWithFilters(
+                    "Addressablesのカタログを選択してください",
+                    initialDir,
+                    new[] { "カタログファイル", "json,bin", "すべてのファイル", "*" }
+                );
                 if (!string.IsNullOrEmpty(selected))
                 {
                     selected = selected.Replace('\\', '/');
@@ -172,7 +194,7 @@ namespace PLATEAU.DynamicTile
                     serializedObject.ApplyModifiedProperties();
 
                     tileManager.ClearTiles();
-                    tileManager.InitializeTiles().Wait();
+                    tileManager.InitializeTiles().ContinueWithErrorCatch();
                 }
             }
         }
@@ -185,6 +207,10 @@ namespace PLATEAU.DynamicTile
         public void OnEnable()
         {
             isShowingZoomLevel = false;
+            onTileInstantiatedProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.onTileInstantiated));
+            beforeTileUnloadProperty = serializedObject.FindProperty(nameof(PLATEAUTileManager.beforeTileUnload));
+            //高解像度タイル選択で表示するリストのキャッシュをクリア
+            filteredTileCacheArray = null;
         }
 
         public void OnDisable()
@@ -247,6 +273,124 @@ namespace PLATEAU.DynamicTile
             {
                 DebugEx.DrawBounds(tile.Extent, Color.red, 3f);
             }
+        }
+
+        private void DrawForceHighResolutionTileEditor()
+        {
+            //重いのでキャッシュ
+            if (filteredTileCacheArray == null)
+            {
+                PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
+                filteredTileCacheArray = tileManager.DynamicTiles.Where(m => m.ZoomLevel == 11).ToArray();
+                selectedTileAddresses = tileManager.ForceHighResolutionTileAddresses != null && tileManager.ForceHighResolutionTileAddresses.Any()
+                    ? new HashSet<string>(tileManager.ForceHighResolutionTileAddresses)
+                    : new HashSet<string>();
+            }
+
+            if (filteredTileCacheArray == null || filteredTileCacheArray.Length == 0)
+            {
+                EditorGUILayout.HelpBox("タイルが読み込まれていません", MessageType.Info);
+                return;
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("常に高解像度で表示するタイル選択", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            // 検索ウィンドウ
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("検索", GUILayout.Width(40));
+            searchQuery = EditorGUILayout.TextField(searchQuery);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(5);
+            // 選択数の表示
+            EditorGUILayout.LabelField($"選択中: {selectedTileAddresses.Count} タイル");
+
+
+            // フィルタリングされたタイルリストを作成
+            var filteredTiles = new List<PLATEAUDynamicTile>();
+            foreach (var tile in filteredTileCacheArray)
+            {
+                if (tile == null) continue;
+
+                // 検索クエリでフィルタリング
+                if (string.IsNullOrEmpty(searchQuery) ||
+                    tile.Address.Contains(searchQuery, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    filteredTiles.Add(tile);
+                }
+            }
+            
+            // リストビューヘッダー
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            EditorGUILayout.LabelField("選択", GUILayout.Width(50));
+            EditorGUILayout.LabelField("タイルアドレス", GUILayout.ExpandWidth(true));
+            EditorGUILayout.EndHorizontal();
+
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(300));
+
+            foreach (var tile in filteredTiles)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                // チェックボックス
+                bool isSelected = selectedTileAddresses.Contains(tile.Address);
+                bool newSelected = EditorGUILayout.Toggle(isSelected, GUILayout.Width(50));
+
+                if (newSelected != isSelected)
+                {
+                    if (newSelected)
+                    {
+                        selectedTileAddresses.Add(tile.Address);
+                    }
+                    else
+                    {
+                        selectedTileAddresses.Remove(tile.Address);
+                    }
+                }
+
+                // タイルアドレス（選択・コピー可能）
+                EditorGUILayout.SelectableLabel(tile.Address, GUILayout.ExpandWidth(true), GUILayout.Height(EditorGUIUtility.singleLineHeight));
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Space(10);
+            
+            // ボタン領域
+            EditorGUILayout.BeginHorizontal();
+            
+            // 編集完了ボタン
+            if (GUILayout.Button($"保存/反映({selectedTileAddresses.Count}個選択中)", GUILayout.Height(30)))
+            {
+                Debug.Log($"編集完了: {selectedTileAddresses.Count}個のタイルが選択されました");
+                PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
+                tileManager.SetForceHighResolutionTileAddresses(selectedTileAddresses.ToArray());
+                EditorUtility.SetDirty(tileManager);
+                AssetDatabase.SaveAssets();
+                EditorUtility.DisplayDialog(nameof(PLATEAUTileManager),"強制高解像度タイル情報を更新しました。","OK");
+            }
+
+
+            // リセットボタン
+            if (GUILayout.Button("リセット", GUILayout.Height(30)))
+            {
+                selectedTileAddresses.Clear();
+                searchQuery = "";
+                PLATEAUTileManager tileManager = (PLATEAUTileManager)target;
+                tileManager.SetForceHighResolutionTileAddresses(selectedTileAddresses.ToArray());
+                EditorUtility.SetDirty(tileManager);
+                AssetDatabase.SaveAssets();
+                EditorUtility.DisplayDialog(nameof(PLATEAUTileManager),"強制高解像度タイル情報をリセットしました。","OK");
+
+            }
+
+           
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
         }
 
     }

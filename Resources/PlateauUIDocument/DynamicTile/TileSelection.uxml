@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.synesthesias.plateau-unity-sdk/Resources/PlateauUIDocument/UIStyle.uss?fileID=7433441132597879392&amp;guid=0d46d6988e7e1c94b84bd3971d937d56&amp;type=3#UIStyle" />
+    <ui:VisualElement name="MainContent" style="flex-grow: 1; flex-direction: column; align-items: auto; justify-content: flex-end; align-self: auto; max-height: none; flex-basis: auto; position: relative; flex-shrink: 1; left: 0; top: 0; right: 0; bottom: 0; width: 100%; height: 100%; overflow: hidden; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;">
+        <ui:VisualElement name="Elem_BundleList" style="flex-shrink: 1; flex-grow: 1; align-self: stretch; justify-content: flex-start; align-items: stretch; left: 0; top: 0; right: 0; bottom: 0; width: 100%; height: 100%; overflow: hidden;">
+            <ui:VisualElement name="SelectBy" style="flex-grow: 0; flex-direction: row; align-self: flex-start; justify-content: flex-start; align-items: flex-start; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; min-height: 40px;">
+                <ui:Button text="選択要素を含むタイルを追加" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_TileFromSelection" class="OutlineButton" style="height: 30px; width: 200px;" />
+                <ui:Button text="選択中のn個を追加" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_FromSelection" class="OutlineButton" style="height: 30px; width: 150px;" />
+                <ui:Button text="パッケージ種から選択" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_FromPackage" class="OutlineButton" style="height: 30px; width: 150px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="SelectType" style="flex-grow: 0; flex-direction: row; align-self: flex-start; justify-content: flex-start; align-items: flex-start; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; min-height: 40px;">
+                <ui:Button text="全選択" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_SelectAll" class="OutlineButton" style="height: 30px; width: 120px;" />
+                <ui:Button text="全選択解除" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_ClearAll" class="OutlineButton" style="height: 30px; width: 120px;" />
+            </ui:VisualElement>
+            <ui:ScrollView name="TileScrollView" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" style="align-self: auto; max-height: none; margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-shrink: 1; justify-content: space-around; flex-grow: 1; align-items: auto; align-self: auto; justify-content: flex-start; left: 0; top: 0; right: 0; bottom: 0; width: auto; height: auto; flex-wrap: nowrap; overflow: visible;" />
+            <ui:VisualElement name="ExecuteElement" style="flex-grow: 0; flex-direction: column; align-items: auto; align-self: auto; margin-top: 10px; margin-right: 5px; margin-bottom: 15px; margin-left: 5px; justify-content: space-around; flex-shrink: 0; flex-basis: auto; padding-bottom: 0;">
+                <ui:VisualElement name="Divider" style="flex-grow: 0; margin-right: 0; margin-left: 0; margin-top: 5px; margin-bottom: 5px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 100%; align-self: auto;" />
+                <ui:Button text="決定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Btn_Execute" class="ActionButton" style="-unity-text-align: middle-center; white-space: nowrap; text-overflow: clip; width: 300px; align-self: center;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

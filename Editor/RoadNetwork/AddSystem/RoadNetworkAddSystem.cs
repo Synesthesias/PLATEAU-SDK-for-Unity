@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using PLATEAU.Editor.RoadNetwork.AddSystem;
 using PLATEAU.RoadAdjust.RoadMarking;
+using PLATEAU.RoadNetwork;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -101,9 +102,23 @@ namespace PLATEAU.Editor.RoadNetwork
             // こうすることで、道路編集で何を対象に編集したのかの判定に一貫性を持たせます。
             if (roadBase.TargetTrans.All(t => t == null))
             {
+                // #REVIEW
+                // : reproducedRoadsから直接GetComponent<PLATEAUCityObjectGroup>していた為そのままにしています
+                // : ただし、タイルメッシュだとPLATEAUCityObjectGroupはほぼすべての道路で一致するので, より詳細なRnCityObjectGroupKeyを持つようになっています
+                // : これはreproduceSourceからとってきています。
+                
                 // 道路ネットワークのTargetTransを更新
-                roadBase.TargetTrans.Clear();
-                roadBase.TargetTrans.AddRange(reproducedRoads.Select(g => g.GetComponent<PLATEAUCityObjectGroup>()).Where(c => c != null));
+                // reproduceSource
+                var groupKeys = reproducedRoads
+                    .Select(x => x.reproduceSource?.TargetCityObjectKey ?? new RnCityObjectGroupKey())
+                    .Where(x => x.IsValid);
+                
+                var trans = reproducedRoads
+                    .Select(ｇ => ｇ.GetComponent<PLATEAUCityObjectGroup>())
+                    .Where(ｇ => ｇ);
+                
+                roadBase.ClearTargets();
+                roadBase.AddTargets(trans, groupKeys);
 
                 // PLATEAUReproducedRoadのsourceを更新
                 foreach (var r in reproducedRoads)

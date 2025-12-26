@@ -86,5 +86,15 @@ namespace PLATEAU.Editor.Window.ProgressDisplay
                 }, null);
             }
         }
+        /// <summary>
+        /// 直前の進捗表示をすべて消してUIを更新します。
+        /// 2回目以降のインポート開始直前に呼ばれる想定。
+        /// </summary>
+        public void Clear()
+        {
+            while (this.progressBag.TryTake(out _)) { }
+            if (ParentEditorWindow != null)
+                UnityEditor.EditorApplication.delayCall += ParentEditorWindow.Repaint;
+        }  
     }
 }

@@ -12,6 +12,7 @@ namespace PLATEAU.Editor.Window.Common
     {
         private string labelText;
         private bool value;
+        private bool defaultValue;
 
         private bool Value
         {
@@ -37,7 +38,7 @@ namespace PLATEAU.Editor.Window.Common
         {
             this.onValueChanged = onValueChanged;
             this.labelText = labelText;
-            Value = defaultValue;
+            Value = this.defaultValue = defaultValue;
             onValueChanged?.Invoke(defaultValue);
         }
         
@@ -45,7 +46,13 @@ namespace PLATEAU.Editor.Window.Common
         {
             Value = EditorGUILayout.ToggleLeft(labelText, Value);
         }
-        
+
+        public override void Reset() 
+        {
+            Value = defaultValue;
+            onValueChanged?.Invoke(defaultValue);
+        }
+
         public override void Dispose(){}
     }
     
@@ -92,7 +99,6 @@ namespace PLATEAU.Editor.Window.Common
             using var verticalScope = PlateauEditorStyle.VerticalScopeWithPadding(16,0,8,8);
             base.DrawContent();
         }
-
         public override void Dispose(){}
     }
 

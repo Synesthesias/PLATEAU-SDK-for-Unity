@@ -154,6 +154,23 @@ namespace PLATEAU.RoadNetwork.Util
         }
 
         /// <summary>
+        /// Sceneエディタ上で選択されているかどうか
+        /// </summary>
+        /// <param name="primaryCityObjectKey"></param>
+        /// <returns></returns>
+        public static bool IsEditorSceneSelected(RnCityObjectGroupKey primaryCityObjectKey)
+        {
+#if UNITY_EDITOR
+            if (!primaryCityObjectKey)
+                return false;
+            
+            return Selection.gameObjects.Any(g => primaryCityObjectKey.EqualAny(g.GetComponent<PLATEAUCityObjectGroup>()));
+#else
+            return false;
+#endif
+        }
+
+        /// <summary>
         /// leftVerticesとrightVerticesの間をtで補間した点列を生成する.
         /// start/endはそれぞれの端点.
         /// startBorder/endBorderはそれぞれの端点のボーダーでstartBorder/LeftVertices/endBorder/RightVerticesで囲まれた範囲の外に出ないようにチェックするためのもの

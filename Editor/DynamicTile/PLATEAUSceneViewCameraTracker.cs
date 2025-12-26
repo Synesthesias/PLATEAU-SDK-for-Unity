@@ -1,11 +1,15 @@
-﻿using PLATEAU.Util.Async;
+using PLATEAU.Util.Async;
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace PLATEAU.DynamicTile
 {
@@ -73,7 +77,7 @@ namespace PLATEAU.DynamicTile
     /// Unity Editorの起動時やシーンオープン時にPLATEAUTileManagerを初期化や、SceneViewCameraTrackerの初期化を行うするクラス。
     /// </summary>
     [InitializeOnLoad]
-    public class PLATEAUEditorEventListener : UnityEditor.AssetModificationProcessor
+    public class PLATEAUEditorEventListener : AssetModificationProcessor, IPostprocessBuildWithReport
     {
         // EditorのEvent発行時にデバッグログを表示するかどうかのフラグ
         public const bool ShowDebugLog = false;
@@ -81,6 +85,27 @@ namespace PLATEAU.DynamicTile
         public static volatile bool disableProjectChangeEvent = false;
 
         public static bool IsRunning { get; private set; }
+
+        public int callbackOrder => 0;
+
+        /// <summary>
+        /// アプリビルド完了時に呼ばれます
+        /// </summary>
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            // アプリビルド後にTileManagerが停止しているのを再開させます。
+            Initialize();
+        }
+
+        /// <summary>
+        /// 手動でTileManagerの読み込みを再開します
+        /// </summary>
+        [MenuItem("PLATEAU/Debug/Reload Tile Manager")]
+        public static void ReloadTileManager()
+        {
+            Initialize();
+            Debug.Log("PLATEAUTileManagerの読み込みを再開しました。");
+        }
 
         static PLATEAUEditorEventListener()
         {
@@ -116,6 +141,7 @@ namespace PLATEAU.DynamicTile
             EditorApplication.projectChanged -= OnProjectChanged;
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             EditorSceneManager.sceneOpened -= OnSceneOpened;
+            CompilationPipeline.compilationStarted -= BeforeScriptCompile;
             PLATEAUSceneViewCameraTracker.Release();
 
             IsRunning = false;
@@ -151,6 +177,7 @@ namespace PLATEAU.DynamicTile
             {
                 Log("Play Mode about to start");
                 tileManager.ClearTileAssets();
+                tileManager.DestroyLoadTask();
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
@@ -183,14 +210,22 @@ namespace PLATEAU.DynamicTile
             var tileManager = Object.FindObjectOfType<PLATEAUTileManager>();
             if (tileManager == null) return;
             tileManager.ClearTileAssets();
-            ResetAddressables();
+            ReinitializeAddressables();
         }
 
-        private static void ResetAddressables()
+        private static void ReinitializeAddressables()
         {
-            var handle = Addressables.InitializeAsync();
-            handle.WaitForCompletion();
-            if(handle.IsValid()) Addressables.Release(handle);
+            try
+            {
+                var handle = Addressables.InitializeAsync();
+                handle.WaitForCompletion();
+                if (handle.IsValid()) Addressables.Release(handle);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Addressables init failed: " + e);
+            }
+            
             // Addressables.ClearResourceLocators();
             // AssetBundle.UnloadAllAssetBundles(true); 
             // Resources.UnloadUnusedAssets();
@@ -215,7 +250,9 @@ namespace PLATEAU.DynamicTile
         {
             if (ShowDebugLog)
             {
+                #pragma warning disable CS0162 // Unreachable code detectedを抑制（デバッグ用なので）
                 Debug.Log(message);
+                #pragma warning restore CS0162
             }
         }
     }

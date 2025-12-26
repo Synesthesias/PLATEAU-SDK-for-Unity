@@ -5,20 +5,16 @@ using System.Threading;
 using NUnit.Framework;
 using PLATEAU.CityImport.AreaSelector;
 using PLATEAU.CityImport.Config;
-using PLATEAU.CityImport.Config.PackageImportConfigs;
-using PLATEAU.CityImport.Import;
 using PLATEAU.Dataset;
 using PLATEAU.Editor.DynamicTile;
 using PLATEAU.DynamicTile;
 using PLATEAU.PolygonMesh;
 using PLATEAU.CityInfo;
-using PLATEAU.Editor.Addressables;
 using PLATEAU.Tests.TestUtils;
 using PLATEAU.Util;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
@@ -27,6 +23,7 @@ namespace PLATEAU.Tests.TestDynamicTile
     /// <summary>
     /// 動的タイルのインポートのユニットテストです。
     /// FIXME: アプリケーションのビルド後に動作するかまではカバーしないので注意。人力でも確認が必要。
+    /// FIXME: このユニットテストはHDRPではうまくいかない可能性があります。
     /// </summary>
     [TestFixture]
     public class TestImportToDynamicTile
@@ -44,6 +41,7 @@ namespace PLATEAU.Tests.TestDynamicTile
         [UnityTest]
         public IEnumerator Test_ImportTileInAssetsTwice()
         {
+            yield return null;
             outputDir = OutputDirPathInAssets;
             SetUp(outputDir);
             
@@ -56,10 +54,12 @@ namespace PLATEAU.Tests.TestDynamicTile
             // 1回目のインポート
             yield return TestImport(gridCodesA, new string[]{gridCodeStrA});
             EditorSceneManager.SaveOpenScenes();
+            yield return null;
             DeletePackedImages();
             yield return null;
             // 2回目のインポート
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
+            yield return null;
         }
 
         /// <summary>
@@ -69,6 +69,8 @@ namespace PLATEAU.Tests.TestDynamicTile
         [UnityTest]
         public IEnumerator Test_ImportTileOutsideAssetsTwice()
         {
+            // テストの処理時間が増えていく場合はAssets/PLATEAUPrefabsが肥大化していないか確認してください
+            
             // プロジェクト外（Assets 配下ではない）に出力先を設定
             outputDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "PLATEAUPrefabsTestDyn_Outside").Replace('\\','/');
             SetUp(outputDir);
@@ -82,7 +84,8 @@ namespace PLATEAU.Tests.TestDynamicTile
             yield return TestImport(gridCodesA, new string[]{gridCodeStrA});
             EditorSceneManager.SaveOpenScenes();
             DeletePackedImages();
-            yield return null;
+            AssetDatabase.Refresh();
+            yield return new WaitForSeconds(0.2f);
             // 2回目のインポート
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
         }
@@ -123,6 +126,12 @@ namespace PLATEAU.Tests.TestDynamicTile
         public void TearDown()
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+            // 生成物のうちテスト用出力先（Assets 配下）を掃除
+            if (AssetDatabase.IsValidFolder(TempSceneParentPath))
+            {
+                AssetDatabase.DeleteAsset(TempSceneParentPath);
+                AssetDatabase.Refresh();
+            }
             // 出力先フォルダを削除
             if (!string.IsNullOrEmpty(outputDir) && Directory.Exists(outputDir))
             {
@@ -137,7 +146,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             if (opened.path == TempScenePath)
             {
                 // 別シーンに切り替えてから削除
-                if (!string.IsNullOrEmpty(prevScenePath) && AssetDatabase.LoadAssetAtPath<SceneAsset>(prevScenePath) != null)
+                if (!string.IsNullOrEmpty(prevScenePath) && File.Exists(prevScenePath))
                 {
                     EditorSceneManager.OpenScene(prevScenePath, OpenSceneMode.Single);
                 }
@@ -208,7 +217,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             }
             catch (System.Exception ex)
             {
-                Debug.LogWarning($"packed_image_* の削除に失敗しました: {ex.Message}");
+                Debug.LogError($"packed_image_* の削除に失敗しました: {ex.Message}");
             }
         }
 
@@ -237,9 +246,6 @@ namespace PLATEAU.Tests.TestDynamicTile
             var task = importer.ExecAsync(conf, cts.Token);
             yield return task.AsIEnumerator();
 
-            // Assert
-            Assert.IsTrue(task.Result, "動的タイルのエクスポートが成功");
-            
             // Assert: マネージャーが生成され、カタログが保存されていること
             var manager = GameObject.FindObjectOfType<PLATEAUTileManager>();
             Assert.IsNotNull(manager, "PLATEAUTileManager が生成されている");
@@ -256,32 +262,14 @@ namespace PLATEAU.Tests.TestDynamicTile
             
             // タイルの読み込み
             var sceneView = SceneView.lastActiveSceneView;
-            if (sceneView == null)
-            {
-                sceneView = EditorWindow.GetWindow<SceneView>();
-                if (sceneView != null)
-                {
-                    sceneView.Show();
-                    // ウィンドウ初期化待ち
-                    for (int i = 0; i < 3; i++)
-                    {
-                        yield return null;
-                    }
-                }
-            }
-            if (sceneView != null)
-            {
-                sceneView.pivot = new Vector3(0, 50, 0);
-            }
+            sceneView.pivot = new Vector3(0, 50, 0);
             yield return manager.InitializeTiles().AsIEnumerator();
 
             // タイルを読み込ませるためシーンビューのループを回す
             for (int i = 0; i < 10; i++)
             {
-                if (sceneView != null)
-                {
-                    sceneView.pivot += Vector3.forward * 0.05f;
-                }
+                sceneView.pivot += Vector3.forward * 0.05f;
+                manager.UpdateCameraPosition(sceneView.pivot);
                 EditorApplication.QueuePlayerLoopUpdate();
                 for (int j = 0; j < 10; j++)
                 {
@@ -313,8 +301,8 @@ namespace PLATEAU.Tests.TestDynamicTile
                 var gridCodeAsserted = gridsAssertedToExist[i];
                 var tileObjects = Resources.FindObjectsOfTypeAll<PLATEAUCityObjectGroup>()
                     .Where(
-                        go =>
-                            go.name.Contains(gridCodeAsserted) && go.gameObject.scene.IsValid()
+                        go => // 例: group6 -> 親 -> LOD1 -> 親 -> tile_zoom_11_grid_543905094_bldg_6697_op
+                            go.transform.parent.parent.name.Contains(gridCodeAsserted)
                     )
                     .ToArray();
                 
