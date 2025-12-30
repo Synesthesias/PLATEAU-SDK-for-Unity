@@ -1,0 +1,43 @@
+# Unityプロジェクトのテストを実行するワークフロー
+# プルリクエスト作成時に自動実行されます
+# 新規のUnityプロジェクトを作成し、このパッケージのコードを配置してテストを実行します
+
+name: Test
+
+on:
+    workflow_dispatch:
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+    
+    steps:
+      - name: Checkout PlateauUnitySDK
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # package.jsonのハッシュを計算してキャッシュキーに使用
+      - name: Calculate package hash
+        id: package-hash
+        run: |
+          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
+          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
+          echo "Package hash: $PACKAGE_HASH"
+
+      # Unityテストを実行
+      - name: Run Unity tests
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
+        with:
+            targetPlatform: StandaloneWindows64
+            buildMethod: test
