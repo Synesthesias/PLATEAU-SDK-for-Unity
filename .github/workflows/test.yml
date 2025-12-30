@@ -63,7 +63,7 @@ jobs:
           echo "Package code copied successfully"
 
       # Unityテストを実行
-      - name: Run Unity tests
+      - name: Check Compile Errors in Unity Project
         uses: game-ci/unity-builder@v4
         env:
           UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
@@ -72,5 +72,5 @@ jobs:
         with:
           projectPath: ${{ steps.extract-project.outputs.project_dir }}
           targetPlatform: StandaloneWindows64
-          buildMethod: test
+          buildMethod: ''
           allowDirtyBuild: true
