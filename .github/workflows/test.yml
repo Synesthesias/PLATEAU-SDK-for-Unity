@@ -62,6 +62,31 @@ jobs:
           cp -r /tmp/plateau-package "$PROJECT_DIR/Packages/PlateauUnitySDK"
           echo "Package code copied successfully"
 
+
+      - name: Add Build Script
+        run: |
+          echo "Adding build script to Unity project..."
+          PROJECT_DIR="${{ steps.extract-project.outputs.project_dir }}"
+          
+          # Assets/Editorディレクトリを作成
+          mkdir -p "$PROJECT_DIR/Assets/Editor"
+          
+          # ビルドメソッドのC#スクリプトを作成
+          cat > "$PROJECT_DIR/Assets/Editor/CompileCheckBuild.cs" << 'EOF'
+          using UnityEngine;
+          using UnityEditor;
+          
+          public class CompileCheckBuild
+          {
+              public static void Build()
+              {
+                  Application.Exit(0);
+              }
+          }
+          EOF
+          
+          echo "Build script created at $PROJECT_DIR/Assets/Editor/CompileCheckBuild.cs"
+
       # Unityテストを実行
       - name: Check Compile Errors in Unity Project
         uses: game-ci/unity-builder@v4
@@ -72,5 +97,5 @@ jobs:
         with:
           projectPath: ${{ steps.extract-project.outputs.project_dir }}
           targetPlatform: StandaloneWindows64
-          buildMethod: ''
+          buildMethod: CompileCheckBuild.Build
           allowDirtyBuild: true
