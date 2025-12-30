@@ -73,3 +73,4 @@ jobs:
           projectPath: ${{ steps.extract-project.outputs.project_dir }}
           targetPlatform: StandaloneWindows64
           buildMethod: test
+          allowDirtyBuild: true
