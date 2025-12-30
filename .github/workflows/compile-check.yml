@@ -15,7 +15,6 @@ jobs:
     container:
       image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
     env:
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
@@ -51,7 +50,17 @@ jobs:
         if: steps.cache-unity-project.outputs.cache-hit != 'true'
         run: |
           echo "Creating new Unity project..."
-          unity-editor -batchmode -nographics -serial ${{ env.UNITY_SERIAL }} -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -createProject unity-project -quit -logFile - || true
+
+          unity-editor \
+          -batchmode \
+          -nographics \
+          -serial ${{ env.UNITY_SERIAL }} \
+          -username ${{ env.UNITY_EMAIL }} \
+          -password ${{ env.UNITY_PASSWORD }} \
+          -createProject unity-project \
+          -quit \
+          -logFile -
+
           echo "Unity project created"
           ls -la unity-project/
 
