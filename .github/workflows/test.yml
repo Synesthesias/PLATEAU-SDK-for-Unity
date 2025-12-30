@@ -24,13 +24,43 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      # package.jsonのハッシュを計算してキャッシュキーに使用
-      - name: Calculate package hash
-        id: package-hash
+      # compileerrorcheck.zipを解凍
+      - name: Extract compileerrorcheck project
+        id: extract-project
         run: |
-          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
-          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
-          echo "Package hash: $PACKAGE_HASH"
+          echo "Extracting compileerrorcheck.zip..."
+          unzip -q Ci~/compileerrorcheck.zip -d .
+          # 解凍されたプロジェクトのディレクトリ名を確認
+          ls -la
+          # プロジェクトディレクトリ名を取得（通常はzipファイル名と同じ）
+          PROJECT_DIR=$(find . -maxdepth 1 -type d -name "compileerrorcheck*" | head -1)
+          if [ -z "$PROJECT_DIR" ]; then
+            # ディレクトリが見つからない場合、現在のディレクトリを確認
+            echo "Project directory not found, listing contents:"
+            ls -la
+            exit 1
+          fi
+          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
+          echo "Project directory: $PROJECT_DIR"
+
+      # 現在のリポジトリのコードを解凍したプロジェクトのPackages/PlateauUnitySDKにコピー
+      - name: Copy package code to Unity project
+        run: |
+          echo "Copying PlateauUnitySDK package to Unity project..."
+          PROJECT_DIR="${{ steps.extract-project.outputs.project_dir }}"
+          # 一時ディレクトリにコピーしてから移動（自分自身へのコピーを避けるため）
+          mkdir -p /tmp/plateau-package
+          cp -r . /tmp/plateau-package/
+          # .gitディレクトリと.githubディレクトリ、Ci~ディレクトリを削除
+          rm -rf /tmp/plateau-package/.git
+          rm -rf /tmp/plateau-package/.github
+          rm -rf /tmp/plateau-package/Ci~
+          # 解凍されたプロジェクトディレクトリも除外
+          find /tmp/plateau-package -maxdepth 1 -type d -name "compileerrorcheck*" -exec rm -rf {} +
+          # Unityプロジェクトにコピー
+          mkdir -p "$PROJECT_DIR/Packages"
+          cp -r /tmp/plateau-package "$PROJECT_DIR/Packages/PlateauUnitySDK"
+          echo "Package code copied successfully"
 
       # Unityテストを実行
       - name: Run Unity tests
@@ -40,5 +70,6 @@ jobs:
           UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
         with:
-            targetPlatform: StandaloneWindows64
-            buildMethod: test
+          projectPath: ${{ steps.extract-project.outputs.project_dir }}
+          targetPlatform: StandaloneWindows64
+          buildMethod: test
