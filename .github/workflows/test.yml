@@ -63,13 +63,10 @@ jobs:
         run: |
           echo "Moving PlateauUnitySDK package to Unity project..."
           PROJECT_DIR="unity-project"
-          # 一時ディレクトリにコピー（unity-projectを除外）
-          mkdir -p /tmp/plateau-package
-          # rsyncを使ってunity-projectを除外してコピー
-          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . /tmp/plateau-package/
-          # Unityプロジェクトに移動（容量節約のためmvを使用）
-          mkdir -p "$PROJECT_DIR/Packages"
-          mv /tmp/plateau-package "$PROJECT_DIR/Packages/PlateauUnitySDK"
+          # UnityプロジェクトのPackagesディレクトリを作成
+          mkdir -p "$PROJECT_DIR/Packages/PlateauUnitySDK"
+          # rsyncを使ってunity-projectを除外して直接Packages/PlateauUnitySDKにコピー
+          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
           echo "Package code moved successfully"
 
       - name: Check Compile Errors in Unity Project
