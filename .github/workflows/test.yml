@@ -33,6 +33,8 @@ jobs:
         with:
             args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -createProject unity-project -logFile -
 
+      - name: Fix permissions
+        run: sudo chown -R $(id -u):$(id -g) unity-project
   
       # 現在のリポジトリのコードを解凍したプロジェクトのPackages/PlateauUnitySDKにコピー
       - name: Copy package code to Unity project
