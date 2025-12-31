@@ -18,7 +18,7 @@ namespace PLATEAU.CityAdjust.ChangeActive
         /// ただしすでに無効化されているものは無視します。
         /// </summary>
         public static void EnableOnlyLargestLODInDuplicate(Transform gmlTrans)
-        {xxxx
+        {
             var sortedLods = LODTransformsSorted(gmlTrans).ToArray();
             // LODの高い方から
             for (int higherLodIndex = sortedLods.Length - 1; higherLodIndex >= 0; higherLodIndex--)
