@@ -39,6 +39,7 @@ jobs:
         run: |
           echo "Copying PlateauUnitySDK package to Unity project..."
           PROJECT_DIR="unity-project"
+          ls -la
           # 一時ディレクトリにコピーしてから移動（自分自身へのコピーを避けるため）
           mkdir -p /tmp/plateau-package
           cp -r . /tmp/plateau-package/
