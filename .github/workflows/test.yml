@@ -24,30 +24,21 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      # compileerrorcheck.zipを解凍
-      - name: Extract compileerrorcheck project
-        id: extract-project
-        run: |
-          echo "Extracting compileerrorcheck.zip..."
-          unzip -q Ci~/compileerrorcheck.zip -d .
-          # 解凍されたプロジェクトのディレクトリ名を確認
-          ls -la
-          # プロジェクトディレクトリ名を取得（通常はzipファイル名と同じ）
-          PROJECT_DIR=$(find . -maxdepth 1 -type d -name "compileerrorcheck*" | head -1)
-          if [ -z "$PROJECT_DIR" ]; then
-            # ディレクトリが見つからない場合、現在のディレクトリを確認
-            echo "Project directory not found, listing contents:"
-            ls -la
-            exit 1
-          fi
-          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
-          echo "Project directory: $PROJECT_DIR"
+      - name: Create Project
+        uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
+        env:
+            UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+            UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+            UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
+        with:
+            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -createProject unity-project -logFile -
 
+  
       # 現在のリポジトリのコードを解凍したプロジェクトのPackages/PlateauUnitySDKにコピー
       - name: Copy package code to Unity project
         run: |
           echo "Copying PlateauUnitySDK package to Unity project..."
-          PROJECT_DIR="${{ steps.extract-project.outputs.project_dir }}"
+          PROJECT_DIR="unity-project"
           # 一時ディレクトリにコピーしてから移動（自分自身へのコピーを避けるため）
           mkdir -p /tmp/plateau-package
           cp -r . /tmp/plateau-package/
@@ -66,7 +57,7 @@ jobs:
       - name: Add Build Script
         run: |
           echo "Adding build script to Unity project..."
-          PROJECT_DIR="${{ steps.extract-project.outputs.project_dir }}"
+          PROJECT_DIR="unity-project"
           
           # Assets/Editorディレクトリを作成
           mkdir -p "$PROJECT_DIR/Assets/Editor"
@@ -80,7 +71,7 @@ jobs:
           {
               public static void EntryPoint()
               {
-                  EditorApplication.Exit(0);
+                EditorApplication.Exit(0);
               }
           }EOF
 
@@ -91,7 +82,7 @@ jobs:
           UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
         with:
-          projectPath: ${{ steps.extract-project.outputs.project_dir }}
+          projectPath: unity-project
           targetPlatform: StandaloneWindows64
           buildMethod: CompileCheckEntryPoint.EntryPoint
           allowDirtyBuild: true
