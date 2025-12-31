@@ -9,8 +9,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  test:
-    name: Run tests
+  checkCompileErrors:
+    name: Check Compile Errors in Unity Project
     runs-on: ubuntu-latest
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -76,18 +76,14 @@ jobs:
           using UnityEngine;
           using UnityEditor;
           
-          public class CompileCheckBuild
+          public class CompileCheckEntryPoint
           {
-              public static void Build()
+              public static void EntryPoint()
               {
-                  Application.Exit(0);
+                  EditorApplication.Exit(0);
               }
-          }
-          EOF
-          
-          echo "Build script created at $PROJECT_DIR/Assets/Editor/CompileCheckBuild.cs"
+          }EOF
 
-      # Unityテストを実行
       - name: Check Compile Errors in Unity Project
         uses: game-ci/unity-builder@v4
         env:
@@ -97,5 +93,5 @@ jobs:
         with:
           projectPath: ${{ steps.extract-project.outputs.project_dir }}
           targetPlatform: StandaloneWindows64
-          buildMethod: CompileCheckBuild.Build
+          buildMethod: CompileCheckEntryPoint.EntryPoint
           allowDirtyBuild: true
