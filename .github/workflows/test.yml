@@ -24,7 +24,27 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      # package.jsonのハッシュを計算してキャッシュキーに使用
+      - name: Calculate package hash
+        id: package-hash
+        run: |
+          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
+          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
+          echo "Package hash: $PACKAGE_HASH"
+
+      # unity-project全体をキャッシュ
+      - name: Cache Unity project
+        id: cache-unity-project
+        uses: actions/cache@v3
+        with:
+          path: unity-project
+          key: unity-project-2022.3.25f1-${{ steps.package-hash.outputs.hash }}
+          restore-keys: |
+            unity-project-2022.3.25f1-
+
+      # キャッシュがヒットしなかった場合のみ、Unityプロジェクトを作成
       - name: Create Project
+        if: steps.cache-unity-project.outputs.cache-hit != 'true'
         uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
         env:
             UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
@@ -33,7 +53,9 @@ jobs:
         with:
             args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -createProject unity-project -logFile -
 
+      # 作成されたプロジェクトの所有権を修正（Dockerコンテナ内でrootとして作成されるため）
       - name: Fix permissions
+        if: steps.cache-unity-project.outputs.cache-hit != 'true'
         run: sudo chown -R $(id -u):$(id -g) unity-project
   
       # 現在のリポジトリのコードを解凍したプロジェクトのPackages/PlateauUnitySDKにコピー
