@@ -56,36 +56,11 @@ jobs:
           cp -r /tmp/plateau-package "$PROJECT_DIR/Packages/PlateauUnitySDK"
           echo "Package code copied successfully"
 
-
-      - name: Add Build Script
-        run: |
-          echo "Adding build script to Unity project..."
-          PROJECT_DIR="unity-project"
-          
-          # Assets/Editorディレクトリを作成
-          mkdir -p "$PROJECT_DIR/Assets/Editor"
-          
-          # ビルドメソッドのC#スクリプトを作成
-          cat > "$PROJECT_DIR/Assets/Editor/CompileCheckBuild.cs" << 'EOF'
-          using UnityEngine;
-          using UnityEditor;
-          
-          public class CompileCheckEntryPoint
-          {
-              public static void EntryPoint()
-              {
-                EditorApplication.Exit(0);
-              }
-          }EOF
-
       - name: Check Compile Errors in Unity Project
-        uses: game-ci/unity-builder@v4
+        uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
         env:
-          UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
+            UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
+            UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
+            UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
         with:
-          projectPath: unity-project
-          targetPlatform: StandaloneWindows64
-          buildMethod: CompileCheckEntryPoint.EntryPoint
-          allowDirtyBuild: true
+            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile -
