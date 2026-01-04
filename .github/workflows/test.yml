@@ -86,7 +86,7 @@ jobs:
         include:
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
             define-symbol: "UNITY_STANDALONE_WIN"
-            build-target: Windows
+            build-target: Win64
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
             define-symbol: "UNITY_IOS"
             build-target: iOS
