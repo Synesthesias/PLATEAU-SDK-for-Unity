@@ -60,17 +60,6 @@ jobs:
       - name: Fix permissions
         if: steps.cache-unity-project.outputs.cache-hit != 'true'
         run: sudo chown -R $(id -u):$(id -g) unity-project
-  
-      # 現在のリポジトリのコードをUnityプロジェクトのPackages/PlateauUnitySDKに移動
-      - name: Move package code to Unity project
-        run: |
-          echo "Moving PlateauUnitySDK package to Unity project..."
-          PROJECT_DIR="unity-project"
-          # UnityプロジェクトのPackagesディレクトリを作成
-          mkdir -p "$PROJECT_DIR/Packages/PlateauUnitySDK"
-          # rsyncを使ってunity-projectを除外して直接Packages/PlateauUnitySDKにコピー
-          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
-          echo "Package code moved successfully"
 
       - name: Set output
         id: set-output
@@ -97,6 +86,12 @@ jobs:
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
     
     steps:
+      - name: Checkout PlateauUnitySDK
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -115,6 +110,17 @@ jobs:
           restore-keys: |
             unity-project-2022.3.25f1-${{ matrix.build-target }}-
             unity-project-2022.3.25f1-
+
+      # 現在のリポジトリのコードをUnityプロジェクトのPackages/PlateauUnitySDKに移動
+      - name: Move package code to Unity project
+        run: |
+          echo "Moving PlateauUnitySDK package to Unity project..."
+          PROJECT_DIR="unity-project"
+          # UnityプロジェクトのPackagesディレクトリを作成
+          mkdir -p "$PROJECT_DIR/Packages/PlateauUnitySDK"
+          # rsyncを使ってunity-projectを除外して直接Packages/PlateauUnitySDKにコピー
+          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
+          echo "Package code moved successfully"
 
       - name: Check Compile Errors in Unity Project
         id: check-compile
