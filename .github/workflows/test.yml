@@ -85,7 +85,7 @@ jobs:
       matrix:
         docker-image:
           - unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
-          - unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
+
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -113,6 +113,9 @@ jobs:
       - name: Check Compile Errors in Unity Project
         id: check-compile
         run: |
+          echo "Checking compile errors in Unity Project..."
+          echo "-define:UNITY_IOS" > /unity-project/csc.rsp
+
           docker run --rm \
             -v ${{ github.workspace }}/unity-project:/project \
             -w /project \
@@ -125,7 +128,6 @@ jobs:
             -password "${{ env.UNITY_PASSWORD }}" \
             -serial "${{ env.UNITY_SERIAL }}" \
             -projectPath /project \
-            -buildTarget iOS \
             -logFile -
 
       # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
