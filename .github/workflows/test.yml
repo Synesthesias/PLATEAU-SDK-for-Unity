@@ -106,13 +106,14 @@ jobs:
           dotnet: true
           haskell: true
 
-      # unity-projectをキャッシュから復元（prepare-projectジョブで作成されたもの）
+      # unity-projectをキャッシュから復元（プラットフォームごとにキャッシュ）
       - name: Restore Unity project
         uses: actions/cache@v3
         with:
           path: unity-project
-          key: unity-project-2022.3.25f1-${{ needs.prepare-project.outputs.package-hash }}
+          key: unity-project-2022.3.25f1-${{ matrix.build-target }}-${{ needs.prepare-project.outputs.package-hash }}
           restore-keys: |
+            unity-project-2022.3.25f1-${{ matrix.build-target }}-
             unity-project-2022.3.25f1-
 
       - name: Check Compile Errors in Unity Project
