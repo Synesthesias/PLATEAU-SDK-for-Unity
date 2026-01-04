@@ -14,9 +14,6 @@ namespace PLATEAU.CityAdjust.ChangeActive
             ReadOnlyDictionary<CityObjectTypeHierarchy.Node, bool> selectionDict)
         {
             var gmlTransforms = cityModel.GmlTransforms;
-            #if UNITY_STANDALONE_WIN
-            adsifdghrhw
-            #endif
 
             #if UNITY_IOS
             adsfghrhw
