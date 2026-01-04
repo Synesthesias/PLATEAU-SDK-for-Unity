@@ -20,6 +20,17 @@ jobs:
       project-path: ${{ steps.set-output.outputs.project-path }}
     
     steps:
+      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+
       - name: Checkout PlateauUnitySDK
         uses: actions/checkout@v3
         with:
@@ -80,7 +91,7 @@ jobs:
     needs: prepare-project
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       matrix:
         docker-image:
           - unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
