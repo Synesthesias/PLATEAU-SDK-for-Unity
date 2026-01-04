@@ -125,6 +125,7 @@ jobs:
             -password "${{ env.UNITY_PASSWORD }}" \
             -serial "${{ env.UNITY_SERIAL }}" \
             -projectPath /project \
+            -buildTarget iOS \
             -logFile -
 
       # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
