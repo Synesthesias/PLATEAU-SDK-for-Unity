@@ -9,13 +9,15 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  checkCompileErrors:
-    name: Check Compile Errors in Unity Project
+  prepare-project:
+    name: Prepare Unity Project
     runs-on: ubuntu-latest
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+    outputs:
+      project-path: ${{ steps.set-output.outputs.project-path }}
     
     steps:
       - name: Checkout PlateauUnitySDK
@@ -69,15 +71,58 @@ jobs:
           rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
           echo "Package code moved successfully"
 
+      - name: Set output
+        id: set-output
+        run: echo "project-path=unity-project" >> $GITHUB_OUTPUT
+
+  checkCompileErrors:
+    name: Check Compile Errors (${{ matrix.docker-image }})
+    needs: prepare-project
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        docker-image:
+          - unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
+          - unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+    
+    steps:
+      - name: Checkout PlateauUnitySDK
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # package.jsonのハッシュを計算（キャッシュキーに使用）
+      - name: Calculate package hash
+        id: package-hash
+        run: |
+          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
+          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
+          echo "Package hash: $PACKAGE_HASH"
+
+      # unity-projectをキャッシュから復元（prepare-projectジョブで作成されたもの）
+      - name: Restore Unity project
+        uses: actions/cache@v3
+        with:
+          path: unity-project
+          key: unity-project-2022.3.25f1-${{ steps.package-hash.outputs.hash }}
+          restore-keys: |
+            unity-project-2022.3.25f1-
+
       - name: Check Compile Errors in Unity Project
         id: check-compile
-        uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
+        uses: docker://${{ matrix.docker-image }}
         env:
             UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
             UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
             UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
         with:
-            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile unity-project/compile-check.log
+            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile -
 
       # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
       - name: Comment on PR if compile errors found
@@ -88,9 +133,10 @@ jobs:
           script: |
             // プルリクエストにコメントを追加
             const prNumber = context.payload.pull_request?.number || context.issue.number;
+            const dockerImage = '${{ matrix.docker-image }}';
             github.rest.issues.createComment({
               issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '## ❌ コンパイルエラーが検出されました\n\n詳細はワークフローのログを確認してください。'
+              body: `## ❌ コンパイルエラーが検出されました\n\nDockerイメージ: ${dockerImage}\n\n詳細はワークフローのログを確認してください。`
             });
