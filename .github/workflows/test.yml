@@ -115,6 +115,7 @@ jobs:
         run: |
           echo "Checking compile errors in Unity Project..."
           echo "-define:UNITY_IOS" > ${{ github.workspace }}/unity-project/csc.rsp
+          ls -la ${{ github.workspace }}/unity-project/
 
           docker run --rm \
             -v ${{ github.workspace }}/unity-project:/project \
