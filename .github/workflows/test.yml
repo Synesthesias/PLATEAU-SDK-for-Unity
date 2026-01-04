@@ -70,10 +70,27 @@ jobs:
           echo "Package code moved successfully"
 
       - name: Check Compile Errors in Unity Project
+        id: check-compile
         uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
         env:
             UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
             UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
             UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
         with:
-            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile -
+            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile unity-project/compile-check.log
+
+      # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
+      - name: Comment on PR if compile errors found
+        if: failure() && steps.check-compile.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // プルリクエストにコメントを追加
+            const prNumber = context.payload.pull_request?.number || context.issue.number;
+            github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ コンパイルエラーが検出されました\n\n詳細はワークフローのログを確認してください。'
+            });
