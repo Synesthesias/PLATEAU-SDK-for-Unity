@@ -18,19 +18,9 @@ jobs:
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
     outputs:
       project-path: ${{ steps.set-output.outputs.project-path }}
+      package-hash: ${{ steps.package-hash.outputs.hash }}
     
     steps:
-      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-
       - name: Checkout PlateauUnitySDK
         uses: actions/checkout@v3
         with:
@@ -91,7 +81,7 @@ jobs:
     needs: prepare-project
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         docker-image:
           - unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
@@ -102,26 +92,21 @@ jobs:
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
     
     steps:
-      - name: Checkout PlateauUnitySDK
-        uses: actions/checkout@v3
+     # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
         with:
-          fetch-depth: 0
-          lfs: true
-
-      # package.jsonのハッシュを計算（キャッシュキーに使用）
-      - name: Calculate package hash
-        id: package-hash
-        run: |
-          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
-          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
-          echo "Package hash: $PACKAGE_HASH"
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
 
       # unity-projectをキャッシュから復元（prepare-projectジョブで作成されたもの）
       - name: Restore Unity project
         uses: actions/cache@v3
         with:
           path: unity-project
-          key: unity-project-2022.3.25f1-${{ steps.package-hash.outputs.hash }}
+          key: unity-project-2022.3.25f1-${{ needs.prepare-project.outputs.package-hash }}
           restore-keys: |
             unity-project-2022.3.25f1-
 
