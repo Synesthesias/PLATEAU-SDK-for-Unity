@@ -86,8 +86,10 @@ jobs:
         include:
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
             define-symbol: "UNITY_STANDALONE_WIN"
+            build-target: Windows
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
             define-symbol: "UNITY_IOS"
+            build-target: iOS
 
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -141,6 +143,7 @@ jobs:
             -password "${{ env.UNITY_PASSWORD }}" \
             -serial "${{ env.UNITY_SERIAL }}" \
             -projectPath /project \
+            -buildTarget ${{ matrix.build-target }} \
             -logFile -
 
       # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
