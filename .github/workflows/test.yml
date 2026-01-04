@@ -116,13 +116,20 @@ jobs:
 
       - name: Check Compile Errors in Unity Project
         id: check-compile
-        uses: docker://${{ matrix.docker-image }}
-        env:
-            UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
-            UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
-            UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
-        with:
-            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -projectPath unity-project -logFile -
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/unity-project:/project \
+            -w /project \
+            -e UNITY_EMAIL="${{ env.UNITY_EMAIL }}" \
+            -e UNITY_PASSWORD="${{ env.UNITY_PASSWORD }}" \
+            -e UNITY_SERIAL="${{ env.UNITY_SERIAL }}" \
+            ${{ matrix.docker-image }} \
+            unity-editor -batchmode -quit -nographics \
+            -username "${{ env.UNITY_EMAIL }}" \
+            -password "${{ env.UNITY_PASSWORD }}" \
+            -serial "${{ env.UNITY_SERIAL }}" \
+            -projectPath /project \
+            -logFile -
 
       # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
       - name: Comment on PR if compile errors found
