@@ -12,7 +12,9 @@ namespace PLATEAU.CityAdjust.ChangeActive
     /// </summary>
     public class CityDuplicateProcessor : IPostGmlImportProcessor
     {
+        #if UNITY_IOS
         kkk
+        #endif
         /// <summary>
         /// 重複した地物があるか検索します。GMLファイルに対応するゲームオブジェクトを対象とします。(例:53394558_bldg_6697_op.gml)
         /// 重複のうちLODが最大のものを有効化し、そうでないものを無効化します。
