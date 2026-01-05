@@ -91,7 +91,13 @@ namespace PLATEAU.DynamicTile
         /// SDKの利用者向けです。
         /// </summary>
         [SerializeField] public UnityEvent<GameObject> beforeTileUnload = new();
-        
+
+        /// <summary>
+        /// タイルがインスタンス化されたときに発火するイベントで、PLATEAUDynamicTileが渡されます。
+        /// Toolkit等の内部処理で利用します。
+        /// </summary>
+        public Action<PLATEAUDynamicTile> onTileInstantiatedAction;
+
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
@@ -478,6 +484,7 @@ namespace PLATEAU.DynamicTile
                     //ReplaceWithDebugMaterial(tile);
 
                     onTileInstantiated?.Invoke(tile.LoadedObject);
+                    onTileInstantiatedAction?.Invoke(tile);
                     return true;
                 }
             }
