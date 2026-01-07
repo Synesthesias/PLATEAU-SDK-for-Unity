@@ -21,6 +21,8 @@ namespace PLATEAU.CityAdjust.NonLibData
 
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
 
+        private static readonly int PropIdBaseMapHDRP = Shader.PropertyToID("_BaseColorMap");
+
         public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool isRebuild)
         {
             this.subMeshConverter = subMeshConverter;
@@ -107,7 +109,8 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 if (nextMaterials[i] != null)
                                 {
                                     var fbxTex = nextMaterials[i].mainTexture;
-                                    nextMaterial.SetTexture(PropIdBaseMap, fbxTex); 
+                                    var propId = shaderName.EndsWith("_HDRP") ? PropIdBaseMapHDRP : PropIdBaseMap;
+                                    nextMaterial.SetTexture(propId, fbxTex);
                                 }
                                 srcMat = nextMaterial;
                             }
