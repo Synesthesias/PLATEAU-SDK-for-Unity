@@ -74,10 +74,8 @@ jobs:
       matrix:
         include:
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
-            define-symbol: "UNITY_STANDALONE_WIN"
             build-target: Win64
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
-            define-symbol: "UNITY_IOS"
             build-target: iOS
 
     env:
@@ -127,17 +125,7 @@ jobs:
         run: |
           echo "Checking compile errors in Unity Project..."
           echo "Docker image: ${{ matrix.docker-image }}"
-          echo "Define symbol: ${{ matrix.define-symbol }}"
           
-          # シンボルが指定されている場合のみcsc.rspを作成
-          if [ -n "${{ matrix.define-symbol }}" ]; then
-            echo "-define:${{ matrix.define-symbol }}" > ${{ github.workspace }}/unity-project/Assets/csc.rsp
-            echo "Created csc.rsp with define symbol: ${{ matrix.define-symbol }}"
-          else
-            # 既存のcsc.rspを削除（前回の実行で作成された可能性があるため）
-            rm -f ${{ github.workspace }}/unity-project/Assets/csc.rsp || true
-          fi
-
           docker run --rm \
             -v ${{ github.workspace }}/unity-project:/project \
             -w /project \
