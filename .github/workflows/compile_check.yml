@@ -20,6 +20,10 @@ jobs:
             build-target: Win64
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
             build-target: iOS
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-mac-mono-3.2.1
+            build-target: Mac
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-android-3.2.1
+            build-target: Android
 
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -48,7 +52,6 @@ jobs:
           tool-cache: false
           android: true
           dotnet: true
-          haskell: true
 
       # unity-projectをキャッシュから復元（プラットフォームごとにキャッシュ）
       - name: Restore Unity project
