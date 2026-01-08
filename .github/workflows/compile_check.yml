@@ -9,65 +9,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  prepare-project:
-    name: Prepare Unity Project
-    runs-on: ubuntu-latest
-    env:
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-      UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-    outputs:
-      project-path: ${{ steps.set-output.outputs.project-path }}
-      package-hash: ${{ steps.package-hash.outputs.hash }}
-    
-    steps:
-      - name: Checkout PlateauUnitySDK
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          lfs: true
-
-      # package.jsonのハッシュを計算してキャッシュキーに使用
-      - name: Calculate package hash
-        id: package-hash
-        run: |
-          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
-          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
-          echo "Package hash: $PACKAGE_HASH"
-
-      # unity-project全体をキャッシュ
-      - name: Cache Unity project
-        id: cache-unity-project
-        uses: actions/cache@v3
-        with:
-          path: unity-project
-          key: unity-project-2022.3.25f1-${{ steps.package-hash.outputs.hash }}
-          restore-keys: |
-            unity-project-2022.3.25f1-
-
-      # キャッシュがヒットしなかった場合のみ、Unityプロジェクトを作成
-      - name: Create Project
-        if: steps.cache-unity-project.outputs.cache-hit != 'true'
-        uses: docker://unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
-        env:
-            UNITY_EMAIL: ${{ env.UNITY_EMAIL }}
-            UNITY_PASSWORD: ${{ env.UNITY_PASSWORD }}
-            UNITY_SERIAL: ${{ env.UNITY_SERIAL }}
-        with:
-            args: unity-editor -batchmode -quit -nographics -username ${{ env.UNITY_EMAIL }} -password ${{ env.UNITY_PASSWORD }} -serial ${{ env.UNITY_SERIAL }} -createProject unity-project -logFile -
-
-      # 作成されたプロジェクトの所有権を修正（Dockerコンテナ内でrootとして作成されるため）
-      - name: Fix permissions
-        if: steps.cache-unity-project.outputs.cache-hit != 'true'
-        run: sudo chown -R $(id -u):$(id -g) unity-project
-
-      - name: Set output
-        id: set-output
-        run: echo "project-path=unity-project" >> $GITHUB_OUTPUT
-
   checkCompileErrors:
     name: Check Compile Errors (${{ matrix.docker-image }})
-    needs: prepare-project
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -90,6 +33,14 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      # package.jsonのハッシュを計算してキャッシュキーに使用
+      - name: Calculate package hash
+        id: package-hash
+        run: |
+          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
+          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
+          echo "Package hash: $PACKAGE_HASH"
+
      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -101,13 +52,33 @@ jobs:
 
       # unity-projectをキャッシュから復元（プラットフォームごとにキャッシュ）
       - name: Restore Unity project
+        id: cache-unity-project
         uses: actions/cache@v3
         with:
           path: unity-project
-          key: unity-project-2022.3.25f1-${{ matrix.build-target }}-${{ needs.prepare-project.outputs.package-hash }}
+          key: unity-project-2022.3.25f1-${{ matrix.build-target }}-${{ steps.package-hash.outputs.hash }}
           restore-keys: |
             unity-project-2022.3.25f1-${{ matrix.build-target }}-
             unity-project-2022.3.25f1-
+
+      # キャッシュがヒットしなかった場合のみ、Unityプロジェクトを作成
+      - name: Create Project
+        if: steps.cache-unity-project.outputs.cache-hit != 'true'
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/unity-project:/project \
+            -w /project \
+            -e UNITY_EMAIL="${{ env.UNITY_EMAIL }}" \
+            -e UNITY_PASSWORD="${{ env.UNITY_PASSWORD }}" \
+            -e UNITY_SERIAL="${{ env.UNITY_SERIAL }}" \
+            ${{ matrix.docker-image }} \
+            unity-editor -batchmode -quit -nographics \
+            -username "${{ env.UNITY_EMAIL }}" \
+            -password "${{ env.UNITY_PASSWORD }}" \
+            -serial "${{ env.UNITY_SERIAL }}" \
+            -createProject /project \
+            -logFile -
+          sudo chown -R $(id -u):$(id -g) unity-project
 
       # 現在のリポジトリのコードをUnityプロジェクトのPackages/PlateauUnitySDKに移動
       - name: Move package code to Unity project
