@@ -1,9 +1,9 @@
-# Unityプロジェクトのテストを実行するワークフロー
+# コンパイルエラーがないかをチェックするワークフロー
 # プルリクエスト作成時に自動実行されます
-# 新規のUnityプロジェクトを作成し、このパッケージのコードを配置してテストを実行します
+# win, ios, mac, android の各プラットフォームに対してチェックを行います
+name: CheckCompileErrors
 
-name: Test
-
+# 発火タイミング設定 pullRequestに限定する
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -12,9 +12,13 @@ jobs:
   checkCompileErrors:
     name: Check Compile Errors (${{ matrix.docker-image }})
     runs-on: ubuntu-latest
+    #　各種プラットフォームのDockerイメージで実行できるようにmatrixを定義する
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       matrix:
+        # ここで指定しているDockerImageはGameCIが提供しているUnityEditorのイメージです
+        # os-UnityVersion-targetplatform-gameCiVersion の規則でタグが存在します
+        # https://hub.docker.com/r/unityci/editor/tags
         include:
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
             build-target: Win64
@@ -31,6 +35,7 @@ jobs:
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
     
     steps:
+      # 該当ブランチをCheckout
       - name: Checkout PlateauUnitySDK
         uses: actions/checkout@v3
         with:
@@ -48,10 +53,16 @@ jobs:
      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
+        # 全部消す設定にすると時間がかなりかかってしまうので必要最小限に抑える
         with:
           tool-cache: false
           android: true
-          dotnet: true
+          dotnet: false
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: false
+  
 
       # unity-projectをキャッシュから復元（プラットフォームごとにキャッシュ）
       - name: Restore Unity project
@@ -90,9 +101,10 @@ jobs:
           # UnityプロジェクトのPackagesディレクトリを作成
           mkdir -p "$PROJECT_DIR/Packages/PlateauUnitySDK"
           # rsyncを使ってunity-projectを除外して直接Packages/PlateauUnitySDKにコピー
-          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' --exclude='Ci~' --exclude='compileerrorcheck*' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
+          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
           echo "Package code moved successfully"
 
+      # batchModeでUnityプロジェクトを開き即終了させる。このときコンパイルエラーがある場合0以外で終了するのでエラー検知が出来る
       - name: Check Compile Errors in Unity Project
         id: check-compile
         run: |
@@ -130,3 +142,4 @@ jobs:
               repo: context.repo.repo,
               body: `## ❌ コンパイルエラーが検出されました\n\nDockerイメージ: ${dockerImage}\n\n詳細はワークフローのログを確認してください。`
             });
+
