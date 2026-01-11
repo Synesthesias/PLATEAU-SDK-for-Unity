@@ -71,8 +71,6 @@ jobs:
         with:
           path: unity-project
           key: unity-project-2022.3.25f1-${{ matrix.build-target }}-${{ steps.package-hash.outputs.hash }}
-          restore-keys: |
-            unity-project-2022.3.25f1-${{ matrix.build-target }}-
 
       # キャッシュがヒットしなかった場合のみ、Unityプロジェクトを作成
       - name: Create Project
