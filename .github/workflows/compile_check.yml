@@ -25,7 +25,7 @@ jobs:
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
             build-target: iOS
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-mac-mono-3.2.1
-            build-target: Mac
+            build-target: OSXUniversal
           - docker-image: unityci/editor:ubuntu-2022.3.25f1-android-3.2.1
             build-target: Android
 
@@ -134,7 +134,7 @@ jobs:
             // プルリクエストにコメントを追加
             const prNumber = context.payload.pull_request?.number || context.issue.number;
             const dockerImage = '${{ matrix.docker-image }}';
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
