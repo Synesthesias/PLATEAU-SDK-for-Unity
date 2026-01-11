@@ -19,6 +19,9 @@ namespace PLATEAU.CityAdjust.ChangeActive
         /// </summary>
         public static void EnableOnlyLargestLODInDuplicate(Transform gmlTrans)
         {
+            #if UNITY_IOS
+            compile error! 
+            #endif
             var sortedLods = LODTransformsSorted(gmlTrans).ToArray();
             // LODの高い方から
             for (int higherLodIndex = sortedLods.Length - 1; higherLodIndex >= 0; higherLodIndex--)
