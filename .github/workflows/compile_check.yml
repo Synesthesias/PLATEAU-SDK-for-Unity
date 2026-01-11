@@ -50,7 +50,7 @@ jobs:
           echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
           echo "Package hash: $PACKAGE_HASH"
 
-     # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
+      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         # 全部消す設定にすると時間がかなりかかってしまうので必要最小限に抑える
