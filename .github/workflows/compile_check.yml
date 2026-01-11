@@ -12,7 +12,7 @@ jobs:
   checkCompileErrors:
     name: Check Compile Errors (${{ matrix.docker-image }})
     runs-on: ubuntu-latest
-    #　各種プラットフォームのDockerイメージで実行できるようにmatrixを定義する
+    # 各種プラットフォームのDockerイメージで実行できるようにmatrixを定義する
     strategy:
       max-parallel: 2
       matrix:
