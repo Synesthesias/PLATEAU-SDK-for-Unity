@@ -1,3 +1,5 @@
+これはコンパイルエラーが起きるプルリクエストを出した時にGitHub Actionsが自動で検知できるかのテストです。
+
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
 using PLATEAU.DynamicTile;
