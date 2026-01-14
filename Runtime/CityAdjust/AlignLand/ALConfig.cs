@@ -1,4 +1,7 @@
+#if UNITY_EDITOR
+#else
 これはコンパイルエラーが起きるプルリクエストを出した時にGitHub Actionsが自動で検知できるかのテストです。
+#endif
 
 using PLATEAU.CityInfo;
 using PLATEAU.Dataset;
