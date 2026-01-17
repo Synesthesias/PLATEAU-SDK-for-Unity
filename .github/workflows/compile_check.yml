@@ -1,0 +1,140 @@
+# コンパイルエラーがないかをチェックするワークフロー
+# プルリクエスト作成時に自動実行されます
+# win, ios, mac, android の各プラットフォームに対してチェックを行います
+name: CheckCompileErrors
+
+# 発火タイミング設定 pullRequestに限定する
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  checkCompileErrors:
+    name: Check Compile Errors (${{ matrix.docker-image }})
+    runs-on: ubuntu-latest
+    # 各種プラットフォームのDockerイメージで実行できるようにmatrixを定義する
+    strategy:
+      max-parallel: 2
+      matrix:
+        # ここで指定しているDockerImageはGameCIが提供しているUnityEditorのイメージです
+        # os-UnityVersion-targetplatform-gameCiVersion の規則でタグが存在します
+        # https://hub.docker.com/r/unityci/editor/tags
+        include:
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
+            build-target: Win64
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
+            build-target: iOS
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-mac-mono-3.2.1
+            build-target: OSXUniversal
+          - docker-image: unityci/editor:ubuntu-2022.3.25f1-android-3.2.1
+            build-target: Android
+
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+    steps:
+      # 該当ブランチをCheckout
+      - name: Checkout PlateauUnitySDK
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # package.jsonのハッシュを計算してキャッシュキーに使用
+      - name: Calculate package hash
+        id: package-hash
+        run: |
+          PACKAGE_HASH=$(sha256sum package.json | cut -d' ' -f1)
+          echo "hash=$PACKAGE_HASH" >> $GITHUB_OUTPUT
+          echo "Package hash: $PACKAGE_HASH"
+
+      # unityEditorのdockerイメージが巨大なのでディスク容量を空ける
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        # 全部消す設定にすると時間がかなりかかってしまうので必要最小限に抑える
+        with:
+          tool-cache: false
+          android: true
+          dotnet: false
+          haskell: true
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+      # unity-projectをキャッシュから復元（プラットフォームごとにキャッシュ）
+      - name: Restore Unity project
+        id: cache-unity-project
+        uses: actions/cache@v3
+        with:
+          path: unity-project
+          key: unity-project-2022.3.25f1-${{ matrix.build-target }}-${{ steps.package-hash.outputs.hash }}
+
+      # キャッシュがヒットしなかった場合のみ、Unityプロジェクトを作成
+      - name: Create Project
+        if: steps.cache-unity-project.outputs.cache-hit != 'true'
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/unity-project:/project \
+            -w /project \
+            -e UNITY_EMAIL="${{ env.UNITY_EMAIL }}" \
+            -e UNITY_PASSWORD="${{ env.UNITY_PASSWORD }}" \
+            -e UNITY_SERIAL="${{ env.UNITY_SERIAL }}" \
+            ${{ matrix.docker-image }} \
+            unity-editor -batchmode -quit -nographics \
+            -username "${{ env.UNITY_EMAIL }}" \
+            -password "${{ env.UNITY_PASSWORD }}" \
+            -serial "${{ env.UNITY_SERIAL }}" \
+            -createProject /project \
+            -logFile -
+          sudo chown -R $(id -u):$(id -g) unity-project
+
+      # 現在のリポジトリのコードをUnityプロジェクトのPackages/PlateauUnitySDKに移動
+      - name: Move package code to Unity project
+        run: |
+          echo "Moving PlateauUnitySDK package to Unity project..."
+          PROJECT_DIR="unity-project"
+          # UnityプロジェクトのPackagesディレクトリを作成
+          mkdir -p "$PROJECT_DIR/Packages/PlateauUnitySDK"
+          # rsyncを使ってunity-projectを除外して直接Packages/PlateauUnitySDKにコピー
+          rsync -a --exclude='unity-project' --exclude='.git' --exclude='.github' . "$PROJECT_DIR/Packages/PlateauUnitySDK/"
+          echo "Package code moved successfully"
+
+      # batchModeでUnityプロジェクトを開き即終了させる。このときコンパイルエラーがある場合0以外で終了するのでエラー検知が出来る
+      - name: Check Compile Errors in Unity Project
+        id: check-compile
+        run: |
+          echo "Checking compile errors in Unity Project..."
+          echo "Docker image: ${{ matrix.docker-image }}"
+          
+          docker run --rm \
+            -v ${{ github.workspace }}/unity-project:/project \
+            -w /project \
+            -e UNITY_EMAIL="${{ env.UNITY_EMAIL }}" \
+            -e UNITY_PASSWORD="${{ env.UNITY_PASSWORD }}" \
+            -e UNITY_SERIAL="${{ env.UNITY_SERIAL }}" \
+            ${{ matrix.docker-image }} \
+            unity-editor -batchmode -quit -nographics \
+            -username "${{ env.UNITY_EMAIL }}" \
+            -password "${{ env.UNITY_PASSWORD }}" \
+            -serial "${{ env.UNITY_SERIAL }}" \
+            -projectPath /project \
+            -buildTarget ${{ matrix.build-target }} \
+            -logFile -
+
+      # コンパイルエラーが検出された場合、プルリクエストにコメントを追加
+      - name: Comment on PR if compile errors found
+        if: failure() && steps.check-compile.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // プルリクエストにコメントを追加
+            const prNumber = context.payload.pull_request?.number || context.issue.number;
+            const dockerImage = '${{ matrix.docker-image }}';
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ❌ コンパイルエラーが検出されました\n\nDockerイメージ: ${dockerImage}\n\n詳細はワークフローのログを確認してください。`
+            });
+
