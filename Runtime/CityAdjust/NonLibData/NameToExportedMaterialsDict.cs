@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Linq;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,9 +20,9 @@ namespace PLATEAU.CityAdjust.NonLibData
         private string assetPath;
         private bool isRebuild = false;
 
+        private static readonly int PropIdMainTex = Shader.PropertyToID("_MainTex");
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
-
-        private static readonly int PropIdBaseMapHDRP = Shader.PropertyToID("_BaseColorMap");
+        private static readonly int PropIdBaseMapHDRP = Shader.PropertyToID("_BaseColorMap");     
 
         public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool isRebuild)
         {
@@ -110,7 +111,10 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 if (nextMaterials[i] != null)
                                 {
                                     var fbxTex = nextMaterials[i].mainTexture;
-                                    var propId = shaderName.EndsWith("_HDRP") ? PropIdBaseMapHDRP : PropIdBaseMap;
+                                    var propId = nextMaterial.HasProperty(PropIdBaseMapHDRP) ? PropIdBaseMapHDRP :
+                                        nextMaterial.HasProperty(PropIdBaseMap) ? PropIdBaseMap :
+                                        nextMaterial.HasProperty(PropIdMainTex) ? PropIdMainTex :
+                                        PropIdBaseMap;
                                     nextMaterial.SetTexture(propId, fbxTex);
                                 }
                                 srcMat = nextMaterial;
