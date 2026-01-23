@@ -100,9 +100,10 @@ namespace PLATEAU.CityAdjust.NonLibData
                             bool isDefaultMaterial = false;
 
                             string shaderName = srcMat.shader.name;
-                            if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
+                            if ((shaderName is "Weather/Building_URP" or "Weather/Building_HDRP") || 
+                                (isRebuild && shaderName is "Shader Graphs/PLATEAUX3DMaterialShader"))
                             {
-                                // Rendering ToolkitのAuto Textureを利用している場合
+                                // Rendering ToolkitのAuto Textureを利用している場合(又は、PLATEAUX3DMaterialShaderを利用している場合)
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
                                 var nextMaterial = new Material(srcMat);
