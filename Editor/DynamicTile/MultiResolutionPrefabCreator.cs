@@ -34,6 +34,13 @@ namespace PLATEAU.DynamicTile
         private bool overwriteExisting;
 
         /// <summary>
+        /// LOD1テクスチャ及びマテリアルを保存するディレクトリ名
+        /// SavePath内に作成される
+        /// このディレクトリの中にtileごとのフォルダが作成される
+        /// </summary>
+        private readonly string lod1TextureWorkSpaceDirName = "Lod1Textures";
+
+        /// <summary>
         /// Material, Textureの保存用フォルダ生成
         /// 存在する場合は連番を付与して生成
         /// </summary>
@@ -443,10 +450,14 @@ namespace PLATEAU.DynamicTile
                 {
                     // savePathをAssets相対パスに変換してからLod1TextureCaptureServiceに渡す
                     var assetRelativeSavePath = AssetPathUtil.GetAssetPath(savePath);
-                    // 背景色をグレーにする（黒だとUVがずれたときに目立つため）
+                    
+                    // MEMO: Prefabのフォルダとは別でLOD1テクスチャ専用のフォルダ内にマテリアル・テクスチャを生成するようにする
+                    // Material差し替えなどでTileを再ビルドしたときに消えるのを防ぐために別ディレクトリにしている
                     var service =
-                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath, target.name), 1,
-                            true, CameraClearFlags.SolidColor, Color.gray);
+                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath,lod1TextureWorkSpaceDirName, target.name),
+                            1,
+                            true,
+                            CameraClearFlags.SolidColor, Color.gray); // 背景色をグレーにする（黒だとUVがずれたときに目立つため）
                     service.Execute(tmpCamera, target);
                     service.SwitchLod1Visible(target, true);
                     //LOD2を削除してLOD1(Material反映済み）のみ残す
