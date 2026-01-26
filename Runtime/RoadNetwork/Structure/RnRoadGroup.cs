@@ -936,7 +936,7 @@ namespace PLATEAU.RoadNetwork.Structure
                 foreach (var w in l.BothWays)
                 {
                     // 不正なWayは無視する
-                    if(w.IsValid == false) 
+                    if (w.IsValid == false)
                         continue;
                     
                     var ang = w.LineString.CalcTotalAngle2D();
