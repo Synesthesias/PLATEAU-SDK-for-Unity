@@ -454,7 +454,7 @@ namespace PLATEAU.DynamicTile
                     // MEMO: Prefabのフォルダとは別でLOD1テクスチャ専用のフォルダ内にマテリアル・テクスチャを生成するようにする
                     // Material差し替えなどでTileを再ビルドしたときに消えるのを防ぐために別ディレクトリにしている
                     var service =
-                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath,lod1TextureWorkSpaceDirName, target.name),
+                        new Lod1TextureCaptureService(Path.Combine(assetRelativeSavePath, lod1TextureWorkSpaceDirName, target.name),
                             1,
                             true,
                             CameraClearFlags.SolidColor, Color.gray); // 背景色をグレーにする（黒だとUVがずれたときに目立つため）
