@@ -77,7 +77,7 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
         /// <summary>
         /// normalizedTの位置がKnotsの何番目かを返す
-        /// Knots[i] ~ Knots[i+1]となるiを返す
+        /// Knots[i] ~ Knots[i+1]となるiを返す. ただしt >= 1.0の場合はKnots.Count-1が返る
         /// </summary>
         /// <param name="spline"></param>
         /// <param name="normalizedT"></param>
@@ -91,6 +91,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             int count = spline.Count;
             if (count == 0)
                 return false;
+
+            // 単一ノットの場合はカーブが存在しないため、常にその唯一のノットを指す
+            if (count == 1)
+            {
+                index = 0;
+                return true;
+            }
             
             normalizedT = Mathf.Clamp01(normalizedT);
 
@@ -102,8 +109,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             for( int i = 0; i < spline.Count - 1; ++i )
             {
                 float segmentLength = spline.GetCurveLength(i);
-
-                if( accumulated + segmentLength >= targetDistance )
+                // ==の時は次のインデックスになってほしいので >= ではなく > にする
+                if( accumulated + segmentLength > targetDistance )
                 {
                     index = i;
                     return true;
@@ -111,6 +118,8 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
 
                 accumulated += segmentLength;
             }
+            
+            // t=1.0の場合はここにくる
             index = spline.Count - 1;
             return true;
         }
