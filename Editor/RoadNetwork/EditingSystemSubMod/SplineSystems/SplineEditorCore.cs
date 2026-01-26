@@ -75,6 +75,46 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
             UpdateTangentModes();
         }
 
+        /// <summary>
+        /// normalizedTの位置がKnotsの何番目かを返す
+        /// Knots[i] ~ Knots[i+1]となるiを返す
+        /// </summary>
+        /// <param name="spline"></param>
+        /// <param name="normalizedT"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private static bool TryGetKnotIndexFromNormalizedT(Spline spline, float normalizedT, out int index)
+        {
+            index = -1;
+            if (spline == null)
+                return false;
+            int count = spline.Count;
+            if (count == 0)
+                return false;
+            
+            normalizedT = Mathf.Clamp01(normalizedT);
+
+            float totalLength = spline.GetLength();
+            float targetDistance = totalLength * normalizedT;
+
+            // 順番にCurveLengthを見ていって超えるindexをチェックする
+            float accumulated = 0.0f;
+            for( int i = 0; i < spline.Count - 1; ++i )
+            {
+                float segmentLength = spline.GetCurveLength(i);
+
+                if( accumulated + segmentLength >= targetDistance )
+                {
+                    index = i;
+                    return true;
+                }
+
+                accumulated += segmentLength;
+            }
+            index = spline.Count - 1;
+            return true;
+        }
+
         public void AddKnotAtT(Vector3 position, float t)
         {
             if (Spline == null) return;
@@ -88,9 +128,13 @@ namespace PLATEAU.Editor.RoadNetwork.EditingSystemSubMod
                 return;
             }
 
-            int segmentCount = Mathf.Max(1, count - 1);
-            float segmentFloat = t * segmentCount;
-            int segmentIndex = Mathf.FloorToInt(segmentFloat);
+            // tは0~1でSplineの全長に対する位置になる
+            // tの位置がノットの何番目かを計算する
+            // (ノットが等間隔に配置されているとか限らないので単純にsegmentCount * tだとindexが導出できない)
+            if (TryGetKnotIndexFromNormalizedT(Spline, t, out int segmentIndex) == false)
+            {
+                segmentIndex = 0;
+            }
             int insertIndex = Mathf.Clamp(segmentIndex + 1, 1, count);
 
             var newKnot2 = new BezierKnot(position, Vector3.forward, -Vector3.forward, Quaternion.identity);
