@@ -20,13 +20,13 @@ jobs:
         # os-UnityVersion-targetplatform-gameCiVersion の規則でタグが存在します
         # https://hub.docker.com/r/unityci/editor/tags
         include:
-          - docker-image: unityci/editor:ubuntu-2022.3.25f1-windows-mono-3.2.1
+          - docker-image: unityci/editor:ubuntu-6000.3.3f1-windows-mono-3.2.1
             build-target: Win64
-          - docker-image: unityci/editor:ubuntu-2022.3.25f1-ios-3.2.1
+          - docker-image: unityci/editor:ubuntu-6000.3.3f1-ios-3.2.1
             build-target: iOS
-          - docker-image: unityci/editor:ubuntu-2022.3.25f1-mac-mono-3.2.1
+          - docker-image: unityci/editor:ubuntu-6000.3.3f1-mac-mono-3.2.1
             build-target: OSXUniversal
-          - docker-image: unityci/editor:ubuntu-2022.3.25f1-android-3.2.1
+          - docker-image: unityci/editor:ubuntu-6000.3.3f1-android-3.2.1
             build-target: Android
 
     env:
