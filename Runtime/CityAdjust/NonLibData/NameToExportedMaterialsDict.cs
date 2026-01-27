@@ -3,6 +3,7 @@ using PLATEAU.CityImport.Import.Convert.MaterialConvert;
 using PLATEAU.Util;
 using System.Linq;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -19,9 +20,9 @@ namespace PLATEAU.CityAdjust.NonLibData
         private string assetPath;
         private bool isRebuild = false;
 
+        private static readonly int PropIdMainTex = Shader.PropertyToID("_MainTex");
         private static readonly int PropIdBaseMap = Shader.PropertyToID("_BaseMap");
-
-        private static readonly int PropIdBaseMapHDRP = Shader.PropertyToID("_BaseColorMap");
+        private static readonly int PropIdBaseMapHDRP = Shader.PropertyToID("_BaseColorMap");     
 
         public NameToExportedMaterialsDict(UnityMeshToDllSubMeshWithTexture subMeshConverter, string assetPath, bool isRebuild)
         {
@@ -100,16 +101,20 @@ namespace PLATEAU.CityAdjust.NonLibData
                             bool isDefaultMaterial = false;
 
                             string shaderName = srcMat.shader.name;
-                            if (shaderName is "Weather/Building_URP" or "Weather/Building_HDRP")
+                            if ((shaderName is "Weather/Building_URP" or "Weather/Building_HDRP") || 
+                                (isRebuild && shaderName is "Shader Graphs/PLATEAUX3DMaterialShader"))
                             {
-                                // Rendering ToolkitのAuto Textureを利用している場合
+                                // Rendering ToolkitのAuto Textureを利用している場合(又は、PLATEAUX3DMaterialShaderを利用している場合)
                                 // マテリアルは元からコピーします、ただしテクスチャはfbxのものに差し替えます。
                                 shouldUseFbxMaterial = false;
                                 var nextMaterial = new Material(srcMat);
                                 if (nextMaterials[i] != null)
                                 {
                                     var fbxTex = nextMaterials[i].mainTexture;
-                                    var propId = shaderName.EndsWith("_HDRP") ? PropIdBaseMapHDRP : PropIdBaseMap;
+                                    var propId = nextMaterial.HasProperty(PropIdBaseMapHDRP) ? PropIdBaseMapHDRP :
+                                        nextMaterial.HasProperty(PropIdBaseMap) ? PropIdBaseMap :
+                                        nextMaterial.HasProperty(PropIdMainTex) ? PropIdMainTex :
+                                        PropIdBaseMap;
                                     nextMaterial.SetTexture(propId, fbxTex);
                                 }
                                 srcMat = nextMaterial;
