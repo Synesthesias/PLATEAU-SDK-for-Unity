@@ -131,7 +131,7 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 // Rendering Toolkitでない場合
 
                                 // mainTextureがないシェーダー、またはmainTextureがない、またはデフォルトマテリアルなら、元のマテリアルを利用します。
-                                if (srcMat.mainTexture != null)
+                                if (srcMat.HasMainTextureAttribute() && srcMat.mainTexture != null)
                                 {
                                     var defaultMat = FallbackMaterial.ByMainTextureName(srcMat.mainTexture.name);
                                     if (defaultMat != null)

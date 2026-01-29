@@ -1,10 +1,11 @@
 .unity-text-element {
-    -unity-font-definition: resource('Fonts/MPLUSRounded1c-Regular SDF');
+    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Regular SDF");
     font-size: 14px;
+    -unity-text-generator: standard;
 }
 
 .bold-font {
-    -unity-font-definition: resource('Fonts/MPLUSRounded1c-Bold SDF');
+    -unity-text-generator: standard;
 }
 
 .unity-label {
@@ -146,14 +147,14 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-image: resource('Icon/Icon_EditButton_OFF');
+    background-image: resource("Icon/Icon_EditButton_OFF");
     -unity-background-image-tint-color: rgb(217, 217, 217);
     border-color: rgb(136, 147, 146);
     transition: 0.2s;
 }
 
 #EditModeButton > .unity-toggle__input:checked > .unity-toggle__checkmark {
-    background-image: resource('Icon/Icon_EditButton_ON');
+    background-image: resource("Icon/Icon_EditButton_ON");
     transition: 0.2s;
 }
 
@@ -337,51 +338,51 @@ Scroller #unity-drag-container {
 }
 
 #Icon_Plus {
-    background-image: resource('Icon/Icon_Plus');
+    background-image: resource("Icon/Icon_Plus");
 }
 
 #Icon_Delete {
-    background-image: resource('Icon/Icon_Delete');
+    background-image: resource("Icon/Icon_Delete");
 }
 
 #SignalSettingArrow {
-    background-image: resource('Icon/SignalSettingArrow');
+    background-image: resource("Icon/SignalSettingArrow");
 }
 
 #Icon_Left_OFF {
-    background-image: resource('Icon/Icon_Left_OFF');
+    background-image: resource("Icon/Icon_Left_OFF");
 }
 
 #Icon_Left_ON {
-    background-image: resource('Icon/Icon_Left_ON');
+    background-image: resource("Icon/Icon_Left_ON");
 }
 
 #Icon_Straight_OFF {
-    background-image: resource('Icon/Icon_Straight_OFF');
+    background-image: resource("Icon/Icon_Straight_OFF");
 }
 
 #Icon_Straight_ON {
-    background-image: resource('Icon/Icon_Straight_ON');
+    background-image: resource("Icon/Icon_Straight_ON");
 }
 
 #Icon_Right_OFF {
-    background-image: resource('Icon/Icon_Right_OFF');
+    background-image: resource("Icon/Icon_Right_OFF");
 }
 
 #Icon_Right_ON {
-    background-image: resource('Icon/Icon_Right_ON');
+    background-image: resource("Icon/Icon_Right_ON");
 }
 
 #TrafficLight_Blue {
-    background-image: resource('Icon/TrafficLight_Blue');
+    background-image: resource("Icon/TrafficLight_Blue");
 }
 
 #TrafficLight_Yellow {
-    background-image: resource('Icon/TrafficLight_Yellow');
+    background-image: resource("Icon/TrafficLight_Yellow");
 }
 
 #TrafficLight_Red {
-    background-image: resource('Icon/TrafficLight_Red');
+    background-image: resource("Icon/TrafficLight_Red");
 }
 
 #LeftToggle {
@@ -405,14 +406,14 @@ Scroller #unity-drag-container {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-image: resource('Icon/Icon_Left_OFF');
+    background-image: resource("Icon/Icon_Left_OFF");
     -unity-background-image-tint-color: rgb(217, 217, 217);
     border-color: rgb(136, 147, 146);
     transition: 0.2s;
 }
 
 #LeftToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
-    background-image: resource('Icon/Icon_Left_ON');
+    background-image: resource("Icon/Icon_Left_ON");
     transition: 0.2s;
 }
 
@@ -437,14 +438,14 @@ Scroller #unity-drag-container {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-image: resource('Icon/Icon_Straight_OFF');
+    background-image: resource("Icon/Icon_Straight_OFF");
     -unity-background-image-tint-color: rgb(217, 217, 217);
     border-color: rgb(136, 147, 146);
     transition: 0.2s;
 }
 
 #StraightToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
-    background-image: resource('Icon/Icon_Straight_ON');
+    background-image: resource("Icon/Icon_Straight_ON");
     transition: 0.2s;
 }
 
@@ -469,14 +470,14 @@ Scroller #unity-drag-container {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-image: resource('Icon/Icon_Right_OFF');
+    background-image: resource("Icon/Icon_Right_OFF");
     -unity-background-image-tint-color: rgb(217, 217, 217);
     border-color: rgb(136, 147, 146);
     transition: 0.2s;
 }
 
 #RightToggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
-    background-image: resource('Icon/Icon_Right_ON');
+    background-image: resource("Icon/Icon_Right_ON");
     transition: 0.2s;
 }
 
