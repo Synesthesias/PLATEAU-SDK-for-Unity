@@ -1,6 +1,10 @@
 using System;
 using PLATEAU.CityInfo;
 
+#if !UNITY_EDITOR
+hogehoge
+#endif
+
 namespace PLATEAU.CityAdjust.MaterialAdjust
 {
     /// <summary>
