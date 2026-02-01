@@ -81,6 +81,7 @@ namespace PLATEAU.RoadNetwork.Util
                 if (IsGuiSelected(obj))
                     ret |= VisibleType.GuiSelected;
 
+                // FIXME : タイルインポートだとほぼすべて同じCityObjectGroupなので実質意味がなくなる
                 if (cityObjects != null && cityObjects.Any(RnEx.IsEditorSceneSelected))
                     ret |= VisibleType.SceneSelected;
 
