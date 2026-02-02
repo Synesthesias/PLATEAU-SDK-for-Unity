@@ -178,6 +178,7 @@ namespace PLATEAU.DynamicTile
                 Log("Play Mode about to start");
                 tileManager.ClearTileAssets();
                 tileManager.DestroyLoadTask();
+                PLATEAUSceneViewCameraTracker.Release();
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
