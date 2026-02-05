@@ -50,7 +50,7 @@ namespace PLATEAU.CityImport.Config
         /// <summary>
         /// ZoomLevel10のテクスチャ解像度分母(1/2, 1/4倍)
         /// </summary>
-        public int ZoomLevel10TextureResolutionDenominator { get; set; } = 2;
+        public int ZoomLevel10TextureResolutionDenominator { get; set; } = 4;
 
         public DynamicTileImportConfig() { }
 
