@@ -103,6 +103,11 @@ namespace PLATEAU.DynamicTile
         /// </summary>
         public Action<PLATEAUDynamicTile> onTileUnloadBegin;
 
+        /// <summary>
+        /// タイルのインスタンス化処理が完了した時にイベントを発行します。
+        /// </summary>
+        public Action onTileInstantiationComplete;
+
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 

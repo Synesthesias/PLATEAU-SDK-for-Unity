@@ -176,9 +176,9 @@ namespace PLATEAU.DynamicTile
             if (state == PlayModeStateChange.ExitingEditMode)
             {
                 Log("Play Mode about to start");
-                tileManager.ClearTileAssets();
-                tileManager.DestroyLoadTask();
                 PLATEAUSceneViewCameraTracker.Release();
+                tileManager.ClearTileAssets();
+                tileManager.DestroyLoadTask(); 
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
@@ -190,6 +190,11 @@ namespace PLATEAU.DynamicTile
             {
                 Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
                 InitView().ContinueWithErrorCatch();
+            }
+            else if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Log($"Edit Mode ended (Entered Play Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
+                PLATEAUSceneViewCameraTracker.Release();
             }
         }
 

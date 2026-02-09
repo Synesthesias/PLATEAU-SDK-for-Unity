@@ -97,6 +97,7 @@ namespace PLATEAU.DynamicTile
             }
 
             isInstantiationFromQueueRunning = false;
+            loadTask.TileManager.onTileInstantiationComplete?.Invoke();
         }
 
         /// <summary>
