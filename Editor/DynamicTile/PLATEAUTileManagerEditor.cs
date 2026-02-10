@@ -195,6 +195,7 @@ namespace PLATEAU.DynamicTile
 
                     tileManager.ClearTiles();
                     tileManager.InitializeTiles().ContinueWithErrorCatch();
+                    tileManager.OutputPath = initialDir;
                 }
             }
         }
