@@ -935,6 +935,10 @@ namespace PLATEAU.RoadNetwork.Structure
             {
                 foreach (var w in l.BothWays)
                 {
+                    // 不正なWayは無視する
+                    if (w.IsValid == false)
+                        continue;
+                    
                     var ang = w.LineString.CalcTotalAngle2D();
                     if (ang < minAngle)
                     {
@@ -944,9 +948,9 @@ namespace PLATEAU.RoadNetwork.Structure
                 }
             }
 
-            if (way == null)
+            // 不正なWayは無視
+            if (way.IsValidOrDefault() == false)
                 return false;
-
 
             var prevBorder = road.GetMergedBorder(RnLaneBorderType.Prev, null);
             var nextBorder = road.GetMergedBorder(RnLaneBorderType.Next, null);
