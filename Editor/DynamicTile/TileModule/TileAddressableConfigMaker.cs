@@ -81,19 +81,28 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             return true;
         }
 
-        /// <summary> 古いグループを削除します。（Assets外に限り） </summary>
+        /// <summary> タイルビルド後のグループ設定を整理します。 </summary>
         private void Cleanup()
         {
-            // ユーザーのAddressablesの設定をなるべく汚したくないので、
-            // タイルの出力先がAssets外のときはGroup設定を削除します。
-            // ロード時にはカタログパスから設定を読み直すので動く仕組みです。
-            // ただし、タイルの出力先がAssets内のときは、タイルはビルドに含める必要があるので設定を残します。
-            if (!context.IsExcludeAssetFolder) return;
-            
             var groupName = context.AddressableGroupName;
-            if (!string.IsNullOrEmpty(groupName))
+            if (string.IsNullOrEmpty(groupName)) return;
+
+            if (context.IsExcludeAssetFolder)
             {
+                // Assets外: ユーザーの設定を汚さないようグループを削除します。
+                // ロード時にはカタログパスから設定を読み直すので動く仕組みです。
                 AddressablesUtility.RemoveGroup(groupName);
+            }
+            else
+            {
+                // Assets内: グループは残すが IncludeInBuild を false にします。
+                // ビルド対象から外さないとAddressablesメニューからの再ビルド時にタイルバンドルが
+                // 再ビルドされ、カタログはSDK利用者の指定した別の場所(ServerData等)に出力されるため、
+                // PLATEAUBundles内の既存カタログとCRCが不整合になります。
+                // タイルバンドルとカタログは既にPLATEAUBundlesに存在しており、
+                // DynamicTileが明示的にカタログをロードするため問題ありません。
+                // 次回のタイルビルド時はOnTileGenerateStartでグループが再作成されます。
+                AddressablesUtility.SetGroupIncludeInBuild(groupName, false);
             }
         }
         
