@@ -525,13 +525,25 @@ namespace PLATEAU.Editor.TileAddressables
         public static void SetGroupIncludeInBuild(string groupName, bool includeInBuild)
         {
             var settings = RequireAddressableSettings();
-            if (settings == null) return;
+            if (settings == null)
+            {
+                Debug.LogError("AddressableAssetSettingsが見つかりません。");
+                return;
+            }
 
             var group = settings.FindGroup(groupName);
-            if (group == null) return;
+            if (group == null)
+            {
+                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                return;
+            }
 
             var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
-            if (bundledSchema == null) return;
+            if (bundledSchema == null)
+            {
+                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
+                return;
+            }
 
             bundledSchema.IncludeInBuild = includeInBuild;
             EditorUtility.SetDirty(bundledSchema);

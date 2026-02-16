@@ -110,6 +110,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         {
             AddressablesUtility.BackToDefaultProfile();
             RestoreMonoScriptBundleNaming();
+            Cleanup();
         }
 
         private void RestoreMonoScriptBundleNaming()
