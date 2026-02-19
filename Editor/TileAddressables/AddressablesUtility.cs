@@ -520,6 +520,37 @@ namespace PLATEAU.Editor.TileAddressables
         }
         
         /// <summary>
+        /// 指定したグループの IncludeInBuild を設定します。
+        /// </summary>
+        public static void SetGroupIncludeInBuild(string groupName, bool includeInBuild)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogError("AddressableAssetSettingsが見つかりません。");
+                return;
+            }
+
+            var group = settings.FindGroup(groupName);
+            if (group == null)
+            {
+                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                return;
+            }
+
+            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
+            if (bundledSchema == null)
+            {
+                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
+                return;
+            }
+
+            bundledSchema.IncludeInBuild = includeInBuild;
+            EditorUtility.SetDirty(bundledSchema);
+            SaveAddressableSettings();
+        }
+
+        /// <summary>
         /// 指定したグループを削除します。
         /// </summary>
         /// <param name="groupName">削除するグループ名</param>

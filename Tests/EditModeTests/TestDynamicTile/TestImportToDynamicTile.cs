@@ -16,6 +16,9 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine.TestTools;
 
 namespace PLATEAU.Tests.TestDynamicTile
@@ -60,6 +63,9 @@ namespace PLATEAU.Tests.TestDynamicTile
             // 2回目のインポート
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
             yield return null;
+
+            // Assets 内出力時、ビルド後にグループの IncludeInBuild が false になっていること
+            AssertGroupIncludeInBuildIsFalse();
         }
 
         /// <summary>
@@ -292,6 +298,24 @@ namespace PLATEAU.Tests.TestDynamicTile
             AssertTileObjectExists(gridsAssertedToExist); // Playモードでもタイルが出てくること
             yield return new ExitPlayMode();
             Debug.Log("Exited Play Mode Test");
+        }
+
+        /// <summary>
+        /// Assets 内出力時、ビルド完了後に対象グループの BundledAssetGroupSchema.IncludeInBuild が false であることを検証します。
+        /// IncludeInBuild が true のまま残ると、Addressables メニューからの再ビルド時にカタログ CRC が不整合になります。
+        /// </summary>
+        private void AssertGroupIncludeInBuildIsFalse()
+        {
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            Assert.IsNotNull(settings, "AddressableAssetSettings が存在する");
+
+            var groupName = DynamicTileProcessingContext.AddressableGroupBaseName + "_" + Path.GetFileName(outputDir);
+            var group = settings.FindGroup(groupName);
+            Assert.IsNotNull(group, $"Addressable グループ '{groupName}' が存在する");
+
+            var schema = group.GetSchema<BundledAssetGroupSchema>();
+            Assert.IsNotNull(schema, $"グループ '{groupName}' に BundledAssetGroupSchema が存在する");
+            Assert.IsFalse(schema.IncludeInBuild, $"グループ '{groupName}' の IncludeInBuild がビルド後に false になっている");
         }
 
         private static void AssertTileObjectExists(string[] gridsAssertedToExist)
