@@ -134,6 +134,9 @@ namespace PLATEAU.TerrainConvert
 
         private bool isActive;
 
+        /// <summary> 対応するsrcGameObjsのインデックス。ルートノードでは-1。 </summary>
+        private readonly int srcGameObjIndex = -1;
+
         public ConvertedTerrainData(Model plateauModel, TerrainConvertOption option)
         {
             heightmapData = null;
@@ -143,8 +146,8 @@ namespace PLATEAU.TerrainConvert
             for (int i = 0; i < plateauModel.RootNodesCount; i++)
             {
                 var rootNode = plateauModel.GetRootNodeAt(i);
-                // 再帰的な子の生成です。
-                children.Add(new ConvertedTerrainData(rootNode, option));
+                // 再帰的な子の生成です。　indexを渡す
+                children.Add(new ConvertedTerrainData(rootNode, option, i));
             }
         }
 
@@ -167,12 +170,13 @@ namespace PLATEAU.TerrainConvert
             }
         }
 
-        private ConvertedTerrainData(Node plateauNode, TerrainConvertOption option)
+        private ConvertedTerrainData(Node plateauNode, TerrainConvertOption option, int srcGameObjIndex)
         {
+            this.srcGameObjIndex = srcGameObjIndex;
             heightmapData = ConvertFromMesh(plateauNode.Mesh, plateauNode.Name, option.TextureWidth, option.TextureHeight, option.FillEdges, option.ApplyConvolutionFilterToHeightMap);
             name = plateauNode.Name;
             isActive = plateauNode.IsActive;
-            
+
             if (heightmapData != null)
             {
                 //Debug Image Output
@@ -195,7 +199,7 @@ namespace PLATEAU.TerrainConvert
             for (int i = 0; i < plateauNode.ChildCount; i++)
             {
                 var child = plateauNode.GetChildAt(i);
-                children.Add(new ConvertedTerrainData(child, option));
+                children.Add(new ConvertedTerrainData(child, option, srcGameObjIndex));
             }
         }
 
@@ -240,13 +244,26 @@ namespace PLATEAU.TerrainConvert
             return null;
         }
 
-        //同名のGameObjectのTransformを取得
-        private Transform GetTransformByName(GameObject[] gameObjects, string name)
+        /// <summary>
+        /// srcGameObjIndexを使って対応するGameObjectを取得します。
+        /// インデックスが無効な場合は名前で検索するフォールバック。
+        /// </summary>
+        private GameObject GetSrcGameObject(GameObject[] srcGameObjs)
         {
-            var found = gameObjects.First(x => x.name == name);
-            if (found != null)
-                return found.transform;
-            return gameObjects.First().transform.root;
+            if (srcGameObjIndex >= 0 && srcGameObjIndex < srcGameObjs.Length)
+                return srcGameObjs[srcGameObjIndex];
+            
+            // fallback
+            // 名前で検索してるので同名のGameObjectが複数ある場合意図した親にならない可能性がある
+            return srcGameObjs.FirstOrDefault(x => x.name == heightmapData?.name);
+        }
+
+        private Transform GetSrcTransform(GameObject[] srcGameObjs)
+        {
+            var srcObj = GetSrcGameObject(srcGameObjs);
+            if (srcObj != null)
+                return srcObj.transform;
+            return srcGameObjs.First().transform.root;
         }
 
         public async Task<TerrainConvertResult> PlaceToScene(GameObject[] srcGameObjs, TerrainConvertOption option, bool skipRoot)
@@ -314,7 +331,8 @@ namespace PLATEAU.TerrainConvert
                     GameObject terrain = Terrain.CreateTerrainGameObject(terraindata);
                     terrain.name = $"TERRAIN_{heightmapData.name}";
                     terrain.transform.position = new Vector3((float)heightmapData.min.X, (float)heightmapData.min.Y, (float)heightmapData.min.Z);
-                    terrain.transform.SetParent(GetTransformByName(srcGameObjs, heightmapData.name).parent);
+                    var srcTrans = GetSrcTransform(srcGameObjs);
+                    terrain.transform.SetParent(srcTrans.parent);
 
                     result.Add(terrain);
                 }
@@ -374,9 +392,9 @@ namespace PLATEAU.TerrainConvert
                         true);
                     var mesh = MeshConverter.Convert(nativeMesh, name);
 
-                    var srcTrans = GetTransformByName(srcGameObjs, heightmapData.name);
+                    var srcTrans = GetSrcTransform(srcGameObjs);
                     string prevTextureName = TextureName(srcTrans);
-                    
+
                     var gameObject = await mesh.PlaceToScene(srcTrans.parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
                     gameObject.name = $"SMOOTHED_{gameObject.name}";
 
@@ -384,13 +402,10 @@ namespace PLATEAU.TerrainConvert
                     smoothedDem.HeightMapData = heightmapData;
 
                     var cityObjectGroup = gameObject.AddComponent<PLATEAUCityObjectGroup>();
-                    foreach (var srcObj in srcGameObjs)
+                    var srcObj = GetSrcGameObject(srcGameObjs);
+                    if (srcObj != null)
                     {
-                        if (srcObj.name != heightmapData.name)
-                            continue;
-
                         cityObjectGroup.CopyFrom(srcObj.GetComponent<PLATEAUCityObjectGroup>());
-                        break;
                     }
                     
                     var material = gameObject.GetComponent<MeshRenderer>().sharedMaterial;
