@@ -276,14 +276,14 @@ namespace PLATEAU.DynamicTile
             //ClearResourceLocatorsはSDK利用しているPJ側でAddressablesを利用している場合に影響が大きいため、ロケーター単位で削除する
             Addressables.ResourceLocators.ToList().ForEach(locator =>
             {
-                if (locator != null && locator.LocatorId.Contains(catalogPath))
+                if (locator is { LocatorId: not null } && locator.LocatorId.Contains(catalogPath))
                 {
                     Debug.Log("DynamicTileのカタログを再ロードします。古いロケーターを削除します。");
                     Addressables.RemoveResourceLocator(locator);
                 }
             });
             //古いAssetBundleを握ったままの事があるのでUnloadする
-            Resources.UnloadUnusedAssets();
+            await Resources.UnloadUnusedAssets();
 
             // カタログファイルをロード
             var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);
