@@ -41,34 +41,33 @@ namespace PLATEAU.DynamicTile
                 if (!raw.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase))
                     return raw;
 
+                if (string.IsNullOrEmpty(catalogDirName) || string.IsNullOrEmpty(baseDir))
+                    return raw;
+
+                // built-in系は触らない
+                var fileNameForBuiltinCheck = Path.GetFileName(raw.Replace('\\', '/'));
+                if (!string.IsNullOrEmpty(fileNameForBuiltinCheck) &&
+                    (fileNameForBuiltinCheck.Contains("unitybuiltinassets", StringComparison.OrdinalIgnoreCase) ||
+                     fileNameForBuiltinCheck.Contains("unitydefaultresources", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return raw;
+                }
+
                 var normalized = NormalizeToUriLike(raw);
 
                 // すでにbaseDir配下ならそのまま
-                if (!string.IsNullOrEmpty(baseDir) &&
-                    normalized.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
+                if (normalized.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
+                    return raw;
+
+                // カタログのフォルダ名を含むものだけ変換
+                var needle = "/" + catalogDirName + "/";
+                if (!normalized.Contains(needle, StringComparison.OrdinalIgnoreCase))
                 {
-                    return normalized;
+                    return raw;
                 }
 
-                // カタログのフォルダ名が含まれるものだけ変換（可能な場合）
-                if (!string.IsNullOrEmpty(catalogDirName))
-                {
-                    var needle = "/" + catalogDirName + "/";
-                    if (!normalized.Contains(needle, StringComparison.OrdinalIgnoreCase))
-                        return normalized;
-                }
-
-                // ファイル名だけにしてbaseDirへ
                 var fileName = GetFileName(normalized);
-                if (string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(baseDir))
-                    return normalized;
-
-                // Built-in系は触らない（重複ロードの原因になりやすい）
-                if (fileName.Contains("unitybuiltinassets", StringComparison.OrdinalIgnoreCase) ||
-                    fileName.Contains("unitydefaultresources", StringComparison.OrdinalIgnoreCase))
-                {
-                    return normalized; // そのまま
-                }
+                if (string.IsNullOrEmpty(fileName)) return raw;
 
                 return baseDir + fileName;
             };
@@ -99,9 +98,22 @@ namespace PLATEAU.DynamicTile
                 t.StartsWith("https:", StringComparison.OrdinalIgnoreCase))
                 return t;
 
-            // "E:/..." 形式を file:/// に
+            // "E:/..." 形式を file:/// に(Windows環境対応)
             if (t.Length >= 3 && char.IsLetter(t[0]) && t[1] == ':' && t[2] == '/')
                 return "file:///" + t;
+
+            // Unix/macOS環境も対応
+            if (t.Length >= 1 && t[0] == '/')
+            {
+                try
+                {
+                    return new Uri(t).AbsoluteUri;
+                }
+                catch
+                {
+                    // なにもしない
+                }
+            }
 
             return t;
         }
@@ -110,6 +122,7 @@ namespace PLATEAU.DynamicTile
         {
             var t = uriLike.Replace('\\', '/');
             var last = t.LastIndexOf('/');
+
             return (last >= 0 && last + 1 < t.Length) ? t.Substring(last + 1) : Path.GetFileName(t);
         }
     }
