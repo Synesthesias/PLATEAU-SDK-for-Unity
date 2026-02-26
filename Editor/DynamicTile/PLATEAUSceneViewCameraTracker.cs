@@ -231,10 +231,6 @@ namespace PLATEAU.DynamicTile
             {
                 Debug.LogWarning("Addressables init failed: " + e);
             }
-            
-            // Addressables.ClearResourceLocators();
-            // AssetBundle.UnloadAllAssetBundles(true); 
-            // Resources.UnloadUnusedAssets();
         }
 
         private static async Task InitView()
