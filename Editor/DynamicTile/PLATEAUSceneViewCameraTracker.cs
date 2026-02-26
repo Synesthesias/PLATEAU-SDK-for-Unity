@@ -191,11 +191,6 @@ namespace PLATEAU.DynamicTile
                 Log($"Play Mode ended (Entered Edit Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
                 InitView().ContinueWithErrorCatch();
             }
-            else if (state == PlayModeStateChange.ExitingPlayMode)
-            {
-                Log($"Edit Mode ended (Entered Play Mode) {EditorApplication.isPlayingOrWillChangePlaymode}");
-                PLATEAUSceneViewCameraTracker.Release();
-            }
         }
 
         static void OnSceneOpened(Scene scene, OpenSceneMode mode)

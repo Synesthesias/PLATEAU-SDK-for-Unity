@@ -80,9 +80,10 @@ namespace PLATEAU.DynamicTile
         private IEnumerator InstantiationFromQueueRoutine()
         {
             isInstantiationFromQueueRunning = true;
-
-            while(loadQueue.Count > 0)
+            var processedAnyLoad = false;
+            while (loadQueue.Count > 0)
             {
+                processedAnyLoad = true;
                 var tile = loadQueue.Dequeue();
                 if (tile == null)
                     continue;
@@ -97,7 +98,8 @@ namespace PLATEAU.DynamicTile
             }
 
             isInstantiationFromQueueRunning = false;
-            loadTask.TileManager.onTileInstantiationComplete?.Invoke();
+            if (processedAnyLoad)
+                loadTask.TileManager.onTileInstantiationComplete?.Invoke();
         }
 
         /// <summary>

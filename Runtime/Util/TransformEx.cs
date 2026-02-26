@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Codice.CM.Common.CmCallContext;
 
 namespace PLATEAU.Util
 {
@@ -89,16 +90,21 @@ namespace PLATEAU.Util
         /// <summary> /// 指定したPathからTransformを取得する /// </summary>
         public static Transform GetTransformFromPath(this Transform origin, string path)
         {
-            var pathArray = path.Split('/');
+            if (origin == null || string.IsNullOrEmpty(path))
+                return null;
+
             var current = origin;
-            foreach (var node in pathArray)
+            foreach (var node in path.Split('/'))
             {
-                if(origin.name == node)
+                if (string.IsNullOrEmpty(node))
+                    continue;
+
+                if (current.name == node)
                     continue;
 
                 current = current.Find(node);
                 if (current == null)
-                    break;
+                    return null;
             }
             return current;
         }
