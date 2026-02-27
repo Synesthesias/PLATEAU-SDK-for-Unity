@@ -252,8 +252,16 @@ namespace PLATEAU.TerrainConvert
         {
             if (srcGameObjs == null || srcGameObjs.Length == 0)
                 return null;
+            
             if (srcGameObjIndex >= 0 && srcGameObjIndex < srcGameObjs.Length)
-                return srcGameObjs[srcGameObjIndex];
+            {
+                var indexedGo = srcGameObjs[srcGameObjIndex];
+                if (indexedGo != null)
+                {
+                    return indexedGo;
+                }
+            }
+                
 
             // fallback
             // 名前で検索してるので同名のGameObjectが複数ある場合意図した親にならない可能性がある
