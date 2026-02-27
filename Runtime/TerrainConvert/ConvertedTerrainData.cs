@@ -336,7 +336,14 @@ namespace PLATEAU.TerrainConvert
                     terrain.name = $"TERRAIN_{heightmapData.name}";
                     terrain.transform.position = new Vector3((float)heightmapData.min.X, (float)heightmapData.min.Y, (float)heightmapData.min.Z);
                     var srcTrans = GetSrcTransform(srcGameObjs);
-                    terrain.transform.SetParent(srcTrans.parent);
+                    if (srcTrans != null)
+                    {
+                        terrain.transform.SetParent(srcTrans.parent);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("セットするべき親GameObjectが見つかりませんでした。");
+                    }
 
                     result.Add(terrain);
                 }
@@ -397,9 +404,10 @@ namespace PLATEAU.TerrainConvert
                     var mesh = MeshConverter.Convert(nativeMesh, name);
 
                     var srcTrans = GetSrcTransform(srcGameObjs);
-                    string prevTextureName = TextureName(srcTrans);
+                    var parent = srcTrans != null ? srcTrans.parent : null;
+                    string prevTextureName = srcTrans != null ? TextureName(srcTrans) : string.Empty;
 
-                    var gameObject = await mesh.PlaceToScene(srcTrans.parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
+                    var gameObject = await mesh.PlaceToScene(parent, new DllSubMeshToUnityMaterialByTextureMaterial(), null, true);
                     gameObject.name = $"SMOOTHED_{gameObject.name}";
 
                     var smoothedDem = gameObject.AddComponent<PLATEAUSmoothedDem>();
