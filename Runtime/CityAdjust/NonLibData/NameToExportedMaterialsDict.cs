@@ -119,6 +119,13 @@ namespace PLATEAU.CityAdjust.NonLibData
                                 }
                                 srcMat = nextMaterial;
                             }
+                            else if (shaderName is "Weather/Building_Lod1Triplanar_URP"
+                                     or "Weather/Building_Lod1Triplanar_HDRP")
+                            {
+                                shouldUseFbxMaterial = false;
+                                isDefaultMaterial = false;
+                                srcMat = new Material(srcMat);
+                            }
                             else if (shaderName is "Shader Graphs/ObstacleLight_URP"
                                      or "Shader Graphs/ObstacleLight_HDRP")
                             {
@@ -158,7 +165,7 @@ namespace PLATEAU.CityAdjust.NonLibData
 #endif
                                     // 元のテクスチャがシーン内に保存されているなら、FBXに出力されたマテリアルを利用します。
                                     // 元のテクスチャがシーン外に保存されているなら、元のマテリアルを利用します。
-                                    if(isRebuild)
+                                    if (isRebuild)
                                         shouldUseFbxMaterial = true; // FBXから変換しているなら、テクスチャのパスに関わらずFBXのマテリアルを使います。
                                     else
                                         shouldUseFbxMaterial = srcTexPath == "";

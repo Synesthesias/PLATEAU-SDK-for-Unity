@@ -176,8 +176,9 @@ namespace PLATEAU.DynamicTile
             if (state == PlayModeStateChange.ExitingEditMode)
             {
                 Log("Play Mode about to start");
+                PLATEAUSceneViewCameraTracker.Release();
                 tileManager.ClearTileAssets();
-                tileManager.DestroyLoadTask();
+                tileManager.DestroyLoadTask(); 
             }
             else if (state == PlayModeStateChange.ExitingPlayMode)
             {
