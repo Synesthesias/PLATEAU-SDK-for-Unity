@@ -116,15 +116,17 @@ namespace PLATEAU.DynamicTile
                 return;
             }
 
-            var fileName = GetFileName(normalized);
-            if (string.IsNullOrEmpty(fileName))
+            var markerIndex = normalized.LastIndexOf(needle, StringComparison.OrdinalIgnoreCase);
+
+            var relativePath = normalized.Substring(markerIndex + needle.Length);
+            if (string.IsNullOrEmpty(relativePath))
             {
                 base.Provide(provideHandle);
                 UnityEngine.Debug.LogWarning("最終結果のファイル名がなかった");
                 return;
             }
 
-            var fixedInternalId = baseDir + fileName;
+            var fixedInternalId = new Uri(new Uri(baseDir), relativePath).AbsoluteUri;
 
             // location差し替え
             var deps = (location.Dependencies != null)
