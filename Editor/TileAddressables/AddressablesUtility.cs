@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEngine.ResourceManagement.Util;
+using PLATEAU.DynamicTile;
 
 namespace PLATEAU.Editor.TileAddressables
 {
@@ -63,8 +65,15 @@ namespace PLATEAU.Editor.TileAddressables
             var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
             if (bundledSchema == null)
             {
-                group.AddSchema<BundledAssetGroupSchema>();
+                bundledSchema = group.AddSchema<BundledAssetGroupSchema>();
             }
+            var providerType = bundledSchema.AssetBundleProviderType;
+            providerType.Value = typeof(TileCatalogAssetBundleProvider);
+            bundledSchema.AssetBundleProviderType = providerType;
+
+            // 念のため dirty（ビルド時に反映されるように）
+            EditorUtility.SetDirty(bundledSchema);
+            EditorUtility.SetDirty(group);
 
             // FIXME: 動的タイルロード時のパフォーマンス向上のため、将来的に非圧縮を検討
             //bundledSchema.Compression = BundledAssetGroupSchema.BundleCompressionMode.Uncompressed;
