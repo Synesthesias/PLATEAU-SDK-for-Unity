@@ -120,8 +120,14 @@ namespace PLATEAU.DynamicTile
                 catalogPathToUse = Path.GetFullPath(catalogPathToUse);
             }
 
-            TileCatalogBundlePathOverride.Apply(catalogPathToUse);
             await LoadCatalog(catalogPathToUse);
+
+            // CustomProviderにパスを渡して補正してもらう
+            var provider = Addressables.ResourceManager.ResourceProviders
+                .OfType<PLATEAU.DynamicTile.TileCatalogAssetBundleProvider>()
+                .FirstOrDefault();
+            provider.SetCatalogPath(catalogPathToUse);
+
             // MetaStoreアドレスを自動解決（同一カタログディレクトリ配下のものを優先）
             var metaStoreAddress = await ResolveMetaStoreAddressAsync(catalogPathToUse);
             if (string.IsNullOrEmpty(metaStoreAddress))
