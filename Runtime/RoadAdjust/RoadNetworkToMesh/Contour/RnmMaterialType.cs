@@ -22,7 +22,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             var mat = type switch
             {
                 RnmMaterialType.RoadCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUV"),
-                RnmMaterialType.IntersectionCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoad"),
+                RnmMaterialType.IntersectionCarLane => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUVTile"),
                 RnmMaterialType.SideWalk => FallbackMaterial.LoadByMaterialFileName("PlateauGenericRoadWithUVTile"),
                 RnmMaterialType.MedianLane => FallbackMaterial.LoadByMaterialFileName("PlateauRoadStone"),
                 _ => throw new ArgumentOutOfRangeException()
