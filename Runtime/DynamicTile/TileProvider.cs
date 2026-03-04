@@ -58,7 +58,6 @@ namespace PLATEAU.DynamicTile
             if (location == null)
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("ろけーしょんなし");
                 return;
             }
 
@@ -66,7 +65,6 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(raw))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("InternalIdなし");
                 return;
             }
 
@@ -74,7 +72,6 @@ namespace PLATEAU.DynamicTile
             if (!raw.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("bundleでない");
                 return;
             }
 
@@ -82,7 +79,6 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(baseDir) || string.IsNullOrEmpty(catalogDirName))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("Pathがない");
                 return;
             }
 
@@ -93,7 +89,6 @@ namespace PLATEAU.DynamicTile
                  fileNameForBuiltinCheck.Contains("unitydefaultresources", StringComparison.OrdinalIgnoreCase)))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("ビルトイン");
                 return;
             }
 
@@ -103,7 +98,6 @@ namespace PLATEAU.DynamicTile
             if (normalized.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("baseDir配下");
                 return;
             }
 
@@ -112,7 +106,6 @@ namespace PLATEAU.DynamicTile
             if (!normalized.Contains(needle, StringComparison.OrdinalIgnoreCase))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("catalogのフォルダ名を含んでいない");
                 return;
             }
 
@@ -122,7 +115,6 @@ namespace PLATEAU.DynamicTile
             if (string.IsNullOrEmpty(relativePath))
             {
                 base.Provide(provideHandle);
-                UnityEngine.Debug.LogWarning("最終結果のファイル名がなかった");
                 return;
             }
 
@@ -145,8 +137,6 @@ namespace PLATEAU.DynamicTile
 
             provideHandle = ReplaceLocation(provideHandle, newLocation);
             base.Provide(provideHandle);
-
-            UnityEngine.Debug.LogWarning("ちゃんと補正された");
         }
 
         private static Uri ToFileUri(string pathOrUri)
@@ -188,13 +178,6 @@ namespace PLATEAU.DynamicTile
             }
 
             return t;
-        }
-
-        private static string GetFileName(string uriLike)
-        {
-            var t = uriLike.Replace('\\', '/');
-            var last = t.LastIndexOf('/');
-            return (last >= 0 && last + 1 < t.Length) ? t.Substring(last + 1) : Path.GetFileName(t);
         }
 
         /// <summary>
