@@ -195,6 +195,10 @@ namespace PLATEAU.DynamicTile
             return (last >= 0 && last + 1 < t.Length) ? t.Substring(last + 1) : Path.GetFileName(t);
         }
 
+        /// <summary>
+        /// リフレクションを利用してLocationを差し替えます。
+        /// WARNING: AddressablePackageのバージョン変更等で動かなくなる可能性があることに気を付けてください。
+        /// </summary>
         private static ProvideHandle ReplaceLocation(ProvideHandle handle, IResourceLocation newLocation)
         {
             try
@@ -202,7 +206,11 @@ namespace PLATEAU.DynamicTile
                 var t = typeof(ProvideHandle);
                 var rmHandleField = t.GetField("m_InternalOp", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 var internalOp = rmHandleField?.GetValue(handle);
-                if (internalOp == null) return handle;
+                if (internalOp == null)
+                {
+                    UnityEngine.Debug.LogWarning("m_InternalOpの取得失敗。タイルカタログ内のPath補正が出来ませんでした。");
+                    return handle;
+                }
 
                 var opType = internalOp.GetType();
 
@@ -217,12 +225,16 @@ namespace PLATEAU.DynamicTile
                 if (locationField != null)
                 {
                     locationField.SetValue(internalOp, newLocation);
+                    return handle;
                 }
+
+                UnityEngine.Debug.LogWarning("Locationの差し替え失敗。タイルカタログ内のPath補正が出来ませんでした。");
             }
-            catch
+            catch(Exception e)
             {
                 // 差し替えできない場合は元のまま
-                UnityEngine.Debug.LogWarning("Locationの差し替え失敗。タイルカタログ内のPath補正が出来ませんでした。読み込みが失敗する可能性があります。");
+                UnityEngine.Debug.LogWarning(e.Message);
+                UnityEngine.Debug.LogWarning("Locationの差し替え失敗。タイルカタログ内のPath補正が出来ませんでした。");
             }
 
             return handle;
