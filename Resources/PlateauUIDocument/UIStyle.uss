@@ -5,6 +5,7 @@
 }
 
 .bold-font {
+    -unity-font-definition: resource("Fonts/MPLUSRounded1c-Bold SDF");
     -unity-text-generator: standard;
 }
 
