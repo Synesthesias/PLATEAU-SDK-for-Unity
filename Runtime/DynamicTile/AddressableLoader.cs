@@ -121,6 +121,13 @@ namespace PLATEAU.DynamicTile
             }
 
             await LoadCatalog(catalogPathToUse);
+
+            // CustomProviderにパスを渡して補正してもらう
+            var provider = Addressables.ResourceManager.ResourceProviders
+                .OfType<PLATEAU.DynamicTile.TileCatalogAssetBundleProvider>()
+                .FirstOrDefault();
+            provider?.SetCatalogPath(catalogPathToUse);
+
             // MetaStoreアドレスを自動解決（同一カタログディレクトリ配下のものを優先）
             var metaStoreAddress = await ResolveMetaStoreAddressAsync(catalogPathToUse);
             if (string.IsNullOrEmpty(metaStoreAddress))
@@ -272,9 +279,18 @@ namespace PLATEAU.DynamicTile
                 return;
             }
             
-            // カタログファイルのロード前に古いロケーターを削除しておかないと、
-            // 同じフォルダを対象に2回タイル化したケースで1回目のデータが読み込まれてしまう不具合が起きます。
-            Addressables.ClearResourceLocators();
+            //動的タイルで利用しているカタログだけロケータから削除し読み直す
+            //ClearResourceLocatorsはSDK利用しているPJ側でAddressablesを利用している場合に影響が大きいため、ロケーター単位で削除する
+            Addressables.ResourceLocators.ToList().ForEach(locator =>
+            {
+                if (locator is { LocatorId: not null } && locator.LocatorId.Contains(catalogPath))
+                {
+                    Debug.Log("DynamicTileのカタログを再ロードします。古いロケーターを削除します。");
+                    Addressables.RemoveResourceLocator(locator);
+                }
+            });
+            //古いAssetBundleを握ったままの事があるのでUnloadする
+            await Resources.UnloadUnusedAssets();
 
             // カタログファイルをロード
             var catalogHandle = Addressables.LoadContentCatalogAsync(catalogPath);

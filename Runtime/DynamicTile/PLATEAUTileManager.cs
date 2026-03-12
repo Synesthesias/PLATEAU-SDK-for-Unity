@@ -91,7 +91,23 @@ namespace PLATEAU.DynamicTile
         /// SDKの利用者向けです。
         /// </summary>
         [SerializeField] public UnityEvent<GameObject> beforeTileUnload = new();
-        
+
+        /// <summary>
+        /// タイルがインスタンス化されたときに発火するイベントで、PLATEAUDynamicTileが渡されます。
+        /// Toolkit等の内部処理で利用します。
+        /// </summary>
+        public Action<PLATEAUDynamicTile> onTileInstantiatedAction;
+
+        /// <summary>
+        /// タイルがアンロードされる直前に発火するイベントで、PLATEAUDynamicTileが渡されます。
+        /// </summary>
+        public Action<PLATEAUDynamicTile> onTileUnloadBegin;
+
+        /// <summary>
+        /// タイルのインスタンス化処理が完了した時にイベントを発行します。
+        /// </summary>
+        public Action onTileInstantiationComplete;
+
         // 使用中のタイルリスト
         public List<PLATEAUDynamicTile> DynamicTiles { get; private set; } = new();
 
@@ -107,7 +123,10 @@ namespace PLATEAU.DynamicTile
         private AddressableLoader addressableLoader = new ();
 
         private PLATEAUDynamicTileLoadTask loadTask; // タイルのロードタスクを管理するクラス
-        
+
+        // UpdateAssetsByCameraPosition無効化フラグ
+        private bool disableUpdateByCameraPosition = false;
+
         /// <summary> カタログの存在するディレクトリを返します。 </summary>
         public string CatalogDirectory
         {
@@ -128,6 +147,9 @@ namespace PLATEAU.DynamicTile
         {
             get
             {
+                if (TileParent == null)
+                    TileParent = transform.Find(TileParentName);
+
                 if (TileParent == null) return null;
                 return TileParent.GetComponent<PLATEAUInstancedCityModel>();
             }
@@ -363,6 +385,9 @@ namespace PLATEAU.DynamicTile
         /// <param name="timeoutSeconds">完了まで待機する際のタイムアウト秒数</param>
         public async Task UpdateAssetsByCameraPosition(Vector3 position, float timeoutSeconds = 10f)
         {
+            if (disableUpdateByCameraPosition)
+                return;
+
             if ( State != ManagerState.Operating)
                 return;
 
@@ -418,6 +443,16 @@ namespace PLATEAU.DynamicTile
 
             return tiles;
         }
+
+        /// <summary>
+        /// UpdateAssetsByCameraPositionによるAsset読込を無効化/有効化します。
+        /// </summary>
+        /// <param name="disabled"></param>
+        public void DisableUpdateByCameraPosition(bool disabled)
+        {
+            disableUpdateByCameraPosition = disabled;
+        }
+
 
         /// <summary>
         /// 実行中のロードタスクをキャンセルし、CancellationTokenSourceをリセットします。
@@ -478,6 +513,7 @@ namespace PLATEAU.DynamicTile
                     //ReplaceWithDebugMaterial(tile);
 
                     onTileInstantiated?.Invoke(tile.LoadedObject);
+                    onTileInstantiatedAction?.Invoke(tile);
                     return true;
                 }
             }

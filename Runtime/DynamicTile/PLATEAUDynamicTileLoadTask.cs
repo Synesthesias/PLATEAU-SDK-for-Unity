@@ -87,6 +87,7 @@ namespace PLATEAU.DynamicTile
         /// <param name="address"></param>
         public bool Unload(PLATEAUDynamicTile tile)
         {
+            tileManager?.onTileUnloadBegin?.Invoke(tile);
             return tileLoader?.Unload(tile) ?? false;
         }
 

@@ -86,6 +86,28 @@ namespace PLATEAU.Util
             return found ? path : null;
         }
 
+        /// <summary> /// 指定したPathからTransformを取得する /// </summary>
+        public static Transform GetTransformFromPath(this Transform origin, string path)
+        {
+            if (origin == null || string.IsNullOrEmpty(path))
+                return null;
+
+            var current = origin;
+            foreach (var node in path.Split('/'))
+            {
+                if (string.IsNullOrEmpty(node))
+                    continue;
+
+                if (current.name == node)
+                    continue;
+
+                current = current.Find(node);
+                if (current == null)
+                    return null;
+            }
+            return current;
+        }
+
         // 全ての子Transformを取得
         public static List<Transform> GetAllChildren(this Transform parent)
         {

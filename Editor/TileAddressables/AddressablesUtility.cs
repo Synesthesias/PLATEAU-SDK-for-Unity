@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEngine.ResourceManagement.Util;
+using PLATEAU.DynamicTile;
 
 namespace PLATEAU.Editor.TileAddressables
 {
@@ -63,8 +65,15 @@ namespace PLATEAU.Editor.TileAddressables
             var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
             if (bundledSchema == null)
             {
-                group.AddSchema<BundledAssetGroupSchema>();
+                bundledSchema = group.AddSchema<BundledAssetGroupSchema>();
             }
+            var providerType = bundledSchema.AssetBundleProviderType;
+            providerType.Value = typeof(TileCatalogAssetBundleProvider);
+            bundledSchema.AssetBundleProviderType = providerType;
+
+            // 念のため dirty（ビルド時に反映されるように）
+            EditorUtility.SetDirty(bundledSchema);
+            EditorUtility.SetDirty(group);
 
             // FIXME: 動的タイルロード時のパフォーマンス向上のため、将来的に非圧縮を検討
             //bundledSchema.Compression = BundledAssetGroupSchema.BundleCompressionMode.Uncompressed;
@@ -519,6 +528,37 @@ namespace PLATEAU.Editor.TileAddressables
             }
         }
         
+        /// <summary>
+        /// 指定したグループの IncludeInBuild を設定します。
+        /// </summary>
+        public static void SetGroupIncludeInBuild(string groupName, bool includeInBuild)
+        {
+            var settings = RequireAddressableSettings();
+            if (settings == null)
+            {
+                Debug.LogError("AddressableAssetSettingsが見つかりません。");
+                return;
+            }
+
+            var group = settings.FindGroup(groupName);
+            if (group == null)
+            {
+                Debug.LogWarning($"グループが見つかりません: {groupName}");
+                return;
+            }
+
+            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
+            if (bundledSchema == null)
+            {
+                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
+                return;
+            }
+
+            bundledSchema.IncludeInBuild = includeInBuild;
+            EditorUtility.SetDirty(bundledSchema);
+            SaveAddressableSettings();
+        }
+
         /// <summary>
         /// 指定したグループを削除します。
         /// </summary>
