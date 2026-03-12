@@ -10352,6 +10352,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.DynamicTile.PLATEAUTileManager.DestroyLoadTask
   nameWithType: PLATEAUTileManager.DestroyLoadTask
+- uid: PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition(System.Boolean)
+  name: DisableUpdateByCameraPosition(Boolean)
+  href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_DisableUpdateByCameraPosition_System_Boolean_
+  commentId: M:PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition(System.Boolean)
+  fullName: PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition(System.Boolean)
+  nameWithType: PLATEAUTileManager.DisableUpdateByCameraPosition(Boolean)
+- uid: PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition*
+  name: DisableUpdateByCameraPosition
+  href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_DisableUpdateByCameraPosition_
+  commentId: Overload:PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition
+  isSpec: "True"
+  fullName: PLATEAU.DynamicTile.PLATEAUTileManager.DisableUpdateByCameraPosition
+  nameWithType: PLATEAUTileManager.DisableUpdateByCameraPosition
 - uid: PLATEAU.DynamicTile.PLATEAUTileManager.DynamicTiles
   name: DynamicTiles
   href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_DynamicTiles
@@ -10536,6 +10549,24 @@ references:
   commentId: F:PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiated
   fullName: PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiated
   nameWithType: PLATEAUTileManager.onTileInstantiated
+- uid: PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiatedAction
+  name: onTileInstantiatedAction
+  href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_onTileInstantiatedAction
+  commentId: F:PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiatedAction
+  fullName: PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiatedAction
+  nameWithType: PLATEAUTileManager.onTileInstantiatedAction
+- uid: PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiationComplete
+  name: onTileInstantiationComplete
+  href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_onTileInstantiationComplete
+  commentId: F:PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiationComplete
+  fullName: PLATEAU.DynamicTile.PLATEAUTileManager.onTileInstantiationComplete
+  nameWithType: PLATEAUTileManager.onTileInstantiationComplete
+- uid: PLATEAU.DynamicTile.PLATEAUTileManager.onTileUnloadBegin
+  name: onTileUnloadBegin
+  href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_onTileUnloadBegin
+  commentId: F:PLATEAU.DynamicTile.PLATEAUTileManager.onTileUnloadBegin
+  fullName: PLATEAU.DynamicTile.PLATEAUTileManager.onTileUnloadBegin
+  nameWithType: PLATEAUTileManager.onTileUnloadBegin
 - uid: PLATEAU.DynamicTile.PLATEAUTileManager.OutputPath
   name: OutputPath
   href: api/PLATEAU.DynamicTile.PLATEAUTileManager.html#PLATEAU_DynamicTile_PLATEAUTileManager_OutputPath
@@ -10813,6 +10844,38 @@ references:
   commentId: F:PLATEAU.DynamicTile.TileBounds.ZoomLevel
   fullName: PLATEAU.DynamicTile.TileBounds.ZoomLevel
   nameWithType: TileBounds.ZoomLevel
+- uid: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider
+  name: TileCatalogAssetBundleProvider
+  href: api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html
+  commentId: T:PLATEAU.DynamicTile.TileCatalogAssetBundleProvider
+  fullName: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider
+  nameWithType: TileCatalogAssetBundleProvider
+- uid: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide(ProvideHandle)
+  name: Provide(ProvideHandle)
+  href: api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html#PLATEAU_DynamicTile_TileCatalogAssetBundleProvider_Provide_ProvideHandle_
+  commentId: M:PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide(ProvideHandle)
+  fullName: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide(ProvideHandle)
+  nameWithType: TileCatalogAssetBundleProvider.Provide(ProvideHandle)
+- uid: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide*
+  name: Provide
+  href: api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html#PLATEAU_DynamicTile_TileCatalogAssetBundleProvider_Provide_
+  commentId: Overload:PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide
+  isSpec: "True"
+  fullName: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.Provide
+  nameWithType: TileCatalogAssetBundleProvider.Provide
+- uid: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath(System.String)
+  name: SetCatalogPath(String)
+  href: api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html#PLATEAU_DynamicTile_TileCatalogAssetBundleProvider_SetCatalogPath_System_String_
+  commentId: M:PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath(System.String)
+  fullName: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath(System.String)
+  nameWithType: TileCatalogAssetBundleProvider.SetCatalogPath(String)
+- uid: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath*
+  name: SetCatalogPath
+  href: api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html#PLATEAU_DynamicTile_TileCatalogAssetBundleProvider_SetCatalogPath_
+  commentId: Overload:PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath
+  isSpec: "True"
+  fullName: PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.SetCatalogPath
+  nameWithType: TileCatalogAssetBundleProvider.SetCatalogPath
 - uid: PLATEAU.DynamicTile.TileCatalogSearcher
   name: TileCatalogSearcher
   href: api/PLATEAU.DynamicTile.TileCatalogSearcher.html
@@ -16640,6 +16703,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Editor.TileAddressables.AddressablesUtility.SaveAddressableSettings
   nameWithType: AddressablesUtility.SaveAddressableSettings
+- uid: PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild(System.String,System.Boolean)
+  name: SetGroupIncludeInBuild(String, Boolean)
+  href: api/PLATEAU.Editor.TileAddressables.AddressablesUtility.html#PLATEAU_Editor_TileAddressables_AddressablesUtility_SetGroupIncludeInBuild_System_String_System_Boolean_
+  commentId: M:PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild(System.String,System.Boolean)
+  fullName: PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild(System.String, System.Boolean)
+  nameWithType: AddressablesUtility.SetGroupIncludeInBuild(String, Boolean)
+- uid: PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild*
+  name: SetGroupIncludeInBuild
+  href: api/PLATEAU.Editor.TileAddressables.AddressablesUtility.html#PLATEAU_Editor_TileAddressables_AddressablesUtility_SetGroupIncludeInBuild_
+  commentId: Overload:PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild
+  isSpec: "True"
+  fullName: PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupIncludeInBuild
+  nameWithType: AddressablesUtility.SetGroupIncludeInBuild
 - uid: PLATEAU.Editor.TileAddressables.AddressablesUtility.SetGroupLoadAndBuildPath(System.String)
   name: SetGroupLoadAndBuildPath(String)
   href: api/PLATEAU.Editor.TileAddressables.AddressablesUtility.html#PLATEAU_Editor_TileAddressables_AddressablesUtility_SetGroupLoadAndBuildPath_System_String_
@@ -48195,6 +48271,19 @@ references:
   isSpec: "True"
   fullName: PLATEAU.Util.TransformEx.GetPathToParent
   nameWithType: TransformEx.GetPathToParent
+- uid: PLATEAU.Util.TransformEx.GetTransformFromPath(Transform,System.String)
+  name: GetTransformFromPath(Transform, String)
+  href: api/PLATEAU.Util.TransformEx.html#PLATEAU_Util_TransformEx_GetTransformFromPath_Transform_System_String_
+  commentId: M:PLATEAU.Util.TransformEx.GetTransformFromPath(Transform,System.String)
+  fullName: PLATEAU.Util.TransformEx.GetTransformFromPath(Transform, System.String)
+  nameWithType: TransformEx.GetTransformFromPath(Transform, String)
+- uid: PLATEAU.Util.TransformEx.GetTransformFromPath*
+  name: GetTransformFromPath
+  href: api/PLATEAU.Util.TransformEx.html#PLATEAU_Util_TransformEx_GetTransformFromPath_
+  commentId: Overload:PLATEAU.Util.TransformEx.GetTransformFromPath
+  isSpec: "True"
+  fullName: PLATEAU.Util.TransformEx.GetTransformFromPath
+  nameWithType: TransformEx.GetTransformFromPath
 - uid: PLATEAU.Util.TypeUtil
   name: TypeUtil
   href: api/PLATEAU.Util.TypeUtil.html

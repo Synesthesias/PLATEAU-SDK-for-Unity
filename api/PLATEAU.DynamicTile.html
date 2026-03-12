@@ -140,6 +140,11 @@ PLATEAUTileManager側のStart,Update処理で代用することも可能</p>
       <section><p>PrefabTextureResizer
 TextureImporterを使用して元画像の設定を変更し、解像度を変更した画像を新規に保存する</p>
 </section>
+      <h4><a class="xref" href="PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html">TileCatalogAssetBundleProvider</a></h4>
+      <section><p>タイル用のカタログに対して適用するCustomProviderです。
+外部ディレクトリに出力したAssetBundleを、出力時と別環境下でも読めるようにするためのスクリプトです。
+ビルド時にカタログに埋め込まれたAssetBundleのInternalId(パス)を補正し、別パスでも読めるようにします。</p>
+</section>
       <h4><a class="xref" href="PLATEAU.DynamicTile.TileCatalogSearcher.html">TileCatalogSearcher</a></h4>
       <section><p>Addressables のカタログファイルを検索します。
 Unity 2022 では json、Unity 6 では bin 拡張子になるため両方に対応します。</p>

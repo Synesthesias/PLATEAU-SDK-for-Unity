@@ -2164,7 +2164,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.DynamicTile.PLATEAUTileManager.html",
-          "hash": "pmVoF40JMx5Cym0MrkOffC/LANqmgKd6QlEPaLm+UBg="
+          "hash": "7tGFE0m3yVAp3F/KaDJVW36vkFk/i2KMxJYwNo1zmSk="
         }
       },
       "is_incremental": false,
@@ -2225,6 +2225,18 @@
         ".html": {
           "relative_path": "api/PLATEAU.DynamicTile.TileBounds.html",
           "hash": "D/wMUqcNZHYJaur2QKC4srOBR2B6npGA1G6ngYW/jhA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PLATEAU.DynamicTile.TileCatalogAssetBundleProvider.html",
+          "hash": "zYjVf/84GDG3ut0CDm7l51SUMjFlJVYN1X45Gfrhelc="
         }
       },
       "is_incremental": false,
@@ -2320,7 +2332,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.DynamicTile.html",
-          "hash": "khebaFjxoq3f7/n76eM9Oy4EbDth/zfFqg0ioGf+VyA="
+          "hash": "qqgPlBVc8LEPpKNhP6URg9+pPb0UdKxZQsZCvDSeqFw="
         }
       },
       "is_incremental": false,
@@ -3556,7 +3568,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Editor.TileAddressables.AddressablesUtility.html",
-          "hash": "3u4Vjwi9D/nL3kufxIJfw7LXUqx33Qo6q7rujYMraAo="
+          "hash": "XGXOwpOIArhKccnXCYMyRQl0bCIx3RXiB0OcJI6DWsc="
         }
       },
       "is_incremental": false,
@@ -9004,7 +9016,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PLATEAU.Util.TransformEx.html",
-          "hash": "ZhWJ9aMv0duUNmGtBm2B2Vas8YqPCy6MJtD9VO82nO4="
+          "hash": "MZeRijlXmTWt5oOOim696HUqScXJXxInanXrkTc5dl4="
         }
       },
       "is_incremental": false,
@@ -9112,7 +9124,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "t0ZP0Gj8fchSJHdinaVzF91SlmNTf4CSXjM1d8mY62k="
+          "hash": "6UXFotjbIAO9NoMdl6WkcIn0VO4+dxrrEwT2Qt9CFTA="
         }
       },
       "is_incremental": false,
@@ -9184,7 +9196,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/ImportCityModels.html",
-          "hash": "2MM11fVAcZIj21GJbbHJ6XG1Uk2xOFUpftPQ41Xk0qI="
+          "hash": "h24SEYebOouRlEyl1vuVN2F4OBXDSq9HeB387uBCXzU="
         }
       },
       "is_incremental": false,
@@ -9244,7 +9256,7 @@
       "output": {
         ".html": {
           "relative_path": "manual/dynamicTile.html",
-          "hash": "rzJDPKfzWyFnuo8C3kdDLxrouI1LVoP77pbm/OxqLP8="
+          "hash": "tgRd2Lj+Ens8YWRjQ9aYEa6F+yDg1Ug2rsP+AurRBnI="
         }
       },
       "is_incremental": false,
@@ -10551,7 +10563,7 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 757,
+          "total_file_count": 758,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
