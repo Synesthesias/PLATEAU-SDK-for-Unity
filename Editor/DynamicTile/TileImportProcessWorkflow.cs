@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace PLATEAU.Editor.DynamicTile
@@ -10,63 +12,92 @@ namespace PLATEAU.Editor.DynamicTile
     /// </summary>
     public class TileImportProcessWorkflow
     {
-        public Volume volume;                     // Global Volume
-        public VolumeProfile normalProfile;       // 通常用
-        public VolumeProfile captureProfile;      // キャプチャ用
+        private bool isHDRP;
 
-        private Light[] allLights;                // シーン内の全ライト
-        private bool[] originalLightStates;       // 元の ON/OFF 状態を保存
+        private List<Volume> originalVolumes = new();           // シーン内の全Global Volume
+        private List<bool> originalVolumeStates = new();        // 元の ON/OFF 状態を保存
 
-        private bool isHDRP = false;
+        private Volume captureVolume;
+        private VolumeProfile captureProfile;
+
+        private List<Light> allLights = new();                // シーン内の全ライト
+        private List<bool> originalLightStates = new();       // 元の ON/OFF 状態を保存
 
         public TileImportProcessWorkflow()
         {
 #if PLATEAU_HDRP
             isHDRP = true;
+#else
+            isHDRP = false;
 #endif
-            if (!isHDRP)
-                return;
-
-            // シーン内の全 Light を取得
-            allLights = Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
-
-            // 元の状態を保存する配列を確保
-            originalLightStates = new bool[allLights.Length];
-            for (int i = 0; i < allLights.Length; i++)
-                originalLightStates[i] = allLights[i].enabled;
-
-            volume = Object.FindFirstObjectByType<Volume>();
-            normalProfile = volume.profile;
-            captureProfile = Resources.Load<VolumeProfile>("PlateauVolume/HDRPCaptureVolumeProfile");
         }
 
-        // キャプチャ開始
+        // Import前に呼び出される処理
         public void PreProcess()
         {
             if (!isHDRP)
                 return;
 
-            // 1. 全ライト OFF
+            // シーン内の全 Light を取得
+            allLights = Object.FindObjectsByType<Light>(FindObjectsSortMode.None).ToList();
+
+            // 元の状態を保存する配列を確保
+            originalLightStates = new();
+            for (int i = 0; i < allLights.Count; i++)
+                originalLightStates.Add(allLights[i].enabled);
+
+            // 既存の Global Volume を取得
+            originalVolumes = Object.FindObjectsByType<Volume>(FindObjectsSortMode.None)
+                                    .Where(v => v.isGlobal)
+                                    .ToList();
+
+            // 全ライト OFF
             foreach (var light in allLights)
                 light.enabled = false;
 
-            // 2. Volume Profile をキャプチャ用に差し替え
-            volume.profile = captureProfile;
+            // 全ての Global Volume を無効化
+            originalVolumeStates = originalVolumes.Select(v => v.enabled).ToList();
+            foreach (var v in originalVolumes)
+                v.enabled = false;
+
+            // キャプチャ専用 Volume を生成
+            var go = new GameObject("HDRP_CaptureVolume (Temporary)");
+            captureVolume = go.AddComponent<Volume>();
+            captureVolume.isGlobal = true;
+
+            // プロファイルをロード
+            captureProfile = Resources.Load<VolumeProfile>("PlateauVolume/HDRPCaptureVolumeProfile");
+
+            if (captureProfile == null)
+            {
+                Debug.LogError("Capture VolumeProfile が見つかりません");
+                return;
+            }
+
+            captureVolume.profile = captureProfile;
         }
 
-        // キャプチャ終了
+        // Import後に呼び出される処理
         public void PostProcess()
         {
             if (!isHDRP)
                 return;
 
-            // 1. ライトの状態を元に戻す
-            for (int i = 0; i < allLights.Length; i++)
+            // ライトの状態を元に戻す
+            for (int i = 0; i < allLights.Count; i++)
                 allLights[i].enabled = originalLightStates[i];
 
-            // 2. Volume Profile を通常用に戻す
-            volume.profile = normalProfile;
-        }
-    }
+            // キャプチャ専用 Volume を削除
+            if (captureVolume != null)
+                Object.DestroyImmediate(captureVolume.gameObject);
 
+            // 元の Volume の enabled を復元
+            for (int i = 0; i < originalVolumes.Count; i++)
+            {
+                if (originalVolumes[i] != null)
+                    originalVolumes[i].enabled = originalVolumeStates[i];
+            }
+        }
+
+    }
 }
