@@ -60,11 +60,6 @@ namespace PLATEAU.Editor.DynamicTile
             foreach (var v in originalVolumes)
                 v.enabled = false;
 
-            // キャプチャ専用 Volume を生成
-            var go = new GameObject("HDRP_CaptureVolume (Temporary)");
-            captureVolume = go.AddComponent<Volume>();
-            captureVolume.isGlobal = true;
-
             // プロファイルをロード
             captureProfile = Resources.Load<VolumeProfile>("PlateauVolume/HDRPCaptureVolumeProfile");
 
@@ -74,9 +69,14 @@ namespace PLATEAU.Editor.DynamicTile
                 return;
             }
 
+            // キャプチャ専用 Volume を生成
+            var go = new GameObject("HDRP_CaptureVolume (Temporary)");
+            captureVolume = go.AddComponent<Volume>();
+            captureVolume.isGlobal = true;
+
             captureVolume.profile = captureProfile;
         }
-
+        
         // Import後に呼び出される処理
         public void PostProcess()
         {
@@ -85,8 +85,11 @@ namespace PLATEAU.Editor.DynamicTile
 
             // ライトの状態を元に戻す
             for (int i = 0; i < allLights.Count; i++)
-                allLights[i].enabled = originalLightStates[i];
-
+            {
+                if (allLights[i] != null)
+                    allLights[i].enabled = originalLightStates[i];
+            }
+            
             // キャプチャ専用 Volume を削除
             if (captureVolume != null)
                 Object.DestroyImmediate(captureVolume.gameObject);

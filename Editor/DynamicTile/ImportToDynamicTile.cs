@@ -78,12 +78,16 @@ namespace PLATEAU.Editor.DynamicTile
 
             var processWorkflow = new TileImportProcessWorkflow();
             processWorkflow.PreProcess(); // Import事前処理
-
-            // インポートを実行
-            var task = TileImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
-            await task;
-
-            processWorkflow.PostProcess(); // Import事後処理
+            try
+            {
+                // インポートを実行
+                var task = TileImporter.ImportAsync(config, progressDisplay, cancelToken, postGmlImport);
+                await task;
+            }
+            finally
+            {
+                processWorkflow.PostProcess(); // Import事後処理
+            }  
 
             // 事後処理
             bool succeed = false;
