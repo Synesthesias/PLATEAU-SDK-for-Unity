@@ -19,7 +19,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
         {
             this.context = context;
         }
-        
+
         /// <summary>
         /// エクスポートの事前処理で、タイルのビルドに必要なAddressable設定を行います。
         /// </summary>
@@ -28,7 +28,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             // すでに同名のグループが存在する場合、一度削除します。
             // こうしないと、Assets内のタイルを更新したケースで更新が反映されなくなります。
             AddressablesUtility.RemoveGroup(context.AddressableGroupName);
-            
+
             // プロファイルを作成
             var profileID = AddressablesUtility.SetOrCreateProfile();
             if (string.IsNullOrEmpty(profileID))
@@ -47,7 +47,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 AddressablesUtility.SetProfileForAssetBundleInAssets(context.AddressableGroupName);
             }
             AddressablesUtility.SetGroupLoadAndBuildPath(context.AddressableGroupName);
-            
+
             // MonoScript Bundle の生成を無効化します。
             // デフォルトではMonoScript BundleがLibraryフォルダに生成されますが、それを無効化することでLibraryフォルダへの依存がなくなり、他のPCで動作させることが簡単になります。
             // Addressables 2.x では Disabled が削除されたため、Custom に設定して名前を null にすることで生成を抑制します。
@@ -64,9 +64,9 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 settings.MonoScriptBundleNaming = MonoScriptBundleNaming.Disabled;
 #endif
             }
-            
+
             AddressablesUtility.SaveAddressableSettings();
-            
+
             return true;
         }
 
@@ -87,25 +87,12 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
             var groupName = context.AddressableGroupName;
             if (string.IsNullOrEmpty(groupName)) return;
 
-            if (context.IsExcludeAssetFolder)
-            {
-                // Assets外: ユーザーの設定を汚さないようグループを削除します。
-                // ロード時にはカタログパスから設定を読み直すので動く仕組みです。
-                AddressablesUtility.RemoveGroup(groupName);
-            }
-            else
-            {
-                // Assets内: グループは残すが IncludeInBuild を false にします。
-                // ビルド対象から外さないとAddressablesメニューからの再ビルド時にタイルバンドルが
-                // 再ビルドされ、カタログはSDK利用者の指定した別の場所(ServerData等)に出力されるため、
-                // PLATEAUBundles内の既存カタログとCRCが不整合になります。
-                // タイルバンドルとカタログは既にPLATEAUBundlesに存在しており、
-                // DynamicTileが明示的にカタログをロードするため問題ありません。
-                // 次回のタイルビルド時はOnTileGenerateStartでグループが再作成されます。
-                AddressablesUtility.SetGroupIncludeInBuild(groupName, false);
-            }
+            // ビルド済みのカタログとバンドルはディスクに存在しており、
+            // ランタイムでは LoadContentCatalogAsync で直接ロードするためグループは不要です。
+            // 次回のタイルビルド時は OnTileGenerateStart でグループが再作成されます。
+            AddressablesUtility.RemoveGroup(groupName);
         }
-        
+
         public void OnTileGenerateStartFailed()
         {
             AddressablesUtility.BackToDefaultProfile();
@@ -122,7 +109,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 settings.MonoScriptBundleCustomNaming = savedMonoScriptBundleCustomNaming;
                 AddressablesUtility.SaveAddressableSettings();
             }
-            
+
             savedMonoScriptBundleNaming = null;
             savedMonoScriptBundleCustomNaming = null;
         }
