@@ -497,6 +497,11 @@ namespace PLATEAU.Editor.TileAddressables
         /// <param name="tileGroupName">ビルド対象のタイルグループ名</param>
         public static void BuildAddressables(TileBuildMode buildMode, string tileGroupName)
         {
+            if (string.IsNullOrEmpty(tileGroupName))
+            {
+                Debug.LogWarning("ビルド対象のタイルグループ名が指定されていません。");
+                return;
+            }
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
@@ -643,6 +648,11 @@ namespace PLATEAU.Editor.TileAddressables
 
                 settings.RemoveGroup(group);
                 Debug.Log($"Addressableグループを削除しました: {groupName}");
+                
+                //一応
+                EditorUtility.SetDirty(settings);
+                AssetDatabase.SaveAssets();
+                
                 return true;
             }
             catch (Exception ex)

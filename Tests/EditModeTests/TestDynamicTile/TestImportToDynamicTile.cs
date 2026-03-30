@@ -64,7 +64,7 @@ namespace PLATEAU.Tests.TestDynamicTile
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
             yield return null;
 
-            // Assets 内出力時、ビルド後にグループの IncludeInBuild が false になっていること
+            // Assets 内出力時、ビルド後にグループが削除されてるかチェック
             AssertGroupRemovedAfterBuild();
         }
 
