@@ -221,7 +221,7 @@ namespace PLATEAU.Editor.DynamicTile
             {
                 PlayerSettings.stripUnusedMeshComponents = false; // UV4を使うために必要
                 // addressableビルド
-                AddressablesUtility.BuildAddressables(context.BuildMode);
+                AddressablesUtility.BuildAddressables(context.BuildMode, context.AddressableGroupName);
             }
             catch (Exception ex) 
             {

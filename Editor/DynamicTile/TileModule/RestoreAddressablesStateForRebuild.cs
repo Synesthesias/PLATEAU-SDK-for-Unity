@@ -31,7 +31,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
 
             // 差分ビルドに必要な state ファイルを探します。
             var contentStatePath = Path.Combine(context.BuildFolderPath, ContentStateFileName);
-            
+
             if (File.Exists(contentStatePath))
             {
                 // state ファイルの存在する場所を Addressable の設定に教えます。
@@ -45,7 +45,7 @@ namespace PLATEAU.Editor.DynamicTile.TileModule
                 // New Buildが実行されます。
                 Debug.Log("Addressables content state not found. A full build will be performed.");
             }
-            
+
             return true;
         }
 

@@ -64,8 +64,8 @@ namespace PLATEAU.Tests.TestDynamicTile
             yield return TestImport(gridCodesB, new string[] { gridCodeStrA, gridCodeStrB });
             yield return null;
 
-            // Assets 内出力時、ビルド後にグループの IncludeInBuild が false になっていること
-            AssertGroupIncludeInBuildIsFalse();
+            // Assets 内出力時、ビルド後にグループが削除されてるかチェック
+            AssertGroupRemovedAfterBuild();
         }
 
         /// <summary>
@@ -301,21 +301,18 @@ namespace PLATEAU.Tests.TestDynamicTile
         }
 
         /// <summary>
-        /// Assets 内出力時、ビルド完了後に対象グループの BundledAssetGroupSchema.IncludeInBuild が false であることを検証します。
-        /// IncludeInBuild が true のまま残ると、Addressables メニューからの再ビルド時にカタログ CRC が不整合になります。
+        /// ビルド完了後に対象グループが削除されていることを検証します。
+        /// ビルド済みのカタログとバンドルはディスクに存在し、ランタイムでは LoadContentCatalogAsync で
+        /// 直接ロードするためグループは不要です。
         /// </summary>
-        private void AssertGroupIncludeInBuildIsFalse()
+        private void AssertGroupRemovedAfterBuild()
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             Assert.IsNotNull(settings, "AddressableAssetSettings が存在する");
 
             var groupName = DynamicTileProcessingContext.AddressableGroupBaseName + "_" + Path.GetFileName(outputDir);
             var group = settings.FindGroup(groupName);
-            Assert.IsNotNull(group, $"Addressable グループ '{groupName}' が存在する");
-
-            var schema = group.GetSchema<BundledAssetGroupSchema>();
-            Assert.IsNotNull(schema, $"グループ '{groupName}' に BundledAssetGroupSchema が存在する");
-            Assert.IsFalse(schema.IncludeInBuild, $"グループ '{groupName}' の IncludeInBuild がビルド後に false になっている");
+            Assert.IsNull(group, $"Addressable グループ '{groupName}' がビルド後に削除されている");
         }
 
         private static void AssertTileObjectExists(string[] gridsAssertedToExist)

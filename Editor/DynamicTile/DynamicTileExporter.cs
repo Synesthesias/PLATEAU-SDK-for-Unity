@@ -167,7 +167,7 @@ namespace PLATEAU.DynamicTile
                 {
                     PlayerSettings.stripUnusedMeshComponents = false;
                     // Addressablesのビルドを実行
-                    AddressablesUtility.BuildAddressables(context.BuildMode);
+                    AddressablesUtility.BuildAddressables(context.BuildMode, context.AddressableGroupName);
                 }
                 finally
                 {

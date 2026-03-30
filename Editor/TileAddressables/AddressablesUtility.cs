@@ -23,7 +23,16 @@ namespace PLATEAU.Editor.TileAddressables
         private const string SafeDefaultPathLoad  = "[UnityEngine.AddressableAssets.Addressables.RuntimePath]/[BuildTarget]";
         private const string SafeDefaultPathBuild = "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]";
         private const string ContentStateFileName = "addressables_content_state.bin";
-        
+
+        /// <summary>
+        /// PLATEAU SDK用のビルド時に Library/com.unity.addressables に出力されるランタイム設定ファイル名。
+        /// デフォルトの "settings.json" / "catalog.bin" を使うとSDK利用者のAddressablesランタイム設定を上書きしてしまうため、
+        /// PLATEAU専用のファイル名を使います。PLATEAUはカタログを明示的にロードするためこれらのファイルは不要ですが、
+        /// ビルドスクリプトが必ず出力するため名前を分離します。
+        /// </summary>
+        private const string PlateauRuntimeSettingsFilename = "settings_plateau.json";
+        private const string PlateauRuntimeCatalogFilename = "catalog_plateau.bin";
+
         /// <summary>
         /// AddressableAssetSettingsを取得。nullの場合は警告を出す。
         /// </summary>
@@ -82,7 +91,7 @@ namespace PLATEAU.Editor.TileAddressables
 
             return group;
         }
-        
+
         /// <summary>
         /// 指定したアセットを指定グループにAddressableとして登録
         /// <param name="assetPath">登録するアセットのパス</param>
@@ -112,7 +121,7 @@ namespace PLATEAU.Editor.TileAddressables
 
             // パスに含まれる /./ を削除して正規化
             assetPath = assetPath.Replace("/./", "/");
-            
+
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
             if (string.IsNullOrEmpty(guid))
             {
@@ -132,7 +141,7 @@ namespace PLATEAU.Editor.TileAddressables
                 foreach (var label in labels)
                 {
                     if (string.IsNullOrEmpty(label)) continue;
-                    
+
                     if (!settings.GetLabels().Contains(label))
                     {
                         settings.AddLabel(label, true);
@@ -142,7 +151,7 @@ namespace PLATEAU.Editor.TileAddressables
                 }
             }
         }
-        
+
         public static void BackToDefaultProfile()
         {
             var addrSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -168,13 +177,13 @@ namespace PLATEAU.Editor.TileAddressables
             // Defaultプロファイルであっても、PLATEAU_BuildPathとPLATEAU_LoadPathの値は
             // PLATEAU_TileBuildProfileから引き継ぐようにします。
             // これによりDefaultプロファイルのままでもAddressableビルドが成功するようにします。
-            
+
             // 現在のプロファイル（TileBuildProfileのはず）から設定値を取得してDefaultにコピーします。
             // これにより、Assets内出力かAssets外出力かに関わらず、正しいパス設定が引き継がれます。
             var currentProfileId = addrSettings.activeProfileId;
             var currentBuildPath = profileSettings.GetValueByName(currentProfileId, ProfileVariableNameBuild);
             var currentLoadPath = profileSettings.GetValueByName(currentProfileId, ProfileVariableNameLoad);
-            
+
             // Defaultプロファイルに変数がなければ作成
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
@@ -204,10 +213,10 @@ namespace PLATEAU.Editor.TileAddressables
 
             // プロファイルを切り替え
             addrSettings.activeProfileId = defaultProfileId;
-            
+
             // BuildRemotePathの設定を変えます。この設定が正しくないとアプリビルドに失敗します。
             bool isExternalPath = !currentLoadPath.Contains("StreamingAssets") && !currentLoadPath.Contains("[UnityEngine.AddressableAssets.Addressables.RuntimePath]");
-            
+
             if (!isExternalPath)
             {
                 addrSettings.BuildRemoteCatalog = false;
@@ -216,7 +225,7 @@ namespace PLATEAU.Editor.TileAddressables
             {
                 addrSettings.BuildRemoteCatalog = true;
             }
-            
+
             EditorUtility.SetDirty(addrSettings);
             SaveAddressableSettings();
         }
@@ -234,7 +243,7 @@ namespace PLATEAU.Editor.TileAddressables
             settings.BuildRemoteCatalog = true;
 
             var profileSettings = settings.profileSettings;
-            
+
             if (!profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
                 profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad);
@@ -243,21 +252,21 @@ namespace PLATEAU.Editor.TileAddressables
             {
                 profileSettings.CreateValue(ProfileVariableNameBuild, SafeDefaultPathBuild);
             }
-            
+
             // 出力パス: Assets/StreamingAssets/PLATEAUBundles/{GroupName}
             // AddressablesではAssets/StreamingAssetsを指定するとビルド時に自動的にそこに出力されます。
             // また、実行時(Runtime)もStreamingAssetsは特別なパスとして処理されるため整合性が取れます。
-            
+
             string buildPath = $"Assets/StreamingAssets/{PLATEAU.DynamicTile.AddressableLoader.AddressableLocalBuildFolderName}/{groupName}";
             // ランタイムではApplication.streamingAssetsPathを使って動的に解決させる
             string loadPath = $"{{UnityEngine.Application.streamingAssetsPath}}/{PLATEAU.DynamicTile.AddressableLoader.AddressableLocalBuildFolderName}/{groupName}";
 
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameBuild, buildPath);
             profileSettings.SetValue(settings.activeProfileId, ProfileVariableNameLoad, loadPath);
-            
+
             OverwriteStandardPathVariables(profileSettings, settings.activeProfileId, buildPath, loadPath);
-            
-            
+
+
             // addressables_content_state.binもビルド先に保存
             settings.ContentStateBuildPath = BuildPath(settings);
 
@@ -300,7 +309,7 @@ namespace PLATEAU.Editor.TileAddressables
                 Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
                 return;
             }
-            
+
             if (!settings.profileSettings.GetVariableNames().Contains(ProfileVariableNameLoad))
             {
                 settings.profileSettings.CreateValue(ProfileVariableNameLoad, SafeDefaultPathLoad); // デフォルト値はあとで必要なパスに書き換えること
@@ -317,7 +326,7 @@ namespace PLATEAU.Editor.TileAddressables
 
             SetGroupSchema(bundledSchema);
         }
-        
+
         /// <summary>
         /// プロファイルを設定します。
         /// </summary>
@@ -328,19 +337,19 @@ namespace PLATEAU.Editor.TileAddressables
                 Debug.LogError("pathパラメータが無効です。");
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(pathVar))
             {
                 Debug.LogError("pathVarパラメータが無効です。");
                 return;
             }
-            
+
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
                 return;
             }
-            
+
             // カタログ設定
             settings.BuildRemoteCatalog = true;
 
@@ -361,10 +370,10 @@ namespace PLATEAU.Editor.TileAddressables
             settings.RemoteCatalogLoadPath.SetVariableByName(settings, ProfileVariableNameLoad);
 
             OverwriteStandardPathVariables(profileSettings, settings.activeProfileId, path, path);
-            
+
             // addressables_content_state.binもビルド先に保存します。これは差分ビルドで利用します。
             settings.ContentStateBuildPath = BuildPath(settings);
-            
+
             SaveAddressableSettings();
         }
 
@@ -476,12 +485,23 @@ namespace PLATEAU.Editor.TileAddressables
             settings.activeProfileId = newProfileId;
             return newProfileId;
         }
-        
+
         /// <summary>
         /// Addressablesのビルドを実行します。
+        /// ビルド前にタイルグループ以外の IncludeInBuild を無効化し、ビルド後に復元します。
+        /// また、BuildPlayerContent を直接使わずビルダーを呼び出すことで、
+        /// RuntimeSettingsFilename / RuntimeCatalogFilename を PLATEAU専用に変更し、
+        /// SDK利用者の settings.json / catalog.bin を上書きしません。
         /// </summary>
-        public static void BuildAddressables(TileBuildMode buildMode)
+        /// <param name="buildMode">ビルドモード</param>
+        /// <param name="tileGroupName">ビルド対象のタイルグループ名</param>
+        public static void BuildAddressables(TileBuildMode buildMode, string tileGroupName)
         {
+            if (string.IsNullOrEmpty(tileGroupName))
+            {
+                Debug.LogWarning("ビルド対象のタイルグループ名が指定されていません。");
+                return;
+            }
             var settings = RequireAddressableSettings();
             if (settings == null)
             {
@@ -495,23 +515,49 @@ namespace PLATEAU.Editor.TileAddressables
             bool prevGenerateBuildLayout = ProjectConfigData.GenerateBuildLayout;
             ProjectConfigData.GenerateBuildLayout = false;
 
+            // タイルグループ以外の IncludeInBuild を一時的に false にし、
+            // タイルビルドに他グループが含まれないようにします。
+            var savedIncludeInBuild = DisableNonTileGroupsIncludeInBuild(settings, tileGroupName);
+
             try
             {
-                // Addressablesのビルドを実行
-                AddressablesPlayerBuildResult result;
+                // BuildPlayerContent の前処理: BundleFileId をクリア（BuildPlayerContent 内部と同等の処理）
+                foreach (var group in settings.groups)
+                {
+                    if (group == null) continue;
+                    foreach (var entry in group.entries)
+                        entry.BundleFileId = null;
+                }
+
+                AddressablesDataBuilderInput builderInput;
                 switch (buildMode)
                 {
                     case TileBuildMode.New:
-                        AddressableAssetSettings.BuildPlayerContent(out result);
+                        builderInput = new AddressablesDataBuilderInput(settings);
                         break;
                     case TileBuildMode.Add:
                         var contentStatePath = Path.Combine(BuildPath(settings), ContentStateFileName);
-                        result = ContentUpdateScript.BuildContentUpdate(settings, contentStatePath);
+                        var cacheData = ContentUpdateScript.LoadContentState(contentStatePath);
+                        if (cacheData == null)
+                        {
+                            Debug.LogError($"差分ビルド用の状態ファイルが読み込めません: {contentStatePath}");
+                            return;
+                        }
+                        builderInput = new AddressablesDataBuilderInput(settings, cacheData.playerVersion);
+                        builderInput.PreviousContentState = cacheData;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                
+
+                // SDK利用者の settings.json / catalog.bin を上書きしないよう、PLATEAU専用のファイル名を使用します。
+                // PLATEAUはカタログを LoadContentCatalogAsync で直接ロードするため、
+                // Library/com.unity.addressables 内のこれらのファイルは参照しません。
+                builderInput.RuntimeSettingsFilename = PlateauRuntimeSettingsFilename;
+                builderInput.RuntimeCatalogFilename = PlateauRuntimeCatalogFilename;
+
+                var result = settings.ActivePlayerDataBuilder.BuildData<AddressablesPlayerBuildResult>(builderInput);
+
                 if (!string.IsNullOrEmpty(result.Error))
                 {
                     Debug.LogError($"Addressablesのビルドでエラーが発生しました: {result.Error}");
@@ -523,40 +569,47 @@ namespace PLATEAU.Editor.TileAddressables
             }
             finally
             {
-                // 設定を元に戻します
+                RestoreGroupsIncludeInBuild(savedIncludeInBuild);
                 ProjectConfigData.GenerateBuildLayout = prevGenerateBuildLayout;
             }
         }
-        
+
         /// <summary>
-        /// 指定したグループの IncludeInBuild を設定します。
+        /// タイルグループ以外の全グループの IncludeInBuild を false にし、
+        /// 元の値を返します。ビルド後に RestoreGroupsIncludeInBuild で復元してください。
         /// </summary>
-        public static void SetGroupIncludeInBuild(string groupName, bool includeInBuild)
+        private static Dictionary<AddressableAssetGroup, bool> DisableNonTileGroupsIncludeInBuild(
+            AddressableAssetSettings settings, string tileGroupName)
         {
-            var settings = RequireAddressableSettings();
-            if (settings == null)
+            var saved = new Dictionary<AddressableAssetGroup, bool>();
+
+            foreach (var group in settings.groups)
             {
-                Debug.LogError("AddressableAssetSettingsが見つかりません。");
-                return;
+                if (group == null) continue;
+                if (group.Name == tileGroupName) continue;
+                // ReadOnly グループ（Built In Data等）はスキーマを持たないのでスキップ
+                var schema = group.GetSchema<BundledAssetGroupSchema>();
+                if (schema == null) continue;
+
+                saved[group] = schema.IncludeInBuild;
+                schema.IncludeInBuild = false;
             }
 
-            var group = settings.FindGroup(groupName);
-            if (group == null)
-            {
-                Debug.LogWarning($"グループが見つかりません: {groupName}");
-                return;
-            }
+            return saved;
+        }
 
-            var bundledSchema = group.GetSchema<BundledAssetGroupSchema>();
-            if (bundledSchema == null)
+        /// <summary>
+        /// DisableNonTileGroupsIncludeInBuild で退避した IncludeInBuild を復元します。
+        /// </summary>
+        private static void RestoreGroupsIncludeInBuild(
+            Dictionary<AddressableAssetGroup, bool> saved)
+        {
+            foreach (var (group, wasIncluded) in saved)
             {
-                Debug.LogWarning("BundledAssetGroupSchemaが見つかりません。");
-                return;
+                var schema = group.GetSchema<BundledAssetGroupSchema>();
+                if (schema == null) continue;
+                schema.IncludeInBuild = wasIncluded;
             }
-
-            bundledSchema.IncludeInBuild = includeInBuild;
-            EditorUtility.SetDirty(bundledSchema);
-            SaveAddressableSettings();
         }
 
         /// <summary>
@@ -571,7 +624,7 @@ namespace PLATEAU.Editor.TileAddressables
                 Debug.LogWarning("グループ名が指定されていません。");
                 return false;
             }
-            
+
             try
             {
                 var settings = RequireAddressableSettings();
@@ -579,22 +632,27 @@ namespace PLATEAU.Editor.TileAddressables
                 {
                     return false;
                 }
-                
+
                 var group = settings.FindGroup(groupName);
                 if (group == null)
                 {
                     Debug.Log($"group does not exist. skipping. group name: {groupName}");
                     return false;
                 }
-                
+
                 if (group == settings.DefaultGroup)
                 {
                     Debug.LogWarning("デフォルトグループは削除できません。");
                     return false;
                 }
-                
+
                 settings.RemoveGroup(group);
                 Debug.Log($"Addressableグループを削除しました: {groupName}");
+                
+                //一応
+                EditorUtility.SetDirty(settings);
+                AssetDatabase.SaveAssets();
+                
                 return true;
             }
             catch (Exception ex)
@@ -612,4 +670,4 @@ namespace PLATEAU.Editor.TileAddressables
             Add
         }
     }
-} 
+}
