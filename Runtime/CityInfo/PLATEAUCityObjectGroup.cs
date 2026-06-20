@@ -441,5 +441,10 @@ namespace PLATEAU.CityInfo
             }
             return false;
         }
+        
+        public byte[] GetMessagePackRawData()
+        {
+            return cityObjectsMessagePack;
+        }
     }
 }
