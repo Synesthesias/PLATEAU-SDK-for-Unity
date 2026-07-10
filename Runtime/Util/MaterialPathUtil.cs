@@ -14,7 +14,9 @@ namespace PLATEAU.Util
     public static class MaterialPathUtil
     {
         //ベースパス
-        public static readonly string BaseMaterialDir = PathUtil.SdkPathToAssetPath("Materials");
+        // NOTE: SdkPathToAssetPathがEditor用APIを利用している為ビルド済みバイナリではエラーになる
+        //遅延評価にすることでMaterialPathUtilを参照しただけでエラーが発生することを防いでいる
+        public static string BaseMaterialDir => PathUtil.SdkPathToAssetPath("Materials");
         // 地図表示用のデフォルトマテリアル名
         private const string MapMaterialNameBuiltInRP = "MapUnlitMaterial_BuiltInRP";
         private const string MapMaterialNameUrp = "MapUnlitMaterial_URP";
