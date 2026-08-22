@@ -88,7 +88,9 @@ namespace PLATEAU.Util.Async
             Graphics.Blit(src, rt);
             var prevRt = RenderTexture.active;
             RenderTexture.active = rt;
-            var dst = new Texture2D(widthX4, heightX4);
+            // PLATEAUの外観テクスチャは不透明 (パッキング後のPNGはアルファチャンネル無し) のため RGB24 とします。
+            // これにより下の Compress() が DXT5 ではなく DXT1 (半分のサイズ) を選択します。
+            var dst = new Texture2D(widthX4, heightX4, TextureFormat.RGB24, true);
             dst.ReadPixels(new Rect(0, 0, widthX4, heightX4), 0, 0);
             dst.Apply();
             RenderTexture.active = prevRt;
@@ -96,6 +98,11 @@ namespace PLATEAU.Util.Async
 
             // 圧縮のキモです。
             dst.Compress(true);
+            // 圧縮結果をGPUに反映したうえで CPU 側のピクセルデータを破棄し、メモリ使用量を半減します。
+            // (これを行わないと圧縮後も CPU 側に同サイズの複製が残り続けます)
+            // 以降このテクスチャは読み出し不可になりますが、エクスポート等の書き出し処理は
+            // MaterialConverter.WriteTextureToPNG が非 readable テクスチャ用のフォールバックを持つため影響ありません。
+            dst.Apply(updateMipmaps: false, makeNoLongerReadable: true);
             return dst;
         }
     }
