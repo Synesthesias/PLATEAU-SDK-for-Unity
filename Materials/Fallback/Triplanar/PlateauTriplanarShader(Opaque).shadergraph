@@ -70,6 +70,12 @@
             "m_Id": "070e5b28eda947efae5c6e06de48aed7"
         },
         {
+            "m_Id": "vsafen00000000000000000000000001"
+        },
+        {
+            "m_Id": "vsafen00000000000000000000000003"
+        },
+        {
             "m_Id": "d589301f9edf42359787107d93829c14"
         },
         {
@@ -154,6 +160,34 @@
     "m_GroupDatas": [],
     "m_StickyNoteDatas": [],
     "m_Edges": [
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "vsafen00000000000000000000000001"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "vsafen00000000000000000000000003"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "vsafen00000000000000000000000003"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "070e5b28eda947efae5c6e06de48aed7"
+                },
+                "m_SlotId": 0
+            }
+        },
         {
             "m_OutputSlot": {
                 "m_Node": {
@@ -3330,3 +3364,94 @@
     }
 }
 
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "vsafen00000000000000000000000002",
+    "m_Id": 0,
+    "m_DisplayName": "Out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": { "x": 0.0, "y": 0.0, "z": 1.0 },
+    "m_DefaultValue": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.NormalVectorNode",
+    "m_ObjectId": "vsafen00000000000000000000000001",
+    "m_Group": { "m_Id": "" },
+    "m_Name": "Normal Vector",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": { "serializedVersion": "2", "x": 1600.0, "y": -980.0, "width": 206.0, "height": 129.0 }
+    },
+    "m_Slots": [ { "m_Id": "vsafen00000000000000000000000002" } ],
+    "synonyms": [ "surface direction" ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": false,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 2,
+    "m_CustomColors": { "m_SerializableColors": [] },
+    "m_Space": 0
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "vsafen00000000000000000000000004",
+    "m_Id": 0,
+    "m_DisplayName": "_in",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_in",
+    "m_StageCapability": 3,
+    "m_Value": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "m_DefaultValue": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "vsafen00000000000000000000000005",
+    "m_Id": 1,
+    "m_DisplayName": "_out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_out",
+    "m_StageCapability": 3,
+    "m_Value": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "m_DefaultValue": { "x": 0.0, "y": 0.0, "z": 0.0 },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.CustomFunctionNode",
+    "m_ObjectId": "vsafen00000000000000000000000003",
+    "m_Group": { "m_Id": "" },
+    "m_Name": "PlateauSafeVertexNormal (Custom Function)",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": { "serializedVersion": "2", "x": 1840.0, "y": -980.0, "width": 237.0, "height": 150.0 }
+    },
+    "m_Slots": [
+        { "m_Id": "vsafen00000000000000000000000004" },
+        { "m_Id": "vsafen00000000000000000000000005" }
+    ],
+    "synonyms": [ "code", "HLSL" ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": false,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": { "m_SerializableColors": [] },
+    "m_SourceType": 1,
+    "m_FunctionName": "PlateauSafeVertexNormal",
+    "m_FunctionSource": "",
+    "m_FunctionBody": "$precision lenSq = dot(_in, _in);\n_out = float3(0.0, 1.0, 0.0);\nif (lenSq > 1e-5)\n    _out = _in * rsqrt(lenSq);"
+}
