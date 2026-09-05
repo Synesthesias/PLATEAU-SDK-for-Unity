@@ -241,6 +241,9 @@
             "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
         },
         {
+            "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
+        },
+        {
             "m_Id": "71a187c5174b4f54824622ab56ed01a5"
         },
         {
@@ -1281,6 +1284,20 @@
             },
             "m_InputSlot": {
                 "m_Node": {
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
                     "m_Id": "2296e8d0c4f149fc8e27feba0c530bda"
                 },
                 "m_SlotId": 0
@@ -1289,9 +1306,9 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             },
             "m_InputSlot": {
                 "m_Node": {
@@ -1303,9 +1320,9 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             },
             "m_InputSlot": {
                 "m_Node": {
@@ -1317,9 +1334,9 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             },
             "m_InputSlot": {
                 "m_Node": {
@@ -1331,9 +1348,9 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             },
             "m_InputSlot": {
                 "m_Node": {
@@ -1345,9 +1362,9 @@
         {
             "m_OutputSlot": {
                 "m_Node": {
-                    "m_Id": "dd0bb27c2ffe4c54b2a1a8854e00894c"
+                    "m_Id": "b7f3e21a9c4d48e6a5120f8d3c7e91aa"
                 },
-                "m_SlotId": 0
+                "m_SlotId": 1
             },
             "m_InputSlot": {
                 "m_Node": {
@@ -7826,6 +7843,95 @@
         "m_SerializableColors": []
     },
     "m_Space": 2
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "d4a81c3e6f2b4a179e5c8d0b1a3f4567",
+    "m_Id": 0,
+    "m_DisplayName": "_in",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_in",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "e5b92d4f703c5b28af6d9e1c2b4a5678",
+    "m_Id": 1,
+    "m_DisplayName": "_out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.CustomFunctionNode",
+    "m_ObjectId": "b7f3e21a9c4d48e6a5120f8d3c7e91aa",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "PlateauSafeTriplanarNormal (Custom Function)",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -1450.0,
+            "y": 15.199990272521973,
+            "width": 237.0,
+            "height": 150.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "d4a81c3e6f2b4a179e5c8d0b1a3f4567"
+        },
+        {
+            "m_Id": "e5b92d4f703c5b28af6d9e1c2b4a5678"
+        }
+    ],
+    "synonyms": [
+        "code",
+        "HLSL"
+    ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": false,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SourceType": 1,
+    "m_FunctionName": "PlateauSafeTriplanarNormal",
+    "m_FunctionSource": "",
+    "m_FunctionBody": "$precision lenSq = dot(_in, _in);\n_out = float3(0.0, 1.0, 0.0);\nif (lenSq > 1e-5)\n    _out = _in * rsqrt(lenSq);"
 }
 
 {
