@@ -10,7 +10,12 @@ namespace PLATEAU.CityAdjust.NonLibData
     /// </summary>
     internal class NameToAttrsDict : INonLibData
     {
-        private NonLibDictionary<PLATEAUCityObjectGroup> data = new();
+        private readonly NonLibDictionary<PLATEAUCityObjectGroup> data;
+
+        public NameToAttrsDict(string restoreNamePrefix = null)
+        {
+            data = new NonLibDictionary<PLATEAUCityObjectGroup>(restoreNamePrefix);
+        }
 
         /// <summary>
         /// ゲームオブジェクトとその子から属性情報の辞書を構築します。
