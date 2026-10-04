@@ -77,11 +77,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private RnModel network; // この道路ネットワークのうち、 roadBases に含まれるもののみを対象に取ります。
         private RnRoadBase[] roadBases;
+        private readonly bool copyNeighborsOnly;
         
-        public RrTargetRoadBases(RnModel network, IEnumerable<RnRoadBase> roadBases)
+        /// <param name="copyNeighborsOnly">
+        /// true なら <see cref="Copy"/> で、対象とその隣接する道路・交差点だけをコピーします。
+        /// 対象が少数のとき、ネットワーク全体をコピーするより大幅に速くなります。
+        /// メッシュ化の前処理は対象と隣接部分しか参照しないため、生成結果は全体コピーと同じになる想定です。
+        /// </param>
+        public RrTargetRoadBases(RnModel network, IEnumerable<RnRoadBase> roadBases, bool copyNeighborsOnly = false)
         {
             this.network = network;
             this.roadBases = roadBases.ToArray();
+            this.copyNeighborsOnly = copyNeighborsOnly;
         }
 
         public IEnumerable<RnRoadBase> RoadBases()
@@ -117,7 +124,20 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // var copiedRoadBases = copiedNetwork.Roads.Cast<RnRoadBase>().Concat(copiedNetwork.Intersections);
             
             // ↓ RrRoadNetworkCopier の正しさをチェックしたいときは、上のコメントアウトを外して完全コピーの結果と比較してください。
-            var copiedNetwork = new RrRoadNetworkCopier().Copy(network, out var roadSrcToDst);
+            Dictionary<RnRoadBase, RnRoadBase> roadSrcToDst;
+            RnModel copiedNetwork;
+            if (copyNeighborsOnly)
+            {
+                var copyTargets = roadBases
+                    .Concat(roadBases.SelectMany(rb => rb.GetNeighborRoads()))
+                    .Where(rb => rb != null)
+                    .Distinct();
+                copiedNetwork = new RrRoadNetworkCopier().CopyPartial(copyTargets, out roadSrcToDst);
+            }
+            else
+            {
+                copiedNetwork = new RrRoadNetworkCopier().Copy(network, out roadSrcToDst);
+            }
             var copiedRoadBases = roadBases.Select(src => roadSrcToDst[src]);
             
             return new RrTargetRoadBases(copiedNetwork, copiedRoadBases);

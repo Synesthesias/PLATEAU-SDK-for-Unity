@@ -24,12 +24,17 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private readonly IRrTarget srcTargetBeforeCopy;
         private readonly RnmLineSeparateType lineSeparateType;
+        private readonly bool copySourceData;
         
         /// <summary> デバッグモードがONなら、輪郭線形状を矢印で表示します </summary>
         private static readonly bool DebugMode = false;
         
         
-        public RoadNetworkToMesh(IRrTarget target, RnmLineSeparateType lineSeparateType)
+        /// <param name="copySourceData">
+        /// true なら生成元オブジェクトの UV4・属性・コンポーネントを生成物へコピーします。
+        /// UV4 のコピーは頂点数の二乗に比例して重いため、ランタイムで頻繁に再生成する場合は false を指定します。
+        /// </param>
+        public RoadNetworkToMesh(IRrTarget target, RnmLineSeparateType lineSeparateType, bool copySourceData = true)
         {
             if (target == null)
             {
@@ -37,6 +42,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             }
             this.srcTargetBeforeCopy = target;
             this.lineSeparateType = lineSeparateType;
+            this.copySourceData = copySourceData;
         }
 
         /// <summary>
@@ -147,7 +153,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     return cityObject.Granularity == MeshGranularity.PerCityModelArea;
                 });
                 
-                if (srcObjs.Length > 0 && isAreaImported == false)
+                if (!copySourceData)
+                {
+                    // 生成元のデータはコピーせず、選択用のコライダーだけ用意します。
+                    dstObj.GetOrAddComponent<MeshCollider>();
+                }
+                else if (srcObjs.Length > 0 && isAreaImported == false)
                 {
                     // UV4をコピーします。
                     new RnmUV4Copier().Copy(srcObjs, dstObj);
@@ -181,12 +192,24 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                         componentCopier.Copy(srcObjs[0].Transform.gameObject, dstObj);
                     }
                 }
+
+                // 既存のオブジェクトを置き換えた場合も当たり判定が新しい形状になるよう、コライダーのメッシュを差し替えます。
+                var meshCollider = dstObj.GetComponent<MeshCollider>();
+                if (meshCollider != null)
+                {
+                    meshCollider.sharedMesh = null;
+                    meshCollider.sharedMesh = mesh;
+                }
             }
             
 #if UNITY_EDITOR
             // 生成物を選択状態に
             // Selection.objects = new []{dstParent.gameObject};
-            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            // Playモード中は MarkSceneDirty が例外を投げるため、編集時のみ呼びます。
+            if (!Application.isPlaying)
+            {
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            }
 #endif
 
             return resultList;

@@ -17,11 +17,52 @@ namespace PLATEAU.RoadAdjust
         /// </summary>
         public RnModel Copy(RnModel src, out Dictionary<RnRoadBase, RnRoadBase> outRoadSrcToDst)
         {
+            return CopyCore(src.Roads, src.Intersections, src.CollectAllLanes(), src.CollectAllEdges(), src.SideWalks,
+                out outRoadSrcToDst);
+        }
+
+        /// <summary>
+        /// 道路ネットワークのうち、指定した道路・交差点だけをディープコピーした道路ネットワークを返します。
+        /// 指定外の道路・交差点への接続は null になります。
+        /// 一部の道路だけを再生成する際に、ネットワーク全体をコピーするコストを避けるために使います。
+        /// </summary>
+        public RnModel CopyPartial(IEnumerable<RnRoadBase> srcRoadBases, out Dictionary<RnRoadBase, RnRoadBase> outRoadSrcToDst)
+        {
+            var roadBaseSet = srcRoadBases.Where(rb => rb != null).Distinct().ToList();
+            var srcRoads = roadBaseSet.OfType<RnRoad>().ToList();
+            var srcInters = roadBaseSet.OfType<RnIntersection>().ToList();
+            var srcLanes = srcRoads.SelectMany(r => r.AllLanesWithMedian);
+            var srcEdges = srcInters.SelectMany(i => i.Edges);
+            var srcSideWalks = roadBaseSet.SelectMany(rb => rb.SideWalks).Distinct();
+            return CopyCore(srcRoads, srcInters, srcLanes, srcEdges, srcSideWalks, out outRoadSrcToDst);
+        }
+
+        private RnModel CopyCore(
+            IEnumerable<RnRoad> srcRoads,
+            IEnumerable<RnIntersection> srcInters,
+            IEnumerable<RnLane> srcLanes,
+            IEnumerable<RnIntersectionEdge> srcEdges,
+            IEnumerable<RnSideWalk> srcSideWalks,
+            out Dictionary<RnRoadBase, RnRoadBase> outRoadSrcToDst)
+        {
             // src→dstの辞書を構築しながら、srcをdstに置き換えてコピーします。
+            var srcRoadList = srcRoads.ToList();
+            var srcInterList = srcInters.ToList();
+            var srcLaneList = srcLanes.ToList();
+            var srcEdgeList = srcEdges.ToList();
+
+            // RnModel.CollectAllWays / CollectAllLineStrings と同じ規則で、コピー対象の Way と LineString を集めます。
+            var srcWays = srcLaneList
+                .SelectMany(l => l.AllWays)
+                .Concat(srcEdgeList.Select(e => e.Border))
+                .Concat(srcSideWalks.SelectMany(sw => sw.AllWays))
+                .Distinct()
+                .ToList();
+            var srcLineStrings = srcWays.Select(w => w.LineString).Distinct().ToList();
 
             // Pointsのコピー
             var points = new Dictionary<RnPoint, RnPoint>();
-            foreach (var srcPoint in src.CollectAllLineStrings().SelectMany(ls => ls.Points).Distinct())
+            foreach (var srcPoint in srcLineStrings.SelectMany(ls => ls.Points).Distinct())
             {
                 var dstPoint = new RnPoint(srcPoint.Vertex);
                 dstPoint.DebugMyId = srcPoint.DebugMyId;
@@ -30,7 +71,7 @@ namespace PLATEAU.RoadAdjust
 
             // LineStringsのコピー
             var lineStrings = new Dictionary<RnLineString, RnLineString>();
-            foreach (var srcLineStr in src.CollectAllLineStrings())
+            foreach (var srcLineStr in srcLineStrings)
             {
                 var dstLineStr = new RnLineString(srcLineStr.Points.Select(p => points[p]));
                 dstLineStr.DebugMyId = srcLineStr.DebugMyId;
@@ -39,7 +80,7 @@ namespace PLATEAU.RoadAdjust
 
             // Wayのコピー
             var ways = new Dictionary<RnWay, RnWay>();
-            foreach (var srcWay in src.CollectAllWays())
+            foreach (var srcWay in srcWays)
             {
                 var lineStr = lineStrings[srcWay.LineString];
                 var dstWay = new RnWay(lineStr, srcWay.IsReversed, srcWay.IsReverseNormal);
@@ -49,7 +90,7 @@ namespace PLATEAU.RoadAdjust
 
             // Laneのコピー
             var lanes = new Dictionary<RnLane, RnLane>();
-            foreach (var srcLane in src.CollectAllLanes())
+            foreach (var srcLane in srcLaneList)
             {
                 var dstLeftWay = srcLane.LeftWay == null ? null : ways[srcLane.LeftWay];
                 var dstRightWay = srcLane.RightWay == null ? null : ways[srcLane.RightWay];
@@ -66,7 +107,7 @@ namespace PLATEAU.RoadAdjust
             // Roadのうち接続でない部分をコピー
             var roads = new Dictionary<RnRoad, RnRoad>();
             var roadBases = new Dictionary<RnRoadBase, RnRoadBase>();
-            foreach (var srcRoad in src.Roads)
+            foreach (var srcRoad in srcRoadList)
             {
                 var dstRoad = new RnRoad(srcRoad.TargetTrans, srcRoad.TargetGroupKeys);
                 dstRoad.DebugMyId = srcRoad.DebugMyId;
@@ -94,7 +135,7 @@ namespace PLATEAU.RoadAdjust
 
             // Intersectionのうち接続でない部分をコピー
             var inters = new Dictionary<RnIntersection, RnIntersection>();
-            foreach (var srcInter in src.Intersections)
+            foreach (var srcInter in srcInterList)
             {
                 var dstInter = new RnIntersection(srcInter.TargetTrans, srcInter.TargetGroupKeys);
                 dstInter.DebugMyId = srcInter.DebugMyId;
@@ -106,7 +147,7 @@ namespace PLATEAU.RoadAdjust
 
             // Intersection Edgeのコピー
             var neighbors = new Dictionary<RnIntersectionEdge, RnIntersectionEdge>();
-            foreach (var srcEdge in src.Intersections.SelectMany(i => i.Edges))
+            foreach (var srcEdge in srcEdgeList)
             {
                 var dstEdge = new RnIntersectionEdge();
                 dstEdge.Border = ways[srcEdge.Border];
@@ -117,7 +158,7 @@ namespace PLATEAU.RoadAdjust
 
             // Trackのコピー
             var tracks = new Dictionary<RnTrack, RnTrack>();
-            foreach (var srcTrack in src.Intersections.SelectMany(i => i.Tracks))
+            foreach (var srcTrack in srcInterList.SelectMany(i => i.Tracks))
             {
                 var dstSpline = new Spline();
                 dstSpline.Copy(srcTrack.Spline);
@@ -149,8 +190,9 @@ namespace PLATEAU.RoadAdjust
             // Roadのうち接続部分をコピー
             foreach (var (srcRoad, dstRoad) in roads)
             {
-                var prev = srcRoad.Prev == null ? null : roadBases[srcRoad.Prev];
-                var next = srcRoad.Next == null ? null : roadBases[srcRoad.Next];
+                // 部分コピーでは、コピー対象外の道路・交差点への接続は null にします。
+                var prev = srcRoad.Prev == null || !roadBases.ContainsKey(srcRoad.Prev) ? null : roadBases[srcRoad.Prev];
+                var next = srcRoad.Next == null || !roadBases.ContainsKey(srcRoad.Next) ? null : roadBases[srcRoad.Next];
                 dstRoad.SetPrevNext(prev, next);
             }
 
