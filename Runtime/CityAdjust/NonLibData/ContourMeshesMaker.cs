@@ -13,7 +13,12 @@ namespace PLATEAU.CityAdjust.NonLibData
     internal class ContourMeshesMaker : INonLibData
     {
         // 記録用の辞書であり、Valueは頂点座標です。
-        private NonLibDictionary<RnmContourMesh> data = new();
+        private readonly NonLibDictionary<RnmContourMesh> data;
+
+        public ContourMeshesMaker(string restoreNamePrefix = null)
+        {
+            data = new NonLibDictionary<RnmContourMesh>(restoreNamePrefix);
+        }
         
         /// <summary> 道路の頂点を記憶します。 </summary>
         public void ComposeFrom(UniqueParentTransformList src)

@@ -27,6 +27,7 @@ namespace PLATEAU.CityAdjust.AlignLand
     public class AlignLandExecutor
     {
         protected const float HeightOffset = 0.3f; // 高さ合わせの結果に対して、埋まらないようにこれだけ上げます(メートル)
+        private const string ResultNamePrefix = "ALIGNED";
         
         public async Task ExecAsync(ALConfigBase conf, IProgressDisplay progressDisplay)
         {
@@ -94,8 +95,8 @@ namespace PLATEAU.CityAdjust.AlignLand
 
             var nonLibDataHolder = new NonLibData.NonLibDataHolder(
                 new GmlIdToSerializedCityObj(),
-                new NameToAttrsDict(),
-                new ContourMeshesMaker()
+                new NameToAttrsDict(ResultNamePrefix),
+                new ContourMeshesMaker(ResultNamePrefix)
             );
             nonLibDataHolder.ComposeFrom(new []{alignTarget, alignInvertTarget});
 
@@ -196,7 +197,7 @@ namespace PLATEAU.CityAdjust.AlignLand
                     var result = await PlateauToUnityModelConverter.PlateauModelToScene(
                         null, new DummyProgressDisplay(), "",
                         new PlaceToSceneConfig(new RecoverFromGameMaterialID(subMeshConverters[i]), true, null, null,
-                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject, "ALIGNED"),
+                            new CityObjectGroupInfoForToolkits(false, false), MeshGranularity.PerPrimaryFeatureObject, ResultNamePrefix),
                         alignTargetModels[i],
                         new AttributeDataHelper(
                             new SerializedCityObjectGetterFromDict(nonLibDataHolder.Get<GmlIdToSerializedCityObj>(), alignTargetModels[i]),

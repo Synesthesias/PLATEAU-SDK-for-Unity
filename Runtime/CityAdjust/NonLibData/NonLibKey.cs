@@ -16,6 +16,17 @@ namespace PLATEAU.CityAdjust.NonLibData
     internal class NonLibDictionary<ValueT> where ValueT : class
     {
         private Dictionary<NonLibPath, List<NonLibValue<ValueT>>> pathToValDict = new();
+        private readonly string restoreNamePrefix;
+
+        /// <summary>
+        /// <paramref name="restoreNamePrefix"/>が指定された場合、復元先の各GameObject名から
+        /// 「プレフィックス_」を1回だけ除いたパスで照合します。
+        /// 変換結果にだけ名前プレフィックスが付く処理で、変換前のパスとの対応を維持するために利用します。
+        /// </summary>
+        public NonLibDictionary(string restoreNamePrefix = null)
+        {
+            this.restoreNamePrefix = restoreNamePrefix;
+        }
         
         /// <summary>
         /// 未復元でありnullでないデータの数です。
@@ -50,7 +61,7 @@ namespace PLATEAU.CityAdjust.NonLibData
         /// </summary>
         public ValueT GetNonRestoredAndMarkRestored(Transform target, Transform[] baseTransforms)
         {
-            var path = new NonLibPath(target, baseTransforms);
+            var path = new NonLibPath(target, baseTransforms, restoreNamePrefix);
             if (pathToValDict.TryGetValue(path, out var values))
             {
                 var val =  values.FirstOrDefault(val => !val.IsRestored);
@@ -76,9 +87,9 @@ namespace PLATEAU.CityAdjust.NonLibData
             public string Path { get; }
             public string ObjName { get; }
     
-            public NonLibPath(Transform obj, Transform[] baseTransforms)
+            public NonLibPath(Transform obj, Transform[] baseTransforms, string namePrefixToRemove = null)
             {
-                Path = MakePath(obj, baseTransforms);
+                Path = MakePath(obj, baseTransforms, namePrefixToRemove);
                 ObjName = obj.name;
             }
     
@@ -97,18 +108,18 @@ namespace PLATEAU.CityAdjust.NonLibData
                 return ToString().GetHashCode();
             }
     
-            private string MakePath(Transform obj, Transform[] baseTransforms)
+            private string MakePath(Transform obj, Transform[] baseTransforms, string namePrefixToRemove)
             {
                 List<string> pathes = new();
                 var current = obj;
                 if (baseTransforms.Contains(current))
                 {
-                    return current.name;
+                    return RemoveNamePrefix(current.name, namePrefixToRemove);
                 }
                 
                 while (current != null && !baseTransforms.Contains(current))
                 {
-                    pathes.Add(current.name);
+                    pathes.Add(RemoveNamePrefix(current.name, namePrefixToRemove));
                     current = current.parent;
                 }
     
@@ -120,6 +131,16 @@ namespace PLATEAU.CityAdjust.NonLibData
                 }
     
                 return sb.ToString();
+            }
+
+            private static string RemoveNamePrefix(string objectName, string namePrefixToRemove)
+            {
+                if (string.IsNullOrEmpty(namePrefixToRemove)) return objectName;
+
+                var prefixWithSeparator = $"{namePrefixToRemove}_";
+                return objectName.StartsWith(prefixWithSeparator)
+                    ? objectName.Substring(prefixWithSeparator.Length)
+                    : objectName;
             }
             
             public override string ToString()
