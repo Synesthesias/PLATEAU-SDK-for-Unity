@@ -120,7 +120,12 @@ namespace PLATEAU.CityInfo
             granularity = other.granularity;
             lod = other.lod;
         }
-        
+
+        public byte[] GetMessagePackRawData()
+        {
+            return cityObjectsMessagePack;
+        }
+
         /// <summary>
         /// RaycastHitからPrimary CityObjectを取得します
         /// </summary>
