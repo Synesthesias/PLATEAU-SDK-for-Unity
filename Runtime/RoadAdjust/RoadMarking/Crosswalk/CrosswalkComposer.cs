@@ -19,10 +19,22 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
 
         /// <summary> これだけ高さを上げれば道路にめりこまないという経験則 </summary>
         private const float HeightOffset = 0.07f;
+
+        /// <summary>
+        /// <see cref="CrosswalkFrequency.KeepExisting"/> で、既存の横断歩道をその道路の端のものとみなす距離の上限（m）。
+        /// 横断歩道は停止線から <see cref="PositionOffset"/> だけ交差点側に置かれるため、端の境界線からは数 m の位置にある。
+        /// これより遠いものは、同じ生成元を持つ別の道路の横断歩道とみなして触らない。
+        /// </summary>
+        private const float KeepExistingMaxDistance = 10f;
         
         
         public List<CrosswalkInstance> Compose(IRrTarget target, CrosswalkFrequency crosswalkFrequency)
         {
+            if (crosswalkFrequency == CrosswalkFrequency.KeepExisting)
+            {
+                return ComposeKeepExisting(target);
+            }
+
             var ret = new List<CrosswalkInstance>();
             var placementRule = crosswalkFrequency.ToPlacementRule();
             foreach (var road in target.Roads())
@@ -44,6 +56,71 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
             }
             
             return ret;
+        }
+
+        /// <summary>
+        /// 既存の横断歩道がある端だけに横断歩道を作り直します。既存のものは削除します。
+        /// 記録された向き（Prev/Next）は、道路の向きをそろえ直すと実際の端と食い違うため、位置で判定します。
+        /// </summary>
+        private List<CrosswalkInstance> ComposeKeepExisting(IRrTarget target)
+        {
+            var ret = new List<CrosswalkInstance>();
+            foreach (var road in target.Roads())
+            {
+                var prevIntersection = road.Prev as RnIntersection;
+                var nextIntersection = road.Next as RnIntersection;
+                var prevBorder = prevIntersection != null ? road.GetMergedBorder(RnLaneBorderType.Prev, null) : null;
+                var nextBorder = nextIntersection != null ? road.GetMergedBorder(RnLaneBorderType.Next, null) : null;
+
+                bool hasPrev = false;
+                bool hasNext = false;
+                var existings = PLATEAUReproducedRoad.FindAll(ReproducedRoadType.Crosswalk, new RoadReproduceSource(road));
+                foreach (var existing in existings)
+                {
+                    var side = FindNearestSide(existing, prevBorder, nextBorder);
+                    if (side == ReproducedRoadDirection.None) continue;
+                    if (side == ReproducedRoadDirection.Prev) hasPrev = true;
+                    else hasNext = true;
+                    Object.DestroyImmediate(existing.gameObject);
+                }
+
+                if (hasNext)
+                {
+                    var crosswalk = GenerateCrosswalk(new MWLine(nextBorder), nextIntersection, road, ReproducedRoadDirection.Next);
+                    if (crosswalk != null) ret.Add(crosswalk);
+                }
+
+                if (hasPrev)
+                {
+                    var crosswalk = GenerateCrosswalk(new MWLine(prevBorder), prevIntersection, road, ReproducedRoadDirection.Prev);
+                    if (crosswalk != null) ret.Add(crosswalk);
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 既存の横断歩道が、道路のどちらの端（交差点との境界線）に近いかを返します。
+        /// どちらの境界線からも <see cref="KeepExistingMaxDistance"/> より遠い場合は None を返します。
+        /// </summary>
+        private static ReproducedRoadDirection FindNearestSide(PLATEAUReproducedRoad crosswalk, RnWay prevBorder, RnWay nextBorder)
+        {
+            var renderer = crosswalk.GetComponent<MeshRenderer>();
+            var center = renderer != null ? renderer.bounds.center : crosswalk.transform.position;
+
+            float prevDistance = DistanceTo(prevBorder, center);
+            float nextDistance = DistanceTo(nextBorder, center);
+            float nearest = Mathf.Min(prevDistance, nextDistance);
+            if (nearest > KeepExistingMaxDistance) return ReproducedRoadDirection.None;
+            return prevDistance <= nextDistance ? ReproducedRoadDirection.Prev : ReproducedRoadDirection.Next;
+        }
+
+        private static float DistanceTo(RnWay border, Vector3 position)
+        {
+            if (border == null || border.Count == 0) return float.MaxValue;
+            border.GetNearestPoint(position, out _, out _, out var distance);
+            return distance;
         }
 
         /// <summary>

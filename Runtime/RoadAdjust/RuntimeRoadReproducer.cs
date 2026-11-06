@@ -5,6 +5,17 @@ using System.Collections.Generic;
 
 namespace PLATEAU.RoadAdjust
 {
+    /// <summary> ランタイムで道路を作り直すときの横断歩道の扱いです。 </summary>
+    public enum RuntimeCrosswalkMode
+    {
+        /// <summary> 対象の道路のすべての交差点側に置きます。 </summary>
+        PlaceAll,
+        /// <summary> すでに置かれている所だけに置き直します。編集していない場所の横断歩道は増えません。 </summary>
+        KeepExisting,
+        /// <summary> 置きません。すでに置かれているものは削除します。 </summary>
+        Delete,
+    }
+
     /// <summary>
     /// <see cref="RoadReproducer"/>を外部アセンブリ（ランタイムのアプリ側）から呼び出すための公開窓口です。
     /// 道路ネットワークの一部を編集した後に、その部分の道路メッシュと道路標示を作り直す用途を想定しています。
@@ -25,7 +36,31 @@ namespace PLATEAU.RoadAdjust
             bool placeCrosswalks = true,
             bool smoothAll = false)
         {
-            var crosswalk = placeCrosswalks ? CrosswalkFrequency.All : CrosswalkFrequency.Delete;
+            var mode = placeCrosswalks ? RuntimeCrosswalkMode.PlaceAll : RuntimeCrosswalkMode.Delete;
+            return Reproduce(network, targets, mode, smoothAll);
+        }
+
+        /// <summary>
+        /// 指定した道路・交差点について、道路メッシュと道路標示を再生成します。
+        /// 同じ生成元を持つ既存の生成物があれば置き換えます。
+        /// </summary>
+        /// <param name="network">対象の道路ネットワーク</param>
+        /// <param name="targets">再生成する道路・交差点</param>
+        /// <param name="crosswalkMode">横断歩道の扱い</param>
+        /// <param name="smoothAll">true なら歩道外側も含めて線を滑らかにします。false なら元の形状を尊重します</param>
+        public static IReadOnlyList<PLATEAUReproducedRoad> Reproduce(
+            RnModel network,
+            IEnumerable<RnRoadBase> targets,
+            RuntimeCrosswalkMode crosswalkMode,
+            bool smoothAll = false)
+        {
+            var crosswalk = crosswalkMode switch
+            {
+                RuntimeCrosswalkMode.PlaceAll => CrosswalkFrequency.All,
+                RuntimeCrosswalkMode.KeepExisting => CrosswalkFrequency.KeepExisting,
+                RuntimeCrosswalkMode.Delete => CrosswalkFrequency.Delete,
+                _ => throw new System.ArgumentOutOfRangeException(nameof(crosswalkMode), crosswalkMode, null),
+            };
             ISmoothingStrategy smoothing = smoothAll
                 ? new SmoothingStrategySmoothAll()
                 : new SmoothingStrategyRespectOriginal();

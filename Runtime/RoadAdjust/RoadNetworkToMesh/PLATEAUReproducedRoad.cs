@@ -82,7 +82,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             return null;
         }
 
-        
+        /// <summary>
+        /// 種類と生成元が合致するものを、向き（<see cref="ReproducedRoadDirection"/>）を問わずすべてシーンから探します。
+        /// 同じ生成元から作られた複数の生成物（道路の両端の横断歩道など）をまとめて扱うときに使います。
+        /// </summary>
+        public static List<PLATEAUReproducedRoad> FindAll(ReproducedRoadType roadTypeArg, RoadReproduceSource sourceRoadArg)
+        {
+            IEnumerable<PLATEAUReproducedRoad> comps = findCache ?? (IEnumerable<PLATEAUReproducedRoad>)FindObjectsOfType<PLATEAUReproducedRoad>(false);
+            return comps
+                .Where(c => c != null && c.gameObject.activeInHierarchy)
+                .Where(c => c.roadType == roadTypeArg && c.reproduceSource.IsMatch(sourceRoadArg))
+                .ToList();
+        }
     }
 
     /// <summary> 道路の両端に配置される道路標示（横断歩道）において、道路のどちら側に配置されたかを示します。どちらでもない道路標示はNoneとなります。 </summary>
