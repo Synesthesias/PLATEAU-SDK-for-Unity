@@ -5,3 +5,4 @@ Documentation~/api
 Documentation~/obj
 *.pdb
 *.pdb.meta
+**/.claude/settings.local.json
