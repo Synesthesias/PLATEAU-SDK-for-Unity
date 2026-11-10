@@ -130,6 +130,7 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             {
                 var copyTargets = roadBases
                     .Concat(roadBases.SelectMany(rb => rb.GetNeighborRoads()))
+                    .Concat(roadBases.OfType<RnRoad>().SelectMany(CollectRoadChainToIntersections))
                     .Where(rb => rb != null)
                     .Distinct();
                 copiedNetwork = new RrRoadNetworkCopier().CopyPartial(copyTargets, out roadSrcToDst);
@@ -144,5 +145,30 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
         }
 
         public RnModel Network() => network;
+
+        /// <summary>
+        /// 道路の前後を、交差点に着くまでたどった道路と、たどり着いた交差点を返します。
+        /// 中央線の色は、道路をたどって交差点までの距離から決めるため、部分コピーでも途中で途切れないようにします。
+        /// </summary>
+        private static IEnumerable<RnRoadBase> CollectRoadChainToIntersections(RnRoad road)
+        {
+            var visited = new HashSet<RnRoadBase> { road };
+
+            var prev = road.Prev;
+            while (prev != null && visited.Add(prev))
+            {
+                yield return prev;
+                if (prev is not RnRoad prevRoad) break;
+                prev = prevRoad.Prev;
+            }
+
+            var next = road.Next;
+            while (next != null && visited.Add(next))
+            {
+                yield return next;
+                if (next is not RnRoad nextRoad) break;
+                next = nextRoad.Next;
+            }
+        }
     }
 }
