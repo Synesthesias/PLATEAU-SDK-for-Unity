@@ -81,6 +81,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking.Crosswalk
                     if (side == ReproducedRoadDirection.None) continue;
                     if (side == ReproducedRoadDirection.Prev) hasPrev = true;
                     else hasNext = true;
+                    ReproducedResources.ReleaseRendererResources(existing.gameObject);
                     Object.DestroyImmediate(existing.gameObject);
                 }
 

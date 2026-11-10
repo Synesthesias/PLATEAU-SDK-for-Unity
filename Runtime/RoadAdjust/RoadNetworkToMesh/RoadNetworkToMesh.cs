@@ -106,7 +106,12 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 
                 // 輪郭線をテッセレートしてメッシュ化
                 var mesh = new ContourToMesh().Generate(contourMesh, out var subMeshIDToMatType);
-                if (mesh.vertexCount == 0) continue;
+                if (mesh.vertexCount == 0)
+                {
+                    ReproducedResources.DestroyTemporary(mesh);
+                    continue;
+                }
+                ReproducedResources.Track(mesh);
 
                 // オブジェクトの生成
                 var dstObj = GenerateDstGameObj(dstParent, srcObjs);
@@ -120,6 +125,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 
                 var renderer = dstObj.GetOrAddComponent<MeshRenderer>();
                 var filter = dstObj.GetOrAddComponent<MeshFilter>();
+                // 既存のオブジェクトを置き換える場合、前の形状のメッシュを後で破棄します。
+                var replacedMesh = filter.sharedMesh;
+                var replacedColliderMesh = dstObj.TryGetComponent<MeshCollider>(out var oldCollider) ? oldCollider.sharedMesh : null;
                 filter.sharedMesh = mesh;
                 
                 // マテリアルを貼り付けます。
@@ -200,6 +208,9 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                     meshCollider.sharedMesh = null;
                     meshCollider.sharedMesh = mesh;
                 }
+
+                if (replacedMesh != mesh) ReproducedResources.Release(replacedMesh);
+                if (replacedColliderMesh != mesh) ReproducedResources.Release(replacedColliderMesh);
             }
             
 #if UNITY_EDITOR

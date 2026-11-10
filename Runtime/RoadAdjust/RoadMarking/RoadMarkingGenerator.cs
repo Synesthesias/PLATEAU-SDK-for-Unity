@@ -147,9 +147,17 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             mesh.RecalculateBounds();
             
             
+            ReproducedResources.Track(mesh);
+            foreach (var material in materials)
+            {
+                ReproducedResources.Track(material);
+            }
+
             var meshFilter = dstObj.GetOrAddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
             var meshRenderer = dstObj.GetOrAddComponent<MeshRenderer>();
+            // 既存のオブジェクトを置き換える場合、前のメッシュとマテリアルを破棄します。
+            ReproducedResources.ReleaseRendererResources(dstObj);
+            meshFilter.mesh = mesh;
             meshRenderer.sharedMaterials = materials;
             meshRenderer.shadowCastingMode = ShadowCastingMode.Off; // 道路と重なっているので影は不要
             dstObj.transform.parent = dstParent;

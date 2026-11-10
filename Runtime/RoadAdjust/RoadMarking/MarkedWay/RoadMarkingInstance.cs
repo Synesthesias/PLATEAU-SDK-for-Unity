@@ -15,10 +15,14 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         public CombineInstance CombineInstance { get; private set; }
         public RoadMarkingMaterial MaterialType { get; }
 
-        public RoadMarkingInstance(Mesh mesh, RoadMarkingMaterial materialType)
+        /// <summary> true ならメッシュはこのインスタンス用に作ったもので、結合後に破棄します。アセットのメッシュでは false にします。 </summary>
+        public bool OwnsMesh { get; }
+
+        public RoadMarkingInstance(Mesh mesh, RoadMarkingMaterial materialType, bool ownsMesh = false)
         {
             CombineInstance = new CombineInstance{mesh = mesh, transform = Matrix4x4.identity};
             MaterialType = materialType;
+            OwnsMesh = ownsMesh;
         }
 
         public void Translate(Vector3 moveVector)
@@ -105,6 +109,16 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             allCombinedMesh.indexFormat = IndexFormat.UInt32;
             allCombinedMesh.CombineMeshes(allCombineTargets, false);
             outMaterials = matCombined.Keys.Select(m => m.ToMaterial()).ToArray();
+
+            // 結合に使い終わったメッシュを破棄します。
+            foreach (var combined in matCombined.Values)
+            {
+                ReproducedResources.DestroyTemporary(combined);
+            }
+            foreach (var instance in instances.Where(i => i.OwnsMesh))
+            {
+                ReproducedResources.DestroyTemporary(instance.CombineInstance.mesh);
+            }
             return allCombinedMesh;
         }
     }

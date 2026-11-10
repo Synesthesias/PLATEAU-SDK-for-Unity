@@ -64,6 +64,8 @@ namespace PLATEAU.RoadAdjust
             var crosswalkA =
                 PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Next);
             var crosswalkB = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Prev);
+            ReproducedResources.ReleaseRendererResources(crosswalkA);
+            ReproducedResources.ReleaseRendererResources(crosswalkB);
             if(crosswalkA != null) Object.DestroyImmediate(crosswalkA);
             if(crosswalkB != null) Object.DestroyImmediate(crosswalkB);
             return false;

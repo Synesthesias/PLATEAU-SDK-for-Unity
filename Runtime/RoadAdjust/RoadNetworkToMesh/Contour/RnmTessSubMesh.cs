@@ -128,6 +128,10 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
                 
                 var matMesh = new Mesh();
                 matMesh.CombineMeshes(matCombines.ToArray(), true);
+                foreach (var combine in matCombines)
+                {
+                    ReproducedResources.DestroyTemporary(combine.mesh);
+                }
                 matMeshes.Add(matMesh);
                 subMeshIDToMatType.Add(matID, mat);
                 matID++;
@@ -138,6 +142,11 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             
             var mesh = new Mesh();
             mesh.CombineMeshes(combines.ToArray(), false);
+            // 結合に使い終わったメッシュを破棄します。
+            foreach (var matMesh in matMeshes)
+            {
+                ReproducedResources.DestroyTemporary(matMesh);
+            }
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
