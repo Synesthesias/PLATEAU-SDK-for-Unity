@@ -20,17 +20,24 @@ namespace PLATEAU.RoadAdjust
         /// 生成します。
         /// 生成された道路を返します。
         /// </summary>
-        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, ISmoothingStrategy smoothingStrategy)
+        /// <param name="copySourceData">生成元オブジェクトの UV4・属性・コンポーネントを道路メッシュへコピーするか。詳細は <see cref="RoadNetworkToMesh.RoadNetworkToMesh"/> を参照。</param>
+        public List<PLATEAUReproducedRoad> Generate(IRrTarget target, CrosswalkFrequency crosswalkFrequency, ISmoothingStrategy smoothingStrategy, bool copySourceData = true)
         {
+            // 生成物の検索で毎回シーン全体を走査しないよう、一覧をまとめて取得しておきます。
+            using var findCache = PLATEAUReproducedRoad.BeginFindCache();
+
             // 道路ネットワークから道路メッシュを生成
-            var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine);
+            var rnm = new RoadNetworkToMesh.RoadNetworkToMesh(target, RnmLineSeparateType.Combine, copySourceData);
             var generatedRoads = rnm.Generate(smoothingStrategy);
 
             // 道路標示を生成
             var rm = new RoadMarking.RoadMarkingGenerator(target, crosswalkFrequency);
             var generatedIntersections = rm.Generate(smoothingStrategy);
 
-            return generatedRoads.Concat(generatedIntersections).ToList();
+            // 輪郭線が無い場合 RoadNetworkToMesh.Generate は null を返すため、空として扱います。
+            return (generatedRoads ?? new List<PLATEAUReproducedRoad>())
+                .Concat(generatedIntersections ?? new List<PLATEAUReproducedRoad>())
+                .ToList();
         }
 
         public static Transform GenerateDstParent()

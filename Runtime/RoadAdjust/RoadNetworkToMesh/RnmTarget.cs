@@ -77,11 +77,18 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
     {
         private RnModel network; // この道路ネットワークのうち、 roadBases に含まれるもののみを対象に取ります。
         private RnRoadBase[] roadBases;
+        private readonly bool copyNeighborsOnly;
         
-        public RrTargetRoadBases(RnModel network, IEnumerable<RnRoadBase> roadBases)
+        /// <param name="copyNeighborsOnly">
+        /// true なら <see cref="Copy"/> で、対象とその隣接する道路・交差点だけをコピーします。
+        /// 対象が少数のとき、ネットワーク全体をコピーするより大幅に速くなります。
+        /// メッシュ化の前処理は対象と隣接部分しか参照しないため、生成結果は全体コピーと同じになる想定です。
+        /// </param>
+        public RrTargetRoadBases(RnModel network, IEnumerable<RnRoadBase> roadBases, bool copyNeighborsOnly = false)
         {
             this.network = network;
             this.roadBases = roadBases.ToArray();
+            this.copyNeighborsOnly = copyNeighborsOnly;
         }
 
         public IEnumerable<RnRoadBase> RoadBases()
@@ -117,12 +124,51 @@ namespace PLATEAU.RoadAdjust.RoadNetworkToMesh
             // var copiedRoadBases = copiedNetwork.Roads.Cast<RnRoadBase>().Concat(copiedNetwork.Intersections);
             
             // ↓ RrRoadNetworkCopier の正しさをチェックしたいときは、上のコメントアウトを外して完全コピーの結果と比較してください。
-            var copiedNetwork = new RrRoadNetworkCopier().Copy(network, out var roadSrcToDst);
+            Dictionary<RnRoadBase, RnRoadBase> roadSrcToDst;
+            RnModel copiedNetwork;
+            if (copyNeighborsOnly)
+            {
+                var copyTargets = roadBases
+                    .Concat(roadBases.SelectMany(rb => rb.GetNeighborRoads()))
+                    .Concat(roadBases.OfType<RnRoad>().SelectMany(CollectRoadChainToIntersections))
+                    .Where(rb => rb != null)
+                    .Distinct();
+                copiedNetwork = new RrRoadNetworkCopier().CopyPartial(copyTargets, out roadSrcToDst);
+            }
+            else
+            {
+                copiedNetwork = new RrRoadNetworkCopier().Copy(network, out roadSrcToDst);
+            }
             var copiedRoadBases = roadBases.Select(src => roadSrcToDst[src]);
             
             return new RrTargetRoadBases(copiedNetwork, copiedRoadBases);
         }
 
         public RnModel Network() => network;
+
+        /// <summary>
+        /// 道路の前後を、交差点に着くまでたどった道路と、たどり着いた交差点を返します。
+        /// 中央線の色は、道路をたどって交差点までの距離から決めるため、部分コピーでも途中で途切れないようにします。
+        /// </summary>
+        private static IEnumerable<RnRoadBase> CollectRoadChainToIntersections(RnRoad road)
+        {
+            var visited = new HashSet<RnRoadBase> { road };
+
+            var prev = road.Prev;
+            while (prev != null && visited.Add(prev))
+            {
+                yield return prev;
+                if (prev is not RnRoad prevRoad) break;
+                prev = prevRoad.Prev;
+            }
+
+            var next = road.Next;
+            while (next != null && visited.Add(next))
+            {
+                yield return next;
+                if (next is not RnRoad nextRoad) break;
+                next = nextRoad.Next;
+            }
+        }
     }
 }

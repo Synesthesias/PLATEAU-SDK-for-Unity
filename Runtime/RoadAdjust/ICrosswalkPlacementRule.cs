@@ -64,6 +64,8 @@ namespace PLATEAU.RoadAdjust
             var crosswalkA =
                 PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Next);
             var crosswalkB = PLATEAUReproducedRoad.Find(ReproducedRoadType.Crosswalk, target, ReproducedRoadDirection.Prev);
+            ReproducedResources.ReleaseRendererResources(crosswalkA);
+            ReproducedResources.ReleaseRendererResources(crosswalkB);
             if(crosswalkA != null) Object.DestroyImmediate(crosswalkA);
             if(crosswalkB != null) Object.DestroyImmediate(crosswalkB);
             return false;
@@ -80,7 +82,13 @@ namespace PLATEAU.RoadAdjust
         /// <summary> 置かない。すでに置かれているものは削除しない </summary>
         None,
         /// <summary> 置かない。すでに置かれているものは削除する。 </summary>
-        Delete
+        Delete,
+        /// <summary>
+        /// すでに置かれている所だけに置き直す。置き直す前に既存のものは削除する。
+        /// どの端に置かれていたかは、既存の横断歩道の位置から判定する（記録された向きは使わない）。
+        /// 道路の一部を編集して作り直すときに、編集していない場所の横断歩道を増やしたり残したりしないために使う。
+        /// </summary>
+        KeepExisting
     }
 
     internal static class CrosswalkFrequencyExtensions
@@ -97,6 +105,9 @@ namespace PLATEAU.RoadAdjust
                     return new CrosswalkPlacementRuleNone();
                 case CrosswalkFrequency.Delete:
                     return new CrosswalkPlacementRuleDelete();
+                case CrosswalkFrequency.KeepExisting:
+                    // 道路単位では決まらず、端ごとに既存の横断歩道を見て決めるため CrosswalkComposer が個別に扱う。
+                    throw new InvalidOperationException($"{nameof(CrosswalkFrequency.KeepExisting)} は配置ルールに変換できません。");
                 default:
                     throw new ArgumentOutOfRangeException();   
             }

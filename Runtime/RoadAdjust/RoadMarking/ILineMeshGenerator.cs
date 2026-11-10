@@ -68,7 +68,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             mesh.RecalculateNormals();
             mesh.RecalculateTangents();
             mesh.RecalculateBounds();
-            return new RoadMarkingInstance(mesh, materialType);
+            return new RoadMarkingInstance(mesh, materialType, ownsMesh: true);
         }
     }
 
@@ -94,7 +94,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
         {
             // 破線の基点を揃えるために、方向によっては逆順にします。
             Vector3[] srcPoints = direction ? srcPointsArg.ToArray() : srcPointsArg.Reverse().ToArray();
-            if(srcPoints.Length <= 1) return new RoadMarkingInstance(new Mesh(), materialType);
+            if(srcPoints.Length <= 1) return new RoadMarkingInstance(new Mesh(), materialType, ownsMesh: true);
 
             // 始点から点iまでの距離を計算します。
             var lengths = new float[srcPoints.Length];
@@ -149,7 +149,11 @@ namespace PLATEAU.RoadAdjust.RoadMarking
             
             var dstMesh = new Mesh();
             dstMesh.CombineMeshes(combines.ToArray());
-            return new RoadMarkingInstance(dstMesh, materialType);
+            foreach (var combine in combines)
+            {
+                ReproducedResources.DestroyTemporary(combine.mesh);
+            }
+            return new RoadMarkingInstance(dstMesh, materialType, ownsMesh: true);
         }
     }
 
@@ -157,7 +161,7 @@ namespace PLATEAU.RoadAdjust.RoadMarking
     {
         public RoadMarkingInstance GenerateMeshInstance(IReadOnlyList<Vector3> points)
         {
-            return new RoadMarkingInstance(new Mesh(), RoadMarkingMaterial.White);
+            return new RoadMarkingInstance(new Mesh(), RoadMarkingMaterial.White, ownsMesh: true);
         }
     }
 }
